@@ -153,6 +153,12 @@ export default {
             {name: '利用料項目確認',link:'/TemporaryPage'}
           ]
         },
+				{
+          name: '練習メニュー',
+          lists:[
+            {name: 'テーブル',link:'/PageTable'},
+          ]
+        },
       ],
     }
   },
