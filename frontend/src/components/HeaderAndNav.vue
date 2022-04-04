@@ -103,7 +103,7 @@
 export default {
   data(){
     return{
-      drawer: null,
+      drawer: false,
       pageTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
@@ -150,13 +150,8 @@ export default {
             {name: '施設体制確認',link:'/TemporaryPage'},
             {name: '受給者証情報確認',link:'/TemporaryPage'},
             {name: '契約情報確認',link:'/TemporaryPage'},
-            {name: '利用料項目確認',link:'/TemporaryPage'}
-          ]
-        },
-				{
-          name: '練習メニュー',
-          lists:[
-            {name: 'テーブル',link:'/PageTable'},
+            {name: '利用料項目確認',link:'/TemporaryPage'},
+            {name: '記録表',link:'/TemporaryHistory'}
           ]
         },
       ],

@@ -4,7 +4,7 @@ import JissekiKiroku from '../views/JissekiKiroku.vue'
 import KyuhuMeisai from '../views/KyuhuMeisai.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
-import PageTable from '../views/PageTable.vue'
+import TemporaryHistory from '../views/TemporaryHistory.vue'
 
 Vue.use(VueRouter)
 
@@ -30,9 +30,9 @@ const routes = [
         component: TemporaryPage
     },
     {
-        path:'/PageTable',
-        name:'一覧ページ',
-        component: PageTable
+        path:'/TemporaryHistory',
+        name:'記録表',
+        component: TemporaryHistory
     },
 ]
 
