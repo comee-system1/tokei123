@@ -5,24 +5,6 @@
       divider=""
       small
     ></v-breadcrumbs>
-<<<<<<< HEAD
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-2">
-              ここにメニュー
-            </div>
-            <div class="col-10">
-              <div class="container-fluid">
-                <wj-flex-grid
-                    :itemsSource="data"
-                    :allowMerging="'ColumnHeaders'"
-                    :alternatingRowStep="0"
-                    :autoGenerateColumns="false"
-                >
-                    <wj-flex-grid-column :binding="'country'" :header="'項目'" :allowMerging="true"></wj-flex-grid-column>
-                </wj-flex-grid>
-              </div>
-=======
 
     <div class="container-fluid">
         <div class="search p-2">
@@ -95,7 +77,6 @@
               <div class="mt-2">
                 <wj-flex-grid  :initialized="onInitialized" ></wj-flex-grid>
               </div>
->>>>>>> 7e16bebf31835a19124f028ac0cf645ed0c84d26
             </div>
         </div>
     </div>
@@ -105,13 +86,9 @@
 
 <script>
 
-<<<<<<< HEAD
-
-=======
 import * as wjCore from "@grapecity/wijmo";
 import * as wjGrid from "@grapecity/wijmo.grid";
 import '@grapecity/wijmo.vue2.input';
->>>>>>> 7e16bebf31835a19124f028ac0cf645ed0c84d26
 import "@grapecity/wijmo.vue2.grid";
 
 export default{
@@ -135,60 +112,6 @@ export default{
           href: '#',
         },
       ],
-<<<<<<< HEAD
-      data: this.getData()
-    }
-  },
-  methods: {
-    getData:function(){
-      //var countries = 'アメリカ,ドイツ,イギリス,日本'.split(',');
-      var data = [];
-      // for (var i = 0; i < 20; i++) {
-      //     data.push({
-      //         id: i,
-      //         country: countries[i % countries.length],
-      //     });
-      // }
-     // console.log(data);
-      var colum = [ '利用日', '入退院・外泊', '食事', '光熱水費' ];
-      for(var i = 0; i < colum.length; i++){
-        data.push({
-          id:1,
-          country: colum[i]
-        });
-        console.log(data);
-      }
-
-
-      return data;
-    }
-  }
-}
-
-</script>
-
-<style>
-  .wj-flexgrid {
-    max-height: 100vh;
-    margin:10px 0;
-  }
-
-  /* use flex display to center-align cells vertically */
-  .wj-flexgrid .wj-cell {
-    display: flex;
-    align-items: center;
-  }
-  .wj-flexgrid .wj-cell.wj-align-right {
-    justify-content: flex-end;
-  }
-  .wj-flexgrid .wj-cell.wj-align-center {
-    justify-content: center;
-  }
-
-  body {
-    margin-bottom: 20px;
-  }
-=======
       search:[ '32:施設入所支援' ],
       member:[ '全員' ],
       usres:[
@@ -377,5 +300,4 @@ body {
   }
 }
 
->>>>>>> 7e16bebf31835a19124f028ac0cf645ed0c84d26
 </style>
