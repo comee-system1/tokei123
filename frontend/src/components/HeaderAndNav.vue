@@ -9,7 +9,7 @@
     >
 			<v-list-item>
 				<p class="kenbunroku-logo">
-					<img  src="../assets/HukushiKenbunrokuLogo.png" alt="">
+					<img src="../assets/HukushiKenbunrokuLogo.png" alt="">
 				</p>
 			</v-list-item>
 			<v-list dense>
@@ -42,18 +42,14 @@
 							</v-list-item-content>
 					</template>
 					<!-- 下の階層のメニュー -->
-					<v-list-item v-for="list in nav_list.lists" :key="list" :to="list.link">
+					<v-list-item v-for="(list,index) in nav_list.lists" :key="index" :to="list.link">
 						<v-list-item-content>
 							<v-list-item-title>{{ list.name }}</v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
-					</v-list-group>
-				</template>
+				</v-list-group>
+			</template>
 			</v-list>
-			<v-spacer></v-spacer>
-			<p class="kenbunroku-logo">
-				<img  src="../assets/CorporateLogo.png" alt="">
-			</p>
     </v-navigation-drawer>
 
     <v-app-bar app color="#348498" dark dense height="30px" >
@@ -70,40 +66,40 @@
         <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                    color="primary"
+                    color="normal"
                     dark
+                    text
                     v-bind="attrs"
                     v-on="on"
 										small
+                    depressed
                 >
-                <v-icon>mdi-account-circle</v-icon>
-                    大正雅夫
+                  <v-icon>mdi-account-circle</v-icon>
+                  大正雅夫
                 </v-btn>
             </template>
             <v-list>
-                <v-list-item
-                    v-for="(item, index) in items"
-                    :key="index"
-                >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
+              <v-list-item
+                  v-for="(item, index) in items"
+                  :key="index"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
             </v-list>
         </v-menu>
-        </div>
+      </div>
       <v-icon>mdi-magnify</v-icon>
       <v-icon>mdi-printer</v-icon>
       <v-icon>mdi-file-excel</v-icon>
     </v-app-bar>
-
   </div>
-
 </template>
 
 <script>
 export default {
   data(){
     return{
-      drawer: false,
+      drawer: null,
       pageTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
@@ -131,7 +127,7 @@ export default {
             {name: 'レセプト集計',link:'/TemporaryPage'},
             {name: '上限管理',link:'/TemporaryPage'},
             {name: '給付明細書',link:'/KyuhuMeisai'},
-            {name: '実績記録表',link:'/JissekiKiroku'},
+            {name: '実績記録票',link:'/JissekiKiroku'},
             {name: '請求書',link:'/SeikyuSho'}
           ]
         },
@@ -150,8 +146,7 @@ export default {
             {name: '施設体制確認',link:'/TemporaryPage'},
             {name: '受給者証情報確認',link:'/TemporaryPage'},
             {name: '契約情報確認',link:'/TemporaryPage'},
-            {name: '利用料項目確認',link:'/TemporaryPage'},
-            {name: '記録表',link:'/TemporaryHistory'}
+            {name: '利用料項目確認',link:'/TemporaryPage'}
           ]
         },
       ],
@@ -173,6 +168,10 @@ export default {
 .kenbunroku-logo{
 	padding-top:10px;
 	margin:auto;
+}
+
+.v-toolbar__title{
+  font-size:15px;
 }
 
 </style>
