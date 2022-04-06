@@ -1,13 +1,12 @@
 <template>
   <div>
-    <h1>仮のページです</h1>
-    <h1>↓にページタイトルが表示されます</h1>
+    <h3>仮のページです</h3>
+    <h3>↓にページタイトルが表示されます</h3>
     <P>{{currentPageTitle}}</P>
   </div>
 </template>
 
 <script>
-
 export default{
   data(){
     return{
@@ -15,9 +14,4 @@ export default{
     }
   }
 }
-
 </script>
-
-<style scoped>
-
-</style>

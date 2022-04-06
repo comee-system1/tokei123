@@ -1,122 +1,125 @@
 <template>
   <v-container fluid>
-    <v-container class="grey lighten-5" fluid>
-      <v-card
-          class="pa-2"
-          outlined
-          tile
-        >
+    <v-container  fluid>
         <v-row dense >
-          <v-col sm="1">サービス </v-col>
-          <v-col sm="11">
+          <v-col sm="1">
+            <p>サービス</p> 
+            <p class="mt-1">提供月</p>
+          </v-col>
+          <v-col sm="8">
+            <div>
               <wj-combo-box :textChanged="onTextChanged" ></wj-combo-box>
               <wj-combo-box :items-source="search"></wj-combo-box>
+            </div>
+            <div class="mt-1">
+              <input type="month">
+            </div>
+          </v-col>
+          <v-col sm="3" >
+            <v-row justify="end" >
+                <v-btn>登録</v-btn>
+            </v-row>
           </v-col>
         </v-row>
-        <v-row dense >
-          <v-col sm="1">提供月</v-col>
-          <v-col sm="11">
-              <wj-combo-box :textChanged="onTextChanged" ></wj-combo-box>
-          </v-col>
-        </v-row>
-      </v-card>
     </v-container>
-
-    <v-row fluid>
-      <v-col cols="2">
-        <wj-combo-box :items-source="member"></wj-combo-box>
-
-          <v-btn-toggle
-            class="mt-2"
-            mandatory
-          >
-          <v-btn
-            x-small
-            color="secondary"
-            dark
-            outlined
-          >コード順
-          </v-btn>
-          <v-btn
-            x-small
-            color="secondary"
-            dark
-            outlined
-          >カナ順
-          </v-btn>
-          <v-btn
-            x-small
-            color="secondary"
-            dark
-            outlined
-          >受給者番号順
-          </v-btn>
-          </v-btn-toggle>
+    <v-container fluid>
+      <v-row >
+        <v-col cols="3">
+          <v-row>
+            <v-col col=6><wj-combo-box :items-source="member"></wj-combo-box></v-col>
+            <v-col col=6><wj-combo-box placeholder="カナ検索"></wj-combo-box></v-col>
+          </v-row>
+          <v-row p-0>
+            <v-col col=12>
+              <v-btn-toggle
+                class="mt-2"
+                mandatory
+              >
+                <v-btn
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                >コード順
+                </v-btn>
+                <v-btn
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                >カナ順
+                </v-btn>
+                <v-btn
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                >受給者番号順
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+          <div class="mt-1">
+          <v-btn x-small outlined v-for="n of alphabet" :key="n">{{n}}</v-btn>
+          </div>
           <wj-flex-grid
             class="mt-1"
             :autoSearch="true"
-            :selectionMode="'ListBox'"
             :headersVisibility="'Column'"
-            :itemsSource="usres">
-              <wj-flex-grid-column :isReadOnly="true" binding="code" header="コード"></wj-flex-grid-column>
-              <wj-flex-grid-column :isReadOnly="true" binding="name" header="利用者名"></wj-flex-grid-column>
-              <wj-flex-grid-column :binding="'active'" header="印刷" :width=60></wj-flex-grid-column>
+            :itemsSource="usres"
+            style="height:100vh;width:100%;font-size:11px;"
+            >
+              <wj-flex-grid-column :isReadOnly="true" binding="code" header="コード" :width=80 ></wj-flex-grid-column>
+              <wj-flex-grid-column :isReadOnly="true" binding="name" header="利用者名"  width="2*" ></wj-flex-grid-column>
+              <wj-flex-grid-column :binding="'active'" header="印刷" width="*" ></wj-flex-grid-column>
           </wj-flex-grid>
-
-      </v-col>
-      <v-col cols="10" >
-        <v-btn-toggle
-          mandatory
-          >
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-          >前の利用者
-          </v-btn>
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-          >次の利用者
-          </v-btn>
-        </v-btn-toggle>
-        <v-container
-            class="d-flex"
-            fluid
-            mt-2
-            pt-0
-          >
-          <div class="mt-1 pr-2">利用者</div>
-          <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
-          <div class="ml-3 mt-1 pr-2">受給者証番号</div>
-          <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
-          <div class="pt-1 ml-5">
-            <small>最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small>
-          </div>
-        </v-container>
-        <v-container
-          mt-0
-          pt-0
-          class="d-flex justify-end "
-          fluid>
-          <div class="ml-5">
-            <span class="text-danger"><span class="wj-glyph-pencil"></span>〇×</span>
-            <small>:編集可能</small>
-          </div>
-          <div class="ml-5"><small>:入退院</small></div>
-          <div class="ml-5"><small>:外泊</small></div>
-          <div class="ml-5"><small>:手修正済み</small></div>
-        </v-container>
-        <wj-flex-grid
-        id="theGridTallRows"
-        :initialized="onInitialized" ></wj-flex-grid>
           
-      </v-col>
-    </v-row>
-    
+          <wj-combo-box :itemsSource="selects" :isDroppedDown="isDroppedDown" :isRequired="false" :selectedIndex=-1 :selectedIndexChanged="onselectedIndexChanged" ></wj-combo-box>
+        </v-col>
+        <v-col cols="9" >
+          <v-container
+              class="d-flex"
+              fluid
+              pa-0
+            >
+            <div class="mt-1 pr-2">利用者</div>
+            <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
+            <div class="mt-1 ml-1">
+            <v-btn small><span class="wj-glyph-left"></span></v-btn>&nbsp;
+            <v-btn small><span class="wj-glyph-right"></span></v-btn>
+            </div>
+            <div class="ml-3 mt-1 pr-2">受給者証番号</div>
+            <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
+            <div class="pt-1 ml-5">
+              <small>最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small>
+            </div>
+          </v-container>
+          <v-container
+            mt-0
+            pt-0
+            class="d-flex justify-end "
+            fluid>
+            <div class="ml-5">
+              <span class="text-danger"><span class="wj-glyph-pencil"></span></span>
+              <small>:編集可能</small>
+            </div>
+            <div class="ml-5"><small>:入退院</small></div>
+            <div class="ml-5"><small>:外泊</small></div>
+            <div class="ml-5"><small>:手修正済み</small></div>
+          </v-container>
+          <wj-flex-grid
+          id="theGridTallRows"
+          :initialized="onInitialized"
+          :isReadOnly=true
+          :allowDragging=false
+          :allowResizing=false
+          :frozenColumns="2"
+          >
+          </wj-flex-grid>
+            
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 
 </template>
@@ -129,6 +132,7 @@ import * as wjGrid from "@grapecity/wijmo.grid";
 import '@grapecity/wijmo.vue2.input';
 import "@grapecity/wijmo.vue2.grid";
 import moment from 'moment'
+import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
 export default{
   
@@ -139,21 +143,34 @@ export default{
       search:[ '32:施設入所支援' ],
       member:[ '全員' ],
       week:['日', '月', '火', '水', '木', '金', '土' ],
-      usres:[
-        {code:"100001", name: "東経たろう", active:true },
-        {code:"100002", name: "東経ジロウ", active:false },
-        {code:"100003", name: "東経三郎", active:true },
-        {code:"100004", name: "東経史郎", active:true },
-        {code:"100005", name: "東経五郎", active:true },
-        {code:"100006", name: "東経六郎", active:true },
-        {code:"100007", name: "東経七ろう", active:true },
-      ]
+      alphabet:['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ],
+      usres:this.getUser(),
+      selects:['印刷を全選択', '印刷を全解除' ],
+      isDroppedDown: false,
+      counter:0
     }
   },
   created(){
     moment.locale("ja");
   },
   methods: {
+    initDate: function (date) {
+      this.theDate = date;
+    },
+    getUser: function()
+    {
+      let users = [];
+      for(let i=0; i <= 100 ; i++){
+        users.push(
+          {
+            code:'0000'+Math.round(Math.random() * 50),
+            name:"東経太郎00"+i,
+            active:false
+          }
+        );
+      }
+      return users;
+    },
     onInitialized:function (flexGrid)
     {
       
@@ -166,10 +183,13 @@ export default{
       let i = 0;
       while (flexGrid.columns.length < lastdate+4) {
           let clm = new wjGrid.Column();
+          if( i >= lastdate+2 ){
+            clm.width = 80;
+          }else
           if(i >= 2 ){ 
-            clm.width = 40;
+            clm.width = 30;
           }else{
-            clm.width = 220;
+            clm.width = 160;
           }
           flexGrid.columns.push(clm);
           i++;
@@ -180,37 +200,10 @@ export default{
 
       // configure the grid
       flexGrid.mergeManager = new CustomMergeManager();
-      flexGrid.rowHeaders.columns[0].width = 40;
-      flexGrid.rows.defaultSize = 45;
+      flexGrid.rowHeaders.columns[0].width = 30;
+      flexGrid.rows.defaultSize = 35;
       flexGrid.alternatingRowStep = 0;
-      flexGrid.isReadOnly = true;
-      flexGrid.allowDragging = false;
-      flexGrid.allowResizing = false;
-
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        if(c == 0) cell.style.textAlign = 'left';
-        if(c >= 2 ) cell.style.textAlign = 'center';
-        if(panel.cellType == 2 && c >= 2 && r == 0 ){
-          if(lastdate >= c-1){
-            let day = c-1;
-            let date = year+"-"+month+"-"+day;
-            let w = moment(date).day();
-            if(w == 0) cell.style.color = "red";
-            if(w == 6) cell.style.color = "blue";
-            cell.innerHTML = day+'<div>('+week[w]+')</div>';
-          }
-        }
-        if(c == 2 && r == 2){
-           cell.innerHTML = '<a >〇</a>';
-        }
-        if(c == 3 && r == 2){
-           cell.innerHTML = '<a >〇</a>';
-        }
-        if(c == 2 && r == 3){
-           cell.innerHTML = '<a >〇</a>';
-        }
-      }
-
+      
       flexGrid.formatItem.addHandler(leftCell);
       let headerColum = [];
       headerColum.push("");
@@ -225,7 +218,7 @@ export default{
 
       // populate the grid
       setData( flexGrid.columnHeaders, 0, headerColum );
-      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日"] );
+      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日",'-','-'] );
       setData( flexGrid.cells, 1, ["変動情報","入退院・外泊","入退院・外泊"] );
       setData( flexGrid.cells, 2, ["変動情報","食事", "朝食" ] );
       setData( flexGrid.cells, 3, ["変動情報","食事", "昼食"] );
@@ -235,7 +228,7 @@ export default{
       setData( flexGrid.cells, 7, ["個別加算","入院外泊加算Ⅱ","入院外泊加算Ⅱ"] );
       setData( flexGrid.cells, 8, ["個別加算","栄養マネジメント加算","栄養マネジメント加算"] );
       setData( flexGrid.cells, 9, ["個別加算","療養食加算","療養食加算"] );
-      setData( flexGrid.cells, 10,["個別加算"," "," "] );
+      setData( flexGrid.cells, 10,["個別加算","-","-"] );
       setData( flexGrid.cells, 11,["受給者証情報","援護者","東経市"] );
       setData( flexGrid.cells, 12,["受給者証情報","援護者","西経市"] );
       setData( flexGrid.cells, 13,["受給者証情報","障害種別","知的"] );
@@ -244,9 +237,47 @@ export default{
       setData( flexGrid.cells, 16,["受給者証情報","負担上限月額",9300] );
       setData( flexGrid.cells, 17,["受給者証情報","上限管理事業所","ひまわり園"] );
       setData( flexGrid.cells, 18,["受給者証情報","特別給付費",500] );
+
+      flexGrid.columns[1].isContentHtml = true;
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        if(c == 0) cell.style.textAlign = 'left';
+        if(c >= 2 ) cell.style.textAlign = 'center';
+        if(panel.cellType == 2 && c >= 2 && r == 0 ){
+          if(lastdate >= c-1){
+            let day = c-1;
+            let date = year+"-"+month+"-"+day;
+            let w = moment(date).day();
+            if(w == 0) cell.style.color = "red";
+            if(w == 6) cell.style.color = "blue";
+            cell.innerHTML = day+'<div>'+week[w]+'</div>';
+          }
+        }
+        cell.style.fontSize = "11px";
+        // if(c == 2 && r == 2){
+        //    cell.innerHTML = '<a >〇</a>';
+        // }
+        // if(c == 3 && r == 2){
+        //    cell.innerHTML = '<a >〇</a>';
+        // }
+        if(c == 2 && r == 3){
+           cell.innerHTML = 'aa';
+        }
+
+
+      }
+
+
     },
+
+    test:function(){
+alert("sss");
+    },
+    
     onTextChanged: function(s){
         console.log(s.text);
+    },
+    onselectedIndexChanged: function(s){
+        console.log(s.selectedIndex);
     },
   }
 }
@@ -257,7 +288,7 @@ function setData(p, r, cells) {
     }
 
     for (var i = 1; i < cells.length; i++) {
-      p.setCellData(r, i - 1, cells[i],true,true);
+      p.setCellData(r, i - 1, cells[i], true,true);
     }
 }
 
@@ -274,6 +305,10 @@ function leftCell(s, e) {
         });
     }
 }
+
+
+
+
 
 var __extends =
     (this && this.__extends) ||
@@ -307,6 +342,7 @@ var CustomMergeManager = (function(_super) {
     function CustomMergeManager() {
         return _super.call(this) || this;
     }
+    
     CustomMergeManager.prototype.getMergedRange = function(panel, r, c, clip) {
         if (clip === void 0) {
             clip = true;
@@ -357,13 +393,9 @@ var CustomMergeManager = (function(_super) {
 </script>
 
 <style lang="scss" scope>
-.wj-flexgrid .wj-cell {
-    padding: 10px 5px;
-    &.wj-header{
-      font-size:11px;    
-    }
+#theGridTallRows.wj-flexgrid .wj-cell {
+    padding: 8px;
 }
-
 .wj-rowheaders{
   div.wj-row{
     & > div.wj-cell.wj-header{
