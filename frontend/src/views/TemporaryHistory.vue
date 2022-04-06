@@ -273,7 +273,6 @@ export default{
       setData( flexGrid.cells, 17,["受給者証情報","上限管理事業所","ひまわり園"] );
       setData( flexGrid.cells, 18,["受給者証情報","特別給付費",500] );
 
-
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         if(c == 0) cell.style.textAlign = 'left';
         if(c >= 2 ) cell.style.textAlign = 'center';
@@ -346,6 +345,10 @@ function leftCell(s, e) {
         });
     }
 }
+
+
+
+
 
 var __extends =
     (this && this.__extends) ||

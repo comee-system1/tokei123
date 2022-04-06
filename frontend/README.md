@@ -1,4 +1,3 @@
-# ver 04
 # frontend
 
 ## Project setup
