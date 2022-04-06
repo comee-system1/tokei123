@@ -67,11 +67,12 @@
             :autoSearch="true"
             :headersVisibility="'Column'"
             :itemsSource="usres"
-            style="height:100vh;width:100%;font-size:11px;"
+            :selectionMode=3
+            style="height:100vh;font-size:11px;"
             >
-              <wj-flex-grid-column :isReadOnly="true" binding="code" header="コード" :width=80 ></wj-flex-grid-column>
-              <wj-flex-grid-column :isReadOnly="true" binding="name" header="利用者名"  width="2*" ></wj-flex-grid-column>
-              <wj-flex-grid-column :binding="'active'" header="印刷" width="*" ></wj-flex-grid-column>
+              <wj-flex-grid-column :isReadOnly="true" binding="code" header="コード" width="2*" ></wj-flex-grid-column>
+              <wj-flex-grid-column :isReadOnly="true" binding="name" header="利用者名"  width="3*" ></wj-flex-grid-column>
+              <wj-flex-grid-column :binding="'active'" header="印刷" width="1*" ></wj-flex-grid-column>
           </wj-flex-grid>
           
           <wj-combo-box :itemsSource="selects" :isDroppedDown="isDroppedDown" :isRequired="false" :selectedIndex=-1 :selectedIndexChanged="onselectedIndexChanged" ></wj-combo-box>
@@ -115,17 +116,31 @@
           :allowResizing=false
           :frozenColumns="2"
           >
+          <div v-for="n in borders" :key=n>
+            <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
+          </div>
           </wj-flex-grid>
             
         </v-col>
       </v-row>
     </v-container>
-  </v-container>
+    <v-row id="modalArea" class="modalArea">
+      <div class="modalBg" onClick="document.getElementById('modalArea').classList.remove('display')"></div>
+      <div class="modalWrapper">
+        <div class="modalContents">
+          <h1>Here are modal contents!</h1>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+        </div>
+        <div class="closeModal" onClick="document.getElementById('modalArea').classList.remove('display')">
+          ×
+        </div>
+      </div>
+    </v-row>
 
+  </v-container>
 </template>
 
 <script>
-
 import * as wjCore from "@grapecity/wijmo";
 import * as wjGrid from "@grapecity/wijmo.grid";
 
@@ -135,7 +150,6 @@ import moment from 'moment'
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
 export default{
-  
   data(){
     return{
       year:moment().year(),
@@ -147,15 +161,36 @@ export default{
       usres:this.getUser(),
       selects:['印刷を全選択', '印刷を全解除' ],
       isDroppedDown: false,
-      counter:0
+      borders:this.getBorder()
     }
   },
   created(){
     moment.locale("ja");
   },
   methods: {
-    initDate: function (date) {
-      this.theDate = date;
+    getBorder: function()
+    {
+      let borders = [];
+      borders.push({
+        width:300,
+        left:350,
+        top:90,
+        color:'red'
+      });
+      borders.push({
+        width:360,
+        left:380,
+        top:165,
+        color:'red'
+      });
+      borders.push({
+        width:270,
+        left:380,
+        top:270,
+        color:'aqua'
+      });
+      
+      return borders;
     },
     getUser: function()
     {
@@ -218,8 +253,8 @@ export default{
 
       // populate the grid
       setData( flexGrid.columnHeaders, 0, headerColum );
-      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日"] );
-      setData( flexGrid.cells, 1, ["変動情報","入退院・外泊","入退院・外泊"] );
+      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日","1"] );
+      setData( flexGrid.cells, 1, ["変動情報","入退院・外泊"," "] );
       setData( flexGrid.cells, 2, ["変動情報","食事", "朝食" ] );
       setData( flexGrid.cells, 3, ["変動情報","食事", "昼食"] );
       setData( flexGrid.cells, 4, ["変動情報","食事", "夕食"] );
@@ -238,7 +273,7 @@ export default{
       setData( flexGrid.cells, 17,["受給者証情報","上限管理事業所","ひまわり園"] );
       setData( flexGrid.cells, 18,["受給者証情報","特別給付費",500] );
 
-      flexGrid.columns[1].isContentHtml = true;
+
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         if(c == 0) cell.style.textAlign = 'left';
         if(c >= 2 ) cell.style.textAlign = 'center';
@@ -253,33 +288,39 @@ export default{
           }
         }
         cell.style.fontSize = "11px";
-        // if(c == 2 && r == 2){
-        //    cell.innerHTML = '<a >〇</a>';
-        // }
-        // if(c == 3 && r == 2){
-        //    cell.innerHTML = '<a >〇</a>';
-        // }
-        if(c == 2 && r == 3){
-           cell.innerHTML = 'aa';
-        }
-
-
-      }
-
-
+         if(c == 1 && r == 1){
+            cell.innerHTML = "<a >期間追加</a>";
+         }
+         if(c == 2 && r == 3){
+            cell.innerHTML = "<a href='#'>〇</a>";
+         }
+      };
+      flexGrid.hostElement.addEventListener('click', function (e) {
+       // if (e.target.tagName == 'BUTTON' && wjCore.closest(e.target, '.wj-cell')) {
+          var ht = flexGrid.hitTest(e);
+          console.log(ht.target.innerText);
+          //alert(wjCore.format('{row}行{col}列のセルがクリックされました', ht));
+          if(ht.target.innerText == "期間追加"){
+            displayModal();
+          }
+       // }
+      });
     },
 
-    test:function(){
-alert("sss");
-    },
-    
     onTextChanged: function(s){
         console.log(s.text);
     },
+
     onselectedIndexChanged: function(s){
         console.log(s.selectedIndex);
     },
   }
+}
+
+function displayModal(){
+  var elem = document.getElementById("modalArea");
+  elem.classList.add('display');
+  return true;
 }
 
 function setData(p, r, cells) {
@@ -305,10 +346,6 @@ function leftCell(s, e) {
         });
     }
 }
-
-
-
-
 
 var __extends =
     (this && this.__extends) ||
@@ -394,7 +431,10 @@ var CustomMergeManager = (function(_super) {
 </script>
 
 <style lang="scss" scope>
-#theGridTallRows.wj-flexgrid .wj-cell {
+#theGridTallRows{
+  position:relative;
+}
+#theGridTallRows.wj-flexgrid .wj-cell{
     padding: 8px;
 }
 .wj-rowheaders{
@@ -410,6 +450,67 @@ var CustomMergeManager = (function(_super) {
       }
     }
   }
+}
+
+.borderPlace{
+  height:2px;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:10;
+  
+}
+
+
+
+#modalArea {
+  display: none;
+  position: fixed;
+  z-index: 10; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  &.display{
+    display: block;
+    animation-name: fade-in;
+    animation-duration: .7s;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.modalBg {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30,30,30,0.1);
+
+}
+
+.modalWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform:translate(-50%,-50%);
+  width: 70%;
+  max-width: 500px;
+  padding: 10px 30px;
+  background-color: #fff;
+  border:1px solid #ccc;
+}
+
+.closeModal {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  cursor: pointer;
 }
 
 </style>
