@@ -1,13 +1,12 @@
 <template>
   <div>
-    <h1>請求書ページです</h1>
-    <h1>↓にページタイトルが表示されます</h1>
+    <h3>請求書ページです</h3>
+    <h3>↓にページタイトルが表示されます</h3>
     <P>{{currentPageTitle}}</P>
   </div>
 </template>
 
 <script>
-
 export default{
   data(){
     return{
@@ -15,5 +14,4 @@ export default{
     }
   }
 }
-
 </script>
