@@ -202,7 +202,7 @@ export default{
       flexGrid.mergeManager = new CustomMergeManager();
       flexGrid.rowHeaders.columns[0].width = 30;
       flexGrid.rows.defaultSize = 35;
-      flexGrid.alternatingRowStep = 0;
+      flexGrid.alternatingRowStep = 1;
       
       flexGrid.formatItem.addHandler(leftCell);
       let headerColum = [];
@@ -218,7 +218,7 @@ export default{
 
       // populate the grid
       setData( flexGrid.columnHeaders, 0, headerColum );
-      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日",'-','-'] );
+      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日"] );
       setData( flexGrid.cells, 1, ["変動情報","入退院・外泊","入退院・外泊"] );
       setData( flexGrid.cells, 2, ["変動情報","食事", "朝食" ] );
       setData( flexGrid.cells, 3, ["変動情報","食事", "昼食"] );
@@ -228,7 +228,7 @@ export default{
       setData( flexGrid.cells, 7, ["個別加算","入院外泊加算Ⅱ","入院外泊加算Ⅱ"] );
       setData( flexGrid.cells, 8, ["個別加算","栄養マネジメント加算","栄養マネジメント加算"] );
       setData( flexGrid.cells, 9, ["個別加算","療養食加算","療養食加算"] );
-      setData( flexGrid.cells, 10,["個別加算","-","-"] );
+      setData( flexGrid.cells, 10,["個別加算"," "," "] );
       setData( flexGrid.cells, 11,["受給者証情報","援護者","東経市"] );
       setData( flexGrid.cells, 12,["受給者証情報","援護者","西経市"] );
       setData( flexGrid.cells, 13,["受給者証情報","障害種別","知的"] );
@@ -349,6 +349,7 @@ var CustomMergeManager = (function(_super) {
         }
 
         var rng = new wjGrid.CellRange(r, c);
+        
         if( rng.col >= 2 && rng.col2 >= 2){
           return rng;
         }
