@@ -24,7 +24,7 @@
     </v-container>
     <v-container fluid>
       <v-row >
-        <v-col cols="3">
+        <v-col cols="2">
           <v-row>
             <v-col col=6><wj-combo-box :items-source="member"></wj-combo-box></v-col>
             <v-col col=6><wj-combo-box placeholder="カナ検索"></wj-combo-box></v-col>
@@ -60,7 +60,7 @@
             </v-col>
           </v-row>
           <div class="mt-1">
-          <v-btn x-small outlined v-for="n of alphabet" :key="n">{{n}}</v-btn>
+          <v-btn x-small outlined v-for="n of alphabet" :key="n" :width=10>{{n}}</v-btn>
           </div>
           <wj-flex-grid
             class="mt-1"
@@ -77,7 +77,7 @@
           
           <wj-combo-box :itemsSource="selects" :isDroppedDown="isDroppedDown" :isRequired="false" :selectedIndex=-1 :selectedIndexChanged="onselectedIndexChanged" ></wj-combo-box>
         </v-col>
-        <v-col cols="9" >
+        <v-col cols="10" >
           <v-container
               class="d-flex"
               fluid
@@ -116,7 +116,7 @@
           :allowResizing=false
           :frozenColumns="2"
           >
-          <div v-for="n in borders" :key=n>
+          <div v-for="n in borders" :key=n.id>
             <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
           </div>
           </wj-flex-grid>
@@ -148,7 +148,14 @@ import '@grapecity/wijmo.vue2.input';
 import "@grapecity/wijmo.vue2.grid";
 import moment from 'moment'
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
+import customMerge from "@/utiles/customMerge";
 
+//一覧左側のタイトルセルの数
+let cell = 2;
+//1日分の幅
+let oneday = 30;
+//グラフはじめのスタート位置
+let startPos = 470;
 export default{
   data(){
     return{
@@ -161,36 +168,70 @@ export default{
       usres:this.getUser(),
       selects:['印刷を全選択', '印刷を全解除' ],
       isDroppedDown: false,
-      borders:this.getBorder()
+      borders:this.getBorder(),
+      lines:this.getLine()
     }
   },
-  created(){
+  created()
+  {
     moment.locale("ja");
   },
   methods: {
+
     getBorder: function()
     {
       let borders = [];
       borders.push({
-        width:300,
-        left:350,
+        id:1,
+        start_day:"2020-04-01",
+        end_day:"2020-04-10",
         top:90,
         color:'red'
       });
       borders.push({
-        width:360,
-        left:380,
+        id:2,
+        start_day:"2020-04-09",
+        end_day:"2020-04-13",
         top:165,
         color:'red'
       });
       borders.push({
-        width:270,
-        left:380,
+        id:3,
+        start_day:"2020-04-21",
+        end_day:"2020-04-30",
         top:270,
         color:'aqua'
       });
+      borders.push({
+        id:4,
+        start_day:"2020-04-20",
+        end_day:"2020-04-23",
+        top:165,
+        color:'green'
+      });
       
-      return borders;
+      let editborders = this.borderConvert(borders);
+      //console.log(editborders);
+      return editborders;
+    },
+    borderConvert: function(data)
+    {
+      var converts;
+      converts = [];
+      data.forEach(function(conv){
+        //日付の差分
+        var m1 = moment(conv.end_day);
+        var m2 = moment(conv.start_day);
+        converts.push({
+          id:conv.id,
+          width:(oneday*m1.diff(m2, 'days'))+oneday,
+          left:startPos+(oneday*(m2.date()-1)),
+          top:conv.top,
+          color:conv.color
+        });
+      })
+
+      return converts;
     },
     getUser: function()
     {
@@ -206,9 +247,90 @@ export default{
       }
       return users;
     },
+    getLine:function ()
+    {
+      let lines = {};
+      lines = [
+        {row:'変動情報', items1:'利用日', items2:'利用日', 
+        day1:'', 
+        day2:'', 
+        day3:'〇', 
+        day4:'〇', 
+        day5:'〇', 
+        day6:'〇', 
+        day7:'〇', 
+        day8:'〇', 
+        day9:'〇', 
+        day10:'〇', 
+        day11:'', 
+        day12:'', 
+        day13:'', 
+        day14:'', 
+        day15:'', 
+        day16:'', 
+        day17:'', 
+        day18:'', 
+        day19:'', 
+        day20:'', 
+        day21:'', 
+        day22:'', 
+        day23:'', 
+        day24:'〇', 
+        day25:'〇', 
+        day26:'〇', 
+        day27:'〇', 
+        day28:'〇', 
+        day29:'〇', 
+        day30:'〇', 
+        total:'12', 
+        money:'1000', 
+        },
+        {row:'変動情報', items1:'入退院・外泊', items2:' ' },
+        {row:'変動情報', items1:'食事', items2:'朝食' },
+        {row:'変動情報', items1:'食事', items2:'昼食' },
+        {row:'変動情報', items1:'食事', items2:'夕食' },
+        {row:'変動情報', items1:'光熱水費', items2:'光熱水費' },
+        {row:'個別加算', items1:'test', items2:'test' },
+        {row:'個別加算', items1:'入院外泊加算Ⅰ', items2:'入院外泊加算Ⅰ' },
+        {row:'個別加算', items1:'入院外泊加算Ⅱ', items2:'入院外泊加算Ⅱ' },
+        {row:'個別加算', items1:'栄養マネジメント加算', items2:'栄養マネジメント加算' },
+        {row:'個別加算', items1:'療養食加算', items2:'療養食加算' },
+        {row:'個別加算', items1:' ', items2:' ' },
+        {row:'受給者証情報', items1:'援護者', items2:'東経市' },
+        {row:'受給者証情報', items1:'援護者', items2:'西経市' },
+        {row:'受給者証情報', items1:'障害種別', items2:'知的' },
+        {row:'受給者証情報', items1:'障害支援区分', items2:'区分4' },
+        {row:'受給者証情報', items1:'決定支給量', items2:' ' },
+        {row:'受給者証情報', items1:'負担上限月額', items2:'9300' },
+        {row:'受給者証情報', items1:'上限管理事業所', items2:'ひまわり園' },
+        {row:'受給者証情報', items1:'特別給付費', items2:'500' },
+      ];
+
+      // lines.push({row:'変動情報', items1:'利用日', items2:'利用日', day1:'〇' });
+      // lines.push({row:'変動情報', items1:'入退院・外泊', items2:' ' });
+      // lines.push({row:'変動情報', items1:'食事', items2:'朝食' });
+      // lines.push({row:'変動情報', items1:'食事', items2:'昼食' });
+      // lines.push({row:'変動情報', items1:'食事', items2:'夕食' });
+      // lines.push({row:'変動情報', items1:'光熱水費', items2:'光熱水費' });
+      // lines.push({row:'個別加算', items1:'test', items2:'test' });
+      // lines.push({row:'個別加算', items1:'入院外泊加算Ⅰ', items2:'入院外泊加算Ⅰ' });
+      // lines.push({row:'個別加算', items1:'入院外泊加算Ⅱ', items2:'入院外泊加算Ⅱ' });
+      // lines.push({row:'個別加算', items1:'栄養マネジメント加算', items2:'栄養マネジメント加算' });
+      // lines.push({row:'個別加算', items1:'療養食加算', items2:'療養食加算' });
+      // lines.push({row:'個別加算', items1:' ', items2:' ' });
+      // lines.push({row:'受給者証情報', items1:'援護者', items2:'東経市' });
+      // lines.push({row:'受給者証情報', items1:'援護者', items2:'西経市' });
+      // lines.push({row:'受給者証情報', items1:'障害種別', items2:'知的' });
+      // lines.push({row:'受給者証情報', items1:'障害支援区分', items2:'区分4' });
+      // lines.push({row:'受給者証情報', items1:'決定支給量', items2:' ' });
+      // lines.push({row:'受給者証情報', items1:'負担上限月額', items2:'9300' });
+      // lines.push({row:'受給者証情報', items1:'上限管理事業所', items2:'ひまわり園' });
+      // lines.push({row:'受給者証情報', items1:'特別給付費', items2:'500' });
+
+      return lines;
+    },
     onInitialized:function (flexGrid)
     {
-      
       let m = moment(this.year+"-"+this.month+"-01");
       let year = this.year;
       let month = this.month;
@@ -218,13 +340,13 @@ export default{
       let i = 0;
       while (flexGrid.columns.length < lastdate+4) {
           let clm = new wjGrid.Column();
-          if( i >= lastdate+2 ){
-            clm.width = 80;
+          if( i >= lastdate + cell ){
+            clm.width = "*";
           }else
-          if(i >= 2 ){ 
+          if(i >= cell ){ 
             clm.width = 30;
           }else{
-            clm.width = 160;
+            clm.width = 220;
           }
           flexGrid.columns.push(clm);
           i++;
@@ -234,7 +356,7 @@ export default{
       }
 
       // configure the grid
-      flexGrid.mergeManager = new CustomMergeManager();
+      flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 30;
       flexGrid.rows.defaultSize = 35;
       flexGrid.alternatingRowStep = 1;
@@ -252,26 +374,47 @@ export default{
       headerColum.push("金額");
 
       // populate the grid
-      setData( flexGrid.columnHeaders, 0, headerColum );
-      setData( flexGrid.cells, 0, ["変動情報","利用日","利用日","1"] );
-      setData( flexGrid.cells, 1, ["変動情報","入退院・外泊"," "] );
-      setData( flexGrid.cells, 2, ["変動情報","食事", "朝食" ] );
-      setData( flexGrid.cells, 3, ["変動情報","食事", "昼食"] );
-      setData( flexGrid.cells, 4, ["変動情報","食事", "夕食"] );
-      setData( flexGrid.cells, 5, ["変動情報","光熱水費","光熱水費"] );
-      setData( flexGrid.cells, 6, ["個別加算","入院外泊加算Ⅰ","入院外泊加算Ⅰ"] );
-      setData( flexGrid.cells, 7, ["個別加算","入院外泊加算Ⅱ","入院外泊加算Ⅱ"] );
-      setData( flexGrid.cells, 8, ["個別加算","栄養マネジメント加算","栄養マネジメント加算"] );
-      setData( flexGrid.cells, 9, ["個別加算","療養食加算","療養食加算"] );
-      setData( flexGrid.cells, 10,["個別加算"," "," "] );
-      setData( flexGrid.cells, 11,["受給者証情報","援護者","東経市"] );
-      setData( flexGrid.cells, 12,["受給者証情報","援護者","西経市"] );
-      setData( flexGrid.cells, 13,["受給者証情報","障害種別","知的"] );
-      setData( flexGrid.cells, 14,["受給者証情報","障害支援区分","区分4"] );
-      setData( flexGrid.cells, 15,["受給者証情報","決定支給量"," "] );
-      setData( flexGrid.cells, 16,["受給者証情報","負担上限月額",9300] );
-      setData( flexGrid.cells, 17,["受給者証情報","上限管理事業所","ひまわり園"] );
-      setData( flexGrid.cells, 18,["受給者証情報","特別給付費",500] );
+      let headNum = 0;
+      let num = 0;
+      setData( flexGrid.columnHeaders, headNum, headerColum );
+      this.lines.forEach(function(data){
+        console.log(data);
+        setData( flexGrid.cells, num++, [
+          data.row,
+          data.items1,
+          data.items2,
+          data.day1,
+          data.day2,
+          data.day3,
+          data.day4,
+          data.day5,
+          data.day6,
+          data.day7,
+          data.day8,
+          data.day9,
+          data.day10,
+          data.day11,
+          data.day12,
+          data.day13,
+          data.day14,
+          data.day15,
+          data.day16,
+          data.day17,
+          data.day18,
+          data.day19,
+          data.day20,
+          data.day21,
+          data.day22,
+          data.day23,
+          data.day24,
+          data.day25,
+          data.day26,
+          data.day27,
+          data.day28,
+          data.day29,
+          data.day30,
+          ] );
+      });
 
 
       flexGrid.itemFormatter = function (panel, r, c, cell) {
@@ -305,6 +448,11 @@ export default{
           }
        // }
       });
+
+      flexGrid.scrollPositionChanged.addHandler((s, e) => {
+console.log(s);
+console.log(e);
+      });
     },
 
     onTextChanged: function(s){
@@ -329,108 +477,44 @@ function setData(p, r, cells) {
     }
 
     for (var i = 1; i < cells.length; i++) {
-      p.setCellData(r, i - 1, cells[i], true,true);
+      p.setCellData(r, i - 1, cells[i]);
     }
 }
 
 function leftCell(s, e) {
     if (e.cell.children.length == 0) {
-        e.cell.innerHTML = "<div>" + e.cell.innerHTML + "</div>";
+        let align = "left";
+        let unit = "";
+        let str = e.cell.innerHTML;
+        if(e.cell.innerText.length > 0 && !isNaN(e.cell.innerText) ){
+          align = "right";
+          unit = " 円";
+          str = Number(e.cell.innerText).toLocaleString();
+        }
+
+        e.cell.innerHTML = "<div>" + str + unit +"</div>";
         wjCore.setCss(e.cell, {
             display: "table",
             tableLayout: "fixed",
         });
         wjCore.setCss(e.cell.children[0], {
             display: "table-cell",
+            textAlign: align,
             verticalAlign: "middle",
         });
     }
 }
 
-var __extends =
-    (this && this.__extends) ||
-    (function() {
-        var extendStatics = function(d, b) {
-            extendStatics =
-                Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array &&
-                    function(d, b) {
-                        d.__proto__ = b;
-                    }) ||
-                function(d, b) {
-                    for (var p in b) if (b.hasOwnProperty.call(p)) d[p] = b[p];
-                };
-            return extendStatics(d, b);
-        };
-        return function(d, b) {
-            extendStatics(d, b);
-            function __() {
-                this.constructor = d;
-            }
-            d.prototype =
-                b === null
-                    ? Object.create(b)
-                    : ((__.prototype = b.prototype), new __());
-        };
-    })();
-    
-var CustomMergeManager = (function(_super) {
-    __extends(CustomMergeManager, _super);
-    function CustomMergeManager() {
-        return _super.call(this) || this;
-    }
-    
-    CustomMergeManager.prototype.getMergedRange = function(panel, r, c, clip) {
-        if (clip === void 0) {
-            clip = true;
-        }
-
-        var rng = new wjGrid.CellRange(r, c);
-        
-        if( rng.col >= 2 && rng.col2 >= 2){
-          return rng;
-        }
-        for (var i = rng.col; i < panel.columns.length - 1; i++) {
-            if (
-                panel.getCellData(rng.row, i, true) !=
-                panel.getCellData(rng.row, i + 1, true)
-            )
-                break;
-            rng.col2 = i + 1;
-        }
-        for (var i2 = rng.col; i2 > 0; i2--) {
-            if (
-                panel.getCellData(rng.row, i2, true) !=
-                panel.getCellData(rng.row, i2 - 1, true)
-            )
-                break;
-            rng.col = i2 - 1;
-        }
-        for (var i3 = rng.row; i3 < panel.rows.length - 1; i3++) {
-            if (
-                panel.getCellData(i3, rng.col, true) !=
-                panel.getCellData(i3 + 1, rng.col, true)
-            )
-                break;
-            rng.row2 = i3 + 1;
-        }
-        for (var i4 = rng.row; i4 > 0; i4--) {
-            if (
-                panel.getCellData(i4, rng.col, true) !=
-                panel.getCellData(i4 - 1, rng.col, true)
-            )
-                break;
-            rng.row = i4 - 1;
-        }
-
-        return rng;
-    };
-    return CustomMergeManager;
-})(wjGrid.MergeManager);
-
 </script>
 
 <style lang="scss" scope>
+//共通cssに移動全体のサイズ
+#app{
+  width:1920px;
+  margin:0 auto;
+}
+
+
 #theGridTallRows{
   position:relative;
 }
@@ -452,17 +536,20 @@ var CustomMergeManager = (function(_super) {
   }
 }
 
+
+
+//チャート用のcssに移動
 .borderPlace{
   height:2px;
   position:absolute;
   top:0;
   left:0;
-  z-index:10;
+  z-index:1;
   
 }
 
 
-
+//モーダル用のcssに移動
 #modalArea {
   display: none;
   position: fixed;
