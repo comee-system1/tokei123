@@ -118,20 +118,192 @@
           >
           <div v-for="n in borders" :key=n.id>
             <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
+            <a class="borderBox" v-bind:style="{left:n.left+'px',top:n.top+'px'}" onClick="document.getElementById('modalArea1').classList.add('display')">
+            {{n.st}}～{{n.ed}}[{{n.diff}}]
+            </a>
           </div>
           </wj-flex-grid>
             
         </v-col>
       </v-row>
     </v-container>
-    <v-row id="modalArea" class="modalArea">
-      <div class="modalBg" onClick="document.getElementById('modalArea').classList.remove('display')"></div>
+    <v-row id="modalArea1" class="modalArea">
+      <div class="modalBg" onClick="document.getElementById('modalArea1').classList.remove('display')"></div>
       <div class="modalWrapper">
         <div class="modalContents">
-          <h1>Here are modal contents!</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+          <h1>変動情報登録</h1>
+          <v-btn-toggle
+            v-model="toggle_exclusive"
+            mandatory
+          >
+            <v-btn class="primary">入退院</v-btn>
+            <v-btn class="primary">外泊</v-btn>
+
+          </v-btn-toggle>
+          <v-row class="mt-1">
+            <v-col cols="2">入院日</v-col>
+            <v-col cols="10">
+              <datepicker :language="ja" class="input_picker" ></datepicker>
+              <v-row>
+                <v-col cols=4 class="mt-5" >施設の利用</v-col>
+                <v-col cols=8>
+                <v-radio-group
+                  v-model="row"
+                  row
+                  >
+                  <v-radio
+                    label="あり"
+                    value="1"
+                  ></v-radio>
+                  <v-radio
+                    label="なし"
+                    value="2"
+                  ></v-radio>
+                </v-radio-group>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row >
+            <v-col cols="2" class="mt-5">食事</v-col>
+            <v-col cols="10">
+              <v-row>
+                <v-col>
+                  <v-checkbox
+                    label="朝食"
+                    value="1"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+                <v-col>
+                  <v-checkbox
+                    label="昼食"
+                    value="2"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+                <v-col>
+                  <v-checkbox
+                    label="夕食"
+                    value="2"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row >
+            <v-col cols="2" class="mt-5">病院名</v-col>
+            <v-col cols="10">
+              <v-text-field
+                label="病院名を入力"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+                    <v-row class="mt-1">
+            <v-col cols="2">入院日</v-col>
+            <v-col cols="10">
+              <datepicker :language="ja" class="input_picker" ></datepicker>
+              <v-row>
+                <v-col cols=4 class="mt-5" >施設の利用</v-col>
+                <v-col cols=8>
+                <v-radio-group
+                  v-model="row"
+                  row
+                  >
+                  <v-radio
+                    label="あり"
+                    value="1"
+                  ></v-radio>
+                  <v-radio
+                    label="なし"
+                    value="2"
+                  ></v-radio>
+                </v-radio-group>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row >
+            <v-col cols="2" class="mt-5">食事</v-col>
+            <v-col cols="10">
+              <v-row>
+                <v-col>
+                  <v-checkbox
+                    label="朝食"
+                    value="1"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+                <v-col>
+                  <v-checkbox
+                    label="昼食"
+                    value="2"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+                <v-col>
+                  <v-checkbox
+                    label="夕食"
+                    value="2"
+                    hide-details
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row >
+            <v-col cols="3" ><v-btn outlined color="secondary" >クリア</v-btn></v-col>
+            <v-col cols="3" ><v-btn outlined color="secondary" >削除</v-btn></v-col>
+            <v-col cols="6" class="text-right" ><v-btn color="indigo"  >登録</v-btn></v-col>
+          </v-row>
         </div>
-        <div class="closeModal" onClick="document.getElementById('modalArea').classList.remove('display')">
+        <div class="closeModal" onClick="document.getElementById('modalArea1').classList.remove('display')">
+          ×
+        </div>
+      </div>
+    </v-row>
+    <v-row id="modalArea2" class="modalArea">
+      <div class="modalBg" onClick="document.getElementById('modalArea2').classList.remove('display')"></div>
+      <div class="modalWrapper">
+        <div class="modalContents">
+          <h1>個別加算追加登録</h1>
+          <wj-combo-box :items-source="addSelect"></wj-combo-box>
+        
+          <v-row class="mt-1">
+            <v-col cols="3">開始日</v-col>
+            <v-col cols="9">
+              <datepicker :language="ja" class="input_picker" ></datepicker>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1">
+            <v-col cols="3">終了日</v-col>
+            <v-col cols="9">
+              <datepicker :language="ja" class="input_picker" ></datepicker>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1">
+            <v-col cols="3">単位数</v-col>
+            <v-col cols="9">30単位/日</v-col>
+          </v-row>
+          <v-row class="mt-1">
+            <v-col cols="3">留意事項</v-col>
+            <v-col cols="9">
+              <ol>
+                <li>入所日(算定日)から30日を限度</li>
+                <li>同一敷地外の病院に30日以上入院した場合は、再算定可能</li>
+                <li>過去3ヶ月間に入所理由がないこと</li>
+              </ol>
+            </v-col>
+          </v-row>
+
+          <v-row >
+            <v-col cols="3" ><v-btn outlined color="secondary" >クリア</v-btn></v-col>
+            <v-col cols="3" ><v-btn outlined color="secondary" >削除</v-btn></v-col>
+            <v-col cols="6" class="text-right" ><v-btn color="indigo"  >登録</v-btn></v-col>
+          </v-row>
+        </div>
+        <div class="closeModal" onClick="document.getElementById('modalArea2').classList.remove('display')">
           ×
         </div>
       </div>
@@ -149,6 +321,8 @@ import "@grapecity/wijmo.vue2.grid";
 import moment from 'moment'
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import customMerge from "@/utiles/customMerge";
+import Datepicker from 'vuejs-datepicker';
+import {ja} from 'vuejs-datepicker/dist/locale'
 
 //一覧左側のタイトルセルの数
 let cell = 2;
@@ -162,6 +336,7 @@ export default{
       year:moment().year(),
       month:moment().month()+1,
       search:[ '32:施設入所支援' ],
+      addSelect:[ '入所時特別支援加算' ],
       member:[ '全員' ],
       week:['日', '月', '火', '水', '木', '金', '土' ],
       alphabet:['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ],
@@ -169,8 +344,12 @@ export default{
       selects:['印刷を全選択', '印刷を全解除' ],
       isDroppedDown: false,
       borders:this.getBorder(),
-      lines:this.getLine()
+      lines:this.getLine(),
+      ja:ja
     }
+  },
+  components : {
+    Datepicker
   },
   created()
   {
@@ -183,32 +362,33 @@ export default{
       let borders = [];
       borders.push({
         id:1,
-        start_day:"2020-04-01",
-        end_day:"2020-04-10",
-        top:90,
+        start_day:"2020-04-05",
+        end_day:"2020-04-22",
+        top:130,
         color:'red'
       });
       borders.push({
         id:2,
-        start_day:"2020-04-09",
-        end_day:"2020-04-13",
-        top:165,
-        color:'red'
+        start_day:"2020-04-27",
+        end_day:"2020-04-29",
+        top:130,
+        color:'green'
       });
       borders.push({
         id:3,
-        start_day:"2020-04-21",
+        start_day:"2020-04-03",
         end_day:"2020-04-30",
-        top:270,
-        color:'aqua'
+        top:430,
+        color:'blue'
       });
       borders.push({
         id:4,
-        start_day:"2020-04-20",
-        end_day:"2020-04-23",
-        top:165,
-        color:'green'
+        start_day:"2020-04-03",
+        end_day:"2020-04-30",
+        top:480,
+        color:'blue'
       });
+
       
       let editborders = this.borderConvert(borders);
       //console.log(editborders);
@@ -227,7 +407,10 @@ export default{
           width:(oneday*m1.diff(m2, 'days'))+oneday,
           left:startPos+(oneday*(m2.date()-1)),
           top:conv.top,
-          color:conv.color
+          color:conv.color,
+          st:m2.format('M/D'),
+          ed:m1.format('M/D'),
+          diff:m1.diff(m2, 'days')
         });
       })
 
@@ -251,40 +434,7 @@ export default{
     {
       let lines = {};
       lines = [
-        {row:'変動情報', items1:'利用日', items2:'利用日', 
-        day1:'', 
-        day2:'', 
-        day3:'〇', 
-        day4:'〇', 
-        day5:'〇', 
-        day6:'〇', 
-        day7:'〇', 
-        day8:'〇', 
-        day9:'〇', 
-        day10:'〇', 
-        day11:'', 
-        day12:'', 
-        day13:'', 
-        day14:'', 
-        day15:'', 
-        day16:'', 
-        day17:'', 
-        day18:'', 
-        day19:'', 
-        day20:'', 
-        day21:'', 
-        day22:'', 
-        day23:'', 
-        day24:'〇', 
-        day25:'〇', 
-        day26:'〇', 
-        day27:'〇', 
-        day28:'〇', 
-        day29:'〇', 
-        day30:'〇', 
-        total:'12', 
-        money:'1000', 
-        },
+        {row:'変動情報', items1:'利用日', items2:'利用日' },
         {row:'変動情報', items1:'入退院・外泊', items2:' ' },
         {row:'変動情報', items1:'食事', items2:'朝食' },
         {row:'変動情報', items1:'食事', items2:'昼食' },
@@ -305,27 +455,6 @@ export default{
         {row:'受給者証情報', items1:'上限管理事業所', items2:'ひまわり園' },
         {row:'受給者証情報', items1:'特別給付費', items2:'500' },
       ];
-
-      // lines.push({row:'変動情報', items1:'利用日', items2:'利用日', day1:'〇' });
-      // lines.push({row:'変動情報', items1:'入退院・外泊', items2:' ' });
-      // lines.push({row:'変動情報', items1:'食事', items2:'朝食' });
-      // lines.push({row:'変動情報', items1:'食事', items2:'昼食' });
-      // lines.push({row:'変動情報', items1:'食事', items2:'夕食' });
-      // lines.push({row:'変動情報', items1:'光熱水費', items2:'光熱水費' });
-      // lines.push({row:'個別加算', items1:'test', items2:'test' });
-      // lines.push({row:'個別加算', items1:'入院外泊加算Ⅰ', items2:'入院外泊加算Ⅰ' });
-      // lines.push({row:'個別加算', items1:'入院外泊加算Ⅱ', items2:'入院外泊加算Ⅱ' });
-      // lines.push({row:'個別加算', items1:'栄養マネジメント加算', items2:'栄養マネジメント加算' });
-      // lines.push({row:'個別加算', items1:'療養食加算', items2:'療養食加算' });
-      // lines.push({row:'個別加算', items1:' ', items2:' ' });
-      // lines.push({row:'受給者証情報', items1:'援護者', items2:'東経市' });
-      // lines.push({row:'受給者証情報', items1:'援護者', items2:'西経市' });
-      // lines.push({row:'受給者証情報', items1:'障害種別', items2:'知的' });
-      // lines.push({row:'受給者証情報', items1:'障害支援区分', items2:'区分4' });
-      // lines.push({row:'受給者証情報', items1:'決定支給量', items2:' ' });
-      // lines.push({row:'受給者証情報', items1:'負担上限月額', items2:'9300' });
-      // lines.push({row:'受給者証情報', items1:'上限管理事業所', items2:'ひまわり園' });
-      // lines.push({row:'受給者証情報', items1:'特別給付費', items2:'500' });
 
       return lines;
     },
@@ -351,14 +480,14 @@ export default{
           flexGrid.columns.push(clm);
           i++;
       }
-      while (flexGrid.rows.length < 19) {
+      while (flexGrid.rows.length < 20) {
           flexGrid.rows.push(new wjGrid.Row());
       }
 
       // configure the grid
       flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 30;
-      flexGrid.rows.defaultSize = 35;
+      flexGrid.rows.defaultSize = 50;
       flexGrid.alternatingRowStep = 1;
       
       flexGrid.formatItem.addHandler(leftCell);
@@ -383,36 +512,7 @@ export default{
           data.row,
           data.items1,
           data.items2,
-          data.day1,
-          data.day2,
-          data.day3,
-          data.day4,
-          data.day5,
-          data.day6,
-          data.day7,
-          data.day8,
-          data.day9,
-          data.day10,
-          data.day11,
-          data.day12,
-          data.day13,
-          data.day14,
-          data.day15,
-          data.day16,
-          data.day17,
-          data.day18,
-          data.day19,
-          data.day20,
-          data.day21,
-          data.day22,
-          data.day23,
-          data.day24,
-          data.day25,
-          data.day26,
-          data.day27,
-          data.day28,
-          data.day29,
-          data.day30,
+          data.total
           ] );
       });
 
@@ -430,12 +530,75 @@ export default{
             cell.innerHTML = day+'<div>'+week[w]+'</div>';
           }
         }
-        cell.style.fontSize = "11px";
-         if(c == 1 && r == 1){
-            cell.innerHTML = "<a >期間追加</a>";
-         }
-         if(c == 2 && r == 3){
-            cell.innerHTML = "<a href='#'>〇</a>";
+        cell.style.fontSize = "12.5px";
+        //テストデータのため後程消す
+        //実データはgetLine関数でapiから取得したデータから配列の作成を行う
+        //getLineデータではhtmlが効かないので、leftCell関数で登録したデータを基に
+        //htmlを付加させる処理を実施する
+        if(panel.cellType == 1 ){
+          
+          if(c == 1 && r == 1){
+              cell.innerHTML = "<a >期間追加</a>";
+          }
+          if(c == 0 && r == 11){
+              cell.innerHTML = "<a >加算追加</a>";
+          }
+          
+          for(let i = 2; i < lastdate+4 ; i++ ){
+            if( r == 0 && ( (c >= 4 && c <= 6) || ( c >= 20 && c <= 31 ) ) ){
+                cell.innerHTML = "<div class='text-subtitle-1'>〇</a>";
+            }
+            if(c == i  && r == 3 ){
+              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 31 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
+              }
+              if ( (i == 6) || ( i == 20 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
+              }
+            }
+
+            if(c == i  && r == 4 ){
+              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 31 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
+              }
+              if ( (i == 6) || ( i == 20 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
+              }
+            }
+
+            if(c == i  && r == 5 ){
+              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 30 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
+              }
+              if ( (i == 6) || ( i == 20 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
+              }
+            }
+
+            if(c == i  && r == 7 ){
+              if ( (i >= 6 && i <= 15) || (  i == 27 )  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
+              }
+            }
+            if(c == i  && r == 10 ){
+              if ( (i >= 3 && i <= 5) || (  i >= 27 && i <= 31)  ){
+                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
+              }
+            }
+
+            if( r == 0 && c == 32 ) cell.innerHTML = "12";
+            if( r == 1 && c == 32 ) cell.innerHTML = "17";
+            if( r == 2 && c == 32 ) cell.innerHTML = "9";
+            if( r == 3 && c == 32 ) cell.innerHTML = "8";
+            if( r == 4 && c == 32 ) cell.innerHTML = "10";
+            if( r == 5 && c == 32 ) cell.innerHTML = "9";
+
+            if( r == 3 && c == 33 ) cell.innerHTML = "2700";
+            if( r == 4 && c == 33 ) cell.innerHTML = "3200";
+            if( r == 5 && c == 33 ) cell.innerHTML = "1200";
+
+
+          }
          }
       };
       flexGrid.hostElement.addEventListener('click', function (e) {
@@ -444,7 +607,10 @@ export default{
           console.log(ht.target.innerText);
           //alert(wjCore.format('{row}行{col}列のセルがクリックされました', ht));
           if(ht.target.innerText == "期間追加"){
-            displayModal();
+            displayModal(1);
+          }
+          if(ht.target.innerText == "加算追加"){
+            displayModal(2);
           }
        // }
       });
@@ -465,8 +631,14 @@ console.log(e);
   }
 }
 
-function displayModal(){
-  var elem = document.getElementById("modalArea");
+function displayModal(type){
+  var elem = "";
+  if(type == 1){
+    elem = document.getElementById("modalArea1");
+  }else{
+    elem = document.getElementById("modalArea2");
+  }
+  
   elem.classList.add('display');
   return true;
 }
@@ -488,7 +660,7 @@ function leftCell(s, e) {
         let str = e.cell.innerHTML;
         if(e.cell.innerText.length > 0 && !isNaN(e.cell.innerText) ){
           align = "right";
-          unit = " 円";
+          if(e.cell.innerText.length > 2 ) unit = " 円";
           str = Number(e.cell.innerText).toLocaleString();
         }
 
@@ -509,6 +681,9 @@ function leftCell(s, e) {
 
 <style lang="scss" scope>
 //共通cssに移動全体のサイズ
+html{
+  overflow-x: scroll;
+}
 #app{
   width:1920px;
   margin:0 auto;
@@ -519,7 +694,7 @@ function leftCell(s, e) {
   position:relative;
 }
 #theGridTallRows.wj-flexgrid .wj-cell{
-    padding: 8px;
+    padding: 15px;
 }
 .wj-rowheaders{
   div.wj-row{
@@ -537,20 +712,41 @@ function leftCell(s, e) {
 }
 
 
+.input_picker {
+  div > input {
+    border: 1px ridge #333333;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 100%;
+  }
+}
+
 
 //チャート用のcssに移動
-.borderPlace{
+.borderPlace {
   height:2px;
   position:absolute;
   top:0;
   left:0;
   z-index:1;
-  
+}
+.borderBox {
+  padding:2px 10px;
+  border:1px solid #333;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:1;
+  background-color:#fff;
+  margin-top:10px;
 }
 
 
 //モーダル用のcssに移動
-#modalArea {
+#modalArea2, 
+#modalArea1 {
   display: none;
   position: fixed;
   z-index: 10; 
