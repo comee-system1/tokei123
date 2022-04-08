@@ -37,14 +37,14 @@
             <v-col col=12>
               <v-btn-toggle class="mt-2 flex-wrap" >
                 <v-btn small color="secondary" dark outlined @click="sortUser(1)">コード順</v-btn>
-                <v-btn small color="secondary" dark outlined >カナ順</v-btn>
-                <v-btn small color="secondary" dark outlined >受給者番号順</v-btn>
+                <v-btn small color="secondary" dark outlined @click="sortUser(2)">カナ順</v-btn>
+                <v-btn small color="secondary" dark outlined @click="sortUser(3)">受給者番号順</v-btn>
               </v-btn-toggle>
             </v-col>
           </v-row>
           <div class="mt-1">
             <v-btn-toggle class="flex-wrap" >
-              <v-btn x-small outlined v-for="n of alphabet" :key="n" :width=5 p-0 style="min-width:auto;">{{n}}</v-btn>
+              <v-btn x-small outlined v-for="(n, k) in alphabet" :key="n" :width=5 p-0 style="min-width:auto;" @click="onAlphabet(k)" >{{n}}</v-btn>
             </v-btn-toggle>
           </div>
           <wj-flex-grid
@@ -55,7 +55,13 @@
             style="height:100vh;"
             :initialized="onInitializedUser"
             :itemsSource="usersData"
+            :allowDragging=false
+            :allowResizing=false
             >
+            <wj-flex-grid-column header="コード" binding="id" width="2*" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
+            <wj-flex-grid-column header="利用者名" binding="name" width="3*" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
+            <wj-flex-grid-column header="印刷" binding="active" width="1*" :wordWrap=true :allowResizing=false ></wj-flex-grid-column>
+
           </wj-flex-grid>
           
           <wj-combo-box :itemsSource="selects" :isDroppedDown="isDroppedDown" :isRequired="false" :selectedIndex=-1 :selectedIndexChanged="onselectedIndexChanged" ></wj-combo-box>
@@ -312,7 +318,13 @@ let cell = 2;
 let oneday = 30;
 //グラフはじめのスタート位置
 let startPos = 470;
-let userFlexGrid;
+//ユーザーデータ
+let userDataAll = [];
+let userCount = 0;
+let textSearch = "";
+let sortSearch = "";
+let alphaSearch = "";
+let checkAll = "";
 
 export default{
   data(){
@@ -329,7 +341,7 @@ export default{
       borders:this.getBorder(),
       lines:this.getLine(),
       ja:ja,
-      usersData:this.createUser()
+      usersData:this.createUser(),
     }
   },
   components : {
@@ -342,10 +354,7 @@ export default{
   },
 
   methods: {
-    sortUser: function(type)
-    {
-alert(type);
-    },
+
     getBorder: function()
     {
       let borders = [];
@@ -433,36 +442,125 @@ alert(type);
 
       return lines;
     },
-    createUser: function(loop=10){
+    createUser: function(){
       let usersData = [];
-      for(let i=0; i < loop ; i++){
-        let active;
-        if(i % 5 ){
-          active = false;
-        }else{
-          active = true;
-        }
-        
+      userCount = 100;
+      for(let i = 0; i < userCount ; i++){        
         usersData.push({
-          id:i,
-          code:"0000"+i,
-          name:"東経太郎 "+i,
-          active:active
+          id:Math.floor(Math.random() * 10) + 1,
+          code:"0000"+Math.floor(Math.random() * 10) + 1,
+          examNumber:"000"+Math.floor(Math.random() * 10) + 1,
+          name:"東経太郎 "+Math.floor(Math.random() * 10) + 1,
+          kana:"トウジョウタロウ"+Math.floor(Math.random() * 10) + 1,
+          active:false
         });
         
       }
+      userDataAll = usersData;
       return usersData;
     },
     onTextChangedUser: function(s){
-        console.log(s.text);
-        this.userData = this.createUser(5);
-        this.onInitializedUser(userFlexGrid);
+        textSearch = s.text;
+        this.userFilter();
+    },
+    sortUser: function(sortType)
+    {
+      sortSearch = sortType;
+      this.userFilter();
+    },
+    onAlphabet: function(key)
+    {
+      alphaSearch = key;
+      this.userFilter();
+    },
+    onselectedIndexChanged: function(s){
+        checkAll = s.selectedIndex;
+        this.userFilter();
+    },
+    userFilter(){
+      let data = [];
+      userDataAll.forEach(function(value){
+        if(checkAll == "0") value.active = true;
+        if(checkAll == "1") value.active = false;
+        if(value.name.indexOf(textSearch) != -1 ){
+          data.push({
+            id:value.id,
+            code:value.code,
+            examNumber:value.examNumber,
+            name:value.name,
+            kana:value.kana,
+            active:value.active
+          });
+        }
+      });
+      if(alphaSearch > 0 ){
+        let get = [];
+        data.forEach(function(value){
+          switch(alphaSearch){
+            case 1:
+              if(value.kana.match(/^[ア-オ]/)) setPush(get,value);
+            break;
+            case 2:
+              if(value.kana.match(/^[カ-コ]/)) setPush(get,value);
+            break;
+            case 3:
+              if(value.kana.match(/^[サ-ソ]/)) setPush(get,value);
+            break;
+            case 4:
+              if(value.kana.match(/^[タ-ト]/)) setPush(get,value);
+            break;
+            case 5:
+              if(value.kana.match(/^[ナ-ノ]/)) setPush(get,value);
+            break;
+            case 6:
+              if(value.kana.match(/^[ハ-ホ]/)) setPush(get,value);
+            break;
+            case 7:
+              if(value.kana.match(/^[マ-モ]/)) setPush(get,value);
+            break;
+            case 8:
+              if(value.kana.match(/^[ヤ-ヨ]/)) setPush(get,value);
+            break;
+            case 9:
+              if(value.kana.match(/^[ラ-ロ]/)) setPush(get,value);
+            break;
+            case 10:
+              if(value.kana.match(/^[ワ-ン]/)) setPush(get,value);
+            break;
+          }
+        });
+        data = get;
+      }
+
+      //コード順でソート
+      if(sortSearch == 1 ){
+        data.sort((a, b) => {
+            if (a.id < b.id) return -1;
+            if (a.id > b.id) return 1;
+            return 0;
+        });
+      }
+      //利用者名でソート
+      if(sortSearch == 2 ){
+        data.sort((a, b) => {
+            if (a.kana < b.kana) return -1;
+            if (a.kana > b.kana) return 1;
+            return 0;
+        });
+      }
+      //受験者番号でソート
+      if(sortSearch == 3 ){
+        data.sort((a, b) => {
+            if (a.examNumber < b.examNumber) return -1;
+            if (a.examNumber > b.examNumber) return 1;
+            return 0;
+        });
+      }
+
+      this.usersData = data;
     },
     onInitializedUser:function (flexGrid)
-    {
-      console.log(this.usersData);
-      userFlexGrid = flexGrid;
-      
+    { 
       let i = 0;
       while (flexGrid.columns.length < 3) {
         let clm = new wjGrid.Column();
@@ -472,24 +570,13 @@ alert(type);
         flexGrid.columns.push(clm);
         i++;
       }
-      while (flexGrid.rows.length < 10) {
+      while (flexGrid.rows.length < userCount) {
           flexGrid.rows.push(new wjGrid.Row());
       }
-
       flexGrid.formatItem.addHandler(userCell);
       // configure the grid
       flexGrid.mergeManager = new customMergeUser();
-
       flexGrid.alternatingRowStep = 1;
-
-      let headerColum = [];
-      headerColum.push("");
-      headerColum.push("コード");
-      headerColum.push("利用者名");
-      headerColum.push("印刷");
-
-      let headNum = 0;
-      setData( flexGrid.columnHeaders, headNum, headerColum );
 
       this.usersData.forEach(function(value){
         setData( flexGrid.cells, value.id, [value.id, value.code, value.name, value.active] );
@@ -668,14 +755,23 @@ console.log(e);
     onTextChanged: function(s){
         console.log(s.text);
     },
-
-    onselectedIndexChanged: function(s){
-        console.log(s.selectedIndex);
-    },
   }
 }
 
-function displayModal(type){
+function setPush(get,value)
+{
+  return get.push({
+    id:value.id,
+    code:value.code,
+    examNumber:value.examNumber,
+    name:value.name,
+    kana:value.kana,
+    active:value.active
+  });
+}
+
+function displayModal(type)
+{
   var elem = "";
   if(type == 1){
     elem = document.getElementById("modalArea1");
@@ -687,7 +783,8 @@ function displayModal(type){
   return true;
 }
 
-function setData(p, r, cells) {
+function setData(p, r, cells)
+{
     if (p.cellType == wjGrid.CellType.Cell) {
       p.grid.rowHeaders.setCellData(r, 0, cells[0]);
     }
@@ -697,7 +794,8 @@ function setData(p, r, cells) {
     }
 }
 
-function leftCell(s, e) {
+function leftCell(s, e)
+{
   if (e.cell.children.length == 0) {
     let align = "left";
     let unit = "";
@@ -720,14 +818,12 @@ function leftCell(s, e) {
     });
   }
 }
-function userCell(s, e) {
+
+function userCell(s, e)
+{
   if (e.cell.children.length == 0) {
     let align = "left";
     let str = e.cell.innerHTML;
-    if(e.col == 2){
-      if(str == "true") str = "<input type='checkbox' checked>";
-      if(str == "false") str = "<input type='checkbox' >";
-    }
     e.cell.innerHTML = str;
     wjCore.setCss(e.cell, {
         display: "table",
