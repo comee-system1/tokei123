@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid id="main">
     <v-container  fluid>
         <v-row dense >
           <v-col sm="1">
@@ -7,13 +7,15 @@
             <p class="mt-1">提供月</p>
           </v-col>
           <v-col sm="8">
-            <div>
-              <wj-combo-box :textChanged="onTextChanged" ></wj-combo-box>
-              <wj-combo-box :items-source="search"></wj-combo-box>
-            </div>
-            <div class="mt-1">
+              <v-row>
+                <v-col col=1>
+                  <wj-combo-box :textChanged="onTextChanged" text="11210000 障碍者支援 ひまわり" style="width:300px;" ></wj-combo-box>
+                  <wj-combo-box :items-source="search"></wj-combo-box>
+                </v-col>
+              </v-row>
+            
               <input type="month">
-            </div>
+
           </v-col>
           <v-col sm="3" >
             <v-row justify="end" >
@@ -27,52 +29,33 @@
         <v-col cols="2">
           <v-row>
             <v-col col=6><wj-combo-box :items-source="member"></wj-combo-box></v-col>
-            <v-col col=6><wj-combo-box placeholder="カナ検索"></wj-combo-box></v-col>
+            <v-col col=6>
+              <wj-combo-box :textChanged="onTextChangedUser" placeholder="カナ検索" ></wj-combo-box>
+            </v-col>
           </v-row>
           <v-row p-0>
             <v-col col=12>
-              <v-btn-toggle
-                class="mt-2"
-                mandatory
-              >
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                >コード順
-                </v-btn>
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                >カナ順
-                </v-btn>
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                >受給者番号順
-                </v-btn>
+              <v-btn-toggle class="mt-2 flex-wrap" >
+                <v-btn small color="secondary" dark outlined @click="sortUser(1)">コード順</v-btn>
+                <v-btn small color="secondary" dark outlined >カナ順</v-btn>
+                <v-btn small color="secondary" dark outlined >受給者番号順</v-btn>
               </v-btn-toggle>
             </v-col>
           </v-row>
           <div class="mt-1">
-          <v-btn x-small outlined v-for="n of alphabet" :key="n" :width=10>{{n}}</v-btn>
+            <v-btn-toggle class="flex-wrap" >
+              <v-btn x-small outlined v-for="n of alphabet" :key="n" :width=5 p-0 style="min-width:auto;">{{n}}</v-btn>
+            </v-btn-toggle>
           </div>
           <wj-flex-grid
             class="mt-1"
             :autoSearch="true"
             :headersVisibility="'Column'"
-            :itemsSource="usres"
             :selectionMode=3
-            style="height:100vh;font-size:11px;"
+            style="height:100vh;"
+            :initialized="onInitializedUser"
+            :itemsSource="usersData"
             >
-              <wj-flex-grid-column :isReadOnly="true" binding="code" header="コード" width="2*" ></wj-flex-grid-column>
-              <wj-flex-grid-column :isReadOnly="true" binding="name" header="利用者名"  width="3*" ></wj-flex-grid-column>
-              <wj-flex-grid-column :binding="'active'" header="印刷" width="1*" ></wj-flex-grid-column>
           </wj-flex-grid>
           
           <wj-combo-box :itemsSource="selects" :isDroppedDown="isDroppedDown" :isRequired="false" :selectedIndex=-1 :selectedIndexChanged="onselectedIndexChanged" ></wj-combo-box>
@@ -84,13 +67,13 @@
               pa-0
             >
             <div class="mt-1 pr-2">利用者</div>
-            <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
+            <div><wj-combo-box :isReadOnly=true text="1000070 東経 太郎"></wj-combo-box></div>
             <div class="mt-1 ml-1">
-            <v-btn small><span class="wj-glyph-left"></span></v-btn>&nbsp;
-            <v-btn small><span class="wj-glyph-right"></span></v-btn>
+            <v-btn x-small><span class="wj-glyph-left"></span></v-btn>&nbsp;
+            <v-btn x-small><span class="wj-glyph-right"></span></v-btn>
             </div>
             <div class="ml-3 mt-1 pr-2">受給者証番号</div>
-            <div><wj-combo-box :isReadOnly=true ></wj-combo-box></div>
+            <div><wj-combo-box :isReadOnly=true text="1000070"></wj-combo-box></div>
             <div class="pt-1 ml-5">
               <small>最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small>
             </div>
@@ -133,7 +116,6 @@
         <div class="modalContents">
           <h1>変動情報登録</h1>
           <v-btn-toggle
-            v-model="toggle_exclusive"
             mandatory
           >
             <v-btn class="primary">入退院</v-btn>
@@ -147,10 +129,7 @@
               <v-row>
                 <v-col cols=4 class="mt-5" >施設の利用</v-col>
                 <v-col cols=8>
-                <v-radio-group
-                  v-model="row"
-                  row
-                  >
+                <v-radio-group row>
                   <v-radio
                     label="あり"
                     value="1"
@@ -200,7 +179,7 @@
               ></v-text-field>
             </v-col>
           </v-row>
-                    <v-row class="mt-1">
+          <v-row class="mt-1">
             <v-col cols="2">入院日</v-col>
             <v-col cols="10">
               <datepicker :language="ja" class="input_picker" ></datepicker>
@@ -208,7 +187,6 @@
                 <v-col cols=4 class="mt-5" >施設の利用</v-col>
                 <v-col cols=8>
                 <v-radio-group
-                  v-model="row"
                   row
                   >
                   <v-radio
@@ -255,7 +233,7 @@
           <v-row >
             <v-col cols="3" ><v-btn outlined color="secondary" >クリア</v-btn></v-col>
             <v-col cols="3" ><v-btn outlined color="secondary" >削除</v-btn></v-col>
-            <v-col cols="6" class="text-right" ><v-btn color="indigo"  >登録</v-btn></v-col>
+            <v-col cols="6" class="text-right" ><v-btn color="indigo" >登録</v-btn></v-col>
           </v-row>
         </div>
         <div class="closeModal" onClick="document.getElementById('modalArea1').classList.remove('display')">
@@ -297,7 +275,7 @@
             </v-col>
           </v-row>
 
-          <v-row >
+          <v-row>
             <v-col cols="3" ><v-btn outlined color="secondary" >クリア</v-btn></v-col>
             <v-col cols="3" ><v-btn outlined color="secondary" >削除</v-btn></v-col>
             <v-col cols="6" class="text-right" ><v-btn color="indigo"  >登録</v-btn></v-col>
@@ -316,11 +294,15 @@
 import * as wjCore from "@grapecity/wijmo";
 import * as wjGrid from "@grapecity/wijmo.grid";
 
+
 import '@grapecity/wijmo.vue2.input';
 import "@grapecity/wijmo.vue2.grid";
+
+
 import moment from 'moment'
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import customMerge from "@/utiles/customMerge";
+import customMergeUser from "@/utiles/customMergeUser";
 import Datepicker from 'vuejs-datepicker';
 import {ja} from 'vuejs-datepicker/dist/locale'
 
@@ -330,6 +312,8 @@ let cell = 2;
 let oneday = 30;
 //グラフはじめのスタート位置
 let startPos = 470;
+let userFlexGrid;
+
 export default{
   data(){
     return{
@@ -340,12 +324,12 @@ export default{
       member:[ '全員' ],
       week:['日', '月', '火', '水', '木', '金', '土' ],
       alphabet:['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ],
-      usres:this.getUser(),
       selects:['印刷を全選択', '印刷を全解除' ],
       isDroppedDown: false,
       borders:this.getBorder(),
       lines:this.getLine(),
-      ja:ja
+      ja:ja,
+      usersData:this.createUser()
     }
   },
   components : {
@@ -353,10 +337,15 @@ export default{
   },
   created()
   {
+  //  this.createUser();
     moment.locale("ja");
   },
-  methods: {
 
+  methods: {
+    sortUser: function(type)
+    {
+alert(type);
+    },
     getBorder: function()
     {
       let borders = [];
@@ -416,20 +405,6 @@ export default{
 
       return converts;
     },
-    getUser: function()
-    {
-      let users = [];
-      for(let i=0; i <= 100 ; i++){
-        users.push(
-          {
-            code:'0000'+Math.round(Math.random() * 50),
-            name:"東経太郎00"+i,
-            active:false
-          }
-        );
-      }
-      return users;
-    },
     getLine:function ()
     {
       let lines = {};
@@ -457,6 +432,69 @@ export default{
       ];
 
       return lines;
+    },
+    createUser: function(loop=10){
+      let usersData = [];
+      for(let i=0; i < loop ; i++){
+        let active;
+        if(i % 5 ){
+          active = false;
+        }else{
+          active = true;
+        }
+        
+        usersData.push({
+          id:i,
+          code:"0000"+i,
+          name:"東経太郎 "+i,
+          active:active
+        });
+        
+      }
+      return usersData;
+    },
+    onTextChangedUser: function(s){
+        console.log(s.text);
+        this.userData = this.createUser(5);
+        this.onInitializedUser(userFlexGrid);
+    },
+    onInitializedUser:function (flexGrid)
+    {
+      console.log(this.usersData);
+      userFlexGrid = flexGrid;
+      
+      let i = 0;
+      while (flexGrid.columns.length < 3) {
+        let clm = new wjGrid.Column();
+        if(i == 0) clm.width = "2*";
+        if(i == 1) clm.width = "2*";
+        if(i == 2) clm.width = "1*";
+        flexGrid.columns.push(clm);
+        i++;
+      }
+      while (flexGrid.rows.length < 10) {
+          flexGrid.rows.push(new wjGrid.Row());
+      }
+
+      flexGrid.formatItem.addHandler(userCell);
+      // configure the grid
+      flexGrid.mergeManager = new customMergeUser();
+
+      flexGrid.alternatingRowStep = 1;
+
+      let headerColum = [];
+      headerColum.push("");
+      headerColum.push("コード");
+      headerColum.push("利用者名");
+      headerColum.push("印刷");
+
+      let headNum = 0;
+      setData( flexGrid.columnHeaders, headNum, headerColum );
+
+      this.usersData.forEach(function(value){
+        setData( flexGrid.cells, value.id, [value.id, value.code, value.name, value.active] );
+      });
+
     },
     onInitialized:function (flexGrid)
     {
@@ -501,13 +539,12 @@ export default{
       }
       headerColum.push("合計");
       headerColum.push("金額");
-
+      
       // populate the grid
       let headNum = 0;
       let num = 0;
       setData( flexGrid.columnHeaders, headNum, headerColum );
       this.lines.forEach(function(data){
-        console.log(data);
         setData( flexGrid.cells, num++, [
           data.row,
           data.items1,
@@ -530,7 +567,7 @@ export default{
             cell.innerHTML = day+'<div>'+week[w]+'</div>';
           }
         }
-        cell.style.fontSize = "12.5px";
+
         //テストデータのため後程消す
         //実データはgetLine関数でapiから取得したデータから配列の作成を行う
         //getLineデータではhtmlが効かないので、leftCell関数で登録したデータを基に
@@ -604,13 +641,20 @@ export default{
       flexGrid.hostElement.addEventListener('click', function (e) {
        // if (e.target.tagName == 'BUTTON' && wjCore.closest(e.target, '.wj-cell')) {
           var ht = flexGrid.hitTest(e);
-          console.log(ht.target.innerText);
+          //console.log(ht.target.innerText);
+          console.log(ht.target);
           //alert(wjCore.format('{row}行{col}列のセルがクリックされました', ht));
           if(ht.target.innerText == "期間追加"){
             displayModal(1);
           }
           if(ht.target.innerText == "加算追加"){
             displayModal(2);
+          }
+          if (e.target.classList.contains("red--text")) {
+            if(ht.target.innerText == "〇"){
+              alert("red");
+              e.cell.innerHTML = "sssss";
+            }
           }
        // }
       });
@@ -654,27 +698,47 @@ function setData(p, r, cells) {
 }
 
 function leftCell(s, e) {
-    if (e.cell.children.length == 0) {
-        let align = "left";
-        let unit = "";
-        let str = e.cell.innerHTML;
-        if(e.cell.innerText.length > 0 && !isNaN(e.cell.innerText) ){
-          align = "right";
-          if(e.cell.innerText.length > 2 ) unit = " 円";
-          str = Number(e.cell.innerText).toLocaleString();
-        }
-
-        e.cell.innerHTML = "<div>" + str + unit +"</div>";
-        wjCore.setCss(e.cell, {
-            display: "table",
-            tableLayout: "fixed",
-        });
-        wjCore.setCss(e.cell.children[0], {
-            display: "table-cell",
-            textAlign: align,
-            verticalAlign: "middle",
-        });
+  if (e.cell.children.length == 0) {
+    let align = "left";
+    let unit = "";
+    let str = e.cell.innerHTML;
+    if(e.cell.innerText.length > 0 && !isNaN(e.cell.innerText) ){
+      align = "right";
+      if(e.cell.innerText.length > 2 ) unit = " 円";
+      str = Number(e.cell.innerText).toLocaleString();
     }
+
+    e.cell.innerHTML = "<div>" + str + unit +"</div>";
+    wjCore.setCss(e.cell, {
+        display: "table",
+        tableLayout: "fixed",
+    });
+    wjCore.setCss(e.cell.children[0], {
+        display: "table-cell",
+        textAlign: align,
+        verticalAlign: "middle",
+    });
+  }
+}
+function userCell(s, e) {
+  if (e.cell.children.length == 0) {
+    let align = "left";
+    let str = e.cell.innerHTML;
+    if(e.col == 2){
+      if(str == "true") str = "<input type='checkbox' checked>";
+      if(str == "false") str = "<input type='checkbox' >";
+    }
+    e.cell.innerHTML = str;
+    wjCore.setCss(e.cell, {
+        display: "table",
+        tableLayout: "fixed",
+    });
+    wjCore.setCss(e.cell.children[0], {
+        display: "table-cell",
+        textAlign: align,
+        verticalAlign: "middle",
+    });
+  }
 }
 
 </script>
@@ -685,16 +749,20 @@ html{
   overflow-x: scroll;
 }
 #app{
-  width:1920px;
+  min-width:1920px;
   margin:0 auto;
 }
-
+div#main{
+  font-size: 14px;
+  font-family: "メイリオ" ;
+}
 
 #theGridTallRows{
   position:relative;
 }
 #theGridTallRows.wj-flexgrid .wj-cell{
-    padding: 15px;
+    padding: 8px 15px;
+    height: 68px;
 }
 .wj-rowheaders{
   div.wj-row{

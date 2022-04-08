@@ -31,7 +31,7 @@ const routes = [
     },
     {
         path:'/TemporaryHistory',
-        name:'記録表',
+        name:'変動情報登録・修正',
         component: TemporaryHistory
     },
 ]

@@ -1,7 +1,7 @@
 <template>
     <v-layout>
       <v-flex md12 class="pankuzu-list">
-        <P>グランドメニュー＞入所レセプト請求＞{{pageTitle}}</P>
+        <P>入所レセプト請求＞{{pageTitle}}</P>
       </v-flex>
     </v-layout>
 </template>
