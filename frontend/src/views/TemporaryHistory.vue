@@ -2,20 +2,20 @@
   <v-container fluid id="main">
     <v-container  fluid>
         <v-row dense >
-          <v-col sm="1">
-            <p>サービス</p> 
-            <p class="mt-1">提供月</p>
-          </v-col>
-          <v-col sm="8">
-              <v-row>
-                <v-col col=1>
-                  <wj-combo-box :textChanged="onTextChanged" text="11210000 障碍者支援 ひまわり" style="width:300px;" ></wj-combo-box>
-                  <wj-combo-box :items-source="search"></wj-combo-box>
-                </v-col>
-              </v-row>
-            
-              <input type="month">
-
+          <v-col sm="9">
+            <v-row>
+              <v-col col=12 class="d-flex flex-row " >
+                <div class="pa-2">サービス</div>
+                <wj-combo-box :textChanged="onTextChanged" text="11210000 障碍者支援 ひまわり" style="width:300px;" ></wj-combo-box>
+                <wj-combo-box :items-source="search" ></wj-combo-box>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col col=12 class="d-flex flex-row ">
+                <div class="pa-2">提供月</div>
+                <input type="month" name="example" value="2022-04" v-on:change="calenderChange" >
+              </v-col>
+            </v-row>
           </v-col>
           <v-col sm="3" >
             <v-row justify="end" >
@@ -89,30 +89,46 @@
             pt-0
             class="d-flex justify-end "
             fluid>
-            <div class="ml-5">
-              <span class="text-danger"><span class="wj-glyph-pencil"></span></span>
-              <small>:編集可能</small>
-            </div>
-            <div class="ml-5"><small>:入退院</small></div>
-            <div class="ml-5"><small>:外泊</small></div>
-            <div class="ml-5"><small>:手修正済み</small></div>
-          </v-container>
-          <wj-flex-grid
-          id="theGridTallRows"
-          :initialized="onInitialized"
-          :isReadOnly=true
-          :allowDragging=false
-          :allowResizing=false
-          :frozenColumns="2"
-          >
-          <div v-for="n in borders" :key=n.id>
-            <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
-            <a class="borderBox" v-bind:style="{left:n.left+'px',top:n.top+'px'}" onClick="document.getElementById('modalArea1').classList.add('display')">
-            {{n.st}}～{{n.ed}}[{{n.diff}}]
-            </a>
-          </div>
-          </wj-flex-grid>
+            <div ><v-img src="../assets/tyusyaku_01.png"></v-img></div>
+            <div ><small>:編集可能</small></div>
             
+            <div class="ml-5"><v-img src="../assets/tyusyaku_02.png"></v-img></div>
+            <div ><small>:入退院</small></div>
+            
+            <div class="ml-5"><v-img src="../assets/tyusyaku_03.png"></v-img></div>
+            <div ><small>:外泊</small></div>
+            
+            <div class="ml-5 editIcon"></div>
+            <div ><small>:手修正済み</small></div>
+            
+
+          </v-container>
+
+
+          <wj-flex-grid
+            id="theGridTallRows"
+            :itemsSource="infoData"
+            :initialized="onInitializedInfo"
+            :headersVisibility="'Column'"
+            :isReadOnly=true
+            :allowDragging=false
+            :allowResizing=false
+          >
+            <wj-flex-grid-column header=" " binding="space" :width="30" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="項目" binding="item" :width="300" :wordWrap=true :allowMerging="true"></wj-flex-grid-column>
+            <wj-flex-grid-column v-for="d in daycount" :key="d" :width="35" :header="year+'/'+month+'/'+d" :binding="'day'+d" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
+            <wj-flex-grid-column header="合計" binding="totals" width="*" :wordWrap=true ></wj-flex-grid-column>
+            <wj-flex-grid-column header="金額" binding="money" width="*" :wordWrap=true ></wj-flex-grid-column>
+
+            <div v-for="n in borders" :key="n.key">
+              <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
+              <a class="borderBox" v-bind:style="{left:n.left+'px',top:n.top+'px'}" onClick="document.getElementById('modalArea1').classList.add('display')">
+              {{n.st}}～{{n.ed}}[{{n.diff}}]
+              </a>
+            </div>
+
+          </wj-flex-grid>
+
         </v-col>
       </v-row>
     </v-container>
@@ -312,12 +328,10 @@ import customMergeUser from "@/utiles/customMergeUser";
 import Datepicker from 'vuejs-datepicker';
 import {ja} from 'vuejs-datepicker/dist/locale'
 
-//一覧左側のタイトルセルの数
-let cell = 2;
 //1日分の幅
-let oneday = 30;
+let oneday = 35;
 //グラフはじめのスタート位置
-let startPos = 470;
+let startPos = 330;
 //ユーザーデータ
 let userDataAll = [];
 let userCount = 0;
@@ -326,22 +340,108 @@ let sortSearch = "";
 let alphaSearch = "";
 let checkAll = "";
 
+
+//どこかに共通配列として定義する
+const define_first = [];
+const define_second = [];
+const define_third = [];
+const define_four = [];
+define_first[1] = "変動情報";
+define_first[2] = "個別加算";
+define_first[3] = "受給者証情報";
+define_second[1] = {
+  name: "利用日",
+}; 
+define_second[2] = {
+  name: "入退院・外泊",
+  sub: "期間追加"
+}; 
+define_second[3] = {
+  name: "食事",
+  sub: "朝食"
+}; 
+define_second[4] = {
+  name: "食事",
+  sub: "昼食"
+}; 
+define_second[5] = {
+  name: "食事",
+  sub: "夕食"
+}; 
+define_second[6] = {
+  name: "光熱水費",
+}; 
+define_third[1] = {
+  name: "入院外泊時加算Ⅰ",
+}; 
+define_third[2] = {
+  name: "入院外泊時加算Ⅱ",
+}; 
+define_third[3] = {
+  name: "栄養マネジメント加算",
+}; 
+define_third[4] = {
+  name: "療養食加算",
+}; 
+define_third[5] = {
+  name: "加算追加",
+}; 
+define_four[1] = {
+  name: "援護者",
+  sub: "東経市"
+}; 
+define_four[2] = {
+  name: "援護者2",
+  sub: "西経市"
+}; 
+define_four[3] = {
+  name: "障害種別",
+  sub: "知的"
+}; 
+define_four[4] = {
+  name: "障害支援区分",
+  sub: "区分4"
+}; 
+define_four[5] = {
+  name: "決定支給量",
+}; 
+define_four[6] = {
+  name: "負担上限月額",
+  money: 9300
+}; 
+define_four[7] = {
+  name: "上限管理事務所",
+  sub: "ひまわり園"
+}; 
+define_four[8] = {
+  name: "特別給付費",
+  money: 500
+}; 
+
+let define_week = ['日', '月', '火', '水', '木', '金', '土' ];
+
+
+let year = moment().year();
+let month = moment().month()+1;
+
 export default{
   data(){
     return{
-      year:moment().year(),
-      month:moment().month()+1,
+      year: year,
+      month: month,
+      daycount:0,
       search:[ '32:施設入所支援' ],
       addSelect:[ '入所時特別支援加算' ],
       member:[ '全員' ],
-      week:['日', '月', '火', '水', '木', '金', '土' ],
+      week:define_week,
       alphabet:['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ],
       selects:['印刷を全選択', '印刷を全解除' ],
       isDroppedDown: false,
       borders:this.getBorder(),
-      lines:this.getLine(),
       ja:ja,
       usersData:this.createUser(),
+      infoData:this.createInfo(),
+      
     }
   },
   components : {
@@ -349,57 +449,71 @@ export default{
   },
   created()
   {
-  //  this.createUser();
     moment.locale("ja");
+    this.daycount = moment().daysInMonth();
   },
 
   methods: {
 
+    calenderChange: function(e)
+    {
+      let split = e.target.value.split('-');
+      this.year = split[0];
+      this.month = split[1];
+      let m = moment(this.year+"-"+this.month+"-01");
+      this.daycount = m.daysInMonth();
+
+      this.createInfo();
+      this.getBorder();
+    },
     getBorder: function()
     {
-      let borders = [];
-      borders.push({
-        id:1,
-        start_day:"2020-04-05",
-        end_day:"2020-04-22",
-        top:130,
+
+      if(this.year) year = this.year;
+      if(this.month) month = this.month;
+      console.log(year);
+      let borderdata = [];
+
+      borderdata.push({
+        key:1,
+        year: 2022,
+        month:4,
+        start_day:"2022-04-05",
+        end_day:"2022-04-22",
+        top:160,
         color:'red'
       });
-      borders.push({
-        id:2,
-        start_day:"2020-04-27",
-        end_day:"2020-04-29",
-        top:130,
+
+      borderdata.push({
+        key:2,
+        year: 2022,
+        month:4,
+        start_day:"2022-04-28",
+        end_day:"2022-04-30",
+        top:160,
         color:'green'
       });
-      borders.push({
-        id:3,
-        start_day:"2020-04-03",
-        end_day:"2020-04-30",
-        top:430,
-        color:'blue'
-      });
-      borders.push({
-        id:4,
-        start_day:"2020-04-03",
-        end_day:"2020-04-30",
-        top:480,
-        color:'blue'
+
+      let border = [];
+      borderdata.forEach(function(value){
+        if(year == value.year && month == value.month){
+          border.push({
+            key:value.key,
+            year:value.year,
+            month:value.month,
+            start_day:value.start_day,
+            end_day:value.end_day,
+            top:value.top,
+            color:value.color,
+          });
+        }
       });
 
-      
-      let editborders = this.borderConvert(borders);
-      //console.log(editborders);
-      return editborders;
-    },
-    borderConvert: function(data)
-    {
-      var converts;
-      converts = [];
-      data.forEach(function(conv){
+      let converts = [];
+      border.forEach(function(conv){
         //日付の差分
-        var m1 = moment(conv.end_day);
-        var m2 = moment(conv.start_day);
+        let m1 = moment(conv.end_day);
+        let m2 = moment(conv.start_day);
         converts.push({
           id:conv.id,
           width:(oneday*m1.diff(m2, 'days'))+oneday,
@@ -412,35 +526,251 @@ export default{
         });
       })
 
+      this.borders = converts;
+
       return converts;
     },
-    getLine:function ()
-    {
-      let lines = {};
-      lines = [
-        {row:'変動情報', items1:'利用日', items2:'利用日' },
-        {row:'変動情報', items1:'入退院・外泊', items2:' ' },
-        {row:'変動情報', items1:'食事', items2:'朝食' },
-        {row:'変動情報', items1:'食事', items2:'昼食' },
-        {row:'変動情報', items1:'食事', items2:'夕食' },
-        {row:'変動情報', items1:'光熱水費', items2:'光熱水費' },
-        {row:'個別加算', items1:'test', items2:'test' },
-        {row:'個別加算', items1:'入院外泊加算Ⅰ', items2:'入院外泊加算Ⅰ' },
-        {row:'個別加算', items1:'入院外泊加算Ⅱ', items2:'入院外泊加算Ⅱ' },
-        {row:'個別加算', items1:'栄養マネジメント加算', items2:'栄養マネジメント加算' },
-        {row:'個別加算', items1:'療養食加算', items2:'療養食加算' },
-        {row:'個別加算', items1:' ', items2:' ' },
-        {row:'受給者証情報', items1:'援護者', items2:'東経市' },
-        {row:'受給者証情報', items1:'援護者', items2:'西経市' },
-        {row:'受給者証情報', items1:'障害種別', items2:'知的' },
-        {row:'受給者証情報', items1:'障害支援区分', items2:'区分4' },
-        {row:'受給者証情報', items1:'決定支給量', items2:' ' },
-        {row:'受給者証情報', items1:'負担上限月額', items2:'9300' },
-        {row:'受給者証情報', items1:'上限管理事業所', items2:'ひまわり園' },
-        {row:'受給者証情報', items1:'特別給付費', items2:'500' },
-      ];
+    createInfo: function(){
+      //1:〇
+      //2:赤〇
+      //3:赤×
+      if(this.year) year = this.year;
+      if(this.month) month = this.month;
+      let userInfo = [];
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[1].name,
+        day3:"1",
+        day4:"1",
+        day5:"1",
+        day22:"1",
+        day23:"1",
+        day24:"1",
+        day25:"1",
+        totals:"12",
+        money:"2,700円",
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[2].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[3].name+"_"+define_second[3].sub,
+        day3:"2",
+        day4:"2",
+        day5:"2",
+        day22:"2",
+        day23:"2",
+        day24:"2",
+        day25:"2",
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[4].name+"_"+define_second[4].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[5].name+"_"+define_second[5].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[6].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[2],
+        item:define_third[1].name,
+        day6:"2",
+        day7:"2",
+        day8:"2",
+        day9:"2",
+        day10:"2",
+        day11:"2",
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[2],
+        item:define_third[2].name,
+        day12:"2",
+        day13:"2",
+        day14:"2",
+        day15:"2",
+        day16:"2",
+        day17:"2",
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[2],
+        item:define_third[3].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[2],
+        item:define_third[4].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[2],
+        item:define_third[5].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[1].name,
+        sub:define_four[1].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[2].name,
+        sub:define_four[2].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[3].name,
+        sub:define_four[3].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[4].name,
+        sub:define_four[4].sub,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[5].name,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[6].name,
+        money:define_four[6].moeny,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[7].name,
+        sub:define_four[7].moeny,
+      });
+      userInfo.push({
+        year: 2022,
+        month: 4,
+        usercode:1,
+        space:define_first[3],
+        item:define_four[8].name,
+        money:define_four[8].moeny,
+      });
 
-      return lines;
+      userInfo.push({
+        year: 2022,
+        month: 5,
+        usercode:1,
+        space:define_first[1],
+        item:define_second[1].name,
+        day6:"1",
+        day8:"1",
+        day9:"1",
+        day24:"1",
+        day26:"1",
+        day29:"1",
+        day30:"1",
+      });
+
+
+      let returns = [];
+
+      userInfo.forEach(function(element){
+        if(element.year == year && element.month == month){
+          returns.push({
+            year: element.year,
+            month: element.month,
+            usercode: element.usercode,
+            space: element.space,
+            item: element.item,
+            money: element.money,
+            totals: element.totals,
+            day1:element.day1,
+            day2:element.day2,
+            day3:element.day3,
+            day4:element.day4,
+            day5:element.day5,
+            day6:element.day6,
+            day7:element.day7,
+            day8:element.day8,
+            day9:element.day9,
+            day10:element.day10,
+            day11:element.day11,
+            day12:element.day12,
+            day13:element.day13,
+            day14:element.day14,
+            day15:element.day15,
+            day16:element.day16,
+            day17:element.day17,
+            day18:element.day18,
+            day19:element.day19,
+            day20:element.day20,
+            day21:element.day21,
+            day22:element.day22,
+            day23:element.day23,
+            day24:element.day24,
+            day25:element.day25,
+            day26:element.day26,
+            day27:element.day27,
+            day28:element.day28,
+            day29:element.day29,
+            day30:element.day30,
+            day31:element.day31,
+          });
+        }
+      });
+
+      this.infoData = returns;
+      return this.infoData;
     },
     createUser: function(){
       let usersData = [];
@@ -559,6 +889,7 @@ export default{
 
       this.usersData = data;
     },
+
     onInitializedUser:function (flexGrid)
     { 
       let i = 0;
@@ -583,172 +914,22 @@ export default{
       });
 
     },
-    onInitialized:function (flexGrid)
+
+    onInitializedInfo:function (flexGrid)
     {
-      let m = moment(this.year+"-"+this.month+"-01");
-      let year = this.year;
-      let month = this.month;
-      let week = this.week;
-      let lastdate = m.daysInMonth();
-
-      let i = 0;
-      while (flexGrid.columns.length < lastdate+4) {
-          let clm = new wjGrid.Column();
-          if( i >= lastdate + cell ){
-            clm.width = "*";
-          }else
-          if(i >= cell ){ 
-            clm.width = 30;
-          }else{
-            clm.width = 220;
-          }
-          flexGrid.columns.push(clm);
-          i++;
-      }
-      while (flexGrid.rows.length < 20) {
-          flexGrid.rows.push(new wjGrid.Row());
-      }
-
-      // configure the grid
       flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 30;
-      flexGrid.rows.defaultSize = 50;
-      flexGrid.alternatingRowStep = 1;
-      
-      flexGrid.formatItem.addHandler(leftCell);
-      let headerColum = [];
-      headerColum.push("");
-      headerColum.push("項目");
-      headerColum.push("項目");
+      flexGrid.formatItem.addHandler(cellEdit);
 
-      for(var d = 1; d <= lastdate; d++){
-        headerColum.push(d);
-      }
-      headerColum.push("合計");
-      headerColum.push("金額");
-      
-      // populate the grid
-      let headNum = 0;
-      let num = 0;
-      setData( flexGrid.columnHeaders, headNum, headerColum );
-      this.lines.forEach(function(data){
-        setData( flexGrid.cells, num++, [
-          data.row,
-          data.items1,
-          data.items2,
-          data.total
-          ] );
-      });
-
-
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        if(c == 0) cell.style.textAlign = 'left';
-        if(c >= 2 ) cell.style.textAlign = 'center';
-        if(panel.cellType == 2 && c >= 2 && r == 0 ){
-          if(lastdate >= c-1){
-            let day = c-1;
-            let date = year+"-"+month+"-"+day;
-            let w = moment(date).day();
-            if(w == 0) cell.style.color = "red";
-            if(w == 6) cell.style.color = "blue";
-            cell.innerHTML = day+'<div>'+week[w]+'</div>';
-          }
+      flexGrid.hostElement.addEventListener("click", function (e) {
+        var ht = flexGrid.hitTest(e);
+        console.log(ht.target.innerText);
+        if(ht.target.innerText == "期間追加"){
+          displayModal(1);
         }
-
-        //テストデータのため後程消す
-        //実データはgetLine関数でapiから取得したデータから配列の作成を行う
-        //getLineデータではhtmlが効かないので、leftCell関数で登録したデータを基に
-        //htmlを付加させる処理を実施する
-        if(panel.cellType == 1 ){
-          
-          if(c == 1 && r == 1){
-              cell.innerHTML = "<a >期間追加</a>";
-          }
-          if(c == 0 && r == 11){
-              cell.innerHTML = "<a >加算追加</a>";
-          }
-          
-          for(let i = 2; i < lastdate+4 ; i++ ){
-            if( r == 0 && ( (c >= 4 && c <= 6) || ( c >= 20 && c <= 31 ) ) ){
-                cell.innerHTML = "<div class='text-subtitle-1'>〇</a>";
-            }
-            if(c == i  && r == 3 ){
-              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 31 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
-              }
-              if ( (i == 6) || ( i == 20 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
-              }
-            }
-
-            if(c == i  && r == 4 ){
-              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 31 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
-              }
-              if ( (i == 6) || ( i == 20 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
-              }
-            }
-
-            if(c == i  && r == 5 ){
-              if ( (i >= 4 && i <= 5) || ( i >= 21 && i <= 30 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
-              }
-              if ( (i == 6) || ( i == 20 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>×</div>";
-              }
-            }
-
-            if(c == i  && r == 7 ){
-              if ( (i >= 6 && i <= 15) || (  i == 27 )  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
-              }
-            }
-            if(c == i  && r == 10 ){
-              if ( (i >= 3 && i <= 5) || (  i >= 27 && i <= 31)  ){
-                  cell.innerHTML = "<div class='red--text text-subtitle-1'>〇</div>";
-              }
-            }
-
-            if( r == 0 && c == 32 ) cell.innerHTML = "12";
-            if( r == 1 && c == 32 ) cell.innerHTML = "17";
-            if( r == 2 && c == 32 ) cell.innerHTML = "9";
-            if( r == 3 && c == 32 ) cell.innerHTML = "8";
-            if( r == 4 && c == 32 ) cell.innerHTML = "10";
-            if( r == 5 && c == 32 ) cell.innerHTML = "9";
-
-            if( r == 3 && c == 33 ) cell.innerHTML = "2700";
-            if( r == 4 && c == 33 ) cell.innerHTML = "3200";
-            if( r == 5 && c == 33 ) cell.innerHTML = "1200";
-
-
-          }
-         }
-      };
-      flexGrid.hostElement.addEventListener('click', function (e) {
-       // if (e.target.tagName == 'BUTTON' && wjCore.closest(e.target, '.wj-cell')) {
-          var ht = flexGrid.hitTest(e);
-          //console.log(ht.target.innerText);
-          console.log(ht.target);
-          //alert(wjCore.format('{row}行{col}列のセルがクリックされました', ht));
-          if(ht.target.innerText == "期間追加"){
-            displayModal(1);
-          }
-          if(ht.target.innerText == "加算追加"){
-            displayModal(2);
-          }
-          if (e.target.classList.contains("red--text")) {
-            if(ht.target.innerText == "〇"){
-              alert("red");
-              e.cell.innerHTML = "sssss";
-            }
-          }
-       // }
-      });
-
-      flexGrid.scrollPositionChanged.addHandler((s, e) => {
-console.log(s);
-console.log(e);
+        if(ht.target.innerText == "加算追加"){
+          displayModal(2);
+        }
       });
     },
 
@@ -756,18 +937,6 @@ console.log(e);
         console.log(s.text);
     },
   }
-}
-
-function setPush(get,value)
-{
-  return get.push({
-    id:value.id,
-    code:value.code,
-    examNumber:value.examNumber,
-    name:value.name,
-    kana:value.kana,
-    active:value.active
-  });
 }
 
 function displayModal(type)
@@ -783,30 +952,83 @@ function displayModal(type)
   return true;
 }
 
+function setPush(get,value)
+{
+  return get.push({
+    id:value.id,
+    code:value.code,
+    examNumber:value.examNumber,
+    name:value.name,
+    kana:value.kana,
+    active:value.active
+  });
+}
+
 function setData(p, r, cells)
 {
     if (p.cellType == wjGrid.CellType.Cell) {
       p.grid.rowHeaders.setCellData(r, 0, cells[0]);
     }
 
-    for (var i = 1; i < cells.length; i++) {
+    for (let i = 1; i < cells.length; i++) {
       p.setCellData(r, i - 1, cells[i]);
     }
 }
 
-function leftCell(s, e)
+function cellEdit(s, e)
 {
   if (e.cell.children.length == 0) {
     let align = "left";
-    let unit = "";
-    let str = e.cell.innerHTML;
-    if(e.cell.innerText.length > 0 && !isNaN(e.cell.innerText) ){
-      align = "right";
-      if(e.cell.innerText.length > 2 ) unit = " 円";
-      str = Number(e.cell.innerText).toLocaleString();
+    let str = "";
+    if( isDate(e.cell.innerText) ){
+      str = dateFormatString(e.cell.innerText);
+    }else
+    if(e.cell.innerText == "1" ){
+      str = "<div class='text-center' style='font-size:1.5em;'>〇</div>";
+    }else
+    if(e.cell.innerText == "2" ){
+      str = "<div class='text-center red--text' style='font-size:1.5em;'>〇</div>";
+    }else
+    if(e.cell.innerText == define_second[2].name){
+      str = "<div class='text-left-float'>"+define_second[2].name+"</div><a class='ml-2 addButton' >"+define_second[2].sub+"</a>";
+    }else
+    if(e.cell.innerText == define_second[3].name+"_"+define_second[3].sub){
+      str = "<div class='text-left-float'>"+define_second[3].name+"</div><div class='text-right-float border-right'><p>"+define_second[3].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_second[4].name+"_"+define_second[4].sub){
+      str = "<div class='text-left-float'></div><div class='text-right-float border-right'><p>"+define_second[4].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_second[5].name+"_"+define_second[5].sub){
+      str = "<div class='text-left-float'></div><div class='text-right-float border-right'><p>"+define_second[5].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_third[5].name){
+      str = "<div class='text-left-float addButton'>"+define_third[5].name+"</div>";
+    }else
+    if(e.cell.innerText == define_four[1].name){
+      str = "<div class='text-left-float'>"+define_four[1].name+"</div><div class='text-right-float border-right'><p>"+define_four[1].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_four[2].name){
+      str = "<div class='text-left-float'></div><div class='text-right-float border-right'><p>"+define_four[2].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_four[3].name){
+      str = "<div class='text-left-float'>"+define_four[3].name+"</div><div class='text-right-float border-right'><p>"+define_four[3].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_four[4].name+"_"+define_four[4].sub){
+      str = "<div class='text-left-float'>"+define_four[4].name+"</div><div class='text-right-float border-right'><p>"+define_four[4].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_four[6].name){
+      str = "<div class='text-left-float'>"+define_four[6].name+"</div><div class='text-right-float border-right'><p>"+define_four[6].money.toLocaleString()+"円</p></div>";
+    }else
+    if(e.cell.innerText == define_four[7].name){
+      str = "<div class='text-left-float'>"+define_four[7].name+"</div><div class='text-right-float border-right'><p>"+define_four[7].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_four[8].name){
+      str = "<div class='text-left-float'>"+define_four[8].name+"</div><div class='text-right-float border-right'><p>"+define_four[8].money.toLocaleString()+"円</p></div>";
+    }else{
+      str = e.cell.innerHTML;
     }
 
-    e.cell.innerHTML = "<div>" + str + unit +"</div>";
+    e.cell.innerHTML = "<div>" + str +"</div>";
     wjCore.setCss(e.cell, {
         display: "table",
         tableLayout: "fixed",
@@ -818,6 +1040,37 @@ function leftCell(s, e)
     });
   }
 }
+
+function dateFormatString(str)
+{
+  let sp = str.split("/");
+  let w = moment(str).day();
+  let color = "";
+  if(w == 0) color = "red--text";
+  if(w == 6) color = "blue--text";
+  let string = "<div class='text-center "+color+"''>"+sp[2]+"</div><div class='text-center "+color+"''>"+define_week[w]+"</div>";
+  return string;
+}
+
+function isDate(strDate)
+{
+    if(strDate == ""){
+        return false;
+    }  
+    if(!strDate.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)){
+        return false;
+    } 
+    var date = new Date(strDate);  
+    if(date.getFullYear() !=  strDate.split("/")[0] 
+        || date.getMonth() != strDate.split("/")[1] - 1 
+        || date.getDate() != strDate.split("/")[2]
+    ){
+        return false;
+    }
+
+    return true;
+}
+
 
 function userCell(s, e)
 {
@@ -844,6 +1097,28 @@ function userCell(s, e)
 html{
   overflow-x: scroll;
 }
+div.text-left-float{
+  float:left;
+}
+div.text-right-float{
+  float:right;
+}
+div.border-right{
+  border-left:1px solid #ccc;
+  width:150px;
+  position:absolute;
+  top:0;
+  right:0;
+  padding-left:20px;
+  height:100%;
+}
+div.border-right p{
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%)
+}
+
 #app{
   min-width:1920px;
   margin:0 auto;
@@ -853,15 +1128,22 @@ div#main{
   font-family: "メイリオ" ;
 }
 
+div.editIcon{
+  width:50px;
+  height:20px;
+  background-color:violet;
+}
+
 #theGridTallRows{
   position:relative;
 }
+
 #theGridTallRows.wj-flexgrid .wj-cell{
-    padding: 8px 15px;
     height: 68px;
 }
+
 .wj-rowheaders{
-  div.wj-row{
+  .wj-row{
     & > div.wj-cell.wj-header{
       & > div{
         position: absolute;
@@ -959,5 +1241,18 @@ div#main{
   right: 1rem;
   cursor: pointer;
 }
+
+.addButton {
+  width:120px;
+  background-color:red;
+  display:block;
+  float:left;
+  color:#fff !important;
+  text-align: left;
+  border-radius: 30px;
+  padding:3px 0px 3px 10px;
+}
+
+
 
 </style>
