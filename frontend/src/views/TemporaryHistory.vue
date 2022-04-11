@@ -13,7 +13,7 @@
             <v-row>
               <v-col col=12 class="d-flex flex-row ">
                 <div class="pa-2">提供月</div>
-                <input type="month" name="example" value="2022-04" v-on:change="calenderChange" >
+                <input type="month" name="example" :value="year+'-'+month" v-on:change="calenderChange" >
               </v-col>
             </v-row>
           </v-col>
@@ -57,8 +57,9 @@
             :itemsSource="usersData"
             :allowDragging=false
             :allowResizing=false
+            :allowSorting=false
             >
-            <wj-flex-grid-column header="コード" binding="id" width="2*" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
+            <wj-flex-grid-column header="コード" binding="code" width="2*" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
             <wj-flex-grid-column header="利用者名" binding="name" width="3*" :wordWrap=true :allowResizing=false :isReadOnly=true ></wj-flex-grid-column>
             <wj-flex-grid-column header="印刷" binding="active" width="1*" :wordWrap=true :allowResizing=false ></wj-flex-grid-column>
 
@@ -72,34 +73,55 @@
               fluid
               pa-0
             >
-            <div class="mt-1 pr-2">利用者</div>
-            <div><wj-combo-box :isReadOnly=true text="1000070 東経 太郎"></wj-combo-box></div>
-            <div class="mt-1 ml-1">
-            <v-btn x-small><span class="wj-glyph-left"></span></v-btn>&nbsp;
-            <v-btn x-small><span class="wj-glyph-right"></span></v-btn>
-            </div>
-            <div class="ml-3 mt-1 pr-2">受給者証番号</div>
-            <div><wj-combo-box :isReadOnly=true text="1000070"></wj-combo-box></div>
-            <div class="pt-1 ml-5">
-              <small>最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small>
-            </div>
+
+            <span
+              class="pa-2"
+              >利用者
+            </span>
+            <v-col
+              class="pa-2"
+              cols=1
+              ><span id="selectUserText" ></span>
+            </v-col>
+            <v-col
+              class="pa-2"
+              cols=1 
+              >
+              <v-btn x-small><span class="wj-glyph-left"></span></v-btn>&nbsp;
+              <v-btn x-small><span class="wj-glyph-right"></span></v-btn>
+            </v-col>
+            <span
+              class="pa-2"
+              >受給者証番号
+            </span>
+            <v-col
+              class="pa-2"
+              cols=1
+              ><span id="selectUserExamNumber" ></span>
+            </v-col>
+            <v-col
+              class="pa-2"
+              cols=6
+              ><small>最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small>
+            </v-col>
+
           </v-container>
           <v-container
             mt-0
             pt-0
             class="d-flex justify-end "
             fluid>
-            <div ><v-img src="../assets/tyusyaku_01.png"></v-img></div>
-            <div ><small>:編集可能</small></div>
+            <div class="mt-1"><v-img src="../assets/tyusyaku_01.png"></v-img></div>
+            <div class="ml-2"><small>:編集可能</small></div>
             
-            <div class="ml-5"><v-img src="../assets/tyusyaku_02.png"></v-img></div>
-            <div ><small>:入退院</small></div>
+            <div class="ml-5 mt-1"><v-img src="../assets/tyusyaku_02.png"></v-img></div>
+            <div class="ml-2"><small>:入退院</small></div>
             
-            <div class="ml-5"><v-img src="../assets/tyusyaku_03.png"></v-img></div>
-            <div ><small>:外泊</small></div>
+            <div class="ml-5 mt-1"><v-img src="../assets/tyusyaku_03.png"></v-img></div>
+            <div class="ml-2"><small>:外泊</small></div>
             
             <div class="ml-5 editIcon"></div>
-            <div ><small>:手修正済み</small></div>
+            <div class="ml-2"><small>:手修正済み</small></div>
             
 
           </v-container>
@@ -113,6 +135,8 @@
             :isReadOnly=true
             :allowDragging=false
             :allowResizing=false
+            :deferResizing=false
+            :allowSorting=false
           >
             <wj-flex-grid-column header=" " binding="space" :width="30" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="項目" binding="item" :width="300" :wordWrap=true :allowMerging="true"></wj-flex-grid-column>
@@ -121,7 +145,11 @@
             <wj-flex-grid-column header="金額" binding="money" width="*" :wordWrap=true ></wj-flex-grid-column>
 
             <div v-for="n in borders" :key="n.key">
-              <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}"></div>
+              <div class="borderPlace" v-bind:style="{width:n.width+'px',left:n.left+'px',top:n.top+'px',backgroundColor:n.color}">
+                
+                <div class="borderPlace--left" v-bind:style="{'border-color':'transparent '+n.color+' transparent  transparent'}"></div>
+                <div class="borderPlace--right" v-bind:style="{'border-color':'transparent  transparent  transparent '+n.color}"></div>
+              </div>
               <a class="borderBox" v-bind:style="{left:n.left+'px',top:n.top+'px'}" onClick="document.getElementById('modalArea1').classList.add('display')">
               {{n.st}}～{{n.ed}}[{{n.diff}}]
               </a>
@@ -334,6 +362,7 @@ let oneday = 35;
 let startPos = 330;
 //ユーザーデータ
 let userDataAll = [];
+let userDataSelect = [];
 let userCount = 0;
 let textSearch = "";
 let sortSearch = "";
@@ -373,15 +402,19 @@ define_second[6] = {
 }; 
 define_third[1] = {
   name: "入院外泊時加算Ⅰ",
+  editicon: 1
 }; 
 define_third[2] = {
   name: "入院外泊時加算Ⅱ",
+  editicon: 1
 }; 
 define_third[3] = {
   name: "栄養マネジメント加算",
+  editicon: 1
 }; 
 define_third[4] = {
   name: "療養食加算",
+  editicon: 1
 }; 
 define_third[5] = {
   name: "加算追加",
@@ -422,8 +455,7 @@ let define_week = ['日', '月', '火', '水', '木', '金', '土' ];
 
 
 let year = moment().year();
-let month = moment().month()+1;
-
+let month = moment().format('MM');
 export default{
   data(){
     return{
@@ -441,7 +473,6 @@ export default{
       ja:ja,
       usersData:this.createUser(),
       infoData:this.createInfo(),
-      
     }
   },
   components : {
@@ -471,7 +502,6 @@ export default{
 
       if(this.year) year = this.year;
       if(this.month) month = this.month;
-      console.log(year);
       let borderdata = [];
 
       borderdata.push({
@@ -538,6 +568,7 @@ export default{
       if(this.month) month = this.month;
       let userInfo = [];
       userInfo.push({
+        uniqkey:1,
         year: 2022,
         month: 4,
         usercode:1,
@@ -554,6 +585,7 @@ export default{
         money:"2,700円",
       });
       userInfo.push({
+        uniqkey:2,
         year: 2022,
         month: 4,
         usercode:1,
@@ -561,6 +593,7 @@ export default{
         item:define_second[2].name,
       });
       userInfo.push({
+        uniqkey:3,
         year: 2022,
         month: 4,
         usercode:1,
@@ -569,19 +602,28 @@ export default{
         day3:"2",
         day4:"2",
         day5:"2",
-        day22:"2",
+        day22:"3",
         day23:"2",
         day24:"2",
         day25:"2",
       });
       userInfo.push({
+        uniqkey:4,
         year: 2022,
         month: 4,
         usercode:1,
         space:define_first[1],
         item:define_second[4].name+"_"+define_second[4].sub,
+        day3:"2",
+        day4:"2",
+        day5:"2",
+        day22:"3",
+        day23:"2",
+        day24:"2",
+        day25:"2",
       });
       userInfo.push({
+        uniqkey:5,
         year: 2022,
         month: 4,
         usercode:1,
@@ -589,6 +631,7 @@ export default{
         item:define_second[5].name+"_"+define_second[5].sub,
       });
       userInfo.push({
+        uniqkey:6,
         year: 2022,
         month: 4,
         usercode:1,
@@ -596,11 +639,13 @@ export default{
         item:define_second[6].name,
       });
       userInfo.push({
+        uniqkey:7,
         year: 2022,
         month: 4,
         usercode:1,
         space:define_first[2],
         item:define_third[1].name,
+        editicon:define_third[1].editicon,
         day6:"2",
         day7:"2",
         day8:"2",
@@ -609,11 +654,13 @@ export default{
         day11:"2",
       });
       userInfo.push({
+        uniqkey:8,
         year: 2022,
         month: 4,
         usercode:1,
         space:define_first[2],
         item:define_third[2].name,
+        editicon:define_third[4].editicon,
         day12:"2",
         day13:"2",
         day14:"2",
@@ -622,20 +669,25 @@ export default{
         day17:"2",
       });
       userInfo.push({
+        uniqkey:9,
         year: 2022,
         month: 4,
         usercode:1,
         space:define_first[2],
         item:define_third[3].name,
+        editicon:define_third[4].editicon,
       });
       userInfo.push({
+        uniqkey:10,
         year: 2022,
         month: 4,
         usercode:1,
         space:define_first[2],
         item:define_third[4].name,
+        editicon:define_third[4].editicon,
       });
       userInfo.push({
+        uniqkey:11,
         year: 2022,
         month: 4,
         usercode:1,
@@ -643,6 +695,7 @@ export default{
         item:define_third[5].name,
       });
       userInfo.push({
+        uniqkey:12,
         year: 2022,
         month: 4,
         usercode:1,
@@ -651,6 +704,7 @@ export default{
         sub:define_four[1].sub,
       });
       userInfo.push({
+        uniqkey:13,
         year: 2022,
         month: 4,
         usercode:1,
@@ -659,6 +713,7 @@ export default{
         sub:define_four[2].sub,
       });
       userInfo.push({
+        uniqkey:14,
         year: 2022,
         month: 4,
         usercode:1,
@@ -667,6 +722,7 @@ export default{
         sub:define_four[3].sub,
       });
       userInfo.push({
+        uniqkey:15,
         year: 2022,
         month: 4,
         usercode:1,
@@ -675,6 +731,7 @@ export default{
         sub:define_four[4].sub,
       });
       userInfo.push({
+        uniqkey:16,
         year: 2022,
         month: 4,
         usercode:1,
@@ -682,6 +739,7 @@ export default{
         item:define_four[5].name,
       });
       userInfo.push({
+        uniqkey:17,
         year: 2022,
         month: 4,
         usercode:1,
@@ -690,6 +748,7 @@ export default{
         money:define_four[6].moeny,
       });
       userInfo.push({
+        uniqkey:18,
         year: 2022,
         month: 4,
         usercode:1,
@@ -698,6 +757,7 @@ export default{
         sub:define_four[7].moeny,
       });
       userInfo.push({
+        uniqkey:19,
         year: 2022,
         month: 4,
         usercode:1,
@@ -707,6 +767,7 @@ export default{
       });
 
       userInfo.push({
+        uniqkey:20,
         year: 2022,
         month: 5,
         usercode:1,
@@ -727,6 +788,7 @@ export default{
       userInfo.forEach(function(element){
         if(element.year == year && element.month == month){
           returns.push({
+            uniqkey: element.uniqkey,
             year: element.year,
             month: element.month,
             usercode: element.usercode,
@@ -777,8 +839,8 @@ export default{
       userCount = 100;
       for(let i = 0; i < userCount ; i++){        
         usersData.push({
-          id:Math.floor(Math.random() * 10) + 1,
-          code:"0000"+Math.floor(Math.random() * 10) + 1,
+          id:i,
+          code:"100"+i,
           examNumber:"000"+Math.floor(Math.random() * 10) + 1,
           name:"東経太郎 "+Math.floor(Math.random() * 10) + 1,
           kana:"トウジョウタロウ"+Math.floor(Math.random() * 10) + 1,
@@ -787,7 +849,9 @@ export default{
         
       }
       userDataAll = usersData;
-      return usersData;
+      this.userFilter();
+      userDataSelect = userDataAll;
+      return this.usersData;
     },
     onTextChangedUser: function(s){
         textSearch = s.text;
@@ -886,12 +950,12 @@ export default{
             return 0;
         });
       }
-
+      userDataSelect = data;
       this.usersData = data;
     },
-
     onInitializedUser:function (flexGrid)
     { 
+      
       let i = 0;
       while (flexGrid.columns.length < 3) {
         let clm = new wjGrid.Column();
@@ -902,15 +966,29 @@ export default{
         i++;
       }
       while (flexGrid.rows.length < userCount) {
-          flexGrid.rows.push(new wjGrid.Row());
+        flexGrid.rows.push(new wjGrid.Row());
       }
       flexGrid.formatItem.addHandler(userCell);
       // configure the grid
       flexGrid.mergeManager = new customMergeUser();
       flexGrid.alternatingRowStep = 1;
 
-      this.usersData.forEach(function(value){
-        setData( flexGrid.cells, value.id, [value.id, value.code, value.name, value.active] );
+      let string = "";
+      flexGrid.hostElement.addEventListener("click", function (e) {
+        var ht = flexGrid.hitTest(e);
+        console.log(ht.target.innerText);
+
+
+        ht = flexGrid.hitTest(e.pageX, e.pageY);
+        //選択した要素の取得
+        let row = ht._row;
+        console.log(row);
+        console.log(userDataSelect[row].name);
+        string = userDataSelect[row].name;
+        console.log(string);
+      //  selectUserText = string;
+        document.querySelector("#selectUserText").innerText = string;
+
       });
 
     },
@@ -923,12 +1001,21 @@ export default{
 
       flexGrid.hostElement.addEventListener("click", function (e) {
         var ht = flexGrid.hitTest(e);
-        console.log(ht.target.innerText);
         if(ht.target.innerText == "期間追加"){
           displayModal(1);
         }
         if(ht.target.innerText == "加算追加"){
           displayModal(2);
+        }
+        //個別加算編集アイコン
+        if(ht.target.innerText == "editicon"){
+          displayModal(1);
+        }
+        //赤丸
+        if(ht.target.innerText == "maru_edit"){
+          e.target.innerText = "dddddd";
+         // const target = document.getElementsByClassName('maru_edit');
+       //   target[0].style.display = "none";	
         }
       });
     },
@@ -936,15 +1023,22 @@ export default{
     onTextChanged: function(s){
         console.log(s.text);
     },
+    onSelectUser: function()
+    {
+      alert("33");
+    }
   }
 }
+
 
 function displayModal(type)
 {
   var elem = "";
   if(type == 1){
+    //変動情報登録
     elem = document.getElementById("modalArea1");
   }else{
+    //加算情報
     elem = document.getElementById("modalArea2");
   }
   
@@ -952,6 +1046,7 @@ function displayModal(type)
   return true;
 }
 
+//カナアイコンフィルタリング用
 function setPush(get,value)
 {
   return get.push({
@@ -964,15 +1059,23 @@ function setPush(get,value)
   });
 }
 
-function setData(p, r, cells)
+function userCell(s, e)
 {
-    if (p.cellType == wjGrid.CellType.Cell) {
-      p.grid.rowHeaders.setCellData(r, 0, cells[0]);
-    }
-
-    for (let i = 1; i < cells.length; i++) {
-      p.setCellData(r, i - 1, cells[i]);
-    }
+  if (e.cell.children.length == 0) {
+    let align = "left";
+    let str = e.cell.innerHTML;
+    str = "<div>"+str+"</div>";
+    e.cell.innerHTML = str.replace(',','');
+    wjCore.setCss(e.cell, {
+        display: "table",
+        tableLayout: "fixed",
+    });
+    wjCore.setCss(e.cell.children[0], {
+        display: "table-cell",
+        textAlign: align,
+        verticalAlign: "middle",
+    });
+  }
 }
 
 function cellEdit(s, e)
@@ -987,7 +1090,10 @@ function cellEdit(s, e)
       str = "<div class='text-center' style='font-size:1.5em;'>〇</div>";
     }else
     if(e.cell.innerText == "2" ){
-      str = "<div class='text-center red--text' style='font-size:1.5em;'>〇</div>";
+      str = "<div class='maru_edit'>maru_edit</div>";
+    }else
+    if(e.cell.innerText == "3" ){
+      str = "<div class='batsu_edit'>batsu_edit</div>";
     }else
     if(e.cell.innerText == define_second[2].name){
       str = "<div class='text-left-float'>"+define_second[2].name+"</div><a class='ml-2 addButton' >"+define_second[2].sub+"</a>";
@@ -1000,6 +1106,18 @@ function cellEdit(s, e)
     }else
     if(e.cell.innerText == define_second[5].name+"_"+define_second[5].sub){
       str = "<div class='text-left-float'></div><div class='text-right-float border-right'><p>"+define_second[5].sub+"</p></div>";
+    }else
+    if(e.cell.innerText == define_third[1].name){
+      str = "<div class='text-left-float'>"+define_third[1].name+"</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+    }else
+    if(e.cell.innerText == define_third[2].name){
+      str = "<div class='text-left-float'>"+define_third[2].name+"</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+    }else
+    if(e.cell.innerText == define_third[3].name){
+      str = "<div class='text-left-float'>"+define_third[3].name+"</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+    }else
+    if(e.cell.innerText == define_third[4].name){
+      str = "<div class='text-left-float'>"+define_third[4].name+"</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
     }else
     if(e.cell.innerText == define_third[5].name){
       str = "<div class='text-left-float addButton'>"+define_third[5].name+"</div>";
@@ -1071,52 +1189,12 @@ function isDate(strDate)
     return true;
 }
 
-
-function userCell(s, e)
-{
-  if (e.cell.children.length == 0) {
-    let align = "left";
-    let str = e.cell.innerHTML;
-    e.cell.innerHTML = str;
-    wjCore.setCss(e.cell, {
-        display: "table",
-        tableLayout: "fixed",
-    });
-    wjCore.setCss(e.cell.children[0], {
-        display: "table-cell",
-        textAlign: align,
-        verticalAlign: "middle",
-    });
-  }
-}
-
 </script>
 
 <style lang="scss" scope>
 //共通cssに移動全体のサイズ
 html{
   overflow-x: scroll;
-}
-div.text-left-float{
-  float:left;
-}
-div.text-right-float{
-  float:right;
-}
-div.border-right{
-  border-left:1px solid #ccc;
-  width:150px;
-  position:absolute;
-  top:0;
-  right:0;
-  padding-left:20px;
-  height:100%;
-}
-div.border-right p{
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  transform: translate(0, -50%)
 }
 
 #app{
@@ -1128,10 +1206,68 @@ div#main{
   font-family: "メイリオ" ;
 }
 
+.input_picker {
+  div > input {
+    border: 1px ridge #333333;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+span#selectUserExamNumber,
+span#selectUserText{
+  width:150px;
+  display:block;
+}
+
 div.editIcon{
   width:50px;
   height:20px;
   background-color:violet;
+}
+
+a.editicon {
+  width:15px;
+  height:15px;
+  display:inline-block;
+  background-image:url("../assets/tyusyaku_04.png");
+  background-repeat: no-repeat;
+  text-indent:-9999px;
+}
+.maru_edit {
+  width:21px;
+  height:20px;
+  background-image:url("../assets/tyusyaku_05.png");
+  display:inline-block;
+  background-repeat: no-repeat;
+  background-size:cover;
+  text-indent:-9999px;
+}
+.batsu_edit {
+  width:20px;
+  height:21px;
+  background-image:url("../assets/tyusyaku_06.png");
+  display:inline-block;
+  background-repeat: no-repeat;
+  background-size:cover;
+  text-indent:-9999px;
+}
+
+.addButton {
+  width:120px;
+  background-color:red;
+  display:block;
+  float:left;
+  color:#fff !important;
+  text-align: left;
+  border-radius: 30px;
+  padding:3px 0px 3px 10px;
+  cursor:pointer;
+  background-image:url("../assets/plus_15px.png");
+  background-position: 95% 50%;
 }
 
 #theGridTallRows{
@@ -1157,29 +1293,39 @@ div.editIcon{
   }
 }
 
-
-.input_picker {
-  div > input {
-    border: 1px ridge #333333;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    width: 100%;
-  }
-}
-
-
-//チャート用のcssに移動
+//チャート用
 .borderPlace {
   height:2px;
   position:absolute;
   top:0;
   left:0;
   z-index:1;
+  &--left{
+    content:"";
+    width: 0px;
+    height: 0px;
+    border: 5px solid;
+    display:block;
+    position:absolute;
+    top:-5px;
+    left:-7px;
+  }
+  &--right{
+    content:"";
+    border:1px solid red;
+    width: 0px;
+    height: 0px;
+    border: 5px solid;
+    border-color: transparent  transparent  transparent aqua;
+    display:block;
+    position:absolute;
+    top:-5px;
+    right:-7px;
+    left:auto;
+  }
 }
 .borderBox {
-  padding:2px 10px;
+  padding:2px 30px;
   border:1px solid #333;
   position:absolute;
   top:0;
@@ -1187,70 +1333,30 @@ div.editIcon{
   z-index:1;
   background-color:#fff;
   margin-top:10px;
+  background-image:url("../assets/tyusyaku_04.png");
+  background-position: 95% 40%;
 }
 
-
-//モーダル用のcssに移動
-#modalArea2, 
-#modalArea1 {
-  display: none;
-  position: fixed;
-  z-index: 10; 
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  &.display{
-    display: block;
-    animation-name: fade-in;
-    animation-duration: .7s;
-  }
+div.text-left-float{
+  float:left;
 }
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+div.text-right-float{
+  float:right;
 }
-
-.modalBg {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(30,30,30,0.1);
-
+div.border-right{
+  border-left:1px solid #ccc;
+  width:150px;
+  position:absolute;
+  top:0;
+  right:0;
+  padding-left:20px;
+  height:100%;
 }
-
-.modalWrapper {
+div.border-right p{
+  margin: 0;
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform:translate(-50%,-50%);
-  width: 70%;
-  max-width: 500px;
-  padding: 10px 30px;
-  background-color: #fff;
-  border:1px solid #ccc;
-}
-
-.closeModal {
-  position: absolute;
-  top: 0.5rem;
-  right: 1rem;
-  cursor: pointer;
-}
-
-.addButton {
-  width:120px;
-  background-color:red;
-  display:block;
-  float:left;
-  color:#fff !important;
-  text-align: left;
-  border-radius: 30px;
-  padding:3px 0px 3px 10px;
+  transform: translate(0, -50%)
 }
 
 
