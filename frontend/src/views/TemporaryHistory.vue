@@ -73,7 +73,6 @@
               fluid
               pa-0
             >
-
             <span
               class="pa-2"
               >利用者
@@ -87,8 +86,8 @@
               class="pa-2"
               cols=1 
               >
-              <v-btn x-small><span class="wj-glyph-left"></span></v-btn>&nbsp;
-              <v-btn x-small><span class="wj-glyph-right"></span></v-btn>
+              <v-btn x-small @click="onMoveUser('back')" ><span class="wj-glyph-left"></span></v-btn>&nbsp;
+              <v-btn x-small @click="onMoveUser('next')" ><span class="wj-glyph-right"></span></v-btn>
             </v-col>
             <span
               class="pa-2"
@@ -452,10 +451,12 @@ define_four[8] = {
 }; 
 
 let define_week = ['日', '月', '火', '水', '木', '金', '土' ];
-
-
+let alphabet = ['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ];
+let selects = ['印刷を全選択', '印刷を全解除' ];
 let year = moment().year();
 let month = moment().format('MM');
+
+let userInfo = [];
 export default{
   data(){
     return{
@@ -466,13 +467,16 @@ export default{
       addSelect:[ '入所時特別支援加算' ],
       member:[ '全員' ],
       week:define_week,
-      alphabet:['全', 'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ' ],
-      selects:['印刷を全選択', '印刷を全解除' ],
+      alphabet:alphabet,
+      selects:selects,
       isDroppedDown: false,
       borders:this.getBorder(),
       ja:ja,
       usersData:this.createUser(),
       infoData:this.createInfo(),
+      selectUserData:"",
+      selectUserCode:"",
+      userRow:0 //ユーザを選択した配列のrow
     }
   },
   components : {
@@ -482,10 +486,229 @@ export default{
   {
     moment.locale("ja");
     this.daycount = moment().daysInMonth();
+    
   },
 
   methods: {
+    createInfoData(){
 
+
+      userInfo.push({
+        uniqkey:1,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[1].name,
+        day3:"1",
+        day4:"1",
+        day5:"1",
+        day22:"1",
+        day23:"1",
+        day24:"1",
+        day25:"1",
+        totals:"12",
+        money:"2,700円",
+      });
+      userInfo.push({
+        uniqkey:2,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[2].name,
+      });
+      userInfo.push({
+        uniqkey:3,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[3].name+"_"+define_second[3].sub,
+        day3:"2",
+        day4:"2",
+        day5:"2",
+        day22:"3",
+        day23:"2",
+        day24:"2",
+        day25:"2",
+      });
+      userInfo.push({
+        uniqkey:4,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[4].name+"_"+define_second[4].sub,
+        day3:"2",
+        day4:"2",
+        day5:"2",
+        day22:"3",
+        day23:"2",
+        day24:"2",
+        day25:"2",
+      });
+      userInfo.push({
+        uniqkey:5,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[5].name+"_"+define_second[5].sub,
+      });
+      userInfo.push({
+        uniqkey:6,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[6].name,
+      });
+      userInfo.push({
+        uniqkey:7,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[2],
+        item:define_third[1].name,
+        editicon:define_third[1].editicon,
+        day6:"2",
+        day7:"2",
+        day8:"2",
+        day9:"2",
+        day10:"2",
+        day11:"2",
+      });
+      userInfo.push({
+        uniqkey:8,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[2],
+        item:define_third[2].name,
+        editicon:define_third[4].editicon,
+        day12:"2",
+        day13:"2",
+        day14:"2",
+        day15:"2",
+        day16:"2",
+        day17:"2",
+      });
+      userInfo.push({
+        uniqkey:9,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[2],
+        item:define_third[3].name,
+        editicon:define_third[4].editicon,
+      });
+      userInfo.push({
+        uniqkey:10,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[2],
+        item:define_third[4].name,
+        editicon:define_third[4].editicon,
+      });
+      userInfo.push({
+        uniqkey:11,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[2],
+        item:define_third[5].name,
+      });
+      userInfo.push({
+        uniqkey:12,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[1].name,
+        sub:define_four[1].sub,
+      });
+      userInfo.push({
+        uniqkey:13,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[2].name,
+        sub:define_four[2].sub,
+      });
+      userInfo.push({
+        uniqkey:14,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[3].name,
+        sub:define_four[3].sub,
+      });
+      userInfo.push({
+        uniqkey:15,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[4].name,
+        sub:define_four[4].sub,
+      });
+      userInfo.push({
+        uniqkey:16,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[5].name,
+      });
+      userInfo.push({
+        uniqkey:17,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[6].name,
+        money:define_four[6].moeny,
+      });
+      userInfo.push({
+        uniqkey:18,
+        year: 2022,
+        month: '04',
+        usercode:1000,
+        space:define_first[3],
+        item:define_four[7].name,
+        sub:define_four[7].moeny,
+      });
+      userInfo.push({
+        uniqkey:19,
+        year: 2022,
+        month: '04',
+        usercode:1001,
+        space:define_first[3],
+        item:define_four[8].name,
+        money:define_four[8].moeny,
+        day6:"1",
+      });
+
+      userInfo.push({
+        uniqkey:20,
+        year: 2022,
+        month: '05',
+        usercode:1000,
+        space:define_first[1],
+        item:define_second[1].name,
+        day6:"1",
+        day8:"1",
+        day9:"1",
+        day24:"1",
+        day26:"1",
+        day29:"1",
+        day30:"1",
+      });
+    },
     calenderChange: function(e)
     {
       let split = e.target.value.split('-');
@@ -500,9 +723,12 @@ export default{
     getBorder: function()
     {
 
+      this.createInfoData();
+
       if(this.year) year = this.year;
       if(this.month) month = this.month;
       let borderdata = [];
+
 
       borderdata.push({
         key:1,
@@ -561,232 +787,21 @@ export default{
       return converts;
     },
     createInfo: function(){
-      //1:〇
-      //2:赤〇
-      //3:赤×
+      //表示用のデータ
       if(this.year) year = this.year;
       if(this.month) month = this.month;
-      let userInfo = [];
-      userInfo.push({
-        uniqkey:1,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[1].name,
-        day3:"1",
-        day4:"1",
-        day5:"1",
-        day22:"1",
-        day23:"1",
-        day24:"1",
-        day25:"1",
-        totals:"12",
-        money:"2,700円",
-      });
-      userInfo.push({
-        uniqkey:2,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[2].name,
-      });
-      userInfo.push({
-        uniqkey:3,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[3].name+"_"+define_second[3].sub,
-        day3:"2",
-        day4:"2",
-        day5:"2",
-        day22:"3",
-        day23:"2",
-        day24:"2",
-        day25:"2",
-      });
-      userInfo.push({
-        uniqkey:4,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[4].name+"_"+define_second[4].sub,
-        day3:"2",
-        day4:"2",
-        day5:"2",
-        day22:"3",
-        day23:"2",
-        day24:"2",
-        day25:"2",
-      });
-      userInfo.push({
-        uniqkey:5,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[5].name+"_"+define_second[5].sub,
-      });
-      userInfo.push({
-        uniqkey:6,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[6].name,
-      });
-      userInfo.push({
-        uniqkey:7,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[2],
-        item:define_third[1].name,
-        editicon:define_third[1].editicon,
-        day6:"2",
-        day7:"2",
-        day8:"2",
-        day9:"2",
-        day10:"2",
-        day11:"2",
-      });
-      userInfo.push({
-        uniqkey:8,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[2],
-        item:define_third[2].name,
-        editicon:define_third[4].editicon,
-        day12:"2",
-        day13:"2",
-        day14:"2",
-        day15:"2",
-        day16:"2",
-        day17:"2",
-      });
-      userInfo.push({
-        uniqkey:9,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[2],
-        item:define_third[3].name,
-        editicon:define_third[4].editicon,
-      });
-      userInfo.push({
-        uniqkey:10,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[2],
-        item:define_third[4].name,
-        editicon:define_third[4].editicon,
-      });
-      userInfo.push({
-        uniqkey:11,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[2],
-        item:define_third[5].name,
-      });
-      userInfo.push({
-        uniqkey:12,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[1].name,
-        sub:define_four[1].sub,
-      });
-      userInfo.push({
-        uniqkey:13,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[2].name,
-        sub:define_four[2].sub,
-      });
-      userInfo.push({
-        uniqkey:14,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[3].name,
-        sub:define_four[3].sub,
-      });
-      userInfo.push({
-        uniqkey:15,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[4].name,
-        sub:define_four[4].sub,
-      });
-      userInfo.push({
-        uniqkey:16,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[5].name,
-      });
-      userInfo.push({
-        uniqkey:17,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[6].name,
-        money:define_four[6].moeny,
-      });
-      userInfo.push({
-        uniqkey:18,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[7].name,
-        sub:define_four[7].moeny,
-      });
-      userInfo.push({
-        uniqkey:19,
-        year: 2022,
-        month: 4,
-        usercode:1,
-        space:define_first[3],
-        item:define_four[8].name,
-        money:define_four[8].moeny,
-      });
-
-      userInfo.push({
-        uniqkey:20,
-        year: 2022,
-        month: 5,
-        usercode:1,
-        space:define_first[1],
-        item:define_second[1].name,
-        day6:"1",
-        day8:"1",
-        day9:"1",
-        day24:"1",
-        day26:"1",
-        day29:"1",
-        day30:"1",
-      });
-
-
       let returns = [];
-
+      //初回ユーザーコード
+      
+      let usercode = "";
+      if(this.selectUserCode){
+        usercode = this.selectUserCode;
+      }else{
+        usercode = userInfo[0].usercode;
+      }
       userInfo.forEach(function(element){
-        if(element.year == year && element.month == month){
+        
+        if(element.year == year && element.month == month && element.usercode == usercode){
           returns.push({
             uniqkey: element.uniqkey,
             year: element.year,
@@ -848,6 +863,8 @@ export default{
         });
         
       }
+      //初回はデータの最初を選択
+      this.selectUserData = usersData[0];
       userDataAll = usersData;
       this.userFilter();
       userDataSelect = userDataAll;
@@ -973,23 +990,21 @@ export default{
       flexGrid.mergeManager = new customMergeUser();
       flexGrid.alternatingRowStep = 1;
 
-      let string = "";
+      //初回のユーザ選択値
+      setUserSelectPoint(0);
+      
+      let _self = this;
       flexGrid.hostElement.addEventListener("click", function (e) {
         var ht = flexGrid.hitTest(e);
-        console.log(ht.target.innerText);
-
-
         ht = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         let row = ht._row;
-        console.log(row);
-        console.log(userDataSelect[row].name);
-        string = userDataSelect[row].name;
-        console.log(string);
-      //  selectUserText = string;
-        document.querySelector("#selectUserText").innerText = string;
-
+        _self.userRow = row;
+        setUserSelectPoint(row);
+        _self.selectUserCode = userDataSelect[row].code;
+        _self.createInfo();
       });
+
 
     },
 
@@ -1023,13 +1038,27 @@ export default{
     onTextChanged: function(s){
         console.log(s.text);
     },
-    onSelectUser: function()
+    onMoveUser: function(type)
     {
-      alert("33");
+
+      let row;
+      if(type == "next") row = this.userRow+1;
+      if(type == "back") row = this.userRow-1;
+      if( row <= 0 ) row = 0;
+      if( userDataSelect.length <= row ) row = userDataSelect.length;
+      this.userRow = row;
+      setUserSelectPoint(row);
+      this.selectUserCode = userDataSelect[row].code;
+      this.createInfo();
     }
   }
 }
 
+function setUserSelectPoint(row)
+{
+  document.querySelector("#selectUserText").innerText = userDataSelect[row].name;
+  document.querySelector("#selectUserExamNumber").innerText = userDataSelect[row].code;
+}
 
 function displayModal(type)
 {
@@ -1243,7 +1272,7 @@ a.editicon {
   background-image:url("../assets/tyusyaku_05.png");
   display:inline-block;
   background-repeat: no-repeat;
-  background-size:cover;
+  background-size:90%;
   text-indent:-9999px;
 }
 .batsu_edit {
@@ -1252,7 +1281,7 @@ a.editicon {
   background-image:url("../assets/tyusyaku_06.png");
   display:inline-block;
   background-repeat: no-repeat;
-  background-size:cover;
+  background-size:90%;
   text-indent:-9999px;
 }
 
