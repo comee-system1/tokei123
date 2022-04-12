@@ -91,7 +91,7 @@
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import customMergeUser from '@/utiles/customMergeUser';
-
+let selects = ['印刷を全選択', '印刷を全解除'];
 let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
@@ -105,9 +105,19 @@ export default {
     return {
       member: ['全員'],
       usersData: this.createUser(),
+      selects: selects,
+      isDroppedDown: false,
     };
   },
   methods: {
+    onTextChangedUser: function (s) {
+      textSearch = s.text;
+      this.userFilter();
+    },
+    onselectedIndexChanged: function (s) {
+      checkAll = s.selectedIndex;
+      this.userFilter();
+    },
     createUser: function () {
       let usersData = [];
       userCount = 100;
