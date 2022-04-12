@@ -1,5 +1,6 @@
 <template>
   <v-container fluid id="main">
+
     <v-container fluid>
       <v-row dense>
         <v-col sm="9">
@@ -36,109 +37,11 @@
 
     <v-container fluid>
       <v-row>
-        <user-list-print />
-        <v-col cols="2">
-          <v-row>
-            <v-col col="6"
-              ><wj-combo-box :items-source="member"></wj-combo-box
-            ></v-col>
-            <v-col col="6">
-              <wj-combo-box
-                :textChanged="onTextChangedUser"
-                placeholder="カナ検索"
-              ></wj-combo-box>
-            </v-col>
-          </v-row>
-          <v-row p-0>
-            <v-col col="12">
-              <v-btn-toggle class="mt-2 flex-wrap">
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(1)"
-                  >コード順</v-btn
-                >
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(2)"
-                  >カナ順</v-btn
-                >
-                <v-btn
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(3)"
-                  >受給者番号順</v-btn
-                >
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-          <div class="mt-1">
-            <v-btn-toggle class="flex-wrap">
-              <v-btn
-                x-small
-                outlined
-                v-for="(n, k) in alphabet"
-                :key="n"
-                :width="5"
-                p-0
-                style="min-width: auto"
-                @click="onAlphabet(k)"
-                >{{ n }}</v-btn
-              >
-            </v-btn-toggle>
-          </div>
-          <wj-flex-grid
-            class="mt-1"
-            :autoSearch="true"
-            :headersVisibility="'Column'"
-            :selectionMode="3"
-            style="height: 100vh"
-            :initialized="onInitializedUser"
-            :itemsSource="usersData"
-            :allowDragging="false"
-            :allowResizing="false"
-            :allowSorting="false"
-          >
-            <wj-flex-grid-column
-              header="コード"
-              binding="code"
-              width="2*"
-              :wordWrap="true"
-              :allowResizing="false"
-              :isReadOnly="true"
-            ></wj-flex-grid-column>
-            <wj-flex-grid-column
-              header="利用者名"
-              binding="name"
-              width="3*"
-              :wordWrap="true"
-              :allowResizing="false"
-              :isReadOnly="true"
-            ></wj-flex-grid-column>
-            <wj-flex-grid-column
-              header="印刷"
-              binding="active"
-              width="1*"
-              :wordWrap="true"
-              :allowResizing="false"
-            ></wj-flex-grid-column>
-          </wj-flex-grid>
-
-          <wj-combo-box
-            :itemsSource="selects"
-            :isDroppedDown="isDroppedDown"
-            :isRequired="false"
-            :selectedIndex="-1"
-            :selectedIndexChanged="onselectedIndexChanged"
-          ></wj-combo-box>
-        </v-col>
+        <user-list-print 
+        @child-select="setUserSelectPoint" 
+        @child-event="createInfo" 
+        @child-user="childSelectUser" >
+        </user-list-print>
         <v-col cols="10">
           <v-container fluid>
             <v-row>
@@ -729,7 +632,6 @@
 
 <script>
 import * as wjCore from '@grapecity/wijmo';
-import * as wjGrid from '@grapecity/wijmo.grid';
 
 import '@grapecity/wijmo.vue2.input';
 import '@grapecity/wijmo.vue2.grid';
@@ -737,7 +639,6 @@ import '@grapecity/wijmo.vue2.grid';
 import moment from 'moment';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import customMerge from '@/utiles/customMerge';
-import customMergeUser from '@/utiles/customMergeUser';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 
@@ -748,13 +649,7 @@ let oneday = 35;
 //グラフはじめのスタート位置
 let startPos = 330;
 //ユーザーデータ
-let userDataAll = [];
 let userDataSelect = [];
-let userCount = 0;
-let textSearch = '';
-let sortSearch = '';
-let alphaSearch = '';
-let checkAll = '';
 
 //どこかに共通配列として定義する
 const define_first = [];
@@ -805,20 +700,7 @@ define_third[5] = {
 };
 
 let define_week = ['日', '月', '火', '水', '木', '金', '土'];
-let alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
-let selects = ['印刷を全選択', '印刷を全解除'];
+
 let year = moment().year();
 let month = moment().format('MM');
 
@@ -831,14 +713,10 @@ export default {
       daycount: 0,
       search: ['32:施設入所支援'],
       addSelect: ['入所時特別支援加算'],
-      member: ['全員'],
       week: define_week,
-      alphabet: alphabet,
-      selects: selects,
       isDroppedDown: false,
       borders: this.getBorder(),
       ja: ja,
-      usersData: this.createUser(),
       infoData: this.createInfoData(),
       selectUserData: '',
       selectUserCode: '',
@@ -858,6 +736,9 @@ export default {
   },
 
   methods: {
+    childSelectUser(data) {
+      userDataSelect = data;
+    },
     getHelperData() {
       let helpers = [];
       helpers = {
@@ -1035,6 +916,22 @@ export default {
         day30: '1',
       });
 
+      userInfo.push({
+        uniqkey: 20,
+        year: 2022,
+        month: '04',
+        usercode: 1001,
+        space: define_first[1],
+        item: define_second[1].name,
+        day6: '1',
+        day8: '1',
+        day9: '1',
+        day24: '1',
+        day26: '1',
+        day29: '1',
+        day30: '1',
+      });
+
       return this.createInfo();
     },
     calenderChange: function (e) {
@@ -1108,7 +1005,7 @@ export default {
 
       return converts;
     },
-    createInfo: function () {
+    createInfo: function (ucode = "") {
       //表示用のデータ
       if (this.year) year = this.year;
       if (this.month) month = this.month;
@@ -1116,8 +1013,8 @@ export default {
       this.infoData = returns;
       //初回ユーザーコード
       let usercode = '';
-      if (this.selectUserCode) {
-        usercode = this.selectUserCode;
+      if (ucode) {
+        usercode = ucode;
       } else {
         usercode = userInfo[0].usercode;
       }
@@ -1174,157 +1071,7 @@ export default {
       this.infoData = returns;
       return this.infoData;
     },
-    createUser: function () {
-      let usersData = [];
-      userCount = 100;
-      for (let i = 0; i < userCount; i++) {
-        usersData.push({
-          id: i,
-          code: '100' + i,
-          examNumber: '000' + Math.floor(Math.random() * 10) + 1,
-          name: '東経太郎 ' + Math.floor(Math.random() * 10) + 1,
-          kana: 'トウジョウタロウ' + Math.floor(Math.random() * 10) + 1,
-          active: false,
-        });
-      }
-      //初回はデータの最初を選択
-      this.selectUserData = usersData[0];
-      userDataAll = usersData;
-      this.userFilter();
-      userDataSelect = userDataAll;
-      return this.usersData;
-    },
-    onTextChangedUser: function (s) {
-      textSearch = s.text;
-      this.userFilter();
-    },
-    sortUser: function (sortType) {
-      sortSearch = sortType;
-      this.userFilter();
-    },
-    onAlphabet: function (key) {
-      alphaSearch = key;
-      this.userFilter();
-    },
-    onselectedIndexChanged: function (s) {
-      checkAll = s.selectedIndex;
-      this.userFilter();
-    },
-    userFilter() {
-      let data = [];
-      userDataAll.forEach(function (value) {
-        if (checkAll == '0') value.active = true;
-        if (checkAll == '1') value.active = false;
-        if (value.name.indexOf(textSearch) != -1) {
-          data.push({
-            id: value.id,
-            code: value.code,
-            examNumber: value.examNumber,
-            name: value.name,
-            kana: value.kana,
-            active: value.active,
-          });
-        }
-      });
-      if (alphaSearch > 0) {
-        let get = [];
-        data.forEach(function (value) {
-          switch (alphaSearch) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) setPush(get, value);
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) setPush(get, value);
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) setPush(get, value);
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) setPush(get, value);
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) setPush(get, value);
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) setPush(get, value);
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) setPush(get, value);
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) setPush(get, value);
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) setPush(get, value);
-              break;
-          }
-        });
-        data = get;
-      }
 
-      //コード順でソート
-      if (sortSearch == 1) {
-        data.sort((a, b) => {
-          if (a.id < b.id) return -1;
-          if (a.id > b.id) return 1;
-          return 0;
-        });
-      }
-      //利用者名でソート
-      if (sortSearch == 2) {
-        data.sort((a, b) => {
-          if (a.kana < b.kana) return -1;
-          if (a.kana > b.kana) return 1;
-          return 0;
-        });
-      }
-      //受験者番号でソート
-      if (sortSearch == 3) {
-        data.sort((a, b) => {
-          if (a.examNumber < b.examNumber) return -1;
-          if (a.examNumber > b.examNumber) return 1;
-          return 0;
-        });
-      }
-      userDataSelect = data;
-      this.usersData = data;
-    },
-    onInitializedUser: function (flexGrid) {
-      let i = 0;
-      while (flexGrid.columns.length < 3) {
-        let clm = new wjGrid.Column();
-        if (i == 0) clm.width = '2*';
-        if (i == 1) clm.width = '2*';
-        if (i == 2) clm.width = '1*';
-        flexGrid.columns.push(clm);
-        i++;
-      }
-      while (flexGrid.rows.length < userCount) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-      flexGrid.formatItem.addHandler(userCell);
-      // configure the grid
-      flexGrid.mergeManager = new customMergeUser();
-      flexGrid.alternatingRowStep = 1;
-
-      //初回のユーザ選択値
-      setUserSelectPoint(0);
-
-      let _self = this;
-      flexGrid.hostElement.addEventListener('click', function (e) {
-        var ht = flexGrid.hitTest(e);
-        ht = flexGrid.hitTest(e.pageX, e.pageY);
-        //選択した要素の取得
-        let row = ht._row;
-        _self.userRow = row;
-        setUserSelectPoint(row);
-        _self.selectUserCode = userDataSelect[row].code;
-        _self.createInfo();
-      });
-    },
     dialogAdd: function () {
       this.dialog_add = true;
     },
@@ -1336,6 +1083,7 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         console.log(ht.target.innerText);
+        console.log(e.target.innerHTML);
 
         if (ht.target.innerText == '期間追加') {
           _self.dialog = true;
@@ -1348,67 +1096,38 @@ export default {
           _self.dialog = true;
         }
         //赤丸
-        if (ht.target.innerText == 'maru_edit') {
-          e.target.innerHTML = "<div class='batsu_edit'>batsu_edit</div>";
-          // const target = document.getElementsByClassName('maru_edit');
-          //   target[0].style.display = "none";
+        if (e.target.innerHTML == '〇') {
+          e.target.innerText = "×";
+        }else
+        if (e.target.innerHTML == '×') {
+          e.target.innerText = "〇";
         }
       });
     },
-
     onTextChanged: function (s) {
       console.log(s.text);
     },
     onMoveUser: function (type) {
+      console.log(userDataSelect);
       let row;
       if (type == 'next') row = this.userRow + 1;
       if (type == 'back') row = this.userRow - 1;
       if (row <= 0) row = 0;
       if (userDataSelect.length <= row) row = userDataSelect.length;
       this.userRow = row;
-      setUserSelectPoint(row);
+      this.setUserSelectPoint(row);
       this.selectUserCode = userDataSelect[row].code;
-      this.createInfo();
+      this.createInfo(userDataSelect[row].code);
     },
+    setUserSelectPoint: function(row) {
+      document.querySelector('#selectUserText').innerText =
+        userDataSelect[row].code + ' ' + userDataSelect[row].name;
+      document.querySelector('#selectUserExamNumber').innerText =
+        userDataSelect[row].examNumber;
+    }
   },
 };
 
-function setUserSelectPoint(row) {
-  document.querySelector('#selectUserText').innerText =
-    userDataSelect[row].code + ' ' + userDataSelect[row].name;
-  document.querySelector('#selectUserExamNumber').innerText =
-    userDataSelect[row].examNumber;
-}
-
-//カナアイコンフィルタリング用
-function setPush(get, value) {
-  return get.push({
-    id: value.id,
-    code: value.code,
-    examNumber: value.examNumber,
-    name: value.name,
-    kana: value.kana,
-    active: value.active,
-  });
-}
-
-function userCell(s, e) {
-  if (e.cell.children.length == 0) {
-    let align = 'left';
-    let str = e.cell.innerHTML;
-    str = '<div>' + str + '</div>';
-    e.cell.innerHTML = str.replace(',', '');
-    wjCore.setCss(e.cell, {
-      display: 'table',
-      tableLayout: 'fixed',
-    });
-    wjCore.setCss(e.cell.children[0], {
-      display: 'table-cell',
-      textAlign: align,
-      verticalAlign: 'middle',
-    });
-  }
-}
 
 function cellEdit(s, e) {
   if (e.cell.children.length == 0) {
@@ -1417,11 +1136,11 @@ function cellEdit(s, e) {
     if (isDate(e.cell.innerText)) {
       str = dateFormatString(e.cell.innerText);
     } else if (e.cell.innerText == '1') {
-      str = "<div class='text-center' style='font-size:1.5em;'>〇</div>";
+      str = "<div class='maru'>maru</div>";
     } else if (e.cell.innerText == '2') {
-      str = "<div class='maru_edit'>maru_edit</div>";
+      str = "<div class='text-center' style='font-size:1.5em; color:red;'>〇</div>";
     } else if (e.cell.innerText == '3') {
-      str = "<div class='batsu_edit'>batsu_edit</div>";
+      str = "<div class='text-center' style='font-size:1.5em; color:red;'>×</div>";
     } else if (e.cell.innerText == define_second[2].name) {
       str =
         "<div class='text-left-float'>" +
@@ -1575,6 +1294,18 @@ div.border-bottom {
   }
 }
 
+.maru {
+  width: 21px;
+  height: 20px;
+  background-image: url('../assets/tyusyaku_07.png');
+  display: block;
+  background-repeat: no-repeat;
+  background-size: 90%;
+  text-indent: -9999px;
+  z-index: -1;
+}
+
+
 div.editIcon {
   width: 50px;
   height: 20px;
@@ -1588,26 +1319,6 @@ a.editicon {
   background-image: url('../assets/tyusyaku_04.png');
   background-repeat: no-repeat;
   text-indent: -9999px;
-}
-.maru_edit {
-  width: 21px;
-  height: 20px;
-  background-image: url('../assets/tyusyaku_05.png');
-  display: block;
-  background-repeat: no-repeat;
-  background-size: 90%;
-  text-indent: -9999px;
-  z-index: -1;
-}
-.batsu_edit {
-  width: 20px;
-  height: 21px;
-  background-image: url('../assets/tyusyaku_06.png');
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-size: 90%;
-  text-indent: -9999px;
-  z-index: -1;
 }
 
 .addButton {

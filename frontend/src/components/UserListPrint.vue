@@ -91,7 +91,10 @@
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import customMergeUser from '@/utiles/customMergeUser';
+
+
 let selects = ['印刷を全選択', '印刷を全解除'];
+
 let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
@@ -99,6 +102,19 @@ let userCount = 0;
 let textSearch = '';
 let sortSearch = '';
 let alphaSearch = '';
+let alphabet = [
+  '全',
+  'ア',
+  'カ',
+  'サ',
+  'タ',
+  'ナ',
+  'ハ',
+  'マ',
+  'ヤ',
+  'ラ',
+  'ワ',
+];
 
 export default {
   data() {
@@ -107,9 +123,18 @@ export default {
       usersData: this.createUser(),
       selects: selects,
       isDroppedDown: false,
+      alphabet: alphabet,
     };
   },
   methods: {
+    sortUser: function (sortType) {
+      sortSearch = sortType;
+      this.userFilter();
+    },
+    onAlphabet: function (key) {
+      alphaSearch = key;
+      this.userFilter();
+    },
     onTextChangedUser: function (s) {
       textSearch = s.text;
       this.userFilter();
@@ -139,6 +164,7 @@ export default {
       userDataSelect = userDataAll;
       return this.usersData;
     },
+
 
     userFilter() {
       let data = [];
@@ -220,6 +246,7 @@ export default {
         });
       }
       userDataSelect = data;
+      this.$emit('child-user',userDataSelect);
       this.usersData = data;
     },
 
@@ -242,7 +269,7 @@ export default {
       flexGrid.alternatingRowStep = 1;
 
       //初回のユーザ選択値
-      setUserSelectPoint(0);
+      this.$emit('child-select',0);
 
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
@@ -250,10 +277,9 @@ export default {
         ht = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         let row = ht._row;
-        _self.userRow = row;
-        setUserSelectPoint(row);
-        _self.selectUserCode = userDataSelect[row].code;
-        _self.createInfo();
+        _self.$emit('child-event',userDataSelect[row].code);
+        _self.$emit('child-select',row);
+        
       });
     },
   },
@@ -269,13 +295,6 @@ function setPush(get, value) {
     kana: value.kana,
     active: value.active,
   });
-}
-
-function setUserSelectPoint(row) {
-  document.querySelector('#selectUserText').innerText =
-    userDataSelect[row].code + ' ' + userDataSelect[row].name;
-  document.querySelector('#selectUserExamNumber').innerText =
-    userDataSelect[row].examNumber;
 }
 
 function userCell(s, e) {
