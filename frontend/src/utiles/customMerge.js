@@ -1,4 +1,22 @@
+// //メソッドを定義
+// var customMerge = ({A, B, x, y}) => {
+//     //処理結果を代入する変数を定義
+//     const _A = A * x
+//     const _B = B * y
+  
+//     return {  //ここが重要！
+//       //vue側で設定したプロパティにデータを入れる
+//       A: _A,
+//       B: _B
+//     }
+//   }
+  
+//   //外部ファイルに渡すメソッド
+//   export default customMerge
+
+
 import * as wjGrid from "@grapecity/wijmo.grid";
+
 
 var __extends =
     (this && this.__extends) ||
