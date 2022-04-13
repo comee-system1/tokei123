@@ -447,6 +447,10 @@ function cellEdit(s, e) {
     let str = '';
     if (isDate.isDate(e.cell.innerText)) {
       str = dateFormatString.dateFormatString(e.cell.innerText, define_week);
+    } else if (e.cell.innerText == '1') {
+      str = '〇';
+    } else if (e.cell.innerText == '2') {
+      str = '×';
     } else {
       str = e.cell.innerText;
     }
