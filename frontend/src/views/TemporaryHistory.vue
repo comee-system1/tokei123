@@ -1,6 +1,5 @@
 <template>
   <v-container fluid id="main">
-
     <v-container fluid>
       <v-row dense>
         <v-col sm="9">
@@ -37,10 +36,11 @@
 
     <v-container fluid>
       <v-row>
-        <user-list-print 
-        @child-select="setUserSelectPoint" 
-        @child-event="createInfo" 
-        @child-user="childSelectUser" >
+        <user-list-print
+          @child-select="setUserSelectPoint"
+          @child-event="createInfo"
+          @child-user="childSelectUser"
+        >
         </user-list-print>
         <v-col cols="10">
           <v-container fluid>
@@ -89,7 +89,7 @@
             </v-row>
           </v-container>
           <v-container class="py-0 px-0 ma-6 mt-6">
-            <v-card class="ma-0" elevation="0">
+            <v-card class="ma-0" elevation="0" :min-width="1580">
               <v-row no-gutters>
                 <v-col>
                   <v-card
@@ -643,6 +643,8 @@ import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 
 import UserListPrint from '../components/UserListPrint.vue';
+import isDate from '@/utiles/isDate';
+import dateFormatString from '@/utiles/dateFormatString';
 
 //1日分の幅
 let oneday = 35;
@@ -1005,7 +1007,7 @@ export default {
 
       return converts;
     },
-    createInfo: function (ucode = "") {
+    createInfo: function (ucode = '') {
       //表示用のデータ
       if (this.year) year = this.year;
       if (this.month) month = this.month;
@@ -1097,10 +1099,9 @@ export default {
         }
         //赤丸
         if (e.target.innerHTML == '〇') {
-          e.target.innerText = "×";
-        }else
-        if (e.target.innerHTML == '×') {
-          e.target.innerText = "〇";
+          e.target.innerText = '×';
+        } else if (e.target.innerHTML == '×') {
+          e.target.innerText = '〇';
         }
       });
     },
@@ -1119,28 +1120,29 @@ export default {
       this.selectUserCode = userDataSelect[row].code;
       this.createInfo(userDataSelect[row].code);
     },
-    setUserSelectPoint: function(row) {
+    setUserSelectPoint: function (row) {
       document.querySelector('#selectUserText').innerText =
         userDataSelect[row].code + ' ' + userDataSelect[row].name;
       document.querySelector('#selectUserExamNumber').innerText =
         userDataSelect[row].examNumber;
-    }
+    },
   },
 };
-
 
 function cellEdit(s, e) {
   if (e.cell.children.length == 0) {
     let align = 'left';
     let str = '';
-    if (isDate(e.cell.innerText)) {
-      str = dateFormatString(e.cell.innerText);
+    if (isDate.isDate(e.cell.innerText)) {
+      str = dateFormatString.dateFormatString(e.cell.innerText, define_week);
     } else if (e.cell.innerText == '1') {
       str = "<div class='maru'>maru</div>";
     } else if (e.cell.innerText == '2') {
-      str = "<div class='text-center' style='font-size:1.5em; color:red;'>〇</div>";
+      str =
+        "<div class='text-center' style='font-size:1.5em; color:red;'>〇</div>";
     } else if (e.cell.innerText == '3') {
-      str = "<div class='text-center' style='font-size:1.5em; color:red;'>×</div>";
+      str =
+        "<div class='text-center' style='font-size:1.5em; color:red;'>×</div>";
     } else if (e.cell.innerText == define_second[2].name) {
       str =
         "<div class='text-left-float'>" +
@@ -1215,44 +1217,6 @@ function cellEdit(s, e) {
     });
   }
 }
-
-function dateFormatString(str) {
-  let sp = str.split('/');
-  let w = moment(str).day();
-  let color = '';
-  if (w == 0) color = 'red--text';
-  if (w == 6) color = 'blue--text';
-  let string =
-    "<div class='text-center " +
-    color +
-    "''>" +
-    sp[2] +
-    "</div><div class='text-center " +
-    color +
-    "''>" +
-    define_week[w] +
-    '</div>';
-  return string;
-}
-
-function isDate(strDate) {
-  if (strDate == '') {
-    return false;
-  }
-  if (!strDate.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)) {
-    return false;
-  }
-  var date = new Date(strDate);
-  if (
-    date.getFullYear() != strDate.split('/')[0] ||
-    date.getMonth() != strDate.split('/')[1] - 1 ||
-    date.getDate() != strDate.split('/')[2]
-  ) {
-    return false;
-  }
-
-  return true;
-}
 </script>
 
 <style lang="scss" scope>
@@ -1304,7 +1268,6 @@ div.border-bottom {
   text-indent: -9999px;
   z-index: -1;
 }
-
 
 div.editIcon {
   width: 50px;

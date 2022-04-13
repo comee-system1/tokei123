@@ -92,7 +92,6 @@ import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import customMergeUser from '@/utiles/customMergeUser';
 
-
 let selects = ['印刷を全選択', '印刷を全解除'];
 
 let userDataAll = [];
@@ -152,7 +151,7 @@ export default {
           code: '100' + i,
           examNumber: '000' + Math.floor(Math.random() * 10) + 1,
           name: '東経太郎 ' + Math.floor(Math.random() * 10) + 1,
-          kana: 'トウジョウタロウ' + Math.floor(Math.random() * 10) + 1,
+          kana: 'トウケイタロウ' + Math.floor(Math.random() * 10) + 1,
           active: false,
         });
       }
@@ -164,7 +163,6 @@ export default {
       userDataSelect = userDataAll;
       return this.usersData;
     },
-
 
     userFilter() {
       let data = [];
@@ -246,7 +244,7 @@ export default {
         });
       }
       userDataSelect = data;
-      this.$emit('child-user',userDataSelect);
+      this.$emit('child-user', userDataSelect);
       this.usersData = data;
     },
 
@@ -269,7 +267,7 @@ export default {
       flexGrid.alternatingRowStep = 1;
 
       //初回のユーザ選択値
-      this.$emit('child-select',0);
+      this.$emit('child-select', 0);
 
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
@@ -277,9 +275,8 @@ export default {
         ht = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         let row = ht._row;
-        _self.$emit('child-event',userDataSelect[row].code);
-        _self.$emit('child-select',row);
-        
+        _self.$emit('child-event', userDataSelect[row].code);
+        _self.$emit('child-select', row);
       });
     },
   },

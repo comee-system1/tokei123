@@ -1,0 +1,371 @@
+<template>
+  <div>
+    <v-layout>
+      <v-flex md12 class="basic-info">
+        <div>
+          <label for="theComboString">サービス</label>
+            <wj-combo-box
+                id="sarvice-combo"
+                :itemsSource="comboData">
+            </wj-combo-box>
+        </div>
+        <div>
+          <label for="theDate">請求月</label>
+          <wj-input-date class="input-date"></wj-input-date>
+          <label for="theDate">提供月</label>
+          <wj-input-date class="input-date"></wj-input-date>
+        </div>
+      </v-flex>
+    </v-layout>
+
+    <v-container fluid>
+      <v-layout>
+        <UserList></UserList>
+        <v-flex md7>
+          <div class="user-info">
+            <div>
+              <label for="theCombo">利用者</label>
+              <wj-combo-box :isReadOnly="true" text="1000007_東経太郎"></wj-combo-box>
+              <v-icon>mdi-arrow-left-bold-box-outline</v-icon>
+              <v-icon>mdi-arrow-right-bold-box-outline</v-icon>
+              <label for="theCombo">受給者証番号</label>
+              <wj-combo-box :isReadOnly="true" text="00000700"></wj-combo-box>
+            </div>
+            <div>
+              <label for="theCombo">補足給付摘要の有無</label>
+              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="short-box"></wj-combo-box>
+              <label for="theCombo">補足給付額（日額）</label>
+              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="short-box"></wj-combo-box>
+              <v-btn-toggle class="mt-2" mandatory>
+                <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
+                <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
+              </v-btn-toggle>
+            </div>
+          </div>
+
+          <wj-flex-grid
+            id="detailGrid"
+            :itemsSource="detailGridData"
+            :headersVisibility="'Column'"
+            :autoGenerateColumns="false"
+            :initialized="onInitializeDetailGrid"
+            :allowMerging="'ColumnHeaders'"
+            :allowResizing="false"
+            :allowDragging="false"
+          >
+            <wj-flex-grid-column header="日付" binding="rymd" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+            <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="朝食" binding="sasa" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="昼食" binding="shiru" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="夕食" binding="syuu" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'10*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
+          </wj-flex-grid>
+
+          <wj-flex-grid
+            id="subGrid"
+            :itemsSource="subGridData"
+            :headersVisibility="'None'"
+            :autoGenerateColumns="false"
+            :initialized="onInitializeSubGrid"
+            :allowResizing="false"
+            :allowDragging="false"
+          >
+            <wj-flex-grid-column binding="Column0" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column1" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column2" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column3" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column4" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column5" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column binding="Column6" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
+</template>
+
+<script>
+import { getOriginalDetailData } from '../data/JissekiKirokuNyushoData.js'
+import "@grapecity/wijmo.styles/wijmo.css";
+import '@grapecity/wijmo.touch';
+import '@grapecity/wijmo.vue2.grid';
+import '@grapecity/wijmo.vue2.grid.grouppanel';
+import '@grapecity/wijmo.vue2.grid.filter'
+import "@grapecity/wijmo.vue2.grid.search";
+import '@grapecity/wijmo.vue2.input';
+import * as wjGrid from '@grapecity/wijmo.grid';
+import UserList from '../components/UserList';
+
+export default{
+  components:{
+    UserList
+  },
+  data(){
+    return{
+      currentPageTitle: this.$route.name,
+      comboData:[
+        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
+        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
+        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
+        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
+      ],
+      detailGridData:getGridData(getOriginalDetailData()),
+      tkkfhiumuData:JSON.parse(getOriginalDetailData())['riyo_inf'][0]['tkkfhiumu'],
+      tkkfhiData:JSON.parse(getOriginalDetailData())['riyo_inf'][0]['tkkfhi'],
+      subGridData:getSubGridData(),
+      modal:false
+    }
+  },
+  methods: {
+    onInitializeDetailGrid: function(grid) {
+      // グリッドの選択を無効にする
+      grid.selectionMode = wjGrid.SelectionMode.None;
+
+      // 0行目のヘッダーを作成///////////////////////////////////////////////////////
+      let row0 = new wjGrid.Row();
+      // 作成したヘッダー行を追加する
+      let panel = grid.columnHeaders;
+      panel.rows.splice(0, 0, row0);
+      // 0行目のヘッダーの内容を設定する
+      panel.setCellData(0, 0, "日付");
+      panel.setCellData(0, 1, "曜日");
+      for (let colIndex = 2; colIndex <= 7; colIndex++) {
+        panel.setCellData(0, colIndex, "支援実績");
+      }
+      for (let colIndex = 8; colIndex <= 11; colIndex++) {
+        panel.setCellData(0, colIndex, "食費・光熱水費実績");
+      }
+      panel.setCellData(0, 12, "備考");
+
+      // フッターを作成/////////////////////////////////////////////////////////////
+      var footer0 = new wjGrid.GroupRow();
+      // 作成したフッター行を追加する
+      var footerPanel = grid.columnFooters;
+      footerPanel.rows.splice(0, 0, footer0);
+      // フッターの内容を設定する
+      for (let colIndex = 0; colIndex <= 2; colIndex++) {
+        footerPanel.setCellData(0, colIndex, "合計");
+      }
+
+      // セルの結合/////////////////////////////////////////////////////////////////
+      var mm = new wjGrid.MergeManager(grid);
+      // 結合するセルの範囲を指定
+      var headerRanges = [
+        new wjGrid.CellRange(0,0,1,0),
+        new wjGrid.CellRange(0,1,1,1),
+        new wjGrid.CellRange(0,2,0,7),
+        new wjGrid.CellRange(0,8,0,11),
+        new wjGrid.CellRange(0,12,1,12),
+      ];
+      var footerRanges = [
+        new wjGrid.CellRange(0,0,0,2)
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function(panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (var h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+          for (var f = 0; f < footerRanges.length; f++) {
+            if (footerRanges[f].contains(r, c)) {
+              return footerRanges[f];
+            }
+          }
+        }
+      };
+      grid.mergeManager = mm;
+
+      // ヘッダーとフッターの高さを調整
+      grid.columnHeaders.rows[1].height = 45;
+      grid.columnFooters.rows[0].height = 25;
+      // ヘッダーとフッターのスタイルをカスタマイズ
+      grid.itemFormatter = function(panel,r,c,cell){
+        var s = cell.style;
+        s.textAlign = 'center';
+        if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          s.backgroundColor = "#d4edf4";
+          s.color = "#4d4d4d";
+          s.fontWeight = "normal";
+        }
+        if(panel.cellType == wjGrid.CellType.ColumnFooter){
+          if(c == 0 || c == 1 ||c == 2 ){
+            s.backgroundColor = "#d4edf4";
+          }else if(c == 12){
+            s.backgroundColor = "#cccccc";
+          }else{
+          s.backgroundColor = "#ffffff";
+          }
+          s.color = "#4d4d4d";
+          s.fontWeight = "normal";
+        }
+      }
+    },
+    onInitializeSubGrid:function(grid){
+      // グリッドの選択を無効にする
+      grid.selectionMode = wjGrid.SelectionMode.None;
+
+      grid.itemFormatter = function(panel,r,c,cell){
+        var s = cell.style;
+        s.textAlign = 'center';
+        if( c == 0 || c == 1 || c == 3 || c == 5){
+          s.backgroundColor= "#d4edf4";
+        }
+      }
+    }
+  }
+}
+
+// グリッド表示用データの作成
+function getGridData(data){
+  let objData = JSON.parse(data);
+  let kirokuMeiData = objData['riyo_inf'][0]['kiroku_mei'];
+  let gridData = [];
+    for(let i = 0; i<kirokuMeiData.length; i++){
+      // 曜日表示用に文字列の日付をDate型に変換
+      let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+      let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      gridData.push(
+        {
+          id:kirokuMeiData[i]["id"],
+          rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+          youbi:WeekChars[date.getDay()],
+          jyokyo:kirokuMeiData[i]["jyokyo"],
+          kasan1:kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
+          kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
+          tnymd:kirokuMeiData[i]["tnymd"],
+          kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+          kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
+          sasa:kirokuMeiData[i]["sasa"],
+          shiru:kirokuMeiData[i]["shiru"],
+          syuu:kirokuMeiData[i]["syuu"],
+          konetu:kirokuMeiData[i]["konetu"] == 0 ? "":kirokuMeiData[i]["konetu"],
+          biko:kirokuMeiData[i]["biko"],
+        }
+      )
+    }
+  return gridData;
+}
+
+function getSubGridData(){
+  let data = JSON.parse(getOriginalDetailData());
+  let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+  let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+  let taishoDate = data['riyo_inf'][0]['taiymd'];
+  let taishogoSanteibi = data['riyo_inf'][0]['ttymd'];
+  let subGridData = [];
+  subGridData.push(
+    {
+      Column0: "入所時特別支援加算",
+      Column1: "利用開始日",
+      Column2: dateFilter(riyouKaishibi),
+      Column3: "30日目",
+      Column4: thirtythDayFilter(riyouKaishibi),
+      Column5: "当月算定日数",
+      Column6: tougetsuSantei + "日"
+    },
+    {
+      Column0: "地域移行支援",
+      Column1: "退所日",
+      Column2: dateFilter(taishoDate),
+      Column3: "退所後算定日",
+      Column4: dateFilter(taishogoSanteibi),
+      Column5: "",
+      Column6: ""
+    }
+  )
+  return subGridData;
+}
+
+// 西暦＋年月日フィルター
+function dateFilter(date){
+  let datearr = (date.substr(0, 4) + '年' + date.substr(4, 2) + '月' + date.substr(6, 2) + '日');
+  return datearr;
+}
+
+// 30日目変換用
+function thirtythDayFilter(riyouKaishibi){
+  let datearr = (riyouKaishibi.substr(0, 4) + '/' + riyouKaishibi.substr(4, 2) + '/' + riyouKaishibi.substr(6, 2)).split('/');
+  let thirtythDay = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+  thirtythDay.setDate(thirtythDay.getDate() + 29);
+  thirtythDay = thirtythDay.getFullYear() + '年' +
+                ( '00' + (thirtythDay.getMonth() + 1) ).slice( -2 ) + '月' +
+                ( '00' + (thirtythDay.getDate()) ).slice( -2 )  + '日';
+  return thirtythDay;
+}
+
+// 曜日変換用
+const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
+
+</script>
+
+<style scoped>
+.basic-info{
+  background-color: #333;
+  height:80px;
+  padding:10px;
+}
+
+.basic-info label{
+  color:white;
+  font-size:14px;
+  margin-left:10px;
+  margin-right:20px;
+}
+
+.basic-info input,select{
+  background:white;
+  font-size:12px;
+  margin-left:10px;
+  margin-bottom:5px;
+}
+
+#sarvice-combo{
+  width:500px;
+  font-size:14px;
+}
+
+.input-date{
+  font-size:14px;
+  width:130px;
+}
+
+.user-info{
+  padding:0;
+  font-size:12px;
+}
+
+  .user-info label{
+    font-size:12px;
+    margin-right:10px;
+  }
+
+.v-input--selection-controls{
+  padding:0;
+  margin:0;
+}
+
+.short-box {
+  width:60px;
+  margin-right:20px;
+}
+
+#detailGrid {
+  margin-top:10px;
+  font-size:12px;
+  height:650px;
+}
+
+#subGrid {
+  font-size:12px;
+}
+</style>

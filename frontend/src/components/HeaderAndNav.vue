@@ -104,7 +104,7 @@
 export default {
   data() {
     return {
-      drawer: false,
+      drawer: true,
       pageTitle: this.$route.name,
       items: [
         { title: "職員マスタ" },
@@ -123,17 +123,19 @@ export default {
         {
           name: "入所レセプト請求",
           lists: [
-            { name: "施設体制確認", link: "/TemporaryPage" },
-            { name: "受給者証情報確認", link: "/TemporaryPage" },
-            { name: "契約情報確認", link: "/TemporaryPage" },
-            { name: "利用料項目確認", link: "/TemporaryPage" },
-            { name: "個別加算登録", link: "/TemporaryPage" },
-            { name: "生活支援取り込み", link: "/TemporaryPage" },
+            { name: "施設体制確認", link: "/ShisetsuTaisei" },
+            { name: "利用者受給者証一覧", link: "/JyukyuIcrn" },
+            { name: "個別利用状況登録", link: "/TemporaryHistory" },
+            { name: "利用状況一覧", link: "/TemporaryPage" },
+            { name: "個別加算一覧", link: "/TemporaryPage" },
             { name: "レセプト集計", link: "/TemporaryPage" },
             { name: "上限管理", link: "/TemporaryPage" },
             { name: "給付明細書", link: "/KyuhuMeisai" },
-            { name: "実績記録票", link: "/JissekiKiroku" },
+            { name: "実績記録票", link: "/JissekiKirokuNyusho" },
+            { name: "加算項目一覧", link: "/TemporaryPage" },
             { name: "請求書", link: "/SeikyuSho" },
+            { name: "受領通知書", link: "/TemporaryPage" },
+            { name: "入退院報告書", link: "/TemporaryPage" },
           ],
         },
         {
