@@ -34,7 +34,9 @@
         </v-col>
       </v-row>
     </v-container>
+
     <v-container fluid>
+
       <v-card class="d-flex mb-6" flat tile>
         <v-card class="pa-2 red--text text--lighten-1" outlined tile>
           {{ buildcheck }}
@@ -46,27 +48,25 @@
           施設体制修正
         </v-btn>
       </v-card>
-    </v-container>
-    <v-container fluid>
-      <v-row>
-        <v-col cols="4">
-          <v-row v-for="(detail, index) in details" :key="index">
+
+      <v-row >
+        <v-col cols="2">
+          <v-row v-for="(detail, index) in details" :key="index" no-gutters>
             <v-col cols="6">
               <v-card
-                class="pa-2 text-center primary white--text"
-                outlined
-                tile
+                class="pa-2 text-center "
+                elevation="0"
                 >{{ detail.name }}</v-card
               >
             </v-col>
             <v-col cols="6">
-              <v-card class="pa-2" outlined tile>{{ detail.value }}</v-card>
+              <v-card class="pa-2" elevation="0">{{ detail.value }}</v-card>
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="8">
-          <v-row justify="end">
-            <v-card class="pa-3 yellow lighten-5" outlined tile>
+        <v-col cols="10">
+          <v-row justify="end" no-gutters>
+            <v-card class="pa-1 yellow lighten-5 text-caption" outlined tile>
               (最終登録日:R03.04.05 10:10 昭和 一郎)
             </v-card>
           </v-row>

@@ -215,26 +215,33 @@
 
             </v-card>
           </v-container>
-          <v-container mt-0 pt-0 class="d-flex justify-end" fluid>
-            <div class="mt-1">
-              <v-img src="../assets/tyusyaku_01.png"></v-img>
-            </div>
-            <div class="ml-2"><small>:編集可能</small></div>
 
-            <div class="ml-5 mt-1">
-              <v-img src="../assets/tyusyaku_02.png"></v-img>
+          <v-container mt-0 pt-0 fluid>
+            <div class="float-left">
+              <a class='ml-2 addButton' @click="dialogTerm()">期間追加</a>
+              <a class='ml-2 addButton' @click="dialogAdd()">加算追加</a>
             </div>
-            <div class="ml-2"><small>:入退院</small></div>
+            <div class="d-flex justify-end" >
+              <div class="mt-1">
+                <v-img src="../assets/tyusyaku_01.png"></v-img>
+              </div>
+              <div class="ml-2"><small>:編集可能</small></div>
 
-            <div class="ml-5 mt-1">
-              <v-img src="../assets/tyusyaku_03.png"></v-img>
+              <div class="ml-5 mt-1">
+                <v-img src="../assets/tyusyaku_02.png"></v-img>
+              </div>
+              <div class="ml-2"><small>:入退院</small></div>
+
+              <div class="ml-5 mt-1">
+                <v-img src="../assets/tyusyaku_03.png"></v-img>
+              </div>
+              <div class="ml-2"><small>:外泊</small></div>
+
+              <div class="ml-5 editMark"></div>
+              <div class="ml-2"><small>:手修正済み</small></div>
             </div>
-            <div class="ml-2"><small>:外泊</small></div>
-
-            <div class="ml-5 editMark"></div>
-            <div class="ml-2"><small>:手修正済み</small></div>
           </v-container>
-
+          
           <wj-flex-grid
             id="theGridTallRows"
             :itemsSource="infoData"
@@ -881,14 +888,6 @@ export default {
         item: define_third[4].name,
         editicon: define_third[4].editicon,
       });
-      userInfo.push({
-        uniqkey: 11,
-        year: 2022,
-        month: '04',
-        usercode: 1000,
-        space: define_first[2],
-        item: define_third[5].name,
-      });
 
       userInfo.push({
         uniqkey: 20,
@@ -1063,6 +1062,9 @@ export default {
     dialogAdd: function () {
       this.dialog_add = true;
     },
+    dialogTerm: function () {
+      this.dialog = true;
+    },
     onInitializedInfo: function (flexGrid) {
       flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 30;
@@ -1080,7 +1082,13 @@ export default {
           _self.dialog_add = true;
         }
         //個別加算編集アイコン
-        if (ht.target.innerText == 'editicon') {
+        if (
+          ht.target.innerText == define_third[1].name || 
+          ht.target.innerText == define_third[2].name || 
+          ht.target.innerText == define_third[3].name || 
+          ht.target.innerText == define_third[4].name 
+          
+          ) {
           _self.dialog = true;
         }
         //赤丸
@@ -1132,9 +1140,7 @@ function cellEdit(s, e) {
       str =
         "<div class='text-left-float'>" +
         define_second[2].name +
-        "</div><a class='ml-2 addButton' >" +
-        define_second[2].sub +
-        '</a>';
+        "</div>";
     } else if (
       e.cell.innerText ==
       define_second[3].name + '_' + define_second[3].sub
@@ -1163,29 +1169,24 @@ function cellEdit(s, e) {
         '</p></div>';
     } else if (e.cell.innerText == define_third[1].name) {
       str =
-        "<div class='text-left-float'>" +
+        "<div class='text-left-float'><a >" +
         define_third[1].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "</a></div>";
     } else if (e.cell.innerText == define_third[2].name) {
       str =
-        "<div class='text-left-float'>" +
+        "<div class='text-left-float'><a >" +
         define_third[2].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "</a></div>";
     } else if (e.cell.innerText == define_third[3].name) {
       str =
-        "<div class='text-left-float'>" +
+        "<div class='text-left-float'><a >" +
         define_third[3].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "</a></div>";
     } else if (e.cell.innerText == define_third[4].name) {
       str =
-        "<div class='text-left-float'>" +
+        "<div class='text-left-float'><a >" +
         define_third[4].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
-    } else if (e.cell.innerText == define_third[5].name) {
-      str =
-        "<div class='text-left-float addButton'>" +
-        define_third[5].name +
-        '</div>';
+        "</a></div>";
     } else if (e.cell.innerText == "項目") {
       str =
         "<div class='text-center'>項目</div>";

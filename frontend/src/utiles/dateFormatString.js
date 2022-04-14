@@ -7,13 +7,11 @@ function dateFormatString(str,define_week) {
     if (w == 0) color = 'red--text';
     if (w == 6) color = 'blue--text';
     let string =
-        "<div class='text-center " +
+        "<div style='line-height:1.3em' class='pa-0 text-caption text-center " +
         color +
         "''>" +
         sp[2] +
-        "</div><div class='text-center " +
-        color +
-        "''>" +
+        "<br />" +
         define_week[w] +
         '</div>';
     return string;

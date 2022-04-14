@@ -7,6 +7,7 @@ import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
 import TemporaryHistory from '../views/TemporaryHistory.vue'
+import TemporaryHistory02 from '../views/TemporaryHistory02.vue' //todo : 後で消す
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,12 @@ const routes = [
         path:'/TemporaryHistory',
         name:'個別利用状況登録',
         component: TemporaryHistory
+    },
+    {
+        //todo 後で消す
+        path:'/TemporaryHistory02',
+        name:'個別利用状況登録',
+        component: TemporaryHistory02
     },
 ]
 
