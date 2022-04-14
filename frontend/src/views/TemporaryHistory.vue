@@ -247,7 +247,7 @@
             </div>
             <div class="ml-2"><small>:外泊</small></div>
 
-            <div class="ml-5 editIcon"></div>
+            <div class="ml-5 editMark"></div>
             <div class="ml-2"><small>:手修正済み</small></div>
           </v-container>
 
@@ -336,297 +336,299 @@
       </v-row>
     </v-container>
 
-    <div class="text-center">
-      <v-dialog v-model="dialog" width="500">
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            変動情報登録
-          </v-card-title>
-          <v-card class="d-flex justify-center" flat>
-            <v-card class="pa-2" elevation="0">
-              <v-btn-toggle mandatory>
-                <v-btn class="primary">入退院</v-btn>
-                <v-btn class="primary">外泊</v-btn>
-              </v-btn-toggle>
+    <v-dialog v-model="dialog" width="500">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          変動情報登録
+        </v-card-title>
+        <v-card class="d-flex justify-center" flat>
+          <v-card class="pa-2" elevation="0">
+            <v-btn-toggle mandatory>
+              <v-btn class="primary">入退院</v-btn>
+              <v-btn class="primary">外泊</v-btn>
+            </v-btn-toggle>
+          </v-card>
+        </v-card>
+
+        <v-container class="lighten-5">
+          <v-row no-gutters style="flex-wrap: nowrap">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="80"
+                color="blue-grey lighten-5"
+                >入院日
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+              <v-card class="pa-0" elevation="0">
+                <datepicker
+                  :language="ja"
+                  class="input_picker"
+                  :format="DatePickerFormat"
+                ></datepicker>
+                <v-card class="d-flex mb-6" color="lighten-2" flat tile>
+                  <v-card class="pa-0" elevation="0">
+                    <v-radio-group row
+                      >施設の利用
+                      <v-radio
+                        label="あり"
+                        value="radio-1"
+                        class="ml-2"
+                      ></v-radio>
+                      <v-radio label="なし" value="radio-2"></v-radio>
+                    </v-radio-group>
+                  </v-card>
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="30"
+                color="blue-grey lighten-5"
+                >食事
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="mt-n5 mx-auto">
+              <v-card class="d-flex" elevation="0">
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="朝食"
+                    value="朝食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="昼食"
+                    value="昼食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="夕食"
+                    value="夕食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="30"
+                color="blue-grey lighten-5"
+                >病院名
+              </v-card>
+            </v-col>
+            <v-col cols="8">
+              <v-card class="pa-0" elevation="0">
+                <v-text-field
+                  label="病院名を入力"
+                  class="ml-2 mt-n2 mx-auto"
+                ></v-text-field>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-container class="lighten-5">
+          <v-row no-gutters style="flex-wrap: nowrap">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="80"
+                color="blue-grey lighten-5"
+                >入院日
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+              <v-card class="pa-0" elevation="0">
+                <datepicker
+                  :language="ja"
+                  class="input_picker"
+                  :format="DatePickerFormat"
+                ></datepicker>
+                <v-card class="d-flex mb-6" color="lighten-2" flat tile>
+                  <v-card class="pa-0" elevation="0">
+                    <v-radio-group row
+                      >施設の利用
+                      <v-radio
+                        label="あり"
+                        value="radio-1"
+                        class="ml-2"
+                      ></v-radio>
+                      <v-radio label="なし" value="radio-2"></v-radio>
+                    </v-radio-group>
+                  </v-card>
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="30"
+                color="blue-grey lighten-5"
+                >食事
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="mt-n5 mx-auto">
+              <v-card class="d-flex" elevation="0">
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="朝食"
+                    value="朝食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="昼食"
+                    value="昼食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+                <v-card class="pa-2" elevation="0">
+                  <v-checkbox
+                    label="夕食"
+                    value="夕食"
+                    hide-details
+                  ></v-checkbox>
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+
+          <v-card class="d-flex mt-3" elevation="0">
+            <v-card elevation="0">
+              <v-btn color="primary" text @click="dialog = false"> 削除 </v-btn>
+            </v-card>
+            <v-card elevation="0">
+              <v-btn color="primary" text @click="dialog = false">
+                クリア
+              </v-btn>
+            </v-card>
+            <v-card elevation="0" class="ml-auto">
+              <v-btn color="primary" text @click="dialog = false"> 登録 </v-btn>
             </v-card>
           </v-card>
+        </v-container>
+      </v-card>
+    </v-dialog>
 
-          <v-container class="lighten-5">
-            <v-row no-gutters style="flex-wrap: nowrap">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="80"
-                  color="blue-grey lighten-5"
-                  >入院日
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
-                <v-card class="pa-0" elevation="0">
-                  <datepicker :language="ja" class="input_picker"></datepicker>
-                  <v-card class="d-flex mb-6" color="lighten-2" flat tile>
-                    <v-card class="pa-0" elevation="0">
-                      <v-radio-group row
-                        >施設の利用
-                        <v-radio
-                          label="あり"
-                          value="radio-1"
-                          class="ml-2"
-                        ></v-radio>
-                        <v-radio label="なし" value="radio-2"></v-radio>
-                      </v-radio-group>
-                    </v-card>
-                  </v-card>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="30"
-                  color="blue-grey lighten-5"
-                  >食事
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="mt-n5 mx-auto">
-                <v-card class="d-flex" elevation="0">
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="朝食"
-                      value="朝食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="昼食"
-                      value="昼食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="夕食"
-                      value="夕食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="30"
-                  color="blue-grey lighten-5"
-                  >病院名
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-0" elevation="0">
-                  <v-text-field
-                    label="病院名を入力"
-                    class="ml-2 mt-n2 mx-auto"
-                  ></v-text-field>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-container class="lighten-5">
-            <v-row no-gutters style="flex-wrap: nowrap">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="80"
-                  color="blue-grey lighten-5"
-                  >入院日
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
-                <v-card class="pa-0" elevation="0">
-                  <datepicker :language="ja" class="input_picker"></datepicker>
-                  <v-card class="d-flex mb-6" color="lighten-2" flat tile>
-                    <v-card class="pa-0" elevation="0">
-                      <v-radio-group row
-                        >施設の利用
-                        <v-radio
-                          label="あり"
-                          value="radio-1"
-                          class="ml-2"
-                        ></v-radio>
-                        <v-radio label="なし" value="radio-2"></v-radio>
-                      </v-radio-group>
-                    </v-card>
-                  </v-card>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="30"
-                  color="blue-grey lighten-5"
-                  >食事
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="mt-n5 mx-auto">
-                <v-card class="d-flex" elevation="0">
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="朝食"
-                      value="朝食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="昼食"
-                      value="昼食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                  <v-card class="pa-2" elevation="0">
-                    <v-checkbox
-                      label="夕食"
-                      value="夕食"
-                      hide-details
-                    ></v-checkbox>
-                  </v-card>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-card class="d-flex mt-3" elevation="0">
-              <v-card elevation="0">
-                <v-btn color="primary" text @click="dialog = false">
-                  削除
-                </v-btn>
-              </v-card>
-              <v-card elevation="0">
-                <v-btn color="primary" text @click="dialog = false">
-                  クリア
-                </v-btn>
-              </v-card>
-              <v-card elevation="0" class="ml-auto">
-                <v-btn color="primary" text @click="dialog = false">
-                  登録
-                </v-btn>
-              </v-card>
-            </v-card>
-          </v-container>
+    <v-dialog v-model="dialog_add" width="500">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          個別加算追加登録
+        </v-card-title>
+        <v-card class="d-flex justify-center" flat>
+          <v-card class="pa-2" elevation="0">
+            <wj-combo-box :items-source="addSelect"></wj-combo-box>
+          </v-card>
         </v-card>
-      </v-dialog>
-    </div>
-    <div class="text-center">
-      <v-dialog v-model="dialog_add" width="500">
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            個別加算追加登録
-          </v-card-title>
-          <v-card class="d-flex justify-center" flat>
-            <v-card class="pa-2" elevation="0">
-              <wj-combo-box :items-source="addSelect"></wj-combo-box>
+        <v-container class="lighten-5">
+          <v-row no-gutters style="flex-wrap: nowrap">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
+                >開始日
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+              <v-card elevation="0">
+                <datepicker
+                  :language="ja"
+                  :format="DatePickerFormat"
+                  class="input_picker mt-2"
+                ></datepicker>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0 mt-2">
+              <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
+                >終了日
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2 mt-2">
+              <v-card elevation="0">
+                <datepicker
+                  :language="ja"
+                  :format="DatePickerFormat"
+                  class="input_picker mt-2"
+                ></datepicker>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-5 mx-auto">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="30"
+                color="blue-grey lighten-5"
+                >単位数
+              </v-card>
+            </v-col>
+            <v-col cols="8" class="mt-2 ml-2 mx-auto"> 30単位/日 </v-col>
+          </v-row>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
+            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+                min-height="30"
+                color="blue-grey lighten-5"
+                >留意事項
+              </v-card>
+            </v-col>
+            <v-col cols="8">
+              <ol>
+                <li>入所日(算定日)から30日を限度</li>
+                <li>同一敷地外の病院に30日以上入院した場合は、再算定可能</li>
+                <li>過去3ヶ月間に入所理由がないこと</li>
+              </ol>
+            </v-col>
+          </v-row>
+
+          <v-card class="d-flex mt-3" elevation="0">
+            <v-card elevation="0">
+              <v-btn color="primary" text @click="dialog_add = false">
+                削除
+              </v-btn>
+            </v-card>
+            <v-card elevation="0">
+              <v-btn color="primary" text @click="dialog_add = false">
+                クリア
+              </v-btn>
+            </v-card>
+            <v-card elevation="0" class="ml-auto">
+              <v-btn color="primary" text @click="dialog_add = false">
+                登録
+              </v-btn>
             </v-card>
           </v-card>
-
-          <v-container class="lighten-5">
-            <v-row no-gutters style="flex-wrap: nowrap">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
-                  >開始日
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
-                <v-card elevation="0">
-                  <datepicker
-                    :language="ja"
-                    class="input_picker mt-2"
-                  ></datepicker>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0 mt-2">
-                <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
-                  >終了日
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2 mt-2">
-                <v-card elevation="0">
-                  <datepicker
-                    :language="ja"
-                    class="input_picker mt-2"
-                  ></datepicker>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mt-5 mx-auto">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="30"
-                  color="blue-grey lighten-5"
-                  >単位数
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="mt-2 ml-2 mx-auto"> 30単位/日 </v-col>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-              <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-                <v-card
-                  class="pa-2"
-                  outlined
-                  tile
-                  min-height="30"
-                  color="blue-grey lighten-5"
-                  >留意事項
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <ol>
-                  <li>入所日(算定日)から30日を限度</li>
-                  <li>同一敷地外の病院に30日以上入院した場合は、再算定可能</li>
-                  <li>過去3ヶ月間に入所理由がないこと</li>
-                </ol>
-              </v-col>
-            </v-row>
-
-            <v-card class="d-flex mt-3" elevation="0">
-              <v-card elevation="0">
-                <v-btn color="primary" text @click="dialog_add = false">
-                  削除
-                </v-btn>
-              </v-card>
-              <v-card elevation="0">
-                <v-btn color="primary" text @click="dialog_add = false">
-                  クリア
-                </v-btn>
-              </v-card>
-              <v-card elevation="0" class="ml-auto">
-                <v-btn color="primary" text @click="dialog_add = false">
-                  登録
-                </v-btn>
-              </v-card>
-            </v-card>
-          </v-container>
-        </v-card>
-      </v-dialog>
-    </div>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -705,8 +707,8 @@ let define_week = ['日', '月', '火', '水', '木', '金', '土'];
 
 let year = moment().year();
 let month = moment().format('MM');
-
 let userInfo = [];
+
 export default {
   data() {
     return {
@@ -720,12 +722,12 @@ export default {
       borders: this.getBorder(),
       ja: ja,
       infoData: this.createInfoData(),
-      selectUserData: '',
       selectUserCode: '',
       userRow: 0, //ユーザを選択した配列のrow
       dialog: false,
       dialog_add: false,
       helper: this.getHelperData(),
+      DatePickerFormat: 'yyyy年MM月dd日',
     };
   },
   components: {
@@ -774,6 +776,7 @@ export default {
       return helpers;
     },
     createInfoData() {
+      if (userInfo.length > 0) userInfo = [];
       userInfo.push({
         uniqkey: 1,
         year: 2022,
@@ -791,6 +794,7 @@ export default {
         totals: '12',
         money: '2,700円',
       });
+
       userInfo.push({
         uniqkey: 2,
         year: 2022,
@@ -919,7 +923,6 @@ export default {
       });
 
       userInfo.push({
-        uniqkey: 20,
         year: 2022,
         month: '04',
         usercode: 1001,
@@ -1027,7 +1030,6 @@ export default {
           element.usercode == usercode
         ) {
           returns.push({
-            uniqkey: element.uniqkey,
             year: element.year,
             month: element.month,
             usercode: element.usercode,
@@ -1087,10 +1089,10 @@ export default {
         console.log(ht.target.innerText);
         console.log(e.target.innerHTML);
 
-        if (ht.target.innerText == '期間追加') {
+        if (ht.target.innerText == define_second[2].sub) {
           _self.dialog = true;
         }
-        if (ht.target.innerText == '加算追加') {
+        if (ht.target.innerText == define_third[5].name) {
           _self.dialog_add = true;
         }
         //個別加算編集アイコン
@@ -1122,9 +1124,9 @@ export default {
     },
     setUserSelectPoint: function (row) {
       document.querySelector('#selectUserText').innerText =
-        userDataSelect[row].code + ' ' + userDataSelect[row].name;
+        userDataSelect[row].riyocode + ' ' + userDataSelect[row].names;
       document.querySelector('#selectUserExamNumber').innerText =
-        userDataSelect[row].examNumber;
+        userDataSelect[row].jyukyuno;
     },
   },
 };
@@ -1269,7 +1271,7 @@ div.border-bottom {
   z-index: -1;
 }
 
-div.editIcon {
+div.editMark {
   width: 50px;
   height: 20px;
   background-color: violet;
@@ -1331,7 +1333,7 @@ a.editicon {
     border: 5px solid;
     display: block;
     position: absolute;
-    top: -5px;
+    top: -4px;
     left: -7px;
   }
   &--right {
@@ -1343,7 +1345,7 @@ a.editicon {
     border-color: transparent transparent transparent aqua;
     display: block;
     position: absolute;
-    top: -5px;
+    top: -4px;
     right: -7px;
     left: auto;
   }

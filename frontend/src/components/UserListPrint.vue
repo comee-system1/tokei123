@@ -55,7 +55,7 @@
     >
       <wj-flex-grid-column
         header="コード"
-        binding="code"
+        binding="riyocode"
         width="2*"
         :wordWrap="true"
         :allowResizing="false"
@@ -63,7 +63,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="利用者名"
-        binding="name"
+        binding="names"
         width="3*"
         :wordWrap="true"
         :allowResizing="false"
@@ -88,9 +88,16 @@
   </v-col>
 </template>
 <script>
+import Vue from 'vue';
+
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import customMergeUser from '@/utiles/customMergeUser';
+
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
+Vue.use(VueAxios, axios);
 
 let selects = ['印刷を全選択', '印刷を全解除'];
 
@@ -144,38 +151,51 @@ export default {
     },
     createUser: function () {
       let usersData = [];
+      console.log(this.axios);
+
+      usersData['status'] = 'idle';
       userCount = 100;
+      let riyo_inf = [];
       for (let i = 0; i < userCount; i++) {
-        usersData.push({
-          id: i,
-          code: '100' + i,
-          examNumber: '000' + Math.floor(Math.random() * 10) + 1,
-          name: '東経太郎 ' + Math.floor(Math.random() * 10) + 1,
-          kana: 'トウケイタロウ' + Math.floor(Math.random() * 10) + 1,
+        riyo_inf.push({
+          riid: '5500' + i,
+          riyocode: i + 1000,
+          names: '東経太郎' + i,
+          kana: 'トウケイタロウ' + i,
+          jukyuid: i * 10,
+          jyukyuno: 'num-' + i * Math.random(),
+          sityoid: i * 30,
+          jidoid: i * 40,
+          kzkname: '東経家族' + i,
+          kakutei: 0,
           active: false,
         });
       }
-
-      //初回はデータの最初を選択
-      this.selectUserData = usersData[0];
+      usersData['riyo_inf'] = riyo_inf;
       userDataAll = usersData;
-      this.userFilter();
       userDataSelect = userDataAll;
-      return this.usersData;
+
+      this.userFilter();
+      return riyo_inf;
     },
 
     userFilter() {
       let data = [];
-      userDataAll.forEach(function (value) {
+      userDataSelect['riyo_inf'].forEach(function (value) {
         if (checkAll == '0') value.active = true;
         if (checkAll == '1') value.active = false;
-        if (value.name.indexOf(textSearch) != -1) {
+        if (value.names.indexOf(textSearch) != -1) {
           data.push({
-            id: value.id,
-            code: value.code,
-            examNumber: value.examNumber,
-            name: value.name,
+            riid: value.riid,
+            riyocode: value.riyocode,
+            names: value.names,
             kana: value.kana,
+            jukyuid: value.jukyuid,
+            jyukyuno: value.jyukyuno,
+            sityoid: value.sityoid,
+            jidoid: value.jidoid,
+            kzkname: value.kzkname,
+            kakutei: value.kakutei,
             active: value.active,
           });
         }
@@ -222,8 +242,8 @@ export default {
       //コード順でソート
       if (sortSearch == 1) {
         data.sort((a, b) => {
-          if (a.id < b.id) return -1;
-          if (a.id > b.id) return 1;
+          if (a.riyocode < b.riyocode) return -1;
+          if (a.riyocode > b.riyocode) return 1;
           return 0;
         });
       }
@@ -235,16 +255,15 @@ export default {
           return 0;
         });
       }
-      //受験者番号でソート
+      //受給者番号でソート
       if (sortSearch == 3) {
         data.sort((a, b) => {
-          if (a.examNumber < b.examNumber) return -1;
-          if (a.examNumber > b.examNumber) return 1;
+          if (a.jyukyuno < b.jyukyuno) return -1;
+          if (a.jyukyuno > b.jyukyuno) return 1;
           return 0;
         });
       }
-      userDataSelect = data;
-      this.$emit('child-user', userDataSelect);
+      this.$emit('child-user', data);
       this.usersData = data;
     },
 
@@ -274,9 +293,11 @@ export default {
         var ht = flexGrid.hitTest(e);
         ht = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
-        let row = ht._row;
-        _self.$emit('child-event', userDataSelect[row].code);
-        _self.$emit('child-select', row);
+        if (e.target.innerText.length > 0) {
+          let row = ht._row;
+          _self.$emit('child-event', userDataSelect['riyo_inf'][row].riyocode);
+          _self.$emit('child-select', row);
+        }
       });
     },
   },
@@ -285,11 +306,16 @@ export default {
 //カナアイコンフィルタリング用
 function setPush(get, value) {
   return get.push({
-    id: value.id,
-    code: value.code,
-    examNumber: value.examNumber,
-    name: value.name,
+    riid: value.riid,
+    riyocode: value.riyocode,
+    names: value.names,
     kana: value.kana,
+    jukyuid: value.jukyuid,
+    jyukyuno: value.jyukyuno,
+    sityoid: value.sityoid,
+    jidoid: value.jidoid,
+    kzkname: value.kzkname,
+    kakutei: value.kakutei,
     active: value.active,
   });
 }
