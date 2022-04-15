@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid id="main">
+  <v-container fluid id="main02">
     <v-container fluid>
       <v-row dense>
         <v-col sm="9">
@@ -89,139 +89,100 @@
             </v-row>
           </v-container>
           <v-container class="py-0 px-0 ma-6 mt-6">
-          
-            <v-card class="pa-5 overflow-auto" md="auto" max-height="130" max-width="1280">
-              <v-row no-gutters >
-                <v-col md="auto" >
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+            <v-card
+              class="pa-5 overflow-auto"
+              md="auto"
+              max-height="130"
+              max-width="1280"
+            >
+              <v-row no-gutters>
+                <v-col md="auto">
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">援護者</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
                   <v-card
-                    class="pa-2 border-bottom text-r"
+                    class="pa-2"
                     elevation="0"
                     v-for="(n, index) in helper.helper"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{n.name}}</span>
-                    <span class="ml-2">{{n.term}}</span>
+                    <span>{{ n.name }}</span>
+                    <span class="ml-2">{{ n.term }}</span>
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">助成自治体番号</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.helperNum}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.helperNum }}
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">障害種別</label>
                   </v-card>
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">障害支区</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.personType}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.personType }}
                   </v-card>
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.personHelp}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.personHelp }}
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">負担上限額</label>
                   </v-card>
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">特別給付費</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.chargeMaxMoney}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.chargeMaxMoney }}
                   </v-card>
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.specialMoney}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.specialMoney }}
                   </v-card>
                 </v-col>
 
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">上限管理事</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
                   <v-card
-                    class="pa-2 "
+                    class="pa-2"
                     elevation="0"
                     v-for="(n, index) in helper.limitAdmin"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{n.name}}</span>
-                    <span class="ml-2">{{n.term}}</span>
+                    <span>{{ n.name }}</span>
+                    <span class="ml-2">{{ n.term }}</span>
                   </v-card>
                 </v-col>
-
               </v-row>
-
             </v-card>
           </v-container>
 
           <v-container mt-0 pt-0 fluid>
             <div class="float-left">
-              <a class='ml-2 addButton' @click="dialogTerm()">期間追加</a>
-              <a class='ml-2 addButton' @click="dialogAdd()">加算追加</a>
+              <a class="ml-2 addButton" @click="dialogTerm()">期間追加</a>
+              <a class="ml-2 addButton" @click="dialogAdd()">加算追加</a>
             </div>
-            <div class="d-flex justify-end" >
+            <div class="d-flex justify-end">
               <div class="mt-1">
                 <v-img src="../assets/tyusyaku_01.png"></v-img>
               </div>
@@ -241,7 +202,7 @@
               <div class="ml-2"><small>:手修正済み</small></div>
             </div>
           </v-container>
-          
+
           <wj-flex-grid
             id="theGridTallRows"
             :itemsSource="infoData"
@@ -317,7 +278,7 @@
               <a
                 class="borderBox"
                 v-bind:style="{ left: n.left + 'px', top: n.top + 'px' }"
-                @click="dialogAdd()"
+                @click="dialogTerm()"
               >
                 {{ n.st }}～{{ n.ed }}[{{ n.diff }}]
               </a>
@@ -744,7 +705,7 @@ export default {
           },
           {
             name: '西経市',
-            term:'7/10～7/20',
+            term: '7/10～7/20',
           },
         ],
         limitAdmin: [
@@ -1077,28 +1038,27 @@ export default {
 
         if (ht.target.innerText == define_second[2].sub) {
           _self.dialog = true;
-        }
-        if (ht.target.innerText == define_third[5].name) {
+        } else if (ht.target.innerText == define_third[5].name) {
           _self.dialog_add = true;
-        }
-        //個別加算編集アイコン
-        if (
-          ht.target.innerText == define_third[1].name || 
-          ht.target.innerText == define_third[2].name || 
-          ht.target.innerText == define_third[3].name || 
-          ht.target.innerText == define_third[4].name 
-          
-          ) {
+        } else if (checkDefineThird(ht.target.innerText, define_third)) {
+          _self.dialog_add = true;
+        } else if (ht.target.innerText == 'editicon') {
+          //個別加算編集アイコン
           _self.dialog = true;
-        }
-        //赤丸
-        if (e.target.innerHTML == '〇') {
+        } else if (e.target.innerHTML == '〇') {
+          //赤丸
           e.target.innerText = '×';
         } else if (e.target.innerHTML == '×') {
-          e.target.innerText = '〇';
+          e.target.innerHTML = '';
+        } else if (
+          e.target.innerHTML == '' ||
+          e.target.innerHTML == '<div class="red-sign"></div>'
+        ) {
+          e.target.innerHTML = '<div class="red-sign">〇</div>';
         }
       });
     },
+
     onTextChanged: function (s) {
       console.log(s.text);
     },
@@ -1122,6 +1082,14 @@ export default {
   },
 };
 
+function checkDefineThird(s, array) {
+  for (let i = 1; i < array.length; i++) {
+    if (array[i].name == s) {
+      return true;
+    }
+  }
+}
+
 function cellEdit(s, e) {
   if (e.cell.children.length == 0) {
     let align = 'left';
@@ -1131,16 +1099,11 @@ function cellEdit(s, e) {
     } else if (e.cell.innerText == '1') {
       str = "<div class='maru'>maru</div>";
     } else if (e.cell.innerText == '2') {
-      str =
-        "<div class='text-center' style='font-size:1.5em; color:red;'>〇</div>";
+      str = "<div class='red-sign'>〇</div>";
     } else if (e.cell.innerText == '3') {
-      str =
-        "<div class='text-center' style='font-size:1.5em; color:red;'>×</div>";
+      str = "<div class='red-sign'>×</div>";
     } else if (e.cell.innerText == define_second[2].name) {
-      str =
-        "<div class='text-left-float'>" +
-        define_second[2].name +
-        "</div>";
+      str = "<div class='text-left-float'>" + define_second[2].name + '</div>';
     } else if (
       e.cell.innerText ==
       define_second[3].name + '_' + define_second[3].sub
@@ -1167,31 +1130,16 @@ function cellEdit(s, e) {
         "<div class='text-left-float'></div><div class='text-right-float border-right'><p>" +
         define_second[5].sub +
         '</p></div>';
-    } else if (e.cell.innerText == define_third[1].name) {
-      str =
-        "<div class='text-left-float'><a >" +
-        define_third[1].name +
-        "</a></div>";
-    } else if (e.cell.innerText == define_third[2].name) {
-      str =
-        "<div class='text-left-float'><a >" +
-        define_third[2].name +
-        "</a></div>";
-    } else if (e.cell.innerText == define_third[3].name) {
-      str =
-        "<div class='text-left-float'><a >" +
-        define_third[3].name +
-        "</a></div>";
-    } else if (e.cell.innerText == define_third[4].name) {
-      str =
-        "<div class='text-left-float'><a >" +
-        define_third[4].name +
-        "</a></div>";
-    } else if (e.cell.innerText == "項目") {
-      str =
-        "<div class='text-center'>項目</div>";
+    } else if (e.cell.innerText == '項目') {
+      str = "<div class='text-center'>項目</div>";
     } else {
       str = e.cell.innerHTML;
+    }
+    for (let i = 1; i < define_third.length; i++) {
+      if (e.cell.innerText == define_third[i].name) {
+        str = '<a>' + define_third[i].name + '</a>';
+        break;
+      }
     }
 
     e.cell.innerHTML = '<div>' + str + '</div>';
@@ -1214,161 +1162,157 @@ html {
   overflow-x: scroll;
 }
 
-#app {
-  min-width: 1920px;
-  margin: 0 auto;
-}
-div#main {
+div#main02 {
   font-size: 14px;
   font-family: 'メイリオ';
-}
 
-.input_picker {
-  div > input {
-    border: 1px ridge #333333;
+  span#selectUserExamNumber,
+  span#selectUserText {
+    min-width: 150px;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+  }
+
+  div.border-bottom {
+    border-bottom: 1px solid #ccc;
+    label {
+      font-size: 0.85em;
+    }
+  }
+
+  .maru {
+    width: 21px;
+    height: 20px;
+    background-image: url('../assets/tyusyaku_07.png');
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 90%;
+    text-indent: -9999px;
+    z-index: -1;
+  }
+
+  .red-sign {
+    font-size: 1.5em;
+    color: red;
     text-align: center;
-    width: 100%;
   }
-}
 
-span#selectUserExamNumber,
-span#selectUserText {
-  min-width: 150px;
-  display: block;
-}
-
-div.border-bottom {
-  border-bottom: 1px solid #ccc;
-  label {
-    font-size: 0.85em;
+  div.editMark {
+    width: 50px;
+    height: 20px;
+    background-color: violet;
   }
-}
 
-.maru {
-  width: 21px;
-  height: 20px;
-  background-image: url('../assets/tyusyaku_07.png');
-  display: block;
-  background-repeat: no-repeat;
-  background-size: 90%;
-  text-indent: -9999px;
-  z-index: -1;
-}
+  a.editicon {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background-image: url('../assets/tyusyaku_04.png');
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+  }
 
-div.editMark {
-  width: 50px;
-  height: 20px;
-  background-color: violet;
-}
+  .addButton {
+    width: 120px;
+    background-color: #fff0f5;
+    display: block;
+    float: left;
+    color: #000 !important;
+    text-align: left;
+    border-radius: 30px;
+    padding: 3px 0px 3px 10px;
+    cursor: pointer;
+    background-image: url('../assets/plus_15px.png');
+    background-position: 95% 50%;
+  }
 
-a.editicon {
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  background-image: url('../assets/tyusyaku_04.png');
-  background-repeat: no-repeat;
-  text-indent: -9999px;
-}
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: #f5f5f5 !important;
+    color: #000 !important;
+  }
 
-.addButton {
-  width: 120px;
-  background-color: red;
-  display: block;
-  float: left;
-  color: #fff !important;
-  text-align: left;
-  border-radius: 30px;
-  padding: 3px 0px 3px 10px;
-  cursor: pointer;
-  background-image: url('../assets/plus_15px.png');
-  background-position: 95% 50%;
-}
+  #theGridTallRows {
+    position: relative;
+  }
 
-#theGridTallRows {
-  position: relative;
-}
+  #theGridTallRows.wj-flexgrid .wj-cell {
+    height: 40px;
+  }
 
-#theGridTallRows.wj-flexgrid .wj-cell {
-  height: 40px;
-}
-
-.wj-rowheaders {
-  .wj-row {
-    & > div.wj-cell.wj-header {
-      & > div {
-        transform: translate(-50%, -50%);
-        writing-mode: vertical-rl;
+  .wj-rowheaders {
+    .wj-row {
+      & > div.wj-cell.wj-header {
+        & > div {
+          transform: translate(-50%, -50%);
+          writing-mode: vertical-rl;
+        }
       }
     }
   }
-}
 
-//チャート用
-.borderPlace {
-  height: 2px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  &--left {
-    content: '';
-    width: 0px;
-    height: 0px;
-    border: 5px solid;
-    display: block;
+  //チャート用
+  .borderPlace {
+    height: 2px;
     position: absolute;
-    top: -4px;
-    left: -7px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    &--left {
+      content: '';
+      width: 0px;
+      height: 0px;
+      border: 5px solid;
+      display: block;
+      position: absolute;
+      top: -4px;
+      left: -7px;
+    }
+    &--right {
+      content: '';
+      border: 1px solid red;
+      width: 0px;
+      height: 0px;
+      border: 5px solid;
+      border-color: transparent transparent transparent aqua;
+      display: block;
+      position: absolute;
+      top: -4px;
+      right: -7px;
+      left: auto;
+    }
   }
-  &--right {
-    content: '';
-    border: 1px solid red;
-    width: 0px;
-    height: 0px;
-    border: 5px solid;
-    border-color: transparent transparent transparent aqua;
-    display: block;
+  .borderBox {
+    padding: 2px 30px;
+    border: 1px solid #333;
     position: absolute;
-    top: -4px;
-    right: -7px;
-    left: auto;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+    margin-top: 10px;
+    background-image: url('../assets/tyusyaku_04.png');
+    background-position: 95% 40%;
   }
-}
-.borderBox {
-  padding: 2px 30px;
-  border: 1px solid #333;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  background-color: #fff;
-  margin-top: 10px;
-  background-image: url('../assets/tyusyaku_04.png');
-  background-position: 95% 40%;
-}
 
-div.text-left-float {
-  float: left;
-}
-div.text-right-float {
-  float: right;
-}
-div.border-right {
-  border-left: 1px solid #ccc;
-  width: 150px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding-left: 20px;
-  height: 100%;
-}
-div.border-right p {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  transform: translate(0, -50%);
+  div.text-left-float {
+    float: left;
+  }
+  div.text-right-float {
+    float: right;
+  }
+  div.border-right {
+    border-left: 1px solid #ccc;
+    width: 150px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-left: 20px;
+    height: 100%;
+  }
+  div.border-right p {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid id="main">
+  <v-container fluid id="shisetsu">
     <v-container fluid>
       <v-row dense>
         <v-col sm="9">
@@ -36,39 +36,41 @@
     </v-container>
 
     <v-container fluid>
-
-      <v-card class="d-flex mb-6" flat tile>
-        <v-card class="pa-2 red--text text--lighten-1" outlined tile>
-          {{ buildcheck }}
-        </v-card>
-        <v-btn class="pa-2 ml-2 mt-1" @click="checkingRegist()">
-          {{ checkbutton }}
-        </v-btn>
-        <v-btn class="pa-2 ml-auto mt-1" @click="registPage()">
-          施設体制修正
-        </v-btn>
-      </v-card>
-
-      <v-row >
+      <v-row>
         <v-col cols="2">
+          <v-row no-gutters>
+            <v-col cols="6">
+              <v-card class="pa-2 red--text text--lighten-1" outlined tile>
+                {{ buildcheck }}
+              </v-card>
+            </v-col>
+            <v-col cols="6">
+              <v-btn class="pa-2 ml-2" @click="checkingRegist()">
+                {{ checkbutton }}
+              </v-btn>
+            </v-col>
+          </v-row>
           <v-row v-for="(detail, index) in details" :key="index" no-gutters>
             <v-col cols="6">
-              <v-card
-                class="pa-2 text-center "
-                elevation="0"
-                >{{ detail.name }}</v-card
-              >
+              <v-card class="pa-2 text-center" elevation="0">{{
+                detail.name
+              }}</v-card>
             </v-col>
             <v-col cols="6">
               <v-card class="pa-2" elevation="0">{{ detail.value }}</v-card>
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="10">
-          <v-row justify="end" no-gutters>
-            <v-card class="pa-1 yellow lighten-5 text-caption" outlined tile>
-              (最終登録日:R03.04.05 10:10 昭和 一郎)
-            </v-card>
+        <v-col cols="6">
+          <v-row no-gutters>
+            <v-col class="ml-auto text-right">
+              <v-btn class="pa-1 mt-1" @click="registPage()">
+                施設体制修正
+              </v-btn>
+              <v-card class="pa-0 text-caption" elevation="0">
+                (最終登録日:R03.04.05 10:10 昭和 一郎)
+              </v-card>
+            </v-col>
           </v-row>
           <v-row>
             <v-col cols="6">
@@ -469,7 +471,16 @@ function cellEdit(s, e) {
 }
 </script>
 <style lang="scss" scope>
-#theGridTallRows.wj-flexgrid .wj-cell {
-  height: 68px;
+#shisetsu {
+  font-size: 14px;
+  font-family: 'メイリオ';
+  #theGridTallRows.wj-flexgrid .wj-cell {
+    height: 40px;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: #f5f5f5 !important;
+    color: #000 !important;
+  }
 }
 </style>

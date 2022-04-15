@@ -89,130 +89,86 @@
             </v-row>
           </v-container>
           <v-container class="py-0 px-0 ma-6 mt-6">
-          
-            <v-card class="pa-5 overflow-auto" md="auto" max-height="130" max-width="1280">
-              <v-row no-gutters >
-                <v-col md="auto" >
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+            <v-card class="pa-5 overflow-auto" md="auto" max-height="130">
+              <v-row no-gutters>
+                <v-col md="auto">
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">援護者</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
                   <v-card
-                    class="pa-2 border-bottom text-r"
+                    class="pa-2"
                     elevation="0"
                     v-for="(n, index) in helper.helper"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{n.name}}</span>
-                    <span class="ml-2">{{n.term}}</span>
+                    <span>{{ n.name }}</span>
+                    <span class="ml-2">{{ n.term }}</span>
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">助成自治体番号</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.helperNum}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.helperNum }}
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">障害種別</label>
                   </v-card>
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">障害支区</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.personType}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.personType }}
                   </v-card>
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.personHelp}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.personHelp }}
                   </v-card>
                 </v-col>
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">負担上限額</label>
                   </v-card>
-                  <v-card
-                    class="pa-2 text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-caption" elevation="0">
                     <label class="font-weight-black">特別給付費</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.chargeMaxMoney}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.chargeMaxMoney }}
                   </v-card>
-                  <v-card
-                    class="pa-2"
-                    elevation="0"
-                    :min-width="100"
-                  >
-                    {{helper.specialMoney}}
+                  <v-card class="pa-2" elevation="0" :min-width="100">
+                    {{ helper.specialMoney }}
                   </v-card>
                 </v-col>
 
                 <v-col md="auto" class="ml-4">
-                  <v-card
-                    class="pa-2 text-center text-caption"
-                    elevation="0"
-                  >
+                  <v-card class="pa-2 text-center text-caption" elevation="0">
                     <label class="font-weight-black">上限管理事</label>
                   </v-card>
                 </v-col>
                 <v-col md="auto">
                   <v-card
-                    class="pa-2 "
+                    class="pa-2"
                     elevation="0"
                     v-for="(n, index) in helper.limitAdmin"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{n.name}}</span>
-                    <span class="ml-2">{{n.term}}</span>
+                    <span>{{ n.name }}</span>
+                    <span class="ml-2">{{ n.term }}</span>
                   </v-card>
                 </v-col>
-
               </v-row>
-
             </v-card>
           </v-container>
           <v-container mt-0 pt-0 class="d-flex justify-end" fluid>
@@ -310,7 +266,7 @@
               <a
                 class="borderBox"
                 v-bind:style="{ left: n.left + 'px', top: n.top + 'px' }"
-                @click="dialogAdd()"
+                @click="dialogModal()"
               >
                 {{ n.st }}～{{ n.ed }}[{{ n.diff }}]
               </a>
@@ -321,32 +277,23 @@
     </v-container>
 
     <v-dialog v-model="dialog" width="500">
-      <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
-          変動情報登録
-        </v-card-title>
-        <v-card class="d-flex justify-center" flat>
+      <v-card class="pa-2">
+        <v-card-title class="text-h5"> 変動情報登録 </v-card-title>
+        <v-card class="d-flex" flat>
           <v-card class="pa-2" elevation="0">
-            <v-btn-toggle mandatory>
-              <v-btn class="primary">入退院</v-btn>
-              <v-btn class="primary">外泊</v-btn>
+            <v-btn-toggle mandatory color="black">
+              <v-btn depressed small block :width="100">入退院</v-btn>
+              <v-btn depressed small block :width="100">外泊</v-btn>
             </v-btn-toggle>
           </v-card>
         </v-card>
 
-        <v-container class="lighten-5">
+        <v-container>
           <v-row no-gutters style="flex-wrap: nowrap">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="80"
-                color="blue-grey lighten-5"
-                >入院日
-              </v-card>
+            <v-col cols="3">
+              <v-card elevation="0">入院日 </v-card>
             </v-col>
-            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+            <v-col cols="9" class="ml-2">
               <v-card class="pa-0" elevation="0">
                 <datepicker
                   :language="ja"
@@ -355,13 +302,9 @@
                 ></datepicker>
                 <v-card class="d-flex mb-6" color="lighten-2" flat tile>
                   <v-card class="pa-0" elevation="0">
-                    <v-radio-group row
+                    <v-radio-group row class="mt-1"
                       >施設の利用
-                      <v-radio
-                        label="あり"
-                        value="radio-1"
-                        class="ml-2"
-                      ></v-radio>
+                      <v-radio label="あり" value="radio-1"></v-radio>
                       <v-radio label="なし" value="radio-2"></v-radio>
                     </v-radio-group>
                   </v-card>
@@ -369,34 +312,27 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="30"
-                color="blue-grey lighten-5"
-                >食事
-              </v-card>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n6 mx-auto">
+            <v-col cols="3" class="flex-grow-0 flex-shrink-0">
+              <v-card elevation="0" min-height="30">食事 </v-card>
             </v-col>
-            <v-col cols="8" class="mt-n5 mx-auto">
+            <v-col cols="9" class="mt-n5 mx-auto">
               <v-card class="d-flex" elevation="0">
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="朝食"
                     value="朝食"
                     hide-details
                   ></v-checkbox>
                 </v-card>
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="昼食"
                     value="昼食"
                     hide-details
                   ></v-checkbox>
                 </v-card>
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="夕食"
                     value="夕食"
@@ -407,39 +343,25 @@
             </v-col>
           </v-row>
           <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="30"
-                color="blue-grey lighten-5"
-                >病院名
-              </v-card>
+            <v-col cols="3" class="flex-grow-0 flex-shrink-0">
+              <v-card elevation="0">病院名 </v-card>
             </v-col>
-            <v-col cols="8">
-              <v-card class="pa-0" elevation="0">
+            <v-col cols="9">
+              <v-card elevation="0">
                 <v-text-field
                   label="病院名を入力"
-                  class="ml-2 mt-n2 mx-auto"
+                  class="mt-n4 mx-auto"
                 ></v-text-field>
               </v-card>
             </v-col>
           </v-row>
         </v-container>
-        <v-container class="lighten-5">
+        <v-container>
           <v-row no-gutters style="flex-wrap: nowrap">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="80"
-                color="blue-grey lighten-5"
-                >入院日
-              </v-card>
+            <v-col cols="3" class="flex-grow-0 flex-shrink-0">
+              <v-card elevation="0">退院日 </v-card>
             </v-col>
-            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+            <v-col cols="9" class="flex-grow-0 flex-shrink-0 ml-2">
               <v-card class="pa-0" elevation="0">
                 <datepicker
                   :language="ja"
@@ -448,13 +370,9 @@
                 ></datepicker>
                 <v-card class="d-flex mb-6" color="lighten-2" flat tile>
                   <v-card class="pa-0" elevation="0">
-                    <v-radio-group row
+                    <v-radio-group row class="mt-1"
                       >施設の利用
-                      <v-radio
-                        label="あり"
-                        value="radio-1"
-                        class="ml-2"
-                      ></v-radio>
+                      <v-radio label="あり" value="radio-1"></v-radio>
                       <v-radio label="なし" value="radio-2"></v-radio>
                     </v-radio-group>
                   </v-card>
@@ -462,34 +380,27 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n5 mx-auto">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="30"
-                color="blue-grey lighten-5"
-                >食事
-              </v-card>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-n6 mx-auto">
+            <v-col cols="3" class="flex-grow-0 flex-shrink-0">
+              <v-card elevation="0" min-height="30">食事 </v-card>
             </v-col>
-            <v-col cols="8" class="mt-n5 mx-auto">
+            <v-col cols="9" class="mt-n5 mx-auto">
               <v-card class="d-flex" elevation="0">
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="朝食"
                     value="朝食"
                     hide-details
                   ></v-checkbox>
                 </v-card>
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="昼食"
                     value="昼食"
                     hide-details
                   ></v-checkbox>
                 </v-card>
-                <v-card class="pa-2" elevation="0">
+                <v-card elevation="0">
                   <v-checkbox
                     label="夕食"
                     value="夕食"
@@ -499,29 +410,26 @@
               </v-card>
             </v-col>
           </v-row>
-
-          <v-card class="d-flex mt-3" elevation="0">
-            <v-card elevation="0">
-              <v-btn color="primary" text @click="dialog = false"> 削除 </v-btn>
-            </v-card>
-            <v-card elevation="0">
-              <v-btn color="primary" text @click="dialog = false">
-                クリア
-              </v-btn>
-            </v-card>
-            <v-card elevation="0" class="ml-auto">
-              <v-btn color="primary" text @click="dialog = false"> 登録 </v-btn>
-            </v-card>
-          </v-card>
         </v-container>
+        <hr size="1" />
+
+        <v-card class="d-flex mt-3" elevation="0">
+          <v-card elevation="0">
+            <v-btn @click="dialog = false" tile outlined> 削除 </v-btn>
+          </v-card>
+          <v-card elevation="0" class="ml-1">
+            <v-btn @click="dialog = false" tile outlined> クリア </v-btn>
+          </v-card>
+          <v-card elevation="0" class="ml-auto">
+            <v-btn @click="dialog = false" tile outlined> 登録 </v-btn>
+          </v-card>
+        </v-card>
       </v-card>
     </v-dialog>
 
     <v-dialog v-model="dialog_add" width="500">
-      <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
-          個別加算追加登録
-        </v-card-title>
+      <v-card class="pa-2">
+        <v-card-title> 個別加算追加登録 </v-card-title>
         <v-card class="d-flex justify-center" flat>
           <v-card class="pa-2" elevation="0">
             <wj-combo-box :items-source="addSelect"></wj-combo-box>
@@ -530,59 +438,41 @@
         <v-container class="lighten-5">
           <v-row no-gutters style="flex-wrap: nowrap">
             <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
-                >開始日
-              </v-card>
+              <v-card elevation="0">開始日 </v-card>
             </v-col>
-            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2">
+            <v-col cols="8">
               <v-card elevation="0">
                 <datepicker
                   :language="ja"
                   :format="DatePickerFormat"
-                  class="input_picker mt-2"
+                  class="input_picker"
                 ></datepicker>
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters style="flex-wrap: nowrap">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0 mt-2">
-              <v-card class="pa-2" outlined tile color="blue-grey lighten-5"
-                >終了日
-              </v-card>
+          <v-row no-gutters style="flex-wrap: nowrap" class="mt-1">
+            <v-col cols="4">
+              <v-card elevation="0">終了日 </v-card>
             </v-col>
-            <v-col cols="8" class="flex-grow-0 flex-shrink-0 ml-2 mt-2">
+            <v-col cols="8">
               <v-card elevation="0">
                 <datepicker
                   :language="ja"
                   :format="DatePickerFormat"
-                  class="input_picker mt-2"
+                  class="input_picker"
                 ></datepicker>
               </v-card>
             </v-col>
           </v-row>
           <v-row no-gutters style="flex-wrap: nowrap" class="mt-5 mx-auto">
-            <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="30"
-                color="blue-grey lighten-5"
-                >単位数
-              </v-card>
+            <v-col cols="4">
+              <v-card elevation="0">単位数 </v-card>
             </v-col>
-            <v-col cols="8" class="mt-2 ml-2 mx-auto"> 30単位/日 </v-col>
+            <v-col cols="8"> 30単位/日 </v-col>
           </v-row>
           <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
             <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-                min-height="30"
-                color="blue-grey lighten-5"
-                >留意事項
-              </v-card>
+              <v-card elevation="0">留意事項 </v-card>
             </v-col>
             <v-col cols="8">
               <ol>
@@ -593,21 +483,17 @@
             </v-col>
           </v-row>
 
+          <hr size="1" />
+
           <v-card class="d-flex mt-3" elevation="0">
             <v-card elevation="0">
-              <v-btn color="primary" text @click="dialog_add = false">
-                削除
-              </v-btn>
+              <v-btn @click="dialog_add = false" tile outlined> 削除 </v-btn>
             </v-card>
-            <v-card elevation="0">
-              <v-btn color="primary" text @click="dialog_add = false">
-                クリア
-              </v-btn>
+            <v-card elevation="0" class="ml-1">
+              <v-btn @click="dialog_add = false" tile outlined> クリア </v-btn>
             </v-card>
             <v-card elevation="0" class="ml-auto">
-              <v-btn color="primary" text @click="dialog_add = false">
-                登録
-              </v-btn>
+              <v-btn @click="dialog_add = false" tile outlined> 登録 </v-btn>
             </v-card>
           </v-card>
         </v-container>
@@ -737,7 +623,7 @@ export default {
           },
           {
             name: '西経市',
-            term:'7/10～7/20',
+            term: '7/10～7/20',
           },
         ],
         limitAdmin: [
@@ -1060,12 +946,13 @@ export default {
       return this.infoData;
     },
 
-    dialogAdd: function () {
-      this.dialog_add = true;
+    dialogModal: function () {
+      this.dialog = true;
     },
     onInitializedInfo: function (flexGrid) {
       flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 30;
+      flexGrid.columnHeaders.rows[0].height = 60;
       flexGrid.formatItem.addHandler(cellEdit);
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
@@ -1075,19 +962,21 @@ export default {
 
         if (ht.target.innerText == define_second[2].sub) {
           _self.dialog = true;
-        }
-        if (ht.target.innerText == define_third[5].name) {
+        } else if (ht.target.innerText == define_third[5].name) {
           _self.dialog_add = true;
-        }
-        //個別加算編集アイコン
-        if (ht.target.innerText == 'editicon') {
-          _self.dialog = true;
-        }
-        //赤丸
-        if (e.target.innerHTML == '〇') {
+        } else if (ht.target.innerText == 'editicon') {
+          //個別加算編集アイコン
+          _self.dialog_add = true;
+        } else if (e.target.innerHTML == '〇') {
+          //赤丸
           e.target.innerText = '×';
         } else if (e.target.innerHTML == '×') {
-          e.target.innerText = '〇';
+          e.target.innerHTML = '';
+        } else if (
+          e.target.innerHTML == '' ||
+          e.target.innerHTML == '<div class="red-sign"></div>'
+        ) {
+          e.target.innerHTML = '<div class="red-sign">〇</div>';
         }
       });
     },
@@ -1123,11 +1012,9 @@ function cellEdit(s, e) {
     } else if (e.cell.innerText == '1') {
       str = "<div class='maru'>maru</div>";
     } else if (e.cell.innerText == '2') {
-      str =
-        "<div class='text-center' style='font-size:1.5em; color:red;'>〇</div>";
+      str = "<div class='red-sign'>〇</div>";
     } else if (e.cell.innerText == '3') {
-      str =
-        "<div class='text-center' style='font-size:1.5em; color:red;'>×</div>";
+      str = "<div class='red-sign'>×</div>";
     } else if (e.cell.innerText == define_second[2].name) {
       str =
         "<div class='text-left-float'>" +
@@ -1186,9 +1073,8 @@ function cellEdit(s, e) {
         "<div class='text-left-float addButton'>" +
         define_third[5].name +
         '</div>';
-    } else if (e.cell.innerText == "項目") {
-      str =
-        "<div class='text-center'>項目</div>";
+    } else if (e.cell.innerText == '項目') {
+      str = "<div class='text-center'>項目</div>";
     } else {
       str = e.cell.innerHTML;
     }
@@ -1211,163 +1097,169 @@ function cellEdit(s, e) {
 //共通cssに移動全体のサイズ
 html {
   overflow-x: scroll;
-}
-
-#app {
-  min-width: 1920px;
-  margin: 0 auto;
-}
-div#main {
-  font-size: 14px;
-  font-family: 'メイリオ';
+  width: 1366px !important;
 }
 
 .input_picker {
   div > input {
-    border: 1px ridge #333333;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    width: 100%;
-  }
-}
-
-span#selectUserExamNumber,
-span#selectUserText {
-  min-width: 150px;
-  display: block;
-}
-
-div.border-bottom {
-  border-bottom: 1px solid #ccc;
-  label {
+    border: 1px solid #ccc !important;
     font-size: 0.85em;
+    border-radius: 3px;
+    display: block;
+    text-align: left;
+    padding: 3px;
+    border-style: solid !important;
+    background: url('../assets/calender_25px.png') no-repeat right;
+    background-size: 15px 15px;
+    background-position: right 3px center;
   }
 }
+div#main {
+  font-size: 14px;
+  font-family: 'メイリオ';
 
-.maru {
-  width: 21px;
-  height: 20px;
-  background-image: url('../assets/tyusyaku_07.png');
-  display: block;
-  background-repeat: no-repeat;
-  background-size: 90%;
-  text-indent: -9999px;
-  z-index: -1;
-}
+  span#selectUserExamNumber,
+  span#selectUserText {
+    min-width: 150px;
+    display: block;
+  }
 
-div.editMark {
-  width: 50px;
-  height: 20px;
-  background-color: violet;
-}
+  div.border-bottom {
+    border-bottom: 1px solid #ccc;
+    label {
+      font-size: 0.85em;
+    }
+  }
 
-a.editicon {
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  background-image: url('../assets/tyusyaku_04.png');
-  background-repeat: no-repeat;
-  text-indent: -9999px;
-}
+  .maru {
+    width: 21px;
+    height: 20px;
+    background-image: url('../assets/tyusyaku_07.png');
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 90%;
+    text-indent: -9999px;
+    z-index: -1;
+  }
 
-.addButton {
-  width: 120px;
-  background-color: red;
-  display: block;
-  float: left;
-  color: #fff !important;
-  text-align: left;
-  border-radius: 30px;
-  padding: 3px 0px 3px 10px;
-  cursor: pointer;
-  background-image: url('../assets/plus_15px.png');
-  background-position: 95% 50%;
-}
+  .red-sign {
+    font-size: 1.5em;
+    color: red;
+    text-align: center;
+  }
 
-#theGridTallRows {
-  position: relative;
-}
+  div.editMark {
+    width: 50px;
+    height: 20px;
+    background-color: violet;
+  }
 
-#theGridTallRows.wj-flexgrid .wj-cell {
-  height: 40px;
-}
+  a.editicon {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background-image: url('../assets/tyusyaku_04.png');
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+  }
 
-.wj-rowheaders {
-  .wj-row {
-    & > div.wj-cell.wj-header {
-      & > div {
-        transform: translate(-50%, -50%);
-        writing-mode: vertical-rl;
+  .addButton {
+    width: 120px;
+    background-color: red;
+    display: block;
+    float: left;
+    color: #fff !important;
+    text-align: left;
+    border-radius: 30px;
+    padding: 3px 0px 3px 10px;
+    cursor: pointer;
+    background-image: url('../assets/plus_15px.png');
+    background-position: 95% 50%;
+  }
+
+  #theGridTallRows {
+    position: relative;
+  }
+
+  #theGridTallRows.wj-flexgrid .wj-cell {
+    height: 40px;
+  }
+
+  .wj-rowheaders {
+    .wj-row {
+      & > div.wj-cell.wj-header {
+        & > div {
+          transform: translate(-50%, -50%);
+          writing-mode: vertical-rl;
+        }
       }
     }
   }
-}
 
-//チャート用
-.borderPlace {
-  height: 2px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  &--left {
-    content: '';
-    width: 0px;
-    height: 0px;
-    border: 5px solid;
-    display: block;
+  //チャート用
+  .borderPlace {
+    height: 2px;
     position: absolute;
-    top: -4px;
-    left: -7px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    &--left {
+      content: '';
+      width: 0px;
+      height: 0px;
+      border: 5px solid;
+      display: block;
+      position: absolute;
+      top: -4px;
+      left: -7px;
+    }
+    &--right {
+      content: '';
+      border: 1px solid red;
+      width: 0px;
+      height: 0px;
+      border: 5px solid;
+      border-color: transparent transparent transparent aqua;
+      display: block;
+      position: absolute;
+      top: -4px;
+      right: -7px;
+      left: auto;
+    }
   }
-  &--right {
-    content: '';
-    border: 1px solid red;
-    width: 0px;
-    height: 0px;
-    border: 5px solid;
-    border-color: transparent transparent transparent aqua;
-    display: block;
+  .borderBox {
+    padding: 2px 30px;
+    border: 1px solid #333;
     position: absolute;
-    top: -4px;
-    right: -7px;
-    left: auto;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+    margin-top: 10px;
+    background-image: url('../assets/tyusyaku_04.png');
+    background-position: 95% 40%;
   }
-}
-.borderBox {
-  padding: 2px 30px;
-  border: 1px solid #333;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  background-color: #fff;
-  margin-top: 10px;
-  background-image: url('../assets/tyusyaku_04.png');
-  background-position: 95% 40%;
-}
 
-div.text-left-float {
-  float: left;
-}
-div.text-right-float {
-  float: right;
-}
-div.border-right {
-  border-left: 1px solid #ccc;
-  width: 150px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding-left: 20px;
-  height: 100%;
-}
-div.border-right p {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  transform: translate(0, -50%);
+  div.text-left-float {
+    float: left;
+  }
+  div.text-right-float {
+    float: right;
+  }
+  div.border-right {
+    border-left: 1px solid #ccc;
+    width: 150px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-left: 20px;
+    height: 100%;
+  }
+  div.border-right p {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
 }
 </style>

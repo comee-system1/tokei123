@@ -6,7 +6,7 @@ export function getOriginalDetailData() {
 		{
 			sityoid: 12345,
 			riid: 55555,
-      sikyuryo:"61:児童発達支援",
+      sikyuryo:"10日/月",
 			dkbn: 0,
       staymd: "20220401",
       ms2_kaisu: 7,

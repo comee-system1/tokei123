@@ -18,7 +18,7 @@ export function getOriginalDetailData() {
 			tnka_kns_d: 300,
 			tnka_kns_m: 6000,
 			tnka_kns_m2: 300,
-			staymd: "20220401",
+			staymd: "20210401",
 			ms2_kaisu: 10,
 			taiymd:"20210424",
 			ttymd:"20210424",

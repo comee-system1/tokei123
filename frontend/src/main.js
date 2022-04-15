@@ -5,8 +5,6 @@ import vuetify from './plugins/vuetify'
 import commonCss from './assets/scss/common.scss'
 import '@grapecity/wijmo.styles/wijmo.css';
 
-
-
 Vue.config.productionTip = false
 
 new Vue({

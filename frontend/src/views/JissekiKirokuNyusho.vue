@@ -2,18 +2,18 @@
   <div>
     <v-layout>
       <v-flex md12 class="basic-info">
-        <div>
+        <div class="service-selection-area">
           <label for="theComboString">サービス</label>
             <wj-combo-box
                 id="sarvice-combo"
                 :itemsSource="comboData">
             </wj-combo-box>
         </div>
-        <div>
+        <div class="month-selection-area">
           <label for="theDate">請求月</label>
-          <wj-input-date class="input-date"></wj-input-date>
+          <input type="month" name="example" :value="year + '-' + lastMonth"/>
           <label for="theDate">提供月</label>
-          <wj-input-date class="input-date"></wj-input-date>
+          <input type="month" name="example" :value="year + '-' + month"/>
         </div>
       </v-flex>
     </v-layout>
@@ -55,16 +55,16 @@
           >
             <wj-flex-grid-column header="日付" binding="rymd" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-            <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
-            <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="朝食" binding="sasa" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="昼食" binding="shiru" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="夕食" binding="syuu" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'10*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'17*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+            <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="朝食" binding="sasa" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="昼食" binding="shiru" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="夕食" binding="syuu" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'12*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
           </wj-flex-grid>
 
@@ -102,6 +102,11 @@ import "@grapecity/wijmo.vue2.grid.search";
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from '../components/UserList';
+import moment from 'moment';
+
+let year = moment().year();
+let month = moment().format('MM');
+let lastMonth = moment().add(-1, 'M').format('MM');
 
 export default{
   components:{
@@ -109,6 +114,9 @@ export default{
   },
   data(){
     return{
+      year:year,
+      month:month,
+      lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
       comboData:[
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
@@ -188,27 +196,65 @@ export default{
       // ヘッダーとフッターの高さを調整
       grid.columnHeaders.rows[1].height = 45;
       grid.columnFooters.rows[0].height = 25;
-      // ヘッダーとフッターのスタイルをカスタマイズ
+      // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
         var s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          // ヘッダーのスタイル
           s.backgroundColor = "#d4edf4";
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
+          s.borderBottom = "2px solid #348498";
+          if(r == 0 && (c == 1 || c == 2 || c == 8)){
+            s.borderRight = "2px solid #348498";
+          }
+          else if(r == 1 && (c == 1 || c == 7 || c == 11)){
+            s.borderRight = "2px solid #348498";
+          }
         }
-        if(panel.cellType == wjGrid.CellType.ColumnFooter){
+        else if(panel.cellType == wjGrid.CellType.Cell){
+          // 通常セルのスタイル
+          s.color = "#4d4d4d";
+          if(c == 1 || c == 7 || c == 11){
+            s.borderRight = "2px solid #348498";
+          }
+
+          if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
+            s.color = "blue";
+          }
+          else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
+            s.color = "red";
+          }
+        }
+        else if(panel.cellType == wjGrid.CellType.ColumnFooter){
+          // フッターのスタイル
+          s.color = "#4d4d4d";
+          s.fontWeight = "normal";
+          s.borderTop = "2px solid #348498";
           if(c == 0 || c == 1 ||c == 2 ){
             s.backgroundColor = "#d4edf4";
           }else if(c == 12){
             s.backgroundColor = "#cccccc";
           }else{
-          s.backgroundColor = "#ffffff";
+            s.backgroundColor = "#ffffff";
           }
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
+
+          if(c == 0 || c == 7 || c == 11 ){
+            s.borderRight = "2px solid #348498";
+          }
         }
       }
+      // center-align merged header cells
+      // grid.formatItem.addHandler(function(s, e) {
+      //   console.log(e.panel);
+      //   console.log(e.range.rowSpan > 1);
+      //   if (e.panel == s.columnHeaders) {
+      //     var html = e.cell.innerHTML;
+      //     e.cell.innerHTML = "<div class='v-center'>" + html + "</div>";
+      //   }
+      // });
     },
     onInitializeSubGrid:function(grid){
       // グリッドの選択を無効にする
@@ -216,9 +262,13 @@ export default{
 
       grid.itemFormatter = function(panel,r,c,cell){
         var s = cell.style;
+        s.color = "#4d4d4d";
         s.textAlign = 'center';
         if( c == 0 || c == 1 || c == 3 || c == 5){
           s.backgroundColor= "#d4edf4";
+        }
+        if(r == 1 && ( c==5||c==6)){
+          s.backgroundColor= "#cccccc";
         }
       }
     }
@@ -309,10 +359,12 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 </script>
 
 <style scoped>
+
+/* パンくずリスト下の基本情報エリアのスタイル */
 .basic-info{
   background-color: #333;
   height:80px;
-  padding:10px;
+  padding:0 10px;
 }
 
 .basic-info label{
@@ -322,10 +374,8 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin-right:20px;
 }
 
-.basic-info input,select{
-  background:white;
-  font-size:12px;
-  margin-left:10px;
+.service-selection-area{
+  margin-top:8px;
   margin-bottom:5px;
 }
 
@@ -334,11 +384,28 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   font-size:14px;
 }
 
-.input-date{
-  font-size:14px;
-  width:130px;
+.month-selection-area{
+  margin-bottom:5px;
 }
 
+.month-selection-area label{
+  margin-right:33px;
+}
+
+.month-selection-area label:nth-child(3){
+  margin-left:60px;
+}
+
+.month-selection-area Input{
+  background-color: white;
+  font-size:14px;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 4px;
+  height:30px;
+  padding:5px;
+}
+
+/* 利用者情報エリアのスタイル */
 .user-info{
   padding:0;
   font-size:12px;
@@ -359,13 +426,22 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin-right:20px;
 }
 
+/* グリッドのスタイル */
 #detailGrid {
   margin-top:10px;
   font-size:12px;
   height:650px;
 }
 
+#detailGrid.wj-control.wj-content.wj-flexgrid {
+  border: 2px solid #348498;
+}
+
 #subGrid {
   font-size:12px;
+}
+
+#subGrid.wj-control.wj-content.wj-flexgrid {
+  border: 2px solid #348498;
 }
 </style>

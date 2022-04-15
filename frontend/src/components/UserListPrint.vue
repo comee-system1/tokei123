@@ -88,12 +88,11 @@
   </v-col>
 </template>
 <script>
-import Vue from 'vue';
-
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import customMergeUser from '@/utiles/customMergeUser';
 
+import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
@@ -126,11 +125,53 @@ export default {
   data() {
     return {
       member: ['全員'],
-      usersData: this.createUser(),
+      usersData: [],
       selects: selects,
       isDroppedDown: false,
       alphabet: alphabet,
+      riyo_inf: [],
     };
+  },
+  beforeCreate() {
+    let usersData = [];
+    usersData['status'] = 'idle';
+
+    const axiosApi = axios.create({
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    let riyo_inf = axiosApi
+      .get('http://local-tokei/')
+      .then(function (response) {
+        console.log(response);
+        userCount = 100;
+        let riyo_inf = [];
+        for (let i = 0; i < userCount; i++) {
+          riyo_inf.push({
+            riid: '5500' + i,
+            riyocode: i + 1000,
+            names: '東経太郎' + i,
+            kana: 'トウケイタロウ' + i,
+            jukyuid: i * 10,
+            jyukyuno: 'num-' + i * Math.random(),
+            sityoid: i * 30,
+            jidoid: i * 40,
+            kzkname: '東経家族' + i,
+            kakutei: 0,
+            active: false,
+          });
+        }
+        return riyo_inf;
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert('error');
+      });
+    console.log(riyo_inf);
+
+    this.riyo_inf = riyo_inf;
   },
   methods: {
     sortUser: function (sortType) {
@@ -150,33 +191,46 @@ export default {
       this.userFilter();
     },
     createUser: function () {
-      let usersData = [];
-      console.log(this.axios);
+      // const axiosApi = axios.create({
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // });
 
-      usersData['status'] = 'idle';
-      userCount = 100;
-      let riyo_inf = [];
-      for (let i = 0; i < userCount; i++) {
-        riyo_inf.push({
-          riid: '5500' + i,
-          riyocode: i + 1000,
-          names: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          jukyuid: i * 10,
-          jyukyuno: 'num-' + i * Math.random(),
-          sityoid: i * 30,
-          jidoid: i * 40,
-          kzkname: '東経家族' + i,
-          kakutei: 0,
-          active: false,
-        });
-      }
-      usersData['riyo_inf'] = riyo_inf;
+      // axiosApi
+      //   .get('http://local-tokei/')
+      //   .then(function (response) {
+      //     console.log(response);
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
+
+      // userCount = 100;
+      // let riyo_inf = [];
+      // for (let i = 0; i < userCount; i++) {
+      //   riyo_inf.push({
+      //     riid: '5500' + i,
+      //     riyocode: i + 1000,
+      //     names: '東経太郎' + i,
+      //     kana: 'トウケイタロウ' + i,
+      //     jukyuid: i * 10,
+      //     jyukyuno: 'num-' + i * Math.random(),
+      //     sityoid: i * 30,
+      //     jidoid: i * 40,
+      //     kzkname: '東経家族' + i,
+      //     kakutei: 0,
+      //     active: false,
+      //   });
+      // }
+
+      let usersData = [];
+      usersData['riyo_inf'] = this.riyo_inf;
       userDataAll = usersData;
       userDataSelect = userDataAll;
 
       this.userFilter();
-      return riyo_inf;
+      return this.riyo_inf;
     },
 
     userFilter() {

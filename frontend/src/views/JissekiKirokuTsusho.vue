@@ -2,18 +2,18 @@
   <div>
     <v-layout>
       <v-flex md12 class="basic-info">
-        <div>
+        <div class="service-selection-area">
           <label for="theComboString">サービス</label>
             <wj-combo-box
                 id="sarvice-combo"
                 :itemsSource="comboData">
             </wj-combo-box>
         </div>
-        <div>
+        <div class="month-selection-area">
           <label for="theDate">請求月</label>
-          <wj-input-date class="input-date"></wj-input-date>
+          <input type="month" name="example" :value="year + '-' + lastMonth"/>
           <label for="theDate">提供月</label>
-          <wj-input-date class="input-date"></wj-input-date>
+          <input type="month" name="example" :value="year + '-' + month"/>
         </div>
       </v-flex>
     </v-layout>
@@ -32,10 +32,8 @@
               <wj-combo-box :isReadOnly="true" text="00000700"></wj-combo-box>
             </div>
             <div>
-              <label for="theCombo">補足給付摘要の有無</label>
-              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="short-box"></wj-combo-box>
-              <label for="theCombo">補足給付額（日額）</label>
-              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="short-box"></wj-combo-box>
+              <label for="theCombo">契約支給量</label>
+              <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box"></wj-combo-box>
               <v-btn-toggle class="mt-2" mandatory>
                 <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
                 <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
@@ -101,6 +99,11 @@ import "@grapecity/wijmo.vue2.grid.search";
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from '../components/UserList';
+import moment from 'moment';
+
+let year = moment().year();
+let month = moment().format('MM');
+let lastMonth = moment().add(-1, 'M').format('MM');
 
 export default{
   components:{
@@ -108,6 +111,9 @@ export default{
   },
   data(){
     return{
+      year:year,
+      month:month,
+      lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
       comboData:[
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
@@ -118,6 +124,7 @@ export default{
       detailGridData:getGridData(getOriginalDetailData()),
       tkkfhiumuData:"",
       tkkfhiData:"",
+      sikyuryoData:JSON.parse(getOriginalDetailData())['riyo_inf'][0]['sikyuryo'],
       subGridData:getSubGridData(),
       modal:false
     }
@@ -208,25 +215,55 @@ export default{
       // ヘッダーとフッターの高さを調整
       grid.columnHeaders.rows[1].height = 25;
       grid.columnFooters.rows[0].height = 25;
-      // ヘッダーとフッターのスタイルをカスタマイズ
+      // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
         var s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          // ヘッダーのスタイル
           s.backgroundColor = "#d4edf4";
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
+          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && (c == 8 || c == 9 || c==10 || c==11))){
+            s.borderBottom = "2px solid #348498";
+          }
+
+          if(c == 1 || c == 4 || c == 10){
+            s.borderRight = "2px solid #348498";
+          }
         }
-        if(panel.cellType == wjGrid.CellType.ColumnFooter){
+        else if(panel.cellType == wjGrid.CellType.Cell){
+          // 通常セルのスタイル
+          s.color = "#4d4d4d";
+          if(c == 1 || c == 4 || c == 10){
+            s.borderRight = "2px solid #348498";
+          }
+
+          if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
+            s.color = "blue";
+          }
+          else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
+            s.color = "red";
+          }
+        }
+        else if(panel.cellType == wjGrid.CellType.ColumnFooter){
+          // フッターのスタイル
+          s.color = "#4d4d4d";
+          s.fontWeight = "normal";
+          s.borderTop = "2px solid #348498";
           if(c == 0 || c == 1 ||c == 2 ){
             s.backgroundColor = "#d4edf4";
           }else if(c == 11){
             s.backgroundColor = "#cccccc";
           }else{
-          s.backgroundColor = "#ffffff";
+            s.backgroundColor = "#ffffff";
           }
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
+
+          if(c == 0 || c == 10){
+            s.borderRight = "2px solid #348498";
+          }
+
         }
       }
     },
@@ -236,6 +273,7 @@ export default{
 
       grid.itemFormatter = function(panel,r,c,cell){
         var s = cell.style;
+        s.color = "#4d4d4d";
         s.textAlign = 'center';
         if( c == 0 || c == 1 || c == 3 || c == 5){
           s.backgroundColor= "#d4edf4";
@@ -317,10 +355,11 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 </script>
 
 <style scoped>
+/* パンくずリスト下の基本情報エリアのスタイル */
 .basic-info{
   background-color: #333;
   height:80px;
-  padding:10px;
+  padding:0 10px;
 }
 
 .basic-info label{
@@ -330,10 +369,8 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin-right:20px;
 }
 
-.basic-info input,select{
-  background:white;
-  font-size:12px;
-  margin-left:10px;
+.service-selection-area{
+  margin-top:8px;
   margin-bottom:5px;
 }
 
@@ -342,11 +379,28 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   font-size:14px;
 }
 
-.input-date{
-  font-size:14px;
-  width:130px;
+.month-selection-area{
+  margin-bottom:5px;
 }
 
+.month-selection-area label{
+  margin-right:33px;
+}
+
+.month-selection-area label:nth-child(3){
+  margin-left:60px;
+}
+
+.month-selection-area Input{
+  background-color: white;
+  font-size:14px;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 4px;
+  height:30px;
+  padding:5px;
+}
+
+/* 利用者情報エリアのスタイル */
 .user-info{
   padding:0;
   font-size:12px;
@@ -362,18 +416,27 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin:0;
 }
 
-.short-box {
-  width:60px;
+.keiyakusikyu-box {
+  width:120px;
   margin-right:20px;
 }
 
+/* グリッドのスタイル */
 #detailGrid {
   margin-top:10px;
   font-size:12px;
   height:650px;
 }
 
+#detailGrid.wj-control.wj-content.wj-flexgrid {
+  border: 2px solid #348498;
+}
+
 #subGrid {
   font-size:12px;
+}
+
+#subGrid.wj-control.wj-content.wj-flexgrid {
+  border: 2px solid #348498;
 }
 </style>
