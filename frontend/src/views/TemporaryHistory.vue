@@ -35,32 +35,34 @@
     </v-container>
 
     <v-container fluid>
-      <v-row>
-        <user-list-print
-          @child-select="setUserSelectPoint"
-          @child-event="createInfo"
-          @child-user="childSelectUser"
-        >
-        </user-list-print>
-        <v-col cols="10">
+      <v-row no-gutters>
+        <v-col cols="3">
+          <user-list-print
+            @child-select="setUserSelectPoint"
+            @child-event="createInfo"
+            @child-user="childSelectUser"
+          >
+          </user-list-print>
+        </v-col>
+        <v-col cols="9" class="pa-1">
           <v-container fluid>
-            <v-row>
-              <v-col cols="2">
+            <v-row no-gutters class="ml-1">
+              <v-col cols="3">
                 <v-row class="border-bottom">
-                  <v-col class="pa-2" cols="3"
+                  <v-col class="pa-1" cols="3"
                     ><label><b>利用者</b></label></v-col
                   >
-                  <v-col class="pa-2" cols="*"
+                  <v-col class="pa-1" cols="6"
                     ><span id="selectUserText"></span>
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="1">
-                <v-row>
-                  <v-col class="pa-2">
+                <v-row no-getters>
+                  <v-col class="mt-n1">
                     <v-btn x-small @click="onMoveUser('back')"
-                      ><span class="wj-glyph-left"></span></v-btn
-                    >&nbsp;
+                      ><span class="wj-glyph-left"></span
+                    ></v-btn>
                     <v-btn x-small @click="onMoveUser('next')"
                       ><span class="wj-glyph-right"></span
                     ></v-btn>
@@ -69,17 +71,17 @@
               </v-col>
               <v-col cols="3">
                 <v-row class="border-bottom">
-                  <v-col class="pa-2" cols="4"
-                    ><label class="pa-2"><b>受給者証番号</b></label></v-col
+                  <v-col class="pa-1" cols="4"
+                    ><label class="pa-1"><b>受給者証番号</b></label></v-col
                   >
-                  <v-col class="pa-2" cols="*"
+                  <v-col class="pa-1" cols="4"
                     ><span id="selectUserExamNumber"></span>
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="*">
-                <v-row>
-                  <v-col class="pa-2" cols="*"
+                <v-row class="mt-n5">
+                  <v-col
                     ><small
                       >最終編集者: R03.08.08 12:36 (担当者：大正雅夫)</small
                     >
@@ -88,84 +90,74 @@
               </v-col>
             </v-row>
           </v-container>
-          <v-container class="py-0 px-0 ma-6 mt-6">
-            <v-card class="pa-5 overflow-auto" md="auto" max-height="130">
+          <v-container ma-0 pa-0>
+            <v-card class="overflow-y" pa-0 max-height="130" elevation="0">
               <v-row no-gutters>
-                <v-col md="auto">
-                  <v-card class="pa-2 text-center text-caption" elevation="0">
-                    <label class="font-weight-black">援護者</label>
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0">
+                    受給者証<br />情報
                   </v-card>
                 </v-col>
-                <v-col md="auto">
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0"> 援護者 </v-card>
+                </v-col>
+                <v-col cols="12" sm="1">
                   <v-card
-                    class="pa-2"
+                    class="pa-1"
                     elevation="0"
                     v-for="(n, index) in helper.helper"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{ n.name }}</span>
-                    <span class="ml-2">{{ n.term }}</span>
+                    <div>{{ n.name }}</div>
+                    <div>{{ n.term }}</div>
                   </v-card>
                 </v-col>
-                <v-col md="auto" class="ml-4">
-                  <v-card class="pa-2 text-center text-caption" elevation="0">
-                    <label class="font-weight-black">助成自治体番号</label>
-                  </v-card>
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0"> 助成自治体番号 </v-card>
                 </v-col>
-                <v-col md="auto">
-                  <v-card class="pa-2" elevation="0" :min-width="100">
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0">
                     {{ helper.helperNum }}
                   </v-card>
                 </v-col>
-                <v-col md="auto" class="ml-4">
-                  <v-card class="pa-2 text-caption" elevation="0">
-                    <label class="font-weight-black">障害種別</label>
-                  </v-card>
-                  <v-card class="pa-2 text-caption" elevation="0">
-                    <label class="font-weight-black">障害支区</label>
-                  </v-card>
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0"> 障害種別 </v-card>
+                  <v-card class="pa-1" elevation="0"> 障害支区 </v-card>
                 </v-col>
-                <v-col md="auto">
-                  <v-card class="pa-2" elevation="0" :min-width="100">
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0">
                     {{ helper.personType }}
                   </v-card>
-                  <v-card class="pa-2" elevation="0" :min-width="100">
+                  <v-card class="pa-1" elevation="0">
                     {{ helper.personHelp }}
                   </v-card>
                 </v-col>
-                <v-col md="auto" class="ml-4">
-                  <v-card class="pa-2 text-caption" elevation="0">
-                    <label class="font-weight-black">負担上限額</label>
-                  </v-card>
-                  <v-card class="pa-2 text-caption" elevation="0">
-                    <label class="font-weight-black">特別給付費</label>
-                  </v-card>
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0"> 負担上限額 </v-card>
+                  <v-card class="pa-1" elevation="0"> 特別給付費 </v-card>
                 </v-col>
-                <v-col md="auto">
-                  <v-card class="pa-2" elevation="0" :min-width="100">
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0">
                     {{ helper.chargeMaxMoney }}
                   </v-card>
-                  <v-card class="pa-2" elevation="0" :min-width="100">
+                  <v-card class="pa-1" elevation="0">
                     {{ helper.specialMoney }}
                   </v-card>
                 </v-col>
-
-                <v-col md="auto" class="ml-4">
-                  <v-card class="pa-2 text-center text-caption" elevation="0">
-                    <label class="font-weight-black">上限管理事</label>
-                  </v-card>
+                <v-col cols="12" sm="1">
+                  <v-card class="pa-1" elevation="0"> 上限管理事 </v-card>
                 </v-col>
-                <v-col md="auto">
+                <v-col cols="12" sm="1">
                   <v-card
-                    class="pa-2"
+                    class="pa-1"
                     elevation="0"
                     v-for="(n, index) in helper.limitAdmin"
                     :key="index"
                     :min-width="100"
                   >
-                    <span>{{ n.name }}</span>
-                    <span class="ml-2">{{ n.term }}</span>
+                    <div>{{ n.name }}</div>
+                    <div>{{ n.term }}</div>
                   </v-card>
                 </v-col>
               </v-row>
@@ -205,20 +197,20 @@
             <wj-flex-grid-column
               header=" "
               binding="space"
-              :width="30"
+              :width="25"
               :wordWrap="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               header="項目"
               binding="item"
-              :width="300"
+              :width="160"
               :wordWrap="true"
               :allowMerging="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               v-for="d in daycount"
               :key="d"
-              :width="35"
+              :width="22"
               :header="year + '/' + month + '/' + d"
               :binding="'day' + d"
               :wordWrap="true"
@@ -519,9 +511,9 @@ import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
 
 //1日分の幅
-let oneday = 35;
+let oneday = 22;
 //グラフはじめのスタート位置
-let startPos = 330;
+let startPos = 185;
 //ユーザーデータ
 let userDataSelect = [];
 
@@ -536,7 +528,7 @@ define_second[1] = {
 };
 define_second[2] = {
   name: '入退院・外泊',
-  sub: '期間追加',
+  sub: '期間',
 };
 define_second[3] = {
   name: '食事',
@@ -819,13 +811,14 @@ export default {
       this.createInfo();
       this.getBorder();
     },
-    getBorder: function () {
+    getBorder: function (usercode = '') {
       if (this.year) year = this.year;
       if (this.month) month = this.month;
       let borderdata = [];
 
       borderdata.push({
         key: 1,
+        usercode: 1000,
         year: 2022,
         month: 4,
         start_day: '2022-04-05',
@@ -836,6 +829,7 @@ export default {
 
       borderdata.push({
         key: 2,
+        usercode: 1000,
         year: 2022,
         month: 4,
         start_day: '2022-04-28',
@@ -845,8 +839,13 @@ export default {
       });
 
       let border = [];
+      console.log(usercode);
       borderdata.forEach(function (value) {
-        if (year == value.year && month == value.month) {
+        if (
+          year == value.year &&
+          month == value.month
+          //&& usercode == value.usercode
+        ) {
           border.push({
             key: value.key,
             year: value.year,
@@ -893,6 +892,8 @@ export default {
       } else {
         usercode = userInfo[0].usercode;
       }
+
+      this.getBorder(usercode);
       userInfo.forEach(function (element) {
         if (
           element.year == year &&
@@ -951,7 +952,7 @@ export default {
     },
     onInitializedInfo: function (flexGrid) {
       flexGrid.mergeManager = new customMerge();
-      flexGrid.rowHeaders.columns[0].width = 30;
+      flexGrid.rowHeaders.columns[0].width = 20;
       flexGrid.columnHeaders.rows[0].height = 60;
       flexGrid.formatItem.addHandler(cellEdit);
       let _self = this;
@@ -1052,22 +1053,22 @@ function cellEdit(s, e) {
       str =
         "<div class='text-left-float'>" +
         define_third[1].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[2].name) {
       str =
         "<div class='text-left-float'>" +
         define_third[2].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[3].name) {
       str =
         "<div class='text-left-float'>" +
         define_third[3].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[4].name) {
       str =
         "<div class='text-left-float'>" +
         define_third[4].name +
-        "</div><div class='text-right-float '><a class='editicon'>editicon</a></div>";
+        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[5].name) {
       str =
         "<div class='text-left-float addButton'>" +
@@ -1132,8 +1133,8 @@ div#main {
   }
 
   .maru {
-    width: 21px;
-    height: 20px;
+    width: 12px;
+    height: 13px;
     background-image: url('../assets/tyusyaku_07.png');
     display: block;
     background-repeat: no-repeat;
@@ -1143,7 +1144,7 @@ div#main {
   }
 
   .red-sign {
-    font-size: 1.5em;
+    font-size: 11px;
     color: red;
     text-align: center;
   }
@@ -1155,26 +1156,40 @@ div#main {
   }
 
   a.editicon {
-    width: 15px;
-    height: 15px;
+    width: 10px;
+    height: 10px;
     display: inline-block;
+    background-size: contain;
     background-image: url('../assets/tyusyaku_04.png');
+    background-position: right bottom;
     background-repeat: no-repeat;
     text-indent: -9999px;
+    margin-top: 5px;
   }
 
   .addButton {
-    width: 120px;
-    background-color: red;
+    width: 60px;
+    background-color: #bea6ae;
     display: block;
     float: left;
-    color: #fff !important;
+    color: #000;
     text-align: left;
-    border-radius: 30px;
+    border-radius: 6px;
     padding: 3px 0px 3px 10px;
     cursor: pointer;
     background-image: url('../assets/plus_15px.png');
     background-position: 95% 50%;
+    background-size: 10px 10px;
+    position: absolute;
+    top: 0;
+    margin-top: 10px;
+    left: auto;
+    right: 0;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: #f5f5f5 !important;
+    color: #000 !important;
   }
 
   #theGridTallRows {
@@ -1182,7 +1197,7 @@ div#main {
   }
 
   #theGridTallRows.wj-flexgrid .wj-cell {
-    height: 40px;
+    height: 45px;
   }
 
   .wj-rowheaders {
@@ -1241,18 +1256,22 @@ div#main {
   }
 
   div.text-left-float {
-    float: left;
+    position: relative;
+    width: 100%;
   }
   div.text-right-float {
-    float: right;
-  }
-  div.border-right {
-    border-left: 1px solid #ccc;
-    width: 150px;
     position: absolute;
     top: 0;
     right: 0;
-    padding-left: 20px;
+    left: auto;
+  }
+  div.border-right {
+    border-left: 1px solid #ccc;
+    width: 60px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-left: 5px;
     height: 100%;
   }
   div.border-right p {

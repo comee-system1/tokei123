@@ -1,29 +1,74 @@
 <template>
-  <v-col cols="2">
-    <v-row>
-      <v-col col="6"
-        ><wj-combo-box :items-source="member"></wj-combo-box
-      ></v-col>
-      <v-col col="6">
-        <wj-combo-box
-          :textChanged="onTextChangedUser"
-          placeholder="カナ検索"
-        ></wj-combo-box>
-      </v-col>
-    </v-row>
-    <v-row p-0>
+  <div>
+    <v-row no-gutters>
       <v-col col="12">
-        <v-btn-toggle class="mt-2 flex-wrap">
-          <v-btn small color="secondary" dark outlined @click="sortUser(1)"
-            >コード順</v-btn
-          >
-          <v-btn small color="secondary" dark outlined @click="sortUser(2)"
-            >カナ順</v-btn
-          >
-          <v-btn small color="secondary" dark outlined @click="sortUser(3)"
-            >受給者番号順</v-btn
-          >
-        </v-btn-toggle>
+        <v-row no-gutters>
+          <wj-combo-box
+            :textChanged="onTextChangedUser"
+            style="width: 100%"
+            placeholder="カナ検索"
+          ></wj-combo-box>
+        </v-row>
+        <v-row no-gutters class="mt-1">
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(1)"
+            >
+              全員
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(2)"
+              >全員2</v-card
+            >
+          </v-col>
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(3)"
+              >全員3</v-card
+            >
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="mt-1">
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(1)"
+            >
+              コード順
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(2)"
+              >カナ順</v-card
+            >
+          </v-col>
+          <v-col>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(3)"
+              >受給者番号順</v-card
+            >
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <div class="mt-1">
@@ -85,7 +130,7 @@
       :selectedIndex="-1"
       :selectedIndexChanged="onselectedIndexChanged"
     ></wj-combo-box>
-  </v-col>
+  </div>
 </template>
 <script>
 import * as wjCore from '@grapecity/wijmo';
@@ -99,7 +144,7 @@ import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
 
 let selects = ['印刷を全選択', '印刷を全解除'];
-
+let userUrl = 'http://local-tokei:8085/';
 let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
@@ -124,54 +169,12 @@ let alphabet = [
 export default {
   data() {
     return {
-      member: ['全員'],
       usersData: [],
       selects: selects,
       isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
     };
-  },
-  beforeCreate() {
-    let usersData = [];
-    usersData['status'] = 'idle';
-
-    const axiosApi = axios.create({
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    let riyo_inf = axiosApi
-      .get('http://local-tokei/')
-      .then(function (response) {
-        console.log(response);
-        userCount = 100;
-        let riyo_inf = [];
-        for (let i = 0; i < userCount; i++) {
-          riyo_inf.push({
-            riid: '5500' + i,
-            riyocode: i + 1000,
-            names: '東経太郎' + i,
-            kana: 'トウケイタロウ' + i,
-            jukyuid: i * 10,
-            jyukyuno: 'num-' + i * Math.random(),
-            sityoid: i * 30,
-            jidoid: i * 40,
-            kzkname: '東経家族' + i,
-            kakutei: 0,
-            active: false,
-          });
-        }
-        return riyo_inf;
-      })
-      .catch(function (error) {
-        console.log(error);
-        alert('error');
-      });
-    console.log(riyo_inf);
-
-    this.riyo_inf = riyo_inf;
   },
   methods: {
     sortUser: function (sortType) {
@@ -191,50 +194,37 @@ export default {
       this.userFilter();
     },
     createUser: function () {
-      // const axiosApi = axios.create({
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-
-      // axiosApi
-      //   .get('http://local-tokei/')
-      //   .then(function (response) {
-      //     console.log(response);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   });
-
-      // userCount = 100;
-      // let riyo_inf = [];
-      // for (let i = 0; i < userCount; i++) {
-      //   riyo_inf.push({
-      //     riid: '5500' + i,
-      //     riyocode: i + 1000,
-      //     names: '東経太郎' + i,
-      //     kana: 'トウケイタロウ' + i,
-      //     jukyuid: i * 10,
-      //     jyukyuno: 'num-' + i * Math.random(),
-      //     sityoid: i * 30,
-      //     jidoid: i * 40,
-      //     kzkname: '東経家族' + i,
-      //     kakutei: 0,
-      //     active: false,
-      //   });
-      // }
-
       let usersData = [];
-      usersData['riyo_inf'] = this.riyo_inf;
+      usersData['status'] = 'idle';
+      userCount = 100;
+      let riyo_inf = [];
+      for (let i = 0; i < userCount; i++) {
+        riyo_inf.push({
+          riid: '5500' + i,
+          riyocode: i + 1000,
+          names: '東経太郎' + i,
+          kana: 'トウケイタロウ' + i,
+          jukyuid: i * 10,
+          jyukyuno: 'num-' + i * Math.floor(Math.random() * 10) + 1,
+          sityoid: i * 30,
+          jidoid: i * 40,
+          kzkname: '東経家族' + i,
+          kakutei: 0,
+          active: false,
+        });
+      }
+
+      usersData['riyo_inf'] = riyo_inf;
       userDataAll = usersData;
       userDataSelect = userDataAll;
 
       this.userFilter();
-      return this.riyo_inf;
+      return riyo_inf;
     },
 
     userFilter() {
       let data = [];
+
       userDataSelect['riyo_inf'].forEach(function (value) {
         if (checkAll == '0') value.active = true;
         if (checkAll == '1') value.active = false;
@@ -320,29 +310,48 @@ export default {
       this.$emit('child-user', data);
       this.usersData = data;
     },
-
+    userFilter2() {
+      return true;
+    },
     onInitializedUser: function (flexGrid) {
-      let i = 0;
-      while (flexGrid.columns.length < 3) {
-        let clm = new wjGrid.Column();
-        if (i == 0) clm.width = '2*';
-        if (i == 1) clm.width = '2*';
-        if (i == 2) clm.width = '1*';
-        flexGrid.columns.push(clm);
-        i++;
-      }
-      while (flexGrid.rows.length < userCount) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-      flexGrid.formatItem.addHandler(userCell);
-      // configure the grid
-      flexGrid.mergeManager = new customMergeUser();
-      flexGrid.alternatingRowStep = 1;
-
-      //初回のユーザ選択値
-      this.$emit('child-select', 0);
-
+      const axiosApi = axios.create({
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       let _self = this;
+      axiosApi
+        .get(userUrl)
+        .then(function (response) {
+          console.log(response);
+          _self.usersData = _self.createUser();
+
+          let i = 0;
+          while (flexGrid.columns.length < 3) {
+            let clm = new wjGrid.Column();
+            if (i == 0) clm.width = '2*';
+            if (i == 1) clm.width = '2*';
+            if (i == 2) clm.width = '1*';
+            flexGrid.columns.push(clm);
+            i++;
+          }
+
+          while (flexGrid.rows.length < userCount) {
+            flexGrid.rows.push(new wjGrid.Row());
+          }
+          flexGrid.formatItem.addHandler(userCell);
+          // configure the grid
+          flexGrid.mergeManager = new customMergeUser();
+          flexGrid.alternatingRowStep = 1;
+
+          //初回のユーザ選択値
+          _self.$emit('child-select', 0);
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert('error');
+        });
+
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         ht = flexGrid.hitTest(e.pageX, e.pageY);
