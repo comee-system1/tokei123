@@ -47,7 +47,7 @@
               tile
               @click="sortUser(1)"
             >
-              コード順
+              コード
             </v-card>
           </v-col>
           <v-col>
@@ -56,7 +56,7 @@
               outlined
               tile
               @click="sortUser(2)"
-              >カナ順</v-card
+              >カナ</v-card
             >
           </v-col>
           <v-col>
@@ -65,7 +65,7 @@
               outlined
               tile
               @click="sortUser(3)"
-              >受給者番号順</v-card
+              >受給者番号</v-card
             >
           </v-col>
         </v-row>
@@ -74,13 +74,12 @@
     <div class="mt-1">
       <v-btn-toggle class="flex-wrap">
         <v-btn
-          x-small
           outlined
           v-for="(n, k) in alphabet"
           :key="n"
-          :width="5"
+          :width="11"
           p-0
-          style="min-width: auto"
+          style="min-width: auto; padding: 9px; height: 10px"
           @click="onAlphabet(k)"
           >{{ n }}</v-btn
         >
@@ -91,35 +90,36 @@
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 100vh"
+      style="height: 90vh"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
-      :allowResizing="false"
+      :allowResizing="true"
       :allowSorting="false"
     >
       <wj-flex-grid-column
         header="コード"
         binding="riyocode"
         width="2*"
-        :wordWrap="true"
-        :allowResizing="false"
+        :word-wrap="false"
+        :allowResizing="true"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="利用者名"
         binding="names"
         width="3*"
-        :wordWrap="true"
-        :allowResizing="false"
+        :word-wrap="false"
+        :allowResizing="true"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="印刷"
         binding="active"
         width="1*"
-        :wordWrap="true"
-        :allowResizing="false"
+        :word-wrap="false"
+        :allowResizing="true"
+        class="text-caption"
       ></wj-flex-grid-column>
     </wj-flex-grid>
 

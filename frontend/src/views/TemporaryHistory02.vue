@@ -1156,7 +1156,7 @@ function cellEdit(s, e) {
 }
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 //共通cssに移動全体のサイズ
 html {
   overflow-x: scroll;

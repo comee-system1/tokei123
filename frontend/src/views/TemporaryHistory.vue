@@ -1,42 +1,12 @@
 <template>
-  <v-container fluid id="main">
-    <v-container fluid>
-      <v-row dense>
-        <v-col sm="9">
-          <v-row>
-            <v-col col="12" class="d-flex flex-row">
-              <div class="pa-2">サービス</div>
-              <wj-combo-box
-                :textChanged="onTextChanged"
-                text="11210000 障碍者支援 ひまわり"
-                style="width: 300px"
-              ></wj-combo-box>
-              <wj-combo-box :items-source="search"></wj-combo-box>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col col="12" class="d-flex flex-row">
-              <div class="pa-2">提供月</div>
-              <input
-                type="month"
-                name="example"
-                :value="year + '-' + month"
-                v-on:change="calenderChange"
-              />
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col sm="3">
-          <v-row justify="end">
-            <v-btn>登録</v-btn>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-
+  <div id="main">
+    <header-services
+      @parent-calendar="parentCalendar($event, dateArgument)"
+      @parent-search="parentSearch($event, searchArgument)"
+    ></header-services>
     <v-container fluid>
       <v-row no-gutters>
-        <v-col cols="3">
+        <v-col cols="2">
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-event="createInfo"
@@ -44,7 +14,7 @@
           >
           </user-list-print>
         </v-col>
-        <v-col cols="9" class="pa-1">
+        <v-col cols="10" class="pa-1">
           <v-container fluid>
             <v-row no-gutters class="ml-1">
               <v-col cols="3">
@@ -58,7 +28,7 @@
                 </v-row>
               </v-col>
               <v-col cols="1">
-                <v-row no-getters>
+                <v-row no-gutters>
                   <v-col class="mt-n1">
                     <v-btn x-small @click="onMoveUser('back')"
                       ><span class="wj-glyph-left"></span
@@ -203,14 +173,14 @@
             <wj-flex-grid-column
               header="項目"
               binding="item"
-              :width="160"
+              :width="200"
               :wordWrap="true"
               :allowMerging="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               v-for="d in daycount"
               :key="d"
-              :width="22"
+              :width="24"
               :header="year + '/' + month + '/' + d"
               :binding="'day' + d"
               :wordWrap="true"
@@ -491,7 +461,7 @@
         </v-container>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -506,14 +476,15 @@ import customMerge from '@/utiles/customMerge';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 
+import HeaderServices from '../components/HeaderServices.vue';
 import UserListPrint from '../components/UserListPrint.vue';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
 
 //1日分の幅
-let oneday = 22;
+let oneday = 24;
 //グラフはじめのスタート位置
-let startPos = 185;
+let startPos = 225;
 //ユーザーデータ
 let userDataSelect = [];
 
@@ -577,7 +548,6 @@ export default {
       year: year,
       month: month,
       daycount: 0,
-      search: ['32:施設入所支援'],
       addSelect: ['入所時特別支援加算'],
       week: define_week,
       isDroppedDown: false,
@@ -590,9 +560,12 @@ export default {
       dialog_add: false,
       helper: this.getHelperData(),
       DatePickerFormat: 'yyyy年MM月dd日',
+      dateArgument: '',
+      searchArgument: '',
     };
   },
   components: {
+    HeaderServices,
     Datepicker,
     UserListPrint,
   },
@@ -602,6 +575,21 @@ export default {
   },
 
   methods: {
+    parentCalendar(dateArgument) {
+      console.log('parentCalendar');
+      console.log(dateArgument);
+      this.year = dateArgument[0];
+      this.month = dateArgument[1];
+      let m = moment(this.year + '-' + this.month + '-01');
+      this.daycount = m.daysInMonth();
+
+      this.createInfo();
+      this.getBorder();
+    },
+    parentSearch(searchArgument) {
+      console.log('searchArgument');
+      console.log(searchArgument);
+    },
     childSelectUser(data) {
       userDataSelect = data;
     },
@@ -801,16 +789,6 @@ export default {
 
       return this.createInfo();
     },
-    calenderChange: function (e) {
-      let split = e.target.value.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      let m = moment(this.year + '-' + this.month + '-01');
-      this.daycount = m.daysInMonth();
-
-      this.createInfo();
-      this.getBorder();
-    },
     getBorder: function (usercode = '') {
       if (this.year) year = this.year;
       if (this.month) month = this.month;
@@ -823,7 +801,7 @@ export default {
         month: 4,
         start_day: '2022-04-05',
         end_day: '2022-04-22',
-        top: 90,
+        top: 110,
         color: 'red',
       });
 
@@ -834,7 +812,7 @@ export default {
         month: 4,
         start_day: '2022-04-28',
         end_day: '2022-04-30',
-        top: 90,
+        top: 110,
         color: 'green',
       });
 
@@ -980,9 +958,6 @@ export default {
           e.target.innerHTML = '<div class="red-sign">〇</div>';
         }
       });
-    },
-    onTextChanged: function (s) {
-      console.log(s.text);
     },
     onMoveUser: function (type) {
       let row;
@@ -1243,14 +1218,14 @@ div#main {
     }
   }
   .borderBox {
-    padding: 2px 30px;
+    padding: 0px 30px;
     border: 1px solid #333;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1;
     background-color: #fff;
-    margin-top: 10px;
+    margin-top: 5px;
     background-image: url('../assets/tyusyaku_04.png');
     background-position: 95% 40%;
   }

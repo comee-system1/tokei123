@@ -1,43 +1,12 @@
 <template>
-  <v-container fluid id="shisetsu">
+  <div id="shisetsu">
+    <header-services
+      @parent-calendar="parentCalendar($event, dateArgument)"
+      @parent-search="parentSearch($event, searchArgument)"
+    ></header-services>
     <v-container fluid>
-      <v-row dense>
-        <v-col sm="9">
-          <v-row>
-            <v-col col="12" class="d-flex flex-row">
-              <div class="pa-2">サービス</div>
-              <wj-combo-box
-                text="11210000 障碍者支援 ひまわり"
-                style="width: 300px"
-              ></wj-combo-box>
-              <wj-combo-box :items-source="search"></wj-combo-box>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col class="d-flex flex-row">
-              <div class="pa-2">提供月</div>
-              <input
-                type="month"
-                name="example"
-                :value="year + '-' + month"
-                v-on:change="calenderChange"
-              />
-              <div class="pa-2 ml-5">請求月</div>
-              <input type="month" name="example" :value="year + '-' + month" />
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col sm="3">
-          <v-row justify="end">
-            <v-btn>作業状況確認</v-btn>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container fluid>
-      <v-row>
-        <v-col cols="2">
+      <v-row no-gutters>
+        <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="6">
               <v-card class="pa-2 red--text text--lighten-1" outlined tile>
@@ -61,7 +30,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="7">
           <v-row no-gutters>
             <v-col class="ml-auto text-right">
               <v-btn class="pa-1 mt-1" @click="registPage()">
@@ -72,7 +41,7 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row no-gutters pa-0>
             <v-col cols="6">
               <wj-flex-grid
                 :initialized="onInitializedBasic"
@@ -111,7 +80,7 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="6" class="pl-1">
               <wj-flex-grid
                 :initialized="onInitializedPlus"
                 :itemsSource="basicPlus"
@@ -137,15 +106,15 @@
     </v-container>
     <v-container fluid>
       <v-card class="pa-2" outlined tile>
-        <v-row>
-          <v-col sm="3">
+        <v-row no-gutters>
+          <v-col sm="12">
             <v-row no-gutters>
-              <v-col cols="6">
+              <v-col cols="2">
                 <v-card class="pa-2 text-center blue lighten-4" outlined tile>
                   日別算定
                 </v-card>
               </v-col>
-              <v-col cols="2">
+              <v-col cols="4">
                 <v-card class="ml-2 pt-0" elevation="0">
                   <v-checkbox
                     v-model="checkbox"
@@ -162,7 +131,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row no-gutters>
           <v-col cols="12">
             <wj-flex-grid
               id="theGridTallRows"
@@ -197,7 +166,7 @@
         </v-row>
       </v-card>
     </v-container>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -207,6 +176,7 @@ import * as wjCore from '@grapecity/wijmo';
 import customMergeUser from '@/utiles/customMergeUser';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
+import HeaderServices from '../components/HeaderServices.vue';
 
 //最低の行数
 let minRow10 = 10;
@@ -231,9 +201,25 @@ export default {
       buildcheck: buildcheck[0],
       checkbutton: checkbutton[0],
       checkflag: 0,
+      dateArgument: '',
+      searchArgument: '',
     };
   },
+  components: {
+    HeaderServices,
+  },
   methods: {
+    parentCalendar(dateArgument) {
+      this.year = dateArgument[0];
+      this.month = dateArgument[1];
+      let m = moment(this.year + '-' + this.month + '-01');
+      this.daycount = m.daysInMonth();
+      this.getdateData();
+    },
+    parentSearch(searchArgument) {
+      console.log('searchArgument');
+      console.log(searchArgument);
+    },
     getDetail() {
       let data = [];
       data.push(
@@ -348,14 +334,7 @@ export default {
       this.dateData = array;
       return array;
     },
-    calenderChange(e) {
-      let split = e.target.value.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      let m = moment(this.year + '-' + this.month + '-01');
-      this.daycount = m.daysInMonth();
-      this.getdateData();
-    },
+
     getBasicData: function () {
       let basicdata = [];
       basicdata = [{ value: '身体拘束廃止未実装減算' }];

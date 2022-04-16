@@ -3,7 +3,4 @@ module.exports = defineConfig({
   transpileDependencies: [
     'vuetify'
   ],
-  devServer: {
-    proxy: "http://local-tokei/"
-  }
 })
