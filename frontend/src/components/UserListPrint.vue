@@ -323,6 +323,7 @@ export default {
       axiosApi
         .get(userUrl)
         .then(function (response) {
+          console.log('axios success');
           console.log(response);
           _self.usersData = _self.createUser();
 

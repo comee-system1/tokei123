@@ -1069,13 +1069,7 @@ function cellEdit(s, e) {
 }
 </script>
 
-<style lang="scss" scope>
-//共通cssに移動全体のサイズ
-html {
-  overflow-x: scroll;
-  width: 1366px !important;
-}
-
+<style lang="scss">
 .input_picker {
   div > input {
     border: 1px solid #ccc !important;
@@ -1093,7 +1087,9 @@ html {
 div#main {
   font-size: 14px;
   font-family: 'メイリオ';
-
+  //おそらく共通でhtmlに記載した方が良いかと思われる(以下2行)
+  overflow-x: scroll;
+  width: 1366px !important;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
