@@ -167,7 +167,7 @@
             <wj-flex-grid-column
               header=" "
               binding="space"
-              :width="25"
+              :width="30"
               :wordWrap="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
@@ -190,7 +190,7 @@
             <wj-flex-grid-column
               header="合計"
               binding="totals"
-              :width="50"
+              :width="60"
               :wordWrap="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
@@ -199,40 +199,6 @@
               :width="80"
               :wordWrap="true"
             ></wj-flex-grid-column>
-
-            <!-- <div v-for="n in borders" :key="n.key">
-              <div
-                class="borderPlace"
-                v-bind:style="{
-                  width: n.width + 'px',
-                  left: n.left + 'px',
-                  top: n.top + 'px',
-                  backgroundColor: n.color,
-                }"
-              >
-                <div
-                  class="borderPlace--left"
-                  v-bind:style="{
-                    'border-color':
-                      'transparent ' + n.color + ' transparent  transparent',
-                  }"
-                ></div>
-                <div
-                  class="borderPlace--right"
-                  v-bind:style="{
-                    'border-color':
-                      'transparent  transparent  transparent ' + n.color,
-                  }"
-                ></div>
-              </div>
-              <a
-                class="borderBox"
-                v-bind:style="{ left: n.left + 'px', top: n.top + 'px' }"
-                @click="dialogModal()"
-              >
-                {{ n.st }}～{{ n.ed }}[{{ n.diff }}]
-              </a>
-            </div> -->
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -482,10 +448,6 @@ import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
 import numberFormat from '@/utiles/numberFormat';
 
-//1日分の幅
-let oneday = 24;
-//グラフはじめのスタート位置
-let startPos = 225;
 //ユーザーデータ
 let userDataSelect = [];
 
@@ -554,7 +516,6 @@ export default {
       addSelect: ['入所時特別支援加算'],
       week: define_week,
       isDroppedDown: false,
-      borders: this.getBorder(),
       ja: ja,
       infoData: this.createInfoData(),
       selectUserCode: '',
@@ -586,7 +547,6 @@ export default {
       this.daycount = m.daysInMonth();
       daycount = this.daycount;
       this.createInfo();
-      this.getBorder();
     },
     parentSearch(searchArgument) {
       console.log('searchArgument');
@@ -658,11 +618,19 @@ export default {
         usercode: 1000,
         space: define_first[1],
         item: define_second[2].name,
-        day5: 'arrow_12', //入退院の始まりの矢印
+        day5: 'arrow_12' + '-' + '4/5～4/7[3]', //入退院の始まりの矢印(日程を記載)
         day6: 'arrow_11', //入退院の途中の矢印
         day7: 'arrow_11',
         day8: 'arrow_11',
         day9: 'arrow_13', //入退院の終わりの矢印
+
+        day15: 'arrow_22' + '-' + '4/15～4/21[7]', //外泊の始まりの矢印
+        day16: 'arrow_21', //外泊の途中の矢印
+        day17: 'arrow_21',
+        day18: 'arrow_21',
+        day19: 'arrow_21',
+        day20: 'arrow_21',
+        day21: 'arrow_23', //外泊の終わりの矢印
       });
       userInfo.push({
         uniqkey: 3,
@@ -802,95 +770,7 @@ export default {
 
       return this.createInfo();
     },
-    getBorder: function (usercode = '') {
-      if (this.year) year = this.year;
-      if (this.month) month = this.month;
-      let borderdata = [];
 
-      borderdata.push({
-        key: 0,
-        usercode: 1000,
-        year: 2022,
-        month: 4,
-        start_day: '2022-04-01',
-        end_day: '2022-04-02',
-        top: 110,
-        color: 'red',
-      });
-      borderdata.push({
-        key: 1,
-        usercode: 1000,
-        year: 2022,
-        month: 4,
-        start_day: '2022-04-10',
-        end_day: '2022-04-22',
-        top: 110,
-        color: 'red',
-      });
-
-      borderdata.push({
-        key: 2,
-        usercode: 1000,
-        year: 2022,
-        month: 4,
-        start_day: '2022-04-22',
-        end_day: '2022-04-25',
-        top: 110,
-        color: 'green',
-      });
-
-      let border = [];
-      console.log(usercode);
-      borderdata.forEach(function (value) {
-        if (
-          year == value.year &&
-          month == value.month
-          //&& usercode == value.usercode
-        ) {
-          border.push({
-            key: value.key,
-            year: value.year,
-            month: value.month,
-            start_day: value.start_day,
-            end_day: value.end_day,
-            top: value.top,
-            color: value.color,
-          });
-        }
-      });
-
-      let converts = [];
-      for (let i = 0; i < border.length; i++) {
-        let m1 = moment(border[i].end_day);
-        let m2 = moment(border[i].start_day);
-        let minus = 0;
-        let moveRight = 0;
-        if (border[i + 1] && border[i].end_day == border[i + 1].start_day) {
-          minus = oneday / 2 + 3;
-        }
-        if (border[i - 1] && border[i].start_day == border[i - 1].end_day) {
-          minus = oneday / 2;
-          moveRight = oneday / 2;
-        }
-        let width = oneday * m1.diff(m2, 'days') + oneday - minus;
-        let left = startPos + oneday * (m2.date() - 1) + moveRight;
-        minus = 0;
-        converts.push({
-          id: border[i].id,
-          width: width,
-          left: left,
-          top: border[i].top,
-          color: border[i].color,
-          st: m2.format('M/D'),
-          ed: m1.format('M/D'),
-          diff: m1.diff(m2, 'days'),
-        });
-      }
-
-      this.borders = converts;
-
-      return converts;
-    },
     createInfo: function (ucode = '') {
       //表示用のデータ
       if (this.year) year = this.year;
@@ -905,7 +785,6 @@ export default {
         usercode = userInfo[0].usercode;
       }
 
-      this.getBorder(usercode);
       userInfo.forEach(function (element) {
         if (
           element.year == year &&
@@ -968,16 +847,14 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 60;
       flexGrid.formatItem.addHandler(cellEdit);
       let _self = this;
-      flexGrid.scrollPositionChanged.addHandler(function (s) {
-        console.log('sssss');
-        console.log(s.rows.length);
-      });
+
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         console.log(ht.target.innerText);
         console.log(e.target.innerHTML);
-
-        if (ht.target.innerText == define_second[2].sub) {
+        if (e.target.innerHTML.match(/termEdit/)) {
+          _self.dialog = true;
+        } else if (ht.target.innerText == define_second[2].sub) {
           _self.dialog = true;
         } else if (ht.target.innerText == define_third[5].name) {
           _self.dialog_add = true;
@@ -1029,20 +906,45 @@ function cellEdit(s, e) {
       str = "<div class='red-sign'>〇</div>";
     } else if (e.cell.innerText == '3') {
       str = "<div class='red-sign'>×</div>";
-    } else if (e.cell.innerText == 'arrow_12') {
-      str =
-        "<div class='red-arrow_start'>←</div><div class='arrow_box'><div>absolute</div></div>";
+    } else if (e.cell.innerText.match(/^arrow_12/)) {
+      //始まりの矢印(入退院)
+      let date = e.cell.innerText.split('-')[1];
+      str = "<div class='red-arrow_start'>";
+      str += '<div>&nbsp;</div>';
+      str += '</div>';
+      str += "<div class='arrow_box'><div>" + date;
+      str += "<span class='d-none'>termEdit</span>";
+      str += '</div></div>';
     } else if (e.cell.innerText == 'arrow_11') {
-      str = "<div class='red-arrow'>-</div>";
+      //途中の矢印(入退院)
+      str = "<div class='red-arrow'></div>";
     } else if (e.cell.innerText == 'arrow_13') {
-      str = "<div class='red-arrow_end'>→</div>";
+      //終わりの矢印(入退院)
+      str = "<div class='red-arrow_end'><div></div></div>";
+    } else if (e.cell.innerText.match(/^arrow_22/)) {
+      //始まりの矢印(外泊)
+      let date = e.cell.innerText.split('-')[1];
+      str = "<div class='green-arrow_start'>";
+      str += '<div></div>';
+      str += '</div>';
+      str += "<div class='arrow_box'><div>" + date;
+      str += "<span class='d-none'>termEdit</span>";
+      str += '</div></div>';
+    } else if (e.cell.innerText == 'arrow_21') {
+      //途中の矢印(外泊)
+      str = "<div class='green-arrow'></div>";
+    } else if (e.cell.innerText == 'arrow_23') {
+      //終わりの矢印(外泊)
+      str = "<div class='green-arrow_end'><div></div></div>";
     } else if (e.cell.innerText == define_second[1].name) {
+      //利用日
       str = "<div class='text-left-float'>" + define_second[1].name + '</div>';
       str +=
         "<div class='text-right-float mt-3 text-caption grey--text'>" +
         define_second[1].sub +
         '</div>';
     } else if (e.cell.innerText == define_second[2].name) {
+      //入退院・外泊
       str =
         "<div class='text-left-float'>" +
         define_second[2].name +
@@ -1053,6 +955,7 @@ function cellEdit(s, e) {
       e.cell.innerText ==
       define_second[3].name + '_' + define_second[3].sub
     ) {
+      //食事・朝食
       str =
         "<div class='text-left-float'>" +
         define_second[3].name +
@@ -1063,6 +966,7 @@ function cellEdit(s, e) {
       e.cell.innerText ==
       define_second[4].name + '_' + define_second[4].sub
     ) {
+      //食事・昼食
       str =
         "<div class='text-left-float'></div><div class='text-right-float border-right'><p>" +
         define_second[4].sub +
@@ -1071,31 +975,37 @@ function cellEdit(s, e) {
       e.cell.innerText ==
       define_second[5].name + '_' + define_second[5].sub
     ) {
+      //食事・夕食
       str =
         "<div class='text-left-float'></div><div class='text-right-float border-right'><p>" +
         define_second[5].sub +
         '</p></div>';
     } else if (e.cell.innerText == define_third[1].name) {
+      //入院外泊
       str =
         "<div class='text-left-float'>" +
         define_third[1].name +
         "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[2].name) {
+      //入院外泊
       str =
         "<div class='text-left-float'>" +
         define_third[2].name +
         "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[3].name) {
+      //入院外泊
       str =
         "<div class='text-left-float'>" +
         define_third[3].name +
         "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[4].name) {
+      //療養食
       str =
         "<div class='text-left-float'>" +
         define_third[4].name +
         "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
     } else if (e.cell.innerText == define_third[5].name) {
+      //加算外泊
       str =
         "<div class='text-left-float addButton'>" +
         define_third[5].name +
@@ -1124,7 +1034,7 @@ function cellEdit(s, e) {
     e.cell.innerHTML = '<div>' + str + '</div>';
     wjCore.setCss(e.cell, {
       display: 'table',
-      tableLayout: 'fixed',
+      tableLayout: 'absolute',
     });
     wjCore.setCss(e.cell.children[0], {
       display: 'table-cell',
@@ -1170,12 +1080,12 @@ div#temporaryHistory {
   }
 
   .maru {
-    width: 12px;
-    height: 13px;
+    width: 10px;
+    height: 11px;
     background-image: url('../assets/tyusyaku_07.png');
     display: block;
     background-repeat: no-repeat;
-    background-size: 90%;
+    background-size: 80%;
     text-indent: -9999px;
     z-index: -1;
   }
@@ -1262,66 +1172,79 @@ div#temporaryHistory {
   }
 
   //チャート用
+  .green-arrow,
+  .green-arrow_end,
+  .green-arrow_start,
+  .red-arrow,
+  .red-arrow_end,
   .red-arrow_start {
-    border-bottom: 1px solid red;
+    border-top: 1px solid red;
     display: block;
-    position: relative;
-    top: 0;
+    position: absolute;
+    width: 100%;
+    top: 6px;
     left: 0;
+    text-indent: -9999px;
   }
-  .arrow_box {
-    border: 1px solid blue;
-    width: 400px;
-    background-color: red;
+
+  .green-arrow,
+  .green-arrow_end,
+  .green-arrow_start {
+    border-top: 1px solid green;
+  }
+
+  .green-arrow_start,
+  .red-arrow_start {
     div {
-      width: 300px;
-      position: fixed;
-      background-color: green;
-      z-index: 999;
+      width: 0;
+      height: 0;
+      border-top: 4px solid transparent;
+      border-right: 4px solid red;
+      border-bottom: 4px solid transparent;
+      position: absolute;
+      left: 0;
+      top: -5px;
+    }
+  }
+  .green-arrow_start {
+    div {
+      border-right: 4px solid green;
     }
   }
 
-  .borderPlace {
-    height: 2px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    &--left {
-      content: '';
-      width: 0px;
-      height: 0px;
-      border: 5px solid;
-      display: block;
+  .green-arrow_end,
+  .red-arrow_end {
+    div {
+      width: 0;
+      height: 0;
+      border-left: 4px solid red;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
       position: absolute;
-      top: -4px;
-      left: -7px;
-    }
-    &--right {
-      content: '';
-      border: 1px solid red;
-      width: 0px;
-      height: 0px;
-      border: 5px solid;
-      display: block;
-      position: absolute;
-      top: -4px;
-      right: -7px;
       left: auto;
+      right: 0;
+      top: -5px;
     }
   }
-  .borderBox {
-    padding: 0px 20px 0px 5px;
-    border: 1px solid #333;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background-color: #fff;
-    margin-top: 5px;
-    margin-left: 15px;
-    background-image: url('../assets/tyusyaku_04.png');
-    background-position: 99% 40%;
+  .green-arrow_end {
+    div {
+      border-left: 4px solid green;
+    }
+  }
+
+  .arrow_box {
+    width: 300px;
+    margin-top: -7px;
+    cursor: pointer;
+    div {
+      padding: 1px 20px 1px 5px;
+      position: absolute;
+      background-color: #fff;
+      border: 1px solid #000;
+      z-index: 1;
+      background-image: url('../assets/tyusyaku_04.png');
+      background-position: 99% 40%;
+    }
   }
 
   div.text-left-float {

@@ -9,6 +9,7 @@ import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
 import TemporaryHistory from '../views/TemporaryHistory.vue'
+import JijyougenkanriJimsyo from '../views/JijyougenkanriJimsyo.vue'
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,11 @@ const routes = [
         path:'/ShisetsuTaisei',
         name:'施設体制確認',
         component: ShisetsuTaisei
+    },
+    {
+        path:'/JijyougenkanriJimsyo',
+        name:'自上限管理事務所用',
+        component: JijyougenkanriJimsyo
     },
     {
         path:'/TemporaryPage',
