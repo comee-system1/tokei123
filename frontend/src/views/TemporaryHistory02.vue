@@ -1157,11 +1157,6 @@ function cellEdit(s, e) {
 </script>
 
 <style lang="scss" scoped>
-//共通cssに移動全体のサイズ
-html {
-  overflow-x: scroll;
-}
-
 div#main02 {
   font-size: 14px;
   font-family: 'メイリオ';

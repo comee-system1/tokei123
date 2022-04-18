@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="user-list-print_scrollbar">
     <v-row no-gutters>
       <v-col col="12">
         <v-row no-gutters>
@@ -144,7 +144,7 @@ import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
 
 let selects = ['印刷を全選択', '印刷を全解除'];
-let userUrl = 'http://local-tokei:8085/';
+//let userUrl = 'http://local-tokei/';
 let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
@@ -193,11 +193,30 @@ export default {
       checkAll = s.selectedIndex;
       this.userFilter();
     },
-    createUser: function () {
+    createUser: function (response) {
       let usersData = [];
       usersData['status'] = 'idle';
-      userCount = 100;
       let riyo_inf = [];
+      //axiosを利用するとき下記有効
+      // for (let i = 0; i < response.data.length; i++) {
+      //   riyo_inf.push({
+      //     riid: response.data[i]['riid'],
+      //     riyocode: response.data[i]['riyocode'],
+      //     names: response.data[i]['names'],
+      //     kana: response.data[i]['kana'],
+      //     jukyuid: response.data[i]['jukyuid'],
+      //     jyukyuno: response.data[i]['jyukyuno'],
+      //     sityoid: response.data[i]['sityoid'],
+      //     jidoid: response.data[i]['jidoid'],
+      //     kzkname: response.data[i]['kzkname'],
+      //     kakutei: response.data[i]['kakutei'],
+      //     active: response.data[i]['active'],
+      //   });
+      // }
+
+      //axiosを利用しないとき下記有効
+      console.log(response);
+      userCount = 100;
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
@@ -213,6 +232,7 @@ export default {
           active: false,
         });
       }
+      //--axiosを利用しないとき下記有効
 
       usersData['riyo_inf'] = riyo_inf;
       userDataAll = usersData;
@@ -314,44 +334,67 @@ export default {
       return true;
     },
     onInitializedUser: function (flexGrid) {
-      const axiosApi = axios.create({
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
       let _self = this;
-      axiosApi
-        .get(userUrl)
-        .then(function (response) {
-          console.log('axios success');
-          console.log(response);
-          _self.usersData = _self.createUser();
+      //axiosを利用する時下記有効
+      // const axiosApi = axios.create({
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // });
+      // axiosApi
+      //   .get(userUrl)
+      //   .then(function (response) {
+      //     _self.usersData = _self.createUser(response);
 
-          let i = 0;
-          while (flexGrid.columns.length < 3) {
-            let clm = new wjGrid.Column();
-            if (i == 0) clm.width = '2*';
-            if (i == 1) clm.width = '2*';
-            if (i == 2) clm.width = '1*';
-            flexGrid.columns.push(clm);
-            i++;
-          }
+      //     let i = 0;
+      //     while (flexGrid.columns.length < 3) {
+      //       let clm = new wjGrid.Column();
+      //       if (i == 0) clm.width = '2*';
+      //       if (i == 1) clm.width = '2*';
+      //       if (i == 2) clm.width = '1*';
+      //       flexGrid.columns.push(clm);
+      //       i++;
+      //     }
 
-          while (flexGrid.rows.length < userCount) {
-            flexGrid.rows.push(new wjGrid.Row());
-          }
-          flexGrid.formatItem.addHandler(userCell);
-          // configure the grid
-          flexGrid.mergeManager = new customMergeUser();
-          flexGrid.alternatingRowStep = 1;
+      //     while (flexGrid.rows.length < userCount) {
+      //       flexGrid.rows.push(new wjGrid.Row());
+      //     }
+      //     flexGrid.formatItem.addHandler(userCell);
+      //     // configure the grid
+      //     flexGrid.mergeManager = new customMergeUser();
+      //     flexGrid.alternatingRowStep = 1;
 
-          //初回のユーザ選択値
-          _self.$emit('child-select', 0);
-        })
-        .catch(function (error) {
-          console.log(error);
-          alert('error');
-        });
+      //     //初回のユーザ選択値
+      //     _self.$emit('child-select', 0);
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //     alert('error');
+      //   });
+
+      //axiosを利用しない時下記1行有効
+      _self.usersData = _self.createUser();
+
+      let i = 0;
+      while (flexGrid.columns.length < 3) {
+        let clm = new wjGrid.Column();
+        if (i == 0) clm.width = '2*';
+        if (i == 1) clm.width = '2*';
+        if (i == 2) clm.width = '1*';
+        flexGrid.columns.push(clm);
+        i++;
+      }
+
+      while (flexGrid.rows.length < userCount) {
+        flexGrid.rows.push(new wjGrid.Row());
+      }
+      flexGrid.formatItem.addHandler(userCell);
+      // configure the grid
+      flexGrid.mergeManager = new customMergeUser();
+      flexGrid.alternatingRowStep = 1;
+
+      //初回のユーザ選択値
+      _self.$emit('child-select', 0);
 
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
@@ -402,5 +445,18 @@ function userCell(s, e) {
   }
 }
 </script>
-<style scoped>
+<style lang="scss">
+div#user-list-print_scrollbar {
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #666;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+  }
+}
 </style>

@@ -21,6 +21,7 @@
           v-on:change="calenderChange"
         />
       </div>
+      <v-btn absolute right top>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
     </v-flex>
   </v-layout>
 </template>

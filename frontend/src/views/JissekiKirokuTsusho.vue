@@ -61,7 +61,7 @@
             <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="重度障害者支援加算（研修終了者）" binding="kasanj" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="重度障害者支援加算（研修修了者）" binding="kasanj" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
           </wj-flex-grid>
 
@@ -105,6 +105,8 @@ let year = moment().year();
 let month = moment().format('MM');
 let lastMonth = moment().add(-1, 'M').format('MM');
 
+let apiResult = getOriginalDetailData();
+
 export default{
   components:{
     UserList
@@ -121,11 +123,9 @@ export default{
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
       ],
-      detailGridData:getGridData(getOriginalDetailData()),
-      tkkfhiumuData:"",
-      tkkfhiData:"",
-      sikyuryoData:JSON.parse(getOriginalDetailData())['riyo_inf'][0]['sikyuryo'],
-      subGridData:getSubGridData(),
+      detailGridData:this.getGridData(apiResult),
+      sikyuryoData:JSON.parse(apiResult)['riyo_inf'][0]['sikyuryo'],
+      subGridData:this.getSubGridData(),
       modal:false
     }
   },
@@ -214,7 +214,6 @@ export default{
 
       // ヘッダーとフッターの高さを調整
       grid.columnHeaders.rows[1].height = 25;
-      grid.columnFooters.rows[0].height = 25;
       // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
@@ -279,57 +278,54 @@ export default{
           s.backgroundColor= "#d4edf4";
         }
       }
-    }
-  }
-}
-
-// グリッド表示用データの作成
-function getGridData(data){
-  let objData = JSON.parse(data);
-  let kirokuMeiData = objData['riyo_inf'][0]['kiroku_mei'];
-  let gridData = [];
-    for(let i = 0; i<kirokuMeiData.length; i++){
-      // 曜日表示用に文字列の日付をDate型に変換
-      let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-      let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
-      gridData.push(
-        {
-          id:kirokuMeiData[i]["id"],
-          rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-          youbi:WeekChars[date.getDay()],
-          jyokyo:kirokuMeiData[i]["jyokyo"],
-          jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-          jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-          gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-          sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-          kasanh_mn:kirokuMeiData[i]["kasanh_mn"] == 0 ? "":kirokuMeiData[i]["kasanh_mn"],
-          kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-          kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-          kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
-          biko:kirokuMeiData[i]["biko"],
-        }
-      )
-    }
-  return gridData;
-}
-
-function getSubGridData(){
-  let data = JSON.parse(getOriginalDetailData());
-  let riyouKaishibi = data['riyo_inf'][0]['staymd'];
-  let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
-  let subGridData = [];
-  subGridData.push(
-    {
-      Column0: "初期加算",
-      Column1: "利用開始日",
-      Column2: dateFilter(riyouKaishibi),
-      Column3: "30日目",
-      Column4: thirtythDayFilter(riyouKaishibi),
-      Column5: "当月算定日数",
-      Column6: tougetsuSantei + "日"
     },
-  )
-  return subGridData;
+    getGridData:function(data){
+      let objData = JSON.parse(data);
+      let kirokuMeiData = objData['riyo_inf'][0]['kiroku_mei'];
+      let gridData = [];
+      for(let i = 0; i<kirokuMeiData.length; i++){
+        // 曜日表示用に文字列の日付をDate型に変換
+        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+        gridData.push(
+          {
+            id:kirokuMeiData[i]["id"],
+            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+            youbi:WeekChars[date.getDay()],
+            jyokyo:kirokuMeiData[i]["jyokyo"],
+            jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
+            jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
+            gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
+            sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
+            kasanh_mn:kirokuMeiData[i]["kasanh_mn"] == 0 ? "":kirokuMeiData[i]["kasanh_mn"],
+            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+            kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+            kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
+            biko:kirokuMeiData[i]["biko"],
+          }
+        )
+      }
+      return gridData;
+    },
+    getSubGridData:function(){
+      let data = JSON.parse(getOriginalDetailData());
+      let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+      let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+      let subGridData = [];
+      subGridData.push(
+        {
+          Column0: "初期加算",
+          Column1: "利用開始日",
+          Column2: dateFilter(riyouKaishibi),
+          Column3: "30日目",
+          Column4: thirtythDayFilter(riyouKaishibi),
+          Column5: "当月算定日数",
+          Column6: tougetsuSantei + "日"
+        },
+      )
+      return subGridData;
+    },
+  }
 }
 
 // 西暦＋年月日フィルター
@@ -424,7 +420,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 /* グリッドのスタイル */
 #detailGrid {
   margin-top:10px;
-  font-size:12px;
+  font-size:14px;
   height:650px;
 }
 
@@ -433,7 +429,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 }
 
 #subGrid {
-  font-size:12px;
+  font-size:14px;
 }
 
 #subGrid.wj-control.wj-content.wj-flexgrid {

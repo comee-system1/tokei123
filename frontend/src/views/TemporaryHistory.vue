@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div id="temporaryHistory">
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
@@ -61,10 +61,10 @@
             </v-row>
           </v-container>
           <v-container ma-0 pa-0>
-            <v-card class="overflow-y" pa-0 max-height="130" elevation="0">
+            <div class="helperArea">
               <v-row no-gutters>
                 <v-col cols="12" sm="1">
-                  <v-card class="pa-1" elevation="0">
+                  <v-card class="pa-1" elevation="0" color="#ccc">
                     受給者証<br />情報
                   </v-card>
                 </v-col>
@@ -131,7 +131,7 @@
                   </v-card>
                 </v-col>
               </v-row>
-            </v-card>
+            </div>
           </v-container>
           <v-container mt-0 pt-0 class="d-flex justify-end" fluid>
             <div class="mt-1">
@@ -180,7 +180,7 @@
             <wj-flex-grid-column
               v-for="d in daycount"
               :key="d"
-              :width="24"
+              width="*"
               :header="year + '/' + month + '/' + d"
               :binding="'day' + d"
               :wordWrap="true"
@@ -190,17 +190,17 @@
             <wj-flex-grid-column
               header="合計"
               binding="totals"
-              width="*"
+              :width="50"
               :wordWrap="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               header="金額"
               binding="money"
-              width="*"
+              :width="80"
               :wordWrap="true"
             ></wj-flex-grid-column>
 
-            <div v-for="n in borders" :key="n.key">
+            <!-- <div v-for="n in borders" :key="n.key">
               <div
                 class="borderPlace"
                 v-bind:style="{
@@ -232,7 +232,7 @@
               >
                 {{ n.st }}～{{ n.ed }}[{{ n.diff }}]
               </a>
-            </div>
+            </div> -->
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -480,6 +480,7 @@ import HeaderServices from '../components/HeaderServices.vue';
 import UserListPrint from '../components/UserListPrint.vue';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
+import numberFormat from '@/utiles/numberFormat';
 
 //1日分の幅
 let oneday = 24;
@@ -496,6 +497,7 @@ define_first[1] = '変動情報';
 define_first[2] = '個別加算';
 define_second[1] = {
   name: '利用日',
+  sub: '(入所日:R03.07.03)',
 };
 define_second[2] = {
   name: '入退院・外泊',
@@ -541,13 +543,14 @@ let define_week = ['日', '月', '火', '水', '木', '金', '土'];
 let year = moment().year();
 let month = moment().format('MM');
 let userInfo = [];
+let daycount = 0;
 
 export default {
   data() {
     return {
       year: year,
       month: month,
-      daycount: 0,
+      daycount: daycount,
       addSelect: ['入所時特別支援加算'],
       week: define_week,
       isDroppedDown: false,
@@ -572,17 +575,16 @@ export default {
   created() {
     moment.locale('ja');
     this.daycount = moment().daysInMonth();
+    daycount = this.daycount;
   },
 
   methods: {
     parentCalendar(dateArgument) {
-      console.log('parentCalendar');
-      console.log(dateArgument);
       this.year = dateArgument[0];
       this.month = dateArgument[1];
       let m = moment(this.year + '-' + this.month + '-01');
       this.daycount = m.daysInMonth();
-
+      daycount = this.daycount;
       this.createInfo();
       this.getBorder();
     },
@@ -604,6 +606,10 @@ export default {
           {
             name: '西経市',
             term: '7/10～7/20',
+          },
+          {
+            name: '北経市',
+            term: '7/20～7/22',
           },
         ],
         limitAdmin: [
@@ -642,7 +648,7 @@ export default {
         day24: '1',
         day25: '1',
         totals: '12',
-        money: '2,700円',
+        money: '2700',
       });
 
       userInfo.push({
@@ -652,6 +658,11 @@ export default {
         usercode: 1000,
         space: define_first[1],
         item: define_second[2].name,
+        day5: 'arrow_12', //入退院の始まりの矢印
+        day6: 'arrow_11', //入退院の途中の矢印
+        day7: 'arrow_11',
+        day8: 'arrow_11',
+        day9: 'arrow_13', //入退院の終わりの矢印
       });
       userInfo.push({
         uniqkey: 3,
@@ -770,6 +781,8 @@ export default {
         day26: '1',
         day29: '1',
         day30: '1',
+        totals: '30',
+        money: '9700',
       });
 
       userInfo.push({
@@ -795,11 +808,21 @@ export default {
       let borderdata = [];
 
       borderdata.push({
+        key: 0,
+        usercode: 1000,
+        year: 2022,
+        month: 4,
+        start_day: '2022-04-01',
+        end_day: '2022-04-02',
+        top: 110,
+        color: 'red',
+      });
+      borderdata.push({
         key: 1,
         usercode: 1000,
         year: 2022,
         month: 4,
-        start_day: '2022-04-05',
+        start_day: '2022-04-10',
         end_day: '2022-04-22',
         top: 110,
         color: 'red',
@@ -810,8 +833,8 @@ export default {
         usercode: 1000,
         year: 2022,
         month: 4,
-        start_day: '2022-04-28',
-        end_day: '2022-04-30',
+        start_day: '2022-04-22',
+        end_day: '2022-04-25',
         top: 110,
         color: 'green',
       });
@@ -837,21 +860,32 @@ export default {
       });
 
       let converts = [];
-      border.forEach(function (conv) {
-        //日付の差分
-        let m1 = moment(conv.end_day);
-        let m2 = moment(conv.start_day);
+      for (let i = 0; i < border.length; i++) {
+        let m1 = moment(border[i].end_day);
+        let m2 = moment(border[i].start_day);
+        let minus = 0;
+        let moveRight = 0;
+        if (border[i + 1] && border[i].end_day == border[i + 1].start_day) {
+          minus = oneday / 2 + 3;
+        }
+        if (border[i - 1] && border[i].start_day == border[i - 1].end_day) {
+          minus = oneday / 2;
+          moveRight = oneday / 2;
+        }
+        let width = oneday * m1.diff(m2, 'days') + oneday - minus;
+        let left = startPos + oneday * (m2.date() - 1) + moveRight;
+        minus = 0;
         converts.push({
-          id: conv.id,
-          width: oneday * m1.diff(m2, 'days') + oneday,
-          left: startPos + oneday * (m2.date() - 1),
-          top: conv.top,
-          color: conv.color,
+          id: border[i].id,
+          width: width,
+          left: left,
+          top: border[i].top,
+          color: border[i].color,
           st: m2.format('M/D'),
           ed: m1.format('M/D'),
           diff: m1.diff(m2, 'days'),
         });
-      });
+      }
 
       this.borders = converts;
 
@@ -934,6 +968,10 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 60;
       flexGrid.formatItem.addHandler(cellEdit);
       let _self = this;
+      flexGrid.scrollPositionChanged.addHandler(function (s) {
+        console.log('sssss');
+        console.log(s.rows.length);
+      });
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         console.log(ht.target.innerText);
@@ -947,12 +985,12 @@ export default {
           //個別加算編集アイコン
           _self.dialog_add = true;
         } else if (e.target.innerHTML == '〇') {
-          //赤丸
           e.target.innerText = '×';
         } else if (e.target.innerHTML == '×') {
           e.target.innerHTML = '';
         } else if (
           e.target.innerHTML == '' ||
+          e.target.innerHTML == '<div class="text-center"></div>' ||
           e.target.innerHTML == '<div class="red-sign"></div>'
         ) {
           e.target.innerHTML = '<div class="red-sign">〇</div>';
@@ -991,6 +1029,19 @@ function cellEdit(s, e) {
       str = "<div class='red-sign'>〇</div>";
     } else if (e.cell.innerText == '3') {
       str = "<div class='red-sign'>×</div>";
+    } else if (e.cell.innerText == 'arrow_12') {
+      str =
+        "<div class='red-arrow_start'>←</div><div class='arrow_box'><div>absolute</div></div>";
+    } else if (e.cell.innerText == 'arrow_11') {
+      str = "<div class='red-arrow'>-</div>";
+    } else if (e.cell.innerText == 'arrow_13') {
+      str = "<div class='red-arrow_end'>→</div>";
+    } else if (e.cell.innerText == define_second[1].name) {
+      str = "<div class='text-left-float'>" + define_second[1].name + '</div>';
+      str +=
+        "<div class='text-right-float mt-3 text-caption grey--text'>" +
+        define_second[1].sub +
+        '</div>';
     } else if (e.cell.innerText == define_second[2].name) {
       str =
         "<div class='text-left-float'>" +
@@ -1049,12 +1100,27 @@ function cellEdit(s, e) {
         "<div class='text-left-float addButton'>" +
         define_third[5].name +
         '</div>';
-    } else if (e.cell.innerText == '項目') {
-      str = "<div class='text-center'>項目</div>";
+    } else if (
+      e.cell.innerText == '合計' ||
+      e.cell.innerText == '金額' ||
+      e.cell.innerText == '項目'
+    ) {
+      str = "<div class='text-center'>" + e.cell.innerText + '</div>';
     } else {
       str = e.cell.innerHTML;
     }
 
+    if (!isNaN(str)) {
+      let yen = '';
+      if (e.row >= 0 && e.col == daycount + 3 && str) {
+        yen = '円';
+      }
+      str =
+        "<div class='text-center'>" +
+        numberFormat.number_format(e.cell.innerText) +
+        yen +
+        '</div>';
+    }
     e.cell.innerHTML = '<div>' + str + '</div>';
     wjCore.setCss(e.cell, {
       display: 'table',
@@ -1084,12 +1150,12 @@ function cellEdit(s, e) {
     background-position: right 3px center;
   }
 }
-div#main {
+div#temporaryHistory {
   font-size: 14px;
   font-family: 'メイリオ';
-  //おそらく共通でhtmlに記載した方が良いかと思われる(以下2行)
   overflow-x: scroll;
   width: 1366px !important;
+  // height: 766px !important;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -1157,7 +1223,19 @@ div#main {
     left: auto;
     right: 0;
   }
-
+  div.helperArea {
+    height: 100px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 2px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: darkgrey;
+    }
+    &::-webkit-scrollbar-thumb {
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+  }
   .wj-cells .wj-cell.wj-state-selected {
     background-color: #f5f5f5 !important;
     color: #000 !important;
@@ -1165,6 +1243,7 @@ div#main {
 
   #theGridTallRows {
     position: relative;
+    height: 365px;
   }
 
   #theGridTallRows.wj-flexgrid .wj-cell {
@@ -1183,6 +1262,25 @@ div#main {
   }
 
   //チャート用
+  .red-arrow_start {
+    border-bottom: 1px solid red;
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+  .arrow_box {
+    border: 1px solid blue;
+    width: 400px;
+    background-color: red;
+    div {
+      width: 300px;
+      position: fixed;
+      background-color: green;
+      z-index: 999;
+    }
+  }
+
   .borderPlace {
     height: 2px;
     position: absolute;
@@ -1205,7 +1303,6 @@ div#main {
       width: 0px;
       height: 0px;
       border: 5px solid;
-      border-color: transparent transparent transparent aqua;
       display: block;
       position: absolute;
       top: -4px;
@@ -1214,7 +1311,7 @@ div#main {
     }
   }
   .borderBox {
-    padding: 0px 30px;
+    padding: 0px 20px 0px 5px;
     border: 1px solid #333;
     position: absolute;
     top: 0;
@@ -1222,8 +1319,9 @@ div#main {
     z-index: 1;
     background-color: #fff;
     margin-top: 5px;
+    margin-left: 15px;
     background-image: url('../assets/tyusyaku_04.png');
-    background-position: 95% 40%;
+    background-position: 99% 40%;
   }
 
   div.text-left-float {

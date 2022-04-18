@@ -119,7 +119,7 @@
                 </label>
               </v-col>
               <v-col class="pa-2" cols="*">
-                <span>{{ errorcnt }} 人</span>
+                <span>{{ errorcnt }} 人 / {{ viewdata.length }} 人中</span>
               </v-col>
             </v-row>
           </v-col>
@@ -141,11 +141,14 @@
               :selectionMode="'Row'"
               :isReadOnly="true"
               :initialized="onInitializeDetailGrid"
+              :formatItem="onFormatItem"
               :itemsSource="viewdata"
             >
               <wj-flex-grid-column
                 v-for="column in headerList"
                 :key="column.item"
+                cssClass="cell-img"
+                :cellTemplate="tplImage"
               />
             </wj-flex-grid>
           </v-col>
@@ -162,6 +165,7 @@ import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
 import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
+import '@grapecity/wijmo.vue2.core';
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
@@ -183,7 +187,7 @@ let alphabet = [
 ];
 
 export default {
-  data() {
+  data: function () {
     return {
       userFilterStrings: [
         { title: '全員', id: 1 },
@@ -195,30 +199,77 @@ export default {
       alphabet: alphabet,
       myradio01: '1',
       errorcnt: '999',
+
       headerList: [
-        { dataname: 'img', title: 'エラー', width: '10*' },
-        { dataname: 'no', title: '受給者証番号', width: '5*' },
-        { dataname: 'name', title: '氏名', width: '10*' },
-        { dataname: 'koufuymd', title: '交付日', width: '5*' },
-        { dataname: 'engo', title: '援護者', width: '5*' },
-        { dataname: 'jitibangou', title: '助成自治\n体番号', width: '5*' },
-        { dataname: 'jyukyukbn', title: '受給者区分', width: '*' },
-        { dataname: 'jyukyuname', title: '受給者氏名', width: '10*' },
-        { dataname: 'syougaisyu', title: '障害種別', width: '*' },
-        { dataname: 'syougaisienkbn', title: '障害支援区分', width: '*' },
+        { dataname: 'err', title: 'エ\nラ\n|', width: '1.5*', align: 'center' },
+        {
+          dataname: 'no',
+          title: '受給者証\n番号',
+          width: '2.5*',
+          align: 'center',
+        },
+        { dataname: 'name', title: '氏名', width: '7*', align: 'left' },
+        { dataname: 'koufuymd', title: '交付日', width: '3*', align: 'center' },
+        { dataname: 'engo', title: '援護者', width: '4*', align: 'left' },
+        {
+          dataname: 'jitibangou',
+          title: '助成自治体\n番号',
+          width: '3*',
+          align: 'center',
+        },
+        {
+          dataname: 'jyukyukbn',
+          title: '受給者\n区分',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'jyukyuname',
+          title: '受給者氏名',
+          width: '7*',
+          align: 'left',
+        },
+        {
+          dataname: 'syougaisyu',
+          title: '障害種別',
+          width: '1.5*',
+          align: 'center',
+        },
+        {
+          dataname: 'syougaisienkbn',
+          title: '障害\n支援\n区分',
+          width: '1.5*',
+          align: 'center',
+        },
         {
           dataname: 'futanjyougen',
           title: '利用者負担上限\n月額',
-          width: '5*',
+          width: '4*',
+          align: 'right',
         },
-        { dataname: 'jyougenkanri', title: '上限額\n管理事業所', width: '10*' },
-        { dataname: 'syokujiteikyo', title: '食事提供体制', width: '*' },
-        { dataname: 'tokubetukyufu', title: '特別\n給付費', width: '5*' },
-        { dataname: 'syusei', title: '修正', width: '*' },
+        {
+          dataname: 'jyougenkanri',
+          title: '上限額\n管理事業所',
+          width: '7*',
+          align: 'left',
+        },
+        {
+          dataname: 'syokujiteikyo',
+          title: '食事\n提供\n体制',
+          width: '1.5*',
+          align: 'center',
+        },
+        {
+          dataname: 'tokubetukyufu',
+          title: '特別\n給付費',
+          width: '2.5*',
+          align: 'right',
+        },
+        { dataname: 'syusei', title: '修正', width: '2*', align: 'center' },
       ],
+      tplImage: CellMaker.makeImage(),
       viewdataAll: [],
       viewdata: this.loadData(),
-      tplImage: CellMaker.makeImage(),
     };
   },
   methods: {
@@ -232,7 +283,7 @@ export default {
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[2].height = 120;
+      flexGrid.columnHeaders.rows[2].height = 60;
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < 15; colIndex++) {
         let col = flexGrid.columns[colIndex];
@@ -240,12 +291,23 @@ export default {
         col.binding = this.headerList[colIndex].dataname;
         col.header = this.headerList[colIndex].title;
         col.width = this.headerList[colIndex].width;
+        col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 0) {
-          col.cssClass = 'cell-img';
-          col.cellTemplate = 'tplImage';
+
+        if (colIndex > 0) {
+          col.cssClass = '';
+          col.cellTemplate = '';
         }
+
+        if (colIndex == 10 || colIndex == 13) {
+          col.format = 'n0';
+        } else if (colIndex == 3) {
+          col.format = 'gyy/MM/dd';
+        } else {
+          col.format = '';
+        }
+
         for (let rowindex = 0; rowindex < 3; rowindex++) {
           let title = '';
           if (1 <= colIndex && colIndex <= 13 && rowindex == 0) {
@@ -259,29 +321,40 @@ export default {
         }
       }
     },
+    // onFormatItem(flexGird, e) {
+    //   // if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+    //   // }
+    //   // if (e.panel == flexGird.columnHeaders) {
+    //   //   if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+    //   //     alert('a' + e.panel.cellType + '=' + wjGrid.CellType.ColumnHeader);
+    //   //     let cell = e.panel.getCellData(1, 2);
+    //   //     cell.style.textAlign = 'center';
+    //   //   }
+    //   // }
+    // },
     loadData: function () {
       let tmpviewdata = [];
       let userCount = 100;
+      // ★Date型はmonthが(0-11で表現されることに注意)
       for (let i = 0; i < userCount; i++) {
         tmpviewdata.push({
           id: i,
-          img: 'https://cdn.grapecity.com/wijmo/images/2.png',
-          no: '100' + i,
-          examNumber: '000' + Math.floor(Math.random() * 10) + 1,
+          err: require('@/assets/tyusyaku_06.png'),
+          no: String(Math.floor(Math.random() * 10000000) + 1).padStart(7, '0'),
           name: '東経太郎 ' + Math.floor(Math.random() * 10) + 1,
           kana: 'トウケイタロウ' + Math.floor(Math.random() * 10) + 1,
-          koufuymd: '20220101',
+          koufuymd: new Date('2022', Number('09') - 1, '26'),
           engo: '第一東経市',
-          jitibangou: '9000' + Math.floor(Math.random() * 10) + 1,
+          jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
           jyukyukbn: '0',
           jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
           syougaisyu: '2',
           syougaisienkbn: '3',
-          futanjyougen: Math.floor(Math.random() * 100) + '000',
+          futanjyougen: Number(Math.floor(Math.random() * 100) + '000'),
           jyougenkanri:
             '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
           syokujiteikyo: '4',
-          tokubetukyufu: Math.floor(Math.random() * 10) + '000',
+          tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000'),
           syusei: '○',
         });
       }
@@ -370,9 +443,14 @@ div.border-bottom {
   font-size: 12px;
   width: auto;
   height: 70vh;
+  .wj-cell.wj-align-center {
+    justify-content: center;
+  }
   .cell-img {
     padding: 0;
     text-align: center;
+    color: red;
+    background-image: url('../assets/tyusyaku_07.png');
   }
 }
 </style>

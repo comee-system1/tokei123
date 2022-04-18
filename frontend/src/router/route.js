@@ -2,12 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import JyukyuIcrn from '../views/JyukyuIcrn.vue'
 import JissekiKirokuNyusho from '../views/JissekiKirokuNyusho.vue'
+import JissekiKirokuTsusho from '../views/JissekiKirokuTsusho.vue'
+import JissekiKirokuTanki from '../views/JissekiKirokuTanki.vue'
 import KyuhuMeisai from '../views/KyuhuMeisai.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
 import TemporaryHistory from '../views/TemporaryHistory.vue'
-import TemporaryHistory02 from '../views/TemporaryHistory02.vue' //todo : 後で消す
 
 Vue.use(VueRouter)
 
@@ -28,6 +29,16 @@ const routes = [
         component: JissekiKirokuNyusho
     },
     {
+        path:'/JissekiKirokuTsusho',
+        name:'実績記録表',
+        component: JissekiKirokuTsusho
+    },
+    {
+        path:'/JissekiKirokuTanki',
+        name:'実績記録表',
+        component: JissekiKirokuTanki
+    },
+    {
         path:'/SeikyuSho',
         name:'請求書',
         component: SeikyuSho
@@ -46,12 +57,6 @@ const routes = [
         path:'/TemporaryHistory',
         name:'個別利用状況登録',
         component: TemporaryHistory
-    },
-    {
-        //todo 後で消す
-        path:'/TemporaryHistory02',
-        name:'個別利用状況登録',
-        component: TemporaryHistory02
     },
 ]
 
