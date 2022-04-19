@@ -52,6 +52,16 @@
             >
               <v-list-item-content>
                 <v-list-item-title>{{ list.name }}</v-list-item-title>
+
+                <v-list-item
+                  v-for="(sublist, subindex) in list.sublists"
+                  :key="subindex"
+                  :to="sublist.link"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>{{ sublist.name }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -129,7 +139,16 @@ export default {
             { name: '利用状況一覧', link: '/TemporaryPage' },
             { name: '個別加算一覧', link: '/TemporaryPage' },
             { name: 'レセプト集計', link: '/TemporaryPage' },
-            { name: '上限管理', link: '/TemporaryPage' },
+            {
+              name: '上限管理',
+              link: '/TemporaryPage',
+              sublists: [
+                {
+                  name: '自上限管理事業所用',
+                  link: 'JijyougenkanriJimsyo',
+                },
+              ],
+            },
             { name: '給付明細書', link: '/KyuhuMeisai' },
             { name: '実績記録票', link: '/JissekiKirokuNyusho' },
             { name: '加算項目一覧', link: '/TemporaryPage' },

@@ -173,14 +173,14 @@
             <wj-flex-grid-column
               header="項目"
               binding="item"
-              :width="200"
+              :width="155"
               :wordWrap="true"
               :allowMerging="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               v-for="d in daycount"
               :key="d"
-              width="*"
+              width="1*"
               :header="year + '/' + month + '/' + d"
               :binding="'day' + d"
               :wordWrap="true"
@@ -190,13 +190,13 @@
             <wj-flex-grid-column
               header="合計"
               binding="totals"
-              :width="60"
+              :width="41"
               :wordWrap="true"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               header="金額"
               binding="money"
-              :width="80"
+              :width="67"
               :wordWrap="true"
             ></wj-flex-grid-column>
           </wj-flex-grid>
@@ -844,7 +844,8 @@ export default {
     onInitializedInfo: function (flexGrid) {
       flexGrid.mergeManager = new customMerge();
       flexGrid.rowHeaders.columns[0].width = 20;
-      flexGrid.columnHeaders.rows[0].height = 60;
+      flexGrid.columnHeaders.rows[0].height = 40;
+      flexGrid.alternatingRowStep = 0;
       flexGrid.formatItem.addHandler(cellEdit);
       let _self = this;
 
@@ -948,7 +949,7 @@ function cellEdit(s, e) {
       str =
         "<div class='text-left-float'>" +
         define_second[2].name +
-        "</div><a class='ml-2 addButton' >" +
+        "</div><a class='ml-2 mt-2 addButton' >" +
         define_second[2].sub +
         '</a>';
     } else if (
@@ -1080,18 +1081,23 @@ div#temporaryHistory {
   }
 
   .maru {
-    width: 10px;
-    height: 11px;
+    width: 13px;
+    height: 14px;
     background-image: url('../assets/tyusyaku_07.png');
     display: block;
     background-repeat: no-repeat;
-    background-size: 80%;
+    background-size: 50%;
+    background-position: 50% 50%;
     text-indent: -9999px;
-    z-index: -1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #fffacd;
+    top: 0;
+    left: 0;
   }
 
   .red-sign {
-    font-size: 11px;
     color: red;
     text-align: center;
   }
@@ -1129,22 +1135,13 @@ div#temporaryHistory {
     background-size: 10px 10px;
     position: absolute;
     top: 0;
-    margin-top: 10px;
+    margin-top: 1px;
     left: auto;
     right: 0;
   }
   div.helperArea {
     height: 100px;
     overflow-y: auto;
-    &::-webkit-scrollbar {
-      width: 2px;
-    }
-    &::-webkit-scrollbar-track {
-      background-color: darkgrey;
-    }
-    &::-webkit-scrollbar-thumb {
-      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    }
   }
   .wj-cells .wj-cell.wj-state-selected {
     background-color: #f5f5f5 !important;
@@ -1153,11 +1150,10 @@ div#temporaryHistory {
 
   #theGridTallRows {
     position: relative;
-    height: 365px;
   }
 
   #theGridTallRows.wj-flexgrid .wj-cell {
-    height: 45px;
+    height: 40px;
   }
 
   .wj-rowheaders {
@@ -1271,6 +1267,18 @@ div#temporaryHistory {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
+  }
+
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #666;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
   }
 }
 </style>

@@ -55,8 +55,8 @@
             <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="算定日数"  binding="nissu" :width="'10*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'25*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
-            <wj-flex-grid-column header="往" binding="gei" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="復" binding="sou" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="往" binding="gei" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="復" binding="sou" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="医療連携体制加算" binding="iryo" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="緊急短期入所受入加算" binding="kinkyu" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -87,7 +87,8 @@ let year = moment().year();
 let month = moment().format('MM');
 let lastMonth = moment().add(-1, 'M').format('MM');
 
-let apiResult = getOriginalDetailData();
+// APIの戻り値をObjectに変換
+let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   components:{
@@ -106,7 +107,8 @@ export default{
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
       ],
       detailGridData:this.getGridData(apiResult),
-      sikyuryoData:JSON.parse(apiResult)['riyo_inf'][0]['keiyakuryo'],
+      sikyuryoData:apiResult['riyo_inf'][0]['keiyakuryo'],
+      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       modal:false
     }
   },
@@ -136,19 +138,22 @@ export default{
 			panel.setCellData(0, 11, "備考");
 
       // フッターを作成/////////////////////////////////////////////////////////////
-      var footer0 = new wjGrid.GroupRow();
+      let footer0 = new wjGrid.GroupRow();
       // 作成したフッター行を追加する
-      var footerPanel = grid.columnFooters;
+      let footerPanel = grid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
       // フッターの内容を設定する
       for (let colIndex = 0; colIndex <= 1; colIndex++) {
         footerPanel.setCellData(0, colIndex, "合計");
       }
+      for (let colIndex = 4; colIndex <= 5; colIndex++) {
+        footerPanel.setCellData(0, colIndex, this.sougeiTotal);
+      }
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      var mm = new wjGrid.MergeManager(grid);
+      let mm = new wjGrid.MergeManager(grid);
       // 結合するセルの範囲を指定
-      var headerRanges = [
+      let headerRanges = [
         new wjGrid.CellRange(0,0,1,0),
         new wjGrid.CellRange(0,1,1,1),
 				new wjGrid.CellRange(0,2,1,2),
@@ -161,19 +166,20 @@ export default{
 				new wjGrid.CellRange(0,10,1,10),
 				new wjGrid.CellRange(0,11,1,11),
       ];
-      var footerRanges = [
-        new wjGrid.CellRange(0,0,0,1)
+      let footerRanges = [
+        new wjGrid.CellRange(0,0,0,1),
+        new wjGrid.CellRange(0,4,0,5)
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (var h = 0; h < headerRanges.length; h++) {
+          for (let h = 0; h < headerRanges.length; h++) {
             if (headerRanges[h].contains(r, c)) {
               return headerRanges[h];
             }
           }
         }else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-          for (var f = 0; f < footerRanges.length; f++) {
+          for (let f = 0; f < footerRanges.length; f++) {
             if (footerRanges[f].contains(r, c)) {
               return footerRanges[f];
             }
@@ -187,7 +193,7 @@ export default{
       // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
-        var s = cell.style;
+        let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
           // ヘッダーのスタイル
@@ -221,7 +227,7 @@ export default{
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
           s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 ){
+          if(c == 0 || c == 1){
             s.backgroundColor = "#d4edf4";
           }else if(c == 11){
             s.backgroundColor = "#cccccc";
@@ -237,8 +243,7 @@ export default{
       }
     },
     getGridData:function(data){
-      let objData = JSON.parse(data);
-      let kirokuMeiData = objData['riyo_inf'][0]['kiroku_mei'];
+      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
       let gridData = [];
       for(let i = 0; i<kirokuMeiData.length; i++){
         // 曜日表示用に文字列の日付をDate型に変換
@@ -269,6 +274,22 @@ export default{
 
 // 曜日変換用
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
+
+// 送迎の合計の算出
+function getSougeiTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['sou']){
+      totalCount++ ;
+    }
+  }
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['gei']){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
 
 </script>
 

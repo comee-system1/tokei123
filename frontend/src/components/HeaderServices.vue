@@ -13,12 +13,20 @@
         ></wj-combo-box>
       </div>
       <div class="month-selection-area">
-        <label for="theDate">請求月</label>
+        <label for="theDate">請求月 </label>
         <input
           type="month"
           name="example"
           :value="year + '-' + month"
           v-on:change="calenderChange"
+        />
+
+        <label for="theDate" v-if="seikyuflag">提供月</label>
+        <input
+          v-if="seikyuflag"
+          type="month"
+          name="example"
+          :value="year + '-' + month"
         />
       </div>
       <v-btn absolute right top>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
@@ -33,6 +41,9 @@ let year = moment().year();
 let month = moment().format('MM');
 
 export default {
+  props: {
+    seikyuflag: { type: Boolean },
+  },
   data() {
     return {
       year: year,

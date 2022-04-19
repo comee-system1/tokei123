@@ -173,7 +173,6 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
-import customMergeUser from '@/utiles/customMergeUser';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
 import HeaderServices from '../components/HeaderServices.vue';
@@ -401,7 +400,6 @@ export default {
       };
     },
     onInitializedDate: function (flexGrid) {
-      flexGrid.mergeManager = new customMergeUser();
       flexGrid.rowHeaders.columns[0].width = 30;
       flexGrid.formatItem.addHandler(cellEdit);
     },
@@ -453,6 +451,7 @@ function cellEdit(s, e) {
 #shisetsu {
   font-size: 14px;
   font-family: 'メイリオ';
+  width: 1366px !important;
   #theGridTallRows.wj-flexgrid .wj-cell {
     height: 40px;
   }

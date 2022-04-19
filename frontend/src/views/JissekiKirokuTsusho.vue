@@ -56,8 +56,8 @@
             <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
             <wj-flex-grid-column header="開始時間" binding="jstime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="終了時間" binding="jetime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-            <wj-flex-grid-column header="往" binding="gei" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="復" binding="sou" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="往" binding="gei" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="復" binding="sou" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -105,7 +105,8 @@ let year = moment().year();
 let month = moment().format('MM');
 let lastMonth = moment().add(-1, 'M').format('MM');
 
-let apiResult = getOriginalDetailData();
+// APIの戻り値をObjectに変換
+let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   components:{
@@ -124,9 +125,10 @@ export default{
         '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
       ],
       detailGridData:this.getGridData(apiResult),
-      sikyuryoData:JSON.parse(apiResult)['riyo_inf'][0]['sikyuryo'],
+      sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
+      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(),
-      modal:false
+      modal:false,
     }
   },
   methods: {
@@ -166,19 +168,23 @@ export default{
       panel.setCellData(1, 11, "備考");
 
       // フッターを作成/////////////////////////////////////////////////////////////
-      var footer0 = new wjGrid.GroupRow();
+      let footer0 = new wjGrid.GroupRow();
       // 作成したフッター行を追加する
-      var footerPanel = grid.columnFooters;
+      let footerPanel = grid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
       // フッターの内容を設定する
-      for (let colIndex = 0; colIndex <= 2; colIndex++) {
+      for (let colIndex = 0; colIndex <= 4; colIndex++) {
         footerPanel.setCellData(0, colIndex, "合計");
+      }
+      // フッターの内容を設定する
+      for (let colIndex = 5; colIndex <= 6; colIndex++) {
+        footerPanel.setCellData(0, colIndex, this.sougeiTotal);
       }
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      var mm = new wjGrid.MergeManager(grid);
+      let mm = new wjGrid.MergeManager(grid);
       // 結合するセルの範囲を指定
-      var headerRanges = [
+      let headerRanges = [
         new wjGrid.CellRange(0,0,2,0),
         new wjGrid.CellRange(0,1,2,1),
         new wjGrid.CellRange(0,2,0,11),
@@ -191,19 +197,20 @@ export default{
         new wjGrid.CellRange(1,10,2,10),
         new wjGrid.CellRange(1,11,2,11),
       ];
-      var footerRanges = [
-        new wjGrid.CellRange(0,0,0,4)
+      let footerRanges = [
+        new wjGrid.CellRange(0,0,0,4),
+        new wjGrid.CellRange(0,5,0,6)
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (var h = 0; h < headerRanges.length; h++) {
+          for (let h = 0; h < headerRanges.length; h++) {
             if (headerRanges[h].contains(r, c)) {
               return headerRanges[h];
             }
           }
         }else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-          for (var f = 0; f < footerRanges.length; f++) {
+          for (let f = 0; f < footerRanges.length; f++) {
             if (footerRanges[f].contains(r, c)) {
               return footerRanges[f];
             }
@@ -217,14 +224,14 @@ export default{
       // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
-        var s = cell.style;
+        let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
           // ヘッダーのスタイル
           s.backgroundColor = "#d4edf4";
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
-          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && (c == 8 || c == 9 || c==10 || c==11))){
+          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11))){
             s.borderBottom = "2px solid #348498";
           }
 
@@ -251,7 +258,7 @@ export default{
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
           s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 ||c == 2 ){
+          if(c == 0 || c == 1 ||c == 2){
             s.backgroundColor = "#d4edf4";
           }else if(c == 11){
             s.backgroundColor = "#cccccc";
@@ -271,17 +278,16 @@ export default{
       grid.selectionMode = wjGrid.SelectionMode.None;
 
       grid.itemFormatter = function(panel,r,c,cell){
-        var s = cell.style;
+        let s = cell.style;
         s.color = "#4d4d4d";
         s.textAlign = 'center';
-        if( c == 0 || c == 1 || c == 3 || c == 5){
+        if(c == 0 || c == 1 || c == 3 || c == 5){
           s.backgroundColor= "#d4edf4";
         }
       }
     },
     getGridData:function(data){
-      let objData = JSON.parse(data);
-      let kirokuMeiData = objData['riyo_inf'][0]['kiroku_mei'];
+      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
       let gridData = [];
       for(let i = 0; i<kirokuMeiData.length; i++){
         // 曜日表示用に文字列の日付をDate型に変換
@@ -347,6 +353,22 @@ function thirtythDayFilter(riyouKaishibi){
 
 // 曜日変換用
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
+
+// 送迎の合計の算出
+function getSougeiTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['sou']){
+      totalCount++ ;
+    }
+  }
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['gei']){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
 
 </script>
 

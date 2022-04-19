@@ -90,7 +90,7 @@
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 90vh"
+      style="height: 500px"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
@@ -135,7 +135,6 @@
 <script>
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import customMergeUser from '@/utiles/customMergeUser';
 
 import Vue from 'vue';
 import axios from 'axios';
@@ -361,8 +360,7 @@ export default {
       //     }
       //     flexGrid.formatItem.addHandler(userCell);
       //     // configure the grid
-      //     flexGrid.mergeManager = new customMergeUser();
-      //     flexGrid.alternatingRowStep = 1;
+      //     flexGrid.alternatingRowStep = 0;
 
       //     //初回のユーザ選択値
       //     _self.$emit('child-select', 0);
@@ -390,8 +388,7 @@ export default {
       }
       flexGrid.formatItem.addHandler(userCell);
       // configure the grid
-      flexGrid.mergeManager = new customMergeUser();
-      flexGrid.alternatingRowStep = 1;
+      flexGrid.alternatingRowStep = 0;
 
       //初回のユーザ選択値
       _self.$emit('child-select', 0);
@@ -447,6 +444,21 @@ function userCell(s, e) {
 </script>
 <style lang="scss">
 div#user-list-print_scrollbar {
+  .wj-cell:nth-child(2),
+  .wj-cell:first-child {
+    background-color: #fffacd;
+    &.wj-header {
+      background-color: #eee;
+    }
+    &.wj-state-multi-selected {
+      color: #000;
+    }
+  }
+  .wj-cell {
+    &.wj-state-multi-selected {
+      background: #eee;
+    }
+  }
   ::-webkit-scrollbar {
     width: 2px;
   }

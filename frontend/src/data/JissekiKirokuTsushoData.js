@@ -29,7 +29,7 @@ export function getOriginalDetailData() {
 				sou: i % 7 == 0 ? 1:0,
 				kasanh_mn: i % 5 == 0 ? 1:0,
 				kasank_mn:5.75,
-				kasans:  i % 10 == 0 ? "":1,
+				kasans:  i % 10 == 0 ? 0:1,
 				kasantkn: i % 15 == 0 ? 1:0,
 				kasanj:i % 14 == 0 ? 1:0,
 				kasanks:i % 3 == 0 ? 1:0,
