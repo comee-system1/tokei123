@@ -6,8 +6,8 @@
       :seikyuflag="true"
     ></header-services>
     <v-container fluid>
-      <v-row class="mb-2" justify="left" no-gutters>
-        <v-col lg="1">
+      <v-row class="mb-2" no-gutters>
+        <v-col sm="1">
           <v-card class="pa-1" elevation="0"> 事業所 </v-card>
         </v-col>
         <v-col md="auto">
@@ -16,33 +16,85 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row class="mb-1" justify="left" no-gutters>
-        <v-col lg="1">
-          <v-card class="pa-1" elevation="0"> 絞り込み </v-card>
+      <v-row no-gutters>
+        <v-col sm="1">
+          <v-card class="pa-2" elevation="0"> 絞込 </v-card>
         </v-col>
         <v-col md="auto">
-          <v-row no-gutters class="mt-1">
-            <v-col>
-              <v-card class="text-center" outlined tile @click="sortUser(1)">
-                コード
-              </v-card>
-            </v-col>
-            <v-col>
-              <v-card class="text-center" outlined tile @click="sortUser(2)"
-                >カナ</v-card
-              >
-            </v-col>
-            <v-col>
-              <v-card class="text-center" outlined tile @click="sortUser(3)"
-                >受給者番号</v-card
-              >
-            </v-col>
-          </v-row>
+          <v-card flat>
+            <v-card-text>
+              <v-row align="center">
+                <v-btn-toggle mandatory>
+                  <v-btn small>全員</v-btn>
+                  <v-btn small>上限管理済み</v-btn>
+                  <v-btn small>未処理</v-btn>
+                </v-btn-toggle>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col sm="1">
+          <v-card class="pa-2 text-center" elevation="0"> ソート </v-card>
+        </v-col>
+        <v-col md="auto">
+          <v-card flat>
+            <v-card-text>
+              <v-row align="center">
+                <v-btn-toggle mandatory>
+                  <v-btn small @click="sortUser(1)">カナ</v-btn>
+                  <v-btn small @click="sortUser(2)">コード</v-btn>
+                  <v-btn small @click="sortUser(3)">受給者番</v-btn>
+                </v-btn-toggle>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col sm="1">
+          <v-card class="pa-2 text-center" elevation="0"> カナ検索 </v-card>
+        </v-col>
+        <v-col md="auto">
+          <wj-combo-box
+            :textChanged="onTextChangedUser"
+            style="width: 100%"
+            placeholder="カナ検索"
+          ></wj-combo-box>
+        </v-col>
+        <v-col class="ml-auto text-right" md="1">
+          <v-btn class="pa-2"> 上限額管理計算 </v-btn>
         </v-col>
       </v-row>
     </v-container>
-    <v-container fluid>
+    <v-container fluid mt-0 pt-0>
+      <v-row no-getters>
+        <v-col cols="5">
+          <v-btn-toggle class="flex-wrap">
+            <v-btn
+              outlined
+              v-for="(n, k) in alphabet"
+              :key="n"
+              :width="11"
+              p-0
+              style="padding: 9px; height: 10px"
+              @click="onAlphabet(k)"
+              >{{ n }}</v-btn
+            >
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="5"
+          ><v-card elevation="0">
+            <small
+              >(管理結果)1:管理事務所で利用者負担額を充当 2:調整事務は行わない
+              3:下記の通り調整した</small
+            >
+          </v-card></v-col
+        >
+        <v-col cols="2" class="text-right mb-1">
+          <v-btn small elevation="0">全選択</v-btn>
+          <v-btn small class="ml-1" elevation="0">全解除</v-btn>
+        </v-col>
+      </v-row>
       <wj-flex-grid
+        id="flexGrid"
         :itemsSource="data"
         :allowMerging="6"
         :headersVisibility="'Column'"
@@ -87,6 +139,7 @@
           :header="'利用者負担上限月額'"
           :width="60"
           :format="'n0'"
+          align="right"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'rese'"
@@ -119,12 +172,14 @@
         <wj-flex-grid-column
           :binding="'souhiyogaku'"
           :header="'総費用額'"
+          align="right"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'riyoufutan'"
           :header="'利用者\n負担額'"
           :wordwrap="true"
           :multiLine="true"
+          align="right"
           width="2*"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -151,6 +206,120 @@
         ></wj-flex-grid-column>
       </wj-flex-grid>
     </v-container>
+
+    <v-dialog v-model="dialog" width="50%">
+      <v-card class="pa-2">
+        <v-card-title>上限管理 他サービス事業所実績登録</v-card-title>
+        <v-container>
+          <v-row class="mb-1" no-gutters>
+            <v-col cols="2" class="mt-1">
+              <v-card elevation="0" align="center">利用者 </v-card>
+            </v-col>
+            <v-col cols="10">
+              <v-row no-gutters>
+                <v-col cols="4"
+                  ><wj-combo-box text="11001234"></wj-combo-box
+                ></v-col>
+                <v-col cols="8"
+                  ><wj-combo-box text="東経静香"></wj-combo-box
+                ></v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <hr size="1" />
+
+          <v-row class="justify-end mt-2">
+            <v-btn small>他サービス前回コピー</v-btn>
+            <v-btn small>順番並び替え</v-btn>
+          </v-row>
+          <v-row class="mt-5" no-gutters>
+            <v-col cols="2" class="mt-1">事務所名</v-col>
+            <v-col cols="4"
+              ><wj-combo-box text="11001234"></wj-combo-box
+            ></v-col>
+            <v-col cols="6"
+              ><wj-combo-box :itemsSource="jimusyoName"></wj-combo-box
+            ></v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="2" class="mt-1">総費用額</v-col>
+            <v-col cols="4"
+              ><wj-combo-box text="11001234"></wj-combo-box
+            ></v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="2" class="mt-1">利用者負担額</v-col>
+            <v-col cols="4"
+              ><wj-combo-box text="11001234"></wj-combo-box
+            ></v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="2" class="mt-1">提供サービス</v-col>
+            <v-col cols="8">
+              <wj-combo-box
+                :itemsSource="teikyoService"
+                style="width: 300px"
+              ></wj-combo-box>
+              <wj-combo-box
+                :itemsSource="teikyoService"
+                style="width: 300px"
+              ></wj-combo-box>
+              <wj-combo-box
+                :itemsSource="teikyoService"
+                style="width: 300px"
+              ></wj-combo-box>
+            </v-col>
+          </v-row>
+
+          <v-card class="d-flex mt-3" elevation="0">
+            <v-card elevation="0">
+              <v-btn @click="dialog = false" tile outlined> 画面クリア </v-btn>
+            </v-card>
+            <v-card elevation="0" class="ml-1">
+              <v-btn @click="dialog = false" tile outlined> 削除 </v-btn>
+            </v-card>
+            <v-card elevation="0" class="ml-auto">
+              <v-btn @click="dialog = false" tile outlined> 設定 </v-btn>
+            </v-card>
+          </v-card>
+
+          <hr class="mt-2" />
+          <div class="mt-2">他サービス入力済一覧</div>
+          <wj-flex-grid
+            :itemsSource="data"
+            :initialized="serviceInitialized"
+            :headersVisibility="'None'"
+            style="height: 100px"
+          >
+            <wj-flex-grid-column
+              binding="id"
+              header="ID"
+              width="1*"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="jimusyoBango"
+              width="2*"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="jimusyoName"
+              width="2*"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="teikyoService"
+              width="2*"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="syohiyougaku"
+              width="2*"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="riyousyafutangaku"
+              width="2*"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -158,6 +327,19 @@
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
+let alphabet = [
+  '全',
+  'ア',
+  'カ',
+  'サ',
+  'タ',
+  'ナ',
+  'ハ',
+  'マ',
+  'ヤ',
+  'ラ',
+  'ワ',
+];
 
 export default {
   data() {
@@ -166,27 +348,136 @@ export default {
       month: moment().format('MM'),
       data: [],
       jimusyoSearch: ['指定なし', 'ひまわり園'],
+      jimusyoName: ['指定なし', 'ひまわり園'],
+      teikyoService: ['11:住宅介護', '12:行動援護'],
       dateArgument: '',
       searchArgument: '',
+      alphabet: alphabet,
+      dialog: false,
+      mainTableGrid: '',
+      griddata: [],
     };
   },
   components: {
     HeaderServices,
   },
   methods: {
+    sortUser: function (sortType) {
+      let data = this.griddata;
+      //かな順でソート
+      if (sortType == 1) {
+        data.sort((a, b) => {
+          if (a.kana < b.kana) return -1;
+          if (a.kana > b.kana) return 1;
+          return 0;
+        });
+      }
+      //コード順でソート
+      if (sortType == 2) {
+        data.sort((a, b) => {
+          if (a.code < b.code) return -1;
+          if (a.code > b.code) return 1;
+          return 0;
+        });
+      }
+      //受給版順でソート
+      if (sortType == 3) {
+        data.sort((a, b) => {
+          if (a.jyukyuBango < b.jyukyuBango) return -1;
+          if (a.jyukyuBango > b.jyukyuBango) return 1;
+          return 0;
+        });
+      }
+
+      this.setGridData(data, this.mainTableGrid);
+      //this.userFilter();
+    },
+    onAlphabet: function (key) {
+      let data = this.griddata;
+      if (key > 0) {
+        let get = [];
+        data.forEach(function (value) {
+          if (value.kana) {
+            switch (key) {
+              case 1:
+                console.log(value.kana);
+                if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
+                break;
+              case 2:
+                if (value.kana.match(/^[カ-コ]/)) setPush(get, value);
+                break;
+              case 3:
+                if (value.kana.match(/^[サ-ソ]/)) setPush(get, value);
+                break;
+              case 4:
+                if (value.kana.match(/^[タ-ト]/)) setPush(get, value);
+                break;
+              case 5:
+                if (value.kana.match(/^[ナ-ノ]/)) setPush(get, value);
+                break;
+              case 6:
+                if (value.kana.match(/^[ハ-ホ]/)) setPush(get, value);
+                break;
+              case 7:
+                if (value.kana.match(/^[マ-モ]/)) setPush(get, value);
+                break;
+              case 8:
+                if (value.kana.match(/^[ヤ-ヨ]/)) setPush(get, value);
+                break;
+              case 9:
+                if (value.kana.match(/^[ラ-ロ]/)) setPush(get, value);
+                break;
+              case 10:
+                if (value.kana.match(/^[ワ-ン]/)) setPush(get, value);
+                break;
+            }
+          }
+        });
+        this.data = get;
+      }
+    },
+    onTextChangedUser: function (e) {
+      let data = [];
+      this.griddata.forEach(function (value) {
+        if (value.jyougenkanri.indexOf(e.text) != -1) {
+          data.push({
+            code: value.code,
+            space: value.space,
+            jyougenkanri: value.jyougenkanri,
+            kana: value.kana,
+            city: value.city,
+            jyukyuBango: value.jyukyuBango,
+            riyou: value.riyou,
+            riyousyafutan: value.riyousyafutan,
+            rese: value.rese,
+            kouban: value.kouban,
+            jigyosyoBango: value.jigyosyoBango,
+            jigyosyoMei: value.jigyosyoMei,
+            teikyoService: value.teikyoService,
+            souhiyogaku: value.souhiyogaku,
+            riyoufutan: value.riyoufutan,
+          });
+        }
+      });
+
+      this.data = data;
+      //this.setGridData(data, this.mainTableGrid);
+    },
     getData: function () {
       let data = [];
       for (let i = 0; i <= 10; i++) {
         data.push({
+          code: Math.random() * 100,
           space: '自',
-          jyougenkanri: 'ひまわり園',
+          jyougenkanri: 'ひまわり園' + Math.floor(Math.random() * 4),
+          kana: 'ヒマワリ園' + i,
           city: '東経市',
           jyukyuBango: '110001' + i,
           riyou: '東経太郎',
           riyousyafutan: 9300,
           rese: '',
           kouban: i,
-          jigyosyoBango: '1121000011',
+          jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
           jigyosyoMei: 'すみれ介護センター',
           teikyoService: '11:居宅介護',
           souhiyogaku: 98500,
@@ -195,6 +486,7 @@ export default {
       }
       let i = 10;
       data.push({
+        code: i,
         space: '自',
         jyougenkanri: 'ひまわり園',
         city: '東経市',
@@ -203,7 +495,7 @@ export default {
         riyousyafutan: 9300,
         rese: '',
         kouban: i,
-        jigyosyoBango: '1121000011',
+        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
         teikyoService: '11:居宅介護',
         souhiyogaku: 98500,
@@ -212,6 +504,7 @@ export default {
 
       i = 11;
       data.push({
+        code: i,
         space: '自',
         jyougenkanri: 'ひまわり園',
         city: '東経市',
@@ -220,13 +513,38 @@ export default {
         riyousyafutan: 6300,
         rese: '',
         kouban: i,
-        jigyosyoBango: '1121000011',
+        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
         teikyoService: '11:居宅介護',
         souhiyogaku: 98500,
         riyoufutan: 8300,
       });
       return data;
+    },
+    serviceInitialized: function (grid) {
+      //サンプルデータ
+      let griddata = [];
+      griddata.push({
+        id: 1,
+        jimusyoBango: '112500123',
+        jimusyoName: 'サクラ訪問介護',
+        teikyoService: '11:住宅介護',
+        syohiyougaku: 115200,
+        riyousyafutangaku: 115200,
+      });
+
+      while (grid.rows.length < 10) {
+        grid.rows.push(new wjGrid.Row());
+      }
+      for (let i = 0; i < 1; i++) {
+        let j = 0;
+        grid.setCellData(i, j++, griddata[i]['id']);
+        grid.setCellData(i, j++, griddata[i]['jimusyoBango']);
+        grid.setCellData(i, j++, griddata[i]['jimusyoName']);
+        grid.setCellData(i, j++, griddata[i]['teikyoService']);
+        grid.setCellData(i, j++, griddata[i]['syohiyougaku']);
+        grid.setCellData(i, j++, griddata[i]['riyousyafutangaku']);
+      }
     },
     onInitialized: function (grid) {
       let griddata = this.getData();
@@ -251,7 +569,22 @@ export default {
       panel.setCellData(0, 0, '基本情報');
       panel.setCellData(0, 7, '利用者請求実績');
       panel.setCellData(0, 14, '上限管理後');
-
+      let _self = this;
+      grid.hostElement.addEventListener('click', function (e) {
+        var ht = grid.hitTest(e);
+        let hPage = grid.hitTest(e.pageX, e.pageY);
+        // console.log(ht.target.innerText);
+        // console.log(e.target.innerHTML);
+        // console.log(hPage);
+        //入力・計算を押下
+        if (
+          hPage.col == 13 &&
+          (ht.target.innerText == '' || ht.target.innerText == '〇')
+        ) {
+          e.target.innerText = '〇';
+          _self.dialog = true;
+        }
+      });
       grid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.columnHeaders) {
           let html = e.cell.innerHTML;
@@ -279,7 +612,11 @@ export default {
             '</div>';
         }
       });
-
+      this.mainTableGrid = grid;
+      this.griddata = griddata;
+      this.setGridData(griddata, grid);
+    },
+    setGridData: function (griddata, grid) {
       let range = [];
       for (let i = 0; i < griddata.length; i++) {
         let j = 0;
@@ -291,7 +628,6 @@ export default {
         grid.setCellData(i, j++, griddata[i]['riyou']);
         grid.setCellData(i, j++, griddata[i]['riyousyafutan']);
         grid.setCellData(i, j++, griddata[i]['rese']);
-        //}
         grid.setCellData(i, j++, griddata[i]['kouban']);
         grid.setCellData(i, j++, griddata[i]['jigyosyoBango']);
         grid.setCellData(i, j++, griddata[i]['jigyosyoMei']);
@@ -310,6 +646,7 @@ export default {
             new wjGrid.CellRange(i - 1, 3, i, 3),
             new wjGrid.CellRange(i - 1, 4, i, 4),
             new wjGrid.CellRange(i - 1, 5, i, 5),
+            new wjGrid.CellRange(i - 1, 13, i, 13),
           ];
         }
       }
@@ -340,7 +677,6 @@ export default {
           }
         }
       };
-
       grid.mergeManager = mm;
     },
 
@@ -357,6 +693,26 @@ export default {
     },
   },
 };
+function setPush(get, value) {
+  get.push({
+    code: value.code,
+    space: value.space,
+    jyougenkanri: value.jyougenkanri,
+    kana: value.kana,
+    city: value.city,
+    jyukyuBango: value.jyukyuBango,
+    riyou: value.riyou,
+    riyousyafutan: value.riyousyafutan,
+    rese: value.rese,
+    kouban: value.kouban,
+    jigyosyoBango: value.jigyosyoBango,
+    jigyosyoMei: value.jigyosyoMei,
+    teikyoService: value.teikyoService,
+    souhiyogaku: value.souhiyogaku,
+    riyoufutan: value.riyoufutan,
+  });
+  return get;
+}
 function convertText(text, slice) {
   let html = text.slice(0, slice);
   html += '<br />';
@@ -372,6 +728,7 @@ function convertText(text, slice) {
   .w-100 {
     width: 100%;
   }
+
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;
@@ -388,6 +745,30 @@ function convertText(text, slice) {
     -webkit-writing-mode: vertical-rl;
     -ms-writing-mode: tb-rl;
     writing-mode: vertical-rl;
+  }
+
+  .wj-cell:nth-child(16),
+  .wj-cell:nth-child(15),
+  .wj-cell:nth-child(-n + 13) {
+    background-color: #fffacd;
+    &.wj-header {
+      background-color: #eee;
+    }
+    &.wj-state-selected {
+      color: #000;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #666;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
   }
 }
 </style>
