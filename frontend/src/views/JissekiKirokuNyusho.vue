@@ -21,7 +21,7 @@
     <v-container fluid>
       <v-layout>
         <UserList></UserList>
-        <v-flex md7>
+        <v-flex md10>
           <div class="user-info">
             <div>
               <label for="theCombo">利用者</label>
@@ -53,18 +53,18 @@
             :allowResizing="false"
             :allowDragging="false"
           >
-            <wj-flex-grid-column header="日付" binding="rymd" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-            <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="日付" binding="rymd" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="曜日" binding="youbi" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'17*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
             <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'17*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="朝食" binding="sasa" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="昼食" binding="shiru" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="夕食" binding="syuu" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'12*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="朝食" binding="sasa" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="昼食" binding="shiru" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="夕食" binding="syuu" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'10*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
           </wj-flex-grid>
 
@@ -204,6 +204,20 @@ export default{
         let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          // ヘッダーの改行位置の設定
+          if (r == 1 && c == 2) {
+            cell.innerHTML = 'サービス提供<br/>の状況';
+          }else if(r == 1 && c == 3){
+            cell.innerHTML = '入院・外泊時<br/>加算';
+          }else if(r == 1 && c == 4){
+            cell.innerHTML = '入院時支援<br/>特別加算';
+          }else if(r == 1 && c == 5){
+            cell.innerHTML = '地域移行<br/>加算';
+          }else if(r == 1 && c == 6){
+            cell.innerHTML = '体験宿泊<br/>支援加算';
+          }else if(r == 1 && c == 7){
+            cell.innerHTML = '重度障害者<br/>支援加算';
+          }
           // ヘッダーのスタイル
           s.backgroundColor = "#d4edf4";
           s.color = "#4d4d4d";
@@ -269,7 +283,7 @@ export default{
         if(c == 0 || c == 1 || c == 3 || c == 5){
           s.backgroundColor= "#d4edf4";
         }
-        if(r == 1 && ( c==5||c==6)){
+        if(r == 1 && (c == 5 || c == 6)){
           s.backgroundColor= "#cccccc";
         }
       }

@@ -21,7 +21,7 @@
     <v-container fluid>
       <v-layout>
         <UserList></UserList>
-        <v-flex md7>
+        <v-flex md10>
           <div class="user-info">
             <div>
               <label for="theCombo">利用者</label>
@@ -54,13 +54,17 @@
             <wj-flex-grid-column header="日付" binding="rymd" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
-            <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
             <wj-flex-grid-column header="開始時間" binding="jstime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
             <wj-flex-grid-column header="終了時間" binding="jetime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-            <wj-flex-grid-column header="往" binding="gei" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-            <wj-flex-grid-column header="復" binding="sou" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="往" binding="gei" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="復" binding="sou" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+            <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="通勤訓練加算" binding="kasantu" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="支援計画会議実施加算" binding="kasankai" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+            <wj-flex-grid-column header="移行準備支援体制加算" binding="kasang" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
             <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
           </wj-flex-grid>
 
@@ -127,7 +131,7 @@ export default{
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(),
-      modal:false
+      modal:false,
     }
   },
   methods: {
@@ -143,7 +147,7 @@ export default{
       // 0行目のヘッダーの内容を設定する
       panel.setCellData(0, 0, "日付");
       panel.setCellData(0, 1, "曜日");
-      for (let colIndex = 2; colIndex <= 10; colIndex++) {
+      for (let colIndex = 2; colIndex <= 14; colIndex++) {
         panel.setCellData(0, colIndex, "サービス提供実績");
       }
 
@@ -155,15 +159,19 @@ export default{
       panel.setCellData(1, 0, "日付");
       panel.setCellData(1, 1, "曜日");
       panel.setCellData(1, 2, "サービス提供の状況");
-      panel.setCellData(1, 3, "提供形態");
-      panel.setCellData(1, 4, "開始時間");
-      panel.setCellData(1, 5, "終了時間");
-      for (let colIndex = 6; colIndex <= 7; colIndex++) {
+      panel.setCellData(1, 3, "開始時間");
+      panel.setCellData(1, 4, "終了時間");
+      for (let colIndex = 5; colIndex <= 6; colIndex++) {
         panel.setCellData(1, colIndex, "送迎加算");
       }
+      panel.setCellData(1, 7, "訪問支援加算");
       panel.setCellData(1, 8, "食事提供加算");
-      panel.setCellData(1, 9, "体験利用支援加算");
-      panel.setCellData(1, 10, "備考");
+      panel.setCellData(1, 9, "医療連携体制加算");
+      panel.setCellData(1, 10, "通勤訓練加算");
+      panel.setCellData(1, 11, "体験利用支援加算");
+      panel.setCellData(1, 12, "支援計画会議実施加算");
+      panel.setCellData(1, 13, "移行準備支援体制加算");
+      panel.setCellData(1, 14, "備考");
 
       // フッターを作成/////////////////////////////////////////////////////////////
       let footer0 = new wjGrid.GroupRow();
@@ -171,10 +179,11 @@ export default{
       let footerPanel = grid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
       // フッターの内容を設定する
-      for (let colIndex = 0; colIndex <= 2; colIndex++) {
+      for (let colIndex = 0; colIndex <= 4; colIndex++) {
         footerPanel.setCellData(0, colIndex, "合計");
       }
-			for (let colIndex = 6; colIndex <= 7; colIndex++) {
+      // フッターの内容を設定する
+      for (let colIndex = 5; colIndex <= 6; colIndex++) {
         footerPanel.setCellData(0, colIndex, this.sougeiTotal);
       }
 
@@ -184,19 +193,22 @@ export default{
       let headerRanges = [
         new wjGrid.CellRange(0,0,2,0),
         new wjGrid.CellRange(0,1,2,1),
-        new wjGrid.CellRange(0,2,0,10),
+        new wjGrid.CellRange(0,2,0,14),
         new wjGrid.CellRange(1,2,2,2),
         new wjGrid.CellRange(1,3,2,3),
         new wjGrid.CellRange(1,4,2,4),
-        new wjGrid.CellRange(1,5,2,5),
-        new wjGrid.CellRange(1,6,1,7),
+        new wjGrid.CellRange(1,5,1,6),
         new wjGrid.CellRange(1,8,2,8),
         new wjGrid.CellRange(1,9,2,9),
-        new wjGrid.CellRange(1,10,2,10)
+        new wjGrid.CellRange(1,10,2,10),
+        new wjGrid.CellRange(1,11,2,11),
+        new wjGrid.CellRange(1,12,2,12),
+        new wjGrid.CellRange(1,13,2,13),
+        new wjGrid.CellRange(1,14,2,14),
       ];
       let footerRanges = [
-        new wjGrid.CellRange(0,0,0,2),
-        new wjGrid.CellRange(0,6,0,7)
+        new wjGrid.CellRange(0,0,0,4),
+        new wjGrid.CellRange(0,5,0,6)
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
@@ -228,18 +240,18 @@ export default{
           s.backgroundColor = "#d4edf4";
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
-          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4 || c == 5))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11))){
+          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && c > 7)){
             s.borderBottom = "2px solid #348498";
           }
 
-          if(c == 1 || c == 5 || c == 9){
+          if(c == 1 || c == 4 || c == 13){
             s.borderRight = "2px solid #348498";
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
           s.color = "#4d4d4d";
-          if(c == 1 || c == 5 || c == 9){
+          if(c == 1 || c == 4 || c == 13){
             s.borderRight = "2px solid #348498";
           }
 
@@ -255,15 +267,15 @@ export default{
           s.color = "#4d4d4d";
           s.fontWeight = "normal";
           s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 ||c == 2 ){
+          if(c == 0 || c == 1 ||c == 2){
             s.backgroundColor = "#d4edf4";
-          }else if(c == 10){
+          }else if(c == 14){
             s.backgroundColor = "#cccccc";
           }else{
             s.backgroundColor = "#ffffff";
           }
 
-          if(c == 0 || c == 5 || c == 9){
+          if(c == 0 || c == 13){
             s.borderRight = "2px solid #348498";
           }
 
@@ -296,13 +308,17 @@ export default{
             rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
             youbi:WeekChars[date.getDay()],
             jyokyo:kirokuMeiData[i]["jyokyo"],
-						keitai:kirokuMeiData[i]["keitai"],
             jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
             jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
             gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
             sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
+            kasanh_mn:kirokuMeiData[i]["kasanh_mn"] == 0 ? "":kirokuMeiData[i]["kasanh_mn"],
             kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+            kasani:kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
+            kasantu:kirokuMeiData[i]["kasantu"] == 0 ? "":kirokuMeiData[i]["kasantu"],
             kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+            kasankai:kirokuMeiData[i]["kasankai"] == 0 ? "":kirokuMeiData[i]["kasankai"],
+            kasang:kirokuMeiData[i]["kasang"] == 0 ? "":kirokuMeiData[i]["kasang"],
             biko:kirokuMeiData[i]["biko"],
           }
         )

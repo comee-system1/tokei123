@@ -6,6 +6,8 @@ import JissekiKirokuTsusho from '../views/JissekiKirokuTsusho.vue'
 import JissekiKirokuTanki from '../views/JissekiKirokuTanki.vue'
 import JissekiKirokuKinoKunren from '../views/JissekiKirokuKinoKunren.vue'
 import JissekiKirokuSeikatsuKunren from '../views/JissekiKirokuSeikatsuKunren.vue'
+import JissekiKirokuShuroIko from '../views/JissekiKirokuShuroIko.vue'
+import JissekiKirokuShurokeizokuA from '../views/JissekiKirokuShurokeizokuA.vue'
 import KyuhuMeisai from '../views/KyuhuMeisai.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
@@ -45,6 +47,16 @@ const routes = [
         path:'/JissekiKirokuSeikatsuKunren',
         name:'実績記録表',
         component: JissekiKirokuSeikatsuKunren
+    },
+    {
+        path:'/JissekiKirokuShuroIko',
+        name:'実績記録表',
+        component: JissekiKirokuShuroIko
+    },
+    {
+        path:'/JissekiKirokuShurokeizokuA',
+        name:'実績記録表',
+        component: JissekiKirokuShurokeizokuA
     },
     {
         path:'/JissekiKirokuTanki',
