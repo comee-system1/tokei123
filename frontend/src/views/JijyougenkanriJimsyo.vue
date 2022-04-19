@@ -6,12 +6,38 @@
       :seikyuflag="true"
     ></header-services>
     <v-container fluid>
-      <v-row>
-        <v-col class="pa-2" elevation="0">指定なし</v-col>
-        <v-col>
-          <v-card class="pa-2" elevation="0">
+      <v-row class="mb-2" justify="left" no-gutters>
+        <v-col lg="1">
+          <v-card class="pa-1" elevation="0"> 事業所 </v-card>
+        </v-col>
+        <v-col md="auto">
+          <v-card elevation="0">
             <wj-combo-box :items-source="jimusyoSearch"></wj-combo-box>
           </v-card>
+        </v-col>
+      </v-row>
+      <v-row class="mb-1" justify="left" no-gutters>
+        <v-col lg="1">
+          <v-card class="pa-1" elevation="0"> 絞り込み </v-card>
+        </v-col>
+        <v-col md="auto">
+          <v-row no-gutters class="mt-1">
+            <v-col>
+              <v-card class="text-center" outlined tile @click="sortUser(1)">
+                コード
+              </v-card>
+            </v-col>
+            <v-col>
+              <v-card class="text-center" outlined tile @click="sortUser(2)"
+                >カナ</v-card
+              >
+            </v-col>
+            <v-col>
+              <v-card class="text-center" outlined tile @click="sortUser(3)"
+                >受給者番号</v-card
+              >
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
