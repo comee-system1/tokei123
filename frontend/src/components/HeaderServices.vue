@@ -29,7 +29,14 @@
           :value="year + '-' + month"
         />
       </div>
-      <v-btn absolute right top>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
+      <v-row no-gutters style="position: absolute; top: 25%; right: 3%">
+        <v-col v-if="jyougengakuFlag">
+          <v-btn> 上限額管理計算 </v-btn>
+        </v-col>
+        <v-col class="ml-5">
+          <v-btn>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
+        </v-col>
+      </v-row>
     </v-flex>
   </v-layout>
 </template>
@@ -43,6 +50,7 @@ let month = moment().format('MM');
 export default {
   props: {
     seikyuflag: { type: Boolean },
+    jyougengakuFlag: { type: Boolean },
   },
   data() {
     return {

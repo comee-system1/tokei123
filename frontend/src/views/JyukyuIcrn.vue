@@ -8,122 +8,68 @@
     <v-container class="user-info" fluid>
       <v-col>
         <v-row>
-          <v-col cols="4">
+          <v-col cols="4" class="pt-1">
             <label>利用者</label>
-            <v-btn-toggle class="mt-0 flex-wrap" mandatory>
+            <v-btn-toggle class="flex-wrap" mandatory>
               <v-btn
+                v-for="n in userSelList"
+                :key="n"
                 small
                 color="secondary"
                 dark
                 outlined
                 :width="btnwidth"
-                @click="siborikomiUser(1)"
+                @click="siborikomiUser(n.val)"
               >
-                全員
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser(2)"
-              >
-                今月入所者
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser(3)"
-              >
-                今月退所者
+                {{ n.name }}
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="4" class="pt-1">
             <label>絞込</label>
-            <v-btn-toggle class="mt-0 flex-wrap" mandatory>
+            <v-btn-toggle class="flex-wrap" mandatory>
               <v-btn
+                v-for="n in siborikomiSelList"
+                :key="n"
                 small
                 color="secondary"
                 dark
                 outlined
                 :width="btnwidth"
-                @click="siborikomiUser2(1)"
+                @click="siborikomiUser2(n.val)"
               >
-                全員
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser2(2)"
-              >
-                未入力
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser2(3)"
-              >
-                期限切れ
+                {{ n.name }}
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col cols="*" class="mt-2 mr-2">
+          <v-col cols="*" class="mt-2 mr-2 pt-1">
             <v-row justify="end">
               <v-btn>受給者証修正</v-btn>
             </v-row>
           </v-col>
         </v-row>
-        <v-row class="mt-1">
-          <v-col cols="4">
+        <v-row class="mt-0">
+          <v-col cols="4" class="pt-1">
             <label>ソート</label>
             <!-- mandatoryは初期選択 -->
-            <v-btn-toggle class="mt-0 flex-wrap" mandatory>
+            <v-btn-toggle class="flex-wrap" mandatory>
               <v-btn
+                v-for="n in sortSelList"
+                :key="n"
                 small
                 color="secondary"
                 dark
                 outlined
                 :width="btnwidth"
-                @click="sortUser(1)"
+                @click="sortUser(n.val)"
               >
-                コード
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="sortUser(2)"
-              >
-                カナ
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="sortUser(3)"
-              >
-                受給者番号
+                {{ n.name }}
               </v-btn>
             </v-btn-toggle>
           </v-col>
         </v-row>
-        <v-row class="mt-1">
-          <v-col cols="*">
+        <v-row class="mt-0">
+          <v-col cols="*" class="pt-3 pb-1">
             <v-btn-toggle class="flex-wrap" mandatory>
               <v-btn
                 small
@@ -139,7 +85,7 @@
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col cols="2" class="mr-2">
+          <v-col cols="2" class="mr-2 pt-3">
             <v-row class="border-bottom" justify="end">
               <v-col class="pa-2" cols="4"
                 ><label>
@@ -305,6 +251,21 @@ export default {
           align: 'right',
         },
         { dataname: 'syusei', title: '修正', width: '1.5*', align: 'center' },
+      ],
+      userSelList: [
+        { val: 1, name: '全員' },
+        { val: 2, name: '今月入所者' },
+        { val: 3, name: '今月退所者' },
+      ],
+      siborikomiSelList: [
+        { val: 1, name: '全員' },
+        { val: 2, name: '未入力' },
+        { val: 3, name: '期限切れ' },
+      ],
+      sortSelList: [
+        { val: 1, name: 'コード' },
+        { val: 2, name: 'カナ' },
+        { val: 3, name: '受給者番号' },
       ],
       tplImage: CellMaker.makeImage(),
       viewdataAll: [],
@@ -668,7 +629,7 @@ export default {
 div#jyukyuicrn {
   font-size: 14px;
   font-family: 'メイリオ';
-  overflow-x: scroll;
+  // overflow-x: scroll;
   width: 1366px !important;
   span#selectUserExamNumber,
   span#selectUserText {

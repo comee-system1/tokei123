@@ -4,6 +4,7 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
       :seikyuflag="true"
+      :jyougengakuFlag="true"
     ></header-services>
     <v-container fluid>
       <v-row class="mb-2" no-gutters>
@@ -40,7 +41,7 @@
           <v-card flat>
             <v-card-text>
               <v-row align="center">
-                <v-btn-toggle mandatory>
+                <v-btn-toggle v-model="toggle_sort">
                   <v-btn small @click="sortUser(1)">カナ</v-btn>
                   <v-btn small @click="sortUser(2)">コード</v-btn>
                   <v-btn small @click="sortUser(3)">受給者番</v-btn>
@@ -59,9 +60,6 @@
             placeholder="カナ検索"
           ></wj-combo-box>
         </v-col>
-        <v-col class="ml-auto text-right" md="1">
-          <v-btn class="pa-2"> 上限額管理計算 </v-btn>
-        </v-col>
       </v-row>
     </v-container>
     <v-container fluid mt-0 pt-0>
@@ -74,7 +72,7 @@
               :key="n"
               :width="11"
               p-0
-              style="padding: 9px; height: 10px"
+              style="min-width: auto; padding: 9px; height: 10px"
               @click="onAlphabet(k)"
               >{{ n }}</v-btn
             >
@@ -89,8 +87,10 @@
           </v-card></v-col
         >
         <v-col cols="2" class="text-right mb-1">
-          <v-btn small elevation="0">全選択</v-btn>
-          <v-btn small class="ml-1" elevation="0">全解除</v-btn>
+          <v-btn small elevation="0" @click="allcheck(1)">全選択</v-btn>
+          <v-btn small class="ml-1" elevation="0" @click="allcheck(0)"
+            >全解除</v-btn
+          >
         </v-col>
       </v-row>
       <wj-flex-grid
@@ -145,6 +145,8 @@
           :binding="'rese'"
           :header="'レセ確定'"
           :width="30"
+          cssClass="cell-img"
+          :cellTemplate="tplImage"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'kouban'"
@@ -200,9 +202,9 @@
           :width="30"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'print'"
-          :header="'印刷'"
-          :width="30"
+          header="印刷"
+          binding="print"
+          width="1*"
         ></wj-flex-grid-column>
       </wj-flex-grid>
     </v-container>
@@ -233,9 +235,9 @@
             <v-btn small>順番並び替え</v-btn>
           </v-row>
           <v-row class="mt-5" no-gutters>
-            <v-col cols="2" class="mt-1">事務所名</v-col>
-            <v-col cols="4"
-              ><wj-combo-box text="11001234"></wj-combo-box
+            <v-col cols="2" class="mt-1 pa-0">事業所名</v-col>
+            <v-col cols="4" class="pa-0"
+              ><wj-combo-box text="11001234" style="width: 100%"></wj-combo-box
             ></v-col>
             <v-col cols="6"
               ><wj-combo-box :itemsSource="jimusyoName"></wj-combo-box
@@ -243,29 +245,31 @@
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">総費用額</v-col>
-            <v-col cols="4"
-              ><wj-combo-box text="11001234"></wj-combo-box
-            ></v-col>
+            <v-col cols="4"><wj-combo-box text="1155200"></wj-combo-box></v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">利用者負担額</v-col>
-            <v-col cols="4"
-              ><wj-combo-box text="11001234"></wj-combo-box
-            ></v-col>
+            <v-col cols="4"><wj-combo-box text="15200"></wj-combo-box></v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">提供サービス</v-col>
             <v-col cols="8">
               <wj-combo-box
                 :itemsSource="teikyoService"
+                :isRequired="false"
+                :selectedIndex="-1"
                 style="width: 300px"
               ></wj-combo-box>
               <wj-combo-box
                 :itemsSource="teikyoService"
+                :isRequired="false"
+                :selectedIndex="-1"
                 style="width: 300px"
               ></wj-combo-box>
               <wj-combo-box
                 :itemsSource="teikyoService"
+                :isRequired="false"
+                :selectedIndex="-1"
                 style="width: 300px"
               ></wj-combo-box>
             </v-col>
@@ -327,6 +331,7 @@
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 let alphabet = [
   '全',
   'ア',
@@ -348,7 +353,7 @@ export default {
       month: moment().format('MM'),
       data: [],
       jimusyoSearch: ['指定なし', 'ひまわり園'],
-      jimusyoName: ['指定なし', 'ひまわり園'],
+      jimusyoName: ['さくら訪問介護'],
       teikyoService: ['11:住宅介護', '12:行動援護'],
       dateArgument: '',
       searchArgument: '',
@@ -356,12 +361,21 @@ export default {
       dialog: false,
       mainTableGrid: '',
       griddata: [],
+      selectedUser: '',
+      tplImage: CellMaker.makeImage({}),
+      toggle_sort: 2,
     };
   },
   components: {
     HeaderServices,
   },
   methods: {
+    allcheck: function (type) {
+      let chk = document.getElementsByClassName('chk');
+      for (let i = 0; i < chk.length; i++) {
+        chk[i].checked = type == 1 ? true : false;
+      }
+    },
     sortUser: function (sortType) {
       let data = this.griddata;
       //かな順でソート
@@ -388,7 +402,6 @@ export default {
           return 0;
         });
       }
-
       this.setGridData(data, this.mainTableGrid);
       //this.userFilter();
     },
@@ -400,7 +413,6 @@ export default {
           if (value.kana) {
             switch (key) {
               case 1:
-                console.log(value.kana);
                 if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
                 break;
               case 2:
@@ -434,6 +446,8 @@ export default {
           }
         });
         this.data = get;
+      } else {
+        this.data = data;
       }
     },
     onTextChangedUser: function (e) {
@@ -456,6 +470,7 @@ export default {
             teikyoService: value.teikyoService,
             souhiyogaku: value.souhiyogaku,
             riyoufutan: value.riyoufutan,
+            print: value.print,
           });
         }
       });
@@ -465,30 +480,32 @@ export default {
     },
     getData: function () {
       let data = [];
-      for (let i = 0; i <= 10; i++) {
-        data.push({
-          code: Math.random() * 100,
-          space: '自',
-          jyougenkanri: 'ひまわり園' + Math.floor(Math.random() * 4),
-          kana: 'ヒマワリ園' + i,
-          city: '東経市',
-          jyukyuBango: '110001' + i,
-          riyou: '東経太郎',
-          riyousyafutan: 9300,
-          rese: '',
-          kouban: i,
-          jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-          jigyosyoMei: 'すみれ介護センター',
-          teikyoService: '11:居宅介護',
-          souhiyogaku: 98500,
-          riyoufutan: 9300,
-        });
-      }
-      let i = 10;
+      let i = 3;
+      data.push({
+        code: Math.random() * 100,
+        space: '自',
+        jyougenkanri: 'ひまわり園',
+        kana: 'ヒマワリ園' + i,
+        city: '東経市',
+        jyukyuBango: '110001' + i,
+        riyou: '東経太郎',
+        riyousyafutan: 9300,
+        rese: require('@/assets/complete.png'),
+        kouban: i,
+        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
+        jigyosyoMei: 'すみれ介護センター',
+        teikyoService: '11:居宅介護',
+        souhiyogaku: 98500,
+        riyoufutan: 9300,
+        nyuryoku: '',
+        print: 'true',
+      });
+
       data.push({
         code: i,
         space: '自',
         jyougenkanri: 'ひまわり園',
+        kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
@@ -500,13 +517,35 @@ export default {
         teikyoService: '11:居宅介護',
         souhiyogaku: 98500,
         riyoufutan: 9300,
+        nyuryoku: '',
+        print: 'true',
+      });
+      i = 10;
+      data.push({
+        code: Math.random() * 100,
+        space: '自',
+        jyougenkanri: 'ひまわり園',
+        kana: 'ヒマワリ園' + i,
+        city: '東経市',
+        jyukyuBango: '110001' + i,
+        riyou: '東経太郎',
+        riyousyafutan: 9300,
+        rese: '',
+        kouban: i,
+        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
+        jigyosyoMei: 'すみれ介護センター',
+        teikyoService: '11:居宅介護',
+        souhiyogaku: 98500,
+        riyoufutan: 9300,
+        nyuryoku: '',
+        print: 'true',
       });
 
-      i = 11;
       data.push({
         code: i,
         space: '自',
         jyougenkanri: 'ひまわり園',
+        kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
@@ -518,7 +557,36 @@ export default {
         teikyoService: '11:居宅介護',
         souhiyogaku: 98500,
         riyoufutan: 8300,
+        nyuryoku: '',
+        print: 'true',
       });
+      data.push({
+        code: i,
+        space: '自',
+        jyougenkanri: 'ひまわり園',
+        kana: 'ヒマワリ園' + i,
+        city: '東経市',
+        jyukyuBango: '110001' + i,
+        riyou: '東経太郎',
+        riyousyafutan: 6300,
+        rese: '',
+        kouban: i,
+        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
+        jigyosyoMei: 'すみれ介護センター',
+        teikyoService: '11:居宅介護',
+        souhiyogaku: 98500,
+        riyoufutan: 8300,
+        nyuryoku: '',
+        print: 'true',
+      });
+
+      //初期は受給版順でソート
+      data.sort((a, b) => {
+        if (a.jyukyuBango < b.jyukyuBango) return -1;
+        if (a.jyukyuBango > b.jyukyuBango) return 1;
+        return 0;
+      });
+
       return data;
     },
     serviceInitialized: function (grid) {
@@ -555,6 +623,8 @@ export default {
         grid.rows.push(new wjGrid.Row());
       }
 
+      grid.formatItem.addHandler(userCell);
+
       var extraRow = new wjGrid.Row();
       grid.columnHeaders.rows[0].height = 120;
       extraRow.allowMerging = true;
@@ -581,6 +651,13 @@ export default {
           hPage.col == 13 &&
           (ht.target.innerText == '' || ht.target.innerText == '〇')
         ) {
+          //表示している配列の選択値を取得
+          if (_self.data.length) {
+            console.log(_self.data);
+            _self.selectedUser = _self.data[hPage.row];
+          } else {
+            _self.selectedUser = griddata[hPage.row];
+          }
           e.target.innerText = '〇';
           _self.dialog = true;
         }
@@ -617,6 +694,32 @@ export default {
       this.setGridData(griddata, grid);
     },
     setGridData: function (griddata, grid) {
+      //前データと同じjyukyuBangoがあった際はマージ用の配列を準備
+      let merge = [];
+      let j = 0;
+      for (let i = 0; i < griddata.length; i++) {
+        if (
+          (griddata[i + 1] &&
+            griddata[i]['jyukyuBango'] == griddata[i + 1]['jyukyuBango']) ||
+          (griddata[i - 1] &&
+            griddata[i]['jyukyuBango'] == griddata[i - 1]['jyukyuBango'])
+        ) {
+          merge.push({
+            row: j,
+            jyukyuBango: griddata[i]['jyukyuBango'],
+          });
+        }
+        j++;
+      }
+      let end = [];
+      for (let i = 0; i < merge.length; i++) {
+        end[merge[i].jyukyuBango] = { row: i };
+      }
+      let start = [];
+      for (let i = merge.length - 1; i >= 0; --i) {
+        start[merge[i].jyukyuBango] = { row: i };
+      }
+
       let range = [];
       for (let i = 0; i < griddata.length; i++) {
         let j = 0;
@@ -634,22 +737,22 @@ export default {
         grid.setCellData(i, j++, griddata[i]['teikyoService']);
         grid.setCellData(i, j++, griddata[i]['souhiyogaku']);
         grid.setCellData(i, j++, griddata[i]['riyoufutan']);
-        //前データと同じjyukyuBangoがあった際はマージさせる配列を準備
-        if (
-          griddata[i - 1] &&
-          griddata[i]['jyukyuBango'] == griddata[i - 1]['jyukyuBango']
-        ) {
-          range = [
-            new wjGrid.CellRange(i - 1, 0, i, 0),
-            new wjGrid.CellRange(i - 1, 1, i, 1),
-            new wjGrid.CellRange(i - 1, 2, i, 2),
-            new wjGrid.CellRange(i - 1, 3, i, 3),
-            new wjGrid.CellRange(i - 1, 4, i, 4),
-            new wjGrid.CellRange(i - 1, 5, i, 5),
-            new wjGrid.CellRange(i - 1, 13, i, 13),
-          ];
-        }
+        grid.setCellData(i, j++, griddata[i]['nyuryoku']);
+        grid.setCellData(i, j++, '');
+        grid.setCellData(i, j++, '');
+        grid.setCellData(i, j++, griddata[i]['print']);
       }
+      //セルマージ用
+      start.forEach(function (element, index) {
+        range.push(new wjGrid.CellRange(element.row, 0, end[index].row, 0));
+        range.push(new wjGrid.CellRange(element.row, 1, end[index].row, 1));
+        range.push(new wjGrid.CellRange(element.row, 2, end[index].row, 2));
+        range.push(new wjGrid.CellRange(element.row, 3, end[index].row, 3));
+        range.push(new wjGrid.CellRange(element.row, 4, end[index].row, 4));
+        range.push(new wjGrid.CellRange(element.row, 5, end[index].row, 5));
+        range.push(new wjGrid.CellRange(element.row, 13, end[index].row, 13));
+        range.push(new wjGrid.CellRange(element.row, 16, end[index].row, 16));
+      });
 
       let mm = new wjGrid.MergeManager(grid);
       let headerRanges = [
@@ -693,6 +796,19 @@ export default {
     },
   },
 };
+function userCell(s, e) {
+  let str = e.cell.innerHTML;
+  //  if (e.cell.children.length == 0) {
+  if (str == 'true') {
+    str = "<div class='checkbox'><input type='checkbox' class='chk'></div>";
+  }
+  if (str == 'false') {
+    str = "<div class='checkbox'><input type='checkbox' class='chk' ></div>";
+  }
+  // }
+  e.cell.innerHTML = str;
+}
+
 function setPush(get, value) {
   get.push({
     code: value.code,
@@ -725,10 +841,14 @@ function convertText(text, slice) {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 1366px !important;
+
   .w-100 {
     width: 100%;
   }
 
+  #flexGrid {
+    overflow-y: scroll;
+  }
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;
@@ -747,18 +867,16 @@ function convertText(text, slice) {
     writing-mode: vertical-rl;
   }
 
-  .wj-cell:nth-child(16),
-  .wj-cell:nth-child(15),
-  .wj-cell:nth-child(-n + 13) {
-    background-color: #fffacd;
-    &.wj-header {
-      background-color: #eee;
-    }
-    &.wj-state-selected {
+  .checkbox {
+    width: 100%;
+    text-align: center;
+  }
+
+  .wj-cell {
+    &.wj-state-multi-selected {
       color: #000;
     }
   }
-
   ::-webkit-scrollbar {
     width: 2px;
   }
@@ -769,6 +887,10 @@ function convertText(text, slice) {
   ::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 10px;
+  }
+  .wj-flexgrid .wj-cell.cell-img {
+    padding: 0;
+    text-align: center;
   }
 }
 </style>

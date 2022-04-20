@@ -133,24 +133,44 @@
               </v-row>
             </div>
           </v-container>
-          <v-container mt-0 pt-0 class="d-flex justify-end" fluid>
-            <div class="mt-1">
-              <v-img src="../assets/tyusyaku_01.png"></v-img>
-            </div>
-            <div class="ml-2"><small>:編集可能</small></div>
 
-            <div class="ml-5 mt-1">
-              <v-img src="../assets/tyusyaku_02.png"></v-img>
-            </div>
-            <div class="ml-2"><small>:入退院</small></div>
-
-            <div class="ml-5 mt-1">
-              <v-img src="../assets/tyusyaku_03.png"></v-img>
-            </div>
-            <div class="ml-2"><small>:外泊</small></div>
-
-            <div class="ml-5 editMark"></div>
-            <div class="ml-2"><small>:手修正済み</small></div>
+          <v-container mb-n2 pt-0 fluid>
+            <v-row no-gutters>
+              <v-col>
+                <a class="ml-2 addButton" @click="dialog = true">期間追加</a>
+                <a class="ml-2 addButton" @click="dialog_add = true"
+                  >加算追加</a
+                >
+              </v-col>
+              <v-col>
+                <v-row no-gutters>
+                  <v-col cols="1">
+                    <v-img class="ma-1" src="../assets/tyusyaku_01.png"></v-img>
+                  </v-col>
+                  <v-col cols="2"> :編集可能 </v-col>
+                  <v-col cols="1">
+                    <v-img
+                      width="30"
+                      class="ma-1"
+                      src="../assets/tyusyaku_02.png"
+                    ></v-img>
+                  </v-col>
+                  <v-col cols="2"> :入退院 </v-col>
+                  <v-col cols="1">
+                    <v-img
+                      width="30"
+                      class="ma-1"
+                      src="../assets/tyusyaku_03.png"
+                    ></v-img>
+                  </v-col>
+                  <v-col cols="2"> :外泊 </v-col>
+                  <v-col cols="1">
+                    <div class="editMark"></div>
+                  </v-col>
+                  <v-col cols="2">:手修正済</v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </v-container>
 
           <wj-flex-grid
@@ -482,22 +502,15 @@ define_second[6] = {
 };
 define_third[1] = {
   name: '入院外泊時加算Ⅰ',
-  editicon: 1,
 };
 define_third[2] = {
   name: '入院外泊時加算Ⅱ',
-  editicon: 1,
 };
 define_third[3] = {
   name: '栄養マネジメント加算',
-  editicon: 1,
 };
 define_third[4] = {
   name: '療養食加算',
-  editicon: 1,
-};
-define_third[5] = {
-  name: '加算追加',
 };
 
 let define_week = ['日', '月', '火', '水', '木', '金', '土'];
@@ -685,7 +698,6 @@ export default {
         usercode: 1000,
         space: define_first[2],
         item: define_third[1].name,
-        editicon: define_third[1].editicon,
         day6: '2',
         day7: '2',
         day8: '2',
@@ -700,7 +712,6 @@ export default {
         usercode: 1000,
         space: define_first[2],
         item: define_third[2].name,
-        editicon: define_third[4].editicon,
         day12: '2',
         day13: '2',
         day14: '2',
@@ -715,7 +726,6 @@ export default {
         usercode: 1000,
         space: define_first[2],
         item: define_third[3].name,
-        editicon: define_third[4].editicon,
       });
       userInfo.push({
         uniqkey: 10,
@@ -724,15 +734,6 @@ export default {
         usercode: 1000,
         space: define_first[2],
         item: define_third[4].name,
-        editicon: define_third[4].editicon,
-      });
-      userInfo.push({
-        uniqkey: 11,
-        year: 2022,
-        month: '04',
-        usercode: 1000,
-        space: define_first[2],
-        item: define_third[5].name,
       });
 
       userInfo.push({
@@ -751,6 +752,17 @@ export default {
         day30: '1',
         totals: '30',
         money: '9700',
+      });
+      userInfo.push({
+        uniqkey: 21,
+        year: 2022,
+        month: '05',
+        usercode: 1000,
+        space: define_first[2],
+        item: define_second[2].name,
+        day16: '1',
+        day28: '1',
+        day29: '1',
       });
 
       userInfo.push({
@@ -850,28 +862,30 @@ export default {
       let _self = this;
 
       flexGrid.hostElement.addEventListener('click', function (e) {
-        var ht = flexGrid.hitTest(e);
-        console.log(ht.target.innerText);
-        console.log(e.target.innerHTML);
-        if (e.target.innerHTML.match(/termEdit/)) {
-          _self.dialog = true;
-        } else if (ht.target.innerText == define_second[2].sub) {
-          _self.dialog = true;
-        } else if (ht.target.innerText == define_third[5].name) {
-          _self.dialog_add = true;
-        } else if (ht.target.innerText == 'editicon') {
-          //個別加算編集アイコン
-          _self.dialog_add = true;
-        } else if (e.target.innerHTML == '〇') {
-          e.target.innerText = '×';
-        } else if (e.target.innerHTML == '×') {
-          e.target.innerHTML = '';
-        } else if (
-          e.target.innerHTML == '' ||
-          e.target.innerHTML == '<div class="text-center"></div>' ||
-          e.target.innerHTML == '<div class="red-sign"></div>'
-        ) {
-          e.target.innerHTML = '<div class="red-sign">〇</div>';
+        //var ht = flexGrid.hitTest(e);
+        //console.log(ht.target.innerText);
+        //console.log(e.target.innerHTML);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        console.log(hPage.col);
+        console.log(_self.daycount);
+        //合計・金額部分は押下時無効にする
+        if (_self.daycount + 2 > hPage.col) {
+          if (e.target.innerHTML.match(/addSpend/)) {
+            _self.dialog_add = true;
+          } else if (e.target.innerHTML.match(/termEdit/)) {
+            //矢印下のボックス
+            _self.dialog = true;
+          } else if (e.target.innerHTML == '〇') {
+            e.target.innerText = '×';
+          } else if (e.target.innerHTML == '×') {
+            e.target.innerHTML = '';
+          } else if (
+            e.target.innerHTML == '' ||
+            e.target.innerHTML == '<div class="text-center"></div>' ||
+            e.target.innerHTML == '<div class="red-sign"></div>'
+          ) {
+            e.target.innerHTML = '<div class="red-sign">〇</div>';
+          }
         }
       });
     },
@@ -944,14 +958,6 @@ function cellEdit(s, e) {
         "<div class='text-right-float mt-3 text-caption grey--text'>" +
         define_second[1].sub +
         '</div>';
-    } else if (e.cell.innerText == define_second[2].name) {
-      //入退院・外泊
-      str =
-        "<div class='text-left-float'>" +
-        define_second[2].name +
-        "</div><a class='ml-2 mt-2 addButton' >" +
-        define_second[2].sub +
-        '</a>';
     } else if (
       e.cell.innerText ==
       define_second[3].name + '_' + define_second[3].sub
@@ -981,36 +987,15 @@ function cellEdit(s, e) {
         "<div class='text-left-float'></div><div class='text-right-float border-right'><p>" +
         define_second[5].sub +
         '</p></div>';
-    } else if (e.cell.innerText == define_third[1].name) {
+    } else if (
+      e.cell.innerText == define_third[1].name ||
+      e.cell.innerText == define_third[2].name ||
+      e.cell.innerText == define_third[3].name ||
+      e.cell.innerText == define_third[4].name
+    ) {
       //入院外泊
       str =
-        "<div class='text-left-float'>" +
-        define_third[1].name +
-        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
-    } else if (e.cell.innerText == define_third[2].name) {
-      //入院外泊
-      str =
-        "<div class='text-left-float'>" +
-        define_third[2].name +
-        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
-    } else if (e.cell.innerText == define_third[3].name) {
-      //入院外泊
-      str =
-        "<div class='text-left-float'>" +
-        define_third[3].name +
-        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
-    } else if (e.cell.innerText == define_third[4].name) {
-      //療養食
-      str =
-        "<div class='text-left-float'>" +
-        define_third[4].name +
-        "<div class='text-right-float '><a class='editicon'>editicon</a></div></div>";
-    } else if (e.cell.innerText == define_third[5].name) {
-      //加算外泊
-      str =
-        "<div class='text-left-float addButton'>" +
-        define_third[5].name +
-        '</div>';
+        '<div class="addSpend">addSpend</div><a>' + e.cell.innerText + '</a>';
     } else if (
       e.cell.innerText == '合計' ||
       e.cell.innerText == '金額' ||
@@ -1064,7 +1049,6 @@ function cellEdit(s, e) {
 div#temporaryHistory {
   font-size: 14px;
   font-family: 'メイリオ';
-  overflow-x: scroll;
   width: 1366px !important;
   // height: 766px !important;
   span#selectUserExamNumber,
@@ -1080,6 +1064,15 @@ div#temporaryHistory {
     }
   }
 
+  div.addSpend {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    text-indent: -9999px;
+    cursor: pointer;
+  }
   .maru {
     width: 13px;
     height: 14px;
@@ -1103,41 +1096,23 @@ div#temporaryHistory {
   }
 
   div.editMark {
-    width: 50px;
+    width: 40px;
     height: 20px;
     background-color: violet;
   }
 
-  a.editicon {
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    background-size: contain;
-    background-image: url('../assets/tyusyaku_04.png');
-    background-position: right bottom;
-    background-repeat: no-repeat;
-    text-indent: -9999px;
-    margin-top: 5px;
-  }
-
   .addButton {
-    width: 60px;
-    background-color: #bea6ae;
+    width: 120px;
+    background-color: #fff0f5;
     display: block;
     float: left;
-    color: #000;
+    color: #000 !important;
     text-align: left;
-    border-radius: 6px;
+    border-radius: 30px;
     padding: 3px 0px 3px 10px;
     cursor: pointer;
     background-image: url('../assets/plus_15px.png');
     background-position: 95% 50%;
-    background-size: 10px 10px;
-    position: absolute;
-    top: 0;
-    margin-top: 1px;
-    left: auto;
-    right: 0;
   }
   div.helperArea {
     height: 100px;
@@ -1150,6 +1125,7 @@ div#temporaryHistory {
 
   #theGridTallRows {
     position: relative;
+    margin-top: 0px;
   }
 
   #theGridTallRows.wj-flexgrid .wj-cell {

@@ -149,7 +149,20 @@ export default {
                 },
               ],
             },
-            { name: '給付明細書', link: '/KyuhuMeisai' },
+            {
+              name: '給付明細書',
+              link: '/TemporaryPage',
+              sublists: [
+                {
+                  name: '介護給付費明細書',
+                  link: '/KyuhuMeisai',
+                },
+                {
+                  name: '介護給付明細一覧',
+                  link: '/KyuhuMeisaiIcrn',
+                },
+              ],
+            },
             { name: '実績記録票', link: '/JissekiKirokuNyusho' },
             { name: '加算項目一覧', link: '/TemporaryPage' },
             { name: '請求書', link: '/SeikyuSho' },

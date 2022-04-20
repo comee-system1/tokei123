@@ -9,6 +9,7 @@ import JissekiKirokuSeikatsuKunren from '../views/JissekiKirokuSeikatsuKunren.vu
 import JissekiKirokuShuroIko from '../views/JissekiKirokuShuroIko.vue'
 import JissekiKirokuShurokeizokuA from '../views/JissekiKirokuShurokeizokuA.vue'
 import KyuhuMeisai from '../views/KyuhuMeisai.vue'
+import KyuhuMeisaiIcrn from '../views/KyuhuMeisaiIcrn.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
@@ -27,6 +28,11 @@ const routes = [
         path:'/KyuhuMeisai',
         name:'給付明細書',
         component:KyuhuMeisai
+    },
+    {
+        path:'/KyuhuMeisaiIcrn',
+        name:'介護給付明細一覧',
+        component:KyuhuMeisaiIcrn
     },
     {
         path:'/JissekiKirokuNyusho',
