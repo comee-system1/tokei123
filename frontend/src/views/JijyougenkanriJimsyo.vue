@@ -484,7 +484,7 @@ export default {
       data.push({
         code: Math.random() * 100,
         space: '自',
-        jyougenkanri: 'ひまわり園',
+        jyougenkanri: 'ひaまわり園',
         kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
@@ -504,13 +504,13 @@ export default {
       data.push({
         code: i,
         space: '自',
-        jyougenkanri: 'ひまわり園',
+        jyougenkanri: 'ひbまわり園',
         kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
         riyousyafutan: 9300,
-        rese: '',
+        rese: require('@/assets/space.png'),
         kouban: i,
         jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
@@ -524,13 +524,13 @@ export default {
       data.push({
         code: Math.random() * 100,
         space: '自',
-        jyougenkanri: 'ひまわり園',
+        jyougenkanri: 'ひeまわり園',
         kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
         riyousyafutan: 9300,
-        rese: '',
+        rese: require('@/assets/space.png'),
         kouban: i,
         jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
@@ -544,13 +544,13 @@ export default {
       data.push({
         code: i,
         space: '自',
-        jyougenkanri: 'ひまわり園',
+        jyougenkanri: 'ggひまわり園',
         kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
         riyousyafutan: 6300,
-        rese: '',
+        rese: require('@/assets/space.png'),
         kouban: i,
         jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
@@ -563,13 +563,13 @@ export default {
       data.push({
         code: i,
         space: '自',
-        jyougenkanri: 'ひまわり園',
+        jyougenkanri: 'wひまわり園',
         kana: 'ヒマワリ園' + i,
         city: '東経市',
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
         riyousyafutan: 6300,
-        rese: '',
+        rese: require('@/assets/space.png'),
         kouban: i,
         jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
@@ -847,7 +847,7 @@ function convertText(text, slice) {
   }
 
   #flexGrid {
-    overflow-y: scroll;
+    min-height: 300px;
   }
   .wj-flexgrid .wj-cell {
     display: flex;
