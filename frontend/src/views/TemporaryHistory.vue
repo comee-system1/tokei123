@@ -4,7 +4,7 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
     ></header-services>
-    <v-container fluid>
+    <v-container fluid class="temporaryHistory-container">
       <v-row no-gutters>
         <v-col cols="2">
           <user-list-print
@@ -14,7 +14,7 @@
           >
           </user-list-print>
         </v-col>
-        <v-col cols="10" class="pa-1">
+        <v-col cols="10" class="pl-1">
           <v-container fluid>
             <v-row no-gutters class="ml-1">
               <v-col cols="3">
@@ -134,41 +134,41 @@
             </div>
           </v-container>
 
-          <v-container mb-n2 pt-0 fluid>
+          <v-container pa-0 fluid>
             <v-row no-gutters>
-              <v-col>
-                <a class="ml-2 addButton" @click="dialog = true">期間追加</a>
-                <a class="ml-2 addButton" @click="dialog_add = true"
-                  >加算追加</a
-                >
+              <v-col md="4">
+                <v-card elevation="0">
+                  <div class="clearfix">
+                    <a class="ml-2 addButton" @click="dialog = true"
+                      >期間追加</a
+                    >
+                    <a class="ml-2 addButton" @click="dialog_add = true"
+                      >加算追加</a
+                    >
+                  </div>
+                </v-card>
               </v-col>
-              <v-col>
-                <v-row no-gutters>
-                  <v-col cols="1">
-                    <v-img class="ma-1" src="../assets/tyusyaku_01.png"></v-img>
-                  </v-col>
-                  <v-col cols="2"> :編集可能 </v-col>
-                  <v-col cols="1">
-                    <v-img
-                      width="30"
-                      class="ma-1"
-                      src="../assets/tyusyaku_02.png"
-                    ></v-img>
-                  </v-col>
-                  <v-col cols="2"> :入退院 </v-col>
-                  <v-col cols="1">
-                    <v-img
-                      width="30"
-                      class="ma-1"
-                      src="../assets/tyusyaku_03.png"
-                    ></v-img>
-                  </v-col>
-                  <v-col cols="2"> :外泊 </v-col>
-                  <v-col cols="1">
-                    <div class="editMark"></div>
-                  </v-col>
-                  <v-col cols="2">:手修正済</v-col>
-                </v-row>
+              <v-col md="5" class="ml-auto">
+                <v-card elevation="0">
+                  <v-row no-gutters>
+                    <v-col>
+                      <img src="../assets/tyusyaku_01.png" />
+                    </v-col>
+                    <v-col cols="2"> :編集可能 </v-col>
+                    <v-col cols="1">
+                      <img src="../assets/tyusyaku_02.png" />
+                    </v-col>
+                    <v-col cols="*"> :入退院 </v-col>
+                    <v-col cols="1">
+                      <img src="../assets/tyusyaku_03.png" />
+                    </v-col>
+                    <v-col cols="*"> :外泊 </v-col>
+                    <v-col cols="1">
+                      <div class="editMark"></div>
+                    </v-col>
+                    <v-col cols="*">:手修正済</v-col>
+                  </v-row>
+                </v-card>
               </v-col>
             </v-row>
           </v-container>
@@ -482,7 +482,7 @@ define_second[1] = {
   sub: '(入所日:R03.07.03)',
 };
 define_second[2] = {
-  name: '入退院・外泊',
+  name: '入院・退院日',
   sub: '期間',
 };
 define_second[3] = {
@@ -499,6 +499,9 @@ define_second[5] = {
 };
 define_second[6] = {
   name: '光熱水費',
+};
+define_second[7] = {
+  name: '外泊日',
 };
 define_third[1] = {
   name: '入院外泊時加算Ⅰ',
@@ -636,7 +639,14 @@ export default {
         day7: 'arrow_11',
         day8: 'arrow_11',
         day9: 'arrow_13', //入退院の終わりの矢印
-
+      });
+      userInfo.push({
+        uniqkey: 2,
+        year: 2022,
+        month: '04',
+        usercode: 1000,
+        space: define_first[1],
+        item: define_second[7].name,
         day15: 'arrow_22' + '-' + '4/15～4/21[7]', //外泊の始まりの矢印
         day16: 'arrow_21', //外泊の途中の矢印
         day17: 'arrow_21',
@@ -1032,6 +1042,7 @@ function cellEdit(s, e) {
 </script>
 
 <style lang="scss">
+@import '@/assets/scss/common.scss';
 .input_picker {
   div > input {
     border: 1px solid #ccc !important;
@@ -1051,6 +1062,10 @@ div#temporaryHistory {
   font-family: 'メイリオ';
   width: 1366px !important;
   // height: 766px !important;
+
+  .temporaryHistory-container {
+    padding: 4px;
+  }
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -1085,42 +1100,47 @@ div#temporaryHistory {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #fffacd;
+    background-color: $light_yellow;
     top: 0;
     left: 0;
   }
-
   .red-sign {
     color: red;
     text-align: center;
   }
 
   div.editMark {
-    width: 40px;
-    height: 20px;
-    background-color: violet;
+    width: 30px;
+    height: 14px;
+    margin-top: 3px;
+    background-color: $pink;
   }
 
   .addButton {
-    width: 120px;
+    width: 100px;
     background-color: #fff0f5;
     display: block;
     float: left;
-    color: #000 !important;
+    color: $font_color !important;
     text-align: left;
     border-radius: 30px;
-    padding: 3px 0px 3px 10px;
+    padding: 1px 0px 1px 10px;
     cursor: pointer;
     background-image: url('../assets/plus_15px.png');
     background-position: 95% 50%;
+  }
+  .clearfix::after {
+    content: '';
+    display: block;
+    clear: both;
   }
   div.helperArea {
     height: 100px;
     overflow-y: auto;
   }
   .wj-cells .wj-cell.wj-state-selected {
-    background-color: #f5f5f5 !important;
-    color: #000 !important;
+    background-color: $light-white !important;
+    color: $font_color !important;
   }
 
   #theGridTallRows {
@@ -1150,7 +1170,7 @@ div#temporaryHistory {
   .red-arrow,
   .red-arrow_end,
   .red-arrow_start {
-    border-top: 1px solid red;
+    border-top: 1px solid $red;
     display: block;
     position: absolute;
     width: 100%;
@@ -1162,7 +1182,7 @@ div#temporaryHistory {
   .green-arrow,
   .green-arrow_end,
   .green-arrow_start {
-    border-top: 1px solid green;
+    border-top: 1px solid $green;
   }
 
   .green-arrow_start,
@@ -1171,7 +1191,7 @@ div#temporaryHistory {
       width: 0;
       height: 0;
       border-top: 4px solid transparent;
-      border-right: 4px solid red;
+      border-right: 4px solid $red;
       border-bottom: 4px solid transparent;
       position: absolute;
       left: 0;
@@ -1189,7 +1209,7 @@ div#temporaryHistory {
     div {
       width: 0;
       height: 0;
-      border-left: 4px solid red;
+      border-left: 4px solid $red;
       border-top: 4px solid transparent;
       border-bottom: 4px solid transparent;
       position: absolute;
@@ -1211,8 +1231,8 @@ div#temporaryHistory {
     div {
       padding: 1px 20px 1px 5px;
       position: absolute;
-      background-color: #fff;
-      border: 1px solid #000;
+      background-color: $white;
+      border: 1px solid $font_color;
       z-index: 1;
       background-image: url('../assets/tyusyaku_04.png');
       background-position: 99% 40%;

@@ -6,8 +6,8 @@
       :seikyuflag="true"
       :jyougengakuFlag="true"
     ></header-services>
-    <v-container fluid>
-      <v-row class="mb-2" no-gutters>
+    <v-container fluid class="jijyougen-container">
+      <v-row no-gutters>
         <v-col sm="1">
           <v-card class="pa-1" elevation="0"> 事業所 </v-card>
         </v-col>
@@ -61,9 +61,8 @@
           ></wj-combo-box>
         </v-col>
       </v-row>
-    </v-container>
-    <v-container fluid mt-0 pt-0>
-      <v-row no-getters>
+
+      <v-row no-gutters>
         <v-col cols="5">
           <v-btn-toggle class="flex-wrap">
             <v-btn
@@ -72,7 +71,7 @@
               :key="n"
               :width="11"
               p-0
-              style="min-width: auto; padding: 9px; height: 10px"
+              style="min-width: auto; padding: 15px; height: 5px"
               @click="onAlphabet(k)"
               >{{ n }}</v-btn
             >
@@ -490,7 +489,7 @@ export default {
         jyukyuBango: '110001' + i,
         riyou: '東経太郎',
         riyousyafutan: 9300,
-        rese: require('@/assets/complete.png'),
+        rese: require('@/assets/kaku_15px.png'),
         kouban: i,
         jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
         jigyosyoMei: 'すみれ介護センター',
@@ -498,7 +497,7 @@ export default {
         souhiyogaku: 98500,
         riyoufutan: 9300,
         nyuryoku: '',
-        print: 'true',
+        print: true,
       });
 
       data.push({
@@ -518,7 +517,7 @@ export default {
         souhiyogaku: 98500,
         riyoufutan: 9300,
         nyuryoku: '',
-        print: 'true',
+        print: true,
       });
       i = 10;
       data.push({
@@ -538,7 +537,7 @@ export default {
         souhiyogaku: 98500,
         riyoufutan: 9300,
         nyuryoku: '',
-        print: 'true',
+        print: true,
       });
 
       data.push({
@@ -558,7 +557,7 @@ export default {
         souhiyogaku: 98500,
         riyoufutan: 8300,
         nyuryoku: '',
-        print: 'true',
+        print: true,
       });
       data.push({
         code: i,
@@ -577,7 +576,7 @@ export default {
         souhiyogaku: 98500,
         riyoufutan: 8300,
         nyuryoku: '',
-        print: 'true',
+        print: true,
       });
 
       //初期は受給版順でソート
@@ -622,8 +621,6 @@ export default {
       while (grid.rows.length < griddata.length) {
         grid.rows.push(new wjGrid.Row());
       }
-
-      grid.formatItem.addHandler(userCell);
 
       var extraRow = new wjGrid.Row();
       grid.columnHeaders.rows[0].height = 120;
@@ -751,6 +748,7 @@ export default {
         range.push(new wjGrid.CellRange(element.row, 4, end[index].row, 4));
         range.push(new wjGrid.CellRange(element.row, 5, end[index].row, 5));
         range.push(new wjGrid.CellRange(element.row, 13, end[index].row, 13));
+        range.push(new wjGrid.CellRange(element.row, 15, end[index].row, 15));
         range.push(new wjGrid.CellRange(element.row, 16, end[index].row, 16));
       });
 
@@ -796,18 +794,6 @@ export default {
     },
   },
 };
-function userCell(s, e) {
-  let str = e.cell.innerHTML;
-  //  if (e.cell.children.length == 0) {
-  if (str == 'true') {
-    str = "<div class='checkbox'><input type='checkbox' class='chk'></div>";
-  }
-  if (str == 'false') {
-    str = "<div class='checkbox'><input type='checkbox' class='chk' ></div>";
-  }
-  // }
-  e.cell.innerHTML = str;
-}
 
 function setPush(get, value) {
   get.push({
@@ -826,6 +812,7 @@ function setPush(get, value) {
     teikyoService: value.teikyoService,
     souhiyogaku: value.souhiyogaku,
     riyoufutan: value.riyoufutan,
+    print: value.print,
   });
   return get;
 }
@@ -837,6 +824,7 @@ function convertText(text, slice) {
 }
 </script>
 <style lang="scss" scope>
+@import '@/assets/scss/common.scss';
 #jijyougen {
   font-size: 14px;
   font-family: 'メイリオ';
@@ -846,20 +834,35 @@ function convertText(text, slice) {
     width: 100%;
   }
 
+  .jijyougen-container {
+    padding: 4px;
+  }
+
   #flexGrid {
     min-height: 300px;
   }
+
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;
     width: 100%;
+    img {
+      &.wj-cell-maker {
+        width: 15px;
+        height: 15px;
+        margin: 0 auto;
+      }
+    }
   }
+
   .wj-flexgrid .wj-cell.wj-align-right {
     justify-content: flex-end;
   }
+
   .wj-flexgrid .wj-cell.wj-align-center {
     justify-content: center;
   }
+
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;
@@ -874,20 +877,32 @@ function convertText(text, slice) {
 
   .wj-cell {
     &.wj-state-multi-selected {
-      color: #000;
+      color: $font-color;
     }
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: $light-white !important;
+    color: $font-color !important;
+  }
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background-color: $light-white !important;
+    color: $font-color !important;
   }
   ::-webkit-scrollbar {
     width: 2px;
   }
+
   ::-webkit-scrollbar-track {
     background: #666;
     border-radius: 10px;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 10px;
   }
+
   .wj-flexgrid .wj-cell.cell-img {
     padding: 0;
     text-align: center;

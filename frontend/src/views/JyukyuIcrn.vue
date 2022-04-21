@@ -6,128 +6,126 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-col>
-        <v-row>
-          <v-col cols="4" class="pt-1">
-            <label>利用者</label>
-            <v-btn-toggle class="flex-wrap" mandatory>
-              <v-btn
-                v-for="n in userSelList"
-                :key="n"
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
-          <v-col cols="4" class="pt-1">
-            <label>絞込</label>
-            <v-btn-toggle class="flex-wrap" mandatory>
-              <v-btn
-                v-for="n in siborikomiSelList"
-                :key="n"
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="siborikomiUser2(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
-          <v-col cols="*" class="mt-2 mr-2 pt-1">
-            <v-row justify="end">
-              <v-btn>受給者証修正</v-btn>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row class="mt-0">
-          <v-col cols="4" class="pt-1">
-            <label>ソート</label>
-            <!-- mandatoryは初期選択 -->
-            <v-btn-toggle class="flex-wrap" mandatory>
-              <v-btn
-                v-for="n in sortSelList"
-                :key="n"
-                small
-                color="secondary"
-                dark
-                outlined
-                :width="btnwidth"
-                @click="sortUser(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
-        </v-row>
-        <v-row class="mt-0">
-          <v-col cols="*" class="pt-3 pb-1">
-            <v-btn-toggle class="flex-wrap" mandatory>
-              <v-btn
-                small
-                outlined
-                v-for="(n, k) in alphabet"
-                :key="n"
-                :width="30"
-                p-0
-                style="min-width: auto"
-                @click="onAlphabet(k)"
-              >
-                {{ n }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
-          <v-col cols="2" class="mr-2 pt-3">
-            <v-row class="border-bottom" justify="end">
-              <v-col class="pa-2" cols="4"
-                ><label>
-                  <font color="red"><b>エラー</b></font>
-                </label>
-              </v-col>
-              <v-col class="pa-2" cols="*">
-                <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row class="mt-0">
-          <v-col class="mr-2">
-            <wj-flex-grid
-              id="detailGrid"
-              :headersVisibility="'Column'"
-              :autoGenerateColumns="false"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowPinning="false"
-              :allowMerging="'AllHeaders'"
-              :allowResizing="false"
-              :allowSorting="false"
-              :allowDragging="false"
-              :selectionMode="'Row'"
-              :isReadOnly="true"
-              :initialized="onInitializeDetailGrid"
-              :formatItem="onFormatItem"
-              :itemsSourceChanged="onItemsSourceChanged"
-              :itemsSource="viewdata"
+      <v-row class="mt-0">
+        <v-col cols="4" class="pt-1">
+          <label>利用者</label>
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              v-for="n in userSelList"
+              :key="n"
+              small
+              color="secondary"
+              dark
+              outlined
+              :width="btnwidth"
+              @click="siborikomiUser(n.val)"
             >
-              <wj-flex-grid-column
-                v-for="column in headerList"
-                :key="column.item"
-                cssClass="cell-img"
-                :cellTemplate="tplImage"
-              />
-            </wj-flex-grid>
-          </v-col>
-        </v-row>
-      </v-col>
+              {{ n.name }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="4" class="pt-1">
+          <label>絞込</label>
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              v-for="n in siborikomiSelList"
+              :key="n"
+              small
+              color="secondary"
+              dark
+              outlined
+              :width="btnwidth"
+              @click="siborikomiUser2(n.val)"
+            >
+              {{ n.name }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="*" class="mt-2 mr-2 pt-1">
+          <v-row justify="end">
+            <v-btn>受給者証修正</v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col cols="4" class="pt-1">
+          <label>ソート</label>
+          <!-- mandatoryは初期選択 -->
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              v-for="n in sortSelList"
+              :key="n"
+              small
+              color="secondary"
+              dark
+              outlined
+              :width="btnwidth"
+              @click="sortUser(n.val)"
+            >
+              {{ n.name }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col cols="*" class="pt-3 pb-1">
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              small
+              outlined
+              v-for="(n, k) in alphabet"
+              :key="n"
+              :width="30"
+              p-0
+              style="min-width: auto"
+              @click="onAlphabet(k)"
+            >
+              {{ n }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="2" class="mr-2 pt-3">
+          <v-row class="border-bottom" justify="end">
+            <v-col class="pa-2" cols="4"
+              ><label>
+                <font color="red"><b>エラー</b></font>
+              </label>
+            </v-col>
+            <v-col class="pa-2" cols="*">
+              <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col class="mr-2">
+          <wj-flex-grid
+            id="jyukyuIcrnGrid"
+            :headersVisibility="'Column'"
+            :autoGenerateColumns="false"
+            :allowAddNew="false"
+            :allowDelete="false"
+            :allowPinning="false"
+            :allowMerging="'AllHeaders'"
+            :allowResizing="false"
+            :allowSorting="false"
+            :allowDragging="false"
+            :selectionMode="'Row'"
+            :isReadOnly="true"
+            :initialized="onInitializejyukyuIcrnGrid"
+            :formatItem="onFormatItem"
+            :itemsSourceChanged="onItemsSourceChanged"
+            :itemsSource="viewdata"
+          >
+            <wj-flex-grid-column
+              v-for="column in headerList"
+              :key="column.item"
+              cssClass="cell-img"
+              :cellTemplate="tplImage"
+            />
+          </wj-flex-grid>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -291,7 +289,7 @@ export default {
     },
   },
   methods: {
-    onInitializeDetailGrid: function (flexGrid) {
+    onInitializejyukyuIcrnGrid: function (flexGrid) {
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
@@ -680,7 +678,7 @@ div#jyukyuicrn {
       font-size: 0.85em;
     }
   }
-  #detailGrid {
+  #jyukyuIcrnGrid {
     font-size: 14px;
     width: auto;
     height: 70vh;

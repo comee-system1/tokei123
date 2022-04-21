@@ -443,15 +443,18 @@ function userCell(s, e) {
 }
 </script>
 <style lang="scss">
+@import '@/assets/scss/common.scss';
+
 div#user-list-print_scrollbar {
+  padding: 0;
   .wj-cell:nth-child(2),
   .wj-cell:first-child {
-    background-color: #fffacd;
+    background-color: $light_yellow;
     &.wj-header {
       background-color: #eee;
     }
     &.wj-state-multi-selected {
-      color: #000;
+      color: $font_color;
     }
   }
   .wj-cell {

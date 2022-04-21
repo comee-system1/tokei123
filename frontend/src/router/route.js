@@ -1,13 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import JyukyuIcrn from '../views/JyukyuIcrn.vue'
-import JissekiKirokuNyusho from '../views/JissekiKirokuNyusho.vue'
-import JissekiKirokuTsusho from '../views/JissekiKirokuTsusho.vue'
-import JissekiKirokuTanki from '../views/JissekiKirokuTanki.vue'
-import JissekiKirokuKinoKunren from '../views/JissekiKirokuKinoKunren.vue'
-import JissekiKirokuSeikatsuKunren from '../views/JissekiKirokuSeikatsuKunren.vue'
-import JissekiKirokuShuroIko from '../views/JissekiKirokuShuroIko.vue'
-import JissekiKirokuShurokeizokuA from '../views/JissekiKirokuShurokeizokuA.vue'
+import JissekiKirokuParent from '../views/JissekiKirokuParent.vue'
 import KyuhuMeisai from '../views/KyuhuMeisai.vue'
 import KyuhuMeisaiIcrn from '../views/KyuhuMeisaiIcrn.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
@@ -35,39 +29,9 @@ const routes = [
         component:KyuhuMeisaiIcrn
     },
     {
-        path:'/JissekiKirokuNyusho',
+        path:'/JissekiKiroku',
         name:'実績記録表',
-        component: JissekiKirokuNyusho
-    },
-    {
-        path:'/JissekiKirokuTsusho',
-        name:'実績記録表',
-        component: JissekiKirokuTsusho
-    },
-    {
-        path:'/JissekiKirokuKinoKunren',
-        name:'実績記録表',
-        component: JissekiKirokuKinoKunren
-    },
-    {
-        path:'/JissekiKirokuSeikatsuKunren',
-        name:'実績記録表',
-        component: JissekiKirokuSeikatsuKunren
-    },
-    {
-        path:'/JissekiKirokuShuroIko',
-        name:'実績記録表',
-        component: JissekiKirokuShuroIko
-    },
-    {
-        path:'/JissekiKirokuShurokeizokuA',
-        name:'実績記録表',
-        component: JissekiKirokuShurokeizokuA
-    },
-    {
-        path:'/JissekiKirokuTanki',
-        name:'実績記録表',
-        component: JissekiKirokuTanki
+        component: JissekiKirokuParent
     },
     {
         path:'/SeikyuSho',

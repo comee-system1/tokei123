@@ -4,7 +4,7 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
     ></header-services>
-    <v-container fluid>
+    <v-container fluid class="shisetsu-container">
       <v-row no-gutters>
         <v-col cols="3">
           <v-row no-gutters>
@@ -33,10 +33,8 @@
         <v-col cols="7">
           <v-row no-gutters>
             <v-col class="ml-auto text-right">
-              <v-btn class="pa-1 mt-1" @click="registPage()">
-                施設体制修正
-              </v-btn>
-              <v-card class="pa-0 text-caption" elevation="0">
+              <v-btn @click="registPage()"> 施設体制修正 </v-btn>
+              <v-card elevation="0" class="mt-2">
                 (最終登録日:R03.04.05 10:10 昭和 一郎)
               </v-card>
             </v-col>
@@ -52,6 +50,7 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 :isReadOnly="true"
+                :alternatingRowStep="0"
                 style="max-height: 200px"
               >
                 <wj-flex-grid-column
@@ -70,6 +69,7 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 :isReadOnly="true"
+                :alternatingRowStep="0"
                 style="max-height: 200px"
               >
                 <wj-flex-grid-column
@@ -77,6 +77,7 @@
                   :header="'施設体制による加算'"
                   :allowMerging="true"
                   width="*"
+                  :alternatingRowStep="0"
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
@@ -90,6 +91,7 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 :isReadOnly="true"
+                :alternatingRowStep="0"
                 style="max-height: 400px"
               >
                 <wj-flex-grid-column
@@ -104,7 +106,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-container fluid>
+    <v-container fluid class="shisetsu-container">
       <v-card class="pa-2" outlined tile>
         <v-row no-gutters>
           <v-col sm="12">
@@ -115,18 +117,12 @@
                 </v-card>
               </v-col>
               <v-col cols="4">
-                <v-card class="ml-2 pt-0" elevation="0">
-                  <v-checkbox
-                    v-model="checkbox"
-                    :label="`有り`"
-                    class="pt-3 my-n1"
-                  ></v-checkbox>
-                </v-card>
+                <div class="my-n3">
+                  <v-checkbox v-model="checkbox" :label="`有り`"></v-checkbox>
+                </div>
               </v-col>
               <v-col cols="4">
-                <v-card class="pa-2 mt-1" elevation="0">
-                  〇:対象日 ×:除外日
-                </v-card>
+                <div class="mt-3">〇:対象日 ×:除外日</div>
               </v-col>
             </v-row>
           </v-col>
@@ -138,17 +134,19 @@
               :itemsSource="dateData"
               :initialized="onInitializedDate"
               :headersVisibility="'Column'"
+              :selectionMode="3"
               :isReadOnly="true"
               :allowDragging="false"
               :allowResizing="false"
               :deferResizing="false"
               :allowSorting="false"
               :allowMerging="'ColumnHeaders'"
+              :alternatingRowStep="0"
             >
               <wj-flex-grid-column
                 header="加算・減算項目"
                 binding="clumn"
-                width="10*"
+                width="8*"
                 :allowMerging="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
@@ -447,18 +445,39 @@ function cellEdit(s, e) {
   }
 }
 </script>
-<style lang="scss" scope>
+<style lang="scss" >
+@import '@/assets/scss/common.scss';
 #shisetsu {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 1366px !important;
+
+  .shisetsu-container {
+    padding: 4px;
+  }
+
   #theGridTallRows.wj-flexgrid .wj-cell {
     height: 40px;
   }
 
   .wj-cells .wj-cell.wj-state-selected {
-    background-color: #f5f5f5 !important;
-    color: #000 !important;
+    background-color: $light-white !important;
+    color: $font-color !important;
+  }
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background-color: $light-white !important;
+    color: $font-color !important;
+  }
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #666;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
   }
 }
 </style>
