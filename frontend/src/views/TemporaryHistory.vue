@@ -770,8 +770,8 @@ export default {
         usercode: 1000,
         space: define_first[2],
         item: define_second[2].name,
-        day16: '1',
-        day28: '1',
+        day6: '1',
+        day18: '1',
         day29: '1',
       });
 

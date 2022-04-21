@@ -219,10 +219,10 @@
             <v-col cols="10">
               <v-row no-gutters>
                 <v-col cols="4"
-                  ><wj-combo-box text="11001234"></wj-combo-box
+                  ><wj-combo-box :text="jyukyuBango"></wj-combo-box
                 ></v-col>
                 <v-col cols="8"
-                  ><wj-combo-box text="東経静香"></wj-combo-box
+                  ><wj-combo-box :text="riyou"></wj-combo-box
                 ></v-col>
               </v-row>
             </v-col>
@@ -236,37 +236,52 @@
           <v-row class="mt-5" no-gutters>
             <v-col cols="2" class="mt-1 pa-0">事業所名</v-col>
             <v-col cols="4" class="pa-0"
-              ><wj-combo-box text="11001234" style="width: 100%"></wj-combo-box
+              ><wj-combo-box
+                :text="dialog_jimusyoBango"
+                style="width: 100%"
+              ></wj-combo-box
             ></v-col>
             <v-col cols="6"
-              ><wj-combo-box :itemsSource="jimusyoName"></wj-combo-box
+              ><wj-combo-box
+                :itemsSource="dialog_jimusyoName"
+                :isRequired="false"
+                :selectedIndex="-1"
+                :selectedIndexChanged="dialog_jimusyoNameChange"
+              ></wj-combo-box
             ></v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">総費用額</v-col>
-            <v-col cols="4"><wj-combo-box text="1155200"></wj-combo-box></v-col>
+            <v-col cols="4"
+              ><wj-combo-box :text="dialog_souhiyogaku"></wj-combo-box
+            ></v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">利用者負担額</v-col>
-            <v-col cols="4"><wj-combo-box text="15200"></wj-combo-box></v-col>
+            <v-col cols="4"
+              ><wj-combo-box :text="dialog_riyosyafutangaku"></wj-combo-box
+            ></v-col>
           </v-row>
           <v-row no-gutters>
             <v-col cols="2" class="mt-1">提供サービス</v-col>
             <v-col cols="8">
               <wj-combo-box
-                :itemsSource="teikyoService"
+                :itemsSource="dialog_teikyoService1"
+                :isRequired="false"
+                :selectedIndex="-1"
+                :selectedIndexChanged="dialog_teikyoService1_change"
+                style="width: 300px"
+              ></wj-combo-box>
+              <wj-combo-box
+                :itemsSource="dialog_teikyoService2"
+                :selectedIndexChanged="dialog_teikyoService2_change"
                 :isRequired="false"
                 :selectedIndex="-1"
                 style="width: 300px"
               ></wj-combo-box>
               <wj-combo-box
-                :itemsSource="teikyoService"
-                :isRequired="false"
-                :selectedIndex="-1"
-                style="width: 300px"
-              ></wj-combo-box>
-              <wj-combo-box
-                :itemsSource="teikyoService"
+                :itemsSource="dialog_teikyoService3"
+                :selectedIndexChanged="dialog_teikyoService3_change"
                 :isRequired="false"
                 :selectedIndex="-1"
                 style="width: 300px"
@@ -282,7 +297,7 @@
               <v-btn @click="dialog = false" tile outlined> 削除 </v-btn>
             </v-card>
             <v-card elevation="0" class="ml-auto">
-              <v-btn @click="dialog = false" tile outlined> 設定 </v-btn>
+              <v-btn @click="dialog_setting()" tile outlined> 設定 </v-btn>
             </v-card>
           </v-card>
 
@@ -352,8 +367,17 @@ export default {
       month: moment().format('MM'),
       data: [],
       jimusyoSearch: ['指定なし', 'ひまわり園'],
-      jimusyoName: ['さくら訪問介護'],
-      teikyoService: ['11:住宅介護', '12:行動援護'],
+      dialog_jimusyoName: this.getJimusyoName(),
+      dialog_jimusyoName_select: '',
+      dialog_jimusyoBango: '',
+      dialog_souhiyogaku: '',
+      dialog_riyosyafutangaku: '',
+      dialog_teikyoService1: this.getDialog_teikyoService(),
+      dialog_teikyoService2: this.getDialog_teikyoService(),
+      dialog_teikyoService3: this.getDialog_teikyoService(),
+      dialog_teikyoService1_select: '',
+      dialog_teikyoService2_select: '',
+      dialog_teikyoService3_select: '',
       dateArgument: '',
       searchArgument: '',
       alphabet: alphabet,
@@ -363,12 +387,66 @@ export default {
       selectedUser: '',
       tplImage: CellMaker.makeImage({}),
       toggle_sort: 2,
+      jyukyuBango: '',
+      riyou: '',
+      servieGrid: '',
     };
   },
   components: {
     HeaderServices,
   },
   methods: {
+    dialog_teikyoService1_change: function (e) {
+      this.dialog_teikyoService1_select = e.selectedIndex;
+    },
+    dialog_teikyoService3_change: function (e) {
+      this.dialog_teikyoServic21_select = e.selectedIndex;
+    },
+    dialog_teikyoService2_change: function (e) {
+      this.dialog_teikyoService3_select = e.selectedIndex;
+    },
+    getDialog_teikyoService: function () {
+      let teikyoServices = [];
+      teikyoServices.push({
+        code: 11,
+        name: '11:居宅介護',
+      });
+      teikyoServices.push({
+        code: 15,
+        name: '15:行動援護',
+      });
+      teikyoServices.push({
+        code: 46,
+        name: '46:就労継続支援B型',
+      });
+      let array = [];
+      for (let i = 0; i < teikyoServices.length; i++) {
+        array[i] = teikyoServices[i]['name'];
+      }
+      this.teikyoServices = teikyoServices;
+      return array;
+    },
+    dialog_jimusyoNameChange: function (e) {
+      this.dialog_jimusyoName_select = e.selectedIndex;
+      this.dialog_jimusyoBango = this.jumusyoNames[e.selectedIndex].bango;
+    },
+    getJimusyoName: function () {
+      let jumusyoNames = [];
+      jumusyoNames.push({
+        name: 'さくら訪問介護',
+        bango: '11210001',
+      });
+      jumusyoNames.push({
+        name: 'たんぽぽ就労事業',
+        bango: '11210002',
+      });
+      let array = [];
+      for (let i = 0; i < jumusyoNames.length; i++) {
+        array[i] = jumusyoNames[i]['name'];
+      }
+      this.jumusyoNames = jumusyoNames;
+      return array;
+    },
     allcheck: function (type) {
       let chk = document.getElementsByClassName('chk');
       for (let i = 0; i < chk.length; i++) {
@@ -479,138 +557,68 @@ export default {
     },
     getData: function () {
       let data = [];
-      let i = 3;
-      data.push({
-        code: Math.random() * 100,
-        space: '自',
-        jyougenkanri: 'ひaまわり園',
-        kana: 'ヒマワリ園' + i,
-        city: '東経市',
-        jyukyuBango: '110001' + i,
-        riyou: '東経太郎',
-        riyousyafutan: 9300,
-        rese: require('@/assets/kaku_15px.png'),
-        kouban: i,
-        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-        jigyosyoMei: 'すみれ介護センター',
-        teikyoService: '11:居宅介護',
-        souhiyogaku: 98500,
-        riyoufutan: 9300,
-        nyuryoku: '',
-        print: true,
-      });
-
-      data.push({
-        code: i,
-        space: '自',
-        jyougenkanri: 'ひbまわり園',
-        kana: 'ヒマワリ園' + i,
-        city: '東経市',
-        jyukyuBango: '110001' + i,
-        riyou: '東経太郎',
-        riyousyafutan: 9300,
-        rese: require('@/assets/space.png'),
-        kouban: i,
-        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-        jigyosyoMei: 'すみれ介護センター',
-        teikyoService: '11:居宅介護',
-        souhiyogaku: 98500,
-        riyoufutan: 9300,
-        nyuryoku: '',
-        print: true,
-      });
-      i = 10;
-      data.push({
-        code: Math.random() * 100,
-        space: '自',
-        jyougenkanri: 'ひeまわり園',
-        kana: 'ヒマワリ園' + i,
-        city: '東経市',
-        jyukyuBango: '110001' + i,
-        riyou: '東経太郎',
-        riyousyafutan: 9300,
-        rese: require('@/assets/space.png'),
-        kouban: i,
-        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-        jigyosyoMei: 'すみれ介護センター',
-        teikyoService: '11:居宅介護',
-        souhiyogaku: 98500,
-        riyoufutan: 9300,
-        nyuryoku: '',
-        print: true,
-      });
-
-      data.push({
-        code: i,
-        space: '自',
-        jyougenkanri: 'ggひまわり園',
-        kana: 'ヒマワリ園' + i,
-        city: '東経市',
-        jyukyuBango: '110001' + i,
-        riyou: '東経太郎',
-        riyousyafutan: 6300,
-        rese: require('@/assets/space.png'),
-        kouban: i,
-        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-        jigyosyoMei: 'すみれ介護センター',
-        teikyoService: '11:居宅介護',
-        souhiyogaku: 98500,
-        riyoufutan: 8300,
-        nyuryoku: '',
-        print: true,
-      });
-      data.push({
-        code: i,
-        space: '自',
-        jyougenkanri: 'wひまわり園',
-        kana: 'ヒマワリ園' + i,
-        city: '東経市',
-        jyukyuBango: '110001' + i,
-        riyou: '東経太郎',
-        riyousyafutan: 6300,
-        rese: require('@/assets/space.png'),
-        kouban: i,
-        jigyosyoBango: '1121' + Math.floor(Math.random() * 11),
-        jigyosyoMei: 'すみれ介護センター',
-        teikyoService: '11:居宅介護',
-        souhiyogaku: 98500,
-        riyoufutan: 8300,
-        nyuryoku: '',
-        print: true,
-      });
+      for (let i = 0; i <= 10; i++) {
+        data.push({
+          code: Math.random() * 100,
+          space: '自',
+          jyougenkanri: 'ひaまわり園',
+          kana: 'ヒマワリ園' + i,
+          city: '東経市',
+          jyukyuBango: '110001' + i,
+          riyou: '東経太郎',
+          riyousyafutan: 9300,
+          rese: '', //require('@/assets/kaku_15px.png'),
+          kouban: i,
+          jigyosyoBango: '1121' + i,
+          jigyosyoMei: 'すみれ介護センター',
+          teikyoService: '11:居宅介護',
+          souhiyogaku: 98500,
+          riyoufutan: 9300,
+          nyuryoku: '',
+          print: '',
+        });
+      }
 
       //初期は受給版順でソート
-      data.sort((a, b) => {
-        if (a.jyukyuBango < b.jyukyuBango) return -1;
-        if (a.jyukyuBango > b.jyukyuBango) return 1;
-        return 0;
-      });
+      // data.sort((a, b) => {
+      //   if (a.jyukyuBango < b.jyukyuBango) return -1;
+      //   if (a.jyukyuBango > b.jyukyuBango) return 1;
+      //   return 0;
+      // });
 
       return data;
     },
     serviceInitialized: function (grid) {
-      //サンプルデータ
-      let griddata = [];
-      griddata.push({
-        id: 1,
-        jimusyoBango: '112500123',
-        jimusyoName: 'サクラ訪問介護',
-        teikyoService: '11:住宅介護',
-        syohiyougaku: 115200,
-        riyousyafutangaku: 115200,
-      });
-
-      while (grid.rows.length < 10) {
+      while (grid.rows.length <= 9) {
         grid.rows.push(new wjGrid.Row());
       }
-      for (let i = 0; i < 1; i++) {
+
+      this.servieGrid = grid;
+    },
+    dialog_setting: function () {
+      //ダイアログの設定ボタン
+      let dialogDatas = [];
+      dialogDatas.push({
+        id: 2,
+        jimusyoBango: this.dialog_jimusyoBango,
+        jimusyoName: this.jumusyoNames[this.dialog_jimusyoName_select].name,
+        teikyoService: this.dialog_teikyoService1_select,
+        syohiyougaku: this.dialog_souhiyogaku,
+        riyousyafutangaku: this.dialog_riyosyafutangaku,
+      });
+      this.setServiceGridData(this.servieGrid, dialogDatas);
+    },
+    setServiceGridData(grid, dialogData) {
+      console.log(dialogData);
+
+      for (let i = 0; i < dialogData.length; i++) {
         let j = 0;
-        grid.setCellData(i, j++, griddata[i]['id']);
-        grid.setCellData(i, j++, griddata[i]['jimusyoBango']);
-        grid.setCellData(i, j++, griddata[i]['jimusyoName']);
-        grid.setCellData(i, j++, griddata[i]['teikyoService']);
-        grid.setCellData(i, j++, griddata[i]['syohiyougaku']);
-        grid.setCellData(i, j++, griddata[i]['riyousyafutangaku']);
+        grid.setCellData(i, j++, dialogData[i]['id']);
+        grid.setCellData(i, j++, dialogData[i]['jimusyoBango']);
+        grid.setCellData(i, j++, dialogData[i]['jimusyoName']);
+        grid.setCellData(i, j++, dialogData[i]['teikyoService']);
+        grid.setCellData(i, j++, dialogData[i]['syohiyougaku']);
+        grid.setCellData(i, j++, dialogData[i]['riyousyafutangaku']);
       }
     },
     onInitialized: function (grid) {
@@ -650,13 +658,14 @@ export default {
         ) {
           //表示している配列の選択値を取得
           if (_self.data.length) {
-            console.log(_self.data);
             _self.selectedUser = _self.data[hPage.row];
           } else {
             _self.selectedUser = griddata[hPage.row];
           }
           e.target.innerText = '〇';
           _self.dialog = true;
+          _self.jyukyuBango = _self.selectedUser['jyukyuBango'];
+          _self.riyou = _self.selectedUser['riyou'];
         }
       });
       grid.formatItem.addHandler(function (s, e) {
@@ -868,6 +877,7 @@ function convertText(text, slice) {
     -webkit-writing-mode: vertical-rl;
     -ms-writing-mode: tb-rl;
     writing-mode: vertical-rl;
+    letter-spacing: 0.2em;
   }
 
   .checkbox {

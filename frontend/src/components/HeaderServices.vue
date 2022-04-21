@@ -18,10 +18,10 @@
             >
           </v-col>
           <v-col md="3">
-            <v-card class="pa-1" tile>&nbsp;</v-card>
+            <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
           </v-col>
           <v-col md="2">
-            <v-card class="pa-1" v-on:click="comboClick()" tile>{{
+            <v-card class="pa-1 jigyosyoInput" v-on:click="comboClick()" tile>{{
               selectButton
             }}</v-card>
           </v-col>
@@ -81,14 +81,17 @@
         <v-card class="pa-2">
           <v-container>
             <wj-flex-grid
-              :itemsSource="data"
+              :itemsSource="jimusyo"
               :headersVisibility="'Column'"
+              :initialized="onInitializedJimusyo"
               :autoClipboard="false"
+              :selectionMode="3"
             >
               <wj-flex-grid-column
                 header="事務所番号"
                 binding="jimusyoBango"
                 width="2*"
+                format="N0"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 header="サービス事業所名"
@@ -127,9 +130,59 @@ export default {
       search: ['32:施設入所支援', '41:自立訓練'],
       header_dialog: false,
       selectButton: '事業者選択',
+      jimusyo: [],
+      jigyosyoCode: '　',
     };
   },
   methods: {
+    createJimusyo: function () {
+      let data = [];
+      data.push({
+        jimusyoBango: '11123405',
+        serviceJigyo: '生活介護支援事務所 ひまわり園',
+        teikyoService: '22 生活介護',
+      });
+      data.push({
+        jimusyoBango: '11123405',
+        serviceJigyo: '短期入所施設 ひまわり園',
+        teikyoService: '24 短期入所',
+      });
+      data.push({
+        jimusyoBango: '11123405',
+        serviceJigyo: '障害者入所施設 ひまわり園',
+        teikyoService: '32 施設入所支援',
+      });
+      data.push({
+        jimusyoBango: '111200012',
+        serviceJigyo: '生活介護支援事務所 たんぽぽ園',
+        teikyoService: '22 生活介護',
+      });
+      data.push({
+        jimusyoBango: '111200012',
+        serviceJigyo: '障害者入所施設 ひまわり園',
+        teikyoService: '32 施設入所支援',
+      });
+      data.push({
+        jimusyoBango: '111200019',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoService: '41 自立訓練(機能訓練)',
+      });
+      this.jimusyo = data;
+    },
+    onInitializedJimusyo: function (grid) {
+      this.createJimusyo();
+      // while (grid.rows.length < griddata.length) {
+      //   grid.rows.push(new wjGrid.Row());
+      // }
+      let _self = this;
+      grid.hostElement.addEventListener('click', function (e) {
+        var ht = grid.hitTest(e);
+        ht = grid.hitTest(e.pageX, e.pageY);
+        _self.jigyosyoCode = _self.jimusyo[ht.row].jimusyoBango;
+        _self.jigyosyoCode += ' ' + _self.jimusyo[ht.row].serviceJigyo;
+        _self.selectButton = _self.jimusyo[ht.row].teikyoService;
+      });
+    },
     calenderChange: function (e) {
       let split = e.target.value.split('-');
       this.$emit('parent-calendar', split);
@@ -146,9 +199,23 @@ export default {
 </script>
 
 <style lang="scss">
+@import '@/assets/scss/common.scss';
+.jigyosyoInput {
+  background: url('../assets/pen_20px.png') no-repeat $white 95% 50% / 20px 20px;
+}
 .header_dialogs {
   position: fixed !important;
   top: 0;
   font-size: 14px;
+  .wj-cell {
+    &.wj-state-multi-selected {
+      background: $selected_color;
+      color: $font_color;
+    }
+    &.wj-state-selected {
+      background: $selected_color;
+      color: $font_color;
+    }
+  }
 }
 </style>
