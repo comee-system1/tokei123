@@ -391,7 +391,7 @@ function userCell(s, e) {
 <style lang="scss">
 
 div#user-list-print_scrollbar {
-	padding-right:7px;
+	padding-right:7px !important;
   .wj-cell:nth-child(2),
   .wj-cell:first-child {
     background-color: #fffacd;

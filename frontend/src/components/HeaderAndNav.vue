@@ -144,6 +144,10 @@ export default {
               link: '/TemporaryPage',
               sublists: [
                 {
+                  name: '他上限管理事業所用',
+                  link: 'TajyougenkanriJimsyo',
+                },
+                {
                   name: '自上限管理事業所用',
                   link: 'JijyougenkanriJimsyo',
                 },

@@ -1,0 +1,90 @@
+#jijyougen {
+  font-size: 14px;
+  font-family: 'メイリオ';
+  width: 1366px !important;
+
+  .w-100 {
+    width: 100%;
+  }
+  label {
+    margin-right: 10px;
+    padding-top: 10px;
+    font-weight: bold;
+    width: 60px;
+    display: inline-block;
+  }
+  .jijyougen-container {
+    padding: 4px;
+  }
+
+  #flexGrid {
+    min-height: 300px;
+  }
+
+  .wj-flexgrid .wj-cell {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    img {
+      &.wj-cell-maker {
+        width: 15px;
+        height: 15px;
+        margin: 0 auto;
+      }
+    }
+  }
+
+  .wj-flexgrid .wj-cell.wj-align-right {
+    justify-content: flex-end;
+  }
+
+  .wj-flexgrid .wj-cell.wj-align-center {
+    justify-content: center;
+  }
+
+  .vertical {
+    text-orientation: upright;
+    -webkit-writing-mode: vertical-rl;
+    -ms-writing-mode: tb-rl;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.2em;
+  }
+
+  .checkbox {
+    width: 100%;
+    text-align: center;
+  }
+
+  .wj-cell {
+    &.wj-state-multi-selected {
+      color: $font-color;
+    }
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: $light-white !important;
+    color: $font-color !important;
+  }
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background-color: $light-white !important;
+    color: $font-color !important;
+  }
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #666;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+  }
+
+  .wj-flexgrid .wj-cell.cell-img {
+    padding: 0;
+    text-align: center;
+  }
+}

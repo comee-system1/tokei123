@@ -98,7 +98,7 @@
         </v-col>
       </v-row>
       <v-row class="mt-0">
-        <v-col class="mr-2">
+        <v-col>
           <wj-flex-grid
             id="jyukyuIcrnGrid"
             :headersVisibility="'Column'"
@@ -625,6 +625,7 @@ export default {
 
 <style  lang="scss">
 div#jyukyuicrn {
+  color: #333333;
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
@@ -679,12 +680,14 @@ div#jyukyuicrn {
     }
   }
   #jyukyuIcrnGrid {
+    color: #333333;
     font-size: 14px;
     width: auto;
     height: 70vh;
     max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
+      color: #333333;
       font-size: 12px;
       display: flex;
       justify-content: center;

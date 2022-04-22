@@ -6,7 +6,7 @@
     ></header-services>
     <v-container fluid class="temporaryHistory-container">
       <v-row no-gutters>
-        <v-col cols="2">
+        <v-col>
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-event="createInfo"
@@ -14,7 +14,7 @@
           >
           </user-list-print>
         </v-col>
-        <v-col cols="10" class="pl-1">
+        <v-col>
           <v-container fluid>
             <v-row no-gutters class="ml-1">
               <v-col cols="3">
@@ -1062,7 +1062,6 @@ div#temporaryHistory {
   font-family: 'メイリオ';
   width: 1366px !important;
   // height: 766px !important;
-
   .temporaryHistory-container {
     padding: 4px;
   }
@@ -1266,15 +1265,15 @@ div#temporaryHistory {
   }
 
   ::-webkit-scrollbar {
-    width: 2px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #666;
-    border-radius: 10px;
+    background: #ccc;
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
+    background: #666;
+    border-radius: 0px;
   }
 }
 </style>

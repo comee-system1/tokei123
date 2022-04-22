@@ -106,14 +106,14 @@ export default{
     }
   },
   methods: {
-    onInitializeDetailGrid: function(grid) {
+    onInitializeDetailGrid: function(flexGrid) {
       // グリッドの選択を無効にする
-      grid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       // 0行目のヘッダーを作成///////////////////////////////////////////////////////
       let row0 = new wjGrid.Row();
       // 作成したヘッダー行を追加する
-      let panel = grid.columnHeaders;
+      let panel = flexGrid.columnHeaders;
       panel.rows.splice(0, 0, row0);
       // 0行目のヘッダーの内容を設定する
       panel.setCellData(0, 0, "日付");
@@ -129,7 +129,7 @@ export default{
       // フッターを作成/////////////////////////////////////////////////////////////
       let footer0 = new wjGrid.GroupRow();
       // 作成したフッター行を追加する
-      let footerPanel = grid.columnFooters;
+      let footerPanel = flexGrid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
       // フッターの内容を設定する
       for (let colIndex = 0; colIndex <= 2; colIndex++) {
@@ -137,7 +137,7 @@ export default{
       }
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(grid);
+      let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let headerRanges = [
         new wjGrid.CellRange(0,0,1,0),
@@ -165,12 +165,12 @@ export default{
           }
         }
       };
-      grid.mergeManager = mm;
+      flexGrid.mergeManager = mm;
 
       // ヘッダーとフッターの高さを調整
-      grid.columnHeaders.rows[1].height = 45;
+      flexGrid.columnHeaders.rows[1].height = 45;
       // グリッドのスタイルをカスタマイズ
-      grid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
@@ -194,22 +194,33 @@ export default{
             cell.innerHTML = '重度障害者<br/>支援加算';
           }
           // ヘッダーのスタイル
-          s.backgroundColor = "#d4edf4";
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
-          s.borderBottom = "2px solid #348498";
+          //＊一旦ヘッダーの色をグレーに戻す↓
+          // s.backgroundColor = "#d4edf4";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
+          // 一旦太線を非表示にする
+          // s.borderBottom = "2px solid #348498";
           if(r == 0 && (c == 1 || c == 2 || c == 8)){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
           else if(r == 1 && (c == 1 || c == 7 || c == 11)){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          s.color = "#4d4d4d";
+          //＊一旦編集不可のセルをアイボリーにする↓
+          s.backgroundColor = "#fffeed";
+          // 一旦文字色を黒に戻す
+          s.color = "#000";
+          // s.color = "#4d4d4d";
           if(c == 1 || c == 7 || c == 11){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
 
           if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
@@ -221,33 +232,45 @@ export default{
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
           // フッターのスタイル
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
-          s.borderTop = "2px solid #348498";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
+          // 一旦太線を非表示にする
+          // s.borderTop = "2px solid #348498";
           if(c == 0 || c == 1 ||c == 2){
-            s.backgroundColor = "#d4edf4";
+            //＊一旦ヘッダーの色をグレーに戻す↓
+            // s.backgroundColor = "#d4edf4";
           }else if(c == 12){
             s.backgroundColor = "#cccccc";
           }else{
-            s.backgroundColor = "#ffffff";
+            //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
+            // s.backgroundColor = "#ffffff";
           }
 
           if(c == 0 || c == 7 || c == 11){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
         }
       }
     },
-    onInitializeSubGrid:function(grid){
+    onInitializeSubGrid:function(flexGrid){
       // グリッドの選択を無効にする
-      grid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      grid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
         s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
-          s.backgroundColor= "#d4edf4";
+          //＊一旦見出しの色をグレーに変更する↓
+          s.backgroundColor= "#eeeeee";
+          // s.backgroundColor= "#d4edf4";
+        }else{
+          //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
         }
         if(r == 1 && (c == 5 || c == 6)){
           s.backgroundColor= "#cccccc";

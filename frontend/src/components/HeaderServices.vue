@@ -69,6 +69,9 @@
         <v-col v-if="jyougengakuFlag">
           <v-btn> 上限額管理計算 </v-btn>
         </v-col>
+        <v-col v-if="receptFlag">
+          <v-btn> レセプトへ反映 </v-btn>
+        </v-col>
         <v-col class="ml-5">
           <v-btn>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
         </v-col>
@@ -121,6 +124,7 @@ export default {
   props: {
     seikyuflag: { type: Boolean },
     jyougengakuFlag: { type: Boolean },
+    receptFlag: { type: Boolean },
   },
 
   data() {

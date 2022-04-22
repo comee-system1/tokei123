@@ -4,7 +4,7 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
       :seikyuflag="true"
-      :jyougengakuFlag="true"
+      :receptFlag="true"
     ></header-services>
 
     <v-container fluid class="jijyougen-container">
@@ -822,19 +822,14 @@ export default {
 
         if (griddata[i]['kouban'] == 1) {
           grid.setCellData(i, j++, griddata[i]['space']);
-          grid.setCellData(i, j++, griddata[i]['jyougenkanri']);
-          grid.setCellData(i, j++, griddata[i]['city']);
-          grid.setCellData(i, j++, griddata[i]['jyukyuBango']);
-          grid.setCellData(i, j++, griddata[i]['riyou']);
-          grid.setCellData(i, j++, griddata[i]['riyousyafutan']);
         } else {
           grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
         }
+        grid.setCellData(i, j++, griddata[i]['jyougenkanri']);
+        grid.setCellData(i, j++, griddata[i]['city']);
+        grid.setCellData(i, j++, griddata[i]['jyukyuBango']);
+        grid.setCellData(i, j++, griddata[i]['riyou']);
+        grid.setCellData(i, j++, griddata[i]['riyousyafutan']);
         grid.setCellData(i, j++, griddata[i]['rese']);
         grid.setCellData(i, j++, griddata[i]['kouban']);
 

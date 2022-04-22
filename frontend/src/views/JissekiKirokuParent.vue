@@ -5,19 +5,19 @@
     @parent-search="parentSearch($event, searchArgument)"
   >
   </ServiceSelection>
-  <v-container fluid>
+  <v-container class="jissekikiroku" fluid>
     <v-layout>
       <v-flex md2>
         <UserList></UserList>
       </v-flex>
       <v-flex md10>
         <SeikatsuKaigo v-if="searchArgument=='22:生活介護'"></SeikatsuKaigo>
-        <Tanki v-if="searchArgument=='24:短期入所'"></Tanki>
-        <ShisetsuNyusho v-if="searchArgument=='32:施設入所支援'"></ShisetsuNyusho>
-        <KinoKunren v-if="searchArgument=='41:自立訓練(機能訓練)'"></KinoKunren>
-        <SeikatsuKunren v-if="searchArgument=='42:自立訓練(生活訓練)'"></SeikatsuKunren>
-        <ShuroIko v-if="searchArgument=='43:就労移行支援'"></ShuroIko>
-        <ShurokeizokuA v-if="searchArgument=='45:就労継続支援A型'"></ShurokeizokuA>
+        <Tanki v-else-if="searchArgument=='24:短期入所'"></Tanki>
+        <ShisetsuNyusho v-else-if="searchArgument=='32:施設入所支援'"></ShisetsuNyusho>
+        <KinoKunren v-else-if="searchArgument=='41:自立訓練(機能訓練)'"></KinoKunren>
+        <SeikatsuKunren v-else-if="searchArgument=='42:自立訓練(生活訓練)'"></SeikatsuKunren>
+        <ShuroIko v-else-if="searchArgument=='43:就労移行支援'"></ShuroIko>
+        <ShurokeizokuA v-else-if="searchArgument=='45:就労継続支援A型'"></ShurokeizokuA>
       </v-flex>
     </v-layout>
   </v-container>
@@ -75,6 +75,9 @@ export default{
 </script>
 
 <style>
+.container.jissekikiroku{
+  padding:4px;
+}
 /* グリッドのスタイル */
 #detailGrid {
   margin-top:10px;
@@ -88,15 +91,17 @@ export default{
   align-items: center;
 }
 
-#detailGrid.wj-control.wj-content.wj-flexgrid {
+/* 一旦グリッドの枠線を表示しない */
+/* #detailGrid.wj-control.wj-content.wj-flexgrid {
   border: 2px solid #348498;
-}
+} */
 
 #subGrid {
   font-size:14px;
 }
 
-#subGrid.wj-control.wj-content.wj-flexgrid {
+/* 一旦グリッドの枠線を表示しない */
+/* #subGrid.wj-control.wj-content.wj-flexgrid {
   border: 2px solid #348498;
-}
+} */
 </style>

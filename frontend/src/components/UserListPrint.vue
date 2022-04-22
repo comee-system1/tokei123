@@ -442,7 +442,7 @@ function userCell(s, e) {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import '@/assets/scss/common.scss';
 
 div#user-list-print_scrollbar {
@@ -463,15 +463,15 @@ div#user-list-print_scrollbar {
     }
   }
   ::-webkit-scrollbar {
-    width: 2px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #666;
-    border-radius: 10px;
+    background: #ccc;
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
+    background: #666;
+    border-radius: 0px;
   }
 }
 </style>

@@ -133,6 +133,7 @@
             :isReadOnly="true"
             :initialized="onInitializeSeikyuGrid"
             :formatItem="onFormatItem"
+            :itemsSourceChanged="itemsSourceChanged"
             :itemsSource="viewdata"
           >
             <wj-flex-grid-column
@@ -188,8 +189,8 @@ import HeaderServices from '../components/HeaderServices.vue';
 const colCntSeikyu = 22;
 const colCntKyufu = 13;
 const strMaru = '○';
-const bgClrInput = 'white';
-const bgClrError = 'mistyrose';
+// const bgClrInput = 'white';
+// const bgClrError = 'mistyrose';
 const fmtYen = 'n0';
 const titleNisu = '日数';
 const titleSeikyugakuSyukei = '請求額集計欄';
@@ -235,126 +236,125 @@ export default {
           width: '1*',
           align: 'center',
         },
-        { dataname: 'name', title: '氏名', width: '7*', align: 'left' },
+        { dataname: 'name', title: '氏名', width: '4*', align: 'left' },
         {
           dataname: 'futan',
           title: '利用者\n負担上\n限月額\n①',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'riyoucnt',
           title: '利用\n日数',
-          width: '1.5*',
+          width: '1*',
           align: 'right',
         },
         {
           dataname: 'nyuincnt',
           title: '入院\n日数',
-          width: '1.5*',
+          width: '1*',
           align: 'right',
         },
         {
           dataname: 'svccode',
           title: '種別',
-          width: '1.5*',
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'svcname',
           title: '名称',
-          width: '1.5*',
+          width: '3*',
           align: 'left',
         },
         {
-          dataname: 'riyoucnt2',
+          dataname: 'riyounissu',
           title: '利用\n日数',
-          width: '1.5*',
+          width: '1*',
           align: 'right',
         },
         {
           dataname: 'kyufutani',
           title: '給付\n単位数',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'souhiyougaku',
           title: '総\n費用額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'itiwarisoutougaku',
           title: '１割\n相当額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
-          dataname: 'riyousyafutan2',
+          dataname: 'riyousyafutan',
           title: '利用者\n負担額\n②',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'jyougengakuchousei',
           title: '上限月\n額調整\n①②少な\nい数',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'jigyousyagenmen',
           title: '事業者\n減免額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'genmenriyousya',
           title: '減免後\n利用者',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'chouseiriyousya',
           title: '調整後\n利用者\n負担額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'jyougenkanrifutangaku',
           title: '上限額\n管理後\n利用者\n負担額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'ketteiriyoufutangaku',
           title: '決定利\n用者負\n担額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
-
         {
           dataname: 'kyufuhi',
           title: '給付費',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'jititaijyosei',
           title: '自治体\n助成分\n請求額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'kyufuhiseikyugaku',
           title: '給付費\n請求額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
         {
           dataname: 'jippisaneigaku',
           title: '実費\n算定額',
-          width: '1.5*',
+          width: '2*',
           align: 'right',
         },
       ],
@@ -471,6 +471,7 @@ export default {
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
@@ -481,13 +482,13 @@ export default {
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < colCntSeikyu; colIndex++) {
         let col = flexGrid.columns[colIndex];
-        col.wordWrap = true;
+
         col.binding = this.headerList[colIndex].dataname;
-        col.header = this.headerList[colIndex].title;
         col.width = this.headerList[colIndex].width;
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
+        col.wordWrap = true;
 
         if (colIndex > 0) {
           col.cssClass = '';
@@ -524,7 +525,7 @@ export default {
       }
 
       // 初期データ読込
-      this.viewdataAll = this.loadData();
+      this.viewdataAll = this.loadData(true);
       this.viewdata = this.viewdataAll;
 
       flexGrid.endUpdate();
@@ -544,7 +545,6 @@ export default {
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         col.binding = this.kyufuHeaderList[colIndex].dataname;
-        // col.header = this.kyufuHeaderList[colIndex].title;
         col.width = this.kyufuHeaderList[colIndex].width;
         col.align = this.kyufuHeaderList[colIndex].align;
         col.allowMerging = true;
@@ -577,7 +577,7 @@ export default {
       }
 
       // 初期データ読込
-      this.viewkyufudataAll = this.loadData();
+      this.viewkyufudataAll = this.loadData(false);
       this.viewkyufudata = this.viewkyufudataAll;
 
       flexGrid.endUpdate();
@@ -591,6 +591,16 @@ export default {
           // e.cell.style.fontSize = '12px';
           // e.cell.style.justifyContent = 'center';
         }
+      } else if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.fontWeight = 'normal';
+        e.cell.style.backgroundColor = '#CEFCFC';
+        e.cell.style.borderTop = '1px solid';
+        if (e.col < 6) {
+          e.cell.style.borderRight = 0;
+        } else if (e.col == 6) {
+          e.cell.style.textAlign = 'right';
+          e.cell.style.fontWeight = 'bold';
+        }
       } else {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (tmpitem != null) {
@@ -598,141 +608,343 @@ export default {
           // いったんクリアしないと色が残る
           e.cell.style.backgroundColor = '';
           e.cell.style.borderBottom = '';
+          e.cell.style.borderRight = '';
+          e.cell.style.textAlign = '';
+          e.cell.style.fontWeight = '';
 
           if (flexGrid.hostElement.id == 'seikyuGrid') {
-            // a
+            // 下の行と同じ利用者の場合は下線を非表示化
+            if (e.col <= 4 && !tmpitem.istotalrow) {
+              e.cell.style.borderBottom = 0;
+            } else if (tmpitem.istotalrow) {
+              e.cell.style.borderBottom = '1px solid ';
+              if (e.col == 5) {
+                e.cell.style.borderRight = 0;
+              } else if (e.col == 6) {
+                e.cell.style.textAlign = 'right';
+                e.cell.style.fontWeight = 'bold';
+              }
+              if (e.col >= 5) {
+                e.cell.style.backgroundColor = '#FFFFCC';
+              }
+            }
+            // if (e.row > 2 && e.row < flexGrid.rows.length - 2 && e.col <= 4) {
+            //   let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
+            //   if (tmpNextitem != null && !tmpNextitem.istotalrow) {
+            //     e.cell.style.borderBottom = 0;
+            //   }
+            // }
           } else if (flexGrid.hostElement.id == 'kyufuGrid') {
             // b
           }
 
-          if (e.col == flexGrid.columns.length - 1) {
-            e.cell.style.backgroundColor = bgClrInput;
-          } else if (
-            (e.col == 3 && !tmpitem.koufuymd) ||
-            (e.col == 4 && !tmpitem.engo) ||
-            (e.col == 5 && !tmpitem.jitibangou) ||
-            (e.col == 6 && !tmpitem.jyukyukbn) ||
-            (e.col == 7 && !tmpitem.jyukyuname) ||
-            (e.col == 8 && !tmpitem.syougaisyu) ||
-            (e.col == 9 && !tmpitem.syougaisienkbn) ||
-            (e.col == 10 && !tmpitem.futanjyougen) ||
-            (e.col == 11 && !tmpitem.jyougenkanri) ||
-            (e.col == 12 && !tmpitem.syokujiteikyo) ||
-            (e.col == 13 && !tmpitem.tokubetukyufu)
-          ) {
-            e.cell.style.backgroundColor = bgClrError;
-          }
+          // if (e.col == flexGrid.columns.length - 1) {
+          //   e.cell.style.backgroundColor = bgClrInput;
+          // } else if (
+          //   (e.col == 3 && !tmpitem.koufuymd) ||
+          //   (e.col == 4 && !tmpitem.engo) ||
+          //   (e.col == 5 && !tmpitem.jitibangou) ||
+          //   (e.col == 6 && !tmpitem.jyukyukbn) ||
+          //   (e.col == 7 && !tmpitem.jyukyuname) ||
+          //   (e.col == 8 && !tmpitem.syougaisyu) ||
+          //   (e.col == 9 && !tmpitem.syougaisienkbn) ||
+          //   (e.col == 10 && !tmpitem.futanjyougen) ||
+          //   (e.col == 11 && !tmpitem.jyougenkanri) ||
+          //   (e.col == 12 && !tmpitem.syokujiteikyo) ||
+          //   (e.col == 13 && !tmpitem.tokubetukyufu)
+          // ) {
+          //   e.cell.style.backgroundColor = bgClrError;
+          // }
 
-          // 仮想マージ
-          // 上の行と同じ利用者の場合は空で表示する
-          if (e.row >= 3 && 0 < e.col && e.col <= 2) {
-            let tmpPreitem = e.panel.rows[e.row - 1].dataItem;
-            if (tmpPreitem != null && tmpitem.id == tmpPreitem.id) {
-              e.panel.setCellData(e.row, e.col, '');
-            } else {
-              if (e.col == 1) {
-                e.panel.setCellData(e.row, e.col, tmpitem.nobk, true);
-              } else if (e.col == 2) {
-                e.panel.setCellData(e.row, e.col, tmpitem.name);
-              }
-            }
-          }
-          // 下の行と同じ利用者の場合は下線を非表示化
-          if (
-            e.row > 2 &&
-            e.row < flexGrid.rows.length - 2 &&
-            0 < e.col &&
-            e.col <= 2
-          ) {
-            let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
-            if (tmpNextitem != null && tmpitem.id == tmpNextitem.id) {
-              e.cell.style.borderBottom = 0;
-            }
-          }
-          // 初期データ読込
-          this.viewdataAll = this.loadData();
-          this.viewdata = this.viewdataAll;
+          // // 仮想マージ
+
+          // // 上の行と同じ利用者の場合は空で表示する
+          // if (e.row >= 3 && 0 < e.col && e.col <= 2) {
+          //   let tmpPreitem = e.panel.rows[e.row - 1].dataItem;
+          //   if (tmpPreitem != null && tmpitem.id == tmpPreitem.id) {
+          //     e.panel.setCellData(e.row, e.col, '');
+          //   } else {
+          //     if (e.col == 1) {
+          //       e.panel.setCellData(e.row, e.col, tmpitem.nobk, true);
+          //     } else if (e.col == 2) {
+          //       e.panel.setCellData(e.row, e.col, tmpitem.name);
+          //     }
+          //   }
+          // }
+
           flexGrid.endUpdate();
         }
       }
     },
-    loadData: function () {
-      let tmpviewdata = [];
-      let userCount = 100;
-      // ★Date型はmonthが0-11で表現されることに注意
-      for (let i = 0; i < userCount; i++) {
-        tmpviewdata.push({
-          id: i,
-          err: '',
-          no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-            10,
-            '0'
-          ),
-          nobk: 0,
-          name: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          koufuymd: new Date('2015', Number('04') - 1, '26'),
-          engo: '第一東経市',
-          jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
-          jyukyukbn: '1',
-          jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
-          syougaisyu: '2',
-          syougaisienkbn: '3',
-          futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
-          jyougenkanri:
-            '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
-          syokujiteikyo: '4',
-          tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000') + 100,
-          syusei: '',
-          nyushoymd: '',
-          taisyoymd: '',
-          isnyusho: false,
-          istaisyo: false,
-        });
-        tmpviewdata[i].nobk = tmpviewdata[i].no;
-        if (i % 2 == 1) {
-          tmpviewdata[i].err = '';
-          tmpviewdata[i].syusei = '';
-        } else {
-          if (i == 4) {
-            tmpviewdata[i].id = tmpviewdata[i - 1].id;
-            tmpviewdata[i].no = tmpviewdata[i - 1].no;
-            tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
-            tmpviewdata[i].name = tmpviewdata[i - 1].name;
-            tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
-            tmpviewdata[i].koufuymd = new Date('2020', Number('04') - 1, '27');
+    itemsSourceChanged: function (flexGrid) {
+      let total = 0;
+      if (flexGrid.hostElement.id == 'seikyuGrid') {
+        for (let colIndex = 6; colIndex < colCntSeikyu; colIndex++) {
+          if (colIndex == 6) {
+            flexGrid.columnFooters.setCellData(0, colIndex, '合計');
+            continue;
+          } else if (colIndex == 7) {
+            continue;
+          } else if (colIndex == 8) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.kyufutani);
+            }, 0);
+          } else if (colIndex == 9) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.souhiyougaku);
+            }, 0);
+          } else if (colIndex == 10) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.itiwarisoutougaku);
+            }, 0);
+          } else if (colIndex == 11) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.riyousyafutan);
+            }, 0);
+          } else if (colIndex == 12) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.jyougengakuchousei);
+            }, 0);
+          } else if (colIndex == 13) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.jigyousyagenmen);
+            }, 0);
+          } else if (colIndex == 14) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.genmenriyousya);
+            }, 0);
+          } else if (colIndex == 15) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.chouseiriyousya);
+            }, 0);
+          } else if (colIndex == 16) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.jyougenkanrifutangaku);
+            }, 0);
+          } else if (colIndex == 17) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.ketteiriyoufutangaku);
+            }, 0);
+          } else if (colIndex == 18) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.kyufuhi);
+            }, 0);
+          } else if (colIndex == 19) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.jititaijyosei);
+            }, 0);
+          } else if (colIndex == 20) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.kyufuhiseikyugaku);
+            }, 0);
+          } else if (colIndex == 21) {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item.jippisaneigaku);
+            }, 0);
           }
-          if (i % 3 == 0) {
-            tmpviewdata[i].err = require('@/assets/error_20px.png');
-            tmpviewdata[i].koufuymd = '';
-            tmpviewdata[i].engo = '';
-            tmpviewdata[i].jitibangou = '';
-            tmpviewdata[i].jyukyukbn = '';
-            tmpviewdata[i].jyukyuname = '';
-            tmpviewdata[i].syougaisyu = '';
-            tmpviewdata[i].syougaisienkbn = '';
-            tmpviewdata[i].futanjyougen = '';
-            tmpviewdata[i].jyougenkanri = '';
-            tmpviewdata[i].syokujiteikyo = '';
-            tmpviewdata[i].tokubetukyufu = '';
-            tmpviewdata[i].syusei = strMaru;
+          flexGrid.columnFooters.setCellData(0, colIndex, total);
+        }
+      }
+    },
+    loadData: function (isSeikyu) {
+      let tmpviewdata = [];
+      let userCount = 102;
+      if (isSeikyu) {
+        let cnt = 0;
+        for (let i = 0; i < userCount; i++) {
+          let codeval = String(
+            Math.floor(Math.random() * 10000000000) + 1
+          ).padStart(10, '0');
+          tmpviewdata.push({
+            id: i,
+            kakutei: '',
+            kana: 'トウケイタロウ' + i,
+            code: codeval,
+            name: '東経太郎' + i,
+            futan: Number(Math.floor(Math.random() * 100) + '0000') + 100,
+            riyoucnt: '00',
+            nyuincnt: '00',
+            svccode: '32',
+            svcname: '施設入所支援',
+            riyounissu: '00',
+            kyufutani: Number(Math.floor(Math.random() * 20000)),
+            souhiyougaku: Number(Math.floor(Math.random() * 200000)),
+            itiwarisoutougaku: Number(Math.floor(Math.random() * 20000)),
+            riyousyafutan: Number(Math.floor(Math.random() * 20000)),
+            jyougengakuchousei: Number(Math.floor(Math.random() * 20000)),
+            jigyousyagenmen: Number(Math.floor(Math.random() * 20000)),
+            genmenriyousya: Number(Math.floor(Math.random() * 20000)),
+            chouseiriyousya: Number(Math.floor(Math.random() * 20000)),
+            jyougenkanrifutangaku: Number(Math.floor(Math.random() * 20000)),
+            ketteiriyoufutangaku: Number(Math.floor(Math.random() * 20000)),
+            kyufuhi: Number(Math.floor(Math.random() * 20000)),
+            jititaijyosei: Number(Math.floor(Math.random() * 20000)),
+            kyufuhiseikyugaku: Number(Math.floor(Math.random() * 200000)),
+            jippisaneigaku: Number(Math.floor(Math.random() * 20000)),
+            usersortorder: cnt,
+            istotalrow: false,
+          });
+          cnt = cnt + 1;
+          if (cnt == 3) {
+            cnt = 0;
+          }
+
+          if (tmpviewdata[i].usersortorder == 0) {
+            tmpviewdata[i].kakutei = require('@/assets/kaku_15px.png');
+          } else if (tmpviewdata[i].usersortorder == 2) {
+            tmpviewdata[i].name = '';
+            tmpviewdata[i].id = tmpviewdata[i - 1].id;
+            tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
+            tmpviewdata[i].code = tmpviewdata[i - 1].code;
+            tmpviewdata[i].futan = '';
+            tmpviewdata[i].riyoucnt = '';
+            tmpviewdata[i].nyuincnt = '';
+
+            tmpviewdata[i].svccode = '';
+            tmpviewdata[i].svcname = '計';
+            tmpviewdata[i].istotalrow = true;
+            tmpviewdata[i].kyufutani =
+              tmpviewdata[i - 2].kyufutani + tmpviewdata[i - 1].kyufutani;
+            tmpviewdata[i].souhiyougaku =
+              tmpviewdata[i - 2].souhiyougaku + tmpviewdata[i - 1].souhiyougaku;
+            tmpviewdata[i].itiwarisoutougaku =
+              tmpviewdata[i - 2].itiwarisoutougaku +
+              tmpviewdata[i - 1].itiwarisoutougaku;
+            tmpviewdata[i].riyousyafutan =
+              tmpviewdata[i - 2].riyousyafutan +
+              tmpviewdata[i - 1].riyousyafutan;
+            tmpviewdata[i].jyougengakuchousei =
+              tmpviewdata[i - 2].jyougengakuchousei +
+              tmpviewdata[i - 1].jyougengakuchousei;
+            tmpviewdata[i].jyougengakuchousei =
+              tmpviewdata[i - 2].jyougengakuchousei +
+              tmpviewdata[i - 1].jyougengakuchousei;
+            tmpviewdata[i].jigyousyagenmen =
+              tmpviewdata[i - 2].jigyousyagenmen +
+              tmpviewdata[i - 1].jigyousyagenmen;
+            tmpviewdata[i].genmenriyousya =
+              tmpviewdata[i - 2].genmenriyousya +
+              tmpviewdata[i - 1].genmenriyousya;
+            tmpviewdata[i].chouseiriyousya =
+              tmpviewdata[i - 2].chouseiriyousya +
+              tmpviewdata[i - 1].chouseiriyousya;
+            tmpviewdata[i].jyougenkanrifutangaku =
+              tmpviewdata[i - 2].jyougenkanrifutangaku +
+              tmpviewdata[i - 1].jyougenkanrifutangaku;
+            tmpviewdata[i].ketteiriyoufutangaku =
+              tmpviewdata[i - 2].ketteiriyoufutangaku +
+              tmpviewdata[i - 1].ketteiriyoufutangaku;
+            tmpviewdata[i].kyufuhi =
+              tmpviewdata[i - 2].kyufuhi + tmpviewdata[i - 1].kyufuhi;
+            tmpviewdata[i].jititaijyosei =
+              tmpviewdata[i - 2].jititaijyosei +
+              tmpviewdata[i - 1].jititaijyosei;
+            tmpviewdata[i].kyufuhiseikyugaku =
+              tmpviewdata[i - 2].kyufuhiseikyugaku +
+              tmpviewdata[i - 1].kyufuhiseikyugaku;
+            tmpviewdata[i].jippisaneigaku =
+              tmpviewdata[i - 2].jippisaneigaku +
+              tmpviewdata[i - 1].jippisaneigaku;
+            tmpviewdata[i].usersortorder = 2;
+          } else if (tmpviewdata[i].usersortorder == 1) {
+            tmpviewdata[i].name = '(' + tmpviewdata[i - 1].code + ')';
+            tmpviewdata[i].id = tmpviewdata[i - 1].id;
+            tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
+            tmpviewdata[i].code = tmpviewdata[i - 1].code;
+            tmpviewdata[i].futan = '';
+            tmpviewdata[i].riyoucnt = '';
+            tmpviewdata[i].nyuincnt = '';
+            tmpviewdata[i].svccode = '22';
+            tmpviewdata[i].svcname = '生活介護';
+            tmpviewdata[i].usersortorder = 1;
+          }
+        }
+      } else {
+        for (let i = 0; i < userCount; i++) {
+          tmpviewdata.push({
+            id: i,
+            kakutei: '',
+            name: '東経太郎' + i,
+            kana: 'トウケイタロウ' + i,
+            code: String(Math.floor(Math.random() * 10000000) + 1).padStart(
+              7,
+              '0'
+            ),
+            symd: new Date('2015', Number('04') - 1, '26'),
+            eymd: new Date('2020', Number('04') - 1, '26'),
+            riyounissuu: '00',
+            nyuinnissu: '00',
+            svcnaiyou: 'サービス内容' + Math.floor(Math.random() * 10) + 1,
+
+            err: '',
+            no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
+              10,
+              '0'
+            ),
+            nobk: 0,
+
+            koufuymd: new Date('2015', Number('04') - 1, '26'),
+            engo: '第一東経市',
+            jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
+            jyukyukbn: '1',
+            jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
+            syougaisyu: '2',
+            syougaisienkbn: '3',
+            futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
+            jyougenkanri:
+              '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
+            syokujiteikyo: '4',
+            tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000') + 100,
+            syusei: '',
+            nyushoymd: '',
+            taisyoymd: '',
+            isnyusho: false,
+            istaisyo: false,
+          });
+          tmpviewdata[i].nobk = tmpviewdata[i].no;
+          if (i % 2 == 1) {
+            tmpviewdata[i].err = '';
+            tmpviewdata[i].syusei = '';
           } else {
-            if (i == 10) {
-              // 年月が一致しているデータのフラグを立てる
-              // tmpviewdata = tmpviewdata.filter((x) =>
-              //   x.nyushoymd.startsWith(
-              //     currentDate.getFullYear() +
-              //       ('00' + (currentDate.getMonth() + 1)).slice(-2)
-              //   )
-              // );
-              tmpviewdata[i].isnyusho = 'true';
+            if (i == 4) {
+              tmpviewdata[i].id = tmpviewdata[i - 1].id;
+              tmpviewdata[i].no = tmpviewdata[i - 1].no;
+              tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
+              tmpviewdata[i].name = tmpviewdata[i - 1].name;
+              tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
+              tmpviewdata[i].koufuymd = new Date(
+                '2020',
+                Number('04') - 1,
+                '27'
+              );
             }
-            if (i == 14) {
-              tmpviewdata[i].istaisyo = 'true';
+            if (i % 3 == 0) {
+              tmpviewdata[i].err = require('@/assets/error_20px.png');
+              tmpviewdata[i].koufuymd = '';
+              tmpviewdata[i].engo = '';
+              tmpviewdata[i].jitibangou = '';
+              tmpviewdata[i].jyukyukbn = '';
+              tmpviewdata[i].jyukyuname = '';
+              tmpviewdata[i].syougaisyu = '';
+              tmpviewdata[i].syougaisienkbn = '';
+              tmpviewdata[i].futanjyougen = '';
+              tmpviewdata[i].jyougenkanri = '';
+              tmpviewdata[i].syokujiteikyo = '';
+              tmpviewdata[i].tokubetukyufu = '';
+              tmpviewdata[i].syusei = strMaru;
+            } else {
+              if (i == 10) {
+                tmpviewdata[i].isnyusho = 'true';
+              }
+              if (i == 14) {
+                tmpviewdata[i].istaisyo = 'true';
+              }
             }
           }
         }
       }
+      // ★Date型はmonthが0-11で表現されることに注意
+
       return tmpviewdata;
     },
     pageChange: function (pageType) {
@@ -869,6 +1081,7 @@ export default {
 
 <style  lang="scss">
 div#KyuhuMeisaiIcrn {
+  color: #333333;
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
@@ -880,8 +1093,7 @@ div#KyuhuMeisaiIcrn {
   }
 
   .user-info {
-    padding: 5px;
-    font-size: 14px;
+    padding: 4px;
     label {
       margin-right: 10px;
       padding-top: 10px;
@@ -925,22 +1137,31 @@ div#KyuhuMeisaiIcrn {
 
   #seikyuGrid,
   #kyufuGrid {
-    font-size: 14px;
+    color: #333333;
+    font-size: 12px;
     width: auto;
     height: 70vh;
     max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
+      color: #333333;
       font-size: 12px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
     }
-    // .wj-cell-maker {
-    //   width: 70%;
-    //   height: 70%;
-    // }
+    .wj-colfooter {
+      // ヘッダのみ縦横中央寄せ
+      color: #333333;
+      font-size: 12px;
+      background: #fffeed;
+      text-align: right;
+    }
+    .wj-cell-maker {
+      width: 15px;
+      height: 15px;
+    }
     .wj-cell:not(.wj-header) {
       background: #fffeed;
     }

@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  nginx:
+    build: ./containers/nginx
+    container_name: nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - ./frontend:/var/www/html
+      - ./containers/nginx/nginx.conf:/etc/nginx/nginx.conf
+  frontend:
+    build: ./containers/frontend
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+    tty: true
