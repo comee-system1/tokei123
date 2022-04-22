@@ -6,7 +6,7 @@
     ></header-services>
     <v-container fluid class="temporaryHistory-container">
       <v-row no-gutters>
-        <v-col>
+        <v-col style="max-width: 275px" cols="2">
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-event="createInfo"
@@ -14,9 +14,9 @@
           >
           </user-list-print>
         </v-col>
-        <v-col>
+        <v-col cols="10">
           <v-container fluid>
-            <v-row no-gutters class="ml-1">
+            <v-row no-gutters>
               <v-col cols="3">
                 <v-row class="border-bottom">
                   <v-col class="pa-1" cols="3"
@@ -183,6 +183,7 @@
             :allowResizing="false"
             :deferResizing="false"
             :allowSorting="false"
+            style="width: 100%"
           >
             <wj-flex-grid-column
               header=" "
@@ -1060,7 +1061,7 @@ function cellEdit(s, e) {
 div#temporaryHistory {
   font-size: 14px;
   font-family: 'メイリオ';
-  width: 1366px !important;
+  min-width: 1366px;
   // height: 766px !important;
   .temporaryHistory-container {
     padding: 4px;
