@@ -469,15 +469,15 @@ function cellEdit(s, e) {
     color: $font-color !important;
   }
   ::-webkit-scrollbar {
-    width: 2px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #666;
-    border-radius: 10px;
+    background: #ccc;
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
+    background: #666;
+    border-radius: 0px;
   }
 }
 </style>

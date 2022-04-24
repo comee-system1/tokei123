@@ -6,7 +6,7 @@
     ></header-services>
     <v-container fluid class="temporaryHistory-container">
       <v-row no-gutters>
-        <v-col style="max-width: 275px" cols="2">
+        <v-col cols="2">
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-event="createInfo"
