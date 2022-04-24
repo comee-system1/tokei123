@@ -213,6 +213,8 @@ import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.multirow';
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import isDate from '@/utiles/isDate';
+import dateFormatString from '@/utiles/dateFormatString';
 
 export default {
   data() {
@@ -235,6 +237,10 @@ export default {
             '重度障害者支援加算Ⅱ2',
             '重度障害者支援加算Ⅱ3',
             '栄養マネジメント加算',
+            '療養食加算',
+            '口腔衛生管理加算',
+            '入院・外泊時加算',
+            '地域移行加算',
           ],
           meals: ['朝食', '昼食', '夕食'],
           mealsCount: [300, 400, 500],
@@ -244,7 +250,6 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      week: ['日', '月', '火', '水', '木', '金', '土'],
       dateArgument: '',
       jyukyusyaItirans: this.getJyukyusyaItiran(), // 受給者一覧情報表示用
       userListComponentDatas: [], // ユーザー一覧データ
@@ -305,12 +310,21 @@ export default {
 
       // セル情報のマージ
       let range = [];
+      //施設入所用
       range = [
         new wjGrid.CellRange(0, 1, 0, 2),
         new wjGrid.CellRange(1, 0, 7, 0),
         new wjGrid.CellRange(1, 1, 1, 2),
         new wjGrid.CellRange(2, 1, 2, 2),
         new wjGrid.CellRange(3, 1, 3, 2),
+        new wjGrid.CellRange(8, 0, 14, 0),
+        new wjGrid.CellRange(8, 1, 8, 2),
+        new wjGrid.CellRange(9, 1, 9, 2),
+        new wjGrid.CellRange(10, 1, 10, 2),
+        new wjGrid.CellRange(11, 1, 11, 2),
+        new wjGrid.CellRange(12, 1, 12, 2),
+        new wjGrid.CellRange(13, 1, 13, 2),
+        new wjGrid.CellRange(14, 1, 14, 2),
       ];
       let mm = new wjGrid.MergeManager(flexGrid);
       mm.getMergedRange = function (panel, r, c) {
@@ -369,7 +383,7 @@ function methodCellSettingDefault(flexGrid, _self) {
   while (flexGrid.columns.length < lastdate + 5) {
     flexGrid.columns.push(new wjGrid.Column());
   }
-  while (flexGrid.rows.length < 14) {
+  while (flexGrid.rows.length < 15) {
     flexGrid.rows.push(new wjGrid.Row());
   }
 
@@ -383,9 +397,13 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.setCellData(0, 0, '');
   flexGrid.setCellData(0, 1, _self.gridItemName[0].heads[0]);
   //日付の表示
+  let date = '';
+  let day = '';
   for (let i = 3; i < lastdate + 3; i++) {
     flexGrid.columns[i].width = 24;
-    flexGrid.setCellData(0, i, i - 2);
+    day = String(i - 2).padStart(2, '0');
+    date = _self.year + '/' + _self.month + '/' + day;
+    flexGrid.setCellData(0, i, date);
   }
   //合計
   flexGrid.setCellData(0, lastdate + 3, _self.gridItemName[0].heads[1]);
@@ -399,19 +417,32 @@ function methodCellSettingDefault(flexGrid, _self) {
  */
 function methodWriteJyoho(flexGrid, self) {
   //変動情報
-  let hendoRows = 7; //変動情報で利用した行数
-  let kasanRows = hendoRows + 1; //加算情報で利用する始まりの行数
-  flexGrid.setCellData(1, 0, self.gridItemName[0].column[0]);
-  flexGrid.setCellData(1, 1, self.gridItemName[0].column[1]);
-  flexGrid.setCellData(2, 1, self.gridItemName[0].column[2]);
-  flexGrid.setCellData(3, 1, self.gridItemName[0].column[3]);
-  flexGrid.setCellData(4, 1, self.gridItemName[0].column[4]);
-  flexGrid.setCellData(7, 1, self.gridItemName[0].column[5]);
-  flexGrid.setCellData(4, 2, self.gridItemName[0].meals[0]);
-  flexGrid.setCellData(5, 2, self.gridItemName[0].meals[1]);
-  flexGrid.setCellData(6, 2, self.gridItemName[0].meals[2]);
-  flexGrid.setCellData(7, 2, self.gridItemName[0].kounetsuSuihi[0]);
-  flexGrid.setCellData(kasanRows, 0, self.gridItemName[0].column2[0]);
+  let hendoRows_st = 1; //変動情報の始まりの行
+  let hendoRows_ed = 7; //変動情報で利用した行数
+  let kasanRows_st = hendoRows_ed + 1; //加算情報で利用する始まりの行数
+  flexGrid.setCellData(hendoRows_st, 0, self.gridItemName[0].column[0]);
+  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[1]);
+  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[2]);
+  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[3]);
+  flexGrid.setCellData(hendoRows_st, 1, self.gridItemName[0].column[4]);
+  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[0]);
+  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[1]);
+  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[2]);
+  flexGrid.setCellData(hendoRows_st, 1, self.gridItemName[0].column[5]);
+  flexGrid.setCellData(
+    hendoRows_st++,
+    2,
+    self.gridItemName[0].kounetsuSuihi[0]
+  );
+  //加算情報
+  flexGrid.setCellData(kasanRows_st, 0, self.gridItemName[0].column2[0]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[1]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[2]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[3]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[4]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[5]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[6]);
+  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[7]);
 }
 /***
  * 値の登録処理
@@ -435,14 +466,17 @@ function settingRiyoubi(flexGrid, _self) {
     day8: 'arrow',
     day9: 'arrow_end',
     day10: 0,
+    total: 12,
+    money: 2500,
     start_date: '4/6',
     end_date: '4/9',
   });
   for (let i = 0; i <= _self.lastdate; i++) {
-    console.log(riyoubi);
     let d = 'day' + (i + 1);
     flexGrid.setCellData(1, i + 3, riyoubi[0][d]);
   }
+  flexGrid.setCellData(1, _self.lastdate + 3, riyoubi[0]['total']);
+  flexGrid.setCellData(1, _self.lastdate + 4, riyoubi[0]['money']);
 }
 
 /****
@@ -452,6 +486,7 @@ function methodCellFormatSetting(flexGrid, _self) {
   flexGrid.formatItem.addHandler(function (s, e) {
     let html = e.cell.innerHTML;
     let text = e.cell.innerText;
+
     let classname = '';
     //食事の表示
     for (let i = 0; i < _self.gridItemName[0].meals.length; i++) {
@@ -480,7 +515,11 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
 
     //変動情報等の縦
-    if (text == _self.gridItemName[0].column[0]) {
+    //加算情報等の縦
+    if (
+      text == _self.gridItemName[0].column[0] ||
+      text == _self.gridItemName[0].column2[0]
+    ) {
       classname = 'vertical';
     }
 
@@ -494,6 +533,11 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
     if (text == 'arrow_end') {
       html = '<div class="red-arrow_end"><div>&nbsp;</div></div>';
+    }
+
+    if (isDate.isDate(text)) {
+      console.log(text);
+      html = dateFormatString.dateFormatString(text);
     }
 
     e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';

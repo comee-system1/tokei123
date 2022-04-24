@@ -98,7 +98,7 @@
       :allowSorting="false"
     >
       <wj-flex-grid-column
-        header="コード"
+        :header="column1"
         binding="riyocode"
         width="2*"
         :word-wrap="false"
@@ -164,7 +164,8 @@ let alphabet = [
   'ラ',
   'ワ',
 ];
-
+let codeText = 'コード';
+let jyukyusyaBangoText = '受給者番号';
 export default {
   data() {
     return {
@@ -173,6 +174,7 @@ export default {
       isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
+      column1: codeText,
     };
   },
   methods: {
@@ -304,6 +306,7 @@ export default {
 
       //コード順でソート
       if (sortSearch == 1) {
+        this.column1 = codeText;
         data.sort((a, b) => {
           if (a.riyocode < b.riyocode) return -1;
           if (a.riyocode > b.riyocode) return 1;
@@ -320,6 +323,7 @@ export default {
       }
       //受給者番号でソート
       if (sortSearch == 3) {
+        this.column1 = jyukyusyaBangoText;
         data.sort((a, b) => {
           if (a.jyukyuno < b.jyukyuno) return -1;
           if (a.jyukyuno > b.jyukyuno) return 1;
