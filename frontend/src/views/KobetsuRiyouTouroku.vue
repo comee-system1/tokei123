@@ -198,6 +198,7 @@
             :allowResizing="false"
             :deferResizing="false"
             :allowSorting="false"
+            :selectionMode="'None'"
           ></wj-flex-grid>
         </v-col>
       </v-row>
@@ -225,32 +226,8 @@ export default {
       mainGrid: [], //表示grid
       riyoubiData: [], //利用日データ
       nyutaiinData: [], //入退院データ
-      gridItemName: [
-        {
-          heads: ['項目', '合計', '金額'],
-          column: ['変動情報'],
-          shisetsuNyusho: [
-            { name: '利用日' },
-            { name: '入院・退院日' },
-            { name: '外泊日' },
-            { name: '食事', mealFlag: true },
-            { name: '光熱水費', kounetsuSuihiFlag: 'kounetsuSuihiFlag' },
-          ],
-          meals: ['朝食', '昼食', '夕食'],
-          column2: [
-            '加算情報',
-            '重度障害者支援加算Ⅱ2',
-            '重度障害者支援加算Ⅱ3',
-            '栄養マネジメント加算',
-            '療養食加算',
-            '口腔衛生管理加算',
-            '入院・外泊時加算',
-            '地域移行加算',
-          ],
-          mealsCount: [300, 400, 500],
-          kounetsuSuihi: [{ count: 100 }],
-        },
-      ],
+      gaihakuData: [], //外泊データ
+      gridItemName: [], //変動情報の表示内容
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
@@ -269,11 +246,99 @@ export default {
     DialogKasantuika,
   },
   methods: {
-    //期間追加ダイアログの表示
+    // 変動情報の切り替え配列
+    changeHndoJyoho: function () {
+      let hendo = [];
+      let items = ['項目', '合計', '金額'];
+      let columns = ['変動情報', '加算情報'];
+      if (this.teikyoService == '34 宿泊型自立訓練') {
+        hendo = [
+          {
+            heads: items,
+            column: columns,
+            shisetsuNyusho: [
+              { name: '利用日' },
+              { name: '入院・退院日' },
+              { name: '外泊日' },
+              { name: '食事', mealFlag: true },
+            ],
+            meals: ['朝食', '夕食'],
+            shisetsuNyusho_add: [
+              { name: '重度障害者支援加算Ⅱ2' },
+              { name: '重度障害者支援加算Ⅱ3' },
+              { name: '栄養マネジメント加算' },
+              { name: '療養食加算' },
+              { name: '口腔衛生管理加算' },
+              { name: '入院・外泊時加算' },
+              { name: '地域移行加算' },
+            ],
+            mealsCount: [300, 500],
+          },
+        ];
+      }
+      if (this.teikyoService == '33 共同生活援助') {
+        hendo = [
+          {
+            heads: items,
+            column: columns,
+            shisetsuNyusho: [
+              { name: '利用日' },
+              { name: '入院・退院日' },
+              { name: '外泊日' },
+              { name: '住居外利用' },
+              { name: '家賃' },
+            ],
+            meals: ['朝食', '昼食', '夕食'],
+            shisetsuNyusho_add: [
+              { name: '重度障害者支援加算Ⅱ2' },
+              { name: '重度障害者支援加算Ⅱ3' },
+              { name: '栄養マネジメント加算' },
+              { name: '療養食加算' },
+              { name: '口腔衛生管理加算' },
+              { name: '入院・外泊時加算' },
+              { name: '地域移行加算' },
+            ],
+            mealsCount: [300, 400, 500],
+            kounetsuSuihi: [{ count: 100 }],
+          },
+        ];
+      }
+
+      if (this.teikyoService == '32 施設入所支援') {
+        hendo = [
+          {
+            heads: items,
+            column: columns,
+            shisetsuNyusho: [
+              { name: '利用日' },
+              { name: '入院・退院日' },
+              { name: '外泊日' },
+              { name: '食事', mealFlag: true },
+              { name: '光熱水費', kounetsuSuihiFlag: 'kounetsuSuihiFlag' },
+            ],
+            meals: ['朝食', '昼食', '夕食'],
+            shisetsuNyusho_add: [
+              { name: '重度障害者支援加算Ⅱ2' },
+              { name: '重度障害者支援加算Ⅱ3' },
+              { name: '栄養マネジメント加算' },
+              { name: '療養食加算' },
+              { name: '口腔衛生管理加算' },
+              { name: '入院・外泊時加算' },
+              { name: '地域移行加算' },
+            ],
+            mealsCount: [300, 400, 500],
+            kounetsuSuihi: [{ count: 100 }],
+          },
+        ];
+      }
+      this.gridItemName = hendo;
+      this.mainGrid.itemsSource = [];
+    },
+    // 変動情報ダイアログの表示
     openDialog_Term() {
       this.$refs.dialog_kikantuika.parentFromOpenDialog();
     },
-    //加算追加ダイアログの表示
+    // 加算追加ダイアログの表示
     openDialog_Add() {
       this.$refs.dialog_kasantuika.parentFromOpenDialog();
     },
@@ -303,27 +368,34 @@ export default {
       this.lastdate = m.daysInMonth();
 
       methodCellSettingDefault(this.mainGrid, this);
+      this.mainGrid.itemsSource = [];
     },
     //ヘッダメニューのサービスを変更したとき
     parentServiceSelect: function (serviceArgument) {
       console.log(serviceArgument);
+      this.teikyoService = serviceArgument.teikyoService;
+      this.changeHndoJyoho();
     },
 
     onitemsSourceChanged: function (flexGrid) {
       console.log('ssddd');
-      console.log(flexGrid);
+
+      let _self = this;
+      // セル初期カラム情報
+      methodCellSettingDefault(flexGrid, _self);
+      // 情報タイトルパーツの書き込み
+      methodWriteJyoho(flexGrid, _self);
+      //値の登録
+      methodSettingPoint(flexGrid, _self);
+
+      //セルマージ
+      methodCellMerge(flexGrid, _self);
     },
     // グリッドイニシアライズ
     onInitialized: function (flexGrid) {
       this.mainGrid = flexGrid;
       flexGrid.autoSizeColumns();
       let _self = this;
-      // セル初期カラム情報
-      methodCellSettingDefault(flexGrid, _self);
-      // 情報パーツの書き込み
-      methodWriteJyoho(flexGrid, _self);
-      //値の登録
-      methodSettingPoint(flexGrid, _self);
 
       // セル情報のフォーマット指定
       methodCellFormatSetting(flexGrid, _self);
@@ -331,33 +403,7 @@ export default {
       //セルのクリックイベント
       methodCellClickEvent(flexGrid, _self);
 
-      // セル情報のマージ
-      let range = [];
-      //施設入所用
-      range = [
-        new wjGrid.CellRange(0, 1, 0, 2),
-        new wjGrid.CellRange(1, 0, 7, 0),
-        new wjGrid.CellRange(1, 1, 1, 2),
-        new wjGrid.CellRange(2, 1, 2, 2),
-        new wjGrid.CellRange(3, 1, 3, 2),
-        new wjGrid.CellRange(8, 0, 14, 0),
-        new wjGrid.CellRange(8, 1, 8, 2),
-        new wjGrid.CellRange(9, 1, 9, 2),
-        new wjGrid.CellRange(10, 1, 10, 2),
-        new wjGrid.CellRange(11, 1, 11, 2),
-        new wjGrid.CellRange(12, 1, 12, 2),
-        new wjGrid.CellRange(13, 1, 13, 2),
-        new wjGrid.CellRange(14, 1, 14, 2),
-      ];
-      let mm = new wjGrid.MergeManager(flexGrid);
-      mm.getMergedRange = function (panel, r, c) {
-        for (let h = 0; h < range.length; h++) {
-          if (range[h].contains(r, c)) {
-            return range[h];
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
+      flexGrid.itemsSource = [];
     },
   },
 };
@@ -405,7 +451,21 @@ function methodCellSettingDefault(flexGrid, _self) {
   while (flexGrid.columns.length < lastdate + 5) {
     flexGrid.columns.push(new wjGrid.Column());
   }
-  while (flexGrid.rows.length < 15) {
+
+  //todo if文の条件をキーの値に変更する
+  //全体の行数
+  let row = 15;
+  if (_self.teikyoService == '34 宿泊型自立訓練') {
+    row = 13;
+  }
+  if (_self.teikyoService == '33 共同生活援助') {
+    row = 13;
+  }
+  if (_self.teikyoService == '32 施設入所支援') {
+    row = 15;
+  }
+
+  while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
 
@@ -437,47 +497,66 @@ function methodCellSettingDefault(flexGrid, _self) {
 /*******
  * 各情報タイトルの書き込み
  */
-function methodWriteJyoho(flexGrid, self) {
-  //変動情報
+function methodWriteJyoho(flexGrid, _self) {
   let hendoRows_st = 1; //変動情報の始まりの行
   let hendoRows_ed = 7; //変動情報で利用した行数
   let kasanRows_st = hendoRows_ed + 1; //加算情報で利用する始まりの行数
-  flexGrid.setCellData(hendoRows_st, 0, self.gridItemName[0].column[0]);
+  //todo if文の条件をキーの値に変更する
+  if (_self.teikyoService == '34 宿泊型自立訓練') {
+    hendoRows_st = 1;
+    hendoRows_ed = 5;
+    kasanRows_st = hendoRows_ed + 1;
+  }
+  //共同生活援助
+  if (_self.teikyoService == '33 共同生活援助') {
+    hendoRows_st = 1;
+    hendoRows_ed = 5;
+    kasanRows_st = hendoRows_ed + 1;
+  }
+  //施設入所支援
+  if (_self.teikyoService == '32 施設入所支援') {
+    hendoRows_st = 1;
+    hendoRows_ed = 7;
+    kasanRows_st = hendoRows_ed + 1;
+  }
+
+  flexGrid.setCellData(hendoRows_st, 0, _self.gridItemName[0].column[0]);
 
   let row = 0;
-  for (let i = 0; i < self.gridItemName[0].shisetsuNyusho.length; i++) {
+  for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho.length; i++) {
     flexGrid.setCellData(
       row + 1,
       1,
-      self.gridItemName[0].shisetsuNyusho[i].name
+      _self.gridItemName[0].shisetsuNyusho[i].name
     );
     //食事用のflagがあれば、食事内容を表示する
-    if (self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
-      for (let j = 0; j < self.gridItemName[0].meals.length; j++) {
+    if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+      for (let j = 0; j < _self.gridItemName[0].meals.length; j++) {
         let k = i + 1 + j;
-        flexGrid.setCellData(k, 2, self.gridItemName[0].meals[j]);
+        flexGrid.setCellData(k, 2, _self.gridItemName[0].meals[j]);
         row++;
       }
-    } else if (self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
+    } else if (_self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
       row++;
+      //高熱水費の変更前文字列を記載
       flexGrid.setCellData(
         row,
         2,
-        self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
+        _self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
       );
     } else {
       row++;
     }
   }
   //加算情報
-  flexGrid.setCellData(kasanRows_st, 0, self.gridItemName[0].column2[0]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[1]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[2]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[3]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[4]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[5]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[6]);
-  flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[7]);
+  flexGrid.setCellData(kasanRows_st, 0, _self.gridItemName[0].column[1]);
+  for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
+    flexGrid.setCellData(
+      kasanRows_st++,
+      1,
+      _self.gridItemName[0].shisetsuNyusho_add[i].name
+    );
+  }
 }
 /**************
  * セルのクリックイベント
@@ -485,9 +564,20 @@ function methodWriteJyoho(flexGrid, self) {
 function methodCellClickEvent(flexGrid, _self) {
   flexGrid.hostElement.addEventListener('click', function (e) {
     var ht = flexGrid.hitTest(e);
-    //矢印下の箱を押下
-    if (ht.target.innerHTML.match(/termFlag/)) {
+    // 矢印下の箱を押下
+    // 変動情報ダイアログ
+    let regexp = /^<span class="d-none">termFlag<\/span>/;
+    if (ht.target.innerHTML.match(regexp)) {
       _self.$refs.dialog_kikantuika.parentFromOpenDialog();
+    }
+    // 変動情報ダイアログ
+    // 加算情報
+    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
+      if (
+        ht.target.innerText == _self.gridItemName[0].shisetsuNyusho_add[i].name
+      ) {
+        _self.$refs.dialog_kikantuika.parentFromOpenDialog();
+      }
     }
   });
 }
@@ -499,6 +589,36 @@ function methodSettingPoint(flexGrid, _self) {
   settingRiyoubi(flexGrid, _self);
   //入院・退院日の設定
   settingNyuTaiin(flexGrid, _self);
+  //外泊の設定
+  settingGaihaku(flexGrid, _self);
+}
+/*******
+ * 外泊の設定
+ */
+function settingGaihaku(flexGrid, _self) {
+  let gaihaku = [];
+  gaihaku.push({
+    key: 0,
+    day4: 0,
+    day5: 0,
+    day21: 'gaihaku_arrow_start-0', //文字列のあとにkeyを不随させる
+    day22: 'gaihaku_arrow-0',
+    day23: 'gaihaku_arrow-0',
+    day24: 'gaihaku_arrow_end-0',
+
+    total: 5,
+    money: 1500,
+    start_date: '4/21',
+    end_date: '4/24',
+    diff_date: 3,
+  });
+  for (let i = 0; i <= _self.lastdate; i++) {
+    let d = 'day' + (i + 1);
+    flexGrid.setCellData(3, i + 3, gaihaku[0][d]);
+  }
+  flexGrid.setCellData(3, _self.lastdate + 3, gaihaku[0]['total']);
+  flexGrid.setCellData(3, _self.lastdate + 4, gaihaku[0]['money']);
+  _self.gaihakuData = gaihaku;
 }
 /*******
  * 入院・退院日の設定
@@ -551,9 +671,10 @@ function settingRiyoubi(flexGrid, _self) {
     day18: 1,
     day29: 1,
     day30: 1,
-    total: 1,
-    money: '',
+    total: 5,
+    money: 1500,
   });
+  console.log(_self.lastdate);
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
     flexGrid.setCellData(1, i + 3, riyoubi[0][d]);
@@ -572,7 +693,7 @@ function methodCellFormatSetting(flexGrid, _self) {
     let text = e.cell.innerText;
 
     let classname = '';
-    //食事の表示
+    // 食事の表示
     for (let i = 0; i < _self.gridItemName[0].meals.length; i++) {
       if (text == _self.gridItemName[0].meals[i]) {
         html =
@@ -582,7 +703,7 @@ function methodCellFormatSetting(flexGrid, _self) {
           '/回</span>';
       }
     }
-    //高熱水費
+    // 高熱水費
     if (text == 'kounetsuSuihiFlag') {
       html =
         '<span class="float-right">@' +
@@ -590,27 +711,27 @@ function methodCellFormatSetting(flexGrid, _self) {
         '/回</span>';
     }
 
-    //項目ヘッダ
+    // 項目ヘッダ
     for (let i = 0; i < _self.gridItemName[0].heads.length; i++) {
       if (text == _self.gridItemName[0].heads[i]) {
         classname = 'head';
       }
     }
 
-    //変動情報等の縦
-    //加算情報等の縦
+    // 変動情報等の縦
+    // 加算情報等の縦
     if (
       text == _self.gridItemName[0].column[0] ||
-      text == _self.gridItemName[0].column2[0]
+      text == _self.gridItemName[0].column[1]
     ) {
       classname = 'vertical';
     }
 
-    //矢印の表示
+    // 矢印の表示
     if (text.match(/^arrow_start-[0-9].*/)) {
       let key = text.split('-')[1];
       let date = _self.nyutaiinData[key];
-      //termFlagは矢印を押下した際の表示用文字列
+      // termFlagは矢印を押下した際の表示用文字列
       html = '<div class="red-arrow_start"><div>&nbsp;</div></div>';
       html +=
         '<div class="arrow_box"><div><span class="d-none">termFlag</span>' +
@@ -628,13 +749,35 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = '<div class="red-arrow_end"><div>&nbsp;</div></div>';
     }
 
-    //日付表示
+    // 外泊用矢印の表示
+    if (text.match(/^gaihaku_arrow_start-[0-9].*/)) {
+      let key = text.split('-')[1];
+      let date = _self.gaihakuData[key];
+      // termFlagは矢印を押下した際の表示用文字列
+      html = '<div class="green-arrow_start"><div>&nbsp;</div></div>';
+      html +=
+        '<div class="arrow_box"><div><span class="d-none">termFlag</span>' +
+        date['start_date'] +
+        '～' +
+        date['end_date'] +
+        '[' +
+        date['diff_date'] +
+        ']</div></div>';
+    }
+    if (text.match(/^gaihaku_arrow-[0-9].*/)) {
+      html = '<div class="green-arrow"><div>&nbsp;</div></div>';
+    }
+    if (text.match(/^gaihaku_arrow_end-[0-9].*/)) {
+      html = '<div class="green-arrow_end"><div>&nbsp;</div></div>';
+    }
+
+    // 日付表示
     if (isDate.isDate(text)) {
       html = dateFormatString.dateFormatString(text);
     }
 
-    //〇の表示
-    //1:手入力不可〇
+    // 〇の表示
+    // 1:手入力不可〇
     if (
       text == 1 &&
       e.col != _self.lastdate + 3 &&
@@ -642,7 +785,7 @@ function methodCellFormatSetting(flexGrid, _self) {
     ) {
       html = '〇';
     }
-    //0:空欄
+    // 0:空欄
     if (
       text == 0 &&
       e.col != _self.lastdate + 3 &&
@@ -651,6 +794,13 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = '';
     }
 
+    // 加算情報置き換え;
+    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
+      if (text == _self.gridItemName[0].shisetsuNyusho_add[i].name) {
+        html =
+          '<a>' + _self.gridItemName[0].shisetsuNyusho_add[i].name + '</a>';
+      }
+    }
     e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
 
     wjCore.setCss(e.cell, {
@@ -662,6 +812,77 @@ function methodCellFormatSetting(flexGrid, _self) {
       verticalAlign: 'middle',
     });
   });
+}
+/**************
+ */
+function methodCellMerge(flexGrid, _self) {
+  let range = [];
+  //todo if文の条件をキーの値に変更する
+  //宿泊型自立訓練
+  if (_self.teikyoService == '34 宿泊型自立訓練') {
+    range = [
+      new wjGrid.CellRange(0, 1, 0, 2),
+      new wjGrid.CellRange(1, 0, 5, 0),
+      new wjGrid.CellRange(1, 1, 1, 2),
+      new wjGrid.CellRange(2, 1, 2, 2),
+      new wjGrid.CellRange(3, 1, 3, 2),
+      new wjGrid.CellRange(6, 0, 12, 0),
+      new wjGrid.CellRange(6, 1, 6, 2),
+      new wjGrid.CellRange(7, 1, 7, 2),
+      new wjGrid.CellRange(8, 1, 8, 2),
+      new wjGrid.CellRange(9, 1, 9, 2),
+      new wjGrid.CellRange(10, 1, 10, 2),
+      new wjGrid.CellRange(11, 1, 11, 2),
+      new wjGrid.CellRange(12, 1, 12, 2),
+    ];
+  }
+  //共同生活援助
+  if (_self.teikyoService == '33 共同生活援助') {
+    range = [
+      new wjGrid.CellRange(0, 1, 0, 2),
+      new wjGrid.CellRange(1, 0, 5, 0),
+      new wjGrid.CellRange(1, 1, 1, 2),
+      new wjGrid.CellRange(2, 1, 2, 2),
+      new wjGrid.CellRange(3, 1, 3, 2),
+      new wjGrid.CellRange(4, 1, 4, 2),
+      new wjGrid.CellRange(5, 1, 5, 2),
+      new wjGrid.CellRange(6, 0, 12, 0),
+      new wjGrid.CellRange(6, 1, 6, 2),
+      new wjGrid.CellRange(7, 1, 7, 2),
+      new wjGrid.CellRange(8, 1, 8, 2),
+      new wjGrid.CellRange(9, 1, 9, 2),
+      new wjGrid.CellRange(10, 1, 10, 2),
+      new wjGrid.CellRange(11, 1, 11, 2),
+      new wjGrid.CellRange(12, 1, 12, 2),
+    ];
+  }
+  //施設入所用
+  if (_self.teikyoService == '32 施設入所支援') {
+    range = [
+      new wjGrid.CellRange(0, 1, 0, 2),
+      new wjGrid.CellRange(1, 0, 7, 0),
+      new wjGrid.CellRange(1, 1, 1, 2),
+      new wjGrid.CellRange(2, 1, 2, 2),
+      new wjGrid.CellRange(3, 1, 3, 2),
+      new wjGrid.CellRange(8, 0, 14, 0),
+      new wjGrid.CellRange(8, 1, 8, 2),
+      new wjGrid.CellRange(9, 1, 9, 2),
+      new wjGrid.CellRange(10, 1, 10, 2),
+      new wjGrid.CellRange(11, 1, 11, 2),
+      new wjGrid.CellRange(12, 1, 12, 2),
+      new wjGrid.CellRange(13, 1, 13, 2),
+      new wjGrid.CellRange(14, 1, 14, 2),
+    ];
+  }
+  let mm = new wjGrid.MergeManager(flexGrid);
+  mm.getMergedRange = function (panel, r, c) {
+    for (let h = 0; h < range.length; h++) {
+      if (range[h].contains(r, c)) {
+        return range[h];
+      }
+    }
+  };
+  flexGrid.mergeManager = mm;
 }
 </script>
 <style lang="scss">
@@ -750,6 +971,9 @@ div#kobetsuriyo {
   }
 
   //矢印
+  .green-arrow,
+  .green-arrow_end,
+  .green-arrow_start,
   .red-arrow,
   .red-arrow_end,
   .red-arrow_start {
@@ -762,6 +986,13 @@ div#kobetsuriyo {
     text-indent: -9999px;
   }
 
+  .green-arrow,
+  .green-arrow_end,
+  .green-arrow_start {
+    border-top: 1px solid $green;
+  }
+
+  .green-arrow_start,
   .red-arrow_start {
     > div {
       width: 0;
@@ -775,6 +1006,13 @@ div#kobetsuriyo {
     }
   }
 
+  .green-arrow_start {
+    > div {
+      border-right: 4px solid green;
+    }
+  }
+
+  .green-arrow_end,
   .red-arrow_end {
     div {
       width: 0;
@@ -786,6 +1024,12 @@ div#kobetsuriyo {
       left: auto;
       right: 0;
       top: -5px;
+    }
+  }
+
+  .green-arrow_end {
+    div {
+      border-left: 4px solid green;
     }
   }
 

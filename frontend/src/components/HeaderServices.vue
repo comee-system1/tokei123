@@ -159,6 +159,16 @@ export default {
       });
       data.push({
         jimusyoBango: '111200019',
+        serviceJigyo: '知的障害者入所施設 ひまわり園',
+        teikyoService: '33 共同生活援助',
+      });
+      data.push({
+        jimusyoBango: '111200030',
+        serviceJigyo: '知的障害者入所施設 東経園',
+        teikyoService: '34 宿泊型自立訓練',
+      });
+      data.push({
+        jimusyoBango: '111200019',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoService: '41 自立訓練(機能訓練)',
       });
