@@ -399,6 +399,7 @@ export default {
     },
     onInitializedDate: function (flexGrid) {
       flexGrid.rowHeaders.columns[0].width = 30;
+      flexGrid.columnHeaders.rows[0].height = 60;
       flexGrid.formatItem.addHandler(cellEdit);
     },
     registPage: function () {

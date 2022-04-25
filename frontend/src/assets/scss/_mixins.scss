@@ -1,3 +1,12 @@
+$pc: 1336px;
+
+@mixin pc {
+  @media screen and (min-width: ($pc)) {
+    @content;
+  }
+}
+
+
 .w-80{ width:80px; }
 
 /* パンくずリスト下の基本情報エリアのスタイル */

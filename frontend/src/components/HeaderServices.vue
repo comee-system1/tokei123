@@ -2,15 +2,6 @@
   <v-layout>
     <v-flex md12 class="basic-info">
       <div class="service-selection-area">
-        <!-- <wj-combo-box
-          text="11210000 障害者支援 ひまわり"
-          style="width: 300px"
-        ></wj-combo-box>
-        <wj-combo-box
-          :items-source="search"
-          :textChanged="searchChange"
-          @click="comboClick"
-        ></wj-combo-box> -->
         <v-row no-gutters>
           <v-col md="1">
             <v-card class="pa-1 transparent white--text" elevation="0"
@@ -21,9 +12,10 @@
             <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
           </v-col>
           <v-col md="2">
-            <v-card class="pa-1 jigyosyoInput" v-on:click="comboClick()" tile>{{
-              selectButton
-            }}</v-card>
+            <v-card class="pa-1" v-on:click="comboClick()" tile
+              >{{ selectButton }}
+              <div class="float-right">▼</div></v-card
+            >
           </v-col>
         </v-row>
       </div>
@@ -89,6 +81,7 @@
               :initialized="onInitializedJimusyo"
               :autoClipboard="false"
               :selectionMode="3"
+              :selecte="-1"
             >
               <wj-flex-grid-column
                 header="事務所番号"
@@ -131,11 +124,8 @@ export default {
     return {
       year: year,
       month: month,
-      search: ['32:施設入所支援', '41:自立訓練'],
       header_dialog: false,
-      selectButton: '事業者選択',
-      jimusyo: [],
-      jigyosyoCode: '　',
+      defaultSetting: this.defaultSettings(),
     };
   },
   methods: {
@@ -155,6 +145,7 @@ export default {
         jimusyoBango: '11123405',
         serviceJigyo: '障害者入所施設 ひまわり園',
         teikyoService: '32 施設入所支援',
+        defaultFlag: true,
       });
       data.push({
         jimusyoBango: '111200012',
@@ -174,18 +165,49 @@ export default {
       this.jimusyo = data;
     },
     onInitializedJimusyo: function (grid) {
-      this.createJimusyo();
-      // while (grid.rows.length < griddata.length) {
-      //   grid.rows.push(new wjGrid.Row());
-      // }
+      //this.createJimusyo();
       let _self = this;
+      grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
         var ht = grid.hitTest(e);
         ht = grid.hitTest(e.pageX, e.pageY);
         _self.jigyosyoCode = _self.jimusyo[ht.row].jimusyoBango;
         _self.jigyosyoCode += ' ' + _self.jimusyo[ht.row].serviceJigyo;
         _self.selectButton = _self.jimusyo[ht.row].teikyoService;
+
+        let returns = {};
+        returns = {
+          jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
+          serviceJigyo: _self.jimusyo[ht.row].serviceJigyo,
+          teikyoService: _self.jimusyo[ht.row].teikyoService,
+        };
+        _self.$emit('parent-service-select', returns);
+
+        _self.header_dialog = false;
       });
+    },
+    defaultSettings: function () {
+      this.createJimusyo();
+
+      //初期データはdefaultFlagが有効のものを利用
+      let defaultdata = [];
+      for (let i = 0; i <= this.jimusyo.length; i++) {
+        if (this.jimusyo[i]['defaultFlag']) {
+          defaultdata = this.jimusyo[i];
+          this.select = i;
+          break;
+        }
+      }
+      this.jigyosyoCode =
+        defaultdata.jimusyoBango + ' ' + defaultdata.serviceJigyo;
+      this.selectButton = defaultdata.teikyoService;
+      let returns = {};
+      returns = {
+        jimusyoBango: defaultdata.jimusyoBango,
+        serviceJigyo: defaultdata.serviceJigyo,
+        teikyoService: defaultdata.teikyoService,
+      };
+      this.$emit('parent-service-select', returns);
     },
     calenderChange: function (e) {
       let split = e.target.value.split('-');
@@ -204,21 +226,22 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-.jigyosyoInput {
-  background: url('../assets/pen_20px.png') no-repeat $white 95% 50% / 20px 20px;
-}
+
 .header_dialogs {
   position: fixed !important;
   top: 0;
   font-size: 14px;
+  .wj-control {
+    color: $font-color;
+  }
   .wj-cell {
     &.wj-state-multi-selected {
       background: $selected_color;
-      color: $font_color;
+      color: $red;
     }
     &.wj-state-selected {
       background: $selected_color;
-      color: $font_color;
+      color: $red;
     }
   }
 }

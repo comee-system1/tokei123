@@ -9,7 +9,7 @@
       <v-row class="mt-0">
         <v-col cols="9" class="pt-1">
           <v-row class="mt-0">
-            <v-col cols="3" class="pt-0">
+            <v-col cols="3" xl="2" class="pt-0">
               <label>内容</label>
               <v-btn-toggle class="flex-wrap" mandatory>
                 <v-btn
@@ -45,11 +45,12 @@
             </v-col>
           </v-row>
           <v-row class="mt-0 pt-0">
-            <v-col cols="3" class="mt-1 pt-0">
+            <v-col cols="3" xl="2" class="mt-1 pt-0">
               <label>表示</label>
               <!-- mandatoryは初期選択 -->
               <v-btn-toggle class="flex-wrap" mandatory>
                 <v-btn
+                  class="aaa"
                   v-for="n in dispSelList"
                   :key="n"
                   small
@@ -57,13 +58,14 @@
                   dark
                   outlined
                   :width="btnwidth"
+                  :disabled="isBtnDisabled"
                   @click="sortUser(n.val)"
                 >
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="4" class="mt-1 pt-0">
+            <v-col cols="4" xl="3" class="mt-1 pt-0">
               <label>サービス</label>
               <wj-combo-box
                 :items-source="search"
@@ -116,7 +118,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="mt-0">
+      <v-row class="mt-0" justify="end">
         <v-col>
           <wj-flex-grid
             id="seikyuGrid"
@@ -227,6 +229,7 @@ export default {
   data: function () {
     return {
       alphabet: alphabet,
+      isBtnDisabled: false,
       errorcnt: '',
       btnwidth: 90,
       headerList: [
@@ -952,9 +955,11 @@ export default {
       if (pageType == '1') {
         document.getElementById('seikyuGrid').style.display = 'block';
         document.getElementById('kyufuGrid').style.display = 'none';
+        this.isBtnDisabled = false;
       } else {
         document.getElementById('seikyuGrid').style.display = 'none';
         document.getElementById('kyufuGrid').style.display = 'block';
+        this.isBtnDisabled = true;
       }
     },
     siborikomiUser: function (siborikomiType) {
@@ -1085,7 +1090,9 @@ div#KyuhuMeisaiIcrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  width: 1366px !important;
+  min-width: 1366px;
+  max-width: 1920px;
+  width: auto;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -1139,9 +1146,9 @@ div#KyuhuMeisaiIcrn {
   #kyufuGrid {
     color: #333333;
     font-size: 12px;
-    width: auto;
-    height: 70vh;
-    max-width: 100%;
+    width: 100%;
+    height: 65vh;
+    // max-height: 1080px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: #333333;

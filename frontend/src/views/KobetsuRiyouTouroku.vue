@@ -3,31 +3,28 @@
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
+      @parent-service-select="parentServiceSelect($event, serviceArgument)"
     ></header-services>
     <v-container fluid class="container">
-      <v-layout>
-        <v-flex style="min-width: 275px; max-width: 275px; width: 275px">
+      <v-row no-gutters>
+        <v-col cols="2">
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
           </user-list-print>
-        </v-flex>
-        <v-flex>
+        </v-col>
+        <v-col cols="10">
           <v-row class="mt-0" no-gutters>
-            <v-col cols="4">
+            <v-col>
               <v-card class="d-flex flex-row" flat tile>
                 <v-card class="pt-2 pr-2" elevation="0">
                   <label class="font-weight-black">利用者名</label>
                 </v-card>
-                <v-card class="pa-1" :width="280" outlined tile>
+                <v-card class="pa-1" :width="180" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
-              </v-card>
-            </v-col>
-            <v-col cols="4">
-              <v-card class="d-flex flex-row" flat tile>
-                <v-card class="pt-2 pr-2" elevation="0">
+                <v-card class="pt-2 pr-2 ml-2" elevation="0">
                   <label class="font-weight-black">受給者番号</label>
                 </v-card>
                 <v-card class="pa-1" :width="180" outlined tile>
@@ -35,10 +32,8 @@
                 </v-card>
               </v-card>
             </v-col>
-            <v-col cols="4">
-              <v-row class="justify-end" no-gutters>
-                <v-btn class="pa-3" outlined>受給者証修正</v-btn>
-              </v-row>
+            <v-col class="text-end">
+              <v-btn class="pa-3" outlined>受給者証修正</v-btn>
             </v-col>
           </v-row>
 
@@ -161,14 +156,14 @@
             <v-col md="4">
               <v-card elevation="0">
                 <div class="clearfix">
-                  <a class="addButton" @click="dialog = true">期間追加</a>
-                  <a class="ml-1 addButton" @click="dialog_add = true"
+                  <a class="addButton" @click="openDialog_Term()">期間追加</a>
+                  <a class="ml-1 addButton" @click="openDialog_Add()"
                     >加算追加</a
                   >
                 </div>
               </v-card>
             </v-col>
-            <v-col md="5" class="ml-auto">
+            <v-col md="6" class="ml-auto">
               <v-card elevation="0">
                 <v-row no-gutters>
                   <v-col>
@@ -194,14 +189,20 @@
           <wj-flex-grid
             id="flexGrid"
             class="mt-1"
-            :allowMerging="6"
             :headersVisibility="'None'"
             :alternatingRowStep="0"
             :initialized="onInitialized"
             :itemsSourceChanged="onitemsSourceChanged"
+            :isReadOnly="true"
+            :allowDragging="false"
+            :allowResizing="false"
+            :deferResizing="false"
+            :allowSorting="false"
           ></wj-flex-grid>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
+      <dialog-kikantuika ref="dialog_kikantuika"> </dialog-kikantuika>
+      <dialog-kasantuika ref="dialog_kasantuika"></dialog-kasantuika>
     </v-container>
   </div>
 </template>
@@ -209,6 +210,8 @@
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import UserListPrint from '../components/UserListPrint.vue';
+import DialogKikantuika from '../components/DialogKikantuika.vue';
+import DialogKasantuika from '../components/DialogKasantuika.vue';
 import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.multirow';
 import * as wjCore from '@grapecity/wijmo';
@@ -219,19 +222,21 @@ import dateFormatString from '@/utiles/dateFormatString';
 export default {
   data() {
     return {
-      viewGridData: [], // 表示用gridデータ''
       mainGrid: [], //表示grid
+      riyoubiData: [], //利用日データ
+      nyutaiinData: [], //入退院データ
       gridItemName: [
         {
           heads: ['項目', '合計', '金額'],
-          column: [
-            '変動情報',
-            '利用日',
-            '入院・退院日',
-            '外泊日',
-            '食事',
-            '光熱水費',
+          column: ['変動情報'],
+          shisetsuNyusho: [
+            { name: '利用日' },
+            { name: '入院・退院日' },
+            { name: '外泊日' },
+            { name: '食事', mealFlag: true },
+            { name: '光熱水費', kounetsuSuihiFlag: 'kounetsuSuihiFlag' },
           ],
+          meals: ['朝食', '昼食', '夕食'],
           column2: [
             '加算情報',
             '重度障害者支援加算Ⅱ2',
@@ -242,25 +247,36 @@ export default {
             '入院・外泊時加算',
             '地域移行加算',
           ],
-          meals: ['朝食', '昼食', '夕食'],
           mealsCount: [300, 400, 500],
-          kounetsuSuihi: [100],
+          kounetsuSuihi: [{ count: 100 }],
         },
       ],
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      dateArgument: '',
+      dateArgument: '', // ヘッダメニューのカレンダー選択
+      serviceArgument: '', // ヘッダメニューのサービス選択
       jyukyusyaItirans: this.getJyukyusyaItiran(), // 受給者一覧情報表示用
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
+      dialog: false, //期間追加用のダイアログ
     };
   },
   components: {
     HeaderServices,
     UserListPrint,
+    DialogKikantuika,
+    DialogKasantuika,
   },
   methods: {
+    //期間追加ダイアログの表示
+    openDialog_Term() {
+      this.$refs.dialog_kikantuika.parentFromOpenDialog();
+    },
+    //加算追加ダイアログの表示
+    openDialog_Add() {
+      this.$refs.dialog_kasantuika.parentFromOpenDialog();
+    },
     // 受給者一覧情報の表示用データの取得
     getJyukyusyaItiran: function () {
       return methodSetJyukyusyaItiran();
@@ -288,6 +304,10 @@ export default {
 
       methodCellSettingDefault(this.mainGrid, this);
     },
+    //ヘッダメニューのサービスを変更したとき
+    parentServiceSelect: function (serviceArgument) {
+      console.log(serviceArgument);
+    },
 
     onitemsSourceChanged: function (flexGrid) {
       console.log('ssddd');
@@ -307,6 +327,9 @@ export default {
 
       // セル情報のフォーマット指定
       methodCellFormatSetting(flexGrid, _self);
+
+      //セルのクリックイベント
+      methodCellClickEvent(flexGrid, _self);
 
       // セル情報のマージ
       let range = [];
@@ -334,7 +357,6 @@ export default {
           }
         }
       };
-
       flexGrid.mergeManager = mm;
     },
   },
@@ -390,8 +412,8 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.frozenColumns = 3;
   flexGrid.frozenRows = 1;
   flexGrid.columns[0].width = 32;
-  flexGrid.columns[1].width = 80;
-  flexGrid.columns[2].width = '*';
+  flexGrid.columns[1].width = 100;
+  flexGrid.columns[2].width = 100;
   flexGrid.rows[0].height = 60;
   flexGrid.height = 60;
   flexGrid.setCellData(0, 0, '');
@@ -400,17 +422,17 @@ function methodCellSettingDefault(flexGrid, _self) {
   let date = '';
   let day = '';
   for (let i = 3; i < lastdate + 3; i++) {
-    flexGrid.columns[i].width = 24;
+    flexGrid.columns[i].width = '1*';
     day = String(i - 2).padStart(2, '0');
     date = _self.year + '/' + _self.month + '/' + day;
     flexGrid.setCellData(0, i, date);
   }
   //合計
   flexGrid.setCellData(0, lastdate + 3, _self.gridItemName[0].heads[1]);
-  flexGrid.columns[lastdate + 3].width = 40;
+  flexGrid.columns[lastdate + 3].width = '2*';
   //金額
   flexGrid.setCellData(0, lastdate + 4, _self.gridItemName[0].heads[2]);
-  flexGrid.columns[lastdate + 4].width = 50;
+  flexGrid.columns[lastdate + 4].width = '3*';
 }
 /*******
  * 各情報タイトルの書き込み
@@ -421,19 +443,32 @@ function methodWriteJyoho(flexGrid, self) {
   let hendoRows_ed = 7; //変動情報で利用した行数
   let kasanRows_st = hendoRows_ed + 1; //加算情報で利用する始まりの行数
   flexGrid.setCellData(hendoRows_st, 0, self.gridItemName[0].column[0]);
-  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[1]);
-  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[2]);
-  flexGrid.setCellData(hendoRows_st++, 1, self.gridItemName[0].column[3]);
-  flexGrid.setCellData(hendoRows_st, 1, self.gridItemName[0].column[4]);
-  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[0]);
-  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[1]);
-  flexGrid.setCellData(hendoRows_st++, 2, self.gridItemName[0].meals[2]);
-  flexGrid.setCellData(hendoRows_st, 1, self.gridItemName[0].column[5]);
-  flexGrid.setCellData(
-    hendoRows_st++,
-    2,
-    self.gridItemName[0].kounetsuSuihi[0]
-  );
+
+  let row = 0;
+  for (let i = 0; i < self.gridItemName[0].shisetsuNyusho.length; i++) {
+    flexGrid.setCellData(
+      row + 1,
+      1,
+      self.gridItemName[0].shisetsuNyusho[i].name
+    );
+    //食事用のflagがあれば、食事内容を表示する
+    if (self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+      for (let j = 0; j < self.gridItemName[0].meals.length; j++) {
+        let k = i + 1 + j;
+        flexGrid.setCellData(k, 2, self.gridItemName[0].meals[j]);
+        row++;
+      }
+    } else if (self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
+      row++;
+      flexGrid.setCellData(
+        row,
+        2,
+        self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
+      );
+    } else {
+      row++;
+    }
+  }
   //加算情報
   flexGrid.setCellData(kasanRows_st, 0, self.gridItemName[0].column2[0]);
   flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[1]);
@@ -444,32 +479,80 @@ function methodWriteJyoho(flexGrid, self) {
   flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[6]);
   flexGrid.setCellData(kasanRows_st++, 1, self.gridItemName[0].column2[7]);
 }
+/**************
+ * セルのクリックイベント
+ */
+function methodCellClickEvent(flexGrid, _self) {
+  flexGrid.hostElement.addEventListener('click', function (e) {
+    var ht = flexGrid.hitTest(e);
+    //矢印下の箱を押下
+    if (ht.target.innerHTML.match(/termFlag/)) {
+      _self.$refs.dialog_kikantuika.parentFromOpenDialog();
+    }
+  });
+}
 /***
  * 値の登録処理
  */
 function methodSettingPoint(flexGrid, _self) {
-  //flexGrid.setCellData(1, 3, 'arrow_start');
   //利用日の設定
   settingRiyoubi(flexGrid, _self);
+  //入院・退院日の設定
+  settingNyuTaiin(flexGrid, _self);
 }
-
-function settingRiyoubi(flexGrid, _self) {
-  let riyoubi = [];
-  riyoubi.push({
-    day1: 1,
-    day2: 1,
-    day3: 1,
-    day4: 1,
+/*******
+ * 入院・退院日の設定
+ */
+function settingNyuTaiin(flexGrid, _self) {
+  let nyutaiin = [];
+  nyutaiin.push({
+    key: 0,
+    day4: 0,
     day5: 0,
-    day6: 'arrow_start',
-    day7: 'arrow',
-    day8: 'arrow',
-    day9: 'arrow_end',
+    day6: 'arrow_start-0', //文字列のあとにkeyを不随させる
+    day7: 'arrow-0',
+    day8: 'arrow-0',
+    day9: 'arrow_end-0',
     day10: 0,
+
     total: 12,
     money: 2500,
     start_date: '4/6',
     end_date: '4/9',
+    diff_date: 3,
+  });
+  for (let i = 0; i <= _self.lastdate; i++) {
+    let d = 'day' + (i + 1);
+    flexGrid.setCellData(2, i + 3, nyutaiin[0][d]);
+  }
+  flexGrid.setCellData(2, _self.lastdate + 3, nyutaiin[0]['total']);
+  flexGrid.setCellData(2, _self.lastdate + 4, nyutaiin[0]['money']);
+  _self.nyutaiinData = nyutaiin;
+}
+/*********
+ * 利用日の設定
+ */
+function settingRiyoubi(flexGrid, _self) {
+  let riyoubi = [];
+  riyoubi.push({
+    key: 0,
+    day6: 1,
+    day7: 1,
+    day8: 1,
+    day9: 1,
+    day10: 1,
+    day11: 1,
+    day12: 1,
+    day13: 1,
+    day14: 1,
+    day15: 1,
+    day16: 1,
+    day17: 1,
+    day18: 1,
+    day29: 1,
+    day30: 1,
+    total: 1,
+    money: '',
   });
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
@@ -477,6 +560,7 @@ function settingRiyoubi(flexGrid, _self) {
   }
   flexGrid.setCellData(1, _self.lastdate + 3, riyoubi[0]['total']);
   flexGrid.setCellData(1, _self.lastdate + 4, riyoubi[0]['money']);
+  _self.riyoubiData = riyoubi;
 }
 
 /****
@@ -499,14 +583,13 @@ function methodCellFormatSetting(flexGrid, _self) {
       }
     }
     //高熱水費
-    for (let i = 0; i < _self.gridItemName[0].kounetsuSuihi.length; i++) {
-      if (text == _self.gridItemName[0].kounetsuSuihi[i]) {
-        html =
-          '<span class="float-right">@' +
-          _self.gridItemName[0].kounetsuSuihi[i] +
-          '/回</span>';
-      }
+    if (text == 'kounetsuSuihiFlag') {
+      html =
+        '<span class="float-right">@' +
+        _self.gridItemName[0].kounetsuSuihi[0].count +
+        '/回</span>';
     }
+
     //項目ヘッダ
     for (let i = 0; i < _self.gridItemName[0].heads.length; i++) {
       if (text == _self.gridItemName[0].heads[i]) {
@@ -524,20 +607,48 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
 
     //矢印の表示
-    if (text == 'arrow_start') {
+    if (text.match(/^arrow_start-[0-9].*/)) {
+      let key = text.split('-')[1];
+      let date = _self.nyutaiinData[key];
+      //termFlagは矢印を押下した際の表示用文字列
       html = '<div class="red-arrow_start"><div>&nbsp;</div></div>';
-      html += '<div class="arrow_box"><div>sssssssss</div></div>';
+      html +=
+        '<div class="arrow_box"><div><span class="d-none">termFlag</span>' +
+        date['start_date'] +
+        '～' +
+        date['end_date'] +
+        '[' +
+        date['diff_date'] +
+        ']</div></div>';
     }
-    if (text == 'arrow') {
+    if (text.match(/^arrow-[0-9].*/)) {
       html = '<div class="red-arrow"><div>&nbsp;</div></div>';
     }
-    if (text == 'arrow_end') {
+    if (text.match(/^arrow_end-[0-9].*/)) {
       html = '<div class="red-arrow_end"><div>&nbsp;</div></div>';
     }
 
+    //日付表示
     if (isDate.isDate(text)) {
-      console.log(text);
       html = dateFormatString.dateFormatString(text);
+    }
+
+    //〇の表示
+    //1:手入力不可〇
+    if (
+      text == 1 &&
+      e.col != _self.lastdate + 3 &&
+      e.col != _self.lastdate + 4
+    ) {
+      html = '〇';
+    }
+    //0:空欄
+    if (
+      text == 0 &&
+      e.col != _self.lastdate + 3 &&
+      e.col != _self.lastdate + 4
+    ) {
+      html = '';
     }
 
     e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
@@ -593,15 +704,19 @@ div#kobetsuriyo {
   }
   #flexGrid {
     width: 100%;
-    min-width: 1000px;
-
+    max-width: auto;
     .wj-cell {
       &.wj-frozen-row {
         padding: 0;
         text-align: center;
       }
     }
+    .wj-frozen {
+      background-color: $selected_color;
+      font-weight: 700;
+    }
   }
+
   // 手修正済み
   div.editMark {
     width: 30px;

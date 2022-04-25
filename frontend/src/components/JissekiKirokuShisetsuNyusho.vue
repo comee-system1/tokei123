@@ -1,25 +1,64 @@
 <template>
   <div>
-    <div class="user-info">
-      <div>
-        <label for="theCombo">利用者</label>
-        <wj-combo-box :isReadOnly="true" text="1000007_東経太郎"></wj-combo-box>
-        <v-icon>mdi-arrow-left-bold-box-outline</v-icon>
-        <v-icon>mdi-arrow-right-bold-box-outline</v-icon>
-        <label for="theCombo">受給者証番号</label>
-        <wj-combo-box :isReadOnly="true" text="00000700"></wj-combo-box>
-      </div>
-      <div>
-        <label for="theCombo">補足給付摘要の有無</label>
-        <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="short-box"></wj-combo-box>
-        <label for="theCombo">補足給付額（日額）</label>
-        <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="short-box"></wj-combo-box>
-        <v-btn-toggle class="mt-2" mandatory>
-          <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-          <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-        </v-btn-toggle>
-      </div>
-    </div>
+    <v-row>
+      <v-col cols="7" class="user-info">
+        <v-row>
+          <v-col cols="6">
+            <div class="border-bottom">
+              <label>利用者</label>
+              <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
+            </div>
+            <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
+            <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
+          </v-col>
+          <v-col cols="6">
+            <div class="border-bottom">
+              <label>受給者証番号</label>
+              <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="4">
+            <div class="border-bottom">
+              <label>補足給付摘要の有無</label>
+              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="husokukyuhu-box"></wj-combo-box>
+            </div>
+          </v-col>
+          <v-col cols="4">
+            <div class="border-bottom">
+              <label>補足給付額（日額）</label>
+              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="husokukyuhu-box"></wj-combo-box>
+            </div>
+          </v-col>
+          <v-col cols="4">
+            <v-btn-toggle mandatory>
+              <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
+              <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="5" class="jippisanteigaku">
+        <wj-flex-grid
+          id="jippisanteigakuGrid"
+          :itemsSource="jippisanteigakuGridData"
+          :headersVisibility="'None'"
+          :autoGenerateColumns="false"
+          :initialized="onInitializeJippisanteigakuGrid"
+          :allowResizing="false"
+          :allowDragging="false"
+        >
+          <wj-flex-grid-column binding="Column0" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column1" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column2" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column3" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column4" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column5" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column6" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-col>
+    </v-row>
 
     <wj-flex-grid
       id="detailGrid"
@@ -102,6 +141,7 @@ export default{
       tkkfhiumuData:apiResult['riyo_inf'][0]['tkkfhiumu'],
       tkkfhiData:apiResult['riyo_inf'][0]['tkkfhi'],
       subGridData:this.getSubGridData(),
+      jippisanteigakuGridData:this.getjippisanteigakuGridData(),
       modal:false
     }
   },
@@ -277,6 +317,54 @@ export default{
         }
       }
     },
+    onInitializeJippisanteigakuGrid:function(flexGrid){
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
+      // セルの結合/////////////////////////////////////////////////////////////////
+      let mm = new wjGrid.MergeManager(flexGrid);
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(0,0,2,0),
+        new wjGrid.CellRange(0,1,0,4),
+        new wjGrid.CellRange(0,5,0,6),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function(panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+
+      flexGrid.cells.rows[0].height = 20;
+      flexGrid.cells.rows[1].height = 20;
+      // flexGrid.columnHeaders.rows[1].height = 20;
+
+       // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
+        let s = cell.style;
+        s.textAlign = 'center';
+        s.fontWeight = "normal";
+        if(r == 0 || r == 1){
+          s.backgroundColor = "#eee"
+          s.padding = '1px';
+        }else{
+          s.backgroundColor = "#fffeed";
+        }
+        if((r == 0||r == 1||r == 1) && c == 0){
+          cell.innerHTML = '実費<br/>算定額';
+        }
+        if(c==0){
+          s.padding = '15px 0px'
+        }
+      }
+    },
     getGridData:function(data){
       // グリッド表示用データの作成
       let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
@@ -336,6 +424,46 @@ export default{
       )
       return subGridData;
     },
+    getjippisanteigakuGridData:function(){
+      let data = JSON.parse(getOriginalDetailData());
+      let sTankaAsa = data['riyo_inf'][0]['tnka_syk_a']+"円/日";
+      let sTankaHiru = data['riyo_inf'][0]['tnka_syk_h']+"円/日";
+      let sTankaYoru = data['riyo_inf'][0]['tnka_syk_y']+"円/日";
+      let sTankaDay = data['riyo_inf'][0]['tnka_syk_d']+"円/日";
+      let kTankaDay = data['riyo_inf'][0]['tnka_kns_d']+"円/日";
+      let kTankaMonth = data['riyo_inf'][0]['tnka_kns_m']+"円/日";
+      let jippisanteigakuGridData = [];
+      jippisanteigakuGridData.push(
+        {
+          Column0: "実費算定額",
+          Column1: "食費の単価",
+          Column2: "食費の単価",
+          Column3: "食費の単価",
+          Column4: "食費の単価",
+          Column5: "光熱水費の単価",
+          Column6: "光熱水費の単価",
+        },
+        {
+          Column0: "実費算定額",
+          Column1: "朝食",
+          Column2: "昼食",
+          Column3: "夕食",
+          Column4: "一日",
+          Column5: "一日",
+          Column6: "一月",
+        },
+        {
+          Column0: "実費算定額",
+          Column1: sTankaAsa,
+          Column2: sTankaHiru,
+          Column3: sTankaYoru,
+          Column4: sTankaDay,
+          Column5: kTankaDay,
+          Column6: kTankaMonth,
+        }
+      )
+      return jippisanteigakuGridData;
+    }
   },
 }
 
@@ -363,13 +491,25 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
 <style scoped>
 /* 利用者情報エリアのスタイル */
-.user-info{
+*{
   padding:0;
-  font-size:12px;
+  margin:0;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #ccc;
+}
+
+.border-bottom label {
+  font-size: 0.85em;
+}
+
+.user-info{
+  font-size:14px;
 }
 
   .user-info label{
-    font-size:12px;
+    font-size:14px;
     margin-right:10px;
   }
 
@@ -378,8 +518,22 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin:0;
 }
 
-.short-box {
+.border-bottom{
+  border-bottom:1px solid #ccc;
+  float:left;
+}
+
+.user-box{
+  border:none;
+}
+
+.husokukyuhu-box {
   width:60px;
   margin-right:20px;
+  border:none;
+}
+
+#jippisanteigakuGrid {
+  font-size:12px;
 }
 </style>

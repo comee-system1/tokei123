@@ -48,7 +48,7 @@
         </v-col>
       </v-row>
       <v-row class="mt-0">
-        <v-col cols="4" class="pt-1">
+        <v-col cols="4" xl="3" class="pt-1">
           <label>ソート</label>
           <!-- mandatoryは初期選択 -->
           <v-btn-toggle class="flex-wrap" mandatory>
@@ -84,10 +84,10 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="2" class="mr-2 pt-3">
-          <v-row class="border-bottom" justify="end">
-            <v-col class="pa-2" cols="4"
-              ><label>
+        <v-col cols="2" class="pt-3">
+          <v-row class="border-bottom">
+            <v-col class="pa-2" cols="4">
+              <label>
                 <font color="red"><b>エラー</b></font>
               </label>
             </v-col>
@@ -629,7 +629,9 @@ div#jyukyuicrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  width: 1366px !important;
+  // width: 1366px !important;
+  min-width: 1366px;
+  max-width: 1920px;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -675,6 +677,7 @@ div#jyukyuicrn {
   }
   div.border-bottom {
     border-bottom: 1px solid red;
+    width: 200px;
     label {
       font-size: 0.85em;
     }
@@ -682,9 +685,9 @@ div#jyukyuicrn {
   #jyukyuIcrnGrid {
     color: #333333;
     font-size: 14px;
-    width: auto;
-    height: 70vh;
-    max-width: 100%;
+    width: 100%;
+    height: 65vh;
+    // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: #333333;
