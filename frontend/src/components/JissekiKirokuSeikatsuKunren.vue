@@ -1,23 +1,32 @@
 <template>
   <div>
-    <div class="user-info">
-      <div>
-        <label for="theCombo">利用者</label>
-        <wj-combo-box :isReadOnly="true" text="1000007_東経太郎"></wj-combo-box>
-        <v-icon>mdi-arrow-left-bold-box-outline</v-icon>
-        <v-icon>mdi-arrow-right-bold-box-outline</v-icon>
-        <label for="theCombo">受給者証番号</label>
-        <wj-combo-box :isReadOnly="true" text="00000700"></wj-combo-box>
-      </div>
-      <div>
-        <label for="theCombo">契約支給量</label>
-        <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box"></wj-combo-box>
-        <v-btn-toggle class="mt-2" mandatory>
-          <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-          <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-        </v-btn-toggle>
-      </div>
-    </div>
+    <v-row>
+      <v-col cols="12" class="user-info">
+        <v-row>
+          <div class="riyousya-block">
+            <label>利用者</label>
+            <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
+          </div>
+          <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
+          <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
+
+          <div class="jukyusyasho-block">
+            <label>受給者証番号</label>
+            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+          </div>
+        </v-row>
+        <v-row>
+          <div class="keiyakuryo-block">
+            <label>契約支給量</label>
+            <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box user-box"></wj-combo-box>
+          </div>
+          <v-btn-toggle mandatory class="denbun-toggle">
+            <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
+            <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
+          </v-btn-toggle>
+        </v-row>
+      </v-col>
+    </v-row>
 
     <wj-flex-grid
       id="detailGrid"
@@ -29,19 +38,19 @@
       :allowResizing="false"
       :allowDragging="false"
     >
-      <wj-flex-grid-column header="日付" binding="rymd" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="曜日" binding="youbi" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'20*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="往" binding="gei" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="復" binding="sou" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="短期滞在加算" binding="kasant" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'20*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="備考" binding="biko" :width="'35*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'8*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'9*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="往" binding="gei" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="復" binding="sou" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="短期滞在加算" binding="kasant" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="備考" binding="biko" :width="'17*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-flex-grid
@@ -90,14 +99,11 @@ export default{
       month:month,
       lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
-      comboData:[
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
-      ],
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
+      tsushoTotal:apiResult['riyo_inf'][0]['gokei_tusho'],
+      houmonTotal1:apiResult['riyo_inf'][0]['gokei_homon1'],
+      houmonTotal2:apiResult['riyo_inf'][0]['gokei_homon2'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(),
       modal:false
@@ -140,15 +146,31 @@ export default{
       panel.setCellData(1, 11, "体験利用支援加算");
       panel.setCellData(1, 12, "備考");
 
-      // フッターを作成/////////////////////////////////////////////////////////////
+      // 0行目のフッターを作成/////////////////////////////////////////////////////////////
       let footer0 = new wjGrid.GroupRow();
       // 作成したフッター行を追加する
       let footerPanel = grid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
-      // フッターの内容を設定する
+      // 0行目のフッターの内容を設定する
       for (let colIndex = 0; colIndex <= 2; colIndex++) {
         footerPanel.setCellData(0, colIndex, "合計");
       }
+      footerPanel.setCellData(0, 3, "通所型");
+      footerPanel.setCellData(0, 4, this.tsushoTotal);
+			for (let colIndex = 6; colIndex <= 7; colIndex++) {
+        footerPanel.setCellData(0, colIndex, this.sougeiTotal);
+      }
+
+      // 1行目のフッターを作成/////////////////////////////////////////////////////////////
+      let footer1 = new wjGrid.GroupRow();
+      footerPanel.rows.splice(1, 0, footer1);
+      // 1行目のフッターの内容を設定する
+      for (let colIndex = 0; colIndex <= 2; colIndex++) {
+        footerPanel.setCellData(0, colIndex, "合計");
+      }
+      footerPanel.setCellData(1, 3, "訪問型");
+      footerPanel.setCellData(1, 4, "1時間未満 : " + this.houmonTotal1);
+      footerPanel.setCellData(1, 5, "1時間以上 : " + this.houmonTotal2);
 			for (let colIndex = 6; colIndex <= 7; colIndex++) {
         footerPanel.setCellData(0, colIndex, this.sougeiTotal);
       }
@@ -172,8 +194,15 @@ export default{
         new wjGrid.CellRange(1,12,2,12)
       ];
       let footerRanges = [
-        new wjGrid.CellRange(0,0,0,2),
-        new wjGrid.CellRange(0,6,0,7)
+        new wjGrid.CellRange(0,0,1,2),
+        new wjGrid.CellRange(0,4,0,5),
+        new wjGrid.CellRange(0,6,1,6),
+        new wjGrid.CellRange(0,7,1,7),
+        new wjGrid.CellRange(0,8,1,8),
+        new wjGrid.CellRange(0,9,1,9),
+        new wjGrid.CellRange(0,10,1,10),
+        new wjGrid.CellRange(0,11,1,11),
+        new wjGrid.CellRange(0,12,1,12),
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
@@ -201,23 +230,44 @@ export default{
         let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          if(r == 0 && c == 0){
+            cell.innerHTML = '日<br/>付';
+          }else if (r == 0 && c == 1) {
+            cell.innerHTML = '曜<br/>日';
+          }else if (r == 1 && c == 2) {
+            cell.innerHTML = 'サービス提供<br/>の状況';
+          }else if (r == 1 && c == 10) {
+            cell.innerHTML = '医療連携<br/>体制加算';
+          }else if (r == 1 && c == 11) {
+            cell.innerHTML = ' 体験利用<br/>支援加算';
+          }
           // ヘッダーのスタイル
-          s.backgroundColor = "#d4edf4";
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
+          //＊一旦ヘッダーの色をグレーに戻す↓
+          // s.backgroundColor = "#d4edf4";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
           if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4 || c == 5))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11 || c == 12))){
-            s.borderBottom = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderBottom = "2px solid #348498";
           }
 
           if(c == 1 || c == 5 || c == 11){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          s.color = "#4d4d4d";
+          //一旦編集不可のセルをアイボリーにする↓
+          s.backgroundColor = "#fffeed";
+          // 一旦文字色を黒に戻す
+          s.color = "#000";
+          // s.color = "#4d4d4d";
           if(c == 1 || c == 5 || c == 11){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
 
           if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
@@ -229,19 +279,26 @@ export default{
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
           // フッターのスタイル
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
-          s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 ||c == 2){
-            s.backgroundColor = "#d4edf4";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
+          // 一旦太線を非表示にする
+          // s.borderTop = "2px solid #348498";
+          if(c == 0 || c == 1 ||c == 2 || c == 3){
+            //＊一旦ヘッダーの色をグレーに戻す↓
+            // s.backgroundColor = "#d4edf4";
           }else if(c == 12){
             s.backgroundColor = "#cccccc";
           }else{
-            s.backgroundColor = "#ffffff";
+            //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
+            // s.backgroundColor = "#ffffff";
           }
 
           if(c == 0 || c == 5 || c == 11){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
 
         }
@@ -256,7 +313,12 @@ export default{
         s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
-          s.backgroundColor= "#d4edf4";
+          //＊一旦見出しの色をグレーに変更する↓
+          s.backgroundColor= "#eeeeee";
+          // s.backgroundColor= "#d4edf4";
+        }else{
+          //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
         }
       }
     },
@@ -349,15 +411,43 @@ function getSougeiTotal(data){
 
 <style scoped>
 /* 利用者情報エリアのスタイル */
+*{
+  padding:0;
+  margin:0;
+}
+
 .user-info{
   padding:0;
-  font-size:12px;
+  font-size:14px;
 }
 
   .user-info label{
-    font-size:12px;
+    font-size:14px;
+    font-weight:bold;
     margin-right:10px;
   }
+
+.riyousya-block,.jukyusyasho-block,.keiyakuryo-block{
+  border-bottom:1px solid #ccc;
+  float:left;
+}
+
+.riyousya-block{
+  width:227px;
+}
+
+.jukyusyasho-block{
+  margin-left:20px;
+  width:269px;
+}
+
+.keiyakuryo-block{
+  width:216px;
+}
+
+.user-box{
+  border:none;
+}
 
 .v-input--selection-controls{
   padding:0;
@@ -365,7 +455,11 @@ function getSougeiTotal(data){
 }
 
 .keiyakusikyu-box {
-  width:120px;
+  width:100px;
   margin-right:20px;
+}
+
+.denbun-toggle{
+  margin-left:20px;
 }
 </style>

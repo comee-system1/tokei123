@@ -6,12 +6,12 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="mt-0">
-        <v-col cols="9" class="pt-1">
-          <v-row class="mt-0">
-            <v-col cols="3" xl="2" class="pt-0">
+      <v-row class="mt-0" no-gutters>
+        <v-col cols="9">
+          <v-row class="mt-0" no-gutters>
+            <v-col cols="3" xl="2">
               <label>内容</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
+              <v-btn-toggle class="flex-wrap" v-model="dispPageType">
                 <v-btn
                   v-for="n in pageSelList"
                   :key="n"
@@ -19,63 +19,60 @@
                   color="secondary"
                   dark
                   outlined
-                  :width="btnwidth"
                   @click="pageChange(n.val)"
                 >
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="6" class="pt-0">
+            <v-col cols="6">
               <label class="mr-6">市町村</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
-                <v-btn
-                  v-for="n in sichosonSelList"
-                  :key="n"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  :width="btnwidth"
-                  @click="siborikomiUser2(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
+              <wj-combo-box
+                v-model="selSichoson"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                :itemsSource="sichosonList"
+                :selectedIndex="0"
+                :selectedIndexChanged="onSichosonIndexChanged"
+              >
+              </wj-combo-box>
             </v-col>
           </v-row>
-          <v-row class="mt-0 pt-0">
-            <v-col cols="3" xl="2" class="mt-1 pt-0">
+          <v-row class="mt-0" no-gutters>
+            <v-col cols="3" xl="2" class="mt-1">
               <label>表示</label>
               <!-- mandatoryは初期選択 -->
-              <v-btn-toggle class="flex-wrap" mandatory>
+              <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
                 <v-btn
-                  class="aaa"
                   v-for="n in dispSelList"
                   :key="n"
                   small
                   color="secondary"
                   dark
                   outlined
-                  :width="btnwidth"
                   :disabled="isBtnDisabled"
-                  @click="sortUser(n.val)"
+                  @click="dispTotal(n.val)"
                 >
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="4" xl="3" class="mt-1 pt-0">
+            <v-col cols="4" xl="3" class="mt-1">
               <label>サービス</label>
               <wj-combo-box
-                :items-source="search"
-                :textChanged="searchChange"
-              ></wj-combo-box>
+                v-model="selSvc"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                :itemsSource="svcList"
+                :selectedIndex="0"
+                :selectedIndexChanged="onSvcIndexChanged"
+              >
+              </wj-combo-box>
             </v-col>
-            <v-col cols="5" class="mt-1 pt-0">
+            <v-col cols="5" class="mt-1">
               <label>ソート</label>
               <!-- mandatoryは初期選択 -->
-              <v-btn-toggle class="flex-wrap" mandatory>
+              <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
                 <v-btn
                   v-for="n in sortSelList"
                   :key="n"
@@ -83,7 +80,6 @@
                   color="secondary"
                   dark
                   outlined
-                  :width="btnwidth"
                   @click="sortUser(n.val)"
                 >
                   {{ n.name }}
@@ -91,9 +87,9 @@
               </v-btn-toggle>
             </v-col>
           </v-row>
-          <v-row class="mt-0"
-            ><v-col cols="*" class="pt-3 pb-1">
-              <v-btn-toggle class="flex-wrap" mandatory>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="*">
+              <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
                 <v-btn
                   small
                   outlined
@@ -111,14 +107,17 @@
           </v-row>
         </v-col>
         <v-col cols="*" style="display: flex; align-items: center">
-          <v-row justify="end">
-            <v-btn class="mr-3" style="width: 100px; height: 100px">
+          <v-row justify="end" no-gutters>
+            <v-btn
+              class="mr-3"
+              style="width: 100px; height: 100px; visibility: hidden"
+            >
               検索
             </v-btn>
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="mt-0" justify="end">
+      <v-row justify="end" no-gutters>
         <v-col>
           <wj-flex-grid
             id="seikyuGrid"
@@ -134,8 +133,8 @@
             :selectionMode="'Row'"
             :isReadOnly="true"
             :initialized="onInitializeSeikyuGrid"
-            :formatItem="onFormatItem"
-            :itemsSourceChanged="itemsSourceChanged"
+            :formatItem="onFormatItemSeikyu"
+            :itemsSourceChanged="itemsSourceChangedKaigo"
             :itemsSource="viewdata"
           >
             <wj-flex-grid-column
@@ -159,7 +158,7 @@
             :selectionMode="'Row'"
             :isReadOnly="true"
             :initialized="onInitializeKyufuGrid"
-            :formatItem="onFormatItem"
+            :formatItem="onFormatItemKyufu"
             :itemsSource="viewkyufudata"
           >
             <wj-flex-grid-column
@@ -188,11 +187,14 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
 
+const keyPage = 'keyval00001';
+const keyTotal = 'keyval00002';
+const keySort = 'keyval00003';
+const keySvc = 'keyval00004';
+const keySichoson = 'keyval00005';
+const keyAlp = 'keyval00006';
 const colCntSeikyu = 22;
 const colCntKyufu = 13;
-const strMaru = '○';
-// const bgClrInput = 'white';
-// const bgClrError = 'mistyrose';
 const fmtYen = 'n0';
 const titleNisu = '日数';
 const titleSeikyugakuSyukei = '請求額集計欄';
@@ -203,11 +205,7 @@ const titleSeikyugaku = '請求額';
 const titleSvcKind = 'サービス種別';
 const titleKyufuhiMeisai = '給付費明細欄';
 
-// const currentDate = new Date();
-let siborikomiSearch = '1';
-let siborikomiSearch2 = '1';
-let sortSearch = '1';
-let alphaSearch = '0';
+let drawListTmpCnt = 0;
 let alphabet = [
   '全',
   'ア',
@@ -228,136 +226,199 @@ export default {
   },
   data: function () {
     return {
+      dispPageType: 0,
+      dispTotalOnly: 0,
+      sortSearch: 0,
+      selSvc: 0,
+      selSichoson: 0,
+      alphaSearch: 0,
       alphabet: alphabet,
       isBtnDisabled: false,
-      errorcnt: '',
-      btnwidth: 90,
+      sichosonList: [
+        { val: 0, name: '指定なし' },
+        { val: 1, name: '東経市' },
+        { val: 2, name: '西経市' },
+      ],
+      svcList: [
+        { val: 0, name: '指定なし' },
+        { val: 32, name: '32:施設入所介護' },
+        { val: 22, name: '22:生活介護' },
+      ],
       headerList: [
         {
           dataname: 'kakutei',
           title: 'レ\nセ\n確\n定',
-          width: '1*',
+          width: 30,
+          minWidth: 30,
+          maxWidth: 30,
           align: 'center',
         },
-        { dataname: 'name', title: '氏名', width: '4*', align: 'left' },
+        {
+          dataname: 'dispname',
+          title: '氏名',
+          width: '2*',
+          minWidth: 150,
+          maxWidth: 400,
+          align: 'left',
+        },
         {
           dataname: 'futan',
           title: '利用者\n負担上\n限月額\n①',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'riyoucnt',
           title: '利用\n日数',
-          width: '1*',
+          width: 40,
+          minWidth: 40,
+          maxWidth: 40,
           align: 'right',
         },
         {
           dataname: 'nyuincnt',
           title: '入院\n日数',
-          width: '1*',
+          width: 40,
+          minWidth: 40,
+          maxWidth: 40,
           align: 'right',
         },
         {
           dataname: 'svccode',
           title: '種別',
-          width: '1*',
+          width: 40,
+          minWidth: 40,
+          maxWidth: 40,
           align: 'center',
         },
         {
           dataname: 'svcname',
           title: '名称',
-          width: '3*',
+          width: '*',
+          minWidth: 120,
+          maxWidth: 150,
           align: 'left',
         },
         {
           dataname: 'riyounissu',
           title: '利用\n日数',
-          width: '1*',
+          width: 40,
+          minWidth: 40,
+          maxWidth: 40,
           align: 'right',
         },
         {
           dataname: 'kyufutani',
           title: '給付\n単位数',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'souhiyougaku',
           title: '総\n費用額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'itiwarisoutougaku',
           title: '１割\n相当額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'riyousyafutan',
           title: '利用者\n負担額\n②',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'jyougengakuchousei',
-          title: '上限月\n額調整\n①②少な\nい数',
-          width: '2*',
+          title: '上限月額\n調整①②\n少ない数',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'jigyousyagenmen',
           title: '事業者\n減免額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'genmenriyousya',
           title: '減免後\n利用者',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'chouseiriyousya',
           title: '調整後\n利用者\n負担額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'jyougenkanrifutangaku',
           title: '上限額\n管理後\n利用者\n負担額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'ketteiriyoufutangaku',
-          title: '決定利\n用者負\n担額',
-          width: '2*',
+          title: '決定\n利用者\n負担額',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'kyufuhi',
           title: '給付費',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'jititaijyosei',
           title: '自治体\n助成分\n請求額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'kyufuhiseikyugaku',
           title: '給付費\n請求額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
         {
           dataname: 'jippisaneigaku',
           title: '実費\n算定額',
-          width: '2*',
+          width: '*',
+          minWidth: 80,
+          maxWidth: 100,
           align: 'right',
         },
       ],
@@ -371,93 +432,93 @@ export default {
         {
           dataname: 'name',
           title: '氏名',
-          width: '10*',
-          align: 'center',
+          width: '5*',
+          align: 'left',
         },
         {
-          dataname: 'code',
-          title: 'コ\n｜\nド',
+          dataname: 'dispsvc',
+          title: 'コード',
           width: '2*',
           align: 'center',
         },
         {
-          dataname: 'symd',
+          dataname: 'dsymd',
           title: '開始日',
-          width: '6*',
+          width: '3.5*',
           align: 'center',
         },
         {
-          dataname: 'eymd',
+          dataname: 'deymd',
           title: '終了日',
-          width: '6*',
+          width: '3.5*',
           align: 'center',
         },
         {
           dataname: 'riyounissuu',
           title: '利用\n日数',
-          width: '2*',
-          align: 'center',
+          width: '1.5*',
+          align: 'right',
         },
         {
           dataname: 'nyuinnissu',
           title: '入院\n日数',
-          width: '2*',
-          align: 'center',
+          width: '1.5*',
+          align: 'right',
         },
         {
           dataname: 'svcnaiyou',
           title: 'サービス内容',
           width: '10*',
-          align: 'center',
+          align: 'left',
         },
         {
           dataname: 'svccode',
           title: 'サービス\nコード',
-          width: '3*',
+          width: '2.5*',
           align: 'center',
         },
         {
           dataname: 'tani',
           title: '単位数',
-          width: '3*',
-          align: 'center',
+          width: '2*',
+          align: 'right',
         },
         {
           dataname: 'kaisu',
           title: '回数',
-          width: '3*',
-          align: 'center',
+          width: '1.5*',
+          align: 'right',
         },
         {
           dataname: 'svctani',
           title: 'サービス\n単位数',
           width: '3*',
-          align: 'center',
+          align: 'right',
         },
         {
           dataname: 'tekiyou',
           title: '摘要',
-          width: '*',
-          align: 'center',
+          width: '10*',
+          align: 'left',
         },
       ],
       pageSelList: [
-        { val: 1, name: '請求額集計欄' },
-        { val: 2, name: '給付費明細' },
+        { val: 0, name: '請求額集計欄' },
+        { val: 1, name: '給付費明細' },
       ],
       sichosonSelList: [
-        { val: 1, name: '全員' },
-        { val: 2, name: '未入力' },
-        { val: 3, name: '期限切れ' },
+        { val: 0, name: '全員' },
+        { val: 1, name: '未入力' },
+        { val: 2, name: '期限切れ' },
       ],
       dispSelList: [
-        { val: 1, name: 'サービス有' },
-        { val: 2, name: '計のみ' },
+        { val: 0, name: 'サービス有' },
+        { val: 1, name: '計のみ' },
       ],
       sortSelList: [
-        { val: 1, name: 'コード' },
-        { val: 2, name: 'カナ' },
-        { val: 3, name: '受給者番号' },
+        { val: 0, name: 'コード' },
+        { val: 1, name: 'カナ' },
+        { val: 2, name: '受給者番号' },
       ],
       tplImage: CellMaker.makeImage(),
       viewdataAll: [],
@@ -466,8 +527,28 @@ export default {
       viewkyufudata: [],
     };
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      // ビュー全体がレンダリングされた後にのみ実行されるコード
+      this.dispPageType = this.getlocalStorage(keyPage);
+      this.dispTotalOnly = this.getlocalStorage(keyTotal);
+      this.sortSearch = this.getlocalStorage(keySort);
+      this.alphaSearch = this.getlocalStorage(keyAlp);
+      this.selSvc = this.getlocalStorage(keySvc);
+      this.selSichoson = this.getlocalStorage(keySichoson);
+      this.pageChange(this.dispPageType);
+    });
+  },
   computed: {},
   methods: {
+    getlocalStorage: function (key) {
+      let tmpval = localStorage.getItem(key);
+      if (tmpval == null) {
+        return 0;
+      } else {
+        return Number(tmpval);
+      }
+    },
     onInitializeSeikyuGrid: function (flexGrid) {
       flexGrid.beginUpdate();
 
@@ -478,8 +559,8 @@ export default {
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
-      flexGrid.columnHeaders.rows[2].height = 60;
-
+      flexGrid.columnHeaders.rows[2].height = 50;
+      flexGrid.frozenColumns = 7;
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
@@ -488,6 +569,8 @@ export default {
 
         col.binding = this.headerList[colIndex].dataname;
         col.width = this.headerList[colIndex].width;
+        col.minWidth = this.headerList[colIndex].minWidth;
+        col.maxWidth = this.headerList[colIndex].maxWidth;
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
@@ -527,10 +610,6 @@ export default {
         }
       }
 
-      // 初期データ読込
-      this.viewdataAll = this.loadData(true);
-      this.viewdata = this.viewdataAll;
-
       flexGrid.endUpdate();
     },
     onInitializeKyufuGrid: function (flexGrid) {
@@ -539,7 +618,7 @@ export default {
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[1].height = 60;
+      flexGrid.columnHeaders.rows[1].height = 50;
 
       flexGrid.alternatingRowStep = 0;
 
@@ -579,31 +658,44 @@ export default {
         }
       }
 
-      // 初期データ読込
-      this.viewkyufudataAll = this.loadData(false);
-      this.viewkyufudata = this.viewkyufudataAll;
-
       flexGrid.endUpdate();
     },
-    onFormatItem(flexGrid, e) {
-      if (e.panel == flexGrid.columnHeaders) {
-        if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
-          // css に scopedをつけると以下のように個別に設定が必要
-          // e.cell.style.textAlign = 'center';
-          // ヘッダのみ小さくする
-          // e.cell.style.fontSize = '12px';
-          // e.cell.style.justifyContent = 'center';
+    setImage: function (e, isIns) {
+      if (isIns) {
+        e.panel.setCellData(e.row, e.col, require('@/assets/kaku_15px.png'));
+      } else {
+        e.panel.setCellData(e.row, e.col, '');
+      }
+    },
+    setName: function (e, name, no, code) {
+      if (!name) {
+        if (this.sortSearch == 2) {
+          e.panel.setCellData(e.row, e.col, '(' + no + ')');
+        } else {
+          e.panel.setCellData(e.row, e.col, '(' + code + ')');
         }
-      } else if (e.panel == flexGrid.columnFooters) {
+      } else {
+        if (this.sortSearch == 2) {
+          e.panel.setCellData(e.row, e.col, name + '\n' + '(' + no + ')');
+        } else {
+          e.panel.setCellData(e.row, e.col, name + '\n' + '(' + code + ')');
+        }
+      }
+    },
+    onFormatItemSeikyu(flexGrid, e) {
+      if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.textAlign = '';
         e.cell.style.fontWeight = 'normal';
         e.cell.style.backgroundColor = '#CEFCFC';
         e.cell.style.borderTop = '1px solid';
         if (e.col < 6) {
           e.cell.style.borderRight = 0;
         } else if (e.col == 6) {
-          e.cell.style.textAlign = 'right';
           e.cell.style.fontWeight = 'bold';
         }
+        e.cell.style.textAlign = 'right';
+        e.cell.style.justifyContent = 'right';
+        e.cell.style.alignItems = 'right';
       } else {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (tmpitem != null) {
@@ -615,71 +707,148 @@ export default {
           e.cell.style.textAlign = '';
           e.cell.style.fontWeight = '';
 
-          if (flexGrid.hostElement.id == 'seikyuGrid') {
-            // 下の行と同じ利用者の場合は下線を非表示化
-            if (e.col <= 4 && !tmpitem.istotalrow) {
-              e.cell.style.borderBottom = 0;
-            } else if (tmpitem.istotalrow) {
-              e.cell.style.borderBottom = '1px solid ';
-              if (e.col == 5) {
-                e.cell.style.borderRight = 0;
-              } else if (e.col == 6) {
-                e.cell.style.textAlign = 'right';
-                e.cell.style.fontWeight = 'bold';
+          // 下の行と同じ利用者の場合は下線を非表示化
+          if (e.col <= 4 && !tmpitem.istotalrow) {
+            e.cell.style.borderBottom = 0;
+          } else if (tmpitem.istotalrow) {
+            e.cell.style.borderBottom = '1px solid ';
+            if (e.col == 5) {
+              e.cell.style.borderRight = 0;
+            } else if (e.col == 6) {
+              e.cell.style.textAlign = 'right';
+              e.cell.style.fontWeight = 'bold';
+            }
+            if (e.col >= 5) {
+              console.log(1);
+              e.cell.style.backgroundColor = '#FFFFCC';
+            }
+          }
+          if (e.panel == flexGrid.cells) {
+            let pretmpitem = null;
+            if (e.row > 0) {
+              pretmpitem = e.panel.rows[e.row - 1].dataItem;
+            }
+            if (e.col == 0) {
+              e.panel.setCellData(e.row, e.col, '');
+              if (tmpitem.kakuteiflg) {
+                if (this.dispTotalOnly == 0) {
+                  if (
+                    pretmpitem == null ||
+                    (pretmpitem != null && pretmpitem.nobk != tmpitem.nobk)
+                  ) {
+                    this.setImage(e, true);
+                  }
+                } else {
+                  if (tmpitem.istotalrow) {
+                    this.setImage(e, true);
+                  }
+                }
               }
-              if (e.col >= 5) {
-                e.cell.style.backgroundColor = '#FFFFCC';
+            } else if (e.col == 1) {
+              if (this.dispTotalOnly == 0) {
+                if (
+                  pretmpitem == null ||
+                  (pretmpitem != null && pretmpitem.nobk != tmpitem.nobk)
+                ) {
+                  drawListTmpCnt = 1;
+                  e.panel.setCellData(e.row, e.col, tmpitem.name);
+                } else {
+                  drawListTmpCnt = drawListTmpCnt + 1;
+                  if (drawListTmpCnt == 2) {
+                    this.setName(e, '', tmpitem.no, tmpitem.code);
+                  } else {
+                    e.panel.setCellData(e.row, e.col, '');
+                  }
+                }
+              } else {
+                this.setName(e, tmpitem.name, tmpitem.no, tmpitem.code);
+                e.panel.rows[e.row].height = 40;
               }
             }
-            // if (e.row > 2 && e.row < flexGrid.rows.length - 2 && e.col <= 4) {
-            //   let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
-            //   if (tmpNextitem != null && !tmpNextitem.istotalrow) {
-            //     e.cell.style.borderBottom = 0;
-            //   }
-            // }
-          } else if (flexGrid.hostElement.id == 'kyufuGrid') {
-            // b
           }
-
-          // if (e.col == flexGrid.columns.length - 1) {
-          //   e.cell.style.backgroundColor = bgClrInput;
-          // } else if (
-          //   (e.col == 3 && !tmpitem.koufuymd) ||
-          //   (e.col == 4 && !tmpitem.engo) ||
-          //   (e.col == 5 && !tmpitem.jitibangou) ||
-          //   (e.col == 6 && !tmpitem.jyukyukbn) ||
-          //   (e.col == 7 && !tmpitem.jyukyuname) ||
-          //   (e.col == 8 && !tmpitem.syougaisyu) ||
-          //   (e.col == 9 && !tmpitem.syougaisienkbn) ||
-          //   (e.col == 10 && !tmpitem.futanjyougen) ||
-          //   (e.col == 11 && !tmpitem.jyougenkanri) ||
-          //   (e.col == 12 && !tmpitem.syokujiteikyo) ||
-          //   (e.col == 13 && !tmpitem.tokubetukyufu)
-          // ) {
-          //   e.cell.style.backgroundColor = bgClrError;
-          // }
-
-          // // 仮想マージ
-
-          // // 上の行と同じ利用者の場合は空で表示する
-          // if (e.row >= 3 && 0 < e.col && e.col <= 2) {
-          //   let tmpPreitem = e.panel.rows[e.row - 1].dataItem;
-          //   if (tmpPreitem != null && tmpitem.id == tmpPreitem.id) {
-          //     e.panel.setCellData(e.row, e.col, '');
-          //   } else {
-          //     if (e.col == 1) {
-          //       e.panel.setCellData(e.row, e.col, tmpitem.nobk, true);
-          //     } else if (e.col == 2) {
-          //       e.panel.setCellData(e.row, e.col, tmpitem.name);
-          //     }
-          //   }
-          // }
 
           flexGrid.endUpdate();
         }
       }
     },
-    itemsSourceChanged: function (flexGrid) {
+    onFormatItemKyufu(flexGrid, e) {
+      if (e.panel == flexGrid.cells) {
+        let tmpitem = e.panel.rows[e.row].dataItem;
+        if (tmpitem != null) {
+          flexGrid.beginUpdate();
+          // いったんクリアしないと色が残る
+          e.cell.style.backgroundColor = '';
+          e.cell.style.borderBottom = '';
+          e.cell.style.borderRight = '';
+          e.cell.style.textAlign = '';
+
+          let tmpPreitem = null;
+          if (e.col <= 6) {
+            if (e.row > 0) {
+              tmpPreitem = e.panel.rows[e.row - 1].dataItem;
+            }
+            if (
+              e.col == 0 &&
+              (tmpPreitem == null || tmpitem.no != tmpPreitem.no)
+            ) {
+              this.setImage(e, true);
+            } else if (tmpPreitem != null && tmpitem.no == tmpPreitem.no) {
+              if (e.col > 1) {
+                if (tmpitem.svc == tmpPreitem.svc) {
+                  e.panel.setCellData(e.row, e.col, '', false);
+                }
+              } else {
+                e.panel.setCellData(e.row, e.col, '');
+              }
+            }
+          }
+
+          // 下の行と同じ利用者の場合は下線を非表示化
+          let tmpNextitem = null;
+          if (e.row < flexGrid.rows.length - 1 && e.col <= 6) {
+            tmpNextitem = e.panel.rows[e.row + 1].dataItem;
+            if (tmpNextitem != null && tmpitem.no == tmpNextitem.no) {
+              if (e.col > 1) {
+                if (tmpitem.svc == tmpNextitem.svc) {
+                  e.cell.style.borderBottom = 0;
+                }
+              } else {
+                e.cell.style.borderBottom = 0;
+              }
+            }
+          }
+          if (e.col == 1) {
+            let tmpPrePreitem = null;
+            if (e.row > 1) {
+              tmpPrePreitem = e.panel.rows[e.row - 2].dataItem;
+            } else {
+              tmpPrePreitem = { no: -1 };
+            }
+            if (tmpPreitem == null) {
+              tmpPreitem = { no: 0 };
+            }
+            if (tmpNextitem == null) {
+              tmpNextitem = { no: -2 };
+            }
+            if (tmpPreitem.no != tmpitem.no && tmpitem.no != tmpNextitem.no) {
+              this.setName(e, tmpitem.name, tmpitem.no, tmpitem.code);
+              e.panel.rows[e.row].height = 40;
+            }
+            if (
+              tmpPrePreitem.no != tmpPreitem.no &&
+              tmpPreitem.no == tmpitem.no
+            ) {
+              this.setName(e, '', tmpitem.no, tmpitem.code);
+            }
+            if (tmpPreitem.no != tmpitem.no && tmpitem.no == tmpNextitem.no) {
+              e.panel.setCellData(e.row, e.col, tmpitem.name);
+            }
+          }
+          flexGrid.endUpdate();
+        }
+      }
+    },
+    itemsSourceChangedKaigo: function (flexGrid) {
       let total = 0;
       if (flexGrid.hostElement.id == 'seikyuGrid') {
         for (let colIndex = 6; colIndex < colCntSeikyu; colIndex++) {
@@ -751,18 +920,23 @@ export default {
     },
     loadData: function (isSeikyu) {
       let tmpviewdata = [];
-      let userCount = 102;
+      let userCount = 101;
       if (isSeikyu) {
         let cnt = 0;
         for (let i = 0; i < userCount; i++) {
-          let codeval = String(
+          let codeval = String(i).padStart(7, '0');
+          let noval = String(
             Math.floor(Math.random() * 10000000000) + 1
           ).padStart(10, '0');
           tmpviewdata.push({
             id: i,
+            kakuteiflg: true,
             kakutei: '',
+            no: noval,
+            nobk: noval,
             kana: 'トウケイタロウ' + i,
             code: codeval,
+            dispname: '東経太郎' + i,
             name: '東経太郎' + i,
             futan: Number(Math.floor(Math.random() * 100) + '0000') + 100,
             riyoucnt: '00',
@@ -793,12 +967,14 @@ export default {
           }
 
           if (tmpviewdata[i].usersortorder == 0) {
-            tmpviewdata[i].kakutei = require('@/assets/kaku_15px.png');
+            tmpviewdata[i].kakuteiflg = true;
           } else if (tmpviewdata[i].usersortorder == 2) {
-            tmpviewdata[i].name = '';
+            tmpviewdata[i].name = tmpviewdata[i - 1].name;
             tmpviewdata[i].id = tmpviewdata[i - 1].id;
             tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
             tmpviewdata[i].code = tmpviewdata[i - 1].code;
+            tmpviewdata[i].no = tmpviewdata[i - 1].no;
+            tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
             tmpviewdata[i].futan = '';
             tmpviewdata[i].riyoucnt = '';
             tmpviewdata[i].nyuincnt = '';
@@ -850,10 +1026,12 @@ export default {
               tmpviewdata[i - 1].jippisaneigaku;
             tmpviewdata[i].usersortorder = 2;
           } else if (tmpviewdata[i].usersortorder == 1) {
-            tmpviewdata[i].name = '(' + tmpviewdata[i - 1].code + ')';
+            tmpviewdata[i].name = tmpviewdata[i - 1].name;
             tmpviewdata[i].id = tmpviewdata[i - 1].id;
             tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
             tmpviewdata[i].code = tmpviewdata[i - 1].code;
+            tmpviewdata[i].no = tmpviewdata[i - 1].no;
+            tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
             tmpviewdata[i].futan = '';
             tmpviewdata[i].riyoucnt = '';
             tmpviewdata[i].nyuincnt = '';
@@ -863,87 +1041,50 @@ export default {
           }
         }
       } else {
+        let n = '';
+        let k = '';
+        let s = '';
+        let noval = 0;
+        let codeval = 0;
         for (let i = 0; i < userCount; i++) {
+          var result1 = Number(String(i).substr(-1));
+          if (result1 == 0) {
+            n = '東経太郎' + i;
+            k = 'トウケイタロウ' + i;
+            noval = String(
+              Math.floor(Math.random() * 10000000000) + 1
+            ).padStart(10, '0');
+            codeval = String(i).padStart(7, '0');
+          }
+          if (result1 < 5) {
+            s = '32';
+          } else {
+            s = '22';
+          }
+
           tmpviewdata.push({
             id: i,
+            kakuteiflg: true,
             kakutei: '',
-            name: '東経太郎' + i,
-            kana: 'トウケイタロウ' + i,
-            code: String(Math.floor(Math.random() * 10000000) + 1).padStart(
-              7,
-              '0'
-            ),
+            name: n,
+            kana: k,
+            code: codeval,
+            dispsvc: s,
+            svc: s,
             symd: new Date('2015', Number('04') - 1, '26'),
             eymd: new Date('2020', Number('04') - 1, '26'),
+            dsymd: new Date('2015', Number('04') - 1, '26'),
+            deymd: new Date('2020', Number('04') - 1, '26'),
             riyounissuu: '00',
             nyuinnissu: '00',
-            svcnaiyou: 'サービス内容' + Math.floor(Math.random() * 10) + 1,
-
-            err: '',
-            no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-              10,
-              '0'
-            ),
-            nobk: 0,
-
-            koufuymd: new Date('2015', Number('04') - 1, '26'),
-            engo: '第一東経市',
-            jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
-            jyukyukbn: '1',
-            jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
-            syougaisyu: '2',
-            syougaisienkbn: '3',
-            futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
-            jyougenkanri:
-              '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
-            syokujiteikyo: '4',
-            tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000') + 100,
-            syusei: '',
-            nyushoymd: '',
-            taisyoymd: '',
-            isnyusho: false,
-            istaisyo: false,
+            svcnaiyou: 'サービス内容ああああああああああああああ' + i,
+            no: noval,
+            svccode: s + String(i).padStart(4, '0'),
+            tani: Number(Math.floor(Math.random() * 10000)),
+            kaisu: '00',
+            svctani: Number(Math.floor(Math.random() * 20000)),
+            tekiyou: '摘要内容○○○○○○○○○○○○○○○○',
           });
-          tmpviewdata[i].nobk = tmpviewdata[i].no;
-          if (i % 2 == 1) {
-            tmpviewdata[i].err = '';
-            tmpviewdata[i].syusei = '';
-          } else {
-            if (i == 4) {
-              tmpviewdata[i].id = tmpviewdata[i - 1].id;
-              tmpviewdata[i].no = tmpviewdata[i - 1].no;
-              tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
-              tmpviewdata[i].name = tmpviewdata[i - 1].name;
-              tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
-              tmpviewdata[i].koufuymd = new Date(
-                '2020',
-                Number('04') - 1,
-                '27'
-              );
-            }
-            if (i % 3 == 0) {
-              tmpviewdata[i].err = require('@/assets/error_20px.png');
-              tmpviewdata[i].koufuymd = '';
-              tmpviewdata[i].engo = '';
-              tmpviewdata[i].jitibangou = '';
-              tmpviewdata[i].jyukyukbn = '';
-              tmpviewdata[i].jyukyuname = '';
-              tmpviewdata[i].syougaisyu = '';
-              tmpviewdata[i].syougaisienkbn = '';
-              tmpviewdata[i].futanjyougen = '';
-              tmpviewdata[i].jyougenkanri = '';
-              tmpviewdata[i].syokujiteikyo = '';
-              tmpviewdata[i].tokubetukyufu = '';
-              tmpviewdata[i].syusei = strMaru;
-            } else {
-              if (i == 10) {
-                tmpviewdata[i].isnyusho = 'true';
-              }
-              if (i == 14) {
-                tmpviewdata[i].istaisyo = 'true';
-              }
-            }
-          }
         }
       }
       // ★Date型はmonthが0-11で表現されることに注意
@@ -951,38 +1092,59 @@ export default {
       return tmpviewdata;
     },
     pageChange: function (pageType) {
-      this.pageType = pageType;
-      if (pageType == '1') {
+      localStorage.setItem(keyPage, pageType);
+      this.dispPageType = pageType;
+      if (this.dispPageType == 0) {
         document.getElementById('seikyuGrid').style.display = 'block';
         document.getElementById('kyufuGrid').style.display = 'none';
         this.isBtnDisabled = false;
+        this.viewdataAll = this.loadData(true);
       } else {
         document.getElementById('seikyuGrid').style.display = 'none';
         document.getElementById('kyufuGrid').style.display = 'block';
         this.isBtnDisabled = true;
+        this.viewkyufudataAll = this.loadData(false);
       }
-    },
-    siborikomiUser: function (siborikomiType) {
-      siborikomiSearch = siborikomiType;
       this.userFilter();
     },
-    siborikomiUser2: function (siborikomiType) {
-      siborikomiSearch2 = siborikomiType;
+    dispTotal: function (dispType) {
+      localStorage.setItem(keyTotal, dispType);
+      this.dispTotalOnly = dispType;
       this.userFilter();
     },
     sortUser: function (sortType) {
-      sortSearch = sortType;
+      localStorage.setItem(keySort, sortType);
+      this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      alphaSearch = key;
+      localStorage.setItem(keyAlp, key);
+      this.alphaSearch = key;
+      this.userFilter();
+    },
+    onSvcIndexChanged: function (s) {
+      localStorage.setItem(keySvc, s.selectedValue);
+      this.selSvc = s.selectedValue;
+      this.userFilter();
+    },
+    onSichosonIndexChanged: function (s) {
+      localStorage.setItem(keySichoson, s.selectedValue);
+      this.selSichoson = s.selectedValue;
       this.userFilter();
     },
     userFilter() {
+      if (this.dispPageType == 0) {
+        this.userFilterSeikyu();
+      } else {
+        this.userFilterKyufu();
+      }
+    },
+    userFilterSeikyu() {
       let tmpviewdata = [];
-      if (alphaSearch > 0) {
+
+      if (this.alphaSearch > 0) {
         this.viewdataAll.forEach(function (value) {
-          switch (alphaSearch) {
+          switch (this.alphaSearch) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
               break;
@@ -1018,79 +1180,153 @@ export default {
       } else {
         tmpviewdata = this.viewdataAll.concat();
       }
-      // 絞込１
-      if (siborikomiSearch == 2) {
-        // 今月入所
-        tmpviewdata = tmpviewdata.filter((x) => x.isnyusho);
-      } else if (siborikomiSearch == 3) {
-        // 今月退所
-        tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
+      // 市町村
+      if (this.selSichoson != '0') {
+        //
       }
-      // 絞込２
-      if (siborikomiSearch2 == 2) {
-        // !x.koufuymdで空orNullを判定する
+      // サービス絞込
+      if (this.selSvc != 0) {
         tmpviewdata = tmpviewdata.filter(
-          (x) =>
-            !x.koufuymd ||
-            !x.engo ||
-            !x.jitibangou ||
-            !x.jyukyukbn ||
-            !x.jyukyuname ||
-            !x.syougaisyu ||
-            !x.syougaisienkbn ||
-            !x.futanjyougen ||
-            !x.jyougenkanri ||
-            !x.syokujiteikyo ||
-            !x.tokubetukyufu
+          (x) => x.istotalrow || x.svccode == this.selSvc
         );
-      } else if (siborikomiSearch2 == 3) {
-        tmpviewdata = tmpviewdata.concat();
+      }
+
+      // 請求額集計のみ
+      if (this.dispPageType == 0) {
+        if (this.dispTotalOnly == 1) {
+          tmpviewdata = tmpviewdata.filter((x) => x.istotalrow);
+        }
       }
 
       //コード順でソート
-      if (sortSearch == 1) {
+      if (this.sortSearch == 0) {
         tmpviewdata.sort((a, b) => {
-          if (a.id < b.id) return -1;
-          if (a.id > b.id) return 1;
-          // 二次キーは交付日
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.code < b.code) return -1;
+          if (a.code > b.code) return 1;
+          // 二次キーは各利用者のソートコード
+          if (a.usersortorder !== b.usersortorder) {
+            return a.usersortorder - b.usersortorder;
           }
         });
       }
       //利用者名でソート
-      if (sortSearch == 2) {
+      if (this.sortSearch == 1) {
         tmpviewdata.sort((a, b) => {
           if (a.kana < b.kana) return -1;
           if (a.kana > b.kana) return 1;
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.usersortorder !== b.usersortorder) {
+            return a.usersortorder - b.usersortorder;
           }
         });
       }
       //受給者番号でソート
-      if (sortSearch == 3) {
+      if (this.sortSearch == 2) {
         tmpviewdata.sort((a, b) => {
-          if (a.nobk < b.nobk) return -1;
-          if (a.nobk > b.nobk) return 1;
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.no < b.no) return -1;
+          if (a.no > b.no) return 1;
+          if (a.usersortorder !== b.usersortorder) {
+            return a.usersortorder - b.usersortorder;
           }
         });
       }
+
       this.viewdata = tmpviewdata;
+    },
+    userFilterKyufu() {
+      let tmpviewdata = [];
+      if (this.alphaSearch > 0) {
+        this.viewkyufudataAll.forEach(function (value) {
+          switch (this.alphaSearch) {
+            case 1:
+              if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
+              break;
+            case 2:
+              if (value.kana.match(/^[カ-コ]/)) tmpviewdata.push(value);
+              break;
+            case 3:
+              if (value.kana.match(/^[サ-ソ]/)) tmpviewdata.push(value);
+              break;
+            case 4:
+              if (value.kana.match(/^[タ-ト]/)) tmpviewdata.push(value);
+              break;
+            case 5:
+              if (value.kana.match(/^[ナ-ノ]/)) tmpviewdata.push(value);
+              break;
+            case 6:
+              if (value.kana.match(/^[ハ-ホ]/)) tmpviewdata.push(value);
+              break;
+            case 7:
+              if (value.kana.match(/^[マ-モ]/)) tmpviewdata.push(value);
+              break;
+            case 8:
+              if (value.kana.match(/^[ヤ-ヨ]/)) tmpviewdata.push(value);
+              break;
+            case 9:
+              if (value.kana.match(/^[ラ-ロ]/)) tmpviewdata.push(value);
+              break;
+            case 10:
+              if (value.kana.match(/^[ワ-ン]/)) tmpviewdata.push(value);
+              break;
+          }
+        });
+      } else {
+        tmpviewdata = this.viewkyufudataAll.concat();
+      }
+      // 市町村
+      if (this.selSichoson != '0') {
+        //
+      }
+
+      // サービス絞込
+      if (this.selSvc != 0) {
+        tmpviewdata = tmpviewdata.filter((x) => x.svc == this.selSvc);
+      }
+
+      //コード順でソート
+      if (this.sortSearch == 0) {
+        tmpviewdata.sort((a, b) => {
+          if (a.code < b.code) return -1;
+          if (a.code > b.code) return 1;
+          // 二次キーは各利用者のサービスコード
+          if (a.svccode !== b.svccode) {
+            return a.svccode - b.svccode;
+          }
+        });
+      }
+      //利用者名でソート
+      if (this.sortSearch == 1) {
+        tmpviewdata.sort((a, b) => {
+          if (a.kana < b.kana) return -1;
+          if (a.kana > b.kana) return 1;
+          if (a.svccode !== b.svccode) {
+            return a.svccode - b.svccode;
+          }
+        });
+      }
+      //受給者番号でソート
+      if (this.sortSearch == 2) {
+        tmpviewdata.sort((a, b) => {
+          if (a.no < b.no) return -1;
+          if (a.no > b.no) return 1;
+          if (a.svccode !== b.svccode) {
+            return a.svccode - b.svccode;
+          }
+        });
+      }
+      this.viewkyufudata = tmpviewdata;
     },
   },
 };
 </script>
 
 <style  lang="scss">
+@import '@/assets/scss/common.scss';
 div#KyuhuMeisaiIcrn {
-  color: #333333;
+  color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1366px;
+  min-width: 1260px;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -1135,36 +1371,25 @@ div#KyuhuMeisaiIcrn {
       }
     }
   }
-  div.border-bottom {
-    border-bottom: 1px solid red;
-    label {
-      font-size: 0.85em;
-    }
-  }
 
   #seikyuGrid,
   #kyufuGrid {
-    color: #333333;
-    font-size: 12px;
+    color: $font_color;
+    font-size: $cell_fontsize;
     width: 100%;
-    height: 65vh;
+    height: 60vh;
     // max-height: 1080px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
-      color: #333333;
-      font-size: 12px;
+      color: $font_color;
+      font-size: $cell_fontsize;
+      // 下の4つはセット
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
     }
-    .wj-colfooter {
-      // ヘッダのみ縦横中央寄せ
-      color: #333333;
-      font-size: 12px;
-      background: #fffeed;
-      text-align: right;
-    }
+
     .wj-cell-maker {
       width: 15px;
       height: 15px;
@@ -1193,6 +1418,14 @@ div#KyuhuMeisaiIcrn {
     width: auto;
     background: lightyellow;
     display: none; // 初期は非表示
+  }
+
+  .v-btn {
+    width: 90px;
+  }
+  .wj-combobox .wj-input-group input.wj-form-control {
+    width: 200px;
+    flex-grow: 1;
   }
 }
 </style>

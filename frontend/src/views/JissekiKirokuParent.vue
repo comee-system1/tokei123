@@ -2,7 +2,8 @@
 <div>
   <ServiceSelection
     @parent-calendar="parentCalendar($event, dateArgument)"
-    @parent-search="parentSearch($event, searchArgument)"
+    @parent-service-select="parentSearch($event, searchArgument)"
+    :seikyuflag="true"
   >
   </ServiceSelection>
   <v-container class="jissekikiroku" fluid>
@@ -11,13 +12,13 @@
         <UserList></UserList>
       </v-flex>
       <v-flex md10>
-        <SeikatsuKaigo v-if="searchArgument=='22:生活介護'"></SeikatsuKaigo>
-        <Tanki v-else-if="searchArgument=='24:短期入所'"></Tanki>
-        <ShisetsuNyusho v-else-if="searchArgument=='32:施設入所支援'"></ShisetsuNyusho>
-        <KinoKunren v-else-if="searchArgument=='41:自立訓練(機能訓練)'"></KinoKunren>
-        <SeikatsuKunren v-else-if="searchArgument=='42:自立訓練(生活訓練)'"></SeikatsuKunren>
-        <ShuroIko v-else-if="searchArgument=='43:就労移行支援'"></ShuroIko>
-        <ShurokeizokuA v-else-if="searchArgument=='45:就労継続支援A型'"></ShurokeizokuA>
+        <SeikatsuKaigo v-if="searchArgument=='22 生活介護'"></SeikatsuKaigo>
+        <Tanki v-else-if="searchArgument=='24 短期入所'"></Tanki>
+        <ShisetsuNyusho v-else-if="searchArgument=='32 施設入所支援'"></ShisetsuNyusho>
+        <KinoKunren v-else-if="searchArgument=='41 自立訓練(機能訓練)'"></KinoKunren>
+        <SeikatsuKunren v-else-if="searchArgument=='42 自立訓練(生活訓練)'"></SeikatsuKunren>
+        <ShuroIko v-else-if="searchArgument=='43 就労移行支援'"></ShuroIko>
+        <ShurokeizokuA v-else-if="searchArgument=='45 就労継続支援A型'"></ShurokeizokuA>
       </v-flex>
     </v-layout>
   </v-container>
@@ -68,7 +69,8 @@ export default{
       this.createInfo();
     },
     parentSearch(searchArgument) {
-      this.searchArgument = searchArgument;
+      console.log(searchArgument.teikyoService)
+      this.searchArgument = searchArgument.teikyoService;
     },
   }
 }
@@ -81,7 +83,7 @@ export default{
 /* グリッドのスタイル */
 #detailGrid {
   margin-top:10px;
-  font-size:14px;
+  font-size:12px;
   height: 65vh;
 }
 
@@ -97,7 +99,7 @@ export default{
 } */
 
 #subGrid {
-  font-size:14px;
+  font-size:12px;
 }
 
 /* 一旦グリッドの枠線を表示しない */

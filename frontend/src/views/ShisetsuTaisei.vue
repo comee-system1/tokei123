@@ -451,7 +451,7 @@ function cellEdit(s, e) {
 #shisetsu {
   font-size: 14px;
   font-family: 'メイリオ';
-  width: 1366px !important;
+  min-width: 1366px !important;
 
   .shisetsu-container {
     padding: 4px;

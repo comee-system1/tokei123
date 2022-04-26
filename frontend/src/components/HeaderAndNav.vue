@@ -135,7 +135,7 @@ export default {
           lists: [
             { name: '施設体制確認', link: '/ShisetsuTaisei' },
             { name: '利用者受給者証一覧', link: '/JyukyuIcrn' },
-            { name: '個別利用状況登録', link: '/TemporaryHistory' },
+            { name: '個別利用状況登録', link: '/KobetsuRiyouTouroku' },
             { name: '利用状況一覧', link: '/TemporaryPage' },
             { name: '個別加算一覧', link: '/TemporaryPage' },
             { name: 'レセプト集計', link: '/TemporaryPage' },

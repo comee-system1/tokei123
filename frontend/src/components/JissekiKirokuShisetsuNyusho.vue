@@ -3,40 +3,30 @@
     <v-row>
       <v-col cols="7" class="user-info">
         <v-row>
-          <v-col cols="6">
-            <div class="border-bottom">
-              <label>利用者</label>
-              <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
-            </div>
-            <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
-            <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
-          </v-col>
-          <v-col cols="6">
-            <div class="border-bottom">
-              <label>受給者証番号</label>
-              <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
-            </div>
-          </v-col>
+          <div class="riyousya-block">
+            <label>利用者</label>
+            <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
+          </div>
+          <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
+          <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
+          <div class="jukyusyasho-block">
+            <label>受給者証番号</label>
+            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+          </div>
         </v-row>
         <v-row>
-          <v-col cols="4">
-            <div class="border-bottom">
-              <label>補足給付摘要の有無</label>
-              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="husokukyuhu-box"></wj-combo-box>
-            </div>
-          </v-col>
-          <v-col cols="4">
-            <div class="border-bottom">
-              <label>補足給付額（日額）</label>
-              <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="husokukyuhu-box"></wj-combo-box>
-            </div>
-          </v-col>
-          <v-col cols="4">
-            <v-btn-toggle mandatory>
-              <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-              <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-            </v-btn-toggle>
-          </v-col>
+          <div class="hosokuumu-block">
+            <label>補足給付摘要の有無</label>
+            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="hosokukyuhu-box"></wj-combo-box>
+          </div>
+          <div class="hosokugaku-block">
+            <label>補足給付額（日額）</label>
+            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="hosokukyuhu-box"></wj-combo-box>
+          </div>
+          <v-btn-toggle mandatory class="denbun-toggle">
+            <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
+            <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
+          </v-btn-toggle>
         </v-row>
       </v-col>
       <v-col cols="5" class="jippisanteigaku">
@@ -131,17 +121,11 @@ export default{
       month:month,
       lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
-      comboData:[
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
-      ],
       detailGridData:this.getGridData(apiResult),
       tkkfhiumuData:apiResult['riyo_inf'][0]['tkkfhiumu'],
       tkkfhiData:apiResult['riyo_inf'][0]['tkkfhi'],
-      subGridData:this.getSubGridData(),
-      jippisanteigakuGridData:this.getjippisanteigakuGridData(),
+      subGridData:this.getSubGridData(apiResult),
+      jippisanteigakuGridData:this.getjippisanteigakuGridData(apiResult),
       modal:false
     }
   },
@@ -253,7 +237,7 @@ export default{
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          //＊一旦編集不可のセルをアイボリーにする↓
+          //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
           // 一旦文字色を黒に戻す
           s.color = "#000";
@@ -343,7 +327,6 @@ export default{
 
       flexGrid.cells.rows[0].height = 20;
       flexGrid.cells.rows[1].height = 20;
-      // flexGrid.columnHeaders.rows[1].height = 20;
 
        // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell){
@@ -394,9 +377,8 @@ export default{
       }
       return gridData;
     },
-    getSubGridData:function(){
+    getSubGridData:function(data){
       // サブグリッド表示用データの作成
-      let data = JSON.parse(getOriginalDetailData());
       let riyouKaishibi = data['riyo_inf'][0]['staymd'];
       let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
       let taishoDate = data['riyo_inf'][0]['taiymd'];
@@ -424,8 +406,7 @@ export default{
       )
       return subGridData;
     },
-    getjippisanteigakuGridData:function(){
-      let data = JSON.parse(getOriginalDetailData());
+    getjippisanteigakuGridData:function(data){
       let sTankaAsa = data['riyo_inf'][0]['tnka_syk_a']+"円/日";
       let sTankaHiru = data['riyo_inf'][0]['tnka_syk_h']+"円/日";
       let sTankaYoru = data['riyo_inf'][0]['tnka_syk_y']+"円/日";
@@ -496,44 +477,64 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin:0;
 }
 
-.border-bottom {
-  border-bottom: 1px solid #ccc;
-}
-
-.border-bottom label {
-  font-size: 0.85em;
-}
-
 .user-info{
   font-size:14px;
+  padding:0;
 }
 
   .user-info label{
     font-size:14px;
+    font-weight:bold;
     margin-right:10px;
   }
+
+.riyousya-block,.jukyusyasho-block,.hosokuumu-block,.hosokugaku-block{
+  border-bottom:1px solid #ccc;
+  float:left;
+}
+
+.riyousya-block{
+  width:227px;
+}
+
+.jukyusyasho-block{
+  margin-left:20px;
+  width:269px;
+}
+
+.hosokuumu-block{
+  width:216px;
+}
+
+.hosokugaku-block{
+  width:216px;
+  margin-left:10px;
+}
 
 .v-input--selection-controls{
   padding:0;
   margin:0;
 }
 
-.border-bottom{
-  border-bottom:1px solid #ccc;
-  float:left;
-}
-
 .user-box{
   border:none;
 }
 
-.husokukyuhu-box {
+.hosokukyuhu-box {
   width:60px;
   margin-right:20px;
   border:none;
 }
 
+.denbun-toggle{
+  margin-left:20px;
+}
+
 #jippisanteigakuGrid {
   font-size:12px;
+}
+
+#detailGrid {
+  margin-top:5px;
 }
 </style>

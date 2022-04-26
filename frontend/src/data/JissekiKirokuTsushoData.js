@@ -13,6 +13,9 @@ export function getOriginalDetailData() {
       ttymd:"20210424",
 			tnymd:"20210424",
       ksnruikei:3,
+			gokei_tusho:20,
+			gokei_homon1:0,
+			gokei_homon2:10,
 			kiroku_mei:[]
 		}
 	)
@@ -22,7 +25,7 @@ export function getOriginalDetailData() {
 			{
 				rymd:`202204${( '00' + i ).slice( -2 )}`,
 				jyokyo: i % 10 == 0 ? "欠席":"",
-				keitai: 1,
+				keitai: i % 3 == 0 ? 2:1,
 				jstime:i % 10 == 0 ? "":"09:00",
 				jetime:i % 10 == 0 ? "":"16:00",
 				gei: i % 7 == 0 ? 1:0,

@@ -1,23 +1,32 @@
 <template>
   <div>
-    <div class="user-info">
-      <div>
-        <label for="theCombo">利用者</label>
-        <wj-combo-box :isReadOnly="true" text="1000007_東経太郎"></wj-combo-box>
-        <v-icon>mdi-arrow-left-bold-box-outline</v-icon>
-        <v-icon>mdi-arrow-right-bold-box-outline</v-icon>
-        <label for="theCombo">受給者証番号</label>
-        <wj-combo-box :isReadOnly="true" text="00000700"></wj-combo-box>
-      </div>
-      <div>
-        <label for="theCombo">契約支給量</label>
-        <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box"></wj-combo-box>
-        <v-btn-toggle class="mt-2" mandatory>
-          <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-          <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-        </v-btn-toggle>
-      </div>
-    </div>
+    <v-row>
+      <v-col cols="12" class="user-info">
+        <v-row>
+          <div class="riyousya-block">
+            <label>利用者</label>
+            <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
+          </div>
+          <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
+          <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
+
+          <div class="jukyusyasho-block">
+            <label>受給者証番号</label>
+            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+          </div>
+        </v-row>
+        <v-row>
+          <div class="keiyakuryo-block">
+            <label>契約支給量</label>
+            <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box user-box"></wj-combo-box>
+          </div>
+          <v-btn-toggle mandatory class="denbun-toggle">
+            <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
+            <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
+          </v-btn-toggle>
+        </v-row>
+      </v-col>
+    </v-row>
 
     <wj-flex-grid
       id="detailGrid"
@@ -89,28 +98,22 @@ export default{
       month:month,
       lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
-      comboData:[
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
-      ],
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      subGridData:this.getSubGridData(),
+      subGridData:this.getSubGridData(apiResult),
       modal:false,
     }
   },
   methods: {
-    onInitializeDetailGrid: function(grid) {
+    onInitializeDetailGrid: function(flexGrid) {
       // グリッドの選択を無効にする
-      grid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       // 0行目のヘッダーを作成///////////////////////////////////////////////////////
       let row0 = new wjGrid.Row();
       // 作成したヘッダー行を追加する
-      let panel = grid.columnHeaders;
+      let panel = flexGrid.columnHeaders;
       panel.rows.splice(0, 0, row0);
       // 0行目のヘッダーの内容を設定する
       panel.setCellData(0, 0, "日付");
@@ -141,7 +144,7 @@ export default{
       // フッターを作成/////////////////////////////////////////////////////////////
       let footer0 = new wjGrid.GroupRow();
       // 作成したフッター行を追加する
-      let footerPanel = grid.columnFooters;
+      let footerPanel = flexGrid.columnFooters;
       footerPanel.rows.splice(0, 0, footer0);
       // フッターの内容を設定する
       for (let colIndex = 0; colIndex <= 4; colIndex++) {
@@ -153,7 +156,7 @@ export default{
       }
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(grid);
+      let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let headerRanges = [
         new wjGrid.CellRange(0,0,2,0),
@@ -188,12 +191,12 @@ export default{
           }
         }
       };
-      grid.mergeManager = mm;
+      flexGrid.mergeManager = mm;
 
       // ヘッダーとフッターの高さを調整
-      grid.columnHeaders.rows[1].height = 25;
+      flexGrid.columnHeaders.rows[1].height = 25;
       // グリッドのスタイルをカスタマイズ
-      grid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
@@ -211,22 +214,32 @@ export default{
             cell.innerHTML = '重度障害者<br/>支援加算';
           }
           // ヘッダーのスタイル
-          s.backgroundColor = "#d4edf4";
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
+          //＊一旦ヘッダーの色をグレーに戻す↓
+          // s.backgroundColor = "#d4edf4";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
           if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11))){
-            s.borderBottom = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderBottom = "2px solid #348498";
           }
 
           if(c == 1 || c == 4 || c == 10){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          s.color = "#4d4d4d";
+          //＊一旦編集不可のセルをアイボリーにする↓
+          s.backgroundColor = "#fffeed";
+          // 一旦文字色を黒に戻す
+          s.color = "#000";
+          // s.color = "#4d4d4d";
           if(c == 1 || c == 4 || c == 10){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
 
           if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
@@ -238,34 +251,46 @@ export default{
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
           // フッターのスタイル
-          s.color = "#4d4d4d";
-          s.fontWeight = "normal";
-          s.borderTop = "2px solid #348498";
+          // 一旦文字色を黒に戻す
+          // s.color = "#4d4d4d";
+          // 一旦ヘッダーの文字の太さを元に戻す
+          // s.fontWeight = "normal";
+          // 一旦太線を非表示にする
+          // s.borderTop = "2px solid #348498";
           if(c == 0 || c == 1 ||c == 2){
-            s.backgroundColor = "#d4edf4";
+            //＊一旦ヘッダーの色をグレーに戻す↓
+            // s.backgroundColor = "#d4edf4";
           }else if(c == 11){
             s.backgroundColor = "#cccccc";
           }else{
-            s.backgroundColor = "#ffffff";
+            //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
+            // s.backgroundColor = "#ffffff";
           }
 
           if(c == 0 || c == 10){
-            s.borderRight = "2px solid #348498";
+            // 一旦太線を非表示にする
+            // s.borderRight = "2px solid #348498";
           }
 
         }
       }
     },
-    onInitializeSubGrid:function(grid){
+    onInitializeSubGrid:function(flexGrid){
       // グリッドの選択を無効にする
-      grid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      grid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
         s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
-          s.backgroundColor= "#d4edf4";
+          //＊一旦見出しの色をグレーに変更する↓
+          s.backgroundColor= "#eeeeee";
+          // s.backgroundColor= "#d4edf4";
+        }else{
+          //＊一旦編集不可のセルをアイボリーにする↓
+            s.backgroundColor = "#fffeed";
         }
       }
     },
@@ -296,8 +321,7 @@ export default{
       }
       return gridData;
     },
-    getSubGridData:function(){
-      let data = JSON.parse(getOriginalDetailData());
+    getSubGridData:function(data){
       let riyouKaishibi = data['riyo_inf'][0]['staymd'];
       let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
       let subGridData = [];
@@ -357,15 +381,43 @@ function getSougeiTotal(data){
 
 <style scoped>
 /* 利用者情報エリアのスタイル */
+*{
+  padding:0;
+  margin:0;
+}
+
 .user-info{
   padding:0;
-  font-size:12px;
+  font-size:14px;
 }
 
   .user-info label{
-    font-size:12px;
+    font-size:14px;
+    font-weight:bold;
     margin-right:10px;
   }
+
+.riyousya-block,.jukyusyasho-block,.keiyakuryo-block{
+  border-bottom:1px solid #ccc;
+  float:left;
+}
+
+.riyousya-block{
+  width:227px;
+}
+
+.jukyusyasho-block{
+  margin-left:20px;
+  width:269px;
+}
+
+.keiyakuryo-block{
+  width:216px;
+}
+
+.user-box{
+  border:none;
+}
 
 .v-input--selection-controls{
   padding:0;
@@ -373,7 +425,12 @@ function getSougeiTotal(data){
 }
 
 .keiyakusikyu-box {
-  width:120px;
+  width:100px;
   margin-right:20px;
 }
+
+.denbun-toggle{
+  margin-left:20px;
+}
+
 </style>

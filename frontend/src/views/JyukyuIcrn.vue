@@ -6,8 +6,8 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="mt-0">
-        <v-col cols="4" class="pt-1">
+      <v-row no-gutters>
+        <v-col cols="3" xl="2">
           <label>利用者</label>
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
@@ -17,14 +17,13 @@
               color="secondary"
               dark
               outlined
-              :width="btnwidth"
               @click="siborikomiUser(n.val)"
             >
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="4" class="pt-1">
+        <v-col cols="4">
           <label>絞込</label>
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
@@ -34,7 +33,6 @@
               color="secondary"
               dark
               outlined
-              :width="btnwidth"
               @click="siborikomiUser2(n.val)"
             >
               {{ n.name }}
@@ -47,8 +45,8 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="mt-0">
-        <v-col cols="4" xl="3" class="pt-1">
+      <v-row class="mt-0" no-gutters>
+        <v-col cols="4" xl="3" class="mt-1">
           <label>ソート</label>
           <!-- mandatoryは初期選択 -->
           <v-btn-toggle class="flex-wrap" mandatory>
@@ -59,7 +57,6 @@
               color="secondary"
               dark
               outlined
-              :width="btnwidth"
               @click="sortUser(n.val)"
             >
               {{ n.name }}
@@ -67,8 +64,8 @@
           </v-btn-toggle>
         </v-col>
       </v-row>
-      <v-row class="mt-0">
-        <v-col cols="*" class="pt-3 pb-1">
+      <v-row class="mt-1" no-gutters>
+        <v-col cols="*">
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
               small
@@ -84,7 +81,7 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="2" class="pt-3">
+        <v-col cols="2">
           <v-row class="border-bottom">
             <v-col class="pa-2" cols="4">
               <label>
@@ -97,7 +94,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="mt-0">
+      <v-row class="mt-1" justify="end" no-gutters>
         <v-col>
           <wj-flex-grid
             id="jyukyuIcrnGrid"
@@ -177,7 +174,6 @@ export default {
     return {
       alphabet: alphabet,
       errorcnt: '',
-      btnwidth: 120,
       headerList: [
         { dataname: 'err', title: 'エ\nラ\n|', width: '1.5*', align: 'center' },
         {
@@ -624,8 +620,9 @@ export default {
 </script>
 
 <style  lang="scss">
+@import '@/assets/scss/common.scss';
 div#jyukyuicrn {
-  color: #333333;
+  color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
@@ -683,15 +680,15 @@ div#jyukyuicrn {
     }
   }
   #jyukyuIcrnGrid {
-    color: #333333;
-    font-size: 14px;
+    color: $font_color;
+    font-size: $cell_fontsize;
     width: 100%;
     height: 65vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
-      color: #333333;
-      font-size: 12px;
+      color: $font_color;
+      font-size: $cell_fontsize;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -720,6 +717,9 @@ div#jyukyuicrn {
       background: #80adbf !important;
       color: #fff !important;
     }
+  }
+  .v-btn {
+    width: 90px;
   }
 }
 </style>
