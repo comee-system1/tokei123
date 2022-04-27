@@ -221,7 +221,7 @@
         <wj-flex-grid-column
           header="印刷"
           binding="print"
-          width="1*"
+          :width="30"
         ></wj-flex-grid-column>
       </wj-flex-grid>
     </v-container>

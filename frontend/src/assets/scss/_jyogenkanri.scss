@@ -23,6 +23,11 @@
 
   #flexGrid {
     min-height: 300px;
+    label{
+      width:0px;
+      top:0;
+      padding:0;
+    }
   }
 
   .wj-flexgrid .wj-cell {
