@@ -553,6 +553,7 @@ export default {
       flexGrid.beginUpdate();
 
       // ヘッダの追加と設定
+      flexGrid.frozenColumns = 7;
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
@@ -560,7 +561,6 @@ export default {
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
       flexGrid.columnHeaders.rows[2].height = 50;
-      flexGrid.frozenColumns = 7;
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
@@ -719,7 +719,6 @@ export default {
               e.cell.style.fontWeight = 'bold';
             }
             if (e.col >= 5) {
-              console.log(1);
               e.cell.style.backgroundColor = '#FFFFCC';
             }
           }
@@ -1118,8 +1117,8 @@ export default {
       this.userFilter();
     },
     onAlphabet: function (key) {
-      localStorage.setItem(keyAlp, key);
-      this.alphaSearch = key;
+      localStorage.setItem(keyAlp, Number(key));
+      this.alphaSearch = Number(key);
       this.userFilter();
     },
     onSvcIndexChanged: function (s) {
@@ -1141,10 +1140,10 @@ export default {
     },
     userFilterSeikyu() {
       let tmpviewdata = [];
-
-      if (this.alphaSearch > 0) {
+      let alpval = this.alphaSearch;
+      if (alpval > 0) {
         this.viewdataAll.forEach(function (value) {
-          switch (this.alphaSearch) {
+          switch (alpval) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
               break;
@@ -1234,9 +1233,10 @@ export default {
     },
     userFilterKyufu() {
       let tmpviewdata = [];
-      if (this.alphaSearch > 0) {
+      let alpval = this.alphaSearch;
+      if (alpval > 0) {
         this.viewkyufudataAll.forEach(function (value) {
-          switch (this.alphaSearch) {
+          switch (alpval) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
               break;
@@ -1395,32 +1395,31 @@ div#KyuhuMeisaiIcrn {
       height: 15px;
     }
     .wj-cell:not(.wj-header) {
-      background: #fffeed;
+      background: $grid_background;
     }
     .wj-cells
       .wj-row:hover
       .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
       transition: all 0s;
-      background: #ccffcc !important;
+      background: $grid_hover_background;
     }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
-      background: #80adbf !important;
-      color: #fff !important;
+      background: $grid_selected_background;
+      color: $grid_selected_color;
     }
 
     .wj-cells .wj-cell.wj-state-selected {
-      background: #80adbf !important;
-      color: #fff !important;
+      background: $grid_selected_background;
+      color: $grid_selected_color;
     }
   }
   #kyufuGrid {
-    width: auto;
-    background: lightyellow;
+    width: 100%;
     display: none; // 初期は非表示
   }
 
-  .v-btn {
+  .v-btn-toggle > .v-btn {
     width: 90px;
   }
   .wj-combobox .wj-input-group input.wj-form-control {

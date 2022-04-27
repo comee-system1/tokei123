@@ -18,7 +18,7 @@
         <KinoKunren v-else-if="searchArgument=='41 自立訓練(機能訓練)'"></KinoKunren>
         <SeikatsuKunren v-else-if="searchArgument=='42 自立訓練(生活訓練)'"></SeikatsuKunren>
         <ShuroIko v-else-if="searchArgument=='43 就労移行支援'"></ShuroIko>
-        <ShurokeizokuA v-else-if="searchArgument=='45 就労継続支援A型'"></ShurokeizokuA>
+        <ShurokeizokuA v-else-if="searchArgument=='45 就労継続支援'"></ShurokeizokuA>
       </v-flex>
     </v-layout>
   </v-container>
@@ -69,7 +69,6 @@ export default{
       this.createInfo();
     },
     parentSearch(searchArgument) {
-      console.log(searchArgument.teikyoService)
       this.searchArgument = searchArgument.teikyoService;
     },
   }
@@ -85,12 +84,14 @@ export default{
   margin-top:10px;
   font-size:12px;
   height: 65vh;
+  color:#333333 !important;
 }
 
 #detailGrid .wj-header {
   display: flex;
   justify-content: center;
   align-items: center;
+  color:#333333 !important;
 }
 
 /* 一旦グリッドの枠線を表示しない */
@@ -100,6 +101,7 @@ export default{
 
 #subGrid {
   font-size:12px;
+  color:#333333 !important;
 }
 
 /* 一旦グリッドの枠線を表示しない */

@@ -3,6 +3,7 @@
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
+      :seikyuflag="true"
     ></header-services>
     <v-container fluid class="shisetsu-container">
       <v-row no-gutters>
@@ -51,7 +52,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 200px"
+                style="max-height: 140px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -70,7 +71,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 200px"
+                style="max-height: 140px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -92,7 +93,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 400px"
+                style="max-height: 285px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -134,7 +135,6 @@
               :itemsSource="dateData"
               :initialized="onInitializedDate"
               :headersVisibility="'Column'"
-              :selectionMode="3"
               :isReadOnly="true"
               :allowDragging="false"
               :allowResizing="false"
@@ -146,7 +146,7 @@
               <wj-flex-grid-column
                 header="加算・減算項目"
                 binding="clumn"
-                width="8*"
+                width="10*"
                 :allowMerging="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
@@ -160,6 +160,7 @@
                 :isReadOnly="true"
               ></wj-flex-grid-column>
             </wj-flex-grid>
+            <v-btn>登録</v-btn>
           </v-col>
         </v-row>
       </v-card>
@@ -398,9 +399,22 @@ export default {
       };
     },
     onInitializedDate: function (flexGrid) {
-      flexGrid.rowHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.rows[0].height = 60;
+      flexGrid.rowHeaders.columns[0].width = 20;
+      flexGrid.columnHeaders.rows[0].height = 48;
+      flexGrid.rows.defaultSize = 34;
       flexGrid.formatItem.addHandler(cellEdit);
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        if (_self.checkbox == false) return false;
+        var ht = flexGrid.hitTest(e);
+        if (ht.target.innerHTML == '〇') {
+          ht.target.innerHTML = '×';
+        } else if (ht.target.innerHTML == '×') {
+          ht.target.innerHTML = '';
+        } else if (ht.target.innerHTML.length == 0) {
+          ht.target.innerHTML = '〇';
+        }
+      });
     },
     registPage: function () {
       alert('事業所情報登録ページに遷移を予定');
@@ -433,7 +447,7 @@ function cellEdit(s, e) {
       str = e.cell.innerText;
     }
 
-    e.cell.innerHTML = '<div>' + str + '</div>';
+    e.cell.innerHTML = '<div class="text-caption">' + str + '</div>';
     wjCore.setCss(e.cell, {
       display: 'table',
       tableLayout: 'fixed',
@@ -448,10 +462,11 @@ function cellEdit(s, e) {
 </script>
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
+
 #shisetsu {
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1366px !important;
+  min-width: 1266px !important;
 
   .shisetsu-container {
     padding: 4px;
@@ -461,23 +476,36 @@ function cellEdit(s, e) {
     height: 40px;
   }
 
-  .wj-cells .wj-cell.wj-state-selected {
-    background-color: $light-white !important;
-    color: $font-color !important;
+  .wj-cell:not(.wj-header) {
+    background: $grid_background;
   }
+
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
+
   .wj-cells .wj-cell.wj-state-multi-selected {
-    background-color: $light-white !important;
-    color: $font-color !important;
+    background: $grid_selected_background;
+    color: $grid_selected_color;
   }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #ccc;
+    background: $light-gray;
     border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #666;
+    background: $brawn;
     border-radius: 0px;
   }
 }

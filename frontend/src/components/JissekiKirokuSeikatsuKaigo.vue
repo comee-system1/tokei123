@@ -12,7 +12,7 @@
 
           <div class="jukyusyasho-block">
             <label>受給者証番号</label>
-            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" text="1100000700" class="user-box"></wj-combo-box>
           </div>
         </v-row>
         <v-row>
@@ -34,13 +34,12 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
-      :allowMerging="'ColumnHeaders'"
       :allowResizing="false"
       :allowDragging="false"
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="開始時間" binding="jstime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="終了時間" binding="jetime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="往" binding="gei" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
@@ -102,7 +101,6 @@ export default{
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(apiResult),
-      modal:false,
     }
   },
   methods: {
@@ -110,50 +108,12 @@ export default{
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      // 0行目のヘッダーを作成///////////////////////////////////////////////////////
-      let row0 = new wjGrid.Row();
-      // 作成したヘッダー行を追加する
-      let panel = flexGrid.columnHeaders;
-      panel.rows.splice(0, 0, row0);
-      // 0行目のヘッダーの内容を設定する
-      panel.setCellData(0, 0, "日付");
-      panel.setCellData(0, 1, "曜日");
-      for (let colIndex = 2; colIndex <= 11; colIndex++) {
-        panel.setCellData(0, colIndex, "サービス提供実績");
-      }
-
-      // 1行目のヘッダーを作成///////////////////////////////////////////////////////
-      let row1 = new wjGrid.Row();
-      // 作成したヘッダー行を追加する
-      panel.rows.splice(1, 0, row1);
-      // 0行目のヘッダーの内容を設定する
-      panel.setCellData(1, 0, "日付");
-      panel.setCellData(1, 1, "曜日");
-      panel.setCellData(1, 2, "サービス提供の状況");
-      panel.setCellData(1, 3, "開始時間");
-      panel.setCellData(1, 4, "終了時間");
-      for (let colIndex = 5; colIndex <= 6; colIndex++) {
-        panel.setCellData(1, colIndex, "送迎加算");
-      }
-      panel.setCellData(1, 7, "訪問支援加算");
-      panel.setCellData(1, 8, "食事提供加算");
-      panel.setCellData(1, 9, "体験利用支援加算");
-      panel.setCellData(1, 10, "重度障害者支援加算");
-      panel.setCellData(1, 11, "備考");
-
-      // フッターを作成/////////////////////////////////////////////////////////////
-      let footer0 = new wjGrid.GroupRow();
-      // 作成したフッター行を追加する
+      // 空のヘッダー行とフッター行を追加/////////////////////////////////////////////
+      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      let headerpanel = flexGrid.columnHeaders;
       let footerPanel = flexGrid.columnFooters;
-      footerPanel.rows.splice(0, 0, footer0);
-      // フッターの内容を設定する
-      for (let colIndex = 0; colIndex <= 4; colIndex++) {
-        footerPanel.setCellData(0, colIndex, "合計");
-      }
-      // フッターの内容を設定する
-      for (let colIndex = 5; colIndex <= 6; colIndex++) {
-        footerPanel.setCellData(0, colIndex, this.sougeiTotal);
-      }
 
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -193,6 +153,20 @@ export default{
       };
       flexGrid.mergeManager = mm;
 
+      // 改行指定不要のヘッダー・フッターの内容を設定する
+      // ヘッダー0行目
+      headerpanel.setCellData(0, 2, "サービス提供実績");
+      // ヘッダー1行目
+      headerpanel.setCellData(1, 3, "開始時間");
+      headerpanel.setCellData(1, 4, "終了時間");
+      headerpanel.setCellData(1, 5, "送迎加算");
+      headerpanel.setCellData(1, 7, "訪問支援加算");
+      headerpanel.setCellData(1, 8, "食事提供加算");
+      headerpanel.setCellData(1, 11, "備考");
+      // フッター0行目
+      footerPanel.setCellData(0, 0, "合計");
+      footerPanel.setCellData(0, 5, this.sougeiTotal);
+
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
       // グリッドのスタイルをカスタマイズ
@@ -201,7 +175,7 @@ export default{
         let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
-          // ヘッダーの改行位置の設定
+          // 改行指定が必要なヘッダーセルの内容を設定
           if(r == 0 && c == 0){
             cell.innerHTML = '日<br/>付';
           }else if (r == 0 && c == 1) {
@@ -234,8 +208,6 @@ export default{
           // 通常セルのスタイル
           //＊一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
-          // 一旦文字色を黒に戻す
-          s.color = "#000";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 4 || c == 10){
             // 一旦太線を非表示にする
@@ -282,7 +254,6 @@ export default{
 
       flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
-        s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
           //＊一旦見出しの色をグレーに変更する↓
@@ -389,6 +360,7 @@ function getSougeiTotal(data){
 .user-info{
   padding:0;
   font-size:14px;
+  color:#333333;
 }
 
   .user-info label{

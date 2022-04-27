@@ -11,6 +11,11 @@ $font_color:#333;
 $green:#27904d;
 $pink:#f5d6e6;
 $selected_color:#eee;
+// grid系
+$grid_background: #fffeed;
+$grid_hover_background: #ccffcc !important;
+$grid_selected_background: #80adbf !important;
+$grid_selected_color:  #fff !important;
 
 $cell_fontsize:12px;
 @import "_mixins";

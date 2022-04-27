@@ -1,7 +1,7 @@
 #jijyougen {
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1366px !important;
+  min-width: 1266px !important;
 
   .w-100 {
     width: 100%;
@@ -12,6 +12,10 @@
     font-weight: bold;
     width: 60px;
     display: inline-block;
+  }
+
+  .filterArea {
+    width:1280px;
   }
   .jijyougen-container {
     padding: 4px;

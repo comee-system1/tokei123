@@ -1269,11 +1269,11 @@ div#temporaryHistory {
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #ccc;
+    background: $light-gray;
     border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background: #666;
+    background: $brawn;
     border-radius: 0px;
   }
 }

@@ -12,7 +12,7 @@
 
           <div class="jukyusyasho-block">
             <label>受給者証番号</label>
-            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" text="1100000700" class="user-box"></wj-combo-box>
           </div>
         </v-row>
         <v-row>
@@ -34,14 +34,13 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
-      :allowMerging="'ColumnHeaders'"
       :allowResizing="false"
       :allowDragging="false"
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="算定日数"  binding="nissu" :width="'4*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'12*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="算定日数"  binding="nissu" :width="'4*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'12*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="往" binding="gei" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="復" binding="sou" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -83,49 +82,21 @@ export default{
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['keiyakuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      modal:false
     }
   },
   methods: {
-    onInitializeDetailGrid: function(grid) {
+    onInitializeDetailGrid: function(flexGrid) {
       // グリッドの選択を無効にする
-      grid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      // 0行目のヘッダーを作成///////////////////////////////////////////////////////
-      let row0 = new wjGrid.Row();
-      // 作成したヘッダー行を追加する
-      let panel = grid.columnHeaders;
-      panel.rows.splice(0, 0, row0);
-      // 0行目のヘッダーの内容を設定する
-      panel.setCellData(0, 0, "日付");
-      panel.setCellData(0, 1, "曜日");
-			panel.setCellData(0, 2, "算定日数");
-			panel.setCellData(0, 3, "サービス提供の状況");
-      for (let colIndex = 4; colIndex <= 5; colIndex++) {
-        panel.setCellData(0, colIndex, "送迎加算");
-      }
-			panel.setCellData(0, 6, "食事提供加算");
-      panel.setCellData(0, 7, "医療連携体制加算");
-			panel.setCellData(0, 8, "緊急短期入所受入加算");
-			panel.setCellData(0, 9, "重度障害者支援加算（研修修了者）");
-			panel.setCellData(0, 10, "定員超過特例加算");
-			panel.setCellData(0, 11, "備考");
-
-      // フッターを作成/////////////////////////////////////////////////////////////
-      let footer0 = new wjGrid.GroupRow();
-      // 作成したフッター行を追加する
-      let footerPanel = grid.columnFooters;
-      footerPanel.rows.splice(0, 0, footer0);
-      // フッターの内容を設定する
-      for (let colIndex = 0; colIndex <= 1; colIndex++) {
-        footerPanel.setCellData(0, colIndex, "合計");
-      }
-      for (let colIndex = 4; colIndex <= 5; colIndex++) {
-        footerPanel.setCellData(0, colIndex, this.sougeiTotal);
-      }
+      // 空のヘッダー行とフッター行を追加/////////////////////////////////////////////
+      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      let headerpanel = flexGrid.columnHeaders;
+      let footerPanel = flexGrid.columnFooters;
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(grid);
+      let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let headerRanges = [
         new wjGrid.CellRange(0,0,1,0),
@@ -160,12 +131,22 @@ export default{
           }
         }
       };
-      grid.mergeManager = mm;
+      flexGrid.mergeManager = mm;
+
+      // 改行指定不要のヘッダー・フッターの内容を設定する
+      // ヘッダー0行目
+      headerpanel.setCellData(0, 4, "送迎加算");
+			headerpanel.setCellData(0, 6, "食事提供加算");
+      headerpanel.setCellData(0, 7, "医療連携体制加算");
+			headerpanel.setCellData(0, 11, "備考");
+      // フッター0行目
+      footerPanel.setCellData(0, 0, "合計");
+      footerPanel.setCellData(0, 4, this.sougeiTotal);
 
       // ヘッダーとフッターの高さを調整
-      grid.columnHeaders.rows[1].height = 25;
+      flexGrid.columnHeaders.rows[1].height = 25;
       // グリッドのスタイルをカスタマイズ
-      grid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
@@ -207,8 +188,6 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
-          // 一旦文字色を黒に戻す
-          s.color = "#000";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 3 || c == 10){
             // 一旦太線を非表示にする
@@ -310,6 +289,7 @@ function getSougeiTotal(data){
 .user-info{
   padding:0;
   font-size:14px;
+  color:#333333;
 }
 
   .user-info label{

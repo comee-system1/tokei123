@@ -12,7 +12,7 @@ export function getOriginalDetailData() {
       ms2_kaisu: 7,
       ttymd:"20210424",
 			tnymd:"20210424",
-      ksnruikei:3,
+      ksnruikei:12,
 			gokei_tusho:20,
 			gokei_homon1:0,
 			gokei_homon2:10,

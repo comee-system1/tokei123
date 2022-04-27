@@ -11,7 +11,7 @@
           <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
           <div class="jukyusyasho-block">
             <label>受給者証番号</label>
-            <wj-combo-box :isReadOnly="true" text="00000700" class="user-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" text="1100000700" class="user-box"></wj-combo-box>
           </div>
         </v-row>
         <v-row>
@@ -56,13 +56,12 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
-      :allowMerging="'ColumnHeaders'"
       :allowResizing="false"
       :allowDragging="false"
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true allowMerging="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -71,7 +70,7 @@
       <wj-flex-grid-column header="朝食" binding="sasa" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="昼食" binding="shiru" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="夕食" binding="syuu" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'5*'" :wordWrap=true allowMerging="true" aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="光熱水費" binding="konetu" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="備考" binding="biko" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
@@ -126,7 +125,6 @@ export default{
       tkkfhiData:apiResult['riyo_inf'][0]['tkkfhi'],
       subGridData:this.getSubGridData(apiResult),
       jippisanteigakuGridData:this.getjippisanteigakuGridData(apiResult),
-      modal:false
     }
   },
   methods: {
@@ -134,31 +132,11 @@ export default{
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      // 0行目のヘッダーを作成///////////////////////////////////////////////////////
-      let row0 = new wjGrid.Row();
-      // 作成したヘッダー行を追加する
-      let panel = flexGrid.columnHeaders;
-      panel.rows.splice(0, 0, row0);
-      // 0行目のヘッダーの内容を設定する
-      panel.setCellData(0, 0, "日付");
-      panel.setCellData(0, 1, "曜日");
-      for (let colIndex = 2; colIndex <= 7; colIndex++) {
-        panel.setCellData(0, colIndex, "支援実績");
-      }
-      for (let colIndex = 8; colIndex <= 11; colIndex++) {
-        panel.setCellData(0, colIndex, "食費・光熱水費実績");
-      }
-      panel.setCellData(0, 12, "備考");
-
-      // フッターを作成/////////////////////////////////////////////////////////////
-      let footer0 = new wjGrid.GroupRow();
-      // 作成したフッター行を追加する
+      // 空のヘッダー行とフッター行を追加/////////////////////////////////////////////
+      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      let headerpanel = flexGrid.columnHeaders;
       let footerPanel = flexGrid.columnFooters;
-      footerPanel.rows.splice(0, 0, footer0);
-      // フッターの内容を設定する
-      for (let colIndex = 0; colIndex <= 2; colIndex++) {
-        footerPanel.setCellData(0, colIndex, "合計");
-      }
 
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -190,6 +168,14 @@ export default{
         }
       };
       flexGrid.mergeManager = mm;
+
+      // 改行指定不要のヘッダー・フッターの内容を設定する
+      // ヘッダー0行目
+      headerpanel.setCellData(0, 2, "支援実績");
+      headerpanel.setCellData(0, 8, "食費・光熱水費実績");
+      headerpanel.setCellData(0, 12, "備考");
+      // フッター0行目
+      footerPanel.setCellData(0, 0, "合計");
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 45;
@@ -239,8 +225,6 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
-          // 一旦文字色を黒に戻す
-          s.color = "#000";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 7 || c == 11){
             // 一旦太線を非表示にする
@@ -286,7 +270,7 @@ export default{
 
       flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
-        s.color = "#4d4d4d";
+        // s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
           //＊一旦見出しの色をグレーに変更する↓
@@ -480,6 +464,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 .user-info{
   font-size:14px;
   padding:0;
+  color:#333333;
 }
 
   .user-info label{
@@ -532,6 +517,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
 #jippisanteigakuGrid {
   font-size:12px;
+  color:#333333;
 }
 
 #detailGrid {

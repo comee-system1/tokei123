@@ -18,7 +18,7 @@ export function getOriginalDetailData() {
 				rcnt:1,
 				rymd:`202204${( '00' + i ).slice( -2 )}`,
 				nissu:1,
-				jyokyo: i % 10 == 0 ? "1:他サービス併給":"2:日中のみ",
+				jyokyo: i % 10 == 0 ? "他サービス併給":"日中のみ",
 				sou: i % 5 == 0 ? 1:0,
 				gei: i % 4 == 0 ? 1:0,
 				kasans:  i % 1 == 0 ? 1:0,

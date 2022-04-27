@@ -4,45 +4,54 @@
       <div class="service-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0"
-              >サービス</v-card
-            >
+            <v-card class="pa-1 transparent white--text" elevation="0">サービス</v-card>
           </v-col>
           <v-col md="3">
             <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
           </v-col>
           <v-col md="2">
-            <v-card class="pa-1" v-on:click="comboClick()" tile
-              >{{ selectButton }}
-              <div class="float-right">▼</div></v-card
-            >
+            <v-card class="pa-1" v-on:click="comboClick()" tile>{{ selectButton }}<div class="float-right">▼</div></v-card>
           </v-col>
         </v-row>
       </div>
       <div class="month-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0"
-              >請求月</v-card
-            >
+            <v-card class="pa-1 transparent white--text" elevation="0">請求月</v-card>
           </v-col>
           <v-col md="2">
-            <v-card class="transparent" tile>
-              <input
-                type="month"
-                name="example"
-                :value="year + '-' + month"
-                v-on:change="calenderChange"
-              />
+            <v-card class="d-flex flex-row" color="transparent" elevation="0">
+              <v-card class="transparent" tile>
+                <input type="month" name="example" :value="year + '-' + month" v-on:change="calenderChange"/>
+              </v-card>
+              <v-btn
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                x-small
+                @click="calendarClick(1)"
+                @mouseover="calendarOver"
+                height="100%"
+                style="min-width: auto; height: 30px"
+                tile
+                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+              >
+              <v-btn
+                x-small
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                height="100%"
+                style="min-width: auto; height: 30px"
+                @click="calendarClick(2)"
+                @mouseover="calendarOver"
+                tile
+                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+              >
             </v-card>
           </v-col>
           <v-col md="1">
-            <v-card
-              class="pa-1 transparent white--text"
-              elevation="0"
-              v-if="seikyuflag"
-              >提供月</v-card
-            >
+            <v-card class="pa-1 transparent white--text" elevation="0" v-if="seikyuflag">提供月</v-card>
           </v-col>
           <v-col md="2">
             <v-card class="transparent" tile>
@@ -64,9 +73,9 @@
         <v-col v-if="receptFlag">
           <v-btn> レセプトへ反映 </v-btn>
         </v-col>
-        <v-col class="ml-5">
-          <!-- <v-btn>登録<v-icon dense>mdi-pencil</v-icon></v-btn> -->
-        </v-col>
+        <!-- <v-col class="ml-5">
+          <v-btn>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
+        </v-col> -->
       </v-row>
       <v-dialog
         v-model="header_dialog"
@@ -81,23 +90,11 @@
               :initialized="onInitializedJimusyo"
               :autoClipboard="false"
               :selectionMode="3"
+              :selecte="-1"
             >
-              <wj-flex-grid-column
-                header="事務所番号"
-                binding="jimusyoBango"
-                width="2*"
-                format="N0"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                header="サービス事業所名"
-                binding="serviceJigyo"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                header="提供サービス名"
-                binding="teikyoService"
-                width="2*"
-              ></wj-flex-grid-column>
+              <wj-flex-grid-column header="事務所番号" binding="jimusyoBango" width="5*" format="N0"></wj-flex-grid-column>
+              <wj-flex-grid-column header="サービス事業所名" binding="serviceJigyo" width="10*"></wj-flex-grid-column>
+              <wj-flex-grid-column header="提供サービス名" binding="teikyoService" width="5*"></wj-flex-grid-column>
             </wj-flex-grid>
           </v-container>
         </v-card>
@@ -131,51 +128,97 @@ export default {
     createJimusyo: function () {
       let data = [];
       data.push({
+        jimusyoBango: '11123404',
+        serviceJigyo: '生活介護支援事務所 ひまわり園',
+        teikyoCode: 21,
+        teikyoService: '21 医療介護',
+      });
+      data.push({
         jimusyoBango: '11123405',
         serviceJigyo: '生活介護支援事務所 ひまわり園',
+        teikyoCode: 22,
         teikyoService: '22 生活介護',
       });
       data.push({
         jimusyoBango: '11123405',
         serviceJigyo: '短期入所施設 ひまわり園',
+        teikyoCode: 24,
         teikyoService: '24 短期入所',
       });
       data.push({
         jimusyoBango: '11123405',
         serviceJigyo: '障害者入所施設 ひまわり園',
+        teikyoCode: 32,
         teikyoService: '32 施設入所支援',
         defaultFlag: true,
       });
       data.push({
-        jimusyoBango: '111200012',
-        serviceJigyo: '生活介護支援事務所 たんぽぽ園',
-        teikyoService: '22 生活介護',
-      });
-      data.push({
-        jimusyoBango: '111200012',
-        serviceJigyo: '障害者入所施設 ひまわり園',
-        teikyoService: '32 施設入所支援',
-      });
-      data.push({
         jimusyoBango: '111200019',
+        serviceJigyo: '知的障害者入所施設 ひまわり園',
+        teikyoCode: 33,
+        teikyoService: '33 共同生活援助',
+      });
+      data.push({
+        jimusyoBango: '111200030',
+        serviceJigyo: '知的障害者入所施設 東経園',
+        teikyoCode: 34,
+        teikyoService: '34 宿泊型自立訓練',
+      });
+      data.push({
+        jimusyoBango: '111200031',
         serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 41,
         teikyoService: '41 自立訓練(機能訓練)',
       });
       data.push({
-        jimusyoBango: '111200019',
+        jimusyoBango: '111200032',
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoService: '42 自立訓練(生活訓練)',
+        teikyoCode: 42,
+        teikyoService: '42 自立訓練(機能訓練)',
       });
       data.push({
-        jimusyoBango: '111200019',
+        jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 43,
         teikyoService: '43 就労移行支援',
       });
+      data.push({
+        jimusyoBango: '111200034',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 44,
+        teikyoService: '44 就労移行支援',
+      });
+      data.push({
+        jimusyoBango: '111200035',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 45,
+        teikyoService: '45 就労継続支援',
+      });
+      data.push({
+        jimusyoBango: '111200036',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 46,
+        teikyoService: '46 就労継続支援',
+      });
+      data.push({
+        jimusyoBango: '111200037',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 47,
+        teikyoService: '47 就労定着支援',
+      });
+      data.push({
+        jimusyoBango: '111200038',
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 35,
+        teikyoService: '35 自立生活援助',
+      });
+
       this.jimusyo = data;
     },
     onInitializedJimusyo: function (grid) {
       //this.createJimusyo();
       let _self = this;
+      grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
         var ht = grid.hitTest(e);
         ht = grid.hitTest(e.pageX, e.pageY);
@@ -187,6 +230,7 @@ export default {
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
           serviceJigyo: _self.jimusyo[ht.row].serviceJigyo,
+          teikyoCode: _self.jimusyo[ht.row].teikyoCode,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
         _self.$emit('parent-service-select', returns);
@@ -202,6 +246,7 @@ export default {
       for (let i = 0; i <= this.jimusyo.length; i++) {
         if (this.jimusyo[i]['defaultFlag']) {
           defaultdata = this.jimusyo[i];
+          this.select = i;
           break;
         }
       }
@@ -212,17 +257,37 @@ export default {
       returns = {
         jimusyoBango: defaultdata.jimusyoBango,
         serviceJigyo: defaultdata.serviceJigyo,
+        teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
       this.$emit('parent-service-select', returns);
     },
+    //カレンダーボタンの日付遷移
+    //1:前月 2:翌月
+    calendarClick: function (type) {
+      let date = this.year + this.month + '01';
+      if (type == 1) {
+        this.year = moment(date).subtract(1, 'months').format('YYYY');
+        this.month = moment(date).subtract(1, 'months').format('MM');
+      } else {
+        this.year = moment(date).add(1, 'months').format('YYYY');
+        this.month = moment(date).add(1, 'months').format('MM');
+      }
+    },
+    calendarOver: function () {
+      let split = [];
+      split[0] = this.year;
+      split[1] = this.month;
+      this.$emit('parent-calendar', split);
+    },
     calenderChange: function (e) {
       let split = e.target.value.split('-');
+      this.year = split[0];
+      this.month = split[1];
       this.$emit('parent-calendar', split);
     },
     searchChange: function (e) {
       let value = e.text;
-
       this.$emit('parent-search', value);
     },
     comboClick: function () {

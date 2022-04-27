@@ -7,24 +7,24 @@
     ></header-services>
     <v-container fluid class="container">
       <v-row no-gutters>
-        <v-col cols="2">
+        <v-col class="leftArea">
           <user-list-print
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
           </user-list-print>
         </v-col>
-        <v-col cols="10">
+        <v-col class="rightArea">
           <v-row class="mt-0" no-gutters>
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
-                <v-card class="pt-2 pr-2" elevation="0">
+                <v-card class="pt-2 pr-2" elevation="0" :min-width="80">
                   <label class="font-weight-black">利用者名</label>
                 </v-card>
                 <v-card class="pa-1" :width="180" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
-                <v-card class="pt-2 pr-2 ml-2" elevation="0">
+                <v-card class="pt-2 pr-2 ml-2" elevation="0" :min-width="80">
                   <label class="font-weight-black">受給者番号</label>
                 </v-card>
                 <v-card class="pa-1" :width="180" outlined tile>
@@ -43,7 +43,7 @@
                 <v-row class="mt-0" no-gutters>
                   <v-col cols="2*">
                     <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-1 pr-2" elevation="0">
+                      <v-card class="pt-1 pr-2" elevation="0" :min-width="60">
                         <label class="font-weight-black">援護者</label>
                       </v-card>
                       <v-row no-gutters>
@@ -199,6 +199,7 @@
             :deferResizing="false"
             :allowSorting="false"
             :selectionMode="'None'"
+            style="max-height: 660px"
           ></wj-flex-grid>
         </v-col>
       </v-row>
@@ -377,8 +378,6 @@ export default {
     },
 
     onitemsSourceChanged: function (flexGrid) {
-      console.log('ssddd');
-
       let _self = this;
       // セル初期カラム情報
       methodCellSettingDefault(flexGrid, _self);
@@ -474,10 +473,9 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.frozenColumns = 3;
   flexGrid.frozenRows = 1;
   flexGrid.columns[0].width = 32;
-  flexGrid.columns[1].width = 100;
-  flexGrid.columns[2].width = 100;
-  flexGrid.rows[0].height = 60;
-  flexGrid.height = 60;
+  flexGrid.columns[1].width = 90;
+  flexGrid.columns[2].width = 90;
+  flexGrid.rows[0].height = 48;
   flexGrid.setCellData(0, 0, '');
   flexGrid.setCellData(0, 1, _self.gridItemName[0].heads[0]);
   //日付の表示
@@ -491,10 +489,10 @@ function methodCellSettingDefault(flexGrid, _self) {
   }
   //合計
   flexGrid.setCellData(0, lastdate + 3, _self.gridItemName[0].heads[1]);
-  flexGrid.columns[lastdate + 3].width = '2*';
+  flexGrid.columns[lastdate + 3].width = 50;
   //金額
   flexGrid.setCellData(0, lastdate + 4, _self.gridItemName[0].heads[2]);
-  flexGrid.columns[lastdate + 4].width = '3*';
+  flexGrid.columns[lastdate + 4].width = 70;
 }
 /*******
  * 各情報タイトルの書き込み
@@ -594,7 +592,9 @@ function methodCellClickEvent(flexGrid, _self) {
     // 赤〇の置き換え
     let redMaruRegexp = /^<div class="d-none">red--maru<\/div>/;
     let redBatsuRegexp = /^<div class="d-none">red--batsu<\/div>/;
-    let redNoneRegexp = /^<div class="red--text"><\/div>/;
+    let redNoneRegexp = /^<div class="red--text bg"><\/div>/;
+
+    console.log(ht.target.innerHTML);
 
     if (ht.target.innerHTML.match(redMaruRegexp)) {
       e.target.innerHTML = '<div class="d-none">red--batsu</div>×';
@@ -606,12 +606,12 @@ function methodCellClickEvent(flexGrid, _self) {
     // スペースの置き換え
     else if (ht.target.innerHTML.match(redNoneRegexp)) {
       e.target.innerHTML =
-        '<div class="red--text"><div class="d-none">red--maru</div>〇</div>';
+        '<div class="red--text bg"><div class="d-none">red--maru</div>〇</div>';
     }
     //初回空欄の置き換え
     else if (ht.target.innerHTML == '' && ht.target.innerText == '') {
       e.target.innerHTML =
-        '<div class="red--text"><div class="d-none">red--maru</div>〇</div>';
+        '<div class="red--text bg"><div class="d-none">red--maru</div>〇</div>';
     }
   });
 }
@@ -821,7 +821,7 @@ function methodCellFormatSetting(flexGrid, _self) {
       if (text == _self.gridItemName[0].meals[i]) {
         html =
           html +
-          '<span class="float-right">@' +
+          '<span class="float-right text-caption">@' +
           _self.gridItemName[0].mealsCount[i] +
           '/回</span>';
       }
@@ -829,7 +829,7 @@ function methodCellFormatSetting(flexGrid, _self) {
     // 高熱水費
     if (text == 'kounetsuSuihiFlag') {
       html =
-        '<span class="float-right">@' +
+        '<span class="float-right text-caption">@' +
         _self.gridItemName[0].kounetsuSuihi[0].count +
         '/回</span>';
     }
@@ -848,6 +848,14 @@ function methodCellFormatSetting(flexGrid, _self) {
       text == _self.gridItemName[0].column[1]
     ) {
       classname = 'vertical';
+    }
+
+    // 加算情報置き換え;
+    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
+      if (text == _self.gridItemName[0].shisetsuNyusho_add[i].name) {
+        html =
+          '<a>' + _self.gridItemName[0].shisetsuNyusho_add[i].name + '</a>';
+      }
     }
 
     // 矢印の表示
@@ -899,6 +907,15 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = dateFormatString.dateFormatString(text);
     }
 
+    //合計・金額部分
+    if (
+      e.row > 0 &&
+      (e.col == _self.lastdate + 3 || e.col == _self.lastdate + 4)
+    ) {
+      classname = 'text-end gridBackground';
+      html = '<span>' + text + '</span>';
+    }
+
     // 〇の表示
     // 1:手入力不可〇
     if (
@@ -906,8 +923,8 @@ function methodCellFormatSetting(flexGrid, _self) {
       e.col != _self.lastdate + 3 &&
       e.col != _self.lastdate + 4
     ) {
-      classname = 'text-center';
-      html = '〇';
+      classname = 'text-center gridBackground';
+      html = '<span>〇</span>';
     }
     // 赤〇の表示
     // 2:手入力可赤〇
@@ -918,7 +935,7 @@ function methodCellFormatSetting(flexGrid, _self) {
     ) {
       classname = 'text-center';
       html =
-        '<div class="red--text"><div class="d-none">red--maru</div>〇</div>';
+        '<div class="red--text bg"><div class="d-none">red--maru</div>〇</div>';
     }
     // 赤×の表示
     // 3:手入力可赤×
@@ -929,7 +946,7 @@ function methodCellFormatSetting(flexGrid, _self) {
     ) {
       classname = 'text-center';
       html =
-        '<div class="red--text"><div class="d-none">red--batsu</div>×</div>';
+        '<div class="red--text bg"><div class="d-none">red--batsu</div>×</div>';
     }
     // 0:空欄
     if (
@@ -940,13 +957,6 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = '';
     }
 
-    // 加算情報置き換え;
-    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
-      if (text == _self.gridItemName[0].shisetsuNyusho_add[i].name) {
-        html =
-          '<a>' + _self.gridItemName[0].shisetsuNyusho_add[i].name + '</a>';
-      }
-    }
     e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
 
     wjCore.setCss(e.cell, {
@@ -1036,7 +1046,7 @@ function methodCellMerge(flexGrid, _self) {
 div#kobetsuriyo {
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1366px;
+  min-width: 1266px;
   .container {
     padding: 4px;
   }
@@ -1049,8 +1059,44 @@ div#kobetsuriyo {
   }
   // 受給者証状況用のエリアボックス
   .jyukyusyaBox {
-    height: 80px;
+    height: 60px;
     overflow-y: auto;
+  }
+  .leftArea {
+    min-width: 275px;
+    max-width: 275px;
+    width: 275px;
+  }
+
+  .rightArea {
+    min-width: 50%;
+    max-width: none;
+    width: 1020px;
+  }
+
+  .gridBackground {
+    background-color: $grid_background;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+    }
+  }
+  .bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
   }
 
   // 期間追加・加算追加ボタン
@@ -1154,7 +1200,7 @@ div#kobetsuriyo {
 
   .green-arrow_start {
     > div {
-      border-right: 4px solid green;
+      border-right: 4px solid $green;
     }
   }
 
@@ -1180,18 +1226,15 @@ div#kobetsuriyo {
   }
 
   .arrow_box {
-    width: 400px;
+    width: 120px;
     margin-top: -9px;
     cursor: pointer;
     div {
-      padding: 0px 20px 0px 5px;
+      padding: 0px 5px;
       position: absolute;
       background-color: $white;
       border: 1px solid $font_color;
       z-index: 1;
-      background-image: url('../assets/tyusyaku_04.png');
-      background-position: 99% 40%;
-      background-size: 10px 10px;
     }
   }
 
@@ -1199,12 +1242,14 @@ div#kobetsuriyo {
   ::-webkit-scrollbar {
     width: 10px;
   }
+
   ::-webkit-scrollbar-track {
-    background: #ccc;
+    background: $light-gray;
     border-radius: 0px;
   }
+
   ::-webkit-scrollbar-thumb {
-    background: #666;
+    background: $brawn;
     border-radius: 0px;
   }
 }

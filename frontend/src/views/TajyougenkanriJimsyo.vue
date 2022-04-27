@@ -15,8 +15,8 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters class="mt-0">
-        <v-col cols="4" class="pt-1">
+      <v-row no-gutters class="mt-0 filterArea">
+        <v-col cols="3">
           <label>絞込</label>
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn small color="secondary" dark outlined :width="btnwidth"
@@ -30,8 +30,8 @@
             >
           </v-btn-toggle>
         </v-col>
-        <v-col cols="4" class="pt-1">
-          <label>ソート</label>
+        <v-col cols="3">
+          <label class="text-right">ソート</label>
           <v-btn-toggle v-model="toggle_sort">
             <v-btn
               small
@@ -62,7 +62,7 @@
             >
           </v-btn-toggle>
         </v-col>
-        <v-col cols="3" class="pt-1">
+        <v-col cols="3" class="ml-3">
           <label>カナ検索</label>
           <wj-combo-box
             :textChanged="onTextChangedUser"
@@ -74,7 +74,7 @@
             placeholder="カナ検索"
           ></wj-combo-box>
         </v-col>
-        <v-col cols="1" class="mt-3">
+        <v-col cols="1" class="mt-2">
           <v-btn small color="secondary" outlined :width="btnwidth">検索</v-btn>
         </v-col>
       </v-row>
@@ -385,7 +385,7 @@ export default {
     return {
       year: moment().year(),
       month: moment().format('MM'),
-      btnwidth: 120,
+      btnwidth: 'auto',
       data: [],
       allData: [],
       jimusyoSearch: ['指定なし', 'ひまわり園'],

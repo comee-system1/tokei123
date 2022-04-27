@@ -23,7 +23,7 @@
         <v-row no-gutters>
           <v-col md="1">
             <v-card class="pa-1 transparent white--text" elevation="0"
-              >請求月</v-card
+              >提供月</v-card
             >
           </v-col>
           <v-col md="2">
@@ -37,7 +37,7 @@
                 /> -->
                 <v-card
                   class="pa-1"
-                  :width="200"
+                  :width="160"
                   @click="inputCalendarClick"
                   tile
                   >{{ year }}年{{ month }}月
@@ -77,7 +77,7 @@
               class="pa-1 transparent white--text"
               elevation="0"
               v-if="seikyuflag"
-              >提供月</v-card
+              >請求月</v-card
             >
           </v-col>
           <v-col md="2">
@@ -93,7 +93,7 @@
             <v-card
               v-if="seikyuflag"
               class="pa-1"
-              :width="200"
+              :width="160"
               @click="inputCalendarClick"
               tile
               >{{ year }}年{{ month }}月
@@ -134,6 +134,11 @@
               :autoClipboard="false"
               :selectionMode="3"
               :selecte="-1"
+              :isReadOnly="true"
+              :allowDragging="false"
+              :allowResizing="false"
+              :deferResizing="false"
+              :allowSorting="false"
             >
               <wj-flex-grid-column
                 header="事務所番号"
@@ -144,12 +149,12 @@
               <wj-flex-grid-column
                 header="サービス事業所名"
                 binding="serviceJigyo"
-                width="2*"
+                width="4*"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 header="提供サービス名"
                 binding="teikyoService"
-                width="2*"
+                width="3*"
               ></wj-flex-grid-column>
             </wj-flex-grid>
           </v-container>
@@ -177,6 +182,7 @@
 
 <script>
 import moment from 'moment';
+import * as wjGrid from '@grapecity/wijmo.grid';
 
 let year = moment().year();
 let month = moment().format('MM');
@@ -227,7 +233,7 @@ export default {
         defaultFlag: true,
       });
       data.push({
-        jimusyoBango: '111200019',
+        jimusyoBango: '11123405',
         serviceJigyo: '知的障害者入所施設 ひまわり園',
         teikyoCode: 33,
         teikyoService: '33 共同生活援助',
@@ -257,25 +263,25 @@ export default {
         teikyoService: '43 就労移行支援',
       });
       data.push({
-        jimusyoBango: '111200034',
+        jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 44,
         teikyoService: '44 就労移行支援',
       });
       data.push({
-        jimusyoBango: '111200035',
+        jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 45,
         teikyoService: '45 就労継続支援',
       });
       data.push({
-        jimusyoBango: '111200036',
+        jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 46,
         teikyoService: '46 就労継続支援',
       });
       data.push({
-        jimusyoBango: '111200037',
+        jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 47,
         teikyoService: '47 就労定着支援',
@@ -287,6 +293,14 @@ export default {
         teikyoService: '35 自立生活援助',
       });
 
+      //事業所番号が次のデータと同じ場合に非表示用のフラグを立てる
+      let j = -1;
+      for (let i = 0; i < data.length; i++) {
+        if (data[j] && data[i].jimusyoBango == data[j].jimusyoBango) {
+          data[i]['invisibleFlag'] = true;
+        }
+        j++;
+      }
       this.jimusyo = data;
     },
     onInitializedJimusyo: function (grid) {
@@ -311,6 +325,13 @@ export default {
 
         _self.header_dialog = false;
       });
+      grid.itemFormatter = function (panel, r, c, cell) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          if (_self.jimusyo[r].invisibleFlag && c == 0) {
+            cell.style.color = 'transparent';
+          }
+        }
+      };
     },
     defaultSettings: function () {
       this.createJimusyo();

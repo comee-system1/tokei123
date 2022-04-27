@@ -39,17 +39,27 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="*" class="mt-2 mr-2 pt-1">
+        <v-col cols="*" class="mt-3 mr-3">
+          <v-row justify="end">
+            <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
+          </v-row>
+        </v-col>
+        <!-- <v-col cols="4" class="mt-3">
           <v-row justify="end">
             <v-btn>受給者証修正</v-btn>
           </v-row>
-        </v-col>
+        </v-col> -->
+        <!-- <v-col cols="*">
+          <v-row justify="end">
+            <v-btn>受給者証修正</v-btn>
+          </v-row>
+        </v-col> -->
       </v-row>
       <v-row class="mt-0" no-gutters>
         <v-col cols="4" xl="3" class="mt-1">
           <label>ソート</label>
           <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap" mandatory>
+          <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
             <v-btn
               v-for="n in sortSelList"
               :key="n"
@@ -66,7 +76,7 @@
       </v-row>
       <v-row class="mt-1" no-gutters>
         <v-col cols="*">
-          <v-btn-toggle class="flex-wrap" mandatory>
+          <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
             <v-btn
               small
               outlined
@@ -140,6 +150,8 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
 
+const keySort = 'keyval00003';
+const keyAlp = 'keyval00006';
 const strMaru = '○';
 const bgClrInput = 'white';
 const bgClrError = 'mistyrose';
@@ -148,10 +160,8 @@ const fmtYmd = 'gyy/MM/dd';
 const daiTitle = '受給者証情報';
 const chuTitle = '利用者負担';
 // const currentDate = new Date();
-let siborikomiSearch = '1';
-let siborikomiSearch2 = '1';
-let sortSearch = '1';
-let alphaSearch = '0';
+let siborikomiSearch = '0';
+let siborikomiSearch2 = '0';
 let alphabet = [
   '全',
   'ア',
@@ -174,6 +184,8 @@ export default {
     return {
       alphabet: alphabet,
       errorcnt: '',
+      sortSearch: 0,
+      alphaSearch: 0,
       headerList: [
         { dataname: 'err', title: 'エ\nラ\n|', width: '1.5*', align: 'center' },
         {
@@ -252,19 +264,29 @@ export default {
         { val: 3, name: '今月退所者' },
       ],
       siborikomiSelList: [
-        { val: 1, name: '全員' },
-        { val: 2, name: '未入力' },
-        { val: 3, name: '期限切れ' },
+        { val: 0, name: '全員' },
+        { val: 1, name: '未入力' },
+        { val: 2, name: '期限切れ' },
       ],
       sortSelList: [
-        { val: 1, name: 'コード' },
-        { val: 2, name: 'カナ' },
-        { val: 3, name: '受給者番号' },
+        { val: 0, name: 'コード' },
+        { val: 1, name: 'カナ' },
+        { val: 2, name: '受給者番号' },
       ],
       tplImage: CellMaker.makeImage(),
       viewdataAll: [],
       viewdata: [],
     };
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      // ビュー全体がレンダリングされた後にのみ実行されるコード
+      this.sortSearch = this.getlocalStorage(keySort);
+      this.alphaSearch = this.getlocalStorage(keyAlp);
+      // 初期データ読込
+      this.viewdataAll = this.loadData();
+      this.userFilter();
+    });
   },
   computed: {
     errCnt: function () {
@@ -285,6 +307,14 @@ export default {
     },
   },
   methods: {
+    getlocalStorage: function (key) {
+      let tmpval = localStorage.getItem(key);
+      if (tmpval == null) {
+        return 0;
+      } else {
+        return Number(tmpval);
+      }
+    },
     onInitializejyukyuIcrnGrid: function (flexGrid) {
       flexGrid.beginUpdate();
       // クリックイベント
@@ -349,8 +379,8 @@ export default {
       }
 
       // 初期データ読込
-      this.viewdataAll = this.loadData();
-      this.viewdata = this.viewdataAll;
+      // this.viewdataAll = this.loadData();
+      // this.viewdata = this.viewdataAll;
       flexGrid.endUpdate();
     },
     onFormatItem(flexGrid, e) {
@@ -506,18 +536,21 @@ export default {
       this.userFilter();
     },
     sortUser: function (sortType) {
-      sortSearch = sortType;
+      localStorage.setItem(keySort, sortType);
+      this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      alphaSearch = key;
+      localStorage.setItem(keyAlp, Number(key));
+      this.alphaSearch = Number(key);
       this.userFilter();
     },
     userFilter() {
       let tmpviewdata = [];
-      if (alphaSearch > 0) {
+      let alpval = this.alphaSearch;
+      if (alpval > 0) {
         this.viewdataAll.forEach(function (value) {
-          switch (alphaSearch) {
+          switch (alpval) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
               break;
@@ -554,15 +587,15 @@ export default {
         tmpviewdata = this.viewdataAll.concat();
       }
       // 絞込１
-      if (siborikomiSearch == 2) {
+      if (this.siborikomiSearch == 1) {
         // 今月入所
         tmpviewdata = tmpviewdata.filter((x) => x.isnyusho);
-      } else if (siborikomiSearch == 3) {
+      } else if (siborikomiSearch == 2) {
         // 今月退所
         tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
       }
       // 絞込２
-      if (siborikomiSearch2 == 2) {
+      if (this.siborikomiSearch2 == 1) {
         // !x.koufuymdで空orNullを判定する
         tmpviewdata = tmpviewdata.filter(
           (x) =>
@@ -578,12 +611,12 @@ export default {
             !x.syokujiteikyo ||
             !x.tokubetukyufu
         );
-      } else if (siborikomiSearch2 == 3) {
+      } else if (siborikomiSearch2 == 2) {
         tmpviewdata = tmpviewdata.concat();
       }
 
       //コード順でソート
-      if (sortSearch == 1) {
+      if (this.sortSearch == 0) {
         tmpviewdata.sort((a, b) => {
           if (a.id < b.id) return -1;
           if (a.id > b.id) return 1;
@@ -594,7 +627,7 @@ export default {
         });
       }
       //利用者名でソート
-      if (sortSearch == 2) {
+      if (this.sortSearch == 1) {
         tmpviewdata.sort((a, b) => {
           if (a.kana < b.kana) return -1;
           if (a.kana > b.kana) return 1;
@@ -604,7 +637,7 @@ export default {
         });
       }
       //受給者番号でソート
-      if (sortSearch == 3) {
+      if (this.sortSearch == 2) {
         tmpviewdata.sort((a, b) => {
           if (a.nobk < b.nobk) return -1;
           if (a.nobk > b.nobk) return 1;
@@ -627,8 +660,9 @@ div#jyukyuicrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1366px;
+  min-width: 1260px;
   max-width: 1920px;
+  width: auto;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -636,7 +670,7 @@ div#jyukyuicrn {
   }
 
   .user-info {
-    padding: 5px;
+    padding: 4px;
     font-size: 14px;
     label {
       margin-right: 10px;
@@ -683,7 +717,7 @@ div#jyukyuicrn {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 100%;
-    height: 65vh;
+    height: 60vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -699,26 +733,26 @@ div#jyukyuicrn {
     //   height: 70%;
     // }
     .wj-cell:not(.wj-header) {
-      background: #fffeed;
+      background: $grid_background;
     }
     .wj-cells
       .wj-row:hover
       .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
       transition: all 0s;
-      background: #ccffcc !important;
+      background: $grid_hover_background;
     }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
-      background: #80adbf !important;
-      color: #fff !important;
+      background: $grid_selected_background;
+      color: $grid_selected_color;
     }
 
     .wj-cells .wj-cell.wj-state-selected {
-      background: #80adbf !important;
-      color: #fff !important;
+      background: $grid_selected_background;
+      color: $grid_selected_color;
     }
   }
-  .v-btn {
+  .v-btn-toggle > .v-btn {
     width: 90px;
   }
 }

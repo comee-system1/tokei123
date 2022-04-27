@@ -90,7 +90,7 @@
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 500px"
+      style="height: 450px"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
@@ -98,12 +98,22 @@
       :allowSorting="false"
     >
       <wj-flex-grid-column
-        :header="column1"
+        header="コード"
         binding="riyocode"
         width="2*"
         :word-wrap="false"
         :allowResizing="true"
         :isReadOnly="true"
+        v-if="riyocodeFlag"
+      ></wj-flex-grid-column>
+      <wj-flex-grid-column
+        header="受給者番"
+        binding="jyukyuno"
+        width="2*"
+        :word-wrap="false"
+        :allowResizing="true"
+        :isReadOnly="true"
+        v-if="jyukyunoFlag"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="利用者名"
@@ -114,9 +124,9 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        header="印刷"
+        header="印"
         binding="active"
-        width="1*"
+        :width="25"
         :word-wrap="false"
         :allowResizing="true"
         class="text-caption"
@@ -164,8 +174,6 @@ let alphabet = [
   'ラ',
   'ワ',
 ];
-let codeText = 'コード';
-let jyukyusyaBangoText = '受給者番号';
 export default {
   data() {
     return {
@@ -174,12 +182,20 @@ export default {
       isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
-      column1: codeText,
+      riyocodeFlag: true,
+      jyukyunoFlag: false,
     };
   },
   methods: {
     sortUser: function (sortType) {
       sortSearch = sortType;
+      if (sortSearch == 3) {
+        this.riyocodeFlag = false;
+        this.jyukyunoFlag = true;
+      } else {
+        this.riyocodeFlag = true;
+        this.jyukyunoFlag = false;
+      }
       this.userFilter();
     },
     onAlphabet: function (key) {
@@ -221,11 +237,11 @@ export default {
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
-          riyocode: i + 1000,
+          riyocode: '123456789' + (Math.floor(Math.random() * 9) + 1),
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
-          jyukyuno: 'num-' + i * Math.floor(Math.random() * 10) + 1,
+          jyukyuno: '9876543210' + (Math.floor(Math.random() * 9) + 1),
           sityoid: i * 30,
           jidoid: i * 40,
           kzkname: '東経家族' + i,
@@ -306,7 +322,6 @@ export default {
 
       //コード順でソート
       if (sortSearch == 1) {
-        this.column1 = codeText;
         data.sort((a, b) => {
           if (a.riyocode < b.riyocode) return -1;
           if (a.riyocode > b.riyocode) return 1;
@@ -323,7 +338,6 @@ export default {
       }
       //受給者番号でソート
       if (sortSearch == 3) {
-        this.column1 = jyukyusyaBangoText;
         data.sort((a, b) => {
           if (a.jyukyuno < b.jyukyuno) return -1;
           if (a.jyukyuno > b.jyukyuno) return 1;
@@ -337,6 +351,7 @@ export default {
       return true;
     },
     onInitializedUser: function (flexGrid) {
+      this.userGrid = flexGrid;
       let _self = this;
       //axiosを利用する時下記有効
       // const axiosApi = axios.create({
@@ -446,35 +461,44 @@ function userCell(s, e) {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss" >
 @import '@/assets/scss/common.scss';
 
 div#user-list-print_scrollbar {
   padding: 0;
-  .wj-cell:nth-child(2),
-  .wj-cell:first-child {
-    background-color: $light_yellow;
-    &.wj-header {
-      background-color: #eee;
-    }
-    &.wj-state-multi-selected {
-      color: $font_color;
-    }
+  width: 275px;
+  .wj-cell:not(.wj-header) {
+    background: $grid_background;
   }
-  .wj-cell {
-    &.wj-state-multi-selected {
-      background: #eee;
-    }
+
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
   }
+
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
+
   ::-webkit-scrollbar-track {
-    background: #ccc;
+    background: $light-gray;
     border-radius: 0px;
   }
+
   ::-webkit-scrollbar-thumb {
-    background: #666;
+    background: $brawn;
     border-radius: 0px;
   }
 }

@@ -15,8 +15,8 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters class="mt-0">
-        <v-col cols="4" class="pt-1">
+      <v-row no-gutters class="mt-0 filterArea">
+        <v-col cols="3">
           <label>絞込</label>
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn small color="secondary" dark outlined :width="btnwidth"
@@ -30,8 +30,8 @@
             >
           </v-btn-toggle>
         </v-col>
-        <v-col cols="4" class="pt-1">
-          <label>ソート</label>
+        <v-col cols="3">
+          <label class="text-right">ソート</label>
           <v-btn-toggle v-model="toggle_sort">
             <v-btn
               small
@@ -62,7 +62,7 @@
             >
           </v-btn-toggle>
         </v-col>
-        <v-col cols="3" class="pt-1">
+        <v-col cols="3" class="ml-3">
           <label>カナ検索</label>
           <wj-combo-box
             :textChanged="onTextChangedUser"
@@ -74,7 +74,7 @@
             placeholder="カナ検索"
           ></wj-combo-box>
         </v-col>
-        <v-col cols="1" class="mt-3">
+        <v-col cols="1" class="mt-2">
           <v-btn small color="secondary" outlined :width="btnwidth">検索</v-btn>
         </v-col>
       </v-row>
@@ -385,10 +385,10 @@ export default {
     return {
       year: moment().year(),
       month: moment().format('MM'),
-      btnwidth: 120,
+      btnwidth: 'auto',
       data: [],
       allData: [],
-      jimusyoSearch: ['指定なし', 'ひまわり園'],
+      jimusyoSearch: ['指定なし', 'ひまわり園', 'すみれ介護センター'],
       dialog_jimusyoName: this.getJimusyoName(),
       dialog_jimusyoName_select: '',
       dialog_jimusyoBango: '',
@@ -586,7 +586,7 @@ export default {
           group: i, //所属グループのid
           code: Math.random() * 100,
           space: '自',
-          jyougenkanri: 'ひaまわり園' + i,
+          jyougenkanri: 'ひまわり園',
           kana: 'ヒマワリ園' + Math.random() * 100,
           city: '東経市',
           jyukyuBango: '110001' + i,
@@ -608,7 +608,7 @@ export default {
           group: i,
           code: Math.random() * 100,
           space: '自',
-          jyougenkanri: 'ひaまわり園',
+          jyougenkanri: 'ひまわり園',
           kana: 'ヒマワリ園' + i,
           city: '東経市',
           jyukyuBango: '110001' + (i % 3),
@@ -617,7 +617,7 @@ export default {
           rese: '', //require('@/assets/kaku_15px.png'),
           kouban: 2,
           jigyosyoBango: '1121' + i,
-          jigyosyoMei: 'すみれ介護センター',
+          jigyosyoMei: 'ひまわり園',
           teikyoService: '11:居宅介護',
           souhiyogaku: 98500,
           riyoufutan: 9300,
@@ -820,24 +820,14 @@ export default {
       for (let i = 0; i < griddata.length; i++) {
         let j = 0;
 
-        if (griddata[i]['kouban'] == 1) {
-          grid.setCellData(i, j++, griddata[i]['space']);
-          grid.setCellData(i, j++, griddata[i]['jyougenkanri']);
-          grid.setCellData(i, j++, griddata[i]['city']);
-          grid.setCellData(i, j++, griddata[i]['jyukyuBango']);
-          grid.setCellData(i, j++, griddata[i]['riyou']);
-          grid.setCellData(i, j++, griddata[i]['riyousyafutan']);
-        } else {
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-          grid.setCellData(i, j++, '');
-        }
+        grid.setCellData(i, j++, griddata[i]['space']);
+        grid.setCellData(i, j++, griddata[i]['jyougenkanri']);
+        grid.setCellData(i, j++, griddata[i]['city']);
+        grid.setCellData(i, j++, griddata[i]['jyukyuBango']);
+        grid.setCellData(i, j++, griddata[i]['riyou']);
+        grid.setCellData(i, j++, griddata[i]['riyousyafutan']);
         grid.setCellData(i, j++, griddata[i]['rese']);
         grid.setCellData(i, j++, griddata[i]['kouban']);
-
         grid.setCellData(i, j++, griddata[i]['jigyosyoBango']);
         grid.setCellData(i, j++, griddata[i]['jigyosyoMei']);
         grid.setCellData(i, j++, griddata[i]['teikyoService']);
