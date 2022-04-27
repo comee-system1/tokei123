@@ -8,7 +8,7 @@
     ></header-services>
 
     <v-container fluid class="jijyougen-container">
-      <v-row class="mt-0">
+      <v-row class="mt-0 filterArea">
         <v-col cols="4" class="pt-1">
           <label>事業所</label>
           <wj-combo-box :items-source="jimusyoSearch"></wj-combo-box>
@@ -117,7 +117,7 @@
         :alternatingRowStep="0"
         :autoGenerateColumns="false"
         :initialized="onInitialized"
-        :isReadOnly="true"
+        :isReadOnly="false"
         :allowDragging="false"
         :allowResizing="false"
         :deferResizing="false"
@@ -600,7 +600,7 @@ export default {
           souhiyogaku: 98500,
           riyoufutan: 9300,
           nyuryoku: '',
-          print: '',
+          print: true,
         });
       }
       for (let i = 0; i <= 1; i++) {
@@ -622,7 +622,7 @@ export default {
           souhiyogaku: 98500,
           riyoufutan: 9300,
           nyuryoku: '',
-          print: '',
+          print: true,
         });
       }
       data.sort((a, b) => {
