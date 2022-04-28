@@ -11,24 +11,62 @@
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(1)">全員</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(1)"
+            >
+              全員
+            </v-card>
           </v-col>
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(2)">全員2</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(2)"
+              >全員2</v-card
+            >
           </v-col>
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(3)">全員3</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(3)"
+              >全員3</v-card
+            >
           </v-col>
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(1)">コード</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(1)"
+            >
+              コード
+            </v-card>
           </v-col>
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(2)">カナ</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(2)"
+              >カナ</v-card
+            >
           </v-col>
           <v-col>
-            <v-card class="text-caption text-center" outlined tile @click="sortUser(3)">受給者番号</v-card>
+            <v-card
+              class="text-caption text-center"
+              outlined
+              tile
+              @click="sortUser(3)"
+              >受給者番号</v-card
+            >
           </v-col>
         </v-row>
       </v-col>
@@ -48,22 +86,22 @@
       </v-btn-toggle>
     </div>
     <wj-flex-grid
-			id="userListGrid"
       class="mt-1"
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 65vh"
+      style="height: 390px"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
       :allowResizing="true"
       :allowSorting="false"
     >
-			<wj-flex-grid-column header="確定" binding="kakutei" width="1*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="印刷" binding="active" width="1*" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
+      <wj-flex-grid-column header="確" binding="kakutei" :width="30" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="コード" binding="riyocode" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="受給者番" binding="jyukyuno" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="利用者名" binding="names" width="4*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="印" binding="active" :width="30" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-combo-box
@@ -72,8 +110,7 @@
       :isRequired="false"
       :selectedIndex="-1"
       :selectedIndexChanged="onselectedIndexChanged"
-    >
-		</wj-combo-box>
+    ></wj-combo-box>
   </div>
 </template>
 <script>
@@ -108,7 +145,6 @@ let alphabet = [
   'ラ',
   'ワ',
 ];
-
 export default {
   data() {
     return {
@@ -117,11 +153,20 @@ export default {
       isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
+      riyocodeFlag: true,
+      jyukyunoFlag: false,
     };
   },
   methods: {
     sortUser: function (sortType) {
       sortSearch = sortType;
+      if (sortSearch == 3) {
+        this.riyocodeFlag = false;
+        this.jyukyunoFlag = true;
+      } else {
+        this.riyocodeFlag = true;
+        this.jyukyunoFlag = false;
+      }
       this.userFilter();
     },
     onAlphabet: function (key) {
@@ -163,11 +208,11 @@ export default {
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
-          riyocode: i + 1000,
+          riyocode: '123456789' + (Math.floor(Math.random() * 9) + 1),
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
-          jyukyuno: 'num-' + i * Math.floor(Math.random() * 10) + 1,
+          jyukyuno: '9876543210' + (Math.floor(Math.random() * 9) + 1),
           sityoid: i * 30,
           jidoid: i * 40,
           kzkname: '東経家族' + i,
@@ -277,7 +322,7 @@ export default {
       return true;
     },
     onInitializedUser: function (flexGrid) {
-      flexGrid.selection = new wjGrid.CellRange(0,2);
+      this.userGrid = flexGrid;
       let _self = this;
       //axiosを利用する時下記有効
       // const axiosApi = axios.create({
@@ -387,45 +432,46 @@ function userCell(s, e) {
   }
 }
 </script>
-
-<style lang="scss">
+<style lang="scss" >
+@import '@/assets/scss/common.scss';
 
 div#user-list-print_scrollbar {
-	padding-right:7px !important;
-  .wj-cell:nth-child(2),
-  .wj-cell:first-child {
-    background-color: #fffacd;
-    &.wj-header {
-      background-color: #eee;
-    }
-    &.wj-state-multi-selected {
-      color: #000;
-    }
+  padding: 0;
+  width: 275px;
+  font-size: 12px;
+  .wj-cell:not(.wj-header) {
+    background: $grid_background;
   }
-  .wj-cell {
-    &.wj-state-multi-selected {
-      background: #eee;
-    }
+
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
   }
+
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
   ::-webkit-scrollbar {
-    width: 2px;
+    width: 10px;
   }
+
   ::-webkit-scrollbar-track {
-    background: #666;
-    border-radius: 10px;
+    background: $light-gray;
+    border-radius: 0px;
   }
+
   ::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
+    background: $brawn;
+    border-radius: 0px;
   }
-}
-
-#userListGrid{
-	font-size: 14px;
-}
-
-#userListGrid .wj-state-selected {
-    background-color: #eee;
-    color: #000;
 }
 </style>

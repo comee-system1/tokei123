@@ -46,9 +46,9 @@
       <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="医療連携体制加算" binding="iryo" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="緊急短期入所受入加算" binding="kinkyu" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="重度障害者支援加算（研修修了者）" binding="jyudo" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="重度障害者支援加算（研修修了者）" binding="jyudo" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="定員超過特例加算" binding="chokatk" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="備考" binding="biko" :width="'17*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="備考" binding="biko" :width="'16*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
   </div>
 </template>
@@ -188,6 +188,7 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
+          s.color = "#333333";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 3 || c == 10){
             // 一旦太線を非表示にする

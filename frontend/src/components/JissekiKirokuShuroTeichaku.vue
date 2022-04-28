@@ -39,15 +39,10 @@
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'10*'"></wj-flex-grid-column>
-      <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="往" binding="gei" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="復" binding="sou" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="備考" binding="biko" :width="'24*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="算定日数"  binding="jyokyo" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="特別地域加算" binding="kasantkt" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="定着支援連携促進加算" binding="kasantren" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="備考" binding="biko" :width="'59*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-flex-grid
@@ -59,13 +54,11 @@
       :allowResizing="false"
       :allowDragging="false"
     >
-      <wj-flex-grid-column binding="Column0" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column1" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column2" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column3" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column4" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column5" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column6" :width="'20*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column binding="Column0" :width="'16*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column binding="Column1" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column binding="Column2" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column binding="Column3" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column binding="Column4" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
   </div>
 </template>
@@ -98,9 +91,6 @@ export default{
       currentPageTitle: this.$route.name,
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
-      tsushoTotal:apiResult['riyo_inf'][0]['gokei_tusho'],
-      houmonTotal1:apiResult['riyo_inf'][0]['gokei_homon1'],
-      houmonTotal2:apiResult['riyo_inf'][0]['gokei_homon2'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(apiResult),
     }
@@ -112,9 +102,7 @@ export default{
 
       // 空のヘッダー行とフッター行を追加/////////////////////////////////////////////
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
-      flexGrid.columnFooters.rows.insert(1, new wjGrid.GroupRow());
       let headerpanel = flexGrid.columnHeaders;
       let footerPanel = flexGrid.columnFooters;
 
@@ -122,25 +110,12 @@ export default{
       let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let headerRanges = [
-        new wjGrid.CellRange(0,0,2,0),
-        new wjGrid.CellRange(0,1,2,1),
-        new wjGrid.CellRange(0,2,0,10),
-        new wjGrid.CellRange(1,2,2,2),
-        new wjGrid.CellRange(1,3,2,3),
-        new wjGrid.CellRange(1,4,2,4),
-        new wjGrid.CellRange(1,5,2,5),
-        new wjGrid.CellRange(1,6,1,7),
-        new wjGrid.CellRange(1,8,2,8),
-        new wjGrid.CellRange(1,9,2,9),
-        new wjGrid.CellRange(1,10,2,10)
+        new wjGrid.CellRange(0,0,1,0),
+        new wjGrid.CellRange(0,1,1,1),
+        new wjGrid.CellRange(0,2,0,5),
       ];
       let footerRanges = [
-        new wjGrid.CellRange(0,0,1,2),
-        new wjGrid.CellRange(0,4,0,5),
-        new wjGrid.CellRange(0,6,1,7),
-        new wjGrid.CellRange(0,8,1,8),
-        new wjGrid.CellRange(0,9,1,9),
-        new wjGrid.CellRange(0,10,1,10),
+        new wjGrid.CellRange(0,0,0,1),
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
@@ -162,24 +137,9 @@ export default{
 
       // 改行指定不要のヘッダー・フッターの内容を設定する
       // ヘッダー0行目
-      headerpanel.setCellData(0, 2, "サービス提供実績");
-      // ヘッダー1行目
-      headerpanel.setCellData(1, 3, "提供形態");
-      headerpanel.setCellData(1, 4, "開始時間");
-      headerpanel.setCellData(1, 5, "終了時間");
-      headerpanel.setCellData(1, 6, "送迎加算");
-      headerpanel.setCellData(1, 8, "食事提供加算");
-      headerpanel.setCellData(1, 9, "体験利用支援加算");
-      headerpanel.setCellData(1, 10, "備考");
+      headerpanel.setCellData(0, 2, "支援実績");
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
-      footerPanel.setCellData(0, 3, "通所型");
-      footerPanel.setCellData(0, 4, this.tsushoTotal);
-      footerPanel.setCellData(0, 6, this.sougeiTotal);
-      // フッター1行目
-      footerPanel.setCellData(1, 3, "訪問型");
-      footerPanel.setCellData(1, 4, "1時間未満 : " + this.houmonTotal1);
-      footerPanel.setCellData(1, 5, "1時間以上 : " + this.houmonTotal2);
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
@@ -194,8 +154,6 @@ export default{
             cell.innerHTML = '日<br/>付';
           }else if (r == 0 && c == 1) {
             cell.innerHTML = '曜<br/>日';
-          }else if (r == 1 && c == 2) {
-            cell.innerHTML = 'サービス提供<br/>の状況';
           }
           // ヘッダーのスタイル
           //＊一旦ヘッダーの色をグレーに戻す↓
@@ -204,23 +162,22 @@ export default{
           // s.color = "#4d4d4d";
           // 一旦ヘッダーの文字の太さを元に戻す
           // s.fontWeight = "normal";
-          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4 || c == 5))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11))){
+          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && (c == 8 || c == 9 || c == 10 || c == 11))){
             // 一旦太線を非表示にする
             // s.borderBottom = "2px solid #348498";
           }
 
-          if(c == 1 || c == 5 || c == 9){
+          if(c == 1 || c == 4 || c == 10){
             // 一旦太線を非表示にする
             // s.borderRight = "2px solid #348498";
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          //一旦編集不可のセルをアイボリーにする↓
+          //＊一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
           s.color = "#333333";
-          // s.color = "#4d4d4d";
-          if(c == 1 || c == 5 || c == 9){
+          if(c == 1 || c == 4 || c == 10){
             // 一旦太線を非表示にする
             // s.borderRight = "2px solid #348498";
           }
@@ -240,10 +197,10 @@ export default{
           // s.fontWeight = "normal";
           // 一旦太線を非表示にする
           // s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 || c == 2 || c == 3){
+          if(c == 0 || c == 1){
             //＊一旦ヘッダーの色をグレーに戻す↓
             // s.backgroundColor = "#d4edf4";
-          }else if(c == 10){
+          }else if(c == 5){
             s.backgroundColor = "#cccccc";
           }else{
             //＊一旦編集不可のセルをアイボリーにする↓
@@ -251,7 +208,7 @@ export default{
             // s.backgroundColor = "#ffffff";
           }
 
-          if(c == 0 || c == 5 || c == 9){
+          if(c == 0 || c == 10){
             // 一旦太線を非表示にする
             // s.borderRight = "2px solid #348498";
           }
@@ -289,14 +246,9 @@ export default{
             rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
             youbi:WeekChars[date.getDay()],
             jyokyo:kirokuMeiData[i]["jyokyo"],
-						keitai:kirokuMeiData[i]["keitai"],
-            jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-            jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-            gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-            sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-            kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-            biko:kirokuMeiData[i]["biko"],
+            kasantkt:kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
+            kasantren:kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
+            biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
           }
         )
       }
@@ -304,17 +256,14 @@ export default{
     },
     getSubGridData:function(data){
       let riyouKaishibi = data['riyo_inf'][0]['staymd'];
-      let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
       let subGridData = [];
       subGridData.push(
         {
           Column0: "初期加算",
           Column1: "利用開始日",
           Column2: dateFilter(riyouKaishibi),
-          Column3: "30日目",
+          Column3: "支援レポート共有日",
           Column4: thirtythDayFilter(riyouKaishibi),
-          Column5: "当月算定日数",
-          Column6: tougetsuSantei + "日"
         },
       )
       return subGridData;

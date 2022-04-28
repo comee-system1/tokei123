@@ -4,7 +4,7 @@
       <div class="service-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0">サービス</v-card>
+            <v-card class="pa-1 transparent white--text" elevation="0"><label>サービス</label></v-card>
           </v-col>
           <v-col md="3">
             <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
@@ -17,7 +17,7 @@
       <div class="month-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0">請求月</v-card>
+            <v-card class="pa-1 transparent white--text" elevation="0"><label>請求月</label></v-card>
           </v-col>
           <v-col md="2">
             <v-card class="d-flex flex-row" color="transparent" elevation="0">
@@ -51,7 +51,7 @@
             </v-card>
           </v-col>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0" v-if="seikyuflag">提供月</v-card>
+            <v-card class="pa-1 transparent white--text" elevation="0" v-if="seikyuflag"><label>提供月</label></v-card>
           </v-col>
           <v-col md="2">
             <v-card class="transparent" tile>
@@ -174,7 +174,7 @@ export default {
         jimusyoBango: '111200032',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 42,
-        teikyoService: '42 自立訓練(機能訓練)',
+        teikyoService: '42 自立訓練(生活訓練)',
       });
       data.push({
         jimusyoBango: '111200033',
@@ -297,8 +297,15 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '@/assets/scss/common.scss';
+
+body {
+  font-size:14px;
+}
+.v-card {
+  font-size:14px;
+}
 
 .header_dialogs {
   position: fixed !important;

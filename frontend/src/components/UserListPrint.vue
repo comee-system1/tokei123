@@ -90,7 +90,7 @@
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 450px"
+      style="height: 55vh"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
@@ -107,9 +107,9 @@
         v-if="riyocodeFlag"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        header="受給者番"
+        header="受給者番号"
         binding="jyukyuno"
-        width="2*"
+        :width="110"
         :word-wrap="false"
         :allowResizing="true"
         :isReadOnly="true"
@@ -237,11 +237,11 @@ export default {
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
-          riyocode: '123456789' + (Math.floor(Math.random() * 9) + 1),
+          riyocode: '123456' + (Math.floor(Math.random() * 9) + 1),
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
-          jyukyuno: '9876543210' + (Math.floor(Math.random() * 9) + 1),
+          jyukyuno: '876543210' + (Math.floor(Math.random() * 9) + 1),
           sityoid: i * 30,
           jidoid: i * 40,
           kzkname: '東経家族' + i,
@@ -266,19 +266,7 @@ export default {
         if (checkAll == '0') value.active = true;
         if (checkAll == '1') value.active = false;
         if (value.names.indexOf(textSearch) != -1) {
-          data.push({
-            riid: value.riid,
-            riyocode: value.riyocode,
-            names: value.names,
-            kana: value.kana,
-            jukyuid: value.jukyuid,
-            jyukyuno: value.jyukyuno,
-            sityoid: value.sityoid,
-            jidoid: value.jidoid,
-            kzkname: value.kzkname,
-            kakutei: value.kakutei,
-            active: value.active,
-          });
+          data.push(value);
         }
       });
       if (alphaSearch > 0) {
@@ -286,34 +274,34 @@ export default {
         data.forEach(function (value) {
           switch (alphaSearch) {
             case 1:
-              if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
+              if (value.kana.match(/^[ア-オ]/)) get.push(value);
               break;
             case 2:
-              if (value.kana.match(/^[カ-コ]/)) setPush(get, value);
+              if (value.kana.match(/^[カ-コ]/)) get.push(value);
               break;
             case 3:
-              if (value.kana.match(/^[サ-ソ]/)) setPush(get, value);
+              if (value.kana.match(/^[サ-ソ]/)) get.push(value);
               break;
             case 4:
-              if (value.kana.match(/^[タ-ト]/)) setPush(get, value);
+              if (value.kana.match(/^[タ-ト]/)) get.push(value);
               break;
             case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) setPush(get, value);
+              if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
               break;
             case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) setPush(get, value);
+              if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
               break;
             case 7:
-              if (value.kana.match(/^[マ-モ]/)) setPush(get, value);
+              if (value.kana.match(/^[マ-モ]/)) get.push(value);
               break;
             case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) setPush(get, value);
+              if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
               break;
             case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) setPush(get, value);
+              if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
               break;
             case 10:
-              if (value.kana.match(/^[ワ-ン]/)) setPush(get, value);
+              if (value.kana.match(/^[ワ-ン]/)) get.push(value);
               break;
           }
         });
@@ -425,23 +413,6 @@ export default {
     },
   },
 };
-
-//カナアイコンフィルタリング用
-function setPush(get, value) {
-  return get.push({
-    riid: value.riid,
-    riyocode: value.riyocode,
-    names: value.names,
-    kana: value.kana,
-    jukyuid: value.jukyuid,
-    jyukyuno: value.jyukyuno,
-    sityoid: value.sityoid,
-    jidoid: value.jidoid,
-    kzkname: value.kzkname,
-    kakutei: value.kakutei,
-    active: value.active,
-  });
-}
 
 function userCell(s, e) {
   if (e.cell.children.length == 0) {

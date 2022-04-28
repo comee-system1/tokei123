@@ -227,6 +227,7 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
+          s.color = "#333333";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 5 || c == 11){
             // 一旦太線を非表示にする
@@ -424,5 +425,9 @@ function getSougeiTotal(data){
 
 .denbun-toggle{
   margin-left:20px;
+}
+
+#detailGrid {
+  height: 60vh;
 }
 </style>

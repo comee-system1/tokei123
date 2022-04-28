@@ -515,34 +515,34 @@ export default {
           if (value.kana) {
             switch (key) {
               case 1:
-                if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
+                if (value.kana.match(/^[ア-オ]/)) get.push(value);
                 break;
               case 2:
-                if (value.kana.match(/^[カ-コ]/)) setPush(get, value);
+                if (value.kana.match(/^[カ-コ]/)) get.push(value);
                 break;
               case 3:
-                if (value.kana.match(/^[サ-ソ]/)) setPush(get, value);
+                if (value.kana.match(/^[サ-ソ]/)) get.push(value);
                 break;
               case 4:
-                if (value.kana.match(/^[タ-ト]/)) setPush(get, value);
+                if (value.kana.match(/^[タ-ト]/)) get.push(value);
                 break;
               case 5:
-                if (value.kana.match(/^[ナ-ノ]/)) setPush(get, value);
+                if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
                 break;
               case 6:
-                if (value.kana.match(/^[ハ-ホ]/)) setPush(get, value);
+                if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
                 break;
               case 7:
-                if (value.kana.match(/^[マ-モ]/)) setPush(get, value);
+                if (value.kana.match(/^[マ-モ]/)) get.push(value);
                 break;
               case 8:
-                if (value.kana.match(/^[ヤ-ヨ]/)) setPush(get, value);
+                if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
                 break;
               case 9:
-                if (value.kana.match(/^[ラ-ロ]/)) setPush(get, value);
+                if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
                 break;
               case 10:
-                if (value.kana.match(/^[ワ-ン]/)) setPush(get, value);
+                if (value.kana.match(/^[ワ-ン]/)) get.push(value);
                 break;
             }
           }
@@ -556,24 +556,7 @@ export default {
       let data = [];
       this.allData.forEach(function (value) {
         if (value.jyougenkanri.indexOf(e.text) != -1) {
-          data.push({
-            code: value.code,
-            space: value.space,
-            jyougenkanri: value.jyougenkanri,
-            kana: value.kana,
-            city: value.city,
-            jyukyuBango: value.jyukyuBango,
-            riyou: value.riyou,
-            riyousyafutan: value.riyousyafutan,
-            rese: value.rese,
-            kouban: value.kouban,
-            jigyosyoBango: value.jigyosyoBango,
-            jigyosyoMei: value.jigyosyoMei,
-            teikyoService: value.teikyoService,
-            souhiyogaku: value.souhiyogaku,
-            riyoufutan: value.riyoufutan,
-            print: value.print,
-          });
+          data.push(value);
         }
       });
       this.griddata = data;
@@ -853,28 +836,6 @@ export default {
     },
   },
 };
-
-function setPush(get, value) {
-  get.push({
-    code: value.code,
-    space: value.space,
-    jyougenkanri: value.jyougenkanri,
-    kana: value.kana,
-    city: value.city,
-    jyukyuBango: value.jyukyuBango,
-    riyou: value.riyou,
-    riyousyafutan: value.riyousyafutan,
-    rese: value.rese,
-    kouban: value.kouban,
-    jigyosyoBango: value.jigyosyoBango,
-    jigyosyoMei: value.jigyosyoMei,
-    teikyoService: value.teikyoService,
-    souhiyogaku: value.souhiyogaku,
-    riyoufutan: value.riyoufutan,
-    print: value.print,
-  });
-  return get;
-}
 function convertText(text, slice) {
   let html = text.slice(0, slice);
   html += '<br />';

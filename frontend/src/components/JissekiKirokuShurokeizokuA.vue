@@ -39,18 +39,18 @@
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="開始時間" binding="jstime" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="終了時間" binding="jetime" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="往" binding="gei" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="復" binding="sou" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="地域協働加算" binding="kasankdo" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'7*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="地域協働加算" binding="kasankdo" :width="'7*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="施設外支援" binding="kasang" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="備考" binding="biko" :width="'16*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="備考" binding="biko" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-flex-grid
@@ -241,6 +241,7 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
+          s.color = "#333333";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 4 || c == 12){
             // 一旦太線を非表示にする
@@ -450,6 +451,10 @@ function getSisetsugaiTotal(data){
 
 .denbun-toggle{
   margin-left:20px;
+}
+
+#detailGrid {
+  height: 60vh;
 }
 
 </style>

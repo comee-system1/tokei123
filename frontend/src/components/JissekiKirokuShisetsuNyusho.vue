@@ -225,6 +225,7 @@ export default{
           // 通常セルのスタイル
           //一旦編集不可のセルをアイボリーにする↓
           s.backgroundColor = "#fffeed";
+          s.color = "#333333";
           // s.color = "#4d4d4d";
           if(c == 1 || c == 7 || c == 11){
             // 一旦太線を非表示にする
@@ -488,11 +489,11 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 }
 
 .hosokuumu-block{
-  width:216px;
+  width:205px;
 }
 
 .hosokugaku-block{
-  width:216px;
+  width:210px;
   margin-left:10px;
 }
 
@@ -506,13 +507,18 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 }
 
 .hosokukyuhu-box {
-  width:60px;
+  width:45px;
   margin-right:20px;
   border:none;
 }
 
+.hosokukyuhu-box:first-child {
+  width:20px;
+}
+
 .denbun-toggle{
   margin-left:20px;
+  width:80px;
 }
 
 #jippisanteigakuGrid {
@@ -522,5 +528,6 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
 #detailGrid {
   margin-top:5px;
+  height: 57vh;
 }
 </style>

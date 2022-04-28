@@ -7,7 +7,7 @@
 
     <v-container class="user-info" fluid>
       <v-row no-gutters>
-        <v-col cols="3" xl="2">
+        <v-col cols="3" xl="3">
           <label>利用者</label>
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
@@ -39,21 +39,11 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="*" class="mt-3 mr-3">
+        <v-col cols="3" class="mt-3 mr-3">
           <v-row justify="end">
             <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
           </v-row>
         </v-col>
-        <!-- <v-col cols="4" class="mt-3">
-          <v-row justify="end">
-            <v-btn>受給者証修正</v-btn>
-          </v-row>
-        </v-col> -->
-        <!-- <v-col cols="*">
-          <v-row justify="end">
-            <v-btn>受給者証修正</v-btn>
-          </v-row>
-        </v-col> -->
       </v-row>
       <v-row class="mt-0" no-gutters>
         <v-col cols="4" xl="3" class="mt-1">
@@ -205,13 +195,13 @@ export default {
         {
           dataname: 'jitibangou',
           title: '助成自治\n体番号',
-          width: '2.5*',
+          width: 70,
           align: 'center',
         },
         {
           dataname: 'jyukyukbn',
           title: '受給者\n区分',
-          width: '2*',
+          width: 50,
           align: 'center',
         },
         {
@@ -222,20 +212,20 @@ export default {
         },
         {
           dataname: 'syougaisyu',
-          title: '障害種別',
-          width: '1.5*',
+          title: '障害\n種別',
+          width: 50,
           align: 'center',
         },
         {
           dataname: 'syougaisienkbn',
           title: '障害\n支援\n区分',
-          width: '1.5*',
+          width: 50,
           align: 'center',
         },
         {
           dataname: 'futanjyougen',
           title: '利用者負担\n上限月額',
-          width: '3*',
+          width: 80,
           align: 'right',
         },
         {
@@ -246,8 +236,8 @@ export default {
         },
         {
           dataname: 'syokujiteikyo',
-          title: '食事\n提供\n体制',
-          width: '1.5*',
+          title: '食事提供\n体制',
+          width: 70,
           align: 'center',
         },
         {
@@ -256,7 +246,7 @@ export default {
           width: '2.5*',
           align: 'right',
         },
-        { dataname: 'syusei', title: '修正', width: '1.5*', align: 'center' },
+        { dataname: 'syusei', title: '修正', width: 50, align: 'center' },
       ],
       userSelList: [
         { val: 1, name: '全員' },
@@ -337,7 +327,7 @@ export default {
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[2].height = 60;
+      flexGrid.columnHeaders.rows[2].height = 40;
 
       flexGrid.alternatingRowStep = 0;
 
@@ -660,7 +650,7 @@ div#jyukyuicrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1260px;
+  min-width: 1366px;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -670,8 +660,8 @@ div#jyukyuicrn {
   }
 
   .user-info {
+    width: auto;
     padding: 4px;
-    font-size: 14px;
     label {
       margin-right: 10px;
       padding-top: 10px;
@@ -716,8 +706,9 @@ div#jyukyuicrn {
   #jyukyuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 100%;
-    height: 60vh;
+    width: 98vw;
+    min-width: 1300px;
+    height: 65vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ

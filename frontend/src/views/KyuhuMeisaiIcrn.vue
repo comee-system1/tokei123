@@ -1236,6 +1236,7 @@ export default {
       let alpval = this.alphaSearch;
       if (alpval > 0) {
         this.viewkyufudataAll.forEach(function (value) {
+          // ここでのthisはforeach内のthisに置き換わる
           switch (alpval) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
@@ -1326,7 +1327,7 @@ div#KyuhuMeisaiIcrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1260px;
+  min-width: 1366px;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -1336,6 +1337,7 @@ div#KyuhuMeisaiIcrn {
   }
 
   .user-info {
+    width: auto;
     padding: 4px;
     label {
       margin-right: 10px;
@@ -1376,8 +1378,9 @@ div#KyuhuMeisaiIcrn {
   #kyufuGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 100%;
-    height: 60vh;
+    width: 98vw;
+    min-width: 1320px;
+    height: 64vh;
     // max-height: 1080px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -1413,10 +1416,6 @@ div#KyuhuMeisaiIcrn {
       background: $grid_selected_background;
       color: $grid_selected_color;
     }
-  }
-  #kyufuGrid {
-    width: 100%;
-    display: none; // 初期は非表示
   }
 
   .v-btn-toggle > .v-btn {
