@@ -203,6 +203,7 @@ export default {
      */
     kikantuika_dialog_regist: function () {
       this.registData = {
+        type: this.type,
         selectKey: this.selectKey,
         nyuuinbi: moment(this.nyuuinbi).format('YYYY-M-D'),
         taiinbi: moment(this.taiinbi).format('YYYY-M-D'),
@@ -220,8 +221,9 @@ export default {
       this.dialogFlag = false;
     },
 
-    parentFromOpenDialog(data) {
+    parentFromOpenDialog(data, type) {
       this.dialogFlag = true;
+      this.type = type;
       this.selectKey = data ? data.selectKey : '';
       this.nyuuinbi = data ? data.nyuuinbi : '';
       this.byouinName = data ? data.byouinName : '';

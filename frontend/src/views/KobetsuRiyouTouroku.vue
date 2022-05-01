@@ -399,6 +399,7 @@ export default {
     //期間追加ダイアログの登録ボタン押下
     kikantuika_dialog_regist: function () {
       this.editGridFlag = true;
+      this.selectType = this.$refs.dialog_kikantuika.registData.type;
       this.mainGrid.itemsSource = [];
     },
     onitemsSourceChanged: function (flexGrid) {
@@ -621,15 +622,38 @@ function methodCellClickEvent(flexGrid, _self) {
         taiinbiDinner: _self.nyutaiinData[0].date[selectKey].taiinbiDinner,
         taiinbiAida: _self.nyutaiinData[0].date[selectKey].taiinbiAida,
       };
-      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params);
+      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params, 'nyutaiin');
     }
+
     // 変動情報ダイアログ 外泊
     regexp = /^<span class="d-none">gaihaku_termFlag_[0-9].*<\/span>/;
     if (ht.target.innerHTML.match(regexp)) {
-      _self.$refs.dialog_kikantuika.parentFromOpenDialog(
-        _self.gaihakuData[ht.target.innerHTML.match(regexp)[0].match(/\d+/)[0]]
-      );
+      let selectKey = e.target.id.split('-')[1];
+      let params = {};
+      params = {
+        selectKey: selectKey,
+        byouinName: _self.gaihakuData[0].date[selectKey].byouinName,
+        nyuuinbi: _self.gaihakuData[0].date[selectKey].start_date,
+        taiinbi: _self.gaihakuData[0].date[selectKey].end_date,
+        //入院用
+        nyuuinbiShiseturiyo:
+          _self.gaihakuData[0].date[selectKey].nyuuinbiShiseturiyo,
+        nyuuinbiBreakfast:
+          _self.gaihakuData[0].date[selectKey].nyuuinbiBreakfast,
+        nyuuinbiLunch: _self.gaihakuData[0].date[selectKey].nyuuinbiLunch,
+        nyuuinbiDinner: _self.gaihakuData[0].date[selectKey].nyuuinbiDinner,
+        //退院用
+        taiinbiShiseturiyo:
+          _self.gaihakuData[0].date[selectKey].taiinbiShiseturiyo,
+        taiinbiBreakfast: _self.gaihakuData[0].date[selectKey].taiinbiBreakfast,
+        taiinbiLunch: _self.gaihakuData[0].date[selectKey].taiinbiLunch,
+        taiinbiDinner: _self.gaihakuData[0].date[selectKey].taiinbiDinner,
+        taiinbiAida: _self.gaihakuData[0].date[selectKey].taiinbiAida,
+      };
+
+      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params, 'gaihaku');
     }
+
     // 変動情報ダイアログ
     // 加算情報
     for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
@@ -687,13 +711,18 @@ function methodSettingPoint(flexGrid, _self) {
   //利用日の設定
   settingRiyoubi(flexGrid, _self);
   //入院・退院日の設定
-  if (_self.editGridFlag == false) {
-    settingNyuTaiin(flexGrid, _self);
-  } else {
+
+  if (_self.editGridFlag == true && _self.selectType == 'nyutaiin') {
     editNyuTaiin(flexGrid, _self);
+  } else {
+    settingNyuTaiin(flexGrid, _self);
   }
   //外泊の設定
-  settingGaihaku(flexGrid, _self);
+  if (_self.editGridFlag == true && _self.selectType == 'gaihaku') {
+    editGaihaku(flexGrid, _self);
+  } else {
+    settingGaihaku(flexGrid, _self);
+  }
   //食事の設定
   settingMeals(flexGrid, _self);
 }
@@ -827,14 +856,20 @@ function settingGaihaku(flexGrid, _self) {
   let gaihaku = [];
   gaihaku.push({
     total: 4,
-    moeny: 1200,
     date: [
       {
         byouinName: '東経国立病院',
         start_date: '4/6',
         end_date: '4/12',
-        nyuuinbiShiseturiyo: 1,
         diff_date: 7,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
         day6: 'gaihaku_arrow_start-0', //文字列のあとに下記にあるdateのキーを指定
         day7: 'gaihaku_arrow-0',
         day8: 'gaihaku_arrow-0',
@@ -847,8 +882,15 @@ function settingGaihaku(flexGrid, _self) {
         byouinName: '北経国立病院',
         start_date: '4/12',
         end_date: '4/14',
-        nyuuinbiShiseturiyo: 0,
         diff_date: 3,
+        nyuuinbiShiseturiyo: 0,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
         day12: 'gaihaku_arrow_start-1',
         day13: 'gaihaku_arrow-1',
         day14: 'gaihaku_arrow_end-1',
@@ -858,32 +900,115 @@ function settingGaihaku(flexGrid, _self) {
         start_date: '4/25',
         end_date: '4/27',
         diff_date: 2,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
         day25: 'gaihaku_arrow_start-2',
         day26: 'gaihaku_arrow-2',
         day27: 'gaihaku_arrow_end-2',
       },
     ],
   });
+  //矢印の作成
+  setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+  _self.gaihakuData = gaihaku;
+}
+/*********
+ * 外泊の編集
+ */
+function editGaihaku(flexGrid, _self) {
+  let gaihaku = [];
 
+  //console.log(_self.$refs.dialog_kikantuika.registData);
+  //別コンポーネントダイアログのregistDataの値を取得(キーのみ)
+  let selectKey = _self.$refs.dialog_kikantuika.registData.selectKey;
+  gaihaku = _self.gaihakuData;
+  //日付情報を一度クリア
+  for (let i = 0; i < _self.lastdate; i++) {
+    let d = 'day' + i;
+    gaihaku[0]['date'][selectKey][d] = '';
+  }
+
+  //日付のloop
+  //秒に変換してloopを行う
+  let st = new Date(_self.$refs.dialog_kikantuika.registData.nyuuinbi);
+  let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
+  let firstday = st.getDate();
+  let lastday = ed.getDate();
+  let num = 0;
+
+  gaihaku[0]['date'][selectKey]['start_date'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbi;
+  gaihaku[0]['date'][selectKey]['end_date'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbi;
+  gaihaku[0]['date'][selectKey]['nyuuinbiShiseturiyo'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo;
+  gaihaku[0]['date'][selectKey]['taiinbiShiseturiyo'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiShiseturiyo;
+  gaihaku[0]['date'][selectKey]['nyuuinbiBreakfast'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiBreakfast;
+  gaihaku[0]['date'][selectKey]['nyuuinbiLunch'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiLunch;
+  gaihaku[0]['date'][selectKey]['nyuuinbiDinner'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiDinner;
+  gaihaku[0]['date'][selectKey]['taiinbiBreakfast'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiBreakfast;
+  gaihaku[0]['date'][selectKey]['taiinbiLunch'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiLunch;
+  gaihaku[0]['date'][selectKey]['taiinbiDinner'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiDinner;
+  gaihaku[0]['date'][selectKey]['taiinbiAida'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiAida;
+
+  gaihaku[0]['date'][selectKey]['diff_date'] = lastday - firstday;
+
+  for (let d = st; d <= ed; d.setDate(d.getDate() + 1)) {
+    var days = d.getDate();
+    var day = 'day' + days;
+    if (num == 0) {
+      gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow_start-' + selectKey;
+    } else if (num == lastday - firstday) {
+      gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow_end-' + selectKey;
+    } else {
+      gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow-' + selectKey;
+    }
+    num++;
+  }
+
+  //矢印の作成
+  setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+  _self.alertMessageFlag = true;
+  _self.gaihakuData = gaihaku;
+}
+/*************
+ * 外泊用矢印作成
+ */
+function setGaihakuCreateArrows(gaihaku, _self, flexGrid) {
   let doubleCheckDay = [];
-  for (let j = 0; j < gaihaku[0].date.length; j++) {
-    for (let i = 0; i <= _self.lastdate; i++) {
-      let d = 'day' + (i + 1);
-      if (gaihaku[0].date[j][d] && doubleCheckDay[d] == '1') {
-        //doubleCheckDayが存在する場合は矢印が2つ並ぶとき
-        //arrow_doubleに置き換え、矢の型を変更する
-        let double = gaihaku[0].date[j][d].replace('start', 'double');
-        flexGrid.setCellData(3, i + 3, double);
-      } else if (gaihaku[0].date[j][d]) {
-        flexGrid.setCellData(3, i + 3, gaihaku[0].date[j][d]);
-        doubleCheckDay[d] = '1';
+  let total = 0;
+  if (gaihaku[0] != undefined) {
+    for (let j = 0; j < gaihaku[0].date.length; j++) {
+      for (let i = 0; i <= _self.lastdate; i++) {
+        let d = 'day' + (i + 1);
+        if (gaihaku[0].date[j][d] && doubleCheckDay[d] == '1') {
+          //doubleCheckDayが存在する場合は矢印が2つ並ぶとき
+          //arrow_doubleに置き換え、矢の型を変更する
+          let double = gaihaku[0].date[j][d].replace('start', 'double');
+          flexGrid.setCellData(3, i + 3, double);
+        } else if (gaihaku[0].date[j][d]) {
+          flexGrid.setCellData(3, i + 3, gaihaku[0].date[j][d]);
+          doubleCheckDay[d] = '1';
+          total++;
+        }
       }
     }
   }
-
-  flexGrid.setCellData(3, _self.lastdate + 3, gaihaku[0]['total']);
-  flexGrid.setCellData(3, _self.lastdate + 4, gaihaku[0]['money']);
-  _self.gaihakuData = gaihaku;
+  flexGrid.setCellData(3, _self.lastdate + 3, total);
 }
 /*******
  * 入院・退院日の設定
@@ -1196,7 +1321,9 @@ function methodCellFormatSetting(flexGrid, _self) {
       let startdate = moment(date['start_date']).format('M/D');
       let end_date = moment(date['end_date']).format('M/D');
       html +=
-        '<div class="arrow_box"><div><span class="d-none">gaihaku_termFlag_' +
+        '<div class="arrow_box"><div id="arrow_box-' +
+        key +
+        '"><span class="d-none">gaihaku_termFlag_' +
         key +
         '</span>' +
         startdate +
