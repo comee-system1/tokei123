@@ -4,6 +4,9 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
       @parent-service-select="parentServiceSelect($event, serviceArgument)"
+      :registButtonFlag="true"
+      :searchButtonFlag="true"
+      :alertMessageFlag="alertMessageFlag"
     ></header-services>
     <v-container fluid class="container">
       <v-row no-gutters>
@@ -18,22 +21,32 @@
           <v-row class="mt-0" no-gutters>
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
-                <v-card class="pt-2 pr-2" elevation="0" :min-width="80">
-                  <label class="font-weight-black">利用者名</label>
+                <v-card class="pr-2 text-center" elevation="0" :min-width="80">
+                  <label class="greyLabel">利用者名</label>
                 </v-card>
-                <v-card class="pa-1" :width="180" outlined tile>
+                <v-card class="pa-1 light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
-                <v-card class="pt-2 pr-2 ml-2" elevation="0" :min-width="80">
-                  <label class="font-weight-black">受給者番号</label>
+                <v-card
+                  class="pr-2 ml-2 text-center"
+                  elevation="0"
+                  :min-width="80"
+                >
+                  <label class="greyLabel">受給者番号</label>
                 </v-card>
-                <v-card class="pa-1" :width="180" outlined tile>
+                <v-card class="pa-1 light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].jyukyusyabango }}
                 </v-card>
               </v-card>
             </v-col>
             <v-col class="text-end">
-              <v-btn class="pa-3" outlined>受給者証修正</v-btn>
+              生活支援変動情報:
+              <v-btn class="pa-3" small>
+                <v-icon x-small class="white mr-3 pa-1 rounded-circle">
+                  mdi-download
+                </v-icon>
+                個別取込</v-btn
+              >
             </v-col>
           </v-row>
 
@@ -152,11 +165,14 @@
             </v-col>
           </v-row> -->
 
-          <v-row no-gutters class="mt-3">
+          <v-row no-gutters class="mt-1">
             <v-col md="4">
               <v-card elevation="0">
                 <div class="clearfix">
-                  <a class="addButton" @click="openDialog_Term()">期間追加</a>
+                  <a class="addButton" @click="openDialog_Term()">入退院追加</a>
+                  <a class="ml-1 addButton" @click="openDialog_Term()"
+                    >外泊追加</a
+                  >
                   <a class="ml-1 addButton" @click="openDialog_Add()"
                     >加算追加</a
                   >
@@ -201,7 +217,11 @@
           ></wj-flex-grid>
         </v-col>
       </v-row>
-      <dialog-kikantuika ref="dialog_kikantuika"> </dialog-kikantuika>
+      <dialog-kikantuika
+        ref="dialog_kikantuika"
+        @kikantuika_dialog_regist="kikantuika_dialog_regist"
+      >
+      </dialog-kikantuika>
       <dialog-kasantuika ref="dialog_kasantuika"></dialog-kasantuika>
     </v-container>
   </div>
@@ -237,6 +257,8 @@ export default {
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
       dialog: false, //期間追加用のダイアログ
+      alertMessageFlag: false, //変更時のアラートメッセージ
+      editGridFlag: false, //grid編集状態フラグ
     };
   },
   components: {
@@ -374,7 +396,11 @@ export default {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.changeHndoJyoho();
     },
-
+    //期間追加ダイアログの登録ボタン押下
+    kikantuika_dialog_regist: function () {
+      this.editGridFlag = true;
+      this.mainGrid.itemsSource = [];
+    },
     onitemsSourceChanged: function (flexGrid) {
       let _self = this;
       // セル初期カラム情報
@@ -383,7 +409,6 @@ export default {
       methodWriteJyoho(flexGrid, _self);
       //値の登録
       methodSettingPoint(flexGrid, _self);
-
       //セルマージ
       methodCellMerge(flexGrid, _self);
     },
@@ -476,7 +501,7 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.rows[0].height = 48;
   flexGrid.rows[2].height = 38;
   flexGrid.rows[3].height = 38;
-  //flexGrid.rows.defaultSize = 20;
+  flexGrid.rows.defaultSize = 32;
   //flexGrid.rows.minSize = 40;
   flexGrid.setCellData(0, 0, '');
   flexGrid.setCellData(0, 1, _self.gridItemName[0].heads[0]);
@@ -566,14 +591,37 @@ function methodWriteJyoho(flexGrid, _self) {
 function methodCellClickEvent(flexGrid, _self) {
   flexGrid.hostElement.addEventListener('click', function (e) {
     let ht = flexGrid.hitTest(e);
+    // console.log(ht.target.innerHTML);
     let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+
     // 矢印下の箱を押下
     // 変動情報ダイアログ 入退院
     let regexp = /^<span class="d-none">termFlag_[0-9].*<\/span>/;
     if (ht.target.innerHTML.match(regexp)) {
-      _self.$refs.dialog_kikantuika.parentFromOpenDialog(
-        _self.nyutaiinData[ht.target.innerHTML.match(regexp)[0].match(/\d+/)[0]]
-      );
+      let selectKey = e.target.id.split('-')[1];
+      let params = {};
+      params = {
+        selectKey: selectKey,
+        byouinName: _self.nyutaiinData[0].date[selectKey].byouinName,
+        nyuuinbi: _self.nyutaiinData[0].date[selectKey].start_date,
+        taiinbi: _self.nyutaiinData[0].date[selectKey].end_date,
+        //入院用
+        nyuuinbiShiseturiyo:
+          _self.nyutaiinData[0].date[selectKey].nyuuinbiShiseturiyo,
+        nyuuinbiBreakfast:
+          _self.nyutaiinData[0].date[selectKey].nyuuinbiBreakfast,
+        nyuuinbiLunch: _self.nyutaiinData[0].date[selectKey].nyuuinbiLunch,
+        nyuuinbiDinner: _self.nyutaiinData[0].date[selectKey].nyuuinbiDinner,
+        //退院用
+        taiinbiShiseturiyo:
+          _self.nyutaiinData[0].date[selectKey].taiinbiShiseturiyo,
+        taiinbiBreakfast:
+          _self.nyutaiinData[0].date[selectKey].taiinbiBreakfast,
+        taiinbiLunch: _self.nyutaiinData[0].date[selectKey].taiinbiLunch,
+        taiinbiDinner: _self.nyutaiinData[0].date[selectKey].taiinbiDinner,
+        taiinbiAida: _self.nyutaiinData[0].date[selectKey].taiinbiAida,
+      };
+      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params);
     }
     // 変動情報ダイアログ 外泊
     regexp = /^<span class="d-none">gaihaku_termFlag_[0-9].*<\/span>/;
@@ -608,10 +656,12 @@ function methodCellClickEvent(flexGrid, _self) {
       /^<div class="blue--text bg"><div class="d-none">blue-maru<\/div><\/div>/;
     if (ht.target.innerHTML.match(redMaruRegexp)) {
       e.target.innerHTML = '<div class="d-none">blue--batsu</div>×';
+      _self.alertMessageFlag = true;
     }
     // 青×の置き換え
     else if (ht.target.innerHTML.match(redBatsuRegexp)) {
       e.target.innerHTML = '';
+      _self.alertMessageFlag = true;
     }
     // スペースの置き換え
     else if (
@@ -620,11 +670,13 @@ function methodCellClickEvent(flexGrid, _self) {
     ) {
       e.target.innerHTML =
         '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
+      _self.alertMessageFlag = true;
     }
     //初回空欄の置き換え
     else if (ht.target.innerHTML == '') {
       e.target.innerHTML =
         '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
+      _self.alertMessageFlag = true;
     }
   });
 }
@@ -635,12 +687,17 @@ function methodSettingPoint(flexGrid, _self) {
   //利用日の設定
   settingRiyoubi(flexGrid, _self);
   //入院・退院日の設定
-  settingNyuTaiin(flexGrid, _self);
+  if (_self.editGridFlag == false) {
+    settingNyuTaiin(flexGrid, _self);
+  } else {
+    editNyuTaiin(flexGrid, _self);
+  }
   //外泊の設定
   settingGaihaku(flexGrid, _self);
   //食事の設定
   settingMeals(flexGrid, _self);
 }
+
 /****************
  * 食事の設定
  */
@@ -769,22 +826,61 @@ function settingMeals(flexGrid, _self) {
 function settingGaihaku(flexGrid, _self) {
   let gaihaku = [];
   gaihaku.push({
-    day21: 'gaihaku_arrow_start-0', //文字列のあとにkeyを不随させる
-    day22: 'gaihaku_arrow-0',
-    day23: 'gaihaku_arrow-0',
-    day24: 'gaihaku_arrow_end-0',
     total: 4,
-    nyuuinbi: '2022-4-21',
-    taiinbi: '2022-4-24',
-    start_date: '4/21',
-    end_date: '4/24',
-    diff_date: 4,
-    byouinName: '東経私立病院',
+    moeny: 1200,
+    date: [
+      {
+        byouinName: '東経国立病院',
+        start_date: '4/6',
+        end_date: '4/12',
+        nyuuinbiShiseturiyo: 1,
+        diff_date: 7,
+        day6: 'gaihaku_arrow_start-0', //文字列のあとに下記にあるdateのキーを指定
+        day7: 'gaihaku_arrow-0',
+        day8: 'gaihaku_arrow-0',
+        day9: 'gaihaku_arrow-0',
+        day10: 'gaihaku_arrow-0',
+        day11: 'gaihaku_arrow-0',
+        day12: 'gaihaku_arrow_end-0',
+      },
+      {
+        byouinName: '北経国立病院',
+        start_date: '4/12',
+        end_date: '4/14',
+        nyuuinbiShiseturiyo: 0,
+        diff_date: 3,
+        day12: 'gaihaku_arrow_start-1',
+        day13: 'gaihaku_arrow-1',
+        day14: 'gaihaku_arrow_end-1',
+      },
+      {
+        byouinName: '西経国立病院',
+        start_date: '4/25',
+        end_date: '4/27',
+        diff_date: 2,
+        day25: 'gaihaku_arrow_start-2',
+        day26: 'gaihaku_arrow-2',
+        day27: 'gaihaku_arrow_end-2',
+      },
+    ],
   });
-  for (let i = 0; i <= _self.lastdate; i++) {
-    let d = 'day' + (i + 1);
-    flexGrid.setCellData(3, i + 3, gaihaku[0][d]);
+
+  let doubleCheckDay = [];
+  for (let j = 0; j < gaihaku[0].date.length; j++) {
+    for (let i = 0; i <= _self.lastdate; i++) {
+      let d = 'day' + (i + 1);
+      if (gaihaku[0].date[j][d] && doubleCheckDay[d] == '1') {
+        //doubleCheckDayが存在する場合は矢印が2つ並ぶとき
+        //arrow_doubleに置き換え、矢の型を変更する
+        let double = gaihaku[0].date[j][d].replace('start', 'double');
+        flexGrid.setCellData(3, i + 3, double);
+      } else if (gaihaku[0].date[j][d]) {
+        flexGrid.setCellData(3, i + 3, gaihaku[0].date[j][d]);
+        doubleCheckDay[d] = '1';
+      }
+    }
   }
+
   flexGrid.setCellData(3, _self.lastdate + 3, gaihaku[0]['total']);
   flexGrid.setCellData(3, _self.lastdate + 4, gaihaku[0]['money']);
   _self.gaihakuData = gaihaku;
@@ -795,26 +891,165 @@ function settingGaihaku(flexGrid, _self) {
 function settingNyuTaiin(flexGrid, _self) {
   let nyutaiin = [];
   nyutaiin.push({
-    day6: 'arrow_start-0', //文字列のあとにkeyを不随させる
-    day7: 'arrow-0',
-    day8: 'arrow-0',
-    day9: 'arrow_end-0',
-    day10: 0,
-    total: 4,
-    nyuuinbi: '2022-4-6',
-    taiinbi: '2022-4-9',
-    start_date: '4/6',
-    end_date: '4/9',
-    diff_date: 4,
-    byouinName: '東経国立病院',
+    date: [
+      {
+        byouinName: '東経国立病院',
+        start_date: '2022/4/6',
+        end_date: '2022/4/16',
+        diff_date: 10,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
+        day6: 'arrow_start-0', //文字列のあとに下記にあるdateのキーを指定
+        day7: 'arrow-0',
+        day8: 'arrow-0',
+        day9: 'arrow-0',
+        day10: 'arrow-0',
+        day11: 'arrow-0',
+        day12: 'arrow-0',
+        day13: 'arrow-0',
+        day14: 'arrow-0',
+        day15: 'arrow-0',
+        day16: 'arrow_end-0',
+      },
+      {
+        byouinName: '西経国立病院',
+        start_date: '2022/4/28',
+        end_date: '2022/4/30',
+        diff_date: 3,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
+        day28: 'arrow_start-1',
+        day29: 'arrow-1',
+        day30: 'arrow_end-1',
+      },
+      {
+        byouinName: '北経国立病院',
+        start_date: '2022/4/16',
+        end_date: '2022/4/18',
+        diff_date: 3,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
+        day16: 'arrow_start-2',
+        day17: 'arrow-2',
+        day18: 'arrow_end-2',
+      },
+    ],
   });
-  for (let i = 0; i <= _self.lastdate; i++) {
-    let d = 'day' + (i + 1);
-    flexGrid.setCellData(2, i + 3, nyutaiin[0][d]);
-  }
-  flexGrid.setCellData(2, _self.lastdate + 3, nyutaiin[0]['total']);
-  flexGrid.setCellData(2, _self.lastdate + 4, nyutaiin[0]['money']);
+  //矢印の作成
+  setCreateArrows(nyutaiin, _self, flexGrid);
   _self.nyutaiinData = nyutaiin;
+}
+/********
+ * 入院・退院日の編集
+ */
+function editNyuTaiin(flexGrid, _self) {
+  let nyutaiin = [];
+  //console.log(_self.$refs.dialog_kikantuika.registData);
+  //別コンポーネントダイアログのregistDataの値を取得(キーのみ)
+  let selectKey = _self.$refs.dialog_kikantuika.registData.selectKey;
+  nyutaiin = _self.nyutaiinData;
+  //日付情報を一度クリア
+  for (let i = 0; i < _self.lastdate; i++) {
+    let d = 'day' + i;
+    nyutaiin[0]['date'][selectKey][d] = '';
+  }
+
+  //日付のloop
+  //秒に変換してloopを行う
+  let st = new Date(_self.$refs.dialog_kikantuika.registData.nyuuinbi);
+  let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
+  let firstday = st.getDate();
+  let lastday = ed.getDate();
+  let num = 0;
+
+  nyutaiin[0]['date'][selectKey]['start_date'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbi;
+  nyutaiin[0]['date'][selectKey]['end_date'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbi;
+  nyutaiin[0]['date'][selectKey]['nyuuinbiShiseturiyo'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo;
+  nyutaiin[0]['date'][selectKey]['taiinbiShiseturiyo'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiShiseturiyo;
+  nyutaiin[0]['date'][selectKey]['nyuuinbiBreakfast'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiBreakfast;
+  nyutaiin[0]['date'][selectKey]['nyuuinbiLunch'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiLunch;
+  nyutaiin[0]['date'][selectKey]['nyuuinbiDinner'] =
+    _self.$refs.dialog_kikantuika.registData.nyuuinbiDinner;
+  nyutaiin[0]['date'][selectKey]['taiinbiBreakfast'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiBreakfast;
+  nyutaiin[0]['date'][selectKey]['taiinbiLunch'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiLunch;
+  nyutaiin[0]['date'][selectKey]['taiinbiDinner'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiDinner;
+  nyutaiin[0]['date'][selectKey]['taiinbiAida'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbiAida;
+
+  nyutaiin[0]['date'][selectKey]['diff_date'] = lastday - firstday;
+
+  for (let d = st; d <= ed; d.setDate(d.getDate() + 1)) {
+    var days = d.getDate();
+    var day = 'day' + days;
+    if (num == 0) {
+      nyutaiin[0]['date'][selectKey][day] = 'arrow_start-' + selectKey;
+    } else if (num == lastday - firstday) {
+      nyutaiin[0]['date'][selectKey][day] = 'arrow_end-' + selectKey;
+    } else {
+      nyutaiin[0]['date'][selectKey][day] = 'arrow-' + selectKey;
+    }
+    num++;
+  }
+  //矢印の作成
+  setCreateArrows(nyutaiin, _self, flexGrid);
+  _self.alertMessageFlag = true;
+  _self.nyutaiinData = nyutaiin;
+}
+
+/***********
+ * 矢印作成用
+ */
+function setCreateArrows(nyutaiin, _self, flexGrid) {
+  let doubleCheckDay = [];
+  let total = 0;
+  if (nyutaiin[0] != undefined) {
+    for (let j = 0; j < nyutaiin[0].date.length; j++) {
+      for (let i = 0; i <= _self.lastdate; i++) {
+        let d = 'day' + (i + 1);
+        if (nyutaiin[0].date[j][d] && doubleCheckDay[d] == '1') {
+          //doubleCheckDayが存在する場合は矢印が2つ並ぶ
+          //arrow_doubleに置き換え、矢の型を変更する
+          let double = nyutaiin[0].date[j][d].replace('start', 'double');
+          flexGrid.setCellData(2, i + 3, double);
+        } else if (nyutaiin[0].date[j][d]) {
+          flexGrid.setCellData(2, i + 3, nyutaiin[0].date[j][d]);
+          doubleCheckDay[d] = '1';
+          total++;
+        }
+      }
+    }
+
+    flexGrid.setCellData(2, _self.lastdate + 3, total);
+    //flexGrid.setCellData(2, _self.lastdate + 4, nyutaiin[0]['moeny']);
+  }
+  return;
 }
 /*********
  * 利用日の設定
@@ -911,18 +1146,29 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
 
     // 矢印の表示
-    if (text.match(/^arrow_start-[0-9].*/)) {
+    if (
+      text.match(/^arrow_start-[0-9].*/) ||
+      text.match(/^arrow_double-[0-9].*/)
+    ) {
       let key = text.split('-')[1];
-      let date = _self.nyutaiinData[key];
+      let date = _self.nyutaiinData[0].date[key];
       // termFlagは矢印を押下した際の表示用文字列
-      html = '<div class="red-arrow_start"><div>&nbsp;</div></div>';
+      if (text.match(/^arrow_double-[0-9].*/)) {
+        html = '<div class="red-arrow_double"><div>&nbsp;</div></div>';
+      } else {
+        html = '<div class="red-arrow_start"><div>&nbsp;</div></div>';
+      }
+      let startdate = moment(date['start_date']).format('M/D');
+      let end_date = moment(date['end_date']).format('M/D');
       html +=
-        '<div class="arrow_box"><div><span class="d-none">termFlag_' +
+        '<div class="arrow_box" ><div id="arrow_box-' +
+        key +
+        '"><span class="d-none">termFlag_' +
         key +
         '</span>' +
-        date['start_date'] +
+        startdate +
         '～' +
-        date['end_date'] +
+        end_date +
         '[' +
         date['diff_date'] +
         ']</div></div>';
@@ -935,18 +1181,27 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
 
     // 外泊用矢印の表示
-    if (text.match(/^gaihaku_arrow_start-[0-9].*/)) {
+    if (
+      text.match(/^gaihaku_arrow_start-[0-9].*/) ||
+      text.match(/^gaihaku_arrow_double-[0-9].*/)
+    ) {
       let key = text.split('-')[1];
-      let date = _self.gaihakuData[key];
+      let date = _self.gaihakuData[0].date[key];
       // termFlagは矢印を押下した際の表示用文字列
-      html = '<div class="green-arrow_start"><div>&nbsp;</div></div>';
+      if (text.match(/^gaihaku_arrow_double-[0-9].*/)) {
+        html = '<div class="green-arrow_double"><div>&nbsp;</div></div>';
+      } else {
+        html = '<div class="green-arrow_start"><div>&nbsp;</div></div>';
+      }
+      let startdate = moment(date['start_date']).format('M/D');
+      let end_date = moment(date['end_date']).format('M/D');
       html +=
         '<div class="arrow_box"><div><span class="d-none">gaihaku_termFlag_' +
         key +
         '</span>' +
-        date['start_date'] +
+        startdate +
         '～' +
-        date['end_date'] +
+        end_date +
         '[' +
         date['diff_date'] +
         ']</div></div>';
@@ -1015,6 +1270,9 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = '';
     }
 
+    if (e.col == 1 || e.col == 2) {
+      classname += ' pa-1';
+    }
     e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
 
     wjCore.setCss(e.cell, {
@@ -1117,6 +1375,13 @@ div#kobetsuriyo {
     background-color: $light-white !important;
     color: $font_color !important;
   }
+  label.greyLabel {
+    background-color: $selected_color;
+    display: inline-block;
+    width: 140px;
+    height: 100%;
+    padding-top: 5px;
+  }
   // 受給者証状況用のエリアボックス
   .jyukyusyaBox {
     height: 60px;
@@ -1148,7 +1413,7 @@ div#kobetsuriyo {
       transform: translate(-50%, -50%);
       -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
-      font-size: 22px;
+      font-size: 16px;
     }
     p {
       position: absolute;
@@ -1166,23 +1431,24 @@ div#kobetsuriyo {
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
-    font-size: 22px;
+    font-size: 16px;
   }
 
   // 期間追加・加算追加ボタン
   a {
     &.addButton {
       width: 100px;
-      background-color: $pink;
+      background-color: $white;
+      border: 1px solid $font_color;
       display: block;
       float: left;
       color: $font_color !important;
-      text-align: left;
-      border-radius: 30px;
-      padding: 4px 0px 1px 10px;
+      text-align: right;
+      border-radius: 3px;
+      padding: 0px 10px 0px 0px;
       cursor: pointer;
       background-image: url('../assets/plus_15px.png');
-      background-position: 95% 50%;
+      background-position: 5% 50%;
     }
   }
   #flexGrid {
@@ -1190,16 +1456,19 @@ div#kobetsuriyo {
     max-width: none;
     min-width: 1300px-275;
     .wj-cell {
+      padding: 0 !important;
       &.wj-frozen-row {
-        padding: 0;
         text-align: center;
+        z-index: 2 !important;
       }
     }
     .wj-frozen {
       background-color: $selected_color;
     }
   }
-
+  .light_yellow {
+    background-color: $light_yellow;
+  }
   // 手修正済み
   div.editMark {
     width: 30px;
@@ -1233,26 +1502,42 @@ div#kobetsuriyo {
   }
 
   //矢印
-  .green-arrow,
+  .green-arrow_double,
   .green-arrow_end,
   .green-arrow_start,
-  .red-arrow,
+  .red-arrow_double,
   .red-arrow_end,
   .red-arrow_start {
-    border-top: 2px solid $red;
+    border-top: 4px solid $red;
     display: block;
     position: absolute;
     width: 100%;
     top: 5px;
     left: 0;
     text-indent: -9999px;
-    z-index: 10;
   }
 
   .green-arrow,
+  .red-arrow {
+    border-top: 4px solid $red;
+    width: 120px;
+    padding: 0 !important;
+    text-indent: -9999px;
+    margin-top: -14px;
+    div {
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 5px;
+      padding: 0;
+    }
+  }
+
+  .green-arrow_double,
+  .green-arrow,
   .green-arrow_end,
   .green-arrow_start {
-    border-top: 2px solid $green;
+    border-top: 4px solid $green;
   }
 
   .green-arrow_start,
@@ -1260,18 +1545,18 @@ div#kobetsuriyo {
     > div {
       width: 0;
       height: 0;
-      border-top: 4px solid transparent;
-      border-right: 4px solid $red;
-      border-bottom: 4px solid transparent;
+      border-top: 6px solid transparent;
+      border-right: 6px solid $red;
+      border-bottom: 6px solid transparent;
       position: absolute;
-      left: 0;
-      top: -5px;
+      left: -2px;
+      top: -8px;
     }
   }
 
   .green-arrow_start {
     > div {
-      border-right: 4px solid $green;
+      border-right: 6px solid $green;
     }
   }
 
@@ -1280,28 +1565,57 @@ div#kobetsuriyo {
     div {
       width: 0;
       height: 0;
-      border-left: 4px solid $red;
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
+      border-left: 6px solid $red;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
       position: absolute;
       left: auto;
-      right: 0;
-      top: -5px;
+      right: -2px;
+      top: -8px;
     }
   }
 
   .green-arrow_end {
     div {
-      border-left: 4px solid green;
+      border-left: 6px solid green;
+    }
+  }
+
+  .red-arrow_double {
+    > div {
+      width: 10px;
+      height: 8px;
+      border-top: 6px solid transparent;
+      border-right: 6px solid $red;
+      border-left: 6px solid $red;
+      border-bottom: 6px solid transparent;
+      position: absolute;
+      left: 4px;
+      top: -8px;
+    }
+  }
+
+  .green-arrow_double {
+    > div {
+      width: 10px;
+      height: 8px;
+      border-top: 6px solid transparent;
+      border-right: 6px solid $green;
+      border-left: 6px solid $green;
+      border-bottom: 6px solid transparent;
+      position: absolute;
+      left: 4px;
+      top: -8px;
     }
   }
 
   .arrow_box {
     width: 120px;
-    margin-top: -9px;
+    margin-top: -5px;
     cursor: pointer;
+    margin-left: 1%;
     div {
-      padding: 0px 5px;
+      color: blue;
       position: absolute;
       background-color: $white;
       border: 1px solid $font_color;

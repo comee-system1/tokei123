@@ -1,12 +1,10 @@
 <template>
   <v-layout>
-    <v-flex md12 class="basic-info">
+    <v-flex md12 class="basic-info" style="position: relative">
       <div class="service-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0"
-              >サービス</v-card
-            >
+            <v-card class="pa-1 transparent" elevation="0">サービス</v-card>
           </v-col>
           <v-col md="3">
             <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
@@ -22,9 +20,7 @@
       <div class="month-selection-area">
         <v-row no-gutters>
           <v-col md="1">
-            <v-card class="pa-1 transparent white--text" elevation="0"
-              >提供月</v-card
-            >
+            <v-card class="pa-1 transparent" elevation="0">提供月</v-card>
           </v-col>
           <v-col md="2">
             <v-card class="d-flex flex-row" color="transparent" elevation="0">
@@ -73,53 +69,55 @@
             </v-card>
           </v-col>
           <v-col md="1" class="text-end">
-            <v-card
-              class="pa-1 transparent white--text"
-              elevation="0"
-              v-if="seikyuflag"
+            <v-card class="pa-1 transparent" elevation="0" v-if="seikyuflag"
               >請求月</v-card
             >
           </v-col>
-          <v-col md="2">
-            <!-- <v-card class="transparent" tile>
-              <input
-                v-if="seikyuflag"
-                type="month"
-                name="example"
-                :value="year + '-' + month"
-              />
-            </v-card> -->
-
-            <v-card
-              v-if="seikyuflag"
-              class="pa-1"
-              :width="160"
-              @click="inputCalendarClick"
-              tile
+          <v-col md="2" v-if="seikyuflag">
+            <v-card class="pa-1" :width="160" @click="inputCalendarClick" tile
               >{{ year }}年{{ month }}月
               <div class="float-right">
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-card>
           </v-col>
+
+          <v-col md="2" v-if="searchButtonFlag">
+            <v-btn class="pa-1" :width="60" small> 検索 </v-btn>
+          </v-col>
         </v-row>
       </div>
 
-      <v-row no-gutters style="position: absolute; top: 25%; right: 3%">
-        <v-col v-if="jyougengakuFlag">
-          <v-btn> 上限額管理計算 </v-btn>
+      <v-row
+        no-gutters
+        style="position: absolute; top: 25%; right: 10px; width: 450px"
+        class="mt-n3"
+      >
+        <v-col cols="2*">
+          <v-btn v-if="jyougengakuFlag"> 上限額管理計算 </v-btn>
         </v-col>
-        <v-col v-if="receptFlag">
-          <v-btn> レセプトへ反映 </v-btn>
+        <v-col cols="2*">
+          <v-btn v-if="receptFlag"> レセプトへ反映 </v-btn>
         </v-col>
-        <v-col class="ml-5">
-          <v-btn>登録<v-icon dense>mdi-pencil</v-icon></v-btn>
+        <v-col class="ml-5 text-end" cols="1*">
+          <v-btn
+            v-if="registButtonFlag"
+            color="cyan darken-3"
+            class="white--text registButton"
+            >登録</v-btn
+          >
         </v-col>
-        <v-col class="ml-1">
-          <v-btn x-small @click="branzMaxim">最大化</v-btn>
+        <v-col cols="1*" class="ml-1 text-end">
+          <v-btn x-small @click="branzMaxim">最大化</v-btn><br />
           <v-btn x-small @click="branzMinmum">最大化解除</v-btn>
         </v-col>
       </v-row>
+      <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
+        情報が変更されています。登録を行ってください※
+      </div>
+      <div class="transparent message text-caption">
+        最終登録日:2021.08.08 13:36 (担当者:大正 雅夫)
+      </div>
       <v-dialog
         v-model="header_dialog"
         width="600"
@@ -192,6 +190,9 @@ export default {
     seikyuflag: { type: Boolean },
     jyougengakuFlag: { type: Boolean },
     receptFlag: { type: Boolean },
+    searchButtonFlag: { type: Boolean },
+    registButtonFlag: { type: Boolean },
+    alertMessageFlag: { type: Boolean },
   },
 
   data() {
@@ -439,6 +440,42 @@ export default {
 .v-picker__title {
   display: none !important;
 }
+
+.message {
+  top: auto;
+  right: 10px;
+  bottom: 2px;
+  border: 1px solid red;
+  position: absolute;
+  color: $font-color;
+}
+
+.alertTitle {
+  font-size: $cell_fontsize;
+  background-color: $red;
+  color: $white;
+  width: 320px;
+  position: absolute;
+  top: auto;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  text-align: center;
+  animation-name: fadeInAnime;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+@keyframes fadeInAnime {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 #datepicker {
   position: absolute;
   margin-top: 40px;
@@ -446,5 +483,11 @@ export default {
   top: 20px;
   left: 20px;
   width: auto;
+}
+.registButton {
+  background-image: url('../assets/pen_20px.png');
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
 }
 </style>

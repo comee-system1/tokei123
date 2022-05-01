@@ -11,14 +11,14 @@ $pc: 1336px;
 
 /* パンくずリスト下の基本情報エリアのスタイル */
 .basic-info{
-  background-color: #333;
+  background-color: $selected_color;
   height:80px;
   padding:0 10px;
   position: relative;
 }
 
 .basic-info label{
-  color:white;
+  color:$font_color;
   font-size:14px;
   margin-left:10px;
   margin-right:20px;

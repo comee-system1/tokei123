@@ -4,11 +4,13 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
       :seikyuflag="true"
+      :searchButtonFlag="true"
+      :registButtonFlag="false"
     ></header-services>
     <v-container fluid class="shisetsu-container">
       <v-row no-gutters>
         <v-col cols="3">
-          <v-row no-gutters>
+          <v-row no-gutters class="mb-1">
             <v-col cols="6">
               <v-card class="pa-2 red--text text--lighten-1" outlined tile>
                 {{ buildcheck }}
@@ -22,12 +24,14 @@
           </v-row>
           <v-row v-for="(detail, index) in details" :key="index" no-gutters>
             <v-col cols="6">
-              <v-card class="pa-2 text-center" elevation="0">{{
+              <v-card class="pa-1 text-center titleback" outlined>{{
                 detail.name
               }}</v-card>
             </v-col>
             <v-col cols="6">
-              <v-card class="pa-2" elevation="0">{{ detail.value }}</v-card>
+              <v-card class="pa-1 ma-1 light_yellow" tile outlined>{{
+                detail.value
+              }}</v-card>
             </v-col>
           </v-row>
         </v-col>
@@ -52,7 +56,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 140px"
+                style="max-height: 130px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -71,7 +75,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 140px"
+                style="max-height: 130px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -93,7 +97,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 285px"
+                style="max-height: 265px"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -106,8 +110,7 @@
           </v-row>
         </v-col>
       </v-row>
-    </v-container>
-    <v-container fluid class="shisetsu-container">
+
       <v-card class="pa-2" outlined tile>
         <v-row no-gutters>
           <v-col sm="12">
@@ -222,7 +225,7 @@ export default {
       let data = [];
       data.push(
         {
-          name: '事務所番号',
+          name: '事業所番号',
           value: 112100012,
         },
         {
@@ -470,6 +473,15 @@ function cellEdit(s, e) {
 
   .shisetsu-container {
     padding: 4px;
+  }
+
+  .titleback {
+    background-color: $grid_background;
+    border: none;
+  }
+
+  .light_yellow {
+    background-color: $light_yellow;
   }
 
   #theGridTallRows.wj-flexgrid .wj-cell {

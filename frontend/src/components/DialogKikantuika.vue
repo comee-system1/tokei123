@@ -23,17 +23,19 @@
                 class="input_picker"
                 :format="DatePickerFormat"
                 :value="nyuuinbi"
+                v-model="nyuuinbi"
               ></datepicker>
               <v-card class="d-flex" flat tile>
                 <v-card elevation="0">
-                  <v-radio-group row
+                  <v-radio-group row v-model="nyuuinbiShiseturiyo"
                     >施設の利用
                     <v-radio
                       label="あり"
-                      value="radio-1"
+                      :key="1"
+                      :value="1"
                       class="ml-2"
                     ></v-radio>
-                    <v-radio label="なし" value="radio-2"></v-radio>
+                    <v-radio label="なし" :key="0" :value="0"></v-radio>
                   </v-radio-group>
                 </v-card>
               </v-card>
@@ -45,9 +47,27 @@
           <v-col cols="3" class="mt-5">食事 </v-col>
           <v-col cols="9" class="mx-auto">
             <v-row>
-              <v-col><v-checkbox label="朝食" value="朝食"></v-checkbox></v-col>
-              <v-col><v-checkbox label="昼食" value="昼食"></v-checkbox></v-col>
-              <v-col><v-checkbox label="夕食" value="夕食"></v-checkbox></v-col>
+              <v-col
+                ><v-checkbox
+                  label="朝食"
+                  v-model="nyuuinbiBreakfast"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
+              <v-col
+                ><v-checkbox
+                  label="昼食"
+                  v-model="nyuuinbiLunch"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
+              <v-col
+                ><v-checkbox
+                  label="夕食"
+                  v-model="nyuuinbiDinner"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -74,17 +94,19 @@
                 class="input_picker"
                 :format="DatePickerFormat"
                 :value="taiinbi"
+                v-model="taiinbi"
               ></datepicker>
               <v-card class="d-flex" color="lighten-2" flat tile>
                 <v-card class="pa-0" elevation="0">
-                  <v-radio-group row
+                  <v-radio-group row v-model="taiinbiShiseturiyo"
                     >施設の利用
                     <v-radio
                       label="あり"
-                      value="radio-1"
+                      :key="1"
+                      :value="1"
                       class="ml-2"
                     ></v-radio>
-                    <v-radio label="なし" value="radio-2"></v-radio>
+                    <v-radio label="なし" :key="0" :value="0"></v-radio>
                   </v-radio-group>
                 </v-card>
               </v-card>
@@ -95,10 +117,34 @@
           <v-col cols="3" class="mt-5">食事 </v-col>
           <v-col cols="9" class="mx-auto">
             <v-row>
-              <v-col><v-checkbox label="朝食" value="朝食"></v-checkbox></v-col>
-              <v-col><v-checkbox label="昼食" value="昼食"></v-checkbox></v-col>
-              <v-col><v-checkbox label="夕食" value="夕食"></v-checkbox></v-col>
-              <v-col><v-checkbox label="間" value="間"></v-checkbox></v-col>
+              <v-col
+                ><v-checkbox
+                  label="朝食"
+                  v-model="taiinbiBreakfast"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
+              <v-col
+                ><v-checkbox
+                  label="昼食"
+                  v-model="taiinbiLunch"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
+              <v-col
+                ><v-checkbox
+                  label="夕食"
+                  v-model="taiinbiDinner"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
+              <v-col
+                ><v-checkbox
+                  label="間"
+                  v-model="taiinbiAida"
+                  input-value="true"
+                ></v-checkbox
+              ></v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -113,7 +159,9 @@
           <v-btn @click="dialogFlag = false" tile outlined> クリア </v-btn>
         </v-card>
         <v-card elevation="0" class="ml-auto">
-          <v-btn @click="dialogFlag = false" tile outlined> 登録 </v-btn>
+          <v-btn @click="kikantuika_dialog_regist()" tile outlined>
+            登録
+          </v-btn>
         </v-card>
       </v-card>
     </v-card>
@@ -121,6 +169,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 export default {
@@ -133,17 +182,59 @@ export default {
       nyuuinbi: '',
       byouinName: '',
       taiinbi: '',
+      nyuuinbiShiseturiyo: 1,
+      nyuuinbiBreakfast: false,
+      nyuuinbiLunch: false,
+      nyuuinbiDinner: false,
+      taiinbiShiseturiyo: 1,
+      taiinbiBreakfast: false,
+      taiinbiLunch: false,
+      taiinbiDinner: false,
+      taiinbiAida: false,
+      registData: {},
     };
   },
   components: {
     Datepicker,
   },
   methods: {
+    /*************
+     * 登録ボタンを押下
+     */
+    kikantuika_dialog_regist: function () {
+      this.registData = {
+        selectKey: this.selectKey,
+        nyuuinbi: moment(this.nyuuinbi).format('YYYY-M-D'),
+        taiinbi: moment(this.taiinbi).format('YYYY-M-D'),
+        nyuuinbiShiseturiyo: this.nyuuinbiShiseturiyo,
+        nyuuinbiBreakfast: this.nyuuinbiBreakfast,
+        nyuuinbiLunch: this.nyuuinbiLunch,
+        nyuuinbiDinner: this.nyuuinbiDinner,
+        taiinbiShiseturiyo: this.taiinbiShiseturiyo,
+        taiinbiBreakfast: this.taiinbiBreakfast,
+        taiinbiLunch: this.taiinbiLunch,
+        taiinbiDinner: this.taiinbiDinner,
+        taiinbiAida: this.taiinbiAida,
+      };
+      this.$emit('kikantuika_dialog_regist');
+      this.dialogFlag = false;
+    },
+
     parentFromOpenDialog(data) {
       this.dialogFlag = true;
+      this.selectKey = data ? data.selectKey : '';
       this.nyuuinbi = data ? data.nyuuinbi : '';
       this.byouinName = data ? data.byouinName : '';
       this.taiinbi = data ? data.taiinbi : '';
+      this.nyuuinbiShiseturiyo = data ? data.nyuuinbiShiseturiyo : 0;
+      this.nyuuinbiBreakfast = data ? data.nyuuinbiBreakfast : 0;
+      this.nyuuinbiLunch = data ? data.nyuuinbiLunch : 0;
+      this.nyuuinbiDinner = data ? data.nyuuinbiDinner : 0;
+      this.taiinbiShiseturiyo = data ? data.taiinbiShiseturiyo : 0;
+      this.taiinbiBreakfast = data ? data.taiinbiBreakfast : 0;
+      this.taiinbiLunch = data ? data.taiinbiLunch : 0;
+      this.taiinbiDinner = data ? data.taiinbiDinner : 0;
+      this.taiinbiAida = data ? data.taiinbiAida : 0;
     },
   },
 };
