@@ -154,10 +154,14 @@
 
       <v-card class="d-flex mt-3" elevation="0">
         <v-card elevation="0">
-          <v-btn @click="dialogFlag = false" tile outlined> 削除 </v-btn>
+          <v-btn @click="kikantuika_dialog_delete()" tile outlined>
+            削除
+          </v-btn>
         </v-card>
         <v-card elevation="0" class="ml-1">
-          <v-btn @click="dialogFlag = false" tile outlined> クリア </v-btn>
+          <v-btn @click="kikantuika_dialog_clear()" tile outlined>
+            クリア
+          </v-btn>
         </v-card>
         <v-card elevation="0" class="ml-auto">
           <v-btn @click="kikantuika_dialog_regist()" tile outlined>
@@ -199,6 +203,42 @@ export default {
     Datepicker,
   },
   methods: {
+    /****************
+     * 削除ボタンを押下
+     */
+    kikantuika_dialog_delete: function () {
+      if (
+        confirm(
+          '日付データの削除を行います。\n削除データは復旧できません。\nよろしいですか？'
+        )
+      ) {
+        this.registData = {
+          type: this.type, // nyutaiin や gaihaku等
+          selectKey: this.selectKey, // nyuutaiinやgaihakuの配列のキー
+        };
+        this.$emit('kikantuika_dialog_delete');
+        this.dialogFlag = false;
+      }
+    },
+    /***********
+     * クリアボタンを押下
+     */
+    kikantuika_dialog_clear: function () {
+      if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
+        this.nyuuinbi = '';
+        this.taiinbi = '';
+        this.nyuuinbiShiseturiyo = '';
+        this.nyuuinbiBreakfast = '';
+        this.nyuuinbiLunch = '';
+        this.nyuuinbiDinner = '';
+        this.taiinbiShiseturiyo = '';
+        this.taiinbiBreakfast = '';
+        this.taiinbiLunch = '';
+        this.taiinbiDinner = '';
+        this.taiinbiAida = '';
+        this.byouinName = '';
+      }
+    },
     /*************
      * 登録ボタンを押下
      */
@@ -219,7 +259,6 @@ export default {
         taiinbiAida: this.taiinbiAida,
         byouinName: this.byouinName,
       };
-      console.log(this.registData);
       this.$emit('kikantuika_dialog_regist');
       this.dialogFlag = false;
     },

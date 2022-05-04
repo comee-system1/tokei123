@@ -224,6 +224,7 @@
       <dialog-kikantuika
         ref="dialog_kikantuika"
         @kikantuika_dialog_regist="kikantuika_dialog_regist"
+        @kikantuika_dialog_delete="kikantuika_dialog_delete"
       >
       </dialog-kikantuika>
       <dialog-kasantuika ref="dialog_kasantuika"></dialog-kasantuika>
@@ -414,6 +415,13 @@ export default {
         this.editGridFlag = true;
       }
       this.mainGrid.itemsSource = [];
+    },
+    //変動情報ダイアログの削除ボタン押下
+    kikantuika_dialog_delete: function () {
+      this.selectType = this.$refs.dialog_kikantuika.registData.type;
+      this.deleteGridFlag = true;
+      this.mainGrid.itemsSource = [];
+      this.deleteGridFlag = false;
     },
     onitemsSourceChanged: function (flexGrid) {
       let _self = this;
@@ -742,7 +750,9 @@ function methodSettingPoint(flexGrid, _self) {
   //利用日の設定
   settingRiyoubi(flexGrid, _self);
   //入院・退院日の設定
-  if (_self.selectType == 'nyutaiin_add') {
+  if (_self.deleteGridFlag == true && _self.selectType == 'nyutaiin') {
+    deleteNyuTaiin(flexGrid, _self);
+  } else if (_self.selectType == 'nyutaiin_add') {
     insertNyuTaiin(flexGrid, _self);
   } else if (_self.editGridFlag == true && _self.selectType == 'nyutaiin') {
     editNyuTaiin(flexGrid, _self);
@@ -750,7 +760,9 @@ function methodSettingPoint(flexGrid, _self) {
     settingNyuTaiin(flexGrid, _self);
   }
   //外泊の設定
-  if (_self.selectType == 'gaihaku_add') {
+  if (_self.deleteGridFlag == true && _self.selectType == 'gaihaku') {
+    deleteGaihaku(flexGrid, _self);
+  } else if (_self.selectType == 'gaihaku_add') {
     insertGaihaku(flexGrid, _self);
   } else if (_self.editGridFlag == true && _self.selectType == 'gaihaku') {
     editGaihaku(flexGrid, _self);
@@ -1051,6 +1063,22 @@ function editMeals(flexGrid, _self) {
   _self.mealsData['lunch'] = lunch;
   _self.mealsData['dinner'] = dinner;
 }
+
+/**************
+ * 外泊の削除
+ */
+function deleteGaihaku(flexGrid, _self) {
+  let gaihaku = [];
+  //別コンポーネントダイアログのregistDataの値を取得(キーのみ)
+  let selectKey = _self.$refs.dialog_kikantuika.registData.selectKey;
+  gaihaku = _self.gaihakuData;
+  gaihaku[0]['date'][selectKey] = [];
+  //矢印の作成
+  setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+  _self.alertMessageFlag = true;
+  _self.gaihakuData = gaihaku;
+}
+
 /*******
  * 外泊の設定
  */
@@ -1061,8 +1089,8 @@ function settingGaihaku(flexGrid, _self) {
     date: [
       {
         byouinName: '東経国立病院',
-        start_date: '5/6',
-        end_date: '5/12',
+        start_date: '2022/5/6',
+        end_date: '2022/5/12',
         diff_date: 7,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
@@ -1082,8 +1110,8 @@ function settingGaihaku(flexGrid, _self) {
       },
       {
         byouinName: '北経国立病院',
-        start_date: '5/12',
-        end_date: '5/14',
+        start_date: '2022/5/12',
+        end_date: '2022/5/14',
         diff_date: 3,
         nyuuinbiShiseturiyo: 0,
         nyuuinbiBreakfast: true,
@@ -1099,8 +1127,8 @@ function settingGaihaku(flexGrid, _self) {
       },
       {
         byouinName: '西経国立病院',
-        start_date: '5/25',
-        end_date: '5/27',
+        start_date: '2022/5/25',
+        end_date: '2022/5/27',
         diff_date: 2,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
@@ -1255,46 +1283,52 @@ function createdArrows(data, _self, flexGrid, row) {
   let total = 0;
   if (data[0] != undefined) {
     for (let j = 0; j < data[0].date.length; j++) {
-      let firstday = new Date(data[0].date[j].start_date).getDate();
-      let lastday = new Date(data[0].date[j].end_date).getDate();
-      for (let i = firstday; i <= lastday; i++) {
-        data[0].date[j]['dayCount' + i] = false;
+      if (data[0].date[j]) {
+        let firstday = new Date(data[0].date[j].start_date).getDate();
+        let lastday = new Date(data[0].date[j].end_date).getDate();
+        for (let i = firstday; i <= lastday; i++) {
+          data[0].date[j]['dayCount' + i] = false;
+        }
       }
     }
     // 日付の重複チェック
     let doubleCheckFlag = [];
     for (let j = 0; j < data[0].date.length; j++) {
-      let firstday = new Date(data[0].date[j].start_date).getDate();
-      let lastday = new Date(data[0].date[j].end_date).getDate();
-      for (let i = firstday; i <= lastday; i++) {
-        let d = 'day' + i;
-        if (data[0].date[j][d]) {
-          if (doubleCheckFlag[d]) {
-            doubleCheckFlag[d] = doubleCheckFlag[d] + 1;
-            data[0].date[j]['dayCount' + i] = true;
-          } else {
-            doubleCheckFlag[d] = 1;
+      if (data[0].date[j]) {
+        let firstday = new Date(data[0].date[j].start_date).getDate();
+        let lastday = new Date(data[0].date[j].end_date).getDate();
+        for (let i = firstday; i <= lastday; i++) {
+          let d = 'day' + i;
+          if (data[0].date[j][d]) {
+            if (doubleCheckFlag[d]) {
+              doubleCheckFlag[d] = doubleCheckFlag[d] + 1;
+              data[0].date[j]['dayCount' + i] = true;
+            } else {
+              doubleCheckFlag[d] = 1;
+            }
           }
         }
       }
     }
 
     for (let j = 0; j < data[0].date.length; j++) {
-      let firstday = new Date(data[0].date[j].start_date).getDate();
-      let lastday = new Date(data[0].date[j].end_date).getDate();
-      for (let i = firstday; i <= lastday; i++) {
-        let d = 'day' + i;
-        let dc = 'dayCount' + i;
-        if (data[0].date[j][dc]) {
-          flexGrid.setCellData(
-            row,
-            i + 2,
-            data[0].date[j][d].replace('start', 'double')
-          );
-        } else {
-          flexGrid.setCellData(row, i + 2, data[0].date[j][d]);
+      if (data[0].date[j]) {
+        let firstday = new Date(data[0].date[j].start_date).getDate();
+        let lastday = new Date(data[0].date[j].end_date).getDate();
+        for (let i = firstday; i <= lastday; i++) {
+          let d = 'day' + i;
+          let dc = 'dayCount' + i;
+          if (data[0].date[j][dc]) {
+            flexGrid.setCellData(
+              row,
+              i + 2,
+              data[0].date[j][d].replace('start', 'double')
+            );
+          } else {
+            flexGrid.setCellData(row, i + 2, data[0].date[j][d]);
+          }
+          total++;
         }
-        total++;
       }
     }
 
@@ -1451,6 +1485,20 @@ function editNyuTaiin(flexGrid, _self) {
     }
     num++;
   }
+  //矢印の作成
+  setCreateArrows(nyutaiin, _self, flexGrid);
+  _self.alertMessageFlag = true;
+  _self.nyutaiinData = nyutaiin;
+}
+/**************
+ * 入院・退院の削除
+ */
+function deleteNyuTaiin(flexGrid, _self) {
+  let nyutaiin = [];
+  //別コンポーネントダイアログのregistDataの値を取得(キーのみ)
+  let selectKey = _self.$refs.dialog_kikantuika.registData.selectKey;
+  nyutaiin = _self.nyutaiinData;
+  nyutaiin[0]['date'][selectKey] = [];
   //矢印の作成
   setCreateArrows(nyutaiin, _self, flexGrid);
   _self.alertMessageFlag = true;
