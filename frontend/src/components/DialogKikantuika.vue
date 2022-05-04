@@ -78,6 +78,7 @@
               label="病院名を入力"
               class="mx-auto mt-n5"
               :value="byouinName"
+              v-model="byouinName"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -203,8 +204,8 @@ export default {
      */
     kikantuika_dialog_regist: function () {
       this.registData = {
-        type: this.type,
-        selectKey: this.selectKey,
+        type: this.type, // nyutaiin や gaihaku等
+        selectKey: this.selectKey, // nyuutaiinやgaihakuの配列のキー
         nyuuinbi: moment(this.nyuuinbi).format('YYYY-M-D'),
         taiinbi: moment(this.taiinbi).format('YYYY-M-D'),
         nyuuinbiShiseturiyo: this.nyuuinbiShiseturiyo,
@@ -216,14 +217,16 @@ export default {
         taiinbiLunch: this.taiinbiLunch,
         taiinbiDinner: this.taiinbiDinner,
         taiinbiAida: this.taiinbiAida,
+        byouinName: this.byouinName,
       };
+      console.log(this.registData);
       this.$emit('kikantuika_dialog_regist');
       this.dialogFlag = false;
     },
-
     parentFromOpenDialog(data, type) {
       this.dialogFlag = true;
       this.type = type;
+      //selectKeyが空欄のときは新規追加
       this.selectKey = data ? data.selectKey : '';
       this.nyuuinbi = data ? data.nyuuinbi : '';
       this.byouinName = data ? data.byouinName : '';
