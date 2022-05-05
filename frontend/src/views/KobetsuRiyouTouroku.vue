@@ -243,7 +243,8 @@ import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
-
+const startPoint = 4;
+const totalPoint = startPoint + 1;
 export default {
   data() {
     return {
@@ -279,6 +280,17 @@ export default {
       let items = ['項目', '合計', '金額'];
       let columns = ['変動情報', '加算情報'];
       if (this.teikyoCode == '34') {
+        let define_taisei_kobetu = [
+          { name: '重度障害者支援加算Ⅱ2' },
+          { name: '重度障害者支援加算Ⅱ3' },
+          { name: '栄養マネジメント加算' },
+          { name: '療養食加算' },
+          { name: '口腔衛生管理加算' },
+        ];
+        let define_kobetu = [
+          { name: '入院・外泊時加算' },
+          { name: '地域移行加算' },
+        ];
         hendo = [
           {
             heads: items,
@@ -291,19 +303,25 @@ export default {
             ],
             meals: ['朝食', '夕食'],
             mealsKey: ['breakfast', 'dinner'],
-            shisetsuNyusho_add: [
-              { name: '重度障害者支援加算Ⅱ2' },
-              { name: '重度障害者支援加算Ⅱ3' },
-              { name: '栄養マネジメント加算' },
-              { name: '療養食加算' },
-              { name: '口腔衛生管理加算' },
-              { name: '入院・外泊時加算' },
-              { name: '地域移行加算' },
-            ],
+            taisei_kobetu: define_taisei_kobetu,
+            kobetu: define_kobetu,
+            kasanRow: define_taisei_kobetu.length + define_kobetu.length,
+            taisei_kobetu_name: ['体制+個別', '個別'],
             mealsCount: [300, 500],
           },
         ];
       } else if (this.teikyoCode == '33') {
+        let define_taisei_kobetu = [
+          { name: '重度障害者支援加算Ⅱ2' },
+          { name: '重度障害者支援加算Ⅱ3' },
+          { name: '栄養マネジメント加算' },
+          { name: '療養食加算' },
+          { name: '口腔衛生管理加算' },
+        ];
+        let define_kobetu = [
+          { name: '入院・外泊時加算' },
+          { name: '地域移行加算' },
+        ];
         hendo = [
           {
             heads: items,
@@ -317,20 +335,26 @@ export default {
             ],
             meals: ['朝食', '昼食', '夕食'],
             mealsKey: ['breakfast', 'lunch', 'dinner'],
-            shisetsuNyusho_add: [
-              { name: '重度障害者支援加算Ⅱ2' },
-              { name: '重度障害者支援加算Ⅱ3' },
-              { name: '栄養マネジメント加算' },
-              { name: '療養食加算' },
-              { name: '口腔衛生管理加算' },
-              { name: '入院・外泊時加算' },
-              { name: '地域移行加算' },
-            ],
+            taisei_kobetu: define_taisei_kobetu,
+            kobetu: define_kobetu,
+            kasanRow: define_taisei_kobetu.length + define_kobetu.length,
+            taisei_kobetu_name: ['体制+個別', '個別'],
             mealsCount: [300, 400, 500],
             kounetsuSuihi: [{ count: 100 }],
           },
         ];
       } else if (this.teikyoCode == '32') {
+        let define_taisei_kobetu = [
+          { name: '重度障害者支援加算Ⅱ2' },
+          { name: '重度障害者支援加算Ⅱ3' },
+          { name: '栄養マネジメント加算' },
+          { name: '療養食加算' },
+          { name: '口腔衛生管理加算' },
+        ];
+        let define_kobetu = [
+          { name: '入院・外泊時加算' },
+          { name: '地域移行加算' },
+        ];
         hendo = [
           {
             heads: items,
@@ -344,15 +368,10 @@ export default {
             ],
             meals: ['朝食', '昼食', '夕食'],
             mealsKey: ['breakfast', 'lunch', 'dinner'],
-            shisetsuNyusho_add: [
-              { name: '重度障害者支援加算Ⅱ2' },
-              { name: '重度障害者支援加算Ⅱ3' },
-              { name: '栄養マネジメント加算' },
-              { name: '療養食加算' },
-              { name: '口腔衛生管理加算' },
-              { name: '入院・外泊時加算' },
-              { name: '地域移行加算' },
-            ],
+            taisei_kobetu: define_taisei_kobetu,
+            kobetu: define_kobetu,
+            kasanRow: define_taisei_kobetu.length + define_kobetu.length,
+            taisei_kobetu_name: ['体制+個別', '個別'],
             mealsCount: [300, 400, 500],
             kounetsuSuihi: [{ count: 100 }],
           },
@@ -439,7 +458,6 @@ export default {
       this.mainGrid = flexGrid;
       flexGrid.autoSizeColumns();
       let _self = this;
-
       // セル情報のフォーマット指定
       methodCellFormatSetting(flexGrid, _self);
 
@@ -492,7 +510,7 @@ function methodSetJyukyusyaItiran() {
  */
 function methodCellSettingDefault(flexGrid, _self) {
   let lastdate = _self.lastdate;
-  let plus = 5;
+  let plus = 6;
   flexGrid.columns.clear();
   while (flexGrid.columns.length < lastdate + plus) {
     flexGrid.columns.push(new wjGrid.Column());
@@ -502,24 +520,25 @@ function methodCellSettingDefault(flexGrid, _self) {
   //全体の行数
   let row = 15;
   if (_self.teikyoCode == '34') {
-    row = 13;
+    row = 6 + _self.gridItemName[0].kasanRow;
   }
   if (_self.teikyoCode == '33') {
-    row = 13;
+    row = 6 + _self.gridItemName[0].kasanRow;
   }
   if (_self.teikyoCode == '32') {
-    row = 15;
+    row = 8 + _self.gridItemName[0].kasanRow;
   }
 
   while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
 
-  flexGrid.frozenColumns = 3;
+  flexGrid.frozenColumns = 4;
   flexGrid.frozenRows = 1;
   flexGrid.columns[0].width = 32;
-  flexGrid.columns[1].width = '6*';
+  flexGrid.columns[1].width = 32;
   flexGrid.columns[2].width = '5*';
+  flexGrid.columns[3].width = '5*';
   flexGrid.rows[0].height = 48;
   flexGrid.rows[2].height = 38;
   flexGrid.rows[3].height = 38;
@@ -527,21 +546,23 @@ function methodCellSettingDefault(flexGrid, _self) {
   //flexGrid.rows.minSize = 40;
   flexGrid.setCellData(0, 0, '');
   flexGrid.setCellData(0, 1, _self.gridItemName[0].heads[0]);
+  flexGrid.setCellData(0, 2, '');
+
   //日付の表示
   let date = '';
   let day = '';
-  for (let i = 3; i < lastdate + 3; i++) {
+  for (let i = 4; i <= lastdate + 3; i++) {
     flexGrid.columns[i].width = '1*';
-    day = String(i - 2).padStart(2, '0');
+    day = String(i - 3).padStart(2, '0');
     date = _self.year + '/' + _self.month + '/' + day;
     flexGrid.setCellData(0, i, date);
   }
   //合計
-  flexGrid.setCellData(0, lastdate + 3, _self.gridItemName[0].heads[1]);
-  flexGrid.columns[lastdate + 3].width = 50;
+  flexGrid.setCellData(0, lastdate + 4, _self.gridItemName[0].heads[1]);
+  flexGrid.columns[lastdate + 4].width = 50;
   //金額
-  flexGrid.setCellData(0, lastdate + 4, _self.gridItemName[0].heads[2]);
-  flexGrid.columns[lastdate + 4].width = 70;
+  flexGrid.setCellData(0, lastdate + 5, _self.gridItemName[0].heads[2]);
+  flexGrid.columns[lastdate + 5].width = 70;
 }
 /*******
  * 各情報タイトルの書き込み
@@ -582,7 +603,7 @@ function methodWriteJyoho(flexGrid, _self) {
     if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
       for (let j = 0; j < _self.gridItemName[0].meals.length; j++) {
         let k = i + 1 + j;
-        flexGrid.setCellData(k, 2, _self.gridItemName[0].meals[j]);
+        flexGrid.setCellData(k, 3, _self.gridItemName[0].meals[j]);
         row++;
       }
     } else if (_self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
@@ -590,7 +611,7 @@ function methodWriteJyoho(flexGrid, _self) {
       //高熱水費の変更前文字列を記載
       flexGrid.setCellData(
         row,
-        2,
+        3,
         _self.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
       );
     } else {
@@ -598,12 +619,34 @@ function methodWriteJyoho(flexGrid, _self) {
     }
   }
   //加算情報
+  //体制・個別
   flexGrid.setCellData(kasanRows_st, 0, _self.gridItemName[0].column[1]);
-  for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
+
+  flexGrid.setCellData(
+    kasanRows_st,
+    1,
+    _self.gridItemName[0].taisei_kobetu_name[0]
+  );
+
+  for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
     flexGrid.setCellData(
       kasanRows_st++,
-      1,
-      _self.gridItemName[0].shisetsuNyusho_add[i].name
+      2,
+      _self.gridItemName[0].taisei_kobetu[i].name
+    );
+  }
+  //個別
+  flexGrid.setCellData(
+    kasanRows_st,
+    1,
+    _self.gridItemName[0].taisei_kobetu_name[1]
+  );
+
+  for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
+    flexGrid.setCellData(
+      kasanRows_st++,
+      2,
+      _self.gridItemName[0].kobetu[i].name
     );
   }
 }
@@ -677,20 +720,23 @@ function methodCellClickEvent(flexGrid, _self) {
 
     // 変動情報ダイアログ
     // 各加算情報編集用
-    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
-      if (
-        ht.target.innerText == _self.gridItemName[0].shisetsuNyusho_add[i].name
-      ) {
+    for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
+      if (ht.target.innerText == _self.gridItemName[0].taisei_kobetu[i].name) {
+        _self.$refs.dialog_kasantuika.parentFromOpenDialog();
+      }
+    }
+    for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
+      if (ht.target.innerText == _self.gridItemName[0].kobetu[i].name) {
         _self.$refs.dialog_kasantuika.parentFromOpenDialog();
       }
     }
 
-    // 2列目より前は何もしない
-    if (hPage.col <= 2) {
+    // 4列目より前は何しない
+    if (hPage.col < startPoint) {
       return false;
     }
     // 最終日以降の2列は何もしない
-    if (_self.lastdate + 3 <= hPage.col) {
+    if (_self.lastdate + startPoint <= hPage.col) {
       return false;
     }
 
@@ -701,7 +747,7 @@ function methodCellClickEvent(flexGrid, _self) {
       /^<div class="blue--text bg"><div class="d-none">blue-maru<\/div><\/div>/;
     //let total = flexGrid.getCellData(hPage.row, _self.lastdate + 3, false);
     // クリックをした位置
-    let d = 'day' + (hPage.col - 2); //日付
+    let d = 'day' + (hPage.col - 3); //日付
     _self.dayPoint = { day: d, dayrow: hPage.row };
     // 青〇の置き換え
     if (ht.target.innerHTML.match(redMaruRegexp)) {
@@ -814,10 +860,18 @@ function editKounetusui(flexGrid, _self) {
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(7, i + 3, kounetusuihi[0][d]);
+    flexGrid.setCellData(7, i + startPoint, kounetusuihi[0][d]);
   }
-  flexGrid.setCellData(7, _self.lastdate + 3, kounetusuihi[0]['total']);
-  flexGrid.setCellData(7, _self.lastdate + 4, kounetusuihi[0]['money']);
+  flexGrid.setCellData(
+    7,
+    _self.lastdate + startPoint,
+    kounetusuihi[0]['total']
+  );
+  flexGrid.setCellData(
+    7,
+    _self.lastdate + totalPoint,
+    kounetusuihi[0]['money']
+  );
 }
 function settingKounetusui(flexGrid, _self) {
   let kounetusuihi = [];
@@ -860,10 +914,18 @@ function settingKounetusui(flexGrid, _self) {
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(7, i + 3, kounetusuihi[0][d]);
+    flexGrid.setCellData(7, i + startPoint, kounetusuihi[0][d]);
   }
-  flexGrid.setCellData(7, _self.lastdate + 3, kounetusuihi[0]['total']);
-  flexGrid.setCellData(7, _self.lastdate + 4, kounetusuihi[0]['money']);
+  flexGrid.setCellData(
+    7,
+    _self.lastdate + startPoint,
+    kounetusuihi[0]['total']
+  );
+  flexGrid.setCellData(
+    7,
+    _self.lastdate + totalPoint,
+    kounetusuihi[0]['money']
+  );
 }
 /****************
  * 食事の設定
@@ -965,23 +1027,23 @@ function settingMeals(flexGrid, _self) {
 
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(4, i + 3, breakfast[0][d]);
+    flexGrid.setCellData(4, i + startPoint, breakfast[0][d]);
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(5, i + 3, lunch[0][d]);
+    flexGrid.setCellData(5, i + startPoint, lunch[0][d]);
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(6, i + 3, dinner[0][d]);
+    flexGrid.setCellData(6, i + startPoint, dinner[0][d]);
   }
 
-  flexGrid.setCellData(4, _self.lastdate + 3, breakfast[0]['total']);
-  flexGrid.setCellData(4, _self.lastdate + 4, breakfast[0]['money']);
-  flexGrid.setCellData(5, _self.lastdate + 3, lunch[0]['total']);
-  flexGrid.setCellData(5, _self.lastdate + 4, lunch[0]['money']);
-  flexGrid.setCellData(6, _self.lastdate + 3, dinner[0]['total']);
-  flexGrid.setCellData(6, _self.lastdate + 4, dinner[0]['money']);
+  flexGrid.setCellData(4, _self.lastdate + startPoint, breakfast[0]['total']);
+  flexGrid.setCellData(4, _self.lastdate + totalPoint, breakfast[0]['money']);
+  flexGrid.setCellData(5, _self.lastdate + startPoint, lunch[0]['total']);
+  flexGrid.setCellData(5, _self.lastdate + totalPoint, lunch[0]['money']);
+  flexGrid.setCellData(6, _self.lastdate + startPoint, dinner[0]['total']);
+  flexGrid.setCellData(6, _self.lastdate + totalPoint, dinner[0]['money']);
 
   _self.mealsData['breakfast'] = breakfast;
   _self.mealsData['lunch'] = lunch;
@@ -1041,23 +1103,23 @@ function editMeals(flexGrid, _self) {
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(4, i + 3, breakfast[0][d]);
+    flexGrid.setCellData(4, i + startPoint, breakfast[0][d]);
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(5, i + 3, lunch[0][d]);
+    flexGrid.setCellData(5, i + startPoint, lunch[0][d]);
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(6, i + 3, dinner[0][d]);
+    flexGrid.setCellData(6, i + startPoint, dinner[0][d]);
   }
 
-  flexGrid.setCellData(4, _self.lastdate + 3, breakfast[0]['total']);
-  flexGrid.setCellData(4, _self.lastdate + 4, breakfast[0]['money']);
-  flexGrid.setCellData(5, _self.lastdate + 3, lunch[0]['total']);
-  flexGrid.setCellData(5, _self.lastdate + 4, lunch[0]['money']);
-  flexGrid.setCellData(6, _self.lastdate + 3, dinner[0]['total']);
-  flexGrid.setCellData(6, _self.lastdate + 4, dinner[0]['money']);
+  flexGrid.setCellData(4, _self.lastdate + startPoint, breakfast[0]['total']);
+  flexGrid.setCellData(4, _self.lastdate + totalPoint, breakfast[0]['money']);
+  flexGrid.setCellData(5, _self.lastdate + startPoint, lunch[0]['total']);
+  flexGrid.setCellData(5, _self.lastdate + totalPoint, lunch[0]['money']);
+  flexGrid.setCellData(6, _self.lastdate + startPoint, dinner[0]['total']);
+  flexGrid.setCellData(6, _self.lastdate + totalPoint, dinner[0]['money']);
 
   _self.mealsData['breakfast'] = breakfast;
   _self.mealsData['lunch'] = lunch;
@@ -1310,7 +1372,6 @@ function createdArrows(data, _self, flexGrid, row) {
         }
       }
     }
-
     for (let j = 0; j < data[0].date.length; j++) {
       if (data[0].date[j]) {
         let firstday = new Date(data[0].date[j].start_date).getDate();
@@ -1321,18 +1382,18 @@ function createdArrows(data, _self, flexGrid, row) {
           if (data[0].date[j][dc]) {
             flexGrid.setCellData(
               row,
-              i + 2,
+              i + 3,
               data[0].date[j][d].replace('start', 'double')
             );
           } else {
-            flexGrid.setCellData(row, i + 2, data[0].date[j][d]);
+            flexGrid.setCellData(row, i + 3, data[0].date[j][d]);
           }
           total++;
         }
       }
     }
 
-    flexGrid.setCellData(row, _self.lastdate + 3, total);
+    flexGrid.setCellData(row, _self.lastdate + 4, total);
   }
   return;
 }
@@ -1594,10 +1655,10 @@ function settingRiyoubi(flexGrid, _self) {
   });
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(1, i + 3, riyoubi[0][d]);
+    flexGrid.setCellData(1, i + startPoint, riyoubi[0][d]);
   }
-  flexGrid.setCellData(1, _self.lastdate + 3, riyoubi[0]['total']);
-  flexGrid.setCellData(1, _self.lastdate + 4, riyoubi[0]['money']);
+  flexGrid.setCellData(1, _self.lastdate + startPoint, riyoubi[0]['total']);
+  flexGrid.setCellData(1, _self.lastdate + totalPoint, riyoubi[0]['money']);
   _self.riyoubiData = riyoubi;
 }
 
@@ -1610,6 +1671,13 @@ function methodCellFormatSetting(flexGrid, _self) {
     let text = e.cell.innerText;
 
     let classname = '';
+    // 体制個別
+    if (
+      text == _self.gridItemName[0].taisei_kobetu_name[0] ||
+      text == _self.gridItemName[0].taisei_kobetu_name[1]
+    ) {
+      classname = 'vertical';
+    }
     // 食事の表示
     for (let i = 0; i < _self.gridItemName[0].meals.length; i++) {
       if (text == _self.gridItemName[0].meals[i]) {
@@ -1645,10 +1713,14 @@ function methodCellFormatSetting(flexGrid, _self) {
     }
 
     // 加算情報置き換え;
-    for (let i = 0; i < _self.gridItemName[0].shisetsuNyusho_add.length; i++) {
-      if (text == _self.gridItemName[0].shisetsuNyusho_add[i].name) {
-        html =
-          '<a>' + _self.gridItemName[0].shisetsuNyusho_add[i].name + '</a>';
+    for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
+      if (text == _self.gridItemName[0].taisei_kobetu[i].name) {
+        html = '<a>' + _self.gridItemName[0].taisei_kobetu[i].name + '</a>';
+      }
+    }
+    for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
+      if (text == _self.gridItemName[0].kobetu[i].name) {
+        html = '<a>' + _self.gridItemName[0].kobetu[i].name + '</a>';
       }
     }
 
@@ -1730,11 +1802,12 @@ function methodCellFormatSetting(flexGrid, _self) {
     //合計・金額部分
     if (
       e.row > 0 &&
-      (e.col == _self.lastdate + 3 || e.col == _self.lastdate + 4)
+      (e.col == _self.lastdate + startPoint ||
+        e.col == _self.lastdate + totalPoint)
     ) {
       classname = 'text-center gridBackground ';
       let yen = '';
-      if (text.length > 0 && e.col == _self.lastdate + 4) yen = '円';
+      if (text.length > 0 && e.col == _self.lastdate + totalPoint) yen = '円';
       html = '<p>' + text + yen + '</p>';
     }
 
@@ -1742,8 +1815,8 @@ function methodCellFormatSetting(flexGrid, _self) {
     // 1:手入力不可〇
     if (
       text == 1 &&
-      e.col != _self.lastdate + 3 &&
-      e.col != _self.lastdate + 4
+      e.col != _self.lastdate + startPoint &&
+      e.col != _self.lastdate + totalPoint
     ) {
       classname = 'text-center gridBackground';
       html = '<span>〇</span>';
@@ -1752,8 +1825,8 @@ function methodCellFormatSetting(flexGrid, _self) {
     // 2:手入力可青〇
     if (
       text == 2 &&
-      e.col != _self.lastdate + 3 &&
-      e.col != _self.lastdate + 4
+      e.col != _self.lastdate + startPoint &&
+      e.col != _self.lastdate + totalPoint
     ) {
       classname = 'text-center';
       html =
@@ -1763,8 +1836,8 @@ function methodCellFormatSetting(flexGrid, _self) {
     // 3:手入力可青×
     if (
       text == 3 &&
-      e.col != _self.lastdate + 3 &&
-      e.col != _self.lastdate + 4
+      e.col != _self.lastdate + startPoint &&
+      e.col != _self.lastdate + totalPoint
     ) {
       classname = 'text-center';
       html =
@@ -1773,8 +1846,8 @@ function methodCellFormatSetting(flexGrid, _self) {
     // 0:空欄
     if (
       text == 0 &&
-      e.col != _self.lastdate + 3 &&
-      e.col != _self.lastdate + 4
+      e.col != _self.lastdate + startPoint &&
+      e.col != _self.lastdate + totalPoint
     ) {
       html = '';
     }
@@ -1803,59 +1876,99 @@ function methodCellMerge(flexGrid, _self) {
   //todo if文の条件をキーの値に変更する
   //宿泊型自立訓練
   if (_self.teikyoCode == '34') {
+    let lastRow = 5 + _self.gridItemName[0].kasanRow;
     range = [
-      new wjGrid.CellRange(0, 1, 0, 2),
-      new wjGrid.CellRange(1, 0, 5, 0),
-      new wjGrid.CellRange(1, 1, 1, 2),
-      new wjGrid.CellRange(2, 1, 2, 2),
-      new wjGrid.CellRange(3, 1, 3, 2),
-      new wjGrid.CellRange(6, 0, 12, 0),
-      new wjGrid.CellRange(6, 1, 6, 2),
-      new wjGrid.CellRange(7, 1, 7, 2),
-      new wjGrid.CellRange(8, 1, 8, 2),
-      new wjGrid.CellRange(9, 1, 9, 2),
-      new wjGrid.CellRange(10, 1, 10, 2),
-      new wjGrid.CellRange(11, 1, 11, 2),
-      new wjGrid.CellRange(12, 1, 12, 2),
+      new wjGrid.CellRange(0, 1, 0, 3),
+      new wjGrid.CellRange(1, 0, _self.gridItemName[0].taisei_kobetu.length, 0),
+      new wjGrid.CellRange(1, 1, 1, 3),
+      new wjGrid.CellRange(2, 1, 2, 3),
+      new wjGrid.CellRange(3, 1, 3, 3),
+      new wjGrid.CellRange(5, 1, 5, 2),
+      new wjGrid.CellRange(6, 0, lastRow, 0), //加算情報縦
+      new wjGrid.CellRange(
+        6,
+        1,
+        6 + _self.gridItemName[0].taisei_kobetu.length - 1,
+        1
+      ),
+      new wjGrid.CellRange(
+        6 + _self.gridItemName[0].taisei_kobetu.length,
+        1,
+        6 +
+          _self.gridItemName[0].taisei_kobetu.length +
+          _self.gridItemName[0].kobetu.length -
+          1,
+        1
+      ),
     ];
+    for (let i = 6; i <= lastRow; i++) {
+      range.push(new wjGrid.CellRange(i, 2, i, 3));
+    }
   }
   //共同生活援助
   if (_self.teikyoCode == '33') {
+    let lastRow = 5 + _self.gridItemName[0].kasanRow;
     range = [
-      new wjGrid.CellRange(0, 1, 0, 2),
-      new wjGrid.CellRange(1, 0, 5, 0),
-      new wjGrid.CellRange(1, 1, 1, 2),
-      new wjGrid.CellRange(2, 1, 2, 2),
-      new wjGrid.CellRange(3, 1, 3, 2),
-      new wjGrid.CellRange(4, 1, 4, 2),
-      new wjGrid.CellRange(5, 1, 5, 2),
-      new wjGrid.CellRange(6, 0, 12, 0),
-      new wjGrid.CellRange(6, 1, 6, 2),
-      new wjGrid.CellRange(7, 1, 7, 2),
-      new wjGrid.CellRange(8, 1, 8, 2),
-      new wjGrid.CellRange(9, 1, 9, 2),
-      new wjGrid.CellRange(10, 1, 10, 2),
-      new wjGrid.CellRange(11, 1, 11, 2),
-      new wjGrid.CellRange(12, 1, 12, 2),
+      new wjGrid.CellRange(0, 1, 0, 3),
+      new wjGrid.CellRange(1, 0, _self.gridItemName[0].taisei_kobetu.length, 0),
+      new wjGrid.CellRange(1, 1, 1, 3),
+      new wjGrid.CellRange(2, 1, 2, 3),
+      new wjGrid.CellRange(3, 1, 3, 3),
+      new wjGrid.CellRange(4, 1, 4, 3),
+      new wjGrid.CellRange(5, 1, 5, 3),
+      new wjGrid.CellRange(6, 0, lastRow, 0), //加算情報縦
+      new wjGrid.CellRange(
+        6,
+        1,
+        6 + _self.gridItemName[0].taisei_kobetu.length - 1,
+        1
+      ),
+      new wjGrid.CellRange(
+        6 + _self.gridItemName[0].taisei_kobetu.length,
+        1,
+        6 +
+          _self.gridItemName[0].taisei_kobetu.length +
+          _self.gridItemName[0].kobetu.length -
+          1,
+        1
+      ),
     ];
+    for (let i = 6; i <= lastRow; i++) {
+      range.push(new wjGrid.CellRange(i, 2, i, 3));
+    }
   }
   //施設入所用
   if (_self.teikyoCode == '32') {
+    let lastRow = 7 + _self.gridItemName[0].kasanRow;
     range = [
-      new wjGrid.CellRange(0, 1, 0, 2),
-      new wjGrid.CellRange(1, 0, 7, 0),
-      new wjGrid.CellRange(1, 1, 1, 2),
-      new wjGrid.CellRange(2, 1, 2, 2),
-      new wjGrid.CellRange(3, 1, 3, 2),
-      new wjGrid.CellRange(8, 0, 14, 0),
-      new wjGrid.CellRange(8, 1, 8, 2),
-      new wjGrid.CellRange(9, 1, 9, 2),
-      new wjGrid.CellRange(10, 1, 10, 2),
-      new wjGrid.CellRange(11, 1, 11, 2),
-      new wjGrid.CellRange(12, 1, 12, 2),
-      new wjGrid.CellRange(13, 1, 13, 2),
-      new wjGrid.CellRange(14, 1, 14, 2),
+      new wjGrid.CellRange(0, 1, 0, 3),
+      new wjGrid.CellRange(1, 0, 7, 0), // 変動情報縦
+      new wjGrid.CellRange(1, 1, 1, 3), // 利用日
+      new wjGrid.CellRange(2, 1, 2, 3), // 入退院
+      new wjGrid.CellRange(3, 1, 3, 3), // 外泊
+      new wjGrid.CellRange(5, 1, 5, 2), //食事
+      new wjGrid.CellRange(6, 1, 6, 2), //食事
+      new wjGrid.CellRange(7, 1, 7, 2), //光熱水費
+      new wjGrid.CellRange(8, 0, lastRow, 0), //加算情報縦
+      new wjGrid.CellRange(
+        8,
+        1,
+        8 + _self.gridItemName[0].taisei_kobetu.length - 1,
+        1
+      ),
+      new wjGrid.CellRange(
+        8 + _self.gridItemName[0].taisei_kobetu.length,
+        1,
+        8 +
+          _self.gridItemName[0].taisei_kobetu.length +
+          _self.gridItemName[0].kobetu.length -
+          1,
+        1
+      ),
     ];
+    for (let i = 8; i <= lastRow; i++) {
+      range.push(new wjGrid.CellRange(i, 2, i, 3));
+    }
   }
   let mm = new wjGrid.MergeManager(flexGrid);
   mm.getMergedRange = function (panel, r, c) {
@@ -2131,7 +2244,6 @@ div#kobetsuriyo {
       z-index: 1;
     }
   }
-
   // スクロールバーの表示
   ::-webkit-scrollbar {
     width: 10px;
