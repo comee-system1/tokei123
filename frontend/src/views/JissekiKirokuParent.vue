@@ -20,7 +20,7 @@
         <ShuroIko v-else-if="searchArgument=='43 就労移行支援'"></ShuroIko>
         <ShurokeizokuA v-else-if="searchArgument=='45 就労継続支援'"></ShurokeizokuA>
         <ShuroTeichaku v-else-if="searchArgument=='47 就労定着支援'"></ShuroTeichaku>
-        <!-- <JiritsuSeikatsu v-else-if="searchArgument=='35 自立生活援助'"></JiritsuSeikatsu> -->
+        <JiritsuSeikatsu v-else-if="searchArgument=='35 自立生活援助'"></JiritsuSeikatsu>
       </v-col>
     </v-row>
   </v-container>
@@ -38,7 +38,7 @@ import SeikatsuKunren from '../components/JissekiKirokuSeikatsuKunren.vue';
 import ShuroIko from '../components/JissekiKirokuShuroIko.vue';
 import ShurokeizokuA from '../components/JissekiKirokuShurokeizokuA.vue';
 import ShuroTeichaku from '../components/JissekiKirokuShuroTeichaku.vue';
-// import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
+import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
 
 import moment from 'moment';
 
@@ -56,7 +56,7 @@ export default{
     ShuroIko,
     ShurokeizokuA,
     ShuroTeichaku,
-    // JiritsuSeikatsu
+    JiritsuSeikatsu
   },
   data(){
     return{
@@ -105,8 +105,18 @@ export default{
 #detailGrid {
   margin-top:10px;
   font-size:12px;
-  height: 65vh;
   color:#333333 !important;
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
+  }
 }
 
 #detailGrid .wj-header {
@@ -130,4 +140,5 @@ export default{
 /* #subGrid.wj-control.wj-content.wj-flexgrid {
   border: 2px solid #348498;
 } */
+
 </style>

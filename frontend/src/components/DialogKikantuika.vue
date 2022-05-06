@@ -2,16 +2,19 @@
   <v-dialog v-model="dialogFlag" width="500">
     <v-card class="pa-2">
       <v-card-title class="text-h5"> 変動情報登録 </v-card-title>
-      <!-- <v-card class="d-flex" flat>
-        <v-card class="pa-2" elevation="0">
-          <v-btn-toggle mandatory color="black">
-            <v-btn depressed small block :width="100">入退院</v-btn>
-            <v-btn depressed small block :width="100">外泊</v-btn>
-          </v-btn-toggle>
-        </v-card>
-      </v-card> -->
-
       <v-container>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="dialogFlag = false"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+
         <v-row no-gutters style="flex-wrap: nowrap">
           <v-col cols="3">
             <v-card elevation="0">入院日 </v-card>

@@ -44,10 +44,10 @@
       <wj-flex-grid-column header="往" binding="gei" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="復" binding="sou" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="医療連携体制加算" binding="iryo" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="iryo" :width="'11*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="緊急短期入所受入加算" binding="kinkyu" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="重度障害者支援加算（研修修了者）" binding="jyudo" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="定員超過特例加算" binding="chokatk" :width="'11*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="定員超過特例加算" binding="chokatk" :width="'11*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="備考" binding="biko" :width="'16*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
   </div>
@@ -82,6 +82,8 @@ export default{
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['keiyakuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      iryoRenkeiTotal: getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      teiinChokaTotal: getTeiinChokaTotal(apiResult['riyo_inf'][0]['kiroku_mei'])
     }
   },
   methods: {
@@ -142,6 +144,8 @@ export default{
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
       footerPanel.setCellData(0, 4, this.sougeiTotal);
+      footerPanel.setCellData(0, 7, this.iryoRenkeiTotal);
+      footerPanel.setCellData(0, 10, this.teiinChokaTotal);
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
@@ -200,6 +204,11 @@ export default{
           }
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
             s.color = "red";
+          }
+
+          //備考欄を左寄せにする
+          if(c == 11){
+            s.textAlign = "left";
           }
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
@@ -278,6 +287,29 @@ function getSougeiTotal(data){
   return totalCount;
 }
 
+// 医療連携体制加算の合計の算出
+function getIryoRenkeiTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['iryo'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
+// 定員超過特例加算の合計の算出
+function getTeiinChokaTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['chokatk'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
+
 </script>
 
 <style scoped>
@@ -333,6 +365,18 @@ function getSougeiTotal(data){
 
 .denbun-toggle{
   margin-left:20px;
+}
+
+@media screen and (max-width: 1366px){
+  #detailGrid {
+    height: 65vh;
+  }
+}
+
+@media screen and (min-width: 1367px){
+  #detailGrid {
+    height: 77vh;
+  }
 }
 
 </style>

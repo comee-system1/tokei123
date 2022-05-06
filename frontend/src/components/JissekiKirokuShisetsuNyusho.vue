@@ -17,11 +17,11 @@
         <v-row>
           <div class="hosokuumu-block">
             <label>補足給付摘要の有無</label>
-            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="hosokukyuhu-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiumuData class="hosokuumu-box"></wj-combo-box>
           </div>
           <div class="hosokugaku-block">
             <label>補足給付額（日額）</label>
-            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="hosokukyuhu-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" v-bind:text= tkkfhiData class="hosokugaku-box"></wj-combo-box>
           </div>
           <v-btn-toggle mandatory class="denbun-toggle">
             <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
@@ -62,9 +62,9 @@
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="地域移行加算" binding="tnymd" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="地域移行加算" binding="kasanti" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="朝食" binding="sasa" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -121,6 +121,7 @@ export default{
       lastMonth:lastMonth,
       currentPageTitle: this.$route.name,
       detailGridData:this.getGridData(apiResult),
+      nyuinGaihakuTotal: getNyuinGaihakuTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       tkkfhiumuData:apiResult['riyo_inf'][0]['tkkfhiumu'],
       tkkfhiData:apiResult['riyo_inf'][0]['tkkfhi'],
       subGridData:this.getSubGridData(apiResult),
@@ -176,6 +177,7 @@ export default{
       headerpanel.setCellData(0, 12, "備考");
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
+      footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 45;
@@ -237,6 +239,11 @@ export default{
           }
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
             s.color = "red";
+          }
+
+          //備考欄を左寄せにする
+          if(c == 12){
+            s.textAlign = "left";
           }
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
@@ -349,7 +356,7 @@ export default{
             jyokyo:kirokuMeiData[i]["jyokyo"],
             kasan1:kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
             kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
-            tnymd:kirokuMeiData[i]["tnymd"],
+            kasanti:kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
             kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
             kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
             sasa:kirokuMeiData[i]["sasa"],
@@ -453,6 +460,17 @@ function thirtythDayFilter(riyouKaishibi){
 // 曜日変換用
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
+// 入院・外泊時加算の合計の算出
+function getNyuinGaihakuTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasan1'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
 </script>
 
 <style scoped>
@@ -489,7 +507,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 }
 
 .hosokuumu-block{
-  width:205px;
+  width:190px;
 }
 
 .hosokugaku-block{
@@ -506,18 +524,20 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   border:none;
 }
 
-.hosokukyuhu-box {
+.hosokuumu-box {
+  width:30px;
+  margin-right:20px;
+  border:none;
+}
+
+.hosokugaku-box{
   width:45px;
   margin-right:20px;
   border:none;
 }
 
-.hosokukyuhu-box:first-child {
-  width:20px;
-}
-
 .denbun-toggle{
-  margin-left:20px;
+  margin-left:12px;
   width:80px;
 }
 
@@ -528,6 +548,17 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
 #detailGrid {
   margin-top:5px;
-  height: 57vh;
+}
+
+@media screen and (max-width: 1366px){
+  #detailGrid {
+    height: 57vh;
+  }
+}
+
+@media screen and (min-width: 1367px){
+  #detailGrid {
+    height: 70vh;
+  }
 }
 </style>

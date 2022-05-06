@@ -248,6 +248,7 @@ const totalPoint = startPoint + 1;
 export default {
   data() {
     return {
+      plusOne: 1, //該当日付を含める
       mainGrid: [], //表示grid
       riyoubiData: [], //利用日データ
       nyutaiinData: [], //入退院データ
@@ -345,15 +346,54 @@ export default {
         ];
       } else if (this.teikyoCode == '32') {
         let define_taisei_kobetu = [
-          { name: '重度障害者支援加算Ⅱ2' },
-          { name: '重度障害者支援加算Ⅱ3' },
+          {
+            name: '重度障害者支援加算Ⅱ2',
+            date: {
+              day1: 2,
+              day2: 2,
+              day3: 2,
+              day4: 2,
+              day14: 2,
+              day15: 2,
+              day16: 3,
+            },
+          },
+          {
+            name: '重度障害者支援加算Ⅱ3',
+            date: {
+              day11: 2,
+              day12: 2,
+              day13: 2,
+              day14: 2,
+              day24: 2,
+              day25: 2,
+              day26: 3,
+            },
+          },
           { name: '栄養マネジメント加算' },
           { name: '療養食加算' },
-          { name: '口腔衛生管理加算' },
+          {
+            name: '口腔衛生管理加算',
+            date: {
+              day1: 1,
+              day2: 1,
+              day3: 1,
+              day4: 1,
+            },
+          },
         ];
         let define_kobetu = [
           { name: '入院・外泊時加算' },
-          { name: '地域移行加算' },
+          {
+            name: '地域移行加算',
+            date: {
+              day1: 2,
+              day2: 2,
+              day14: 2,
+              day18: 2,
+              day24: 2,
+            },
+          },
         ];
         hendo = [
           {
@@ -730,9 +770,12 @@ function methodCellClickEvent(flexGrid, _self) {
         _self.$refs.dialog_kasantuika.parentFromOpenDialog();
       }
     }
-
-    // 4列目より前は何しない
+    // 4列目より前は何もしない
+    // 3行目より上は何もしない
     if (hPage.col < startPoint) {
+      return false;
+    }
+    if (hPage.row <= 3 && ht.target.innerText.length == 0) {
       return false;
     }
     // 最終日以降の2列は何もしない
@@ -836,14 +879,118 @@ function methodSettingPoint(flexGrid, _self) {
       }
     }
   }
-}
 
+  //加算情報の登録
+  if (_self.editGridFlag == true) {
+    editKasan(flexGrid, _self);
+  } else {
+    settingKasan(flexGrid, _self);
+  }
+}
+/********************
+ * 変動情報の行数取得
+ */
+function getHendoRows(_self) {
+  // mealFlagがある時はmeals分を加える
+  let rows = 0;
+  for (let i = 0; i < _self.gridItemName[0]['shisetsuNyusho'].length; i++) {
+    if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+      rows = rows + _self.gridItemName[0].meals.length;
+    }
+    rows++;
+  }
+  return rows;
+}
+/*****************
+ * 加算情報編集
+ */
+function editKasan(flexGrid, _self) {
+  let rows = getHendoRows(_self);
+
+  //体制+個別用の配列番号
+  if (rows <= _self.dayPoint.dayrow) {
+    // 変動情報と体制・個別を合わせたものより大きい場合は個別用配列を利用する
+    if (
+      rows + _self.gridItemName[0]['taisei_kobetu'].length <=
+      _self.dayPoint.dayrow
+    ) {
+      let k =
+        _self.dayPoint.dayrow -
+        (rows + _self.gridItemName[0]['taisei_kobetu'].length);
+      if (_self.gridItemName[0]['kobetu'][k]['date']) {
+        // 選択した値を登録
+        _self.gridItemName[0]['kobetu'][k]['date'][_self.dayPoint.day] =
+          _self.selectedPoint;
+      } else {
+        //配列がないときは配列を作成
+        let d = _self.dayPoint.day;
+        _self.gridItemName[0]['kobetu'][k]['date'] = [];
+        _self.gridItemName[0]['kobetu'][k]['date'][d] = _self.selectedPoint;
+      }
+    } else {
+      let k = _self.dayPoint.dayrow - rows;
+      if (_self.gridItemName[0]['taisei_kobetu'][k]['date']) {
+        // 選択した値を登録
+        _self.gridItemName[0]['taisei_kobetu'][k]['date'][_self.dayPoint.day] =
+          _self.selectedPoint;
+      } else {
+        //配列がないときは配列を作成
+        let d = _self.dayPoint.day;
+        _self.gridItemName[0]['taisei_kobetu'][k]['date'] = [];
+        _self.gridItemName[0]['taisei_kobetu'][k]['date'][d] =
+          _self.selectedPoint;
+      }
+    }
+  }
+  createKasan(flexGrid, _self);
+}
+/****************
+ * 加算情報登録
+ */
+function settingKasan(flexGrid, _self) {
+  //加算情報作成
+  createKasan(flexGrid, _self);
+}
+function createKasan(flexGrid, _self) {
+  let rows = getHendoRows(_self);
+
+  _self.gridItemName[0].taisei_kobetu.forEach(function (elements) {
+    let total = 0;
+    for (let i = 1; i <= _self.lastdate; i++) {
+      let d = 'day' + i;
+      if (elements['date']) {
+        flexGrid.setCellData(rows, i + 3, elements['date'][d]);
+        if (elements['date'][d] == 2 || elements['date'][d] == 1) {
+          total++;
+        }
+      }
+      flexGrid.setCellData(rows, _self.lastdate + startPoint, total);
+    }
+    rows++;
+  });
+
+  _self.gridItemName[0].kobetu.forEach(function (elements) {
+    let total = 0;
+    for (let i = 1; i <= _self.lastdate; i++) {
+      let d = 'day' + i;
+      if (elements['date']) {
+        flexGrid.setCellData(rows, i + 3, elements['date'][d]);
+        if (elements['date'][d] == 2 || elements['date'][d] == 1) {
+          total++;
+        }
+      }
+      flexGrid.setCellData(rows, _self.lastdate + startPoint, total);
+    }
+    rows++;
+  });
+}
 /***********
  * 光熱水費
  */
 function editKounetusui(flexGrid, _self) {
+  let rows = getHendoRows(_self) - 1;
   let kounetusuihi = _self.kounetusuihi;
-  if (_self.dayPoint['dayrow'] == 7) {
+  if (_self.dayPoint['dayrow'] == rows) {
     kounetusuihi[0][_self.dayPoint['day']] = _self.selectedPoint;
 
     if (_self.selectedPoint == 2) {
@@ -860,15 +1007,15 @@ function editKounetusui(flexGrid, _self) {
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(7, i + startPoint, kounetusuihi[0][d]);
+    flexGrid.setCellData(rows, i + startPoint, kounetusuihi[0][d]);
   }
   flexGrid.setCellData(
-    7,
+    rows,
     _self.lastdate + startPoint,
     kounetusuihi[0]['total']
   );
   flexGrid.setCellData(
-    7,
+    rows,
     _self.lastdate + totalPoint,
     kounetusuihi[0]['money']
   );
@@ -905,7 +1052,7 @@ function settingKounetusui(flexGrid, _self) {
     total: 22,
     money: 2200,
   });
-
+  let rows = getHendoRows(_self) - 1;
   if (_self.kounetusuihi > 0) {
     kounetusuihi = [];
     kounetusuihi = _self.kounetusuihi;
@@ -914,15 +1061,15 @@ function settingKounetusui(flexGrid, _self) {
   }
   for (let i = 0; i <= _self.lastdate; i++) {
     let d = 'day' + (i + 1);
-    flexGrid.setCellData(7, i + startPoint, kounetusuihi[0][d]);
+    flexGrid.setCellData(rows, i + startPoint, kounetusuihi[0][d]);
   }
   flexGrid.setCellData(
-    7,
+    rows,
     _self.lastdate + startPoint,
     kounetusuihi[0]['total']
   );
   flexGrid.setCellData(
-    7,
+    rows,
     _self.lastdate + totalPoint,
     kounetusuihi[0]['money']
   );
@@ -1191,7 +1338,7 @@ function settingGaihaku(flexGrid, _self) {
         byouinName: '西経国立病院',
         start_date: '2022/5/25',
         end_date: '2022/5/27',
-        diff_date: 2,
+        diff_date: 3,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1263,7 +1410,10 @@ function editGaihaku(flexGrid, _self) {
   gaihaku[0]['date'][selectKey]['taiinbiAida'] =
     _self.$refs.dialog_kikantuika.registData.taiinbiAida;
 
-  gaihaku[0]['date'][selectKey]['diff_date'] = lastday - firstday;
+  gaihaku[0]['date'][selectKey]['diff_date'] =
+    lastday - firstday + _self.plusOne;
+  gaihaku[0]['date'][selectKey]['byouinName'] =
+    _self.$refs.dialog_kikantuika.registData.byouinName;
 
   for (let d = st; d <= ed; d.setDate(d.getDate() + 1)) {
     var days = d.getDate();
@@ -1301,7 +1451,7 @@ function insertGaihaku(flexGrid, _self) {
   gaihaku[0]['date'].push({
     start_date: _self.$refs.dialog_kikantuika.registData.nyuuinbi,
     end_date: _self.$refs.dialog_kikantuika.registData.taiinbi,
-    diff_date: lastday - firstday,
+    diff_date: lastday - firstday + _self.plusOne,
     nyuuinbiShiseturiyo:
       _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo,
     taiinbiShiseturiyo:
@@ -1420,7 +1570,7 @@ function settingNyuTaiin(flexGrid, _self) {
         byouinName: '東経国立病院',
         start_date: '2022/5/6',
         end_date: '2022/5/16',
-        diff_date: 10,
+        diff_date: 11,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1532,7 +1682,10 @@ function editNyuTaiin(flexGrid, _self) {
   nyutaiin[0]['date'][selectKey]['taiinbiAida'] =
     _self.$refs.dialog_kikantuika.registData.taiinbiAida;
 
-  nyutaiin[0]['date'][selectKey]['diff_date'] = lastday - firstday;
+  nyutaiin[0]['date'][selectKey]['diff_date'] =
+    lastday - firstday + _self.plusOne;
+  nyutaiin[0]['date'][selectKey]['byouinName'] =
+    _self.$refs.dialog_kikantuika.registData.byouinName;
 
   for (let d = st; d <= ed; d.setDate(d.getDate() + 1)) {
     var days = d.getDate();
@@ -1583,7 +1736,7 @@ function insertNyuTaiin(flexGrid, _self) {
   nyutaiin[0]['date'].push({
     start_date: _self.$refs.dialog_kikantuika.registData.nyuuinbi,
     end_date: _self.$refs.dialog_kikantuika.registData.taiinbi,
-    diff_date: lastday - firstday,
+    diff_date: lastday - firstday + _self.plusOne,
     nyuuinbiShiseturiyo:
       _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo,
     taiinbiShiseturiyo:
@@ -1811,6 +1964,11 @@ function methodCellFormatSetting(flexGrid, _self) {
       html = '<p>' + text + yen + '</p>';
     }
 
+    //金額・食事以外をグレー
+    if (e.col == _self.lastdate + totalPoint && e.row > 0 && text.length == 0) {
+      classname = 'text-center gridBackground backGray';
+    }
+
     // 〇の表示
     // 1:手入力不可〇
     if (
@@ -2028,6 +2186,9 @@ div#kobetsuriyo {
     left: 0;
     width: 100%;
     height: 100%;
+    &.backGray {
+      background-color: $selected_color;
+    }
     span {
       position: absolute;
       top: 50%;

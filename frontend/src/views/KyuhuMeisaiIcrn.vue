@@ -108,16 +108,11 @@
         </v-col>
         <v-col cols="*" style="display: flex; align-items: center">
           <v-row justify="end" no-gutters>
-            <v-btn
-              class="mr-3"
-              style="width: 100px; height: 100px; visibility: hidden"
-            >
-              検索
-            </v-btn>
+            <v-btn class="mr-5" style="width: 80px; height: 80px"> 検索 </v-btn>
           </v-row>
         </v-col>
       </v-row>
-      <v-row justify="end" no-gutters>
+      <v-row justify="end" class="mt-1" no-gutters>
         <v-col>
           <wj-flex-grid
             id="seikyuGrid"
@@ -195,6 +190,8 @@ const keySichoson = 'keyval00005';
 const keyAlp = 'keyval00006';
 const colCntSeikyu = 22;
 const colCntKyufu = 13;
+const rowheight = 25;
+const rowHeaderheight = 20;
 const fmtYen = 'n0';
 const titleNisu = '日数';
 const titleSeikyugakuSyukei = '請求額集計欄';
@@ -560,8 +557,11 @@ export default {
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
+      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[1].height = rowHeaderheight;
       flexGrid.columnHeaders.rows[2].height = 50;
       flexGrid.alternatingRowStep = 0;
+      flexGrid.cells.rows.defaultSize = rowheight;
 
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < colCntSeikyu; colIndex++) {
@@ -618,7 +618,9 @@ export default {
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
       flexGrid.columnHeaders.rows[1].height = 50;
+      flexGrid.cells.rows.defaultSize = rowheight;
 
       flexGrid.alternatingRowStep = 0;
 

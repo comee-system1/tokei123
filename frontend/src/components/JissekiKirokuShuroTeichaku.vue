@@ -39,7 +39,7 @@
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="算定日数"  binding="jyokyo" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="算定日数"  binding="keitai" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="特別地域加算" binding="kasantkt" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="定着支援連携促進加算" binding="kasantren" :width="'15*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="備考" binding="biko" :width="'59*'" :wordWrap=true></wj-flex-grid-column>
@@ -91,7 +91,6 @@ export default{
       currentPageTitle: this.$route.name,
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
-      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(apiResult),
     }
   },
@@ -188,6 +187,11 @@ export default{
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
             s.color = "red";
           }
+
+          //備考欄を左寄せにする
+          if(c == 5){
+            s.textAlign = "left";
+          }
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
           // フッターのスタイル
@@ -245,7 +249,7 @@ export default{
             id:kirokuMeiData[i]["id"],
             rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
             youbi:WeekChars[date.getDay()],
-            jyokyo:kirokuMeiData[i]["jyokyo"],
+            keitai:kirokuMeiData[i]["keitai"],
             kasantkt:kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
             kasantren:kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
             biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
@@ -290,22 +294,6 @@ function thirtythDayFilter(riyouKaishibi){
 
 // 曜日変換用
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
-
-// 送迎の合計の算出
-function getSougeiTotal(data){
-  let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['sou']){
-      totalCount++ ;
-    }
-  }
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['gei']){
-      totalCount++ ;
-    }
-  }
-  return totalCount;
-}
 
 </script>
 
@@ -364,8 +352,16 @@ function getSougeiTotal(data){
   margin-left:20px;
 }
 
-#detailGrid {
-  height: 60vh;
+@media screen and (max-width: 1366px){
+  #detailGrid {
+    height: 60vh;
+  }
+}
+
+@media screen and (min-width: 1367px){
+  #detailGrid {
+    height: 73vh;
+  }
 }
 
 </style>

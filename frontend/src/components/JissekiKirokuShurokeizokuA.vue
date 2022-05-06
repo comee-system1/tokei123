@@ -40,15 +40,15 @@
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="往" binding="gei" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="復" binding="sou" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'7*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="地域協働加算" binding="kasankdo" :width="'7*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'6*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'6*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="往" binding="gei" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="復" binding="sou" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="地域協働加算" binding="kasankdo" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="施設外支援" binding="kasang" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="備考" binding="biko" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
@@ -108,6 +108,9 @@ export default{
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      jikansuTotal: getJikansuTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      iryoRenkeiTotal: getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      taikenRiyoTotal: getTaikenRiyoTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       sisetsugaiTotal:getSisetsugaiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       ruikei:apiResult['riyo_inf'][0]['ksnruikei'],
       subGridData:this.getSubGridData(apiResult),
@@ -189,8 +192,11 @@ export default{
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
       footerPanel.setCellData(0, 5, this.sougeiTotal);
+      footerPanel.setCellData(0, 7, this.jikansuTotal);
+      footerPanel.setCellData(0, 9, this.iryoRenkeiTotal);
+      footerPanel.setCellData(0, 10, this.taikenRiyoTotal);
       footerPanel.setCellData(0, 12, "移行準備支援体制加算");
-            // フッター1行目
+      // フッター1行目
       footerPanel.setCellData(1, 12, "当月");
       footerPanel.setCellData(1, 13, this.sisetsugaiTotal);
       // フッター2行目
@@ -253,6 +259,11 @@ export default{
           }
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
             s.color = "red";
+          }
+
+          //備考欄を左寄せにする
+          if(c == 13){
+            s.textAlign = "left";
           }
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
@@ -385,6 +396,39 @@ function getSougeiTotal(data){
   return totalCount;
 }
 
+// 訪問支援加算時間数の合計の算出
+function getJikansuTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasanh_mn'] != "0"){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
+// 医療連携体制加算の合計の算出
+function getIryoRenkeiTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasani'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
+// 体験利用支援加算の合計の算出
+function getTaikenRiyoTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasantkn'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
 // 施設外支援の月の合計を算出
 function getSisetsugaiTotal(data){
   let totalCount = 0;
@@ -453,8 +497,16 @@ function getSisetsugaiTotal(data){
   margin-left:20px;
 }
 
-#detailGrid {
-  height: 60vh;
+@media screen and (max-width: 1366px){
+  #detailGrid {
+    height: 60vh;
+  }
+}
+
+@media screen and (min-width: 1367px){
+  #detailGrid {
+    height: 73vh;
+  }
 }
 
 </style>

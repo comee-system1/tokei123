@@ -39,7 +39,7 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="3" class="mt-3 mr-3">
+        <v-col cols="4" class="mt-3 mr-3">
           <v-row justify="end">
             <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
           </v-row>
@@ -146,9 +146,11 @@ const strMaru = '○';
 const bgClrInput = 'white';
 const bgClrError = 'mistyrose';
 const fmtYen = 'n0';
-const fmtYmd = 'gyy/MM/dd';
+const fmtYmd = 'yyyy/MM/dd'; //'gyy/MM/dd';
 const daiTitle = '受給者証情報';
 const chuTitle = '利用者負担';
+const rowHeaderheight = 20;
+const rowheight = 25;
 // const currentDate = new Date();
 let siborikomiSearch = '0';
 let siborikomiSearch2 = '0';
@@ -177,21 +179,21 @@ export default {
       sortSearch: 0,
       alphaSearch: 0,
       headerList: [
-        { dataname: 'err', title: 'エ\nラ\n|', width: '1.5*', align: 'center' },
+        { dataname: 'err', title: 'エ\nラ\n|', width: 30, align: 'center' },
         {
           dataname: 'no',
           title: '受給者証\n番号',
-          width: '4*',
+          width: 100,
           align: 'center',
         },
         { dataname: 'name', title: '氏名', width: '7*', align: 'left' },
         {
           dataname: 'koufuymd',
           title: '交付日',
-          width: '3.5*',
+          width: 90,
           align: 'center',
         },
-        { dataname: 'engo', title: '援護者', width: '3.5*', align: 'left' },
+        { dataname: 'engo', title: '援護者', width: 100, align: 'left' },
         {
           dataname: 'jitibangou',
           title: '助成自治\n体番号',
@@ -229,6 +231,12 @@ export default {
           align: 'right',
         },
         {
+          dataname: 'jyougenumu',
+          title: '上限\n管理',
+          width: 50,
+          align: 'center',
+        },
+        {
           dataname: 'jyougenkanri',
           title: '上限額\n管理事業所',
           width: '7*',
@@ -243,7 +251,7 @@ export default {
         {
           dataname: 'tokubetukyufu',
           title: '特別\n給付費',
-          width: '2.5*',
+          width: 70,
           align: 'right',
         },
         { dataname: 'syusei', title: '修正', width: 50, align: 'center' },
@@ -327,12 +335,14 @@ export default {
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[1].height = rowHeaderheight;
       flexGrid.columnHeaders.rows[2].height = 40;
-
+      flexGrid.cells.rows.defaultSize = rowheight;
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < 15; colIndex++) {
+      for (let colIndex = 0; colIndex < 16; colIndex++) {
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         col.binding = this.headerList[colIndex].dataname;
@@ -347,7 +357,7 @@ export default {
           col.cellTemplate = '';
         }
 
-        if (colIndex == 10 || colIndex == 13) {
+        if (colIndex == 10 || colIndex == 14) {
           col.format = fmtYen;
         } else if (colIndex == 3) {
           col.format = fmtYmd;
@@ -357,9 +367,9 @@ export default {
 
         for (let rowindex = 0; rowindex < 3; rowindex++) {
           let title = '';
-          if (1 <= colIndex && colIndex <= 13 && rowindex == 0) {
+          if (1 <= colIndex && colIndex <= 14 && rowindex == 0) {
             title = daiTitle;
-          } else if (10 <= colIndex && colIndex <= 13 && rowindex == 1) {
+          } else if (10 <= colIndex && colIndex <= 14 && rowindex == 1) {
             title = chuTitle;
           } else {
             title = this.headerList[colIndex].title;

@@ -113,7 +113,7 @@
         </v-col>
       </v-row>
       <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
-        情報が変更されています。登録を行ってください※
+        ※情報が変更されています。登録を行ってください※
       </div>
       <div class="transparent message text-caption">
         最終登録日:2021.08.08 13:36 (担当者:大正 雅夫)
@@ -125,6 +125,18 @@
       >
         <v-card class="pa-2">
           <v-container>
+            <v-btn
+              elevation="2"
+              icon
+              small
+              absolute
+              top
+              right
+              @click="header_dialog = false"
+              class="closeButton"
+              color="secondary"
+              ><v-icon dark small> mdi-close </v-icon></v-btn
+            >
             <wj-flex-grid
               :itemsSource="jimusyo"
               :headersVisibility="'Column'"
@@ -432,6 +444,13 @@ export default {
       background: $selected_color;
       color: $red;
     }
+  }
+
+  .closeButton {
+    z-index: 100;
+    top: 5px;
+    right: 5px;
+    background-color: $white;
   }
 }
 .v-picker {

@@ -39,16 +39,16 @@
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'8*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="提供形態"  binding="keitai" :width="'6*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="開始時間" binding="jstime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="終了時間" binding="jetime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="往" binding="gei" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="復" binding="sou" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="短期滞在加算" binding="kasant" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="往" binding="gei" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="復" binding="sou" :width="'4*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="短期滞在加算" binding="kasant" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="備考" binding="biko" :width="'17*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
@@ -104,6 +104,8 @@ export default{
       houmonTotal1:apiResult['riyo_inf'][0]['gokei_homon1'],
       houmonTotal2:apiResult['riyo_inf'][0]['gokei_homon2'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      iryoRenkeiTotal: getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      taikenRiyoTotal: getTaikenRiyoTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
       subGridData:this.getSubGridData(apiResult),
     }
   },
@@ -182,6 +184,8 @@ export default{
       footerPanel.setCellData(0, 3, "通所型");
       footerPanel.setCellData(0, 4, this.tsushoTotal);
       footerPanel.setCellData(0, 6, this.sougeiTotal);
+      footerPanel.setCellData(0, 10, this.iryoRenkeiTotal);
+      footerPanel.setCellData(0, 11, this.taikenRiyoTotal);
       // フッター1行目
       footerPanel.setCellData(1, 3, "訪問型");
       footerPanel.setCellData(1, 4, "1時間未満 : " + this.houmonTotal1);
@@ -239,6 +243,11 @@ export default{
           }
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
             s.color = "red";
+          }
+
+          //備考欄を左寄せにする
+          if(c == 12){
+            s.textAlign = "left";
           }
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
@@ -370,6 +379,28 @@ function getSougeiTotal(data){
   return totalCount;
 }
 
+// 医療連携体制加算の合計の算出
+function getIryoRenkeiTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasani'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
+// 体験利用支援加算の合計の算出
+function getTaikenRiyoTotal(data){
+  let totalCount = 0;
+  for(let i = 0; i < data.length; i++){
+    if(data[i]['kasantkn'] > 0){
+      totalCount++ ;
+    }
+  }
+  return totalCount;
+}
+
 </script>
 
 <style scoped>
@@ -427,7 +458,15 @@ function getSougeiTotal(data){
   margin-left:20px;
 }
 
-#detailGrid {
-  height: 60vh;
+@media screen and (max-width: 1366px){
+  #detailGrid {
+    height: 60vh;
+  }
+}
+
+@media screen and (min-width: 1367px){
+  #detailGrid {
+    height: 73vh;
+  }
 }
 </style>
