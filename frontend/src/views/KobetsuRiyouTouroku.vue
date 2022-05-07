@@ -49,135 +49,21 @@
               >
             </v-col>
           </v-row>
-
-          <!-- <v-row no-gutters class="mt-1">
-            <v-col>
-              <v-card class="pa-2 jyukyusyaBox" outlined tile>
-                <v-row class="mt-0" no-gutters>
-                  <v-col cols="2*">
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-1 pr-2" elevation="0" :min-width="60">
-                        <label class="font-weight-black">援護者</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col cols="12">
-                          <v-card
-                            class="pa-1"
-                            elevation="0"
-                            v-for="(n, k) in jyukyusyaItirans[0].engosya"
-                            :key="k"
-                          >
-                            {{ n.engosya
-                            }}<span class="ml-5">{{ n.date }}</span></v-card
-                          >
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="*" class="ml-2">
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">助成自治体番号</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col>
-                          <v-card class="pa-2" elevation="0">{{
-                            jyukyusyaItirans[1].jyoseijititaiBango
-                          }}</v-card>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="1*" class="ml-2">
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">障害種別</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col>
-                          <v-card class="pa-2" elevation="0">
-                            {{ jyukyusyaItirans[2].syogaisyubetsu }}
-                          </v-card>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">障害支区</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col>
-                          <v-card class="pa-2" elevation="0">
-                            {{ jyukyusyaItirans[3].syogaishiku }}
-                          </v-card>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="1*" class="ml-2">
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">負担上限額</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col class="text-right">
-                          <v-card class="pa-2" elevation="0">
-                            {{ jyukyusyaItirans[4].futanjyougengaku }} 円
-                          </v-card>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">特別給付費</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col class="text-right">
-                          <v-card class="pa-2" elevation="0">
-                            {{ jyukyusyaItirans[5].tokubetsukyufuhi }}円
-                          </v-card>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="3" class="ml-2">
-                    <v-card class="d-flex flex-row" flat tile>
-                      <v-card class="pt-2 pr-2" elevation="0">
-                        <label class="font-weight-black">上限管理時</label>
-                      </v-card>
-                      <v-row no-gutters>
-                        <v-col cols="12">
-                          <v-card
-                            class="pa-1"
-                            elevation="0"
-                            v-for="(n, k) in jyukyusyaItirans[6].jyougenkanriji"
-                            :key="k"
-                          >
-                            {{ n.name
-                            }}<span class="ml-5">{{ n.date }}</span></v-card
-                          >
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-col>
-          </v-row> -->
-
           <v-row no-gutters class="mt-1">
             <v-col md="4">
               <v-card elevation="0">
                 <div class="clearfix">
-                  <a class="addButton" @click="openDialog_Term('nyutaiin_add')"
+                  <a
+                    class="addButton pt-1"
+                    @click="openDialog_Term('nyutaiin_add')"
                     >入退院追加</a
                   >
                   <a
-                    class="ml-1 addButton"
+                    class="ml-1 pt-1 addButton"
                     @click="openDialog_Term('gaihaku_add')"
                     >外泊追加</a
                   >
-                  <a class="ml-1 addButton" @click="openDialog_Add()"
+                  <a class="ml-1 pt-1 addButton" @click="openDialog_Add()"
                     >加算追加</a
                   >
                 </div>
@@ -260,7 +146,6 @@ export default {
       lastdate: moment().daysInMonth(),
       dateArgument: '', // ヘッダメニューのカレンダー選択
       serviceArgument: '', // ヘッダメニューのサービス選択
-      jyukyusyaItirans: this.getJyukyusyaItiran(), // 受給者一覧情報表示用
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
       dialog: false, //期間追加用のダイアログ
@@ -432,10 +317,6 @@ export default {
     openDialog_Add() {
       this.$refs.dialog_kasantuika.parentFromOpenDialog();
     },
-    // 受給者一覧情報の表示用データの取得
-    getJyukyusyaItiran: function () {
-      return methodSetJyukyusyaItiran();
-    },
     // 左メニューで作成されたユーザ一覧の取得を行う
     getSelectUserChildComponent: function (data) {
       this.userListComponentDatas = data;
@@ -509,66 +390,18 @@ export default {
     },
   },
 };
-/*********************
- * 受給者証情報のデータ作成
- */
-function methodSetJyukyusyaItiran() {
-  let jyukyusyaItiran = [];
-  jyukyusyaItiran.push({
-    engosya: [
-      { engosya: '東経市', date: '7/10～7/20' },
-      { engosya: '西経市', date: '7/11～7/21' },
-      { engosya: '北経市', date: '7/12～7/22' },
-    ],
-  });
-  jyukyusyaItiran.push({
-    jyoseijititaiBango: '1234',
-  });
-  jyukyusyaItiran.push({
-    syogaisyubetsu: '知的',
-  });
-  jyukyusyaItiran.push({
-    syogaishiku: '区分4',
-  });
-  jyukyusyaItiran.push({
-    futanjyougengaku: '9,300',
-  });
-  jyukyusyaItiran.push({
-    tokubetsukyufuhi: '500',
-  });
-  jyukyusyaItiran.push({
-    jyougenkanriji: [
-      { name: 'ひまわり園', date: '7/10～7/20' },
-      { name: 'はなます園', date: '7/11～7/21' },
-    ],
-  });
-  return jyukyusyaItiran;
-}
 
 /*******************
  * セル初期カラム情報
  */
 function methodCellSettingDefault(flexGrid, _self) {
   let lastdate = _self.lastdate;
-  let plus = 6;
+  let plus = 6; //日付以外の列数
   flexGrid.columns.clear();
   while (flexGrid.columns.length < lastdate + plus) {
     flexGrid.columns.push(new wjGrid.Column());
   }
-
-  //todo if文の条件をキーの値に変更する
-  //全体の行数
-  let row = 15;
-  if (_self.teikyoCode == '34') {
-    row = 6 + _self.gridItemName[0].kasanRow;
-  }
-  if (_self.teikyoCode == '33') {
-    row = 6 + _self.gridItemName[0].kasanRow;
-  }
-  if (_self.teikyoCode == '32') {
-    row = 8 + _self.gridItemName[0].kasanRow;
-  }
-
+  let row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
   while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
@@ -609,26 +442,7 @@ function methodCellSettingDefault(flexGrid, _self) {
  */
 function methodWriteJyoho(flexGrid, _self) {
   let hendoRows_st = 1; //変動情報の始まりの行
-  let hendoRows_ed = 7; //変動情報で利用した行数
-  let kasanRows_st = hendoRows_ed + 1; //加算情報で利用する始まりの行数
-  //todo if文の条件をキーの値に変更する
-  if (_self.teikyoCode == '34') {
-    hendoRows_st = 1;
-    hendoRows_ed = 5;
-    kasanRows_st = hendoRows_ed + 1;
-  }
-  //共同生活援助
-  if (_self.teikyoCode == '33') {
-    hendoRows_st = 1;
-    hendoRows_ed = 5;
-    kasanRows_st = hendoRows_ed + 1;
-  }
-  //施設入所支援
-  if (_self.teikyoCode == '32') {
-    hendoRows_st = 1;
-    hendoRows_ed = 7;
-    kasanRows_st = hendoRows_ed + 1;
-  }
+  let kasanRows_st = getHendoRows(_self); // 加算情報の始まり
 
   flexGrid.setCellData(hendoRows_st, 0, _self.gridItemName[0].column[0]);
 
@@ -894,8 +708,13 @@ function getHendoRows(_self) {
   // mealFlagがある時はmeals分を加える
   let rows = 0;
   for (let i = 0; i < _self.gridItemName[0]['shisetsuNyusho'].length; i++) {
-    if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
-      rows = rows + _self.gridItemName[0].meals.length;
+    if (i == 3) {
+      //食事のとき
+      if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+        rows = rows + _self.gridItemName[0].meals.length;
+      } else {
+        rows++;
+      }
     }
     rows++;
   }
@@ -942,6 +761,7 @@ function editKasan(flexGrid, _self) {
       }
     }
   }
+  // 加算情報作成
   createKasan(flexGrid, _self);
 }
 /****************
@@ -951,6 +771,9 @@ function settingKasan(flexGrid, _self) {
   //加算情報作成
   createKasan(flexGrid, _self);
 }
+/****************
+ * 加算情報登録
+ */
 function createKasan(flexGrid, _self) {
   let rows = getHendoRows(_self);
 
@@ -2033,8 +1856,10 @@ function methodCellMerge(flexGrid, _self) {
   let range = [];
   //todo if文の条件をキーの値に変更する
   //宿泊型自立訓練
+  let hendoRow = getHendoRows(_self);
+  let lastRow = hendoRow - 1 + _self.gridItemName[0].kasanRow;
+
   if (_self.teikyoCode == '34') {
-    let lastRow = 5 + _self.gridItemName[0].kasanRow;
     range = [
       new wjGrid.CellRange(0, 1, 0, 3),
       new wjGrid.CellRange(1, 0, _self.gridItemName[0].taisei_kobetu.length, 0),
@@ -2042,30 +1867,10 @@ function methodCellMerge(flexGrid, _self) {
       new wjGrid.CellRange(2, 1, 2, 3),
       new wjGrid.CellRange(3, 1, 3, 3),
       new wjGrid.CellRange(5, 1, 5, 2),
-      new wjGrid.CellRange(6, 0, lastRow, 0), //加算情報縦
-      new wjGrid.CellRange(
-        6,
-        1,
-        6 + _self.gridItemName[0].taisei_kobetu.length - 1,
-        1
-      ),
-      new wjGrid.CellRange(
-        6 + _self.gridItemName[0].taisei_kobetu.length,
-        1,
-        6 +
-          _self.gridItemName[0].taisei_kobetu.length +
-          _self.gridItemName[0].kobetu.length -
-          1,
-        1
-      ),
     ];
-    for (let i = 6; i <= lastRow; i++) {
-      range.push(new wjGrid.CellRange(i, 2, i, 3));
-    }
   }
   //共同生活援助
   if (_self.teikyoCode == '33') {
-    let lastRow = 5 + _self.gridItemName[0].kasanRow;
     range = [
       new wjGrid.CellRange(0, 1, 0, 3),
       new wjGrid.CellRange(1, 0, _self.gridItemName[0].taisei_kobetu.length, 0),
@@ -2074,60 +1879,50 @@ function methodCellMerge(flexGrid, _self) {
       new wjGrid.CellRange(3, 1, 3, 3),
       new wjGrid.CellRange(4, 1, 4, 3),
       new wjGrid.CellRange(5, 1, 5, 3),
-      new wjGrid.CellRange(6, 0, lastRow, 0), //加算情報縦
-      new wjGrid.CellRange(
-        6,
-        1,
-        6 + _self.gridItemName[0].taisei_kobetu.length - 1,
-        1
-      ),
-      new wjGrid.CellRange(
-        6 + _self.gridItemName[0].taisei_kobetu.length,
-        1,
-        6 +
-          _self.gridItemName[0].taisei_kobetu.length +
-          _self.gridItemName[0].kobetu.length -
-          1,
-        1
-      ),
     ];
-    for (let i = 6; i <= lastRow; i++) {
-      range.push(new wjGrid.CellRange(i, 2, i, 3));
-    }
   }
   //施設入所用
   if (_self.teikyoCode == '32') {
-    let lastRow = 7 + _self.gridItemName[0].kasanRow;
     range = [
       new wjGrid.CellRange(0, 1, 0, 3),
-      new wjGrid.CellRange(1, 0, 7, 0), // 変動情報縦
+      new wjGrid.CellRange(1, 0, hendoRow - 1, 0), // 変動情報縦
       new wjGrid.CellRange(1, 1, 1, 3), // 利用日
       new wjGrid.CellRange(2, 1, 2, 3), // 入退院
       new wjGrid.CellRange(3, 1, 3, 3), // 外泊
       new wjGrid.CellRange(5, 1, 5, 2), //食事
       new wjGrid.CellRange(6, 1, 6, 2), //食事
-      new wjGrid.CellRange(7, 1, 7, 2), //光熱水費
-      new wjGrid.CellRange(8, 0, lastRow, 0), //加算情報縦
-      new wjGrid.CellRange(
-        8,
-        1,
-        8 + _self.gridItemName[0].taisei_kobetu.length - 1,
-        1
-      ),
-      new wjGrid.CellRange(
-        8 + _self.gridItemName[0].taisei_kobetu.length,
-        1,
-        8 +
-          _self.gridItemName[0].taisei_kobetu.length +
-          _self.gridItemName[0].kobetu.length -
-          1,
-        1
-      ),
+      new wjGrid.CellRange(7, 1, hendoRow - 1, 2), //光熱水費
     ];
-    for (let i = 8; i <= lastRow; i++) {
-      range.push(new wjGrid.CellRange(i, 2, i, 3));
-    }
   }
+  range.push(
+    new wjGrid.CellRange(hendoRow, 0, lastRow, 0) //加算情報縦
+  );
+  range.push(
+    new wjGrid.CellRange(
+      hendoRow,
+      1,
+      hendoRow + _self.gridItemName[0].taisei_kobetu.length - 1,
+      1
+    )
+  );
+
+  //体制個別
+  range.push(
+    new wjGrid.CellRange(
+      hendoRow + _self.gridItemName[0].taisei_kobetu.length,
+      1,
+      hendoRow +
+        _self.gridItemName[0].taisei_kobetu.length +
+        _self.gridItemName[0].kobetu.length -
+        1,
+      1
+    )
+  );
+  //体制
+  for (let i = hendoRow; i <= lastRow; i++) {
+    range.push(new wjGrid.CellRange(i, 2, i, 3));
+  }
+
   let mm = new wjGrid.MergeManager(flexGrid);
   mm.getMergedRange = function (panel, r, c) {
     for (let h = 0; h < range.length; h++) {
@@ -2232,6 +2027,9 @@ div#kobetsuriyo {
       cursor: pointer;
       background-image: url('../assets/plus_15px.png');
       background-position: 5% 50%;
+      &:hover {
+        background-color: $selected_color;
+      }
     }
   }
   #flexGrid {
