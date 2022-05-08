@@ -4,10 +4,24 @@
       <v-card-title> 個別加算追加登録 </v-card-title>
       <v-card class="d-flex justify-center" flat>
         <v-card class="pa-2" elevation="0">
-          <wj-combo-box :items-source="addSelect"></wj-combo-box>
+          <wj-combo-box
+            :items-source="addSelect"
+            :selectedIndexChanged="ontextChanged"
+          ></wj-combo-box>
         </v-card>
       </v-card>
       <v-container class="lighten-5">
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="dialog_add_flag = false"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
         <v-row no-gutters style="flex-wrap: nowrap">
           <v-col cols="4" class="flex-grow-0 flex-shrink-0">
             <v-card elevation="0">開始日 </v-card>
@@ -67,7 +81,9 @@
             </v-btn>
           </v-card>
           <v-card elevation="0" class="ml-auto">
-            <v-btn @click="dialog_add_flag = false" tile outlined> 登録 </v-btn>
+            <v-btn @click="kasantuika_dialog_regist()" tile outlined>
+              登録
+            </v-btn>
           </v-card>
         </v-card>
       </v-container>
@@ -79,20 +95,54 @@
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 export default {
+  props: [],
   data() {
     return {
       pageTitle: this.$route.name,
       ja: ja,
       DatePickerFormat: 'yyyy年MM月dd日',
       dialog_add_flag: false,
-      addSelect: ['入所時特別支援加算'],
+      addSelect: '',
+      selected: {},
+      registData: {},
     };
   },
   components: {
     Datepicker,
   },
+
   methods: {
-    parentFromOpenDialog() {
+    ontextChanged: function (e) {
+      this.selected = {
+        name: this.addSelect[e.selectedIndex],
+      };
+    },
+    kasantuika_dialog_regist() {
+      //未選択時は一番上のデータを利用
+      if (this.selected.name == undefined) {
+        this.selected.name = this.addSelect[0];
+      }
+      this.registData = {
+        selectName: this.selected.name,
+        addType: 1, //1: 体制・個別に追加 2: 個別に追加
+      };
+      this.$emit('kasantuika_dialog_regist');
+      this.dialog_add_flag = false;
+    },
+    parentFromOpenDialog(teikyoCode, taisei_kobetu) {
+      // 今選択しているヘッダにあるサービス
+      // 仕様の可否は仕様確認後
+      console.log(teikyoCode);
+      console.log(this.itemName);
+      let addSelect = [];
+      if (taisei_kobetu) {
+        for (let i = 0; i < taisei_kobetu.length; i++) {
+          addSelect.push(taisei_kobetu[i].name);
+        }
+      }
+      this.addSelect = addSelect;
+      //this.addSelect = ['入所時特別支援加算', '入所時特別支援加算2'];
+
       this.dialog_add_flag = true;
     },
   },
