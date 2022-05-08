@@ -53,17 +53,15 @@
             <v-col md="4">
               <v-card elevation="0">
                 <div class="clearfix">
-                  <a
-                    class="addButton pt-1"
-                    @click="openDialog_Term('nyutaiin_add')"
+                  <a class="addButton" @click="openDialog_Term('nyutaiin_add')"
                     >入退院追加</a
                   >
                   <a
-                    class="ml-1 pt-1 addButton"
+                    class="ml-1 addButton"
                     @click="openDialog_Term('gaihaku_add')"
                     >外泊追加</a
                   >
-                  <a class="ml-1 pt-1 addButton" @click="openDialog_Add()"
+                  <a class="ml-1 addButton" @click="openDialog_Add()"
                     >加算追加</a
                   >
                 </div>
@@ -113,7 +111,10 @@
         @kikantuika_dialog_delete="kikantuika_dialog_delete"
       >
       </dialog-kikantuika>
-      <dialog-kasantuika ref="dialog_kasantuika"></dialog-kasantuika>
+      <dialog-kasantuika
+        ref="dialog_kasantuika"
+        @kasantuika_dialog_regist="kasantuika_dialog_regist"
+      ></dialog-kasantuika>
     </v-container>
   </div>
 </template>
@@ -148,9 +149,10 @@ export default {
       serviceArgument: '', // ヘッダメニューのサービス選択
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
-      dialog: false, //期間追加用のダイアログ
-      alertMessageFlag: false, //変更時のアラートメッセージ
-      editGridFlag: false, //grid編集状態フラグ
+      dialog: false, // 期間追加用のダイアログ
+      alertMessageFlag: false, // 変更時のアラートメッセージ
+      editGridFlag: false, // grid編集状態フラグ
+      kasanRow: 0, // 加算情報の行数
     };
   },
   components: {
@@ -244,6 +246,18 @@ export default {
             },
           },
           {
+            name: '222重度障害者支援加算Ⅱ2',
+            date: {
+              day1: 2,
+              day2: 2,
+              day3: 2,
+              day4: 2,
+              day14: 2,
+              day15: 2,
+              day16: 3,
+            },
+          },
+          {
             name: '重度障害者支援加算Ⅱ3',
             date: {
               day11: 2,
@@ -315,7 +329,11 @@ export default {
     },
     // 加算追加ダイアログの表示
     openDialog_Add() {
-      this.$refs.dialog_kasantuika.parentFromOpenDialog();
+      console.log(this.gridItemName[0].taisei_kobetu);
+      this.$refs.dialog_kasantuika.parentFromOpenDialog(
+        this.teikyoCode,
+        this.gridItemName[0].taisei_kobetu
+      );
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
     getSelectUserChildComponent: function (data) {
@@ -354,6 +372,20 @@ export default {
       } else {
         this.editGridFlag = true;
       }
+      this.mainGrid.itemsSource = [];
+    },
+    //変動情報ダイアログの登録ボタン押下
+    kasantuika_dialog_regist: function () {
+      let selectKasanName = this.$refs.dialog_kasantuika.registData.selectName;
+      let addType = this.$refs.dialog_kasantuika.registData.addType;
+      let kasanRow = this.gridItemName[0].kasanRow;
+      this.kasanRow = getHendoRows(this) + kasanRow + 1;
+      if (addType == 1) {
+        this.gridItemName[0].taisei_kobetu.push({ name: selectKasanName });
+      } else {
+        this.gridItemName[0].taisei_kobetu.push({ name: selectKasanName });
+      }
+
       this.mainGrid.itemsSource = [];
     },
     //変動情報ダイアログの削除ボタン押下
@@ -402,10 +434,10 @@ function methodCellSettingDefault(flexGrid, _self) {
     flexGrid.columns.push(new wjGrid.Column());
   }
   let row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
+  if (_self.kasanRow > 0) row = _self.kasanRow;
   while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
-
   flexGrid.frozenColumns = 4;
   flexGrid.frozenRows = 1;
   flexGrid.columns[0].width = 32;
@@ -2015,6 +2047,7 @@ div#kobetsuriyo {
   // 期間追加・加算追加ボタン
   a {
     &.addButton {
+      height: 20px;
       width: 100px;
       background-color: $white;
       border: 1px solid $font_color;
@@ -2026,7 +2059,7 @@ div#kobetsuriyo {
       padding: 0px 10px 0px 0px;
       cursor: pointer;
       background-image: url('../assets/plus_15px.png');
-      background-position: 5% 50%;
+      background-position: top 1px left 1px;
       &:hover {
         background-color: $selected_color;
       }
