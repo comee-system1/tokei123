@@ -7,7 +7,6 @@ import KyuhuMeisaiIcrn from '../views/KyuhuMeisaiIcrn.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
-import TemporaryHistory from '../views/TemporaryHistory.vue'
 import JijyougenkanriJimsyo from '../views/JijyougenkanriJimsyo.vue'
 import TajyougenkanriJimsyo from '../views/TajyougenkanriJimsyo.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
@@ -59,11 +58,6 @@ const routes = [
         path:'/TemporaryPage',
         name:'仮のページ',
         component: TemporaryPage
-    },
-    {
-        path:'/TemporaryHistory',
-        name:'個別利用状況登録',
-        component: TemporaryHistory
     },
     {
         path:'/KobetsuRiyouTouroku',

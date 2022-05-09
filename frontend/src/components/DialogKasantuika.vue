@@ -72,7 +72,7 @@
         <hr size="1" />
 
         <v-card class="d-flex mt-3" elevation="0">
-          <v-card elevation="0">
+          <v-card elevation="0" v-if="dialog_delete_flag">
             <v-btn @click="dialog_add_flag = false" tile outlined> 削除 </v-btn>
           </v-card>
           <v-card elevation="0" class="ml-1">
@@ -105,6 +105,7 @@ export default {
       addSelect: '',
       selected: {},
       registData: {},
+      dialog_delete_flag: true,
     };
   },
   components: {
@@ -129,19 +130,16 @@ export default {
       this.$emit('kasantuika_dialog_regist');
       this.dialog_add_flag = false;
     },
-    parentFromOpenDialog(teikyoCode, taisei_kobetu) {
+    parentFromOpenDialog(kasanid, type) {
       // 今選択しているヘッダにあるサービス
       // 仕様の可否は仕様確認後
-      console.log(teikyoCode);
-      console.log(this.itemName);
-      let addSelect = [];
-      if (taisei_kobetu) {
-        for (let i = 0; i < taisei_kobetu.length; i++) {
-          addSelect.push(taisei_kobetu[i].name);
-        }
+      console.log(kasanid);
+      if (type == 'add') {
+        this.dialog_delete_flag = false;
+      } else {
+        this.dialog_delete_flag = true;
       }
-      this.addSelect = addSelect;
-      //this.addSelect = ['入所時特別支援加算', '入所時特別支援加算2'];
+      this.addSelect = ['入所時特別支援加算', '入所時特別支援加算2'];
 
       this.dialog_add_flag = true;
     },

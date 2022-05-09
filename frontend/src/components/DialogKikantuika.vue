@@ -17,7 +17,7 @@
 
         <v-row no-gutters style="flex-wrap: nowrap">
           <v-col cols="3">
-            <v-card elevation="0">入院日 </v-card>
+            <v-card elevation="0">{{ dateColum }} </v-card>
           </v-col>
           <v-col cols="9" class="ml-2">
             <v-card class="pa-0" elevation="0">
@@ -200,6 +200,7 @@ export default {
       taiinbiDinner: false,
       taiinbiAida: false,
       registData: {},
+      dateColum: '',
     };
   },
   components: {
@@ -266,6 +267,11 @@ export default {
       this.dialogFlag = false;
     },
     parentFromOpenDialog(data, type) {
+      if (type == 'nyutaiin') {
+        this.dateColum = '入院・退院日';
+      } else {
+        this.dateColum = '外泊日';
+      }
       this.dialogFlag = true;
       this.type = type;
       //selectKeyが空欄のときは新規追加

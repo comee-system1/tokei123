@@ -22,20 +22,25 @@
               </v-btn>
             </v-col>
           </v-row>
-          <v-row v-for="(detail, index) in details" :key="index" no-gutters>
+          <v-row
+            v-for="(detail, index) in details"
+            :key="index"
+            no-gutters
+            class="mb-1"
+          >
             <v-col cols="6">
               <v-card class="pa-1 text-center titleback" outlined>{{
                 detail.name
               }}</v-card>
             </v-col>
             <v-col cols="6">
-              <v-card class="pa-1 ma-1 light_yellow" tile outlined>{{
+              <v-card class="ml-1 pa-1 light_yellow" tile outlined>{{
                 detail.value
               }}</v-card>
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="7">
+        <v-col cols="7" class="ml-1">
           <v-row no-gutters>
             <v-col class="ml-auto text-right">
               <v-btn @click="registPage()"> 施設体制修正 </v-btn>

@@ -329,11 +329,7 @@ export default {
     },
     // 加算追加ダイアログの表示
     openDialog_Add() {
-      console.log(this.gridItemName[0].taisei_kobetu);
-      this.$refs.dialog_kasantuika.parentFromOpenDialog(
-        this.teikyoCode,
-        this.gridItemName[0].taisei_kobetu
-      );
+      this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
     getSelectUserChildComponent: function (data) {
@@ -378,13 +374,13 @@ export default {
     kasantuika_dialog_regist: function () {
       let selectKasanName = this.$refs.dialog_kasantuika.registData.selectName;
       let addType = this.$refs.dialog_kasantuika.registData.addType;
-      let kasanRow = this.gridItemName[0].kasanRow;
-      this.kasanRow = getHendoRows(this) + kasanRow + 1;
+      this.kasanRow = this.kasanRow + 1;
       if (addType == 1) {
         this.gridItemName[0].taisei_kobetu.push({ name: selectKasanName });
       } else {
-        this.gridItemName[0].taisei_kobetu.push({ name: selectKasanName });
+        this.gridItemName[0].kobetu.push({ name: selectKasanName });
       }
+      this.alertMessageFlag = true;
 
       this.mainGrid.itemsSource = [];
     },
@@ -433,8 +429,13 @@ function methodCellSettingDefault(flexGrid, _self) {
   while (flexGrid.columns.length < lastdate + plus) {
     flexGrid.columns.push(new wjGrid.Column());
   }
-  let row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
-  if (_self.kasanRow > 0) row = _self.kasanRow;
+  let row = 0;
+  if (_self.kasanRow > 0) {
+    row = _self.kasanRow;
+  } else {
+    row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
+    _self.kasanRow = row;
+  }
   while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
@@ -447,6 +448,13 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.rows[0].height = 48;
   flexGrid.rows[2].height = 38;
   flexGrid.rows[3].height = 38;
+  if (_self.gridItemName[0].taisei_kobetu.length == 1)
+    flexGrid.rows[getHendoRows(_self)].height = 100;
+  if (_self.gridItemName[0].taisei_kobetu.length == 2)
+    flexGrid.rows[getHendoRows(_self)].height = 50;
+  if (_self.gridItemName[0].kobetu.length == 1)
+    flexGrid.rows[_self.kasanRow - 1].height = 50;
+
   flexGrid.rows.defaultSize = 32;
   //flexGrid.rows.minSize = 40;
   flexGrid.setCellData(0, 0, '');
@@ -608,12 +616,12 @@ function methodCellClickEvent(flexGrid, _self) {
     // 各加算情報編集用
     for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
       if (ht.target.innerText == _self.gridItemName[0].taisei_kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog();
+        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'taisei_kobetsu');
       }
     }
     for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
       if (ht.target.innerText == _self.gridItemName[0].kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog();
+        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'kobetsu');
       }
     }
     // 4列目より前は何もしない
@@ -1889,8 +1897,7 @@ function methodCellMerge(flexGrid, _self) {
   //todo if文の条件をキーの値に変更する
   //宿泊型自立訓練
   let hendoRow = getHendoRows(_self);
-  let lastRow = hendoRow - 1 + _self.gridItemName[0].kasanRow;
-
+  let lastRow = _self.kasanRow - 1;
   if (_self.teikyoCode == '34') {
     range = [
       new wjGrid.CellRange(0, 1, 0, 3),

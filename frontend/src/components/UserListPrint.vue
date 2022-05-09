@@ -137,7 +137,6 @@
       :itemsSource="selects"
       :isDroppedDown="isDroppedDown"
       :isRequired="false"
-      :selectedIndex="-1"
       :selectedIndexChanged="onselectedIndexChanged"
     ></wj-combo-box>
   </div>
@@ -152,7 +151,7 @@ import VueAxios from 'vue-axios';
 
 Vue.use(VueAxios, axios);
 
-let selects = ['印刷を全選択', '印刷を全解除'];
+let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 //let userUrl = 'http://local-tokei/';
 let userDataAll = [];
 let userDataSelect = [];
@@ -208,7 +207,7 @@ export default {
     },
     onselectedIndexChanged: function (s) {
       checkAll = s.selectedIndex;
-      this.userFilter();
+      this.userFilter(s);
     },
     createUser: function (response) {
       let usersData = [];
@@ -259,12 +258,12 @@ export default {
       return riyo_inf;
     },
 
-    userFilter() {
+    userFilter(s) {
       let data = [];
 
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (checkAll == '0') value.active = true;
-        if (checkAll == '1') value.active = false;
+        if (checkAll == '1') value.active = true;
+        if (checkAll == '2') value.active = false;
         if (value.names.indexOf(textSearch) != -1) {
           data.push(value);
         }
@@ -331,6 +330,9 @@ export default {
           if (a.jyukyuno > b.jyukyuno) return 1;
           return 0;
         });
+      }
+      if (s) {
+        s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
       }
       this.$emit('child-user', data);
       this.usersData = data;

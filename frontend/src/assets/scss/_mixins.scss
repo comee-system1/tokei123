@@ -55,3 +55,17 @@ $pc: 1336px;
   padding:5px;
 }
 
+.input_picker {
+  div > input {
+    border: 1px solid #ccc !important;
+    font-size: 0.85em;
+    border-radius: 3px;
+    display: block;
+    text-align: left;
+    padding: 3px;
+    border-style: solid !important;
+    background: url('@/assets/calender_25px.png') no-repeat right;
+    background-size: 15px 15px;
+    background-position: right 3px center;
+  }
+}

@@ -6,95 +6,115 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row no-gutters>
-        <v-col cols="3" xl="3">
-          <label>利用者</label>
-          <v-btn-toggle class="flex-wrap" mandatory>
-            <v-btn
-              v-for="n in userSelList"
-              :key="n"
-              small
-              color="secondary"
-              dark
-              outlined
-              @click="siborikomiUser(n.val)"
-            >
-              {{ n.name }}
-            </v-btn>
-          </v-btn-toggle>
-        </v-col>
-        <v-col cols="4">
-          <label>絞込</label>
-          <v-btn-toggle class="flex-wrap" mandatory>
-            <v-btn
-              v-for="n in siborikomiSelList"
-              :key="n"
-              small
-              color="secondary"
-              dark
-              outlined
-              @click="siborikomiUser2(n.val)"
-            >
-              {{ n.name }}
-            </v-btn>
-          </v-btn-toggle>
-        </v-col>
-        <v-col cols="4" class="mt-3 mr-3">
-          <v-row justify="end">
-            <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
-          </v-row>
-        </v-col>
-      </v-row>
       <v-row class="mt-0" no-gutters>
-        <v-col cols="4" xl="3" class="mt-1">
-          <label>ソート</label>
-          <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
-            <v-btn
-              v-for="n in sortSelList"
-              :key="n"
-              small
-              color="secondary"
-              dark
-              outlined
-              @click="sortUser(n.val)"
-            >
-              {{ n.name }}
-            </v-btn>
-          </v-btn-toggle>
-        </v-col>
-      </v-row>
-      <v-row class="mt-1" no-gutters>
-        <v-col cols="*">
-          <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-            <v-btn
-              small
-              outlined
-              v-for="(n, k) in alphabet"
-              :key="n"
-              :width="30"
-              p-0
-              style="min-width: auto"
-              @click="onAlphabet(k)"
-            >
-              {{ n }}
-            </v-btn>
-          </v-btn-toggle>
-        </v-col>
-        <v-col cols="2">
-          <v-row class="border-bottom">
-            <v-col class="pa-2" cols="4">
-              <label>
-                <font color="red"><b>エラー</b></font>
-              </label>
+        <v-col cols="6" xl="5">
+          <v-row class="mt-0" no-gutters>
+            <v-col cols="6">
+              <label>利用者</label>
+              <v-btn-toggle class="flex-wrap" mandatory>
+                <v-btn
+                  v-for="n in userSelList"
+                  :key="n"
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  @click="siborikomiUser(n.val)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
             </v-col>
-            <v-col class="pa-2" cols="*">
-              <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
+            <v-col cols="6">
+              <label>絞込</label>
+              <v-btn-toggle class="flex-wrap" mandatory>
+                <v-btn
+                  v-for="n in siborikomiSelList"
+                  :key="n"
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  @click="siborikomiUser2(n.val)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+
+          <v-row class="mt-0" no-gutters>
+            <v-col cols="7" class="mt-1">
+              <label>ソート</label>
+              <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
+                <v-btn
+                  v-for="n in sortSelList"
+                  :key="n"
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  @click="sortUser(n.val)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="*">
+              <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
+                <v-btn
+                  small
+                  outlined
+                  v-for="(n, k) in alphabet"
+                  :key="n"
+                  :width="30"
+                  p-0
+                  style="min-width: auto"
+                  @click="onAlphabet(k)"
+                >
+                  {{ n }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="1" style="display: flex; align-items: center">
+          <v-row no-gutters>
+            <v-btn style="width: 80px; height: 80px" @click="searchClicked">
+              検索
+            </v-btn>
+          </v-row>
+        </v-col>
+        <v-col cols="*">
+          <v-row>
+            <v-col cols="*" class="mt-3 mr-10">
+              <v-row justify="end">
+                <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-spacer style="height: 50px"></v-spacer>
+          <v-row no-gutters justify="end">
+            <v-col cols="4" xl="3" class="mr-1">
+              <v-row class="border-bottom">
+                <v-col class="pa-2" cols="4">
+                  <label class="errorlabel">
+                    <b>エラー</b>
+                  </label>
+                </v-col>
+                <v-col class="pa-2" cols="*">
+                  <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="mt-1" justify="end" no-gutters>
+
+      <v-row class="mt-1" no-gutters>
         <v-col>
           <wj-flex-grid
             id="jyukyuIcrnGrid"
@@ -151,9 +171,8 @@ const daiTitle = '受給者証情報';
 const chuTitle = '利用者負担';
 const rowHeaderheight = 20;
 const rowheight = 25;
-// const currentDate = new Date();
-let siborikomiSearch = '0';
-let siborikomiSearch2 = '0';
+let siborikomiSearch = 0;
+let siborikomiSearch2 = 0;
 let alphabet = [
   '全',
   'ア',
@@ -281,9 +300,6 @@ export default {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       this.sortSearch = this.getlocalStorage(keySort);
       this.alphaSearch = this.getlocalStorage(keyAlp);
-      // 初期データ読込
-      this.viewdataAll = this.loadData();
-      this.userFilter();
     });
   },
   computed: {
@@ -377,13 +393,23 @@ export default {
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
         }
       }
-
-      // 初期データ読込
-      // this.viewdataAll = this.loadData();
-      // this.viewdata = this.viewdataAll;
       flexGrid.endUpdate();
     },
+    onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
     onFormatItem(flexGrid, e) {
+      if (
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 1) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 10) ||
+        e.col == 0 ||
+        e.col == 9 ||
+        e.col == 14
+      ) {
+        e.cell.style.borderRight = '1px solid';
+      }
+
       if (e.panel == flexGrid.columnHeaders) {
         if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
           // css に scopedをつけると以下のように個別に設定が必要
@@ -447,6 +473,11 @@ export default {
           flexGrid.endUpdate();
         }
       }
+    },
+    searchClicked: function () {
+      // 初期データ読込
+      this.viewdataAll = this.loadData();
+      this.userFilter();
     },
     loadData: function () {
       let tmpviewdata = [];
@@ -587,7 +618,7 @@ export default {
         tmpviewdata = this.viewdataAll.concat();
       }
       // 絞込１
-      if (this.siborikomiSearch == 1) {
+      if (siborikomiSearch == 1) {
         // 今月入所
         tmpviewdata = tmpviewdata.filter((x) => x.isnyusho);
       } else if (siborikomiSearch == 2) {
@@ -595,7 +626,7 @@ export default {
         tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
       }
       // 絞込２
-      if (this.siborikomiSearch2 == 1) {
+      if (siborikomiSearch2 == 1) {
         // !x.koufuymdで空orNullを判定する
         tmpviewdata = tmpviewdata.filter(
           (x) =>
@@ -672,11 +703,21 @@ div#jyukyuicrn {
   .user-info {
     width: auto;
     padding: 4px;
-    label {
-      margin-right: 10px;
-      padding-top: 10px;
+    label:not(.errorlabel) {
+      display: inline-block;
+      margin-top: 2px;
+      margin-right: 2px;
+      padding-top: 2px;
       font-weight: bold;
+      background: #f0ffff;
+      border: 1px solid #7db8ff;
+      height: 27px;
+      width: 60px;
+      text-align: center;
     }
+  }
+  .errorlabel {
+    color: red;
   }
 
   .siborikomi-info,
@@ -753,6 +794,7 @@ div#jyukyuicrn {
       color: $grid_selected_color;
     }
   }
+
   .v-btn-toggle > .v-btn {
     width: 90px;
   }

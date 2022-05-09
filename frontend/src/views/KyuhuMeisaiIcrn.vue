@@ -7,9 +7,9 @@
 
     <v-container class="user-info" fluid>
       <v-row class="mt-0" no-gutters>
-        <v-col cols="9">
+        <v-col cols="9" xl="7">
           <v-row class="mt-0" no-gutters>
-            <v-col cols="3" xl="2">
+            <v-col cols="3" xl="3">
               <label>内容</label>
               <v-btn-toggle class="flex-wrap" v-model="dispPageType">
                 <v-btn
@@ -26,7 +26,7 @@
               </v-btn-toggle>
             </v-col>
             <v-col cols="6">
-              <label class="mr-6">市町村</label>
+              <label>市町村</label>
               <wj-combo-box
                 v-model="selSichoson"
                 selectedValuePath="val"
@@ -39,7 +39,7 @@
             </v-col>
           </v-row>
           <v-row class="mt-0" no-gutters>
-            <v-col cols="3" xl="2" class="mt-1">
+            <v-col cols="3" xl="3" class="mt-1">
               <label>表示</label>
               <!-- mandatoryは初期選択 -->
               <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
@@ -57,7 +57,7 @@
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="4" xl="3" class="mt-1">
+            <v-col cols="3" xl="3" class="mt-1">
               <label>サービス</label>
               <wj-combo-box
                 v-model="selSvc"
@@ -107,12 +107,14 @@
           </v-row>
         </v-col>
         <v-col cols="*" style="display: flex; align-items: center">
-          <v-row justify="end" no-gutters>
-            <v-btn class="mr-5" style="width: 80px; height: 80px"> 検索 </v-btn>
+          <v-row no-gutters>
+            <v-btn style="width: 80px; height: 80px" @click="searchClicked">
+              検索
+            </v-btn>
           </v-row>
         </v-col>
       </v-row>
-      <v-row justify="end" class="mt-1" no-gutters>
+      <v-row class="mt-1" no-gutters>
         <v-col>
           <wj-flex-grid
             id="seikyuGrid"
@@ -129,7 +131,7 @@
             :isReadOnly="true"
             :initialized="onInitializeSeikyuGrid"
             :formatItem="onFormatItemSeikyu"
-            :itemsSourceChanged="itemsSourceChangedKaigo"
+            :itemsSourceChanged="itemsSourceChangedSeikyu"
             :itemsSource="viewdata"
           >
             <wj-flex-grid-column
@@ -154,6 +156,7 @@
             :isReadOnly="true"
             :initialized="onInitializeKyufuGrid"
             :formatItem="onFormatItemKyufu"
+            :itemsSourceChanged="itemsSourceChangedKyufu"
             :itemsSource="viewkyufudata"
           >
             <wj-flex-grid-column
@@ -685,6 +688,23 @@ export default {
       }
     },
     onFormatItemSeikyu(flexGrid, e) {
+      e.cell.style.borderRight = '';
+      if (
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 3) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 5) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 5) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 13) ||
+        e.col == 2 ||
+        e.col == 4 ||
+        e.col == 6 ||
+        e.col == 12 ||
+        e.col == 14 ||
+        e.col == 17 ||
+        e.col == 18 ||
+        e.col == 19
+      ) {
+        e.cell.style.borderRight = '1px solid';
+      }
       if (e.panel == flexGrid.columnFooters) {
         e.cell.style.textAlign = '';
         e.cell.style.fontWeight = 'normal';
@@ -705,7 +725,7 @@ export default {
           // いったんクリアしないと色が残る
           e.cell.style.backgroundColor = '';
           e.cell.style.borderBottom = '';
-          e.cell.style.borderRight = '';
+
           e.cell.style.textAlign = '';
           e.cell.style.fontWeight = '';
 
@@ -773,6 +793,18 @@ export default {
       }
     },
     onFormatItemKyufu(flexGrid, e) {
+      e.cell.style.borderRight = '';
+
+      if (
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 5) ||
+        e.col == 1 ||
+        e.col == 4 ||
+        e.col == 6
+      ) {
+        e.cell.style.borderRight = '1px solid';
+      }
+
       if (e.panel == flexGrid.cells) {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (tmpitem != null) {
@@ -780,7 +812,6 @@ export default {
           // いったんクリアしないと色が残る
           e.cell.style.backgroundColor = '';
           e.cell.style.borderBottom = '';
-          e.cell.style.borderRight = '';
           e.cell.style.textAlign = '';
 
           let tmpPreitem = null;
@@ -849,7 +880,9 @@ export default {
         }
       }
     },
-    itemsSourceChangedKaigo: function (flexGrid) {
+    itemsSourceChangedSeikyu: function (flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       let total = 0;
       if (flexGrid.hostElement.id == 'seikyuGrid') {
         for (let colIndex = 6; colIndex < colCntSeikyu; colIndex++) {
@@ -918,6 +951,18 @@ export default {
           flexGrid.columnFooters.setCellData(0, colIndex, total);
         }
       }
+    },
+    itemsSourceChangedKyufu: function (flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
+    searchClicked: function () {
+      if (this.dispPageType == 0) {
+        this.viewdataAll = this.loadData(true);
+      } else {
+        this.viewkyufudataAll = this.loadData(false);
+      }
+      this.userFilter();
     },
     loadData: function (isSeikyu) {
       let tmpviewdata = [];
@@ -1099,14 +1144,11 @@ export default {
         document.getElementById('seikyuGrid').style.display = 'block';
         document.getElementById('kyufuGrid').style.display = 'none';
         this.isBtnDisabled = false;
-        this.viewdataAll = this.loadData(true);
       } else {
         document.getElementById('seikyuGrid').style.display = 'none';
         document.getElementById('kyufuGrid').style.display = 'block';
         this.isBtnDisabled = true;
-        this.viewkyufudataAll = this.loadData(false);
       }
-      this.userFilter();
     },
     dispTotal: function (dispType) {
       localStorage.setItem(keyTotal, dispType);
@@ -1342,9 +1384,16 @@ div#KyuhuMeisaiIcrn {
     width: auto;
     padding: 4px;
     label {
-      margin-right: 10px;
-      padding-top: 10px;
+      display: inline-block;
+      margin-top: 2px;
+      margin-right: 2px;
+      padding-top: 2px;
       font-weight: bold;
+      background: #f0ffff;
+      border: 1px solid #7db8ff;
+      height: 27px;
+      width: 60px;
+      text-align: center;
     }
   }
 
@@ -1424,7 +1473,7 @@ div#KyuhuMeisaiIcrn {
     width: 90px;
   }
   .wj-combobox .wj-input-group input.wj-form-control {
-    width: 200px;
+    width: 150px;
     flex-grow: 1;
   }
 }
