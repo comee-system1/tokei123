@@ -11,6 +11,7 @@ import JijyougenkanriJimsyo from '../views/JijyougenkanriJimsyo.vue'
 import TajyougenkanriJimsyo from '../views/TajyougenkanriJimsyo.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
+import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 
 Vue.use(VueRouter)
 
@@ -69,6 +70,11 @@ const routes = [
         path:'/KobetsuRiyouTouroku',
         name:'個別利用状況登録',
         component: KobetsuRiyouTouroku
+    },
+    {
+        path:'/KasanKoumokuIcrn',
+        name:'加算項目一覧',
+        component: KasanKoumokuIcrn
     },
 ]
 
