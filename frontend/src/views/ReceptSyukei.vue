@@ -4,12 +4,12 @@
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
       :seikyuflag="true"
-      :receptFlag="true"
+      :receptFlag="false"
     ></header-services>
 
     <v-container fluid class="jijyougen-container">
       <v-row>
-        <v-col>
+        <v-col cols="8">
           <v-tabs height="30" v-model="tab" @change="tabChange">
             <v-tab class="text-caption" href="#recept">レセプト集計</v-tab>
             <v-tab class="text-caption" href="#TajyougenkanriJimsyo"
@@ -20,6 +20,15 @@
             >
           </v-tabs>
         </v-col>
+        <v-col>
+          <v-row no-gutters>
+            <v-col cols="3"><v-btn small class="w-100">確定登録</v-btn></v-col>
+            <v-col cols="3"><v-btn small class="w-100">確定解除</v-btn></v-col>
+            <v-col cols="6*" align="right"
+              ><v-btn @click="recept_reflect">レセプトへ反映</v-btn></v-col
+            >
+          </v-row>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="8" style="width: 800px">
@@ -27,7 +36,7 @@
             <v-col cols="6" class="pt-1">
               <v-row>
                 <v-col cols="2">
-                  <label>利用者</label>
+                  <label class="serach">利用者</label>
                 </v-col>
                 <v-col>
                   <wj-combo-box
@@ -40,7 +49,7 @@
             <v-col cols="6" class="pt-1">
               <v-row>
                 <v-col cols="3">
-                  <label>上限管理事</label>
+                  <label class="serach">上限管理事</label>
                 </v-col>
                 <v-col>
                   <wj-combo-box
@@ -55,7 +64,7 @@
             <v-col cols="6" class="pt-1">
               <v-row>
                 <v-col cols="2">
-                  <label>ソート</label>
+                  <label class="serach">ソート</label>
                 </v-col>
                 <v-col>
                   <v-row no-gutters class="mt-1">
@@ -86,7 +95,7 @@
             <v-col cols="6" class="pt-1">
               <v-row>
                 <v-col cols="3">
-                  <label>絞込</label>
+                  <label class="serach">絞込</label>
                 </v-col>
                 <v-col>
                   <v-row no-gutters class="mt-1">
@@ -155,7 +164,7 @@
     <v-container fluid class="container">
       <div v-if="receptFlag">Tab 1 Content</div>
       <div v-if="TajyougenkanriJimsyoFlag">
-        <recept-tajougen></recept-tajougen>
+        <recept-tajougen ref="tajougenChild"></recept-tajougen>
       </div>
       <div v-if="JijyougenkanriJimsyoFlag">Tab 3 Content</div>
     </v-container>
@@ -202,6 +211,12 @@ export default {
     ReceptTajougen,
   },
   methods: {
+    /********:
+     * レセプトへ反映ボタン
+     */
+    recept_reflect: function () {
+      this.$refs.tajougenChild.parentReceptReflect();
+    },
     /************
      * アルファベットの絞り込み
      */
@@ -231,10 +246,12 @@ div#tajyougen {
   font-family: 'メイリオ';
   min-width: 1266px;
   label {
-    display: inline-block;
-    font-weight: 700;
-    width: 120px;
-    margin-top: 5px;
+    &.serach {
+      display: inline-block;
+      font-weight: 700;
+      width: 120px;
+      margin-top: 5px;
+    }
   }
   .w-100 {
     width: 100%;

@@ -116,12 +116,13 @@
     </wj-flex-grid>
   </div>
 </template>
+
 <script>
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import * as wjCore from '@grapecity/wijmo';
+import { isNumber, changeType, DataType } from '@grapecity/wijmo';
 
 Vue.use(VueAxios, axios);
 
@@ -142,18 +143,31 @@ export default {
         '総費用額',
       ],
       receptData: [],
+      mainFlexGrid: [],
+      editGridFlag: false,
     };
   },
+  components: {},
   methods: {
-    onInitialized: function (flexGrid) {
-      let _self = this;
-      // ヘッダ情報の作成
-      this.createHeader(flexGrid, _self);
-      // ヘッダセルのマージ
-      this.createHeaderMerge(flexGrid);
-      //セルのフォーマット指定
-      this.createCellFormat(flexGrid, _self);
+    /***********
+     * 親コンポーネントのレセプトへ反映ボタン
+     */
+    parentReceptReflect() {
+      //console.log(this.allData);
+      //alert('Hello from Child!');
+      // ●に変更する
 
+      for (let i = 0; i < this.allData.length; i++) {
+        let pt13 = this.mainFlexGrid.getCellData(i, 13);
+        let pt14 = this.mainFlexGrid.getCellData(i, 14);
+        if (pt13 && pt14) {
+          this.allData[i]['resehanei'] = '●';
+        }
+      }
+      this.editGridFlag = true;
+      this.mainFlexGrid.itemsSource = [];
+    },
+    getData: function () {
       let receptData = [];
       for (let i = 0; i < 10; i++) {
         receptData.push({
@@ -173,37 +187,93 @@ export default {
           kanrikekkafutangaku: '',
           kanrikekka: '',
           resekakutei: '',
-          print: true,
+          print: false,
         });
       }
-      this.receptData = receptData;
-      flexGrid.itemsSource = [];
+
+      this.allData = receptData;
+      return receptData;
+    },
+
+    onInitialized: function (flexGrid) {
+      let griddata = this.getData();
+      this.mainFlexGrid = flexGrid;
+      let _self = this;
+      // ヘッダ情報の作成
+      this.createHeader(flexGrid, _self);
+      // ヘッダセルのマージ
+      this.createHeaderMerge(flexGrid);
+      //セルのフォーマット指定
+      this.createCellFormat(flexGrid, _self);
+
+      // セルの値を編集
+      this.edittingCell(flexGrid);
+
+      flexGrid.itemsSource = griddata;
+    },
+    /********
+     * セルを編集
+     */
+    edittingCell: function (flexGrid) {
+      flexGrid.cellEditEnding.addHandler((s, e) => {
+        let col = s.columns[e.col];
+        let value = changeType(
+          s.activeEditor.value,
+          DataType.Number,
+          col.format
+        );
+
+        // console.log('length=>' + _self.allData.length);
+        // console.log('row=>' + e.row);
+        // console.log('col=>' + e.col);
+        // console.log('value=>' + value);
+        // console.log(isNumber(value));
+
+        let pt13 = flexGrid.getCellData(e.row, 13);
+        let pt14 = flexGrid.getCellData(e.row, 14);
+        console.log('pt13=>' + pt13);
+        console.log('pt14=>' + pt14);
+        if (e.col == 13 || e.col == 14) {
+          if (!isNumber(value) && value.length > 0) {
+            e.cancel = true;
+            e.stayInEditMode = true;
+            alert('数値のみの入力になります。');
+          } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
+            flexGrid.setCellData(e.row, 6, '〇');
+          }
+        }
+      });
     },
     onItemsSourceChanged: function (flexGrid) {
-      let receptData = this.receptData;
-      while (flexGrid.rows.length < receptData.length) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
+      let receptData = this.allData;
+      console.log('change');
+      console.log(this.editGridFlag);
+      console.log(receptData);
+      if (this.editGridFlag) {
+        while (flexGrid.rows.length < receptData.length) {
+          flexGrid.rows.push(new wjGrid.Row());
+        }
 
-      for (let i = 0; i < receptData.length; i++) {
-        let j = 0;
-        flexGrid.setCellData(i, j++, receptData[i]['sityoson']);
-        flexGrid.setCellData(i, j++, receptData[i]['jyukyusyaBango']);
-        flexGrid.setCellData(i, j++, receptData[i]['riyousyamei']);
-        flexGrid.setCellData(i, j++, receptData[i]['jyougenicon']);
-        flexGrid.setCellData(i, j++, receptData[i]['jyougengaku']);
-        flexGrid.setCellData(i, j++, receptData[i]['riyosyafutan']);
-        flexGrid.setCellData(i, j++, receptData[i]['resehanei']);
-        flexGrid.setCellData(i, j++, receptData[i]['koban']);
-        flexGrid.setCellData(i, j++, receptData[i]['jikyosyobango']);
-        flexGrid.setCellData(i, j++, receptData[i]['jikyosyomei']);
-        flexGrid.setCellData(i, j++, receptData[i]['teikyoservice']);
-        flexGrid.setCellData(i, j++, receptData[i]['souhiyougaku']);
-        flexGrid.setCellData(i, j++, receptData[i]['riyosyafutangaku']);
-        flexGrid.setCellData(i, j++, receptData[i]['kanrikekkafutangaku']);
-        flexGrid.setCellData(i, j++, receptData[i]['kanrikekka']);
-        flexGrid.setCellData(i, j++, receptData[i]['resekakutei']);
-        flexGrid.setCellData(i, j++, receptData[i]['print']);
+        for (let i = 0; i < receptData.length; i++) {
+          let j = 0;
+          flexGrid.setCellData(i, j++, receptData[i]['sityoson']);
+          flexGrid.setCellData(i, j++, receptData[i]['jyukyusyaBango']);
+          flexGrid.setCellData(i, j++, receptData[i]['riyousyamei']);
+          flexGrid.setCellData(i, j++, receptData[i]['jyougenicon']);
+          flexGrid.setCellData(i, j++, receptData[i]['jyougengaku']);
+          flexGrid.setCellData(i, j++, receptData[i]['riyosyafutan']);
+          flexGrid.setCellData(i, j++, receptData[i]['resehanei']);
+          flexGrid.setCellData(i, j++, receptData[i]['koban']);
+          flexGrid.setCellData(i, j++, receptData[i]['jikyosyobango']);
+          flexGrid.setCellData(i, j++, receptData[i]['jikyosyomei']);
+          flexGrid.setCellData(i, j++, receptData[i]['teikyoservice']);
+          flexGrid.setCellData(i, j++, receptData[i]['souhiyougaku']);
+          flexGrid.setCellData(i, j++, receptData[i]['riyosyafutangaku']);
+          flexGrid.setCellData(i, j++, receptData[i]['kanrikekkafutangaku']);
+          flexGrid.setCellData(i, j++, receptData[i]['kanrikekka']);
+          flexGrid.setCellData(i, j++, receptData[i]['resekakutei']);
+          flexGrid.setCellData(i, j++, receptData[i]['print']);
+        }
       }
     },
     /*****************
@@ -212,6 +282,7 @@ export default {
     createCellFormat: function (flexGrid, _self) {
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
+
         let text = e.cell.innerText;
         let classname = '';
         if (
@@ -231,19 +302,17 @@ export default {
         ) {
           classname = 'text-center';
         }
-
-        e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
-
-        wjCore.setCss(e.cell, {
-          display: 'table',
-          tableLayout: 'fixed',
-        });
-        wjCore.setCss(e.cell.children[0], {
-          display: 'table-cell',
-          verticalAlign: 'middle',
-        });
+        if (classname) {
+          e.cell.innerHTML =
+            '<div class="text-center w-100 ' +
+            classname +
+            '">' +
+            html +
+            '</div>';
+        }
       });
     },
+
     /**************
      * ヘッダ情報の作成
      */
