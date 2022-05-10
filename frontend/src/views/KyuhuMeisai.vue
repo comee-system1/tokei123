@@ -1,192 +1,119 @@
 <template>
-  <div id="Kyuhu">
-    <header-services
-      @parent-calendar="parentCalendar($event, dateArgument)"
-      @parent-search="parentSearch($event, searchArgument)"
-      :seikyuflag="true"
-      :searchButtonFlag="true"
-      :registButtonFlag="false"
-    ></header-services>
-    <v-container fluid class="shisetsu-container">
-      <v-row no-gutters>
-        <v-col cols="3">
-          <v-row no-gutters class="mb-1">
-            <v-col cols="6">
-              <v-card class="pa-2 red--text text--lighten-1" outlined tile>
-                {{ buildcheck }}
-              </v-card>
-            </v-col>
-            <v-col cols="6">
-              <v-btn class="pa-2 ml-2" @click="checkingRegist()">
-                {{ checkbutton }}
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row
-            v-for="(detail, index) in details"
-            :key="index"
-            no-gutters
-            class="mb-1"
-          >
-            <v-col cols="6">
-              <v-card class="pa-1 text-center titleback" outlined>{{
-                detail.name
-              }}</v-card>
-            </v-col>
-            <v-col cols="6">
-              <v-card class="ml-1 pa-1 light_yellow" tile outlined>{{
-                detail.value
-              }}</v-card>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="7" class="ml-1">
-          <v-row no-gutters>
-            <v-col class="ml-auto text-right">
-              <v-btn @click="registPage()"> 施設体制修正 </v-btn>
-              <v-card elevation="0" class="mt-2">
-                (最終登録日:R03.04.05 10:10 昭和 一郎)
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row no-gutters pa-0>
-            <v-col cols="6">
-              <wj-flex-grid
-                :initialized="onInitializedBasic"
-                :itemsSource="basicData"
-                :headersVisibility="'Column'"
-                :autoGenerateColumns="false"
-                :allowDragging="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :isReadOnly="true"
-                :alternatingRowStep="0"
-                style="max-height: 130px"
-              >
-                <wj-flex-grid-column
-                  :binding="'value'"
-                  :header="'体制による基本単価減'"
-                  :allowMerging="true"
-                  width="*"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-              <wj-flex-grid
-                :initialized="onInitializedAdd"
-                :itemsSource="basicAdd"
-                :headersVisibility="'Column'"
-                :autoGenerateColumns="false"
-                :allowDragging="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :isReadOnly="true"
-                :alternatingRowStep="0"
-                style="max-height: 130px"
-              >
-                <wj-flex-grid-column
-                  :binding="'value'"
-                  :header="'施設体制による加算'"
-                  :allowMerging="true"
-                  width="*"
-                  :alternatingRowStep="0"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </v-col>
-            <v-col cols="6" class="pl-1">
-              <wj-flex-grid
-                :initialized="onInitializedPlus"
-                :itemsSource="basicPlus"
-                :headersVisibility="'Column'"
-                :autoGenerateColumns="false"
-                :allowDragging="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :isReadOnly="true"
-                :alternatingRowStep="0"
-                style="max-height: 265px"
-              >
-                <wj-flex-grid-column
-                  :binding="'value'"
-                  :header="'施設体制+個別による加算'"
-                  :allowMerging="true"
-                  width="*"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-
-      <v-card class="pa-2" outlined tile>
-        <v-row no-gutters>
-          <v-col sm="12">
-            <v-row no-gutters>
-              <v-col cols="2">
-                <v-card class="pa-2 text-center blue lighten-4" outlined tile>
-                  日別算定
-                </v-card>
-              </v-col>
-              <v-col cols="4">
-                <div class="my-n3">
-                  <v-checkbox v-model="checkbox" :label="`有り`"></v-checkbox>
-                </div>
-              </v-col>
-              <v-col cols="4">
-                <div class="mt-3">〇:対象日 ×:除外日</div>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <wj-flex-grid
-              id="theGridTallRows"
-              :itemsSource="dateData"
-              :initialized="onInitializedDate"
-              :headersVisibility="'Column'"
-              :isReadOnly="true"
-              :allowDragging="false"
-              :allowResizing="false"
-              :deferResizing="false"
-              :allowSorting="false"
-              :allowMerging="'ColumnHeaders'"
-              :alternatingRowStep="0"
-            >
-              <wj-flex-grid-column
-                header="加算・減算項目"
-                binding="clumn"
-                width="10*"
-                :allowMerging="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                v-for="d in daycount"
-                :key="d"
-                width="1*"
-                :header="year + '/' + month + '/' + d"
-                :binding="'day' + d"
-                :wordWrap="true"
-                :allowResizing="false"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-            </wj-flex-grid>
-            <v-btn>登録</v-btn>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-container>
-  </div>
+<div id="kyuhumeisai">
+  <ServiceSelection
+    @parent-calendar="parentCalendar($event, dateArgument)"
+    @parent-service-select="parentSearch($event, searchArgument)"
+    :seikyuflag="true"
+  >
+  </ServiceSelection>
+  <v-container class="kyuhumeisai" fluid>
+    <v-row no-gutters>
+      <v-col class="leftArea">
+        <UserList></UserList>
+      </v-col>
+      <v-col class="rightArea">
+        <wj-flex-grid
+          id="jyukyunotGrid"
+          class="mt-1"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :initialized="onInitializedUser"
+          :itemsSource="usersData"
+          :allowDragging="false"
+          :allowResizing="true"
+          :allowSorting="false"
+          style="display: block;"
+        >
+          <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :word-wrap="true" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'8*'"></wj-flex-grid-column>
+        </wj-flex-grid>
+        <wj-flex-grid
+          id="userListGrid"
+          class="mt-0"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :initialized="onInitializedUser"
+          :itemsSource="usersData"
+          :allowDragging="false"
+          :allowResizing="true"
+          :allowSorting="false"
+          style="border: none;display: block;"
+        >
+          <wj-flex-grid-column header="利用者名" binding="names" :word-wrap="true" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="" :word-wrap="true" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
+        </wj-flex-grid>
+        <v-card class="d-flex" flat tile>
+          <v-card elevation="0">
+            <v-radio-group row v-model="nyuuinbiShiseturiyo"
+              >表示
+              <v-radio
+                label="あり"
+                :key="1"
+                :value="1"
+                class="ml-2"
+              ></v-radio>
+              <v-radio label="なし" :key="0" :value="0"></v-radio>
+            </v-radio-group>
+          </v-card>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</div>
 </template>
 
 <script>
+import ServiceSelection from '../components/HeaderServices.vue';
+import UserList from '../components/UserList';
+
+let daycount = 0;
 
 export default{
+  components:{
+    ServiceSelection,
+    UserList,
+  },
   data(){
     return{
-      currentPageTitle: this.$route.name
-    }
+      daycount: daycount,
+      dateArgument: '',
+      searchArgument: '',
+    };
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+@import '@/assets/scss/common.scss';
 
+  #kyuhumeisai {
+  font-size: 14px;
+  font-family: 'メイリオ';
+  min-width: 1266px !important;
+  }
+
+  #kyuhumeisai .leftArea {
+    min-width: 275px;
+    max-width: 275px;
+    width: 275px;
+  }
+
+  #kyuhumeisai .rightArea {
+    min-width: 50%;
+    max-width: none;
+    width: 1020px;
+    margin-left:4px;
+  }
+  #jyukyunotGrid {
+    width: 40%;
+  }
 </style>
