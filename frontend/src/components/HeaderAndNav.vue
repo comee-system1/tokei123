@@ -138,7 +138,7 @@ export default {
             { name: '個別利用状況登録', link: '/KobetsuRiyouTouroku' },
             { name: '利用状況一覧', link: '/TemporaryPage' },
             { name: '個別加算一覧', link: '/TemporaryPage' },
-            { name: 'レセプト集計', link: '/TemporaryPage' },
+            { name: 'レセプト集計', link: '/ReceptSyukei' },
             {
               name: '上限管理',
               link: '/TemporaryPage',

@@ -267,7 +267,7 @@ export default {
         jimusyoBango: '111200032',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 42,
-        teikyoService: '42 自立訓練(機能訓練)',
+        teikyoService: '42 自立訓練(生活訓練)',
       });
       data.push({
         jimusyoBango: '111200033',
@@ -285,13 +285,13 @@ export default {
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 45,
-        teikyoService: '45 就労継続支援',
+        teikyoService: '45 就労継続支援A型',
       });
       data.push({
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 46,
-        teikyoService: '46 就労継続支援',
+        teikyoService: '46 就労継続支援B型',
       });
       data.push({
         jimusyoBango: '111200033',

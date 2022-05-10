@@ -10,6 +10,7 @@ import TemporaryPage from '../views/TemporaryPage.vue'
 import JijyougenkanriJimsyo from '../views/JijyougenkanriJimsyo.vue'
 import TajyougenkanriJimsyo from '../views/TajyougenkanriJimsyo.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
+import ReceptSyukei from '../views/ReceptSyukei.vue'
 
 Vue.use(VueRouter)
 
@@ -53,6 +54,11 @@ const routes = [
         path:'/TajyougenkanriJimsyo',
         name:'他上限管理事務所用',
         component: TajyougenkanriJimsyo
+    },
+    {
+        path:'/ReceptSyukei',
+        name:'レセプト集計',
+        component: ReceptSyukei
     },
     {
         path:'/TemporaryPage',

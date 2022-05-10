@@ -1,72 +1,30 @@
 <template>
-  <div id="user-list-print_scrollbar">
+  <div id="user-list_scrollbar">
     <v-row no-gutters>
       <v-col col="12">
         <v-row no-gutters>
-          <wj-combo-box
-            :textChanged="onTextChangedUser"
-            style="width: 100%"
-            placeholder="カナ検索"
-          ></wj-combo-box>
+          <wj-combo-box :textChanged="onTextChangedUser" style="width: 100%" placeholder="カナ検索"></wj-combo-box>
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(1)"
-            >
-              全員
-            </v-card>
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(1)">全員</v-card>
           </v-col>
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(2)"
-              >全員2</v-card
-            >
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(2)">全員2</v-card>
           </v-col>
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(3)"
-              >全員3</v-card
-            >
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(3)">全員3</v-card>
           </v-col>
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(1)"
-            >
-              コード
-            </v-card>
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(1)">コード</v-card>
           </v-col>
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(2)"
-              >カナ</v-card
-            >
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(2)">カナ</v-card>
           </v-col>
           <v-col>
-            <v-card
-              class="text-caption text-center"
-              outlined
-              tile
-              @click="sortUser(3)"
-              >受給者番号</v-card
-            >
+            <v-card class="text-caption text-center" outlined tile @click="sortUser(3)">受給者番号</v-card>
           </v-col>
         </v-row>
       </v-col>
@@ -86,29 +44,28 @@
       </v-btn-toggle>
     </div>
     <wj-flex-grid
+      id="userListGrid"
       class="mt-1"
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 390px"
       :initialized="onInitializedUser"
       :itemsSource="usersData"
       :allowDragging="false"
       :allowResizing="true"
       :allowSorting="false"
     >
-      <wj-flex-grid-column header="確" binding="kakutei" :width="30" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
-      <wj-flex-grid-column header="コード" binding="riyocode" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
-      <wj-flex-grid-column header="受給者番" binding="jyukyuno" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
-      <wj-flex-grid-column header="利用者名" binding="names" width="4*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="印" binding="active" :width="30" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
+      <wj-flex-grid-column header="確" binding="kakutei" :width="30" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
+      <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :width="110" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="印" binding="active" :width="25" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-combo-box
       :itemsSource="selects"
       :isDroppedDown="isDroppedDown"
       :isRequired="false"
-      :selectedIndex="-1"
       :selectedIndexChanged="onselectedIndexChanged"
     ></wj-combo-box>
   </div>
@@ -116,6 +73,7 @@
 <script>
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 
 import Vue from 'vue';
 import axios from 'axios';
@@ -123,7 +81,7 @@ import VueAxios from 'vue-axios';
 
 Vue.use(VueAxios, axios);
 
-let selects = ['印刷を全選択', '印刷を全解除'];
+let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 //let userUrl = 'http://local-tokei/';
 let userDataAll = [];
 let userDataSelect = [];
@@ -155,6 +113,7 @@ export default {
       riyo_inf: [],
       riyocodeFlag: true,
       jyukyunoFlag: false,
+      tplImage: CellMaker.makeImage({}),
     };
   },
   methods: {
@@ -208,15 +167,15 @@ export default {
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
-          riyocode: '123456789' + (Math.floor(Math.random() * 9) + 1),
+          riyocode: '123456' + (Math.floor(Math.random() * 9) + 1),
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
-          jyukyuno: '9876543210' + (Math.floor(Math.random() * 9) + 1),
+          jyukyuno: '876543210' + (Math.floor(Math.random() * 9) + 1),
           sityoid: i * 30,
           jidoid: i * 40,
           kzkname: '東経家族' + i,
-          kakutei: "確",
+          kakutei: require('@/assets/kaku_15px.png'),
           active: false,
         });
       }
@@ -234,22 +193,10 @@ export default {
       let data = [];
 
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (checkAll == '0') value.active = true;
-        if (checkAll == '1') value.active = false;
+        if (checkAll == '1') value.active = true;
+        if (checkAll == '2') value.active = false;
         if (value.names.indexOf(textSearch) != -1) {
-          data.push({
-            riid: value.riid,
-            riyocode: value.riyocode,
-            names: value.names,
-            kana: value.kana,
-            jukyuid: value.jukyuid,
-            jyukyuno: value.jyukyuno,
-            sityoid: value.sityoid,
-            jidoid: value.jidoid,
-            kzkname: value.kzkname,
-            kakutei: value.kakutei,
-            active: value.active,
-          });
+          data.push(value);
         }
       });
       if (alphaSearch > 0) {
@@ -257,34 +204,34 @@ export default {
         data.forEach(function (value) {
           switch (alphaSearch) {
             case 1:
-              if (value.kana.match(/^[ア-オ]/)) setPush(get, value);
+              if (value.kana.match(/^[ア-オ]/)) get.push(value);
               break;
             case 2:
-              if (value.kana.match(/^[カ-コ]/)) setPush(get, value);
+              if (value.kana.match(/^[カ-コ]/)) get.push(value);
               break;
             case 3:
-              if (value.kana.match(/^[サ-ソ]/)) setPush(get, value);
+              if (value.kana.match(/^[サ-ソ]/)) get.push(value);
               break;
             case 4:
-              if (value.kana.match(/^[タ-ト]/)) setPush(get, value);
+              if (value.kana.match(/^[タ-ト]/)) get.push(value);
               break;
             case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) setPush(get, value);
+              if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
               break;
             case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) setPush(get, value);
+              if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
               break;
             case 7:
-              if (value.kana.match(/^[マ-モ]/)) setPush(get, value);
+              if (value.kana.match(/^[マ-モ]/)) get.push(value);
               break;
             case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) setPush(get, value);
+              if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
               break;
             case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) setPush(get, value);
+              if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
               break;
             case 10:
-              if (value.kana.match(/^[ワ-ン]/)) setPush(get, value);
+              if (value.kana.match(/^[ワ-ン]/)) get.push(value);
               break;
           }
         });
@@ -397,23 +344,6 @@ export default {
   },
 };
 
-//カナアイコンフィルタリング用
-function setPush(get, value) {
-  return get.push({
-    riid: value.riid,
-    riyocode: value.riyocode,
-    names: value.names,
-    kana: value.kana,
-    jukyuid: value.jukyuid,
-    jyukyuno: value.jyukyuno,
-    sityoid: value.sityoid,
-    jidoid: value.jidoid,
-    kzkname: value.kzkname,
-    kakutei: value.kakutei,
-    active: value.active,
-  });
-}
-
 function userCell(s, e) {
   if (e.cell.children.length == 0) {
     let align = 'left';
@@ -435,7 +365,7 @@ function userCell(s, e) {
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
 
-div#user-list-print_scrollbar {
+div#user-list_scrollbar {
   padding: 0;
   width: 275px;
   font-size: 12px;
@@ -473,5 +403,18 @@ div#user-list-print_scrollbar {
     background: $brawn;
     border-radius: 0px;
   }
+
+  @media screen and (max-width: 1366px){
+    #userListGrid {
+      height: 57vh;
+    }
+  }
+
+  @media screen and (min-width: 1367px){
+    #userListGrid {
+      height: 71vh;
+    }
+  }
 }
+
 </style>

@@ -73,7 +73,9 @@
 
         <v-card class="d-flex mt-3" elevation="0">
           <v-card elevation="0" v-if="dialog_delete_flag">
-            <v-btn @click="dialog_add_flag = false" tile outlined> 削除 </v-btn>
+            <v-btn @click="kasantuika_dialog_delete()" tile outlined>
+              削除
+            </v-btn>
           </v-card>
           <v-card elevation="0" class="ml-1">
             <v-btn @click="dialog_add_flag = false" tile outlined>
@@ -118,6 +120,10 @@ export default {
         name: this.addSelect[e.selectedIndex],
       };
     },
+    kasantuika_dialog_delete() {
+      this.$emit('kasantuika_dialog_delete');
+      this.dialog_add_flag = false;
+    },
     kasantuika_dialog_regist() {
       //未選択時は一番上のデータを利用
       if (this.selected.name == undefined) {
@@ -133,7 +139,10 @@ export default {
     parentFromOpenDialog(kasanid, type) {
       // 今選択しているヘッダにあるサービス
       // 仕様の可否は仕様確認後
-      console.log(kasanid);
+      // type:add(追加) type:taisei_kobetu type:kobetu 想定
+      this.kasanid = kasanid;
+      this.type = type;
+      //削除ボタン表示可否
       if (type == 'add') {
         this.dialog_delete_flag = false;
       } else {

@@ -1,5 +1,5 @@
 <template>
-  <div id="kobetsuriyo">
+  <div id="kobeturiyo">
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
@@ -17,7 +17,7 @@
           >
           </user-list-print>
         </v-col>
-        <v-col class="rightArea">
+        <v-col class="rightArea ml-1">
           <v-row class="mt-0" no-gutters>
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
@@ -114,6 +114,7 @@
       <dialog-kasantuika
         ref="dialog_kasantuika"
         @kasantuika_dialog_regist="kasantuika_dialog_regist"
+        @kasantuika_dialog_delete="kasantuika_dialog_delete"
       ></dialog-kasantuika>
     </v-container>
   </div>
@@ -385,6 +386,19 @@ export default {
       this.mainGrid.itemsSource = [];
     },
     //変動情報ダイアログの削除ボタン押下
+    kasantuika_dialog_delete: function () {
+      let kasanid = this.$refs.dialog_kasantuika.kasanid;
+      let type = this.$refs.dialog_kasantuika.type;
+      if (type == 'taisei_kobetu') {
+        this.gridItemName[0].taisei_kobetu.splice(kasanid, 1);
+      }
+      if (type == 'kobetu') {
+        this.gridItemName[0].kobetu.splice(kasanid, 1);
+      }
+      this.kasanRow = this.kasanRow - 1;
+      this.mainGrid.itemsSource = [];
+    },
+    //変動情報ダイアログの削除ボタン押下
     kikantuika_dialog_delete: function () {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       this.deleteGridFlag = true;
@@ -616,12 +630,12 @@ function methodCellClickEvent(flexGrid, _self) {
     // 各加算情報編集用
     for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
       if (ht.target.innerText == _self.gridItemName[0].taisei_kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'taisei_kobetsu');
+        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'taisei_kobetu');
       }
     }
     for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
       if (ht.target.innerText == _self.gridItemName[0].kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'kobetsu');
+        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'kobetu');
       }
     }
     // 4列目より前は何もしない
@@ -1001,7 +1015,7 @@ function settingMeals(flexGrid, _self) {
     day28: 2,
     day29: 2,
     day30: 2,
-    total: 28,
+    total: 26,
     money: 10400,
   });
   dinner.push({
@@ -1975,7 +1989,7 @@ function methodCellMerge(flexGrid, _self) {
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#kobetsuriyo {
+div#kobeturiyo {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px;

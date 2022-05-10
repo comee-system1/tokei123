@@ -1467,6 +1467,18 @@ div#KyuhuMeisaiIcrn {
       background: $grid_selected_background;
       color: $grid_selected_color;
     }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 0px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: $brawn;
+      border-radius: 0px;
+    }
   }
 
   .v-btn-toggle > .v-btn {

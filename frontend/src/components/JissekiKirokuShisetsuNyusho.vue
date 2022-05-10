@@ -7,8 +7,6 @@
             <label>利用者</label>
             <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
           </div>
-          <v-btn x-small @click="onMoveUser('back')"><span class="wj-glyph-left"></span></v-btn>
-          <v-btn x-small @click="onMoveUser('next')"><span class="wj-glyph-right"></span></v-btn>
           <div class="jukyusyasho-block">
             <label>受給者証番号</label>
             <wj-combo-box :isReadOnly="true" text="1100000700" class="user-box"></wj-combo-box>
@@ -58,6 +56,7 @@
       :initialized="onInitializeDetailGrid"
       :allowResizing="false"
       :allowDragging="false"
+      :autoRowHeights="true"
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
@@ -96,7 +95,6 @@
 
 <script>
 import { getOriginalDetailData } from '../data/JissekiKirokuNyushoData.js'
-import "@grapecity/wijmo.styles/wijmo.css";
 import '@grapecity/wijmo.touch';
 import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
@@ -335,7 +333,7 @@ export default{
         if((r == 0||r == 1||r == 1) && c == 0){
           cell.innerHTML = '実費<br/>算定額';
         }
-        if(c==0){
+        if(c == 0){
           s.padding = '15px 0px'
         }
       }
@@ -480,30 +478,9 @@ function getNyuinGaihakuTotal(data){
   margin:0;
 }
 
-.user-info{
-  font-size:14px;
-  padding:0;
-  color:#333333;
-}
-
-  .user-info label{
-    font-size:14px;
-    font-weight:bold;
-    margin-right:10px;
-  }
-
-.riyousya-block,.jukyusyasho-block,.hosokuumu-block,.hosokugaku-block{
+.hosokuumu-block,.hosokugaku-block{
   border-bottom:1px solid #ccc;
   float:left;
-}
-
-.riyousya-block{
-  width:227px;
-}
-
-.jukyusyasho-block{
-  margin-left:20px;
-  width:269px;
 }
 
 .hosokuumu-block{
@@ -515,15 +492,6 @@ function getNyuinGaihakuTotal(data){
   margin-left:10px;
 }
 
-.v-input--selection-controls{
-  padding:0;
-  margin:0;
-}
-
-.user-box{
-  border:none;
-}
-
 .hosokuumu-box {
   width:30px;
   margin-right:20px;
@@ -531,7 +499,7 @@ function getNyuinGaihakuTotal(data){
 }
 
 .hosokugaku-box{
-  width:45px;
+  width:50px;
   margin-right:20px;
   border:none;
 }
@@ -552,7 +520,7 @@ function getNyuinGaihakuTotal(data){
 
 @media screen and (max-width: 1366px){
   #detailGrid {
-    height: 57vh;
+    height: 56vh;
   }
 }
 

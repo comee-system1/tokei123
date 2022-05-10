@@ -276,9 +276,9 @@ export default {
         { dataname: 'syusei', title: '修正', width: 50, align: 'center' },
       ],
       userSelList: [
-        { val: 1, name: '全員' },
-        { val: 2, name: '今月入所者' },
-        { val: 3, name: '今月退所者' },
+        { val: 0, name: '全員' },
+        { val: 1, name: '今月入所者' },
+        { val: 2, name: '今月退所者' },
       ],
       siborikomiSelList: [
         { val: 0, name: '全員' },
@@ -792,6 +792,17 @@ div#jyukyuicrn {
     .wj-cells .wj-cell.wj-state-selected {
       background: $grid_selected_background;
       color: $grid_selected_color;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 0px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: $brawn;
+      border-radius: 0px;
     }
   }
 
