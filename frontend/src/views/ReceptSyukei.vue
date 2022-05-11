@@ -32,9 +32,14 @@
                 >一括確定解除</v-btn
               ></v-col
             >
-            <v-col cols="6*" align="right"
-              ><v-btn @click="recept_reflect">レセプトへ反映</v-btn></v-col
-            >
+            <v-col cols="6*" align="right">
+              <v-btn @click="recept_reflect" v-if="TajyougenkanriJimsyoFlag"
+                >レセプトへ反映</v-btn
+              >
+              <v-btn @click="recept_calc" v-if="JijyougenkanriJimsyoFlag"
+                >上限管理計算</v-btn
+              >
+            </v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -233,19 +238,33 @@ export default {
      * 並び順変更
      */
     sort: function (type) {
-      this.$refs.tajougenChild.parentSort(type);
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentSort(type);
+      } else {
+        this.$refs.tajougenChild.parentSort(type);
+      }
     },
     /*********************
      * 全選択
      */
     selectAll: function (type) {
-      this.$refs.tajougenChild.parentSelectAll(type);
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentSelectAll(type);
+      } else {
+        this.$refs.tajougenChild.parentSelectAll(type);
+      }
     },
     /********:
      * レセプトへ反映ボタン
      */
     recept_reflect: function () {
       this.$refs.tajougenChild.parentReceptReflect();
+    },
+    /********:
+     * 上限額管理計算へ反映ボタン
+     */
+    recept_calc: function () {
+      this.$refs.jijyougenChild.parentReceptCalc();
     },
     /************
      * アルファベットの絞り込み
