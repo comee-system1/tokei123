@@ -1359,7 +1359,7 @@ div#KyuhuMeisaiIcrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1366px;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,

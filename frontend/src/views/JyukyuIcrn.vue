@@ -691,7 +691,7 @@ div#jyukyuicrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1366px;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,

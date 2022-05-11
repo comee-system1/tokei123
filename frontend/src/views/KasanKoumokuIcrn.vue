@@ -3,6 +3,7 @@
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
+      :seikyuflag="true"
     ></header-services>
 
     <v-container class="user-info" fluid>
@@ -103,7 +104,7 @@
             :allowAddNew="false"
             :allowDelete="false"
             :allowPinning="false"
-            :allowMerging="'AllHeaders'"
+            :allowMerging="'None'"
             :allowResizing="false"
             :allowSorting="false"
             :allowDragging="false"
@@ -115,12 +116,6 @@
             :itemsSourceChanged="onItemsSourceChanged"
             :itemsSource="viewdata"
           >
-            <!-- <wj-flex-grid-column
-              v-for="column in headerList"
-              :key="column.item"
-              cssClass="cell-img"
-              :cellTemplate="tplImage"
-            /> -->
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -145,17 +140,24 @@ import ls from '@/utiles/localStorage';
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
 const keyKasan = 'keyval00007';
-// const bgClrInput = 'white';
-// const bgClrError = 'mistyrose';
+const styleDefault = '';
+const styleNormal = 'normal';
+const bgClrSelKasan = '#FFECCC';
+const bgClrTotal = '#CEFCFC';
+const boderSolid = '1px solid';
+const alignRight = 'right';
+const writingModeTategeki = 'vertical-rl';
 const fmtYen = 'n0';
 const fmtYmd = 'yyyy/MM/dd'; //'gyy/MM/dd';
 const nisuTitle = '日数';
 const taiseiTitle = '施設体制加算';
 const kobetuTitle = '個別加算';
+const totalTitle = '合計';
+const totalNinzuTitle = '人数';
+const totalTaniTitle = '単位数';
 const rowHeaderheight = 20;
 const rowheight = 25;
 let siborikomiSearch = 0;
-let siborikomiSearch2 = 0;
 let alphabet = [
   '全',
   'ア',
@@ -228,7 +230,27 @@ export default {
         { val: 1, name: '今月入所者' },
         { val: 2, name: '今月退所者' },
       ],
-      kasanList: [
+      kasanList: this.loadKasan(),
+      sortSelList: [
+        { val: 0, name: 'コード' },
+        { val: 1, name: 'カナ' },
+        { val: 2, name: '受給者番号' },
+      ],
+      viewdataAll: [],
+      viewdata: [],
+    };
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      // ビュー全体がレンダリングされた後にのみ実行されるコード
+      this.sortSearch = ls.getlocalStorage(keySort);
+      this.alphaSearch = ls.getlocalStorage(keyAlp);
+      this.selKasan = ls.getlocalStorage(keyKasan);
+    });
+  },
+  methods: {
+    loadKasan: function () {
+      return [
         { val: 0, kbn: 0, name: '指定なし' },
         { val: 1, kbn: 1, name: '夜間職員配置体制加算' },
         { val: 2, kbn: 1, name: '重度障害者支援加算Ⅰ' },
@@ -245,25 +267,8 @@ export default {
         { val: 13, kbn: 2, name: '経口維持加算Ⅰ' },
         { val: 14, kbn: 2, name: '口腔衛生管理加算' },
         { val: 15, kbn: 2, name: '栄養マネジメント加算' },
-      ],
-      sortSelList: [
-        { val: 0, name: 'コード' },
-        { val: 1, name: 'カナ' },
-        { val: 2, name: '受給者番号' },
-      ],
-      tplImage: CellMaker.makeImage(),
-      viewdataAll: [],
-      viewdata: [],
-    };
-  },
-  mounted: function () {
-    this.$nextTick(function () {
-      // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = ls.getlocalStorage(keySort);
-      this.alphaSearch = ls.getlocalStorage(keyAlp);
-    });
-  },
-  methods: {
+      ];
+    },
     onInitializekasanKoumokuIcrnGrid: function (flexGrid) {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
@@ -284,8 +289,14 @@ export default {
     },
 
     onItemsSourceChanging(flexGrid) {
+      if (this.viewdata == null || this.viewdata.length == 0) {
+        for (let colIndex = 5; colIndex < flexGrid.columns.length; colIndex++) {
+          flexGrid.columnFooters.setCellData(0, colIndex, '');
+          flexGrid.columnFooters.setCellData(1, colIndex, '');
+        }
+        return;
+      }
       flexGrid.beginUpdate();
-
       let newheadList = this.headerList.concat();
 
       for (let i = 0; i < this.kasanList.length; i++) {
@@ -296,7 +307,7 @@ export default {
           dataname: String(this.kasanList[i].val),
           title: this.kasanList[i].name,
           width: 60,
-          align: 'right',
+          align: alignRight,
           kasankbn: this.kasanList[i].kbn,
           kasanval: this.kasanList[i].val,
         });
@@ -345,12 +356,6 @@ export default {
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
         }
       }
-      flexGrid.endUpdate();
-    },
-    onItemsSourceChanged(flexGrid) {
-      // 初期選択を解除
-      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-
       let kasancnt = this.kasanList.filter((x) => x.kbn == 1).length - 1;
       // セル結合
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -389,55 +394,105 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
-      flexGrid.columnFooters.setCellData(0, 0, '合計');
-      flexGrid.columnFooters.setCellData(0, 2, '人数');
-      flexGrid.columnFooters.setCellData(1, 2, '単位数');
+      flexGrid.columnFooters.setCellData(0, 0, totalTitle);
+      flexGrid.columnFooters.setCellData(0, 2, totalNinzuTitle);
+      flexGrid.columnFooters.setCellData(1, 2, totalTaniTitle);
+      this.viewdata.forEach(function (val) {
+        console.log(val[flexGrid.columns[5].binding]);
+      });
+      if (this.viewdata.length > 0) {
+        // 合計設定
+        for (let colIndex = 5; colIndex < flexGrid.columns.length; colIndex++) {
+          flexGrid.columnFooters.setCellData(
+            0,
+            colIndex,
+            this.viewdata.filter(
+              (x) => x.kbn == 1 || x.val == flexGrid.columns[colIndex].binding
+            ).length
+          );
+          flexGrid.columnFooters.setCellData(
+            1,
+            colIndex,
+            this.viewdata
+              .filter((x) => x.kbn == 2)
+              .reduce((prev, item) => {
+                return prev + item[flexGrid.columns[colIndex].binding];
+              }, 0)
+          );
+        }
+      }
+      flexGrid.endUpdate();
+    },
+    onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onFormatItem(flexGrid, e) {
       flexGrid.beginUpdate();
-      e.cell.style.writingMode = '';
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        (e.col == 0 || (e.row == 1 && 2 <= e.col))
-      ) {
-        // 縦書きで右から左へ
-        e.cell.style.writingMode = 'vertical-rl';
-      }
+      e.cell.style.writingMode = styleDefault;
+      e.cell.style.textAlign = styleDefault;
+      e.cell.style.fontWeight = styleDefault;
+      e.cell.style.justifyContent = styleDefault;
+      e.cell.style.alignItems = styleDefault;
+      e.cell.style.borderRight = styleDefault;
+      e.cell.style.borderBottom = styleDefault;
+      e.cell.style.borderTop = styleDefault;
+      e.cell.style.backgroundColor = styleDefault;
 
-      e.cell.style.borderRight = '';
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 5) ||
-        e.col == 4 ||
+        (e.panel == flexGrid.columnFooters && e.col == 2) ||
+        4 == e.col ||
         (4 < e.col &&
           e.col < flexGrid.columns.length - 1 &&
           flexGrid.columnHeaders.getCellData(0, e.col, false) !=
             flexGrid.columnHeaders.getCellData(0, e.col + 1, false))
       ) {
-        e.cell.style.borderRight = '1px solid';
+        e.cell.style.borderRight = boderSolid;
       }
-      if (e.panel == flexGrid.cells) {
-        e.cell.style.borderBottom = '';
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.col == 0 || (e.row == 1 && 2 <= e.col)) {
+          // 縦書きで右から左へ
+          e.cell.style.writingMode = writingModeTategeki;
+        }
+      } else if (e.panel == flexGrid.cells) {
         if (e.row == flexGrid.rows.length - 1) {
           e.cell.style.borderBottom = 0;
-          return;
-        }
-        let tmpitem = e.panel.rows[e.row].dataItem;
-        if (tmpitem.kbn == 1) {
-          if (e.col <= 4) {
-            e.cell.style.borderBottom = 0;
-          }
         } else {
-          e.cell.style.borderBottom = '1px solid';
+          let tmpitem = e.panel.rows[e.row].dataItem;
+          if (tmpitem.kbn == 1) {
+            if (e.col <= 4) {
+              e.cell.style.borderBottom = 0;
+            }
+          } else {
+            e.cell.style.borderBottom = boderSolid;
+          }
         }
       } else if (e.panel == flexGrid.columnFooters) {
-        e.cell.style.borderTop = '';
         if (e.row == 0) {
-          e.cell.style.borderTop = '1px solid';
+          e.cell.style.borderTop = boderSolid;
         }
-        e.cell.style.backgroundColor = '#CEFCFC';
+        if (5 <= e.col) {
+          e.cell.style.fontWeight = styleNormal;
+          e.cell.style.textAlign = alignRight;
+          e.cell.style.justifyContent = alignRight;
+          e.cell.style.alignItems = alignRight;
+        }
+        e.cell.style.backgroundColor = bgClrTotal;
       }
-
+      // 加算絞込の場合は背景色を変える
+      if (
+        e.panel == flexGrid.columnHeaders ||
+        e.panel == flexGrid.cells ||
+        e.panel == flexGrid.columnFooters
+      ) {
+        if (!(e.panel == flexGrid.columnHeaders && e.row == 0)) {
+          if (flexGrid.columns[e.col].binding == String(this.selKasan)) {
+            e.cell.style.backgroundColor = bgClrSelKasan;
+          }
+        }
+      }
       flexGrid.endUpdate();
     },
     searchClicked: function () {
@@ -449,6 +504,7 @@ export default {
       let tmpviewdata = [];
       let userCount = 100;
       // ★Date型はmonthが0-11で表現されることに注意
+      let kankaku = true;
       for (let i = 0; i < userCount; i++) {
         if (i % 2 == 0) {
           tmpviewdata.push({
@@ -465,18 +521,19 @@ export default {
             gaihakuymd: String(99),
             kbn: 1,
           });
+          if (kankaku) {
+            tmpviewdata[i].err = require('@/assets/kaku_15px.png');
+            kankaku = false;
+          } else {
+            tmpviewdata[i].err = '';
+            kankaku = true;
+          }
         } else {
           tmpviewdata.push({
             id: i - 1,
             no: tmpviewdata[i - 1].no,
-            name:
-              '(' +
-              String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-                10,
-                '0'
-              ) +
-              ')',
-            kana: 'トウケイタロウ' + i - 1,
+            name: '(' + tmpviewdata[i - 1].no + ')',
+            kana: tmpviewdata[i - 1].kana,
             useymd: '',
             nyuinymd: '',
             gaihakuymd: '',
@@ -499,7 +556,7 @@ export default {
             this.$set(
               tmpviewdata[i],
               String(this.kasanList[kasan].val),
-              Number(Math.floor(Math.random() * 100000))
+              Number(Math.floor(Math.random() * 10000))
             );
           }
         }
@@ -513,10 +570,6 @@ export default {
     },
     siborikomiUser: function (siborikomiType) {
       siborikomiSearch = siborikomiType;
-      this.userFilter();
-    },
-    siborikomiUser2: function (siborikomiType) {
-      siborikomiSearch2 = siborikomiType;
       this.userFilter();
     },
     sortUser: function (sortType) {
@@ -570,6 +623,7 @@ export default {
       } else {
         tmpviewdata = this.viewdataAll.concat();
       }
+
       // 絞込１
       if (siborikomiSearch == 1) {
         // 今月入所
@@ -578,35 +632,14 @@ export default {
         // 今月退所
         tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
       }
-      // 絞込２
-      if (siborikomiSearch2 == 1) {
-        // !x.koufuymdで空orNullを判定する
-        tmpviewdata = tmpviewdata.filter(
-          (x) =>
-            !x.koufuymd ||
-            !x.engo ||
-            !x.jitibangou ||
-            !x.jyukyukbn ||
-            !x.jyukyuname ||
-            !x.syougaisyu ||
-            !x.syougaisienkbn ||
-            !x.futanjyougen ||
-            !x.jyougenkanri ||
-            !x.syokujiteikyo ||
-            !x.tokubetukyufu
-        );
-      } else if (siborikomiSearch2 == 2) {
-        tmpviewdata = tmpviewdata.concat();
-      }
 
       //コード順でソート
       if (this.sortSearch == 0) {
         tmpviewdata.sort((a, b) => {
           if (a.id < b.id) return -1;
           if (a.id > b.id) return 1;
-          // 二次キーは交付日
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.kbn !== b.kbn) {
+            return a.kbn - b.kbn;
           }
         });
       }
@@ -615,18 +648,18 @@ export default {
         tmpviewdata.sort((a, b) => {
           if (a.kana < b.kana) return -1;
           if (a.kana > b.kana) return 1;
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.kbn !== b.kbn) {
+            return a.kbn - b.kbn;
           }
         });
       }
       //受給者番号でソート
       if (this.sortSearch == 2) {
         tmpviewdata.sort((a, b) => {
-          if (a.nobk < b.nobk) return -1;
-          if (a.nobk > b.nobk) return 1;
-          if (a.koufuymd !== b.koufuymd) {
-            return a.koufuymd - b.koufuymd;
+          if (a.no < b.no) return -1;
+          if (a.no > b.no) return 1;
+          if (a.kbn !== b.kbn) {
+            return a.kbn - b.kbn;
           }
         });
       }
@@ -644,7 +677,7 @@ div#KasanKoumokuIcrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1366px;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,

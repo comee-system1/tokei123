@@ -311,6 +311,7 @@ export default {
     },
     onInitializedJimusyo: function (grid) {
       //this.createJimusyo();
+
       let _self = this;
       grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
@@ -369,6 +370,8 @@ export default {
         teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
+      // todo消す予定
+      this.$emit('parent-service-select', returns);
       return returns;
     },
     /*****************
