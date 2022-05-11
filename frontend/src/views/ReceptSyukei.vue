@@ -22,8 +22,16 @@
         </v-col>
         <v-col>
           <v-row no-gutters>
-            <v-col cols="3"><v-btn small class="w-100">確定登録</v-btn></v-col>
-            <v-col cols="3"><v-btn small class="w-100">確定解除</v-btn></v-col>
+            <v-col cols="3"
+              ><v-btn small class="w-100" @click="defineButton(1)"
+                >確定登録</v-btn
+              ></v-col
+            >
+            <v-col cols="3"
+              ><v-btn small class="w-100" @click="defineButton(0)"
+                >一括確定解除</v-btn
+              ></v-col
+            >
             <v-col cols="6*" align="right"
               ><v-btn @click="recept_reflect">レセプトへ反映</v-btn></v-col
             >
@@ -79,12 +87,12 @@
                       </v-card>
                     </v-col>
                     <v-col>
-                      <v-card class="text-center" @click="sort(1)" outlined tile
+                      <v-card class="text-center" @click="sort(2)" outlined tile
                         >コード</v-card
                       >
                     </v-col>
                     <v-col>
-                      <v-card class="text-center" @click="sort(1)" outlined tile
+                      <v-card class="text-center" @click="sort(3)" outlined tile
                         >受給者番号</v-card
                       >
                     </v-col>
@@ -141,12 +149,12 @@
         <v-col cols="4">
           <v-btn
             small
-            v-for="str in alphabet"
-            :key="str"
+            v-for="(str, k) in alphabet"
+            :key="k"
             class="pa-0"
             outlined
             min-width="30"
-            @click="onAlphabet(str)"
+            @click="onAlphabet(k)"
           >
             {{ str }}
           </v-btn>
@@ -156,8 +164,8 @@
           >：上限額管理事業所が同一法人で別事業所の場合
         </v-col>
         <v-col class="text-right">
-          <v-btn x-small>全選択</v-btn>
-          <v-btn x-small class="ml-1">全解除</v-btn>
+          <v-btn x-small @click="selectAll(1)">全選択</v-btn>
+          <v-btn x-small @click="selectAll(0)" class="ml-1">全解除</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -166,7 +174,9 @@
       <div v-if="TajyougenkanriJimsyoFlag">
         <recept-tajougen ref="tajougenChild"></recept-tajougen>
       </div>
-      <div v-if="JijyougenkanriJimsyoFlag">Tab 3 Content</div>
+      <div v-if="JijyougenkanriJimsyoFlag">
+        <recept-jijyougen ref="jijyougenChild"></recept-jijyougen>
+      </div>
     </v-container>
   </div>
 </template>
@@ -175,6 +185,7 @@
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import ReceptTajougen from '../components/ReceptTajougen.vue';
+import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 
 const riyosyaCombo = ['全員'];
 const jyougenkanriCombo = ['指定なし'];
@@ -200,17 +211,36 @@ export default {
       year: moment().year(),
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
-      tab: 'TajyougenkanriJimsyo', // タブの初期状態
+      tab: 'JijyougenkanriJimsyo', // タブの初期状態
       receptFlag: false, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
+      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
     };
   },
   components: {
     HeaderServices,
     ReceptTajougen,
+    ReceptJijyougen,
   },
   methods: {
+    /***************
+     * 確定登録・解除ボタン
+     */
+    defineButton: function (type) {
+      this.$refs.tajougenChild.parentDefineButton(type);
+    },
+    /**************
+     * 並び順変更
+     */
+    sort: function (type) {
+      this.$refs.tajougenChild.parentSort(type);
+    },
+    /*********************
+     * 全選択
+     */
+    selectAll: function (type) {
+      this.$refs.tajougenChild.parentSelectAll(type);
+    },
     /********:
      * レセプトへ反映ボタン
      */
@@ -221,7 +251,7 @@ export default {
      * アルファベットの絞り込み
      */
     onAlphabet: function (key) {
-      console.log(key);
+      this.$refs.tajougenChild.parentAlphabet(key);
     },
     /*****************
      * タブを切り替えた際の表示切替

@@ -134,12 +134,6 @@
             :itemsSourceChanged="itemsSourceChangedSeikyu"
             :itemsSource="viewdata"
           >
-            <wj-flex-grid-column
-              v-for="column in headerList"
-              :key="column.item"
-              cssClass="cell-img"
-              :cellTemplate="tplImage"
-            />
           </wj-flex-grid>
           <wj-flex-grid
             id="kyufuGrid"
@@ -159,12 +153,6 @@
             :itemsSourceChanged="itemsSourceChangedKyufu"
             :itemsSource="viewkyufudata"
           >
-            <wj-flex-grid-column
-              v-for="column in kyufuHeaderList"
-              :key="column.item"
-              cssClass="cell-img"
-              :cellTemplate="tplImage"
-            />
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -184,6 +172,7 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import ls from '@/utiles/localStorage';
 
 const keyPage = 'keyval00001';
 const keyTotal = 'keyval00002';
@@ -520,7 +509,6 @@ export default {
         { val: 1, name: 'カナ' },
         { val: 2, name: '受給者番号' },
       ],
-      tplImage: CellMaker.makeImage(),
       viewdataAll: [],
       viewdata: [],
       viewkyufudataAll: [],
@@ -530,25 +518,17 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.dispPageType = this.getlocalStorage(keyPage);
-      this.dispTotalOnly = this.getlocalStorage(keyTotal);
-      this.sortSearch = this.getlocalStorage(keySort);
-      this.alphaSearch = this.getlocalStorage(keyAlp);
-      this.selSvc = this.getlocalStorage(keySvc);
-      this.selSichoson = this.getlocalStorage(keySichoson);
+      this.dispPageType = ls.getlocalStorage(keyPage);
+      this.dispTotalOnly = ls.getlocalStorage(keyTotal);
+      this.sortSearch = ls.getlocalStorage(keySort);
+      this.alphaSearch = ls.getlocalStorage(keyAlp);
+      this.selSvc = ls.getlocalStorage(keySvc);
+      this.selSichoson = ls.getlocalStorage(keySichoson);
       this.pageChange(this.dispPageType);
     });
   },
   computed: {},
   methods: {
-    getlocalStorage: function (key) {
-      let tmpval = localStorage.getItem(key);
-      if (tmpval == null) {
-        return 0;
-      } else {
-        return Number(tmpval);
-      }
-    },
     onInitializeSeikyuGrid: function (flexGrid) {
       flexGrid.beginUpdate();
 
@@ -568,6 +548,7 @@ export default {
 
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < colCntSeikyu; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
 
         col.binding = this.headerList[colIndex].dataname;
@@ -579,7 +560,10 @@ export default {
         col.multiLine = true;
         col.wordWrap = true;
 
-        if (colIndex > 0) {
+        if (colIndex == 0) {
+          col.cssClass = 'cell-img';
+          col.cellTemplate = CellMaker.makeImage();
+        } else {
           col.cssClass = '';
           col.cellTemplate = '';
         }
@@ -629,6 +613,7 @@ export default {
 
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < colCntKyufu; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         col.binding = this.kyufuHeaderList[colIndex].dataname;
@@ -637,7 +622,10 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
 
-        if (colIndex > 0) {
+        if (colIndex == 0) {
+          col.cssClass = 'cell-img';
+          col.cellTemplate = CellMaker.makeImage();
+        } else {
           col.cssClass = '';
           col.cellTemplate = '';
         }

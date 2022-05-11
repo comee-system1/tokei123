@@ -1,7 +1,7 @@
 <template>
-  <div id="recept-tajyougen" class="mt-n5">
+  <div id="recept-jijyougen" class="mt-n5">
     <wj-flex-grid
-      id="grid_tajyougen"
+      id="grid_jijyougen"
       :initialized="onInitialized"
       :allowMerging="6"
       :headersVisibility="'Column'"
@@ -148,7 +148,7 @@ export default {
   data() {
     return {
       verticalHeader: [
-        'レセプト反映',
+        '上限額管理計算',
         '管理結果',
         'レセプト確定',
         '印刷',
@@ -303,7 +303,7 @@ export default {
           code: Math.random() * 10000000,
           riyousyamei: Math.floor(Math.random() * 10) + '東経太郎',
           kana: 'トウケイタロウ',
-          jyougenicon: '他',
+          jyougenicon: '自',
           jyougengaku: '南山事務所',
           riyosyafutan: Math.random() * 10000000,
           resehanei: '',
@@ -547,8 +547,8 @@ export default {
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
 
-div#recept-tajyougen {
-  #grid_tajyougen {
+div#recept-jijyougen {
+  #grid_jijyougen {
     height: 52vh;
   }
   .wj-flexgrid .wj-cell {

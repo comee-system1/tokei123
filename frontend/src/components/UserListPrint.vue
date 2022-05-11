@@ -125,9 +125,10 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="印"
-        binding="active"
+        binding="print"
         :width="25"
         :word-wrap="false"
+        :isReadOnly="true"
         :allowResizing="true"
         class="text-caption"
       ></wj-flex-grid-column>
@@ -153,7 +154,6 @@ Vue.use(VueAxios, axios);
 
 let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 //let userUrl = 'http://local-tokei/';
-let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
 let userCount = 0;
@@ -226,7 +226,7 @@ export default {
       //     jidoid: response.data[i]['jidoid'],
       //     kzkname: response.data[i]['kzkname'],
       //     kakutei: response.data[i]['kakutei'],
-      //     active: response.data[i]['active'],
+      //     print: response.data[i]['print'],
       //   });
       // }
 
@@ -245,14 +245,13 @@ export default {
           jidoid: i * 40,
           kzkname: '東経家族' + i,
           kakutei: 0,
-          active: false,
+          print: '',
         });
       }
       //--axiosを利用しないとき下記有効
 
       usersData['riyo_inf'] = riyo_inf;
-      userDataAll = usersData;
-      userDataSelect = userDataAll;
+      userDataSelect = usersData;
 
       this.userFilter();
       return riyo_inf;
@@ -262,8 +261,8 @@ export default {
       let data = [];
 
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (checkAll == '1') value.active = true;
-        if (checkAll == '2') value.active = false;
+        if (checkAll == '1') value.print = '〇';
+        if (checkAll == '2') value.print = '';
         if (value.names.indexOf(textSearch) != -1) {
           data.push(value);
         }
@@ -404,12 +403,21 @@ export default {
 
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
-        ht = flexGrid.hitTest(e.pageX, e.pageY);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         if (e.target.innerText.length > 0) {
-          let row = ht._row;
+          let row = hPage._row;
           _self.$emit('child-event', userDataSelect['riyo_inf'][row].riyocode);
           _self.$emit('child-select', row);
+        }
+        //印刷箇所を押下
+        if (ht.cellType == wjGrid.CellType.Cell && ht.col == 2) {
+          let p = flexGrid.getCellData(ht.row, 2);
+          let mark = '';
+          if (p == '〇') mark = '';
+          if (p == '') mark = '〇';
+          _self.usersData[ht.row]['print'] = mark;
+          flexGrid.setCellData(ht.row, 2, mark);
         }
       });
     },
@@ -442,6 +450,9 @@ div#user-list-print_scrollbar {
   width: 275px;
   .wj-cell:not(.wj-header) {
     background: $grid_background;
+    &:nth-child(3) {
+      background-color: $white;
+    }
   }
 
   .wj-cells

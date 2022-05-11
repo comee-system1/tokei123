@@ -25,12 +25,6 @@
           <v-col md="2">
             <v-card class="d-flex flex-row" color="transparent" elevation="0">
               <v-card class="transparent" tile>
-                <!-- <input
-                  type="month"
-                  name="example"
-                  :value="year + '-' + month"
-                  v-on:change="calenderChange"
-                /> -->
                 <v-card
                   class="pa-1"
                   :width="160"
@@ -48,7 +42,6 @@
                 class="pa-0 ml-1"
                 x-small
                 @click="calendarClick(1)"
-                @mouseover="calendarOver"
                 height="100%"
                 style="min-width: auto; height: 30px"
                 tile
@@ -62,7 +55,6 @@
                 height="100%"
                 style="min-width: auto; height: 30px"
                 @click="calendarClick(2)"
-                @mouseleave="calendarOver"
                 tile
                 ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
               >
@@ -83,7 +75,9 @@
           </v-col>
 
           <v-col md="2" v-if="searchButtonFlag">
-            <v-btn class="pa-1" :width="60" small> 検索 </v-btn>
+            <v-btn class="pa-1" :width="60" small @click="searchButton()">
+              検索
+            </v-btn>
           </v-col>
         </v-row>
       </div>
@@ -196,7 +190,6 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 
 let year = moment().year();
 let month = moment().format('MM');
-let calendarFlag = false; //有効時にカレンダーの選択値を渡す
 export default {
   props: {
     seikyuflag: { type: Boolean },
@@ -334,7 +327,7 @@ export default {
           teikyoCode: _self.jimusyo[ht.row].teikyoCode,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-        _self.$emit('parent-service-select', returns);
+        _self.defaultSetting = returns;
 
         _self.header_dialog = false;
       });
@@ -346,10 +339,18 @@ export default {
         }
       };
     },
+    /********************
+     * 検索ボタンを押下
+     */
+    searchButton: function () {
+      let split = [];
+      split[0] = this.year;
+      split[1] = this.month;
+      split['service'] = this.defaultSetting;
+      this.$emit('parent-calendar', split);
+    },
     defaultSettings: function () {
       this.createJimusyo();
-
-      //初期データはdefaultFlagが有効のものを利用
       let defaultdata = [];
       for (let i = 0; i <= this.jimusyo.length; i++) {
         if (this.jimusyo[i]['defaultFlag']) {
@@ -368,20 +369,20 @@ export default {
         teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
-      this.$emit('parent-service-select', returns);
+      return returns;
     },
+    /*****************
+     * datepickerから日付を選択
+     */
     monthSelect: function () {
       let split = this.picker.split('-');
       this.year = split[0];
       this.month = split[1];
-      this.$emit('parent-calendar', split);
-
       this.datepicker_dialog = false;
     },
     //カレンダーボタンの日付遷移
     //1:前月 2:翌月
     calendarClick: function (type) {
-      calendarFlag = true;
       let date = this.year + this.month + '01';
       if (type == 1) {
         this.year = moment(date).subtract(1, 'months').format('YYYY');
@@ -391,28 +392,15 @@ export default {
         this.month = moment(date).add(1, 'months').format('MM');
       }
     },
-    calendarOver: function () {
-      if (calendarFlag) {
-        let split = [];
-        split[0] = this.year;
-        split[1] = this.month;
-        this.$emit('parent-calendar', split);
-        calendarFlag = false;
-      }
-    },
-    calenderChange: function (e) {
-      let split = e.target.value.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      this.$emit('parent-calendar', split);
-    },
-    searchChange: function (e) {
-      let value = e.text;
-      this.$emit('parent-search', value);
-    },
+    /************
+     * サービスを押下
+     */
     comboClick: function () {
       this.header_dialog = true;
     },
+    /**************
+     * カレンダーを選択
+     */
     inputCalendarClick: function () {
       this.datepicker_dialog = true;
     },

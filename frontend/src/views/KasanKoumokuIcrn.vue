@@ -26,20 +26,16 @@
               </v-btn-toggle>
             </v-col>
             <v-col cols="6">
-              <label>絞込</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
-                <v-btn
-                  v-for="n in siborikomiSelList"
-                  :key="n"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="siborikomiUser2(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
+              <label>加算</label>
+              <wj-combo-box
+                v-model="selKasan"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                :itemsSource="kasanList"
+                :selectedIndex="0"
+                :selectedIndexChanged="onKasanIndexChanged"
+              >
+              </wj-combo-box>
             </v-col>
           </v-row>
 
@@ -89,26 +85,10 @@
           </v-row>
         </v-col>
         <v-col cols="*">
-          <v-row>
-            <v-col cols="*" class="mt-3 mr-10">
-              <v-row justify="end">
-                <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-spacer style="height: 50px"></v-spacer>
+          <v-spacer style="height: 75px"></v-spacer>
           <v-row no-gutters justify="end">
             <v-col cols="4" xl="3" class="mr-1">
-              <v-row class="border-bottom">
-                <v-col class="pa-2" cols="4">
-                  <label class="errorlabel">
-                    <b>エラー</b>
-                  </label>
-                </v-col>
-                <v-col class="pa-2" cols="*">
-                  <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
-                </v-col>
-              </v-row>
+              <label class="labelhosoku"> 上段：回数 下段：単位数 </label>
             </v-col>
           </v-row>
         </v-col>
@@ -117,7 +97,7 @@
       <v-row class="mt-1" no-gutters>
         <v-col>
           <wj-flex-grid
-            id="jyukyuIcrnGrid"
+            id="kasanKoumokuIcrnGrid"
             :headersVisibility="'Column'"
             :autoGenerateColumns="false"
             :allowAddNew="false"
@@ -129,17 +109,18 @@
             :allowDragging="false"
             :selectionMode="'Row'"
             :isReadOnly="true"
-            :initialized="onInitializejyukyuIcrnGrid"
+            :initialized="onInitializekasanKoumokuIcrnGrid"
             :formatItem="onFormatItem"
+            :itemsSourceChanging="onItemsSourceChanging"
             :itemsSourceChanged="onItemsSourceChanged"
             :itemsSource="viewdata"
           >
-            <wj-flex-grid-column
+            <!-- <wj-flex-grid-column
               v-for="column in headerList"
               :key="column.item"
               cssClass="cell-img"
               :cellTemplate="tplImage"
-            />
+            /> -->
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -159,16 +140,18 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import ls from '@/utiles/localStorage';
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
-const strMaru = '○';
-const bgClrInput = 'white';
-const bgClrError = 'mistyrose';
+const keyKasan = 'keyval00007';
+// const bgClrInput = 'white';
+// const bgClrError = 'mistyrose';
 const fmtYen = 'n0';
 const fmtYmd = 'yyyy/MM/dd'; //'gyy/MM/dd';
-const daiTitle = '受給者証情報';
-const chuTitle = '利用者負担';
+const nisuTitle = '日数';
+const taiseiTitle = '施設体制加算';
+const kobetuTitle = '個別加算';
 const rowHeaderheight = 20;
 const rowheight = 25;
 let siborikomiSearch = 0;
@@ -197,93 +180,71 @@ export default {
       errorcnt: '',
       sortSearch: 0,
       alphaSearch: 0,
+      selKasan: 0,
       headerList: [
-        { dataname: 'err', title: 'エ\nラ\n|', width: 30, align: 'center' },
         {
-          dataname: 'no',
-          title: '受給者証\n番号',
-          width: 100,
+          dataname: 'err',
+          title: 'レセ確定',
+          width: 30,
           align: 'center',
-        },
-        { dataname: 'name', title: '氏名', width: '7*', align: 'left' },
-        {
-          dataname: 'koufuymd',
-          title: '交付日',
-          width: 90,
-          align: 'center',
-        },
-        { dataname: 'engo', title: '援護者', width: 100, align: 'left' },
-        {
-          dataname: 'jitibangou',
-          title: '助成自治\n体番号',
-          width: 70,
-          align: 'center',
+          kasankbn: 0,
+          kasanval: 0,
         },
         {
-          dataname: 'jyukyukbn',
-          title: '受給者\n区分',
-          width: 50,
-          align: 'center',
-        },
-        {
-          dataname: 'jyukyuname',
-          title: '受給者氏名',
-          width: '7*',
+          dataname: 'name',
+          title: '氏名',
+          width: 200,
           align: 'left',
+          kasankbn: 0,
+          kasanval: 0,
         },
         {
-          dataname: 'syougaisyu',
-          title: '障害\n種別',
-          width: 50,
+          dataname: 'useymd',
+          title: '利用日数',
+          width: 30,
           align: 'center',
+          kasankbn: 0,
+          kasanval: 0,
         },
         {
-          dataname: 'syougaisienkbn',
-          title: '障害\n支援\n区分',
-          width: 50,
+          dataname: 'nyuinymd',
+          title: '入院日数',
+          width: 30,
           align: 'center',
+          kasankbn: 0,
+          kasanval: 0,
         },
         {
-          dataname: 'futanjyougen',
-          title: '利用者負担\n上限月額',
-          width: 80,
-          align: 'right',
-        },
-        {
-          dataname: 'jyougenumu',
-          title: '上限\n管理',
-          width: 50,
+          dataname: 'gaihakuymd',
+          title: '外泊日数',
+          width: 30,
           align: 'center',
+          kasankbn: 0,
+          kasanval: 0,
         },
-        {
-          dataname: 'jyougenkanri',
-          title: '上限額\n管理事業所',
-          width: '7*',
-          align: 'left',
-        },
-        {
-          dataname: 'syokujiteikyo',
-          title: '食事提供\n体制',
-          width: 70,
-          align: 'center',
-        },
-        {
-          dataname: 'tokubetukyufu',
-          title: '特別\n給付費',
-          width: 70,
-          align: 'right',
-        },
-        { dataname: 'syusei', title: '修正', width: 50, align: 'center' },
       ],
       userSelList: [
         { val: 0, name: '全員' },
         { val: 1, name: '今月入所者' },
         { val: 2, name: '今月退所者' },
       ],
-      siborikomiSelList: [
-        { val: 0, name: '全員' },
-        { val: 1, name: '未入力' },
-        { val: 2, name: '期限切れ' },
+      kasanList: [
+        { val: 0, kbn: 0, name: '指定なし' },
+        { val: 1, kbn: 1, name: '夜間職員配置体制加算' },
+        { val: 2, kbn: 1, name: '重度障害者支援加算Ⅰ' },
+        { val: 3, kbn: 1, name: '夜間看護体制加算' },
+        { val: 4, kbn: 1, name: '視覚・聴覚等支援体制加算' },
+        { val: 5, kbn: 1, name: '地域生活移行個別支援加算' },
+        { val: 6, kbn: 1, name: '口腔衛生管理体制加算' },
+        { val: 7, kbn: 1, name: '処遇改善加算Ⅰ' },
+        { val: 8, kbn: 1, name: '処遇改善特別加算' },
+        { val: 9, kbn: 1, name: '特定処遇改善加算' },
+        { val: 10, kbn: 2, name: '入所時特別支援加算' },
+        { val: 11, kbn: 2, name: '入院・外泊時加算Ⅰ' },
+        { val: 12, kbn: 2, name: '入院・外泊時加算Ⅱ' },
+        { val: 13, kbn: 2, name: '経口維持加算Ⅰ' },
+        { val: 14, kbn: 2, name: '口腔衛生管理加算' },
+        { val: 15, kbn: 2, name: '栄養マネジメント加算' },
       ],
       sortSelList: [
         { val: 0, name: 'コード' },
@@ -298,77 +259,65 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = this.getlocalStorage(keySort);
-      this.alphaSearch = this.getlocalStorage(keyAlp);
+      this.sortSearch = ls.getlocalStorage(keySort);
+      this.alphaSearch = ls.getlocalStorage(keyAlp);
     });
   },
-  computed: {
-    errCnt: function () {
-      return this.viewdata.filter(
-        (x) =>
-          !x.koufuymd ||
-          !x.engo ||
-          !x.jitibangou ||
-          !x.jyukyukbn ||
-          !x.jyukyuname ||
-          !x.syougaisyu ||
-          !x.syougaisienkbn ||
-          !x.futanjyougen ||
-          !x.jyougenkanri ||
-          !x.syokujiteikyo ||
-          !x.tokubetukyufu
-      ).length;
-    },
-  },
   methods: {
-    getlocalStorage: function (key) {
-      let tmpval = localStorage.getItem(key);
-      if (tmpval == null) {
-        return 0;
-      } else {
-        return Number(tmpval);
-      }
-    },
-    onInitializejyukyuIcrnGrid: function (flexGrid) {
+    onInitializekasanKoumokuIcrnGrid: function (flexGrid) {
       flexGrid.beginUpdate();
-      // クリックイベント
-      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        let ht = flexGrid.hitTest(e);
-        if (
-          ht.panel == flexGrid.cells &&
-          ht.col == flexGrid.columns.length - 1
-        ) {
-          if (ht.panel.getCellData(ht.row, ht.col) == strMaru) {
-            ht.panel.setCellData(ht.row, ht.col, '');
-          } else {
-            ht.panel.setCellData(ht.row, ht.col, strMaru);
-          }
-        }
-      });
-
       // ヘッダの追加と設定
+      flexGrid.frozenColumns = 5;
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnFooters.rows[0].allowMerging = true;
+      flexGrid.columnFooters.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
-      flexGrid.columnHeaders.rows[1].height = rowHeaderheight;
-      flexGrid.columnHeaders.rows[2].height = 40;
+      flexGrid.columnHeaders.rows[1].height = 100;
       flexGrid.cells.rows.defaultSize = rowheight;
       flexGrid.alternatingRowStep = 0;
 
+      flexGrid.endUpdate();
+    },
+
+    onItemsSourceChanging(flexGrid) {
+      flexGrid.beginUpdate();
+
+      let newheadList = this.headerList.concat();
+
+      for (let i = 0; i < this.kasanList.length; i++) {
+        if (this.kasanList[i].val == 0) {
+          continue;
+        }
+        newheadList.push({
+          dataname: String(this.kasanList[i].val),
+          title: this.kasanList[i].name,
+          width: 60,
+          align: 'right',
+          kasankbn: this.kasanList[i].kbn,
+          kasanval: this.kasanList[i].val,
+        });
+      }
+      flexGrid.columns.clear();
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < 16; colIndex++) {
+      for (let colIndex = 0; colIndex < newheadList.length; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
-        col.binding = this.headerList[colIndex].dataname;
-        col.header = this.headerList[colIndex].title;
-        col.width = this.headerList[colIndex].width;
-        col.align = this.headerList[colIndex].align;
+        col.binding = newheadList[colIndex].dataname;
+        col.header = newheadList[colIndex].title;
+        col.width = newheadList[colIndex].width;
+        col.align = newheadList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
 
-        if (colIndex > 0) {
+        if (colIndex == 0) {
+          col.cssClass = 'cell-img';
+          col.cellTemplate = CellMaker.makeImage();
+        } else {
           col.cssClass = '';
           col.cellTemplate = '';
         }
@@ -380,15 +329,18 @@ export default {
         } else {
           col.format = '';
         }
-
-        for (let rowindex = 0; rowindex < 3; rowindex++) {
+        for (let rowindex = 0; rowindex < 2; rowindex++) {
           let title = '';
-          if (1 <= colIndex && colIndex <= 14 && rowindex == 0) {
-            title = daiTitle;
-          } else if (10 <= colIndex && colIndex <= 14 && rowindex == 1) {
-            title = chuTitle;
+          if (rowindex == 0 && 2 <= colIndex && colIndex <= 4) {
+            title = nisuTitle;
+          } else if (rowindex == 0 && 5 <= colIndex) {
+            if (newheadList[colIndex].kasankbn == 1) {
+              title = taiseiTitle;
+            } else if (newheadList[colIndex].kasankbn == 2) {
+              title = kobetuTitle;
+            }
           } else {
-            title = this.headerList[colIndex].title;
+            title = newheadList[colIndex].title;
           }
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
         }
@@ -398,81 +350,95 @@ export default {
     onItemsSourceChanged(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+
+      let kasancnt = this.kasanList.filter((x) => x.kbn == 1).length - 1;
+      // セル結合
+      let mm = new wjGrid.MergeManager(flexGrid);
+      // 結合するセルの範囲を指定
+      let headerRanges = [
+        new wjGrid.CellRange(0, 0, 1, 0),
+        new wjGrid.CellRange(0, 1, 1, 1),
+        new wjGrid.CellRange(0, 2, 0, 4),
+        new wjGrid.CellRange(0, 5, 0, 5 + kasancnt),
+        new wjGrid.CellRange(
+          0,
+          5 + kasancnt + 1,
+          0,
+          flexGrid.columns.length - 1
+        ),
+      ];
+      let footerRanges = [
+        new wjGrid.CellRange(0, 0, 1, 1),
+        new wjGrid.CellRange(0, 2, 0, 4),
+        new wjGrid.CellRange(1, 2, 1, 4),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+          for (let f = 0; f < footerRanges.length; f++) {
+            if (footerRanges[f].contains(r, c)) {
+              return footerRanges[f];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+      flexGrid.columnFooters.setCellData(0, 0, '合計');
+      flexGrid.columnFooters.setCellData(0, 2, '人数');
+      flexGrid.columnFooters.setCellData(1, 2, '単位数');
     },
     onFormatItem(flexGrid, e) {
+      flexGrid.beginUpdate();
+      e.cell.style.writingMode = '';
       if (
-        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 1) ||
-        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 10) ||
-        e.col == 0 ||
-        e.col == 9 ||
-        e.col == 14
+        e.panel == flexGrid.columnHeaders &&
+        (e.col == 0 || (e.row == 1 && 2 <= e.col))
+      ) {
+        // 縦書きで右から左へ
+        e.cell.style.writingMode = 'vertical-rl';
+      }
+
+      e.cell.style.borderRight = '';
+      if (
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 5) ||
+        e.col == 4 ||
+        (4 < e.col &&
+          e.col < flexGrid.columns.length - 1 &&
+          flexGrid.columnHeaders.getCellData(0, e.col, false) !=
+            flexGrid.columnHeaders.getCellData(0, e.col + 1, false))
       ) {
         e.cell.style.borderRight = '1px solid';
       }
-
-      if (e.panel == flexGrid.columnHeaders) {
-        if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
-          // css に scopedをつけると以下のように個別に設定が必要
-          // e.cell.style.textAlign = 'center';
-          // ヘッダのみ小さくする
-          // e.cell.style.fontSize = '12px';
-          // e.cell.style.justifyContent = 'center';
+      if (e.panel == flexGrid.cells) {
+        e.cell.style.borderBottom = '';
+        if (e.row == flexGrid.rows.length - 1) {
+          e.cell.style.borderBottom = 0;
+          return;
         }
-      } else {
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (tmpitem != null) {
-          flexGrid.beginUpdate();
-          // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = '';
-          e.cell.style.borderBottom = '';
-
-          if (e.col == flexGrid.columns.length - 1) {
-            e.cell.style.backgroundColor = bgClrInput;
-          } else if (
-            (e.col == 3 && !tmpitem.koufuymd) ||
-            (e.col == 4 && !tmpitem.engo) ||
-            (e.col == 5 && !tmpitem.jitibangou) ||
-            (e.col == 6 && !tmpitem.jyukyukbn) ||
-            (e.col == 7 && !tmpitem.jyukyuname) ||
-            (e.col == 8 && !tmpitem.syougaisyu) ||
-            (e.col == 9 && !tmpitem.syougaisienkbn) ||
-            (e.col == 10 && !tmpitem.futanjyougen) ||
-            (e.col == 11 && !tmpitem.jyougenkanri) ||
-            (e.col == 12 && !tmpitem.syokujiteikyo) ||
-            (e.col == 13 && !tmpitem.tokubetukyufu)
-          ) {
-            e.cell.style.backgroundColor = bgClrError;
+        if (tmpitem.kbn == 1) {
+          if (e.col <= 4) {
+            e.cell.style.borderBottom = 0;
           }
-
-          // 仮想マージ
-          // 上の行と同じ利用者の場合は空で表示する
-          if (e.row >= 3 && 0 < e.col && e.col <= 2) {
-            let tmpPreitem = e.panel.rows[e.row - 1].dataItem;
-            if (tmpPreitem != null && tmpitem.id == tmpPreitem.id) {
-              e.panel.setCellData(e.row, e.col, '');
-            } else {
-              if (e.col == 1) {
-                e.panel.setCellData(e.row, e.col, tmpitem.nobk, true);
-              } else if (e.col == 2) {
-                e.panel.setCellData(e.row, e.col, tmpitem.name);
-              }
-            }
-          }
-          // 下の行と同じ利用者の場合は下線を非表示化
-          if (
-            e.row > 2 &&
-            e.row < flexGrid.rows.length - 2 &&
-            0 < e.col &&
-            e.col <= 2
-          ) {
-            let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
-            if (tmpNextitem != null && tmpitem.id == tmpNextitem.id) {
-              e.cell.style.borderBottom = 0;
-            }
-          }
-          flexGrid.endUpdate();
+        } else {
+          e.cell.style.borderBottom = '1px solid';
         }
+      } else if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.borderTop = '';
+        if (e.row == 0) {
+          e.cell.style.borderTop = '1px solid';
+        }
+        e.cell.style.backgroundColor = '#CEFCFC';
       }
+
+      flexGrid.endUpdate();
     },
     searchClicked: function () {
       // 初期データ読込
@@ -484,79 +450,66 @@ export default {
       let userCount = 100;
       // ★Date型はmonthが0-11で表現されることに注意
       for (let i = 0; i < userCount; i++) {
-        tmpviewdata.push({
-          id: i,
-          err: '',
-          no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-            10,
-            '0'
-          ),
-          nobk: 0,
-          name: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          koufuymd: new Date('2015', Number('04') - 1, '26'),
-          engo: '第一東経市',
-          jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
-          jyukyukbn: '1',
-          jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
-          syougaisyu: '2',
-          syougaisienkbn: '3',
-          futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
-          jyougenkanri:
-            '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
-          syokujiteikyo: '4',
-          tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000') + 100,
-          syusei: '',
-          nyushoymd: '',
-          taisyoymd: '',
-          isnyusho: false,
-          istaisyo: false,
-        });
-        tmpviewdata[i].nobk = tmpviewdata[i].no;
-        if (i % 2 == 1) {
-          tmpviewdata[i].err = '';
-          tmpviewdata[i].syusei = '';
+        if (i % 2 == 0) {
+          tmpviewdata.push({
+            id: i,
+            no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
+              10,
+              '0'
+            ),
+            err: require('@/assets/kaku_15px.png'),
+            name: '東経太郎' + i,
+            kana: 'トウケイタロウ' + i,
+            useymd: String(99),
+            nyuinymd: String(99),
+            gaihakuymd: String(99),
+            kbn: 1,
+          });
         } else {
-          if (i == 4) {
-            tmpviewdata[i].id = tmpviewdata[i - 1].id;
-            tmpviewdata[i].no = tmpviewdata[i - 1].no;
-            tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
-            tmpviewdata[i].name = tmpviewdata[i - 1].name;
-            tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
-            tmpviewdata[i].koufuymd = new Date('2020', Number('04') - 1, '27');
+          tmpviewdata.push({
+            id: i - 1,
+            no: tmpviewdata[i - 1].no,
+            name:
+              '(' +
+              String(Math.floor(Math.random() * 10000000000) + 1).padStart(
+                10,
+                '0'
+              ) +
+              ')',
+            kana: 'トウケイタロウ' + i - 1,
+            useymd: '',
+            nyuinymd: '',
+            gaihakuymd: '',
+            kbn: 2,
+          });
+        }
+
+        // 動的に加算のプロパティを作成
+        for (let kasan = 0; kasan < this.kasanList.length; kasan++) {
+          if (this.kasanList[kasan].val == 0) {
+            continue;
           }
-          if (i % 3 == 0) {
-            tmpviewdata[i].err = require('@/assets/error_20px.png');
-            tmpviewdata[i].koufuymd = '';
-            tmpviewdata[i].engo = '';
-            tmpviewdata[i].jitibangou = '';
-            tmpviewdata[i].jyukyukbn = '';
-            tmpviewdata[i].jyukyuname = '';
-            tmpviewdata[i].syougaisyu = '';
-            tmpviewdata[i].syougaisienkbn = '';
-            tmpviewdata[i].futanjyougen = '';
-            tmpviewdata[i].jyougenkanri = '';
-            tmpviewdata[i].syokujiteikyo = '';
-            tmpviewdata[i].tokubetukyufu = '';
-            tmpviewdata[i].syusei = strMaru;
+          if (i % 2 == 0) {
+            this.$set(
+              tmpviewdata[i],
+              String(this.kasanList[kasan].val),
+              Number(Math.floor(Math.random() * 100))
+            );
           } else {
-            if (i == 10) {
-              // 年月が一致しているデータのフラグを立てる
-              // tmpviewdata = tmpviewdata.filter((x) =>
-              //   x.nyushoymd.startsWith(
-              //     currentDate.getFullYear() +
-              //       ('00' + (currentDate.getMonth() + 1)).slice(-2)
-              //   )
-              // );
-              tmpviewdata[i].isnyusho = 'true';
-            }
-            if (i == 14) {
-              tmpviewdata[i].istaisyo = 'true';
-            }
+            this.$set(
+              tmpviewdata[i],
+              String(this.kasanList[kasan].val),
+              Number(Math.floor(Math.random() * 100000))
+            );
           }
         }
       }
       return tmpviewdata;
+    },
+    onKasanIndexChanged: function (s) {
+      localStorage.setItem(keyKasan, s.selectedValue);
+      this.selKasan = s.selectedValue;
+      this.userFilter();
     },
     siborikomiUser: function (siborikomiType) {
       siborikomiSearch = siborikomiType;
@@ -703,7 +656,7 @@ div#KasanKoumokuIcrn {
   .user-info {
     width: auto;
     padding: 4px;
-    label:not(.errorlabel) {
+    label:not(.labelhosoku) {
       display: inline-block;
       margin-top: 2px;
       margin-right: 2px;
@@ -716,8 +669,8 @@ div#KasanKoumokuIcrn {
       text-align: center;
     }
   }
-  .errorlabel {
-    color: red;
+  .labelhosoku {
+    font-weight: normal;
   }
 
   .siborikomi-info,
@@ -754,7 +707,7 @@ div#KasanKoumokuIcrn {
       font-size: 0.85em;
     }
   }
-  #jyukyuIcrnGrid {
+  #kasanKoumokuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 98vw;
@@ -771,8 +724,8 @@ div#KasanKoumokuIcrn {
       text-align: center;
     }
     // .wj-cell-maker {
-    //   width: 70%;
-    //   height: 70%;
+    //   width: 15px;
+    //   height: 15px;
     // }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
