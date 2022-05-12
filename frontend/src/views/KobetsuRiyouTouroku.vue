@@ -2,6 +2,8 @@
   <div id="kobeturiyo">
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
+      @parent-search="parentSearch($event, searchArgument)"
+      @parent-service-select="parentServiceSelect($event, serviceArgument)"
       :registButtonFlag="true"
       :searchButtonFlag="true"
       :alertMessageFlag="alertMessageFlag"
@@ -10,6 +12,7 @@
       <v-row no-gutters>
         <v-col class="leftArea">
           <user-list-print
+            ref="user_list_print"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
@@ -315,21 +318,9 @@ export default {
           },
         ];
       } else {
-        hendo = [
-          {
-            heads: [],
-            column: [],
-            shisetsuNyusho: [],
-            meals: [],
-            mealsKey: [],
-            taisei_kobetu: [],
-            kobetu: [],
-            kasanRow: 0,
-            taisei_kobetu_name: [],
-            mealsCount: [],
-            kounetsuSuihi: [],
-          },
-        ];
+        console.log(
+          'you cannot select service this one . Please Select other Service. '
+        );
       }
       this.gridItemName = hendo;
       this.mainGrid.itemsSource = [];
@@ -356,15 +347,21 @@ export default {
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
     },
-    //ヘッダメニューの検索ボタンを押した
+    //ヘッダメニューのカレンダーを変更したとき
     parentCalendar: function (dateArgument) {
       this.year = dateArgument[0];
       this.month = dateArgument[1];
       let m = moment(this.year + '-' + this.month + '-01');
-      this.teikyoCode = dateArgument['service'].teikyoCode;
-      this.changeHndoJyoho();
       this.lastdate = m.daysInMonth();
       this.mainGrid.itemsSource = [];
+    },
+    //ヘッダメニューのサービスを変更したとき
+    parentServiceSelect: function (serviceArgument) {
+      this.teikyoCode = serviceArgument.teikyoCode;
+      this.changeHndoJyoho();
+      if (this.teikyoCode) {
+        this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
+      }
     },
     //変動情報ダイアログの登録ボタン押下
     kikantuika_dialog_regist: function () {
@@ -414,7 +411,6 @@ export default {
     },
     onitemsSourceChanged: function (flexGrid) {
       let _self = this;
-
       // セル初期カラム情報
       methodCellSettingDefault(flexGrid, _self);
       // 情報タイトルパーツの書き込み
@@ -426,7 +422,9 @@ export default {
     },
     // グリッドイニシアライズ
     onInitialized: function (flexGrid) {
-      this.changeHndoJyoho();
+      //初回の提供サービスコードを渡す
+      this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
+
       this.mainGrid = flexGrid;
       flexGrid.autoSizeColumns();
       let _self = this;
@@ -453,10 +451,12 @@ function methodCellSettingDefault(flexGrid, _self) {
     flexGrid.columns.push(new wjGrid.Column());
   }
   let row = 0;
-
-  row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
-  _self.kasanRow = row;
-
+  if (_self.kasanRow > 0) {
+    row = _self.kasanRow;
+  } else {
+    row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
+    _self.kasanRow = row;
+  }
   while (flexGrid.rows.length < row) {
     flexGrid.rows.push(new wjGrid.Row());
   }
@@ -466,11 +466,9 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.columns[1].width = 32;
   flexGrid.columns[2].width = '5*';
   flexGrid.columns[3].width = '5*';
-  if (flexGrid.rows.length > 0) {
-    flexGrid.rows[0].height = 48;
-    flexGrid.rows[2].height = 38;
-    flexGrid.rows[3].height = 38;
-  }
+  flexGrid.rows[0].height = 48;
+  flexGrid.rows[2].height = 38;
+  flexGrid.rows[3].height = 38;
   if (_self.gridItemName[0].taisei_kobetu.length == 1)
     flexGrid.rows[getHendoRows(_self)].height = 100;
   if (_self.gridItemName[0].taisei_kobetu.length == 2)
@@ -506,6 +504,7 @@ function methodCellSettingDefault(flexGrid, _self) {
 function methodWriteJyoho(flexGrid, _self) {
   let hendoRows_st = 1; //変動情報の始まりの行
   let kasanRows_st = getHendoRows(_self); // 加算情報の始まり
+
   flexGrid.setCellData(hendoRows_st, 0, _self.gridItemName[0].column[0]);
 
   let row = 0;
@@ -537,6 +536,7 @@ function methodWriteJyoho(flexGrid, _self) {
   //加算情報
   //体制・個別
   flexGrid.setCellData(kasanRows_st, 0, _self.gridItemName[0].column[1]);
+
   flexGrid.setCellData(
     kasanRows_st,
     1,
@@ -1952,18 +1952,6 @@ function methodCellMerge(flexGrid, _self) {
       new wjGrid.CellRange(5, 1, 5, 2), //食事
       new wjGrid.CellRange(6, 1, 6, 2), //食事
       new wjGrid.CellRange(7, 1, hendoRow - 1, 2), //光熱水費
-    ];
-  }
-  // 施設情報がないとき(初回)
-  if (!_self.teikyoCode) {
-    range = [
-      new wjGrid.CellRange(0, 1, 0, 3),
-      new wjGrid.CellRange(1, 0, hendoRow - 1, 0), // 変動情報縦
-      new wjGrid.CellRange(1, 1, 1, 3), // 利用日
-      new wjGrid.CellRange(2, 1, 2, 3), // 入退院
-      new wjGrid.CellRange(3, 1, 3, 3), // 外泊
-      new wjGrid.CellRange(4, 1, 4, 3),
-      new wjGrid.CellRange(5, 1, 5, 3),
     ];
   }
   range.push(

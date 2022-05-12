@@ -75,7 +75,7 @@
           </v-col>
 
           <v-col md="2" v-if="searchButtonFlag">
-            <v-btn class="pa-1" :width="60" small @click="searchButton()">
+            <v-btn class="pa-1" :width="60" small @click="serachButton()">
               検索
             </v-btn>
           </v-col>
@@ -208,6 +208,7 @@ export default {
       header_dialog: false,
       datepicker_dialog: false,
       defaultSetting: this.defaultSettings(),
+      returndata: '', // 検索ボタンを押下時に選択値を渡す変数
     };
   },
   methods: {
@@ -311,7 +312,6 @@ export default {
     },
     onInitializedJimusyo: function (grid) {
       //this.createJimusyo();
-
       let _self = this;
       grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
@@ -328,7 +328,8 @@ export default {
           teikyoCode: _self.jimusyo[ht.row].teikyoCode,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-        _self.defaultSetting = returns;
+        this.returndata = returns;
+        //        _self.$emit('parent-service-select', returns);
 
         _self.header_dialog = false;
       });
@@ -340,18 +341,10 @@ export default {
         }
       };
     },
-    /********************
-     * 検索ボタンを押下
-     */
-    searchButton: function () {
-      let split = [];
-      split[0] = this.year;
-      split[1] = this.month;
-      split['service'] = this.defaultSetting;
-      this.$emit('parent-calendar', split);
-    },
     defaultSettings: function () {
       this.createJimusyo();
+
+      //初期データはdefaultFlagが有効のものを利用
       let defaultdata = [];
       for (let i = 0; i <= this.jimusyo.length; i++) {
         if (this.jimusyo[i]['defaultFlag']) {
@@ -370,17 +363,22 @@ export default {
         teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
-      // todo消す予定
+      this.returndata = returns;
+      console.log(this.returndata);
       this.$emit('parent-service-select', returns);
-      return returns;
     },
-    /*****************
-     * datepickerから日付を選択
+    /**************
+     * 検索ボタンを押下
      */
+    serachButton: function () {
+      console.log(this.returndata);
+    },
     monthSelect: function () {
       let split = this.picker.split('-');
       this.year = split[0];
       this.month = split[1];
+      this.$emit('parent-calendar', split);
+
       this.datepicker_dialog = false;
     },
     //カレンダーボタンの日付遷移
@@ -395,15 +393,20 @@ export default {
         this.month = moment(date).add(1, 'months').format('MM');
       }
     },
-    /************
-     * サービスを押下
-     */
+    calenderChange: function (e) {
+      let split = e.target.value.split('-');
+      this.year = split[0];
+      this.month = split[1];
+      this.$emit('parent-calendar', split);
+    },
+    searchChange: function (e) {
+      let value = e.text;
+      this.$emit('parent-search', value);
+    },
+    /**提供サービスを押下 */
     comboClick: function () {
       this.header_dialog = true;
     },
-    /**************
-     * カレンダーを選択
-     */
     inputCalendarClick: function () {
       this.datepicker_dialog = true;
     },

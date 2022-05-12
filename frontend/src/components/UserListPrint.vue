@@ -92,6 +92,7 @@
       :selectionMode="3"
       style="height: 55vh"
       :initialized="onInitializedUser"
+      :itemsSourceChanged="onItemsSourceChanged"
       :itemsSource="usersData"
       :allowDragging="false"
       :allowResizing="true"
@@ -183,9 +184,18 @@ export default {
       riyo_inf: [],
       riyocodeFlag: true,
       jyukyunoFlag: false,
+      useTeikyoCode: '',
     };
   },
   methods: {
+    setChildTeikyocode(teikyoCode) {
+      alert(teikyoCode);
+      if (this.useTeikyoCode && this.useTeikyoCode != teikyoCode) {
+        //以前の状態とコードが異なる際に、ユーザの一覧をクリアする
+        this.usersData = [];
+      }
+      this.useTeikyoCode = teikyoCode;
+    },
     sortUser: function (sortType) {
       sortSearch = sortType;
       if (sortSearch == 3) {
@@ -339,6 +349,10 @@ export default {
     userFilter2() {
       return true;
     },
+    onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
     onInitializedUser: function (flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
@@ -399,7 +413,7 @@ export default {
       flexGrid.alternatingRowStep = 0;
 
       //初回のユーザ選択値
-      _self.$emit('child-select', 0);
+      // _self.$emit('child-select', 0);
 
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
@@ -407,7 +421,6 @@ export default {
         //選択した要素の取得
         if (e.target.innerText.length > 0) {
           let row = hPage._row;
-          _self.$emit('child-event', userDataSelect['riyo_inf'][row].riyocode);
           _self.$emit('child-select', row);
         }
         //印刷箇所を押下

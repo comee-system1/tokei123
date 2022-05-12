@@ -456,58 +456,58 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-// #kyuhumeisai {
-// font-size: 14px;
-// font-family: 'メイリオ';
-// min-width: 1266px !important;
-// }
+#kyuhumeisai {
+  font-size: 14px;
+  font-family: 'メイリオ';
+  min-width: 1266px !important;
 
-// #kyuhumeisai .leftArea {
-//   min-width: 275px;
-//   max-width: 275px;
-//   width: 275px;
-// }
+  .leftArea {
+    min-width: 275px;
+    max-width: 275px;
+    width: 275px;
+  }
 
-// #kyuhumeisai .rightArea {
-//   min-width: 50%;
-//   max-width: none;
-//   width: 1020px;
-//   margin-left:4px;
-// }
-// .kyuhumeisai .wj-flexgrid {
-//   border: none;
-// }
+  .rightArea {
+    min-width: 50%;
+    max-width: none;
+    width: 1020px;
+    margin-left: 4px;
+  }
+  .kyuhumeisai .wj-flexgrid {
+    border: none;
+  }
 
-// .kyuhumeisai .wj-header:first-child {
-//   text-align: center;
-// }
+  .kyuhumeisai .wj-header:first-child {
+    text-align: center;
+  }
 
-// .kyuhumeisai .no-scrollbars.wj-flexgrid [wj-part=root] {
-// 	overflow: hidden !important;
-// }
-// .kyuhumeisai .no-scrollbars.wj-flexgrid [wj-part=ch] {
-// 	border: 1px solid rgba(0,0,0,.2);
-//   border-radius: 4px;
-// }
+  .kyuhumeisai .no-scrollbars.wj-flexgrid [wj-part='root'] {
+    overflow: hidden !important;
+  }
+  .kyuhumeisai .no-scrollbars.wj-flexgrid [wj-part='ch'] {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
 
-// .confirmTitle {
-// font-size: $cell_fontsize;
-// background-color: $red;
-// color: $white;
-// text-align: center;
-// animation-name: fadeInAnime;
-// animation-duration: 1s;
-// animation-fill-mode: forwards;
-// opacity: 0;
-// }
+  .confirmTitle {
+    font-size: $cell_fontsize;
+    background-color: $red;
+    color: $white;
+    text-align: center;
+    animation-name: fadeInAnime;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+  }
 
-// .v-slide-group__content {
-//   border-bottom: solid 1px rgba(0,0,0,.2);
-// }
+  .v-slide-group__content {
+    border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+  }
 
-// .v-tab--active {
-//   background: #444;
-//   color: #eee;
-//   font-weight: 700;
-// }
+  .v-tab--active {
+    background: #444;
+    color: #eee;
+    font-weight: 700;
+  }
+}
 </style>

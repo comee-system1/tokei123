@@ -16,7 +16,6 @@
         :binding="'sityoson'"
         :header="'市町村名'"
         align="center"
-        valign="middle"
         width="2*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -24,7 +23,7 @@
         :binding="'jyukyusyaBango'"
         :header="'受給者番号'"
         align="center"
-        width="3*"
+        width="2*"
         format="'f0'"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -301,11 +300,11 @@ export default {
             riyosyafutan: 9000,
             resehanei: '',
             koban: j + 1,
-            jigyosyobango: '1000000' + i,
+            jigyosyobango: '1000000' + i + j,
             jigyosyomei: 'ひまわり園',
             teikyoservice: '22 生活介護',
-            souhiyougaku: 10000 * Math.floor(Math.random() * 12),
-            riyosyafutangaku: 10000000,
+            souhiyougaku: '',
+            riyosyafutangaku: '',
             kanrikekkafutangaku: '',
             kanrikekka: '',
             resekakutei: '',
@@ -360,6 +359,7 @@ export default {
       let _self = this;
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
+
       // セルのマージ
       this.createCellMerge(flexGrid);
 
@@ -461,10 +461,14 @@ export default {
     createCellFormat: function (flexGrid, _self) {
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
-
         let text = e.cell.innerText;
 
         let classname = '';
+        console.log(e.cell);
+        if (e.cell == 3) {
+          console.log('sss');
+          e.cell.style.color = 'red';
+        }
         if (
           text == _self.verticalHeader[0] ||
           text == _self.verticalHeader[1] ||
@@ -530,7 +534,6 @@ export default {
         new wjGrid.CellRange(0, 16, 1, 16), //レセプト確定
         new wjGrid.CellRange(0, 17, 1, 17), //印刷
       ];
-      console.log(this.merge);
       let ranges = [];
       for (let i = 0; i < this.merge.length; i++) {
         for (let j = 0; j <= 6; j++) {
@@ -575,12 +578,18 @@ div#recept-jijyougen {
   }
   .wj-flexgrid .wj-cell {
     display: flex;
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  .wj-header.wj-cell {
+    display: flex;
     align-items: center;
     font-size: 12px;
     font-weight: normal;
   }
 
-  .wj-flexgrid .wj-cell.wj-align-center {
+  .wj-header.wj-cell.wj-align-center {
     justify-content: center;
   }
 
