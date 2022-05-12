@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogFlag" width="500">
     <v-card class="pa-2">
-      <v-card-title class="text-h5"> 変動情報登録 </v-card-title>
+      <v-card-title class="text-h5"> {{ dateTitle }} </v-card-title>
       <v-container>
         <v-btn
           elevation="2"
@@ -17,7 +17,7 @@
 
         <v-row no-gutters style="flex-wrap: nowrap">
           <v-col cols="3">
-            <v-card elevation="0">{{ dateColum }} </v-card>
+            <v-card elevation="0">{{ dateStart }} </v-card>
           </v-col>
           <v-col cols="9" class="ml-2">
             <v-card class="pa-0" elevation="0">
@@ -75,7 +75,9 @@
           </v-col>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-          <v-col cols="3" class="flex-grow-0 flex-shrink-0"> 病院名 </v-col>
+          <v-col cols="3" class="flex-grow-0 flex-shrink-0">
+            {{ dateName }}
+          </v-col>
           <v-col cols="9">
             <v-text-field
               label="病院名を入力"
@@ -89,7 +91,7 @@
       <v-container>
         <v-row no-gutters style="flex-wrap: nowrap">
           <v-col cols="3" class="flex-grow-0 flex-shrink-0">
-            <v-card elevation="0">退院日 </v-card>
+            <v-card elevation="0">{{ dateEnd }} </v-card>
           </v-col>
           <v-col cols="9" class="flex-grow-0 flex-shrink-0 ml-2">
             <v-card class="pa-0" elevation="0">
@@ -200,7 +202,10 @@ export default {
       taiinbiDinner: false,
       taiinbiAida: false,
       registData: {},
-      dateColum: '',
+      dateTitle: '',
+      dateStart: '',
+      dateEnd: '',
+      dateName: '',
     };
   },
   components: {
@@ -267,10 +272,16 @@ export default {
       this.dialogFlag = false;
     },
     parentFromOpenDialog(data, type) {
-      if (type == 'nyutaiin') {
-        this.dateColum = '入院・退院日';
+      if (type == 'nyutaiin_add') {
+        this.dateStart = '入院日';
+        this.dateEnd = '退院日';
+        this.dateTitle = '入退院情報登録';
+        this.dateName = '病院名';
       } else {
-        this.dateColum = '外泊日';
+        this.dateStart = '開始日';
+        this.dateEnd = '終了日';
+        this.dateTitle = '外泊情報登録';
+        this.dateName = '外泊先';
       }
       this.dialogFlag = true;
       this.type = type;

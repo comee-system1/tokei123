@@ -61,12 +61,14 @@
         :binding="'resehanei'"
         :width="30"
         :isReadOnly="true"
+        align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'koban'"
         :header="verticalHeader[4]"
         :width="30"
         align="center"
+        valign="middle"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -99,7 +101,6 @@
         align="right"
         :multiLine="true"
         :format="'n0'"
-        :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'riyosyafutangaku'"
@@ -108,7 +109,6 @@
         align="right"
         :format="'n0'"
         :multiLine="true"
-        :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'hensyu'"
@@ -137,8 +137,17 @@
         :width="30"
         :isReadOnly="true"
       ></wj-flex-grid-column>
-      <wj-flex-grid-column binding="print" :width="30"></wj-flex-grid-column>
+      <wj-flex-grid-column
+        binding="print"
+        :width="30"
+        :isReadOnly="true"
+      ></wj-flex-grid-column>
     </wj-flex-grid>
+    <div id="menubar">
+      <v-btn elevation="2" outlined tile block>事業所未登録</v-btn>
+      <v-btn elevation="2" outlined tile mt-1 block>事業所追加</v-btn>
+      <v-btn elevation="2" outlined tile mt-1 block>項目並替え</v-btn>
+    </div>
   </div>
 </template>
 
@@ -386,6 +395,31 @@ export default {
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
+          //編集カラムを押下
+          if (hPage.col == 13) {
+            if (flexGrid.getCellData(hPage.row, 13) == '〇') {
+              let element = document.getElementById('menubar');
+              flexGrid.setCellData(hPage.row, 13, ' ');
+              _self.allData[hPage.row]['hensyu'] = '';
+              element.style.display = 'none';
+            } else {
+              let element = document.getElementById('menubar');
+              for (let i = 0; i < _self.allData.length; i++) {
+                flexGrid.setCellData(i, 13, '');
+                _self.allData[i]['hensyu'] = '';
+              }
+              element.style.display = 'none';
+
+              if (flexGrid.getCellData(hPage.row, 13) == '') {
+                let mark = '〇';
+                flexGrid.setCellData(hPage.row, 13, mark);
+                _self.allData[hPage.row]['hensyu'] = mark;
+                element.style.top = e.pageY + 'px';
+                element.style.left = e.pageX + 'px';
+                element.style.display = 'block';
+              }
+            }
+          }
           //印刷カラムを押下
           if (hPage.col == 17) {
             let mark = '〇';
@@ -410,8 +444,6 @@ export default {
               _self.allData[hPage.row]['complateFlag'] = true;
             }
           }
-          //  alert(hPage.row);
-          //flexGrid.setCellData(e.row, 6, '〇');
         }
       });
     },
@@ -440,14 +472,17 @@ export default {
         // console.log('value=>' + value);
         // console.log(isNumber(value));
 
-        let pt13 = flexGrid.getCellData(e.row, 13);
-        let pt14 = flexGrid.getCellData(e.row, 14);
-        if (e.col == 13 || e.col == 14) {
+        let pt_souhiyou = flexGrid.getCellData(e.row, 11);
+        let pt_riyousyafutan = flexGrid.getCellData(e.row, 12);
+        if (e.col == 11 || e.col == 12) {
           if (!isNumber(value) && value.length > 0) {
             e.cancel = true;
             e.stayInEditMode = true;
             alert('数値のみの入力になります。');
-          } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
+          } else if (
+            (pt_souhiyou > 0 && value) ||
+            (pt_riyousyafutan > 0 && value)
+          ) {
             flexGrid.setCellData(e.row, 6, '〇');
             flexGrid.setCellData(e.row, 15, '');
           }
@@ -464,11 +499,6 @@ export default {
         let text = e.cell.innerText;
 
         let classname = '';
-        console.log(e.cell);
-        if (e.cell == 3) {
-          console.log('sss');
-          e.cell.style.color = 'red';
-        }
         if (
           text == _self.verticalHeader[0] ||
           text == _self.verticalHeader[1] ||
@@ -486,6 +516,9 @@ export default {
           text == _self.centerHeader[3]
         ) {
           classname = 'text-center';
+        }
+        if (text == '〇' || text == '●') {
+          classname = 'vertical';
         }
         if (text == 'complete') {
           classname = 'complete';
@@ -613,6 +646,17 @@ div#recept-jijyougen {
     text-indent: -9999px;
     background-position: center;
     background-repeat: no-repeat;
+  }
+
+  #menubar {
+    display: none;
+    position: absolute;
+    background-color: $white;
+    min-width: 80px;
+    min-height: 60px;
+    border: 1px solid $light-gray;
+    top: 0;
+    left: 0;
   }
 }
 </style>

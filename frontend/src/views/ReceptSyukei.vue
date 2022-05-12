@@ -62,7 +62,12 @@
             <v-col cols="6" class="pt-1">
               <v-row>
                 <v-col cols="3">
-                  <label class="serach">上限管理事</label>
+                  <label class="serach" v-if="TajyougenkanriJimsyoFlag"
+                    >上限管理事</label
+                  >
+                  <label class="serach" v-if="JijyougenkanriJimsyoFlag"
+                    >他サービス事</label
+                  >
                 </v-col>
                 <v-col>
                   <wj-combo-box
@@ -165,8 +170,14 @@
           </v-btn>
         </v-col>
         <v-col cols="6">
-          ※<span class="blue--text">青字</span
-          >：上限額管理事業所が同一法人で別事業所の場合
+          <span v-if="TajyougenkanriJimsyoFlag"
+            >※<span class="blue--text">青字</span
+            >：上限額管理事業所が同一法人で別事業所の場合</span
+          >
+          <span v-if="JijyougenkanriJimsyoFlag"
+            >※<span class="blue--text">青字</span
+            >：登録済み他サービス事業所、サービス名称を表示</span
+          >
         </v-col>
         <v-col class="text-right">
           <v-btn x-small @click="selectAll(1)">全選択</v-btn>

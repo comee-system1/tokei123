@@ -1,19 +1,31 @@
 <template>
   <v-layout>
-    <v-flex md12 class="basic-info" style="position: relative; height: 100px">
+    <v-flex md12 class="basic-info" style="position: relative">
       <div class="service-selection-area">
         <label>サービス</label>
-        <v-btn elevation="0" outlined tile disabled class="service">{{
-          jigyosyoCode
-        }}</v-btn>
-        <v-btn @click="comboClick()" tile outlined class="service"
+        <v-btn
+          elevation="0"
+          outlined
+          tile
+          disabled
+          height="30"
+          class="service"
+          color="red"
+          >{{ jigyosyoCode }}</v-btn
+        >
+        <v-btn @click="comboClick()" tile outlined height="30" class="service"
           >{{ selectButton }}
           <div class="float-right">▼</div></v-btn
         >
       </div>
       <div class="month-selection-area">
         <label>提供月</label>
-        <v-btn @click="inputCalendarClick" tile outlined class="service"
+        <v-btn
+          @click="inputCalendarClick"
+          tile
+          outlined
+          class="service"
+          height="30"
           >{{ year }}年{{ month }}月
           <div class="float-right">
             <v-icon small>mdi-calendar-month</v-icon>
@@ -42,7 +54,7 @@
           tile
           ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
         >
-        <span style="margin-left: 30px">
+        <span style="margin-left: 30px" v-if="seikyuflag">
           <label>請求月</label>
           <v-btn
             class="pa-1 service"
@@ -50,6 +62,7 @@
             @click="inputCalendarClick"
             tile
             outlined
+            height="30"
             >{{ year }}年{{ month }}月
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
@@ -57,13 +70,7 @@
           </v-btn>
         </span>
 
-        <v-btn
-          v-if="searchButtonFlag"
-          class="pa-1 ml-3"
-          :width="60"
-          small
-          @click="serachButton()"
-        >
+        <v-btn class="pa-1 ml-3" :width="60" small @click="serachButton()">
           検索
         </v-btn>
       </div>
@@ -431,6 +438,7 @@ export default {
 .service {
   &.v-btn {
     border: 1px solid $light-gray;
+    background-color: $white;
     &:nth-child(3) {
       border-left: none;
     }
