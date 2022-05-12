@@ -359,7 +359,7 @@ export default {
     parentServiceSelect: function (serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.changeHndoJyoho();
-      if (this.teikyoCode) {
+      if (this.$refs.user_list_print) {
         this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       }
     },
@@ -464,8 +464,8 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.frozenRows = 1;
   flexGrid.columns[0].width = 32;
   flexGrid.columns[1].width = 32;
-  flexGrid.columns[2].width = '5*';
-  flexGrid.columns[3].width = '5*';
+  flexGrid.columns[2].width = '8*';
+  flexGrid.columns[3].width = '8*';
   flexGrid.rows[0].height = 48;
   flexGrid.rows[2].height = 38;
   flexGrid.rows[3].height = 38;
@@ -486,7 +486,7 @@ function methodCellSettingDefault(flexGrid, _self) {
   let date = '';
   let day = '';
   for (let i = 4; i <= lastdate + 3; i++) {
-    flexGrid.columns[i].width = '1*';
+    flexGrid.columns[i].width = '2*';
     day = String(i - 3).padStart(2, '0');
     date = _self.year + '/' + _self.month + '/' + day;
     flexGrid.setCellData(0, i, date);

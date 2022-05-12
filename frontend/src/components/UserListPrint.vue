@@ -189,7 +189,6 @@ export default {
   },
   methods: {
     setChildTeikyocode(teikyoCode) {
-      alert(teikyoCode);
       if (this.useTeikyoCode && this.useTeikyoCode != teikyoCode) {
         //以前の状態とコードが異なる際に、ユーザの一覧をクリアする
         this.usersData = [];
@@ -487,6 +486,7 @@ div#user-list-print_scrollbar {
 
   ::-webkit-scrollbar {
     width: 10px;
+    overflow-y: scroll;
   }
 
   ::-webkit-scrollbar-track {

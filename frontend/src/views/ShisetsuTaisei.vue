@@ -29,7 +29,7 @@
             class="mb-1"
           >
             <v-col cols="6">
-              <v-card class="pa-1 text-center titleback" outlined>{{
+              <v-card class="pa-1 text-center titleback" outlined tile>{{
                 detail.name
               }}</v-card>
             </v-col>
@@ -52,6 +52,7 @@
           <v-row no-gutters pa-0>
             <v-col cols="6">
               <wj-flex-grid
+                id="grid1"
                 :initialized="onInitializedBasic"
                 :itemsSource="basicData"
                 :headersVisibility="'Column'"
@@ -61,7 +62,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 130px"
+                style="height: 20vh"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -71,6 +72,7 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
               <wj-flex-grid
+                id="grid2"
                 :initialized="onInitializedAdd"
                 :itemsSource="basicAdd"
                 :headersVisibility="'Column'"
@@ -80,7 +82,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 130px"
+                style="height: 20vh"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -93,6 +95,7 @@
             </v-col>
             <v-col cols="6" class="pl-1">
               <wj-flex-grid
+                id="grid3"
                 :initialized="onInitializedPlus"
                 :itemsSource="basicPlus"
                 :headersVisibility="'Column'"
@@ -102,7 +105,7 @@
                 :allowSorting="false"
                 :isReadOnly="true"
                 :alternatingRowStep="0"
-                style="max-height: 265px"
+                style="height: 40vh"
               >
                 <wj-flex-grid-column
                   :binding="'value'"
@@ -116,7 +119,7 @@
         </v-col>
       </v-row>
 
-      <v-card class="pa-2" outlined tile>
+      <v-card class="pa-2 mt-5" outlined tile>
         <v-row no-gutters>
           <v-col sm="12">
             <v-row no-gutters>
@@ -191,6 +194,7 @@ let minRow20 = 20;
 let define_week = ['日', '月', '火', '水', '木', '金', '土'];
 let buildcheck = ['施設体制未確認', '施設体制確認済'];
 let checkbutton = ['確認登録', '確認解除'];
+
 export default {
   data() {
     return {
@@ -214,7 +218,26 @@ export default {
   components: {
     HeaderServices,
   },
+
+  mounted: function () {
+    this.handleResize;
+    window.addEventListener('resize', this.handleResize);
+  },
   methods: {
+    handleResize: function () {
+      //windowサイズ
+      let lot = 4;
+      let lot3 = 2;
+      let height = window.innerHeight;
+      if (height < 700) lot = 6;
+      if (height < 700) lot3 = 3;
+      height = height / lot;
+      let height3 = window.innerHeight / lot3;
+
+      document.getElementById('grid1').style.height = height + 'px';
+      document.getElementById('grid2').style.height = height + 'px';
+      document.getElementById('grid3').style.height = height3 + 'px';
+    },
     parentCalendar(dateArgument) {
       this.year = dateArgument[0];
       this.month = dateArgument[1];
@@ -481,7 +504,7 @@ function cellEdit(s, e) {
   }
 
   .titleback {
-    background-color: $grid_background;
+    background-color: $light-gray;
     border: none;
   }
 

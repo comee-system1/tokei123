@@ -1,98 +1,78 @@
 <template>
   <v-layout>
-    <v-flex md12 class="basic-info" style="position: relative">
+    <v-flex md12 class="basic-info" style="position: relative; height: 100px">
       <div class="service-selection-area">
-        <v-row no-gutters>
-          <v-col md="1">
-            <v-card class="pa-1 transparent" elevation="0">サービス</v-card>
-          </v-col>
-          <v-col md="3">
-            <v-card class="pa-1" tile>{{ jigyosyoCode }}</v-card>
-          </v-col>
-          <v-col md="2">
-            <v-card class="pa-1" v-on:click="comboClick()" tile
-              >{{ selectButton }}
-              <div class="float-right">▼</div></v-card
-            >
-          </v-col>
-        </v-row>
+        <label>サービス</label>
+        <v-btn elevation="0" outlined tile disabled class="service">{{
+          jigyosyoCode
+        }}</v-btn>
+        <v-btn @click="comboClick()" tile outlined class="service"
+          >{{ selectButton }}
+          <div class="float-right">▼</div></v-btn
+        >
       </div>
       <div class="month-selection-area">
-        <v-row no-gutters>
-          <v-col md="1">
-            <v-card class="pa-1 transparent" elevation="0">提供月</v-card>
-          </v-col>
-          <v-col md="2">
-            <v-card class="d-flex flex-row" color="transparent" elevation="0">
-              <v-card class="transparent" tile>
-                <v-card
-                  class="pa-1"
-                  :width="160"
-                  @click="inputCalendarClick"
-                  tile
-                  >{{ year }}年{{ month }}月
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-card>
-              </v-card>
-              <v-btn
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                x-small
-                @click="calendarClick(1)"
-                height="100%"
-                style="min-width: auto; height: 30px"
-                tile
-                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-              >
-              <v-btn
-                x-small
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                height="100%"
-                style="min-width: auto; height: 30px"
-                @click="calendarClick(2)"
-                tile
-                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-              >
-            </v-card>
-          </v-col>
-          <v-col md="1" class="text-end">
-            <v-card class="pa-1 transparent" elevation="0" v-if="seikyuflag"
-              >請求月</v-card
-            >
-          </v-col>
-          <v-col md="2" v-if="seikyuflag">
-            <v-card class="pa-1" :width="160" @click="inputCalendarClick" tile
-              >{{ year }}年{{ month }}月
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-card>
-          </v-col>
+        <label>提供月</label>
+        <v-btn @click="inputCalendarClick" tile outlined class="service"
+          >{{ year }}年{{ month }}月
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
+          </div>
+        </v-btn>
 
-          <v-col md="2" v-if="searchButtonFlag">
-            <v-btn class="pa-1" :width="60" small @click="serachButton()">
-              検索
-            </v-btn>
-          </v-col>
-        </v-row>
+        <v-btn
+          elevation="0"
+          color="white"
+          class="pa-0 ml-1"
+          x-small
+          @click="calendarClick(1)"
+          height="100%"
+          style="min-width: auto; height: 30px"
+          tile
+          ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+        >
+        <v-btn
+          x-small
+          elevation="0"
+          color="white"
+          class="pa-0 ml-1"
+          height="100%"
+          style="min-width: auto; height: 30px"
+          @click="calendarClick(2)"
+          tile
+          ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+        >
+        <span style="margin-left: 30px">
+          <label>請求月</label>
+          <v-btn
+            class="pa-1 service"
+            :width="160"
+            @click="inputCalendarClick"
+            tile
+            outlined
+            >{{ year }}年{{ month }}月
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+        </span>
+
+        <v-btn
+          v-if="searchButtonFlag"
+          class="pa-1 ml-3"
+          :width="60"
+          small
+          @click="serachButton()"
+        >
+          検索
+        </v-btn>
       </div>
 
       <v-row
         no-gutters
-        style="position: absolute; top: 25%; right: 10px; width: 450px"
+        style="position: absolute; top: 25%; right: 10px; width: 200px"
         class="mt-n3"
       >
-        <v-col cols="2*">
-          <v-btn v-if="jyougengakuFlag"> 上限額管理計算 </v-btn>
-        </v-col>
-        <v-col cols="2*">
-          <v-btn v-if="receptFlag"> レセプトへ反映 </v-btn>
-        </v-col>
         <v-col class="ml-5 text-end" cols="1*">
           <v-btn
             v-if="registButtonFlag"
@@ -329,7 +309,7 @@ export default {
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
         this.returndata = returns;
-        //        _self.$emit('parent-service-select', returns);
+        _self.$emit('parent-service-select', returns);
 
         _self.header_dialog = false;
       });
@@ -447,6 +427,19 @@ export default {
     background-color: $white;
   }
 }
+
+.service {
+  &.v-btn {
+    border: 1px solid $light-gray;
+    &:nth-child(3) {
+      border-left: none;
+    }
+    span {
+      color: $font_color;
+    }
+  }
+}
+
 .v-picker {
   z-index: 10;
 }
