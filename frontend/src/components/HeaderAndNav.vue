@@ -139,20 +139,21 @@ export default {
             { name: '利用状況一覧', link: '/TemporaryPage' },
             { name: '個別加算一覧', link: '/TemporaryPage' },
             { name: 'レセプト集計', link: '/ReceptSyukei' },
-            {
-              name: '上限管理',
-              link: '/TemporaryPage',
-              sublists: [
-                {
-                  name: '他上限管理事業所用',
-                  link: 'TajyougenkanriJimsyo',
-                },
-                {
-                  name: '自上限管理事業所用',
-                  link: 'JijyougenkanriJimsyo',
-                },
-              ],
-            },
+            // レセプト集計に集約化
+            // {
+            //   name: '上限管理',
+            //   link: '/TemporaryPage',
+            //   sublists: [
+            //     {
+            //       name: '他上限管理事業所用',
+            //       link: 'TajyougenkanriJimsyo',
+            //     },
+            //     {
+            //       name: '自上限管理事業所用',
+            //       link: 'JijyougenkanriJimsyo',
+            //     },
+            //   ],
+            // },
             {
               name: '給付明細書',
               link: '/TemporaryPage',
@@ -216,4 +217,9 @@ export default {
 .v-toolbar__title {
   font-size: 15px;
 }
+
+.v-list .v-list-item--active .v-list-item__title{
+  color:white;
+}
+
 </style>

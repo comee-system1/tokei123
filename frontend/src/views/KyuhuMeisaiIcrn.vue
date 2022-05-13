@@ -9,7 +9,7 @@
       <v-row class="mt-0" no-gutters>
         <v-col cols="9" xl="7">
           <v-row class="mt-0" no-gutters>
-            <v-col cols="3" xl="3">
+            <v-col cols="3">
               <label>内容</label>
               <v-btn-toggle class="flex-wrap" v-model="dispPageType">
                 <v-btn
@@ -193,7 +193,19 @@ const titleAGata = 'A型減免';
 const titleSeikyugaku = '請求額';
 const titleSvcKind = 'サービス種別';
 const titleKyufuhiMeisai = '給付費明細欄';
-
+const titleTotal = '合計';
+const styleDefault = '';
+const styleNormal = 'normal';
+const styleBold = 'bold';
+const boderSolid = '1px solid';
+const alignRight = 'right';
+const bgClrTotal = '#CEFCFC';
+const bgClrMiniTotal = '#FFFFCC';
+const styleBlock = 'block';
+const styleNone = 'none';
+const grdNameSeikyu = 'seikyuGrid';
+const grdNameKyufu = 'kyufuGrid';
+const cellimag = 'cell-img';
 let drawListTmpCnt = 0;
 let alphabet = [
   '全',
@@ -561,17 +573,17 @@ export default {
         col.wordWrap = true;
 
         if (colIndex == 0) {
-          col.cssClass = 'cell-img';
+          col.cssClass = cellimag;
           col.cellTemplate = CellMaker.makeImage();
         } else {
-          col.cssClass = '';
-          col.cellTemplate = '';
+          col.cssClass = styleDefault;
+          col.cellTemplate = styleDefault;
         }
 
         if (colIndex == 2 || colIndex >= 8) {
           col.format = fmtYen;
         } else {
-          col.format = '';
+          col.format = styleDefault;
         }
 
         for (let rowindex = 0; rowindex < 3; rowindex++) {
@@ -579,15 +591,15 @@ export default {
           if (rowindex == 0) {
             if (3 <= colIndex && colIndex <= 4) {
               title = titleNisu;
-            } else if (5 <= colIndex && colIndex <= 19) {
+            } else if (5 <= colIndex && colIndex <= 6) {
+              title = titleSvc;
+            } else if (7 <= colIndex && colIndex <= 19) {
               title = titleSeikyugakuSyukei;
             } else if (20 <= colIndex && colIndex <= 21) {
               title = titleTokubetukyufu;
             }
           } else if (rowindex == 1) {
-            if (5 <= colIndex && colIndex <= 6) {
-              title = titleSvc;
-            } else if (13 <= colIndex && colIndex <= 14) {
+            if (13 <= colIndex && colIndex <= 14) {
               title = titleAGata;
             } else if (18 == colIndex) {
               title = titleSeikyugaku;
@@ -623,17 +635,17 @@ export default {
         col.multiLine = true;
 
         if (colIndex == 0) {
-          col.cssClass = 'cell-img';
+          col.cssClass = cellimag;
           col.cellTemplate = CellMaker.makeImage();
         } else {
-          col.cssClass = '';
-          col.cellTemplate = '';
+          col.cssClass = styleDefault;
+          col.cellTemplate = styleDefault;
         }
 
         if (colIndex == 2 || colIndex >= 8) {
           col.format = fmtYen;
         } else {
-          col.format = '';
+          col.format = styleDefault;
         }
 
         for (let rowindex = 0; rowindex < 2; rowindex++) {
@@ -676,11 +688,9 @@ export default {
       }
     },
     onFormatItemSeikyu(flexGrid, e) {
-      e.cell.style.borderRight = '';
+      e.cell.style.borderRight = styleDefault;
       if (
-        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 3) ||
-        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 5) ||
-        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 5) ||
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col >= 3) ||
         (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 13) ||
         e.col == 2 ||
         e.col == 4 ||
@@ -691,45 +701,47 @@ export default {
         e.col == 18 ||
         e.col == 19
       ) {
-        e.cell.style.borderRight = '1px solid';
+        e.cell.style.borderRight = boderSolid;
       }
       if (e.panel == flexGrid.columnFooters) {
-        e.cell.style.textAlign = '';
-        e.cell.style.fontWeight = 'normal';
-        e.cell.style.backgroundColor = '#CEFCFC';
-        e.cell.style.borderTop = '1px solid';
+        e.cell.style.textAlign = styleDefault;
+        e.cell.style.fontWeight = styleNormal;
+        e.cell.style.backgroundColor = bgClrTotal;
+        e.cell.style.borderTop = boderSolid;
         if (e.col < 6) {
           e.cell.style.borderRight = 0;
         } else if (e.col == 6) {
-          e.cell.style.fontWeight = 'bold';
+          e.cell.style.fontWeight = styleBold;
         }
-        e.cell.style.textAlign = 'right';
-        e.cell.style.justifyContent = 'right';
-        e.cell.style.alignItems = 'right';
+        e.cell.style.textAlign = alignRight;
+        e.cell.style.justifyContent = alignRight;
+        e.cell.style.alignItems = alignRight;
       } else {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = '';
-          e.cell.style.borderBottom = '';
+          e.cell.style.backgroundColor = styleDefault;
+          e.cell.style.borderBottom = styleDefault;
 
-          e.cell.style.textAlign = '';
-          e.cell.style.fontWeight = '';
+          e.cell.style.textAlign = styleDefault;
+          e.cell.style.fontWeight = styleDefault;
 
           // 下の行と同じ利用者の場合は下線を非表示化
-          if (e.col <= 4 && !tmpitem.istotalrow) {
-            e.cell.style.borderBottom = 0;
-          } else if (tmpitem.istotalrow) {
-            e.cell.style.borderBottom = '1px solid ';
-            if (e.col == 5) {
-              e.cell.style.borderRight = 0;
-            } else if (e.col == 6) {
-              e.cell.style.textAlign = 'right';
-              e.cell.style.fontWeight = 'bold';
-            }
-            if (e.col >= 5) {
-              e.cell.style.backgroundColor = '#FFFFCC';
+          if (this.selSvc == 0) {
+            if (e.col <= 4 && !tmpitem.istotalrow) {
+              e.cell.style.borderBottom = 0;
+            } else if (tmpitem.istotalrow) {
+              e.cell.style.borderBottom = boderSolid;
+              if (e.col == 5) {
+                e.cell.style.borderRight = 0;
+              } else if (e.col == 6) {
+                e.cell.style.textAlign = alignRight;
+                e.cell.style.fontWeight = styleBold;
+              }
+              if (e.col >= 5) {
+                e.cell.style.backgroundColor = bgClrMiniTotal;
+              }
             }
           }
           if (e.panel == flexGrid.cells) {
@@ -738,7 +750,7 @@ export default {
               pretmpitem = e.panel.rows[e.row - 1].dataItem;
             }
             if (e.col == 0) {
-              e.panel.setCellData(e.row, e.col, '');
+              e.panel.setCellData(e.row, e.col, styleDefault);
               if (tmpitem.kakuteiflg) {
                 if (this.dispTotalOnly == 0) {
                   if (
@@ -755,19 +767,24 @@ export default {
               }
             } else if (e.col == 1) {
               if (this.dispTotalOnly == 0) {
-                if (
-                  pretmpitem == null ||
-                  (pretmpitem != null && pretmpitem.nobk != tmpitem.nobk)
-                ) {
-                  drawListTmpCnt = 1;
-                  e.panel.setCellData(e.row, e.col, tmpitem.name);
-                } else {
-                  drawListTmpCnt = drawListTmpCnt + 1;
-                  if (drawListTmpCnt == 2) {
-                    this.setName(e, '', tmpitem.no, tmpitem.code);
+                if (this.selSvc == 0) {
+                  if (
+                    pretmpitem == null ||
+                    (pretmpitem != null && pretmpitem.nobk != tmpitem.nobk)
+                  ) {
+                    drawListTmpCnt = 1;
+                    e.panel.setCellData(e.row, e.col, tmpitem.name);
                   } else {
-                    e.panel.setCellData(e.row, e.col, '');
+                    drawListTmpCnt = drawListTmpCnt + 1;
+                    if (drawListTmpCnt == 2) {
+                      this.setName(e, '', tmpitem.no, tmpitem.code);
+                    } else {
+                      e.panel.setCellData(e.row, e.col, styleDefault);
+                    }
                   }
+                } else {
+                  this.setName(e, tmpitem.name, tmpitem.no, tmpitem.code);
+                  e.panel.rows[e.row].height = 40;
                 }
               } else {
                 this.setName(e, tmpitem.name, tmpitem.no, tmpitem.code);
@@ -781,7 +798,7 @@ export default {
       }
     },
     onFormatItemKyufu(flexGrid, e) {
-      e.cell.style.borderRight = '';
+      e.cell.style.borderRight = styleDefault;
 
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
@@ -790,7 +807,7 @@ export default {
         e.col == 4 ||
         e.col == 6
       ) {
-        e.cell.style.borderRight = '1px solid';
+        e.cell.style.borderRight = boderSolid;
       }
 
       if (e.panel == flexGrid.cells) {
@@ -798,9 +815,9 @@ export default {
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = '';
-          e.cell.style.borderBottom = '';
-          e.cell.style.textAlign = '';
+          e.cell.style.backgroundColor = styleDefault;
+          e.cell.style.borderBottom = styleDefault;
+          e.cell.style.textAlign = styleDefault;
 
           let tmpPreitem = null;
           if (e.col <= 6) {
@@ -825,16 +842,23 @@ export default {
 
           // 下の行と同じ利用者の場合は下線を非表示化
           let tmpNextitem = null;
-          if (e.row < flexGrid.rows.length - 1 && e.col <= 6) {
+          if (e.row < flexGrid.rows.length - 1) {
             tmpNextitem = e.panel.rows[e.row + 1].dataItem;
             if (tmpNextitem != null && tmpitem.no == tmpNextitem.no) {
-              if (e.col > 1) {
-                if (tmpitem.svc == tmpNextitem.svc) {
+              if (tmpitem.svc != tmpNextitem.svc) {
+                e.cell.style.borderBottom = boderSolid;
+              }
+              if (e.col <= 6) {
+                if (e.col > 1) {
+                  if (tmpitem.svc == tmpNextitem.svc) {
+                    e.cell.style.borderBottom = 0;
+                  }
+                } else {
                   e.cell.style.borderBottom = 0;
                 }
-              } else {
-                e.cell.style.borderBottom = 0;
               }
+            } else if (tmpNextitem != null && tmpitem.no != tmpNextitem.no) {
+              e.cell.style.borderBottom = boderSolid;
             }
           }
           if (e.col == 1) {
@@ -872,68 +896,50 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       let total = 0;
-      if (flexGrid.hostElement.id == 'seikyuGrid') {
+      if (flexGrid.hostElement.id == grdNameSeikyu) {
+        let propkey = '';
         for (let colIndex = 6; colIndex < colCntSeikyu; colIndex++) {
           if (colIndex == 6) {
-            flexGrid.columnFooters.setCellData(0, colIndex, '合計');
+            flexGrid.columnFooters.setCellData(0, colIndex, titleTotal);
             continue;
           } else if (colIndex == 7) {
             continue;
-          } else if (colIndex == 8) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.kyufutani);
-            }, 0);
+          } else if (colIndex >= 8) {
+            propkey = 'kyufutani';
           } else if (colIndex == 9) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.souhiyougaku);
-            }, 0);
+            propkey = 'souhiyougaku';
           } else if (colIndex == 10) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.itiwarisoutougaku);
-            }, 0);
+            propkey = 'itiwarisoutougaku';
           } else if (colIndex == 11) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.riyousyafutan);
-            }, 0);
+            propkey = 'riyousyafutan';
           } else if (colIndex == 12) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.jyougengakuchousei);
-            }, 0);
+            propkey = 'jyougengakuchousei';
           } else if (colIndex == 13) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.jigyousyagenmen);
-            }, 0);
+            propkey = 'jigyousyagenmen';
           } else if (colIndex == 14) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.genmenriyousya);
-            }, 0);
+            propkey = 'genmenriyousya';
           } else if (colIndex == 15) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.chouseiriyousya);
-            }, 0);
+            propkey = 'chouseiriyousya';
           } else if (colIndex == 16) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.jyougenkanrifutangaku);
-            }, 0);
+            propkey = 'jyougenkanrifutangaku';
           } else if (colIndex == 17) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.ketteiriyoufutangaku);
-            }, 0);
+            propkey = 'ketteiriyoufutangaku';
           } else if (colIndex == 18) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.kyufuhi);
-            }, 0);
+            propkey = 'kyufuhi';
           } else if (colIndex == 19) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.jititaijyosei);
-            }, 0);
+            propkey = 'jititaijyosei';
           } else if (colIndex == 20) {
-            total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.kyufuhiseikyugaku);
-            }, 0);
+            propkey = 'kyufuhiseikyugaku';
           } else if (colIndex == 21) {
+            propkey = 'jippisaneigaku';
+          }
+          if (this.dispTotalOnly == 0) {
             total = this.viewdata.reduce((prev, item) => {
-              return prev + (!item.istotalrow ? 0 : item.jippisaneigaku);
+              return prev + (!item.istotalrow ? item[propkey] : 0);
+            }, 0);
+          } else {
+            total = this.viewdata.reduce((prev, item) => {
+              return prev + (!item.istotalrow ? 0 : item[propkey]);
             }, 0);
           }
           flexGrid.columnFooters.setCellData(0, colIndex, total);
@@ -1126,40 +1132,44 @@ export default {
       return tmpviewdata;
     },
     pageChange: function (pageType) {
-      localStorage.setItem(keyPage, pageType);
+      ls.setlocalStorage(keyPage, pageType);
       this.dispPageType = pageType;
       if (this.dispPageType == 0) {
-        document.getElementById('seikyuGrid').style.display = 'block';
-        document.getElementById('kyufuGrid').style.display = 'none';
+        document.getElementById(grdNameSeikyu).style.display = styleBlock;
+        document.getElementById(grdNameKyufu).style.display = styleNone;
         this.isBtnDisabled = false;
       } else {
-        document.getElementById('seikyuGrid').style.display = 'none';
-        document.getElementById('kyufuGrid').style.display = 'block';
+        document.getElementById(grdNameKyufu).style.display = styleBlock;
+        document.getElementById(grdNameSeikyu).style.display = styleNone;
         this.isBtnDisabled = true;
       }
     },
     dispTotal: function (dispType) {
-      localStorage.setItem(keyTotal, dispType);
+      ls.setlocalStorage(keyTotal, dispType);
       this.dispTotalOnly = dispType;
+      if (this.dispTotalOnly == 1) {
+        this.selSvc = 0;
+        ls.setlocalStorage(keySvc, this.selSvc);
+      }
       this.userFilter();
     },
     sortUser: function (sortType) {
-      localStorage.setItem(keySort, sortType);
+      ls.setlocalStorage(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      localStorage.setItem(keyAlp, Number(key));
+      ls.setlocalStorage(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },
     onSvcIndexChanged: function (s) {
-      localStorage.setItem(keySvc, s.selectedValue);
+      ls.setlocalStorage(keySvc, s.selectedValue);
       this.selSvc = s.selectedValue;
       this.userFilter();
     },
     onSichosonIndexChanged: function (s) {
-      localStorage.setItem(keySichoson, s.selectedValue);
+      ls.setlocalStorage(keySichoson, s.selectedValue);
       this.selSichoson = s.selectedValue;
       this.userFilter();
     },
@@ -1217,9 +1227,7 @@ export default {
       }
       // サービス絞込
       if (this.selSvc != 0) {
-        tmpviewdata = tmpviewdata.filter(
-          (x) => x.istotalrow || x.svccode == this.selSvc
-        );
+        tmpviewdata = tmpviewdata.filter((x) => x.svccode == this.selSvc);
       }
 
       // 請求額集計のみ
@@ -1359,7 +1367,7 @@ div#KyuhuMeisaiIcrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1266px !important;
+  min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,

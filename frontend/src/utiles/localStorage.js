@@ -1,3 +1,6 @@
+function setlocalStorage(key,val) {
+  localStorage.setItem(key, val);
+}
 function getlocalStorage(key) {
     let tmpval = localStorage.getItem(key);
     if (tmpval == null) {
@@ -8,5 +11,6 @@ function getlocalStorage(key) {
   }
 
   export default {
+    setlocalStorage,
     getlocalStorage,
 };

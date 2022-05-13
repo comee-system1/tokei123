@@ -41,7 +41,7 @@
           </v-row>
 
           <v-row class="mt-0" no-gutters>
-            <v-col cols="7" class="mt-1">
+            <v-col cols="7">
               <label>ソート</label>
               <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
                 <v-btn
@@ -95,7 +95,7 @@
         </v-col>
       </v-row>
 
-      <v-row class="mt-1" no-gutters>
+      <v-row class="mt-0" no-gutters>
         <v-col>
           <wj-flex-grid
             id="kasanKoumokuIcrnGrid"
@@ -143,6 +143,7 @@ const keyKasan = 'keyval00007';
 const styleDefault = '';
 const styleNormal = 'normal';
 const bgClrSelKasan = '#FFECCC';
+const bgClrSelKasanData = '#FFF6E8';
 const bgClrTotal = '#CEFCFC';
 const boderSolid = '1px solid';
 const alignRight = 'right';
@@ -489,7 +490,14 @@ export default {
       ) {
         if (!(e.panel == flexGrid.columnHeaders && e.row == 0)) {
           if (flexGrid.columns[e.col].binding == String(this.selKasan)) {
-            e.cell.style.backgroundColor = bgClrSelKasan;
+            if (
+              e.panel == flexGrid.columnHeaders ||
+              e.panel == flexGrid.columnFooters
+            ) {
+              e.cell.style.backgroundColor = bgClrSelKasan;
+            } else {
+              e.cell.style.backgroundColor = bgClrSelKasanData;
+            }
           }
         }
       }
@@ -520,6 +528,8 @@ export default {
             nyuinymd: String(99),
             gaihakuymd: String(99),
             kbn: 1,
+            isNyusyo: false,
+            isTaisyo: false,
           });
           if (kankaku) {
             tmpviewdata[i].err = require('@/assets/kaku_15px.png');
@@ -527,6 +537,11 @@ export default {
           } else {
             tmpviewdata[i].err = '';
             kankaku = true;
+          }
+          if (i < 10) {
+            tmpviewdata[i].isNyusyo = true;
+          } else if (i < 20) {
+            tmpviewdata[i].isTaisyo = true;
           }
         } else {
           tmpviewdata.push({
@@ -538,6 +553,8 @@ export default {
             nyuinymd: '',
             gaihakuymd: '',
             kbn: 2,
+            isNyusyo: tmpviewdata[i - 1].isNyusyo,
+            isTaisyo: tmpviewdata[i - 1].isTaisyo,
           });
         }
 
@@ -564,7 +581,7 @@ export default {
       return tmpviewdata;
     },
     onKasanIndexChanged: function (s) {
-      localStorage.setItem(keyKasan, s.selectedValue);
+      ls.setlocalStorage(keyKasan, s.selectedValue);
       this.selKasan = s.selectedValue;
       this.userFilter();
     },
@@ -573,12 +590,12 @@ export default {
       this.userFilter();
     },
     sortUser: function (sortType) {
-      localStorage.setItem(keySort, sortType);
+      ls.setlocalStorage(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      localStorage.setItem(keyAlp, Number(key));
+      ls.setlocalStorage(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },
@@ -627,10 +644,10 @@ export default {
       // 絞込１
       if (siborikomiSearch == 1) {
         // 今月入所
-        tmpviewdata = tmpviewdata.filter((x) => x.isnyusho);
+        tmpviewdata = tmpviewdata.filter((x) => x.isNyusyo);
       } else if (siborikomiSearch == 2) {
         // 今月退所
-        tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
+        tmpviewdata = tmpviewdata.filter((x) => x.isTaisyo);
       }
 
       //コード順でソート
@@ -677,7 +694,7 @@ div#KasanKoumokuIcrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1266px !important;
+  min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -756,10 +773,10 @@ div#KasanKoumokuIcrn {
       align-items: center;
       text-align: center;
     }
-    // .wj-cell-maker {
-    //   width: 15px;
-    //   height: 15px;
-    // }
+    .wj-cell-maker {
+      width: 15px;
+      height: 15px;
+    }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }

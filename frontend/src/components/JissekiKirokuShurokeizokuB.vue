@@ -5,14 +5,14 @@
         <v-row>
           <div class="riyousya-block">
             <label>利用者</label>
-            <wj-combo-box :isReadOnly="true" text="1000007_東経太郎" class="user-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" class="user-box" v-bind:text="riyousya"></wj-combo-box>
           </div>
           <div class="jukyusyasho-block">
             <label>受給者証番号</label>
-            <wj-combo-box :isReadOnly="true" text="1100000700" class="user-box"></wj-combo-box>
+            <wj-combo-box :isReadOnly="true" class="user-box zyukyusya-num" v-bind:text="zyukyusyaNum"></wj-combo-box>
           </div>
         </v-row>
-        <v-row>
+        <v-row class="row-2">
           <div class="keiyakuryo-block">
             <label>契約支給量</label>
             <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box user-box"></wj-combo-box>
@@ -80,28 +80,14 @@ import '@grapecity/wijmo.vue2.grid.filter'
 import "@grapecity/wijmo.vue2.grid.search";
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import moment from 'moment';
-
-let year = moment().year();
-let month = moment().format('MM');
-let lastMonth = moment().add(-1, 'M').format('MM');
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
+  props:['userListData','riyousya','zyukyusyaNum'],
   data(){
     return{
-      year:year,
-      month:month,
-      lastMonth:lastMonth,
-      currentPageTitle: this.$route.name,
-      comboData:[
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援',
-        '1121000011_障害者支援施設_ひまわり園_32: 施設入所支援'
-      ],
       detailGridData:this.getGridData(apiResult),
       sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
       sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
@@ -223,39 +209,14 @@ export default{
           }else if (r == 1 && c == 10) {
             cell.innerHTML = '体験利用支援<br/>加算';
           }
-          // ヘッダーのスタイル
-          //＊一旦ヘッダーの色をグレーに戻す↓
-          // s.backgroundColor = "#d4edf4";
-          // 一旦文字色を黒に戻す
-          // s.color = "#4d4d4d";
-          // 一旦ヘッダーの文字の太さを元に戻す
-          // s.fontWeight = "normal";
-          if(r == 0 || r == 2 ||(r == 1 && (c == 2 || c == 3 || c == 4))||(r == 1 && c > 7)){
-            // 一旦太線を非表示にする
-            // s.borderBottom = "2px solid #348498";
-          }
-
-          if(c == 1 || c == 4 || c == 12){
-            // 一旦太線を非表示にする
-            // s.borderRight = "2px solid #348498";
-          }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
           // 通常セルのスタイル
-          //一旦編集不可のセルをアイボリーにする↓
-          s.backgroundColor = "#fffeed";
-          s.color = "#333333";
-          // s.color = "#4d4d4d";
-          if(c == 1 || c == 4 || c == 12){
-            // 一旦太線を非表示にする
-            // s.borderRight = "2px solid #348498";
-          }
-
           if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
-            s.color = "blue";
+            cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
           }
           else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
-            s.color = "red";
+            cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
           }
 
           //備考欄を左寄せにする
@@ -265,28 +226,15 @@ export default{
         }
         else if(panel.cellType == wjGrid.CellType.ColumnFooter){
           // フッターのスタイル
-          // 一旦文字色を黒に戻す
-          // s.color = "#4d4d4d";
-          // 一旦ヘッダーの文字の太さを元に戻す
-          // s.fontWeight = "normal";
-          // 一旦太線を非表示にする
-          // s.borderTop = "2px solid #348498";
-          if(c == 0 || c == 1 ||c == 2){
-            //＊一旦ヘッダーの色をグレーに戻す↓
-            // s.backgroundColor = "#d4edf4";
-          }else if(c == 12){
-            s.backgroundColor = "#eee";
-          }else{
-            //＊一旦編集不可のセルをアイボリーにする↓
+          // フッターの上部に線を表示する
+          if(r == 0){
+            s.borderTop = "1px solid rgba(0,0,0,.2)";
+          }
+
+          if(c >= 5 && c <= 11 || c == 13){
+            // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
-            // s.backgroundColor = "#ffffff";
           }
-
-          if(c == 0 || c == 12){
-            // 一旦太線を非表示にする
-            // s.borderRight = "2px solid #348498";
-          }
-
         }
       }
     },
@@ -296,15 +244,11 @@ export default{
 
       flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
-        // s.color = "#4d4d4d";
         s.textAlign = 'center';
         if(c == 0 || c == 1 || c == 3 || c == 5){
-          //＊一旦見出しの色をグレーに変更する↓
+          // セルをヘッダーの色にする
           s.backgroundColor= "#eeeeee";
-          // s.backgroundColor= "#d4edf4";
-        }else{
-          //＊一旦編集不可のセルをアイボリーにする↓
-            s.backgroundColor = "#fffeed";
+          s.fontWeight="bold";
         }
       }
     },
@@ -446,13 +390,13 @@ function getSisetsugaiTotal(data){
 
 @media screen and (max-width: 1366px){
   #detailGrid {
-    height: 60vh;
+    height: 62vh;
   }
 }
 
 @media screen and (min-width: 1367px){
   #detailGrid {
-    height: 73vh;
+    height: 75vh;
   }
 }
 </style>

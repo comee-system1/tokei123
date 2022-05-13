@@ -21,7 +21,7 @@
       <div class="month-selection-area">
         <label>提供月</label>
         <v-btn
-          @click="inputCalendarClick"
+          @click="inputCalendarClick('teikyo')"
           tile
           outlined
           class="service"
@@ -59,18 +59,41 @@
           <v-btn
             class="pa-1 service"
             :width="160"
-            @click="inputCalendarClick"
+            @click="inputCalendarClick('seikyu')"
             tile
             outlined
             height="30"
-            >{{ year }}年{{ month }}月
+            >{{ seikyu_year }}年{{ seikyu_month }}月
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
           </v-btn>
+
+          <v-btn
+            elevation="0"
+            color="white"
+            class="pa-0 ml-1"
+            x-small
+            @click="calendarClick(3)"
+            height="100%"
+            style="min-width: auto; height: 30px"
+            tile
+            ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+          >
+          <v-btn
+            x-small
+            elevation="0"
+            color="white"
+            class="pa-0 ml-1"
+            height="100%"
+            style="min-width: auto; height: 30px"
+            @click="calendarClick(4)"
+            tile
+            ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+          >
         </span>
 
-        <v-btn class="pa-1 ml-3" :width="60" small @click="serachButton()">
+        <v-btn class="pa-1 ml-3" :width="60" small @click="searchButton()">
           検索
         </v-btn>
       </div>
@@ -175,8 +198,6 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 
-let year = moment().year();
-let month = moment().format('MM');
 export default {
   props: {
     seikyuflag: { type: Boolean },
@@ -189,8 +210,10 @@ export default {
 
   data() {
     return {
-      year: year,
-      month: month,
+      year: moment().year(),
+      month: moment().format('MM'),
+      seikyu_year: moment().add('month', 1).startOf('month').format('YYYY'),
+      seikyu_month: moment().add('month', 1).startOf('month').format('MM'),
       picker: '',
       header_dialog: false,
       datepicker_dialog: false,
@@ -231,12 +254,14 @@ export default {
         serviceJigyo: '知的障害者入所施設 ひまわり園',
         teikyoCode: 33,
         teikyoService: '33 共同生活援助',
+        defaultFlag: false,
       });
       data.push({
         jimusyoBango: '111200030',
         serviceJigyo: '知的障害者入所施設 東経園',
         teikyoCode: 34,
         teikyoService: '34 宿泊型自立訓練',
+        defaultFlag: false,
       });
       data.push({
         jimusyoBango: '111200031',
@@ -304,6 +329,7 @@ export default {
       grid.hostElement.addEventListener('click', function (e) {
         var ht = grid.hitTest(e);
         ht = grid.hitTest(e.pageX, e.pageY);
+        //サービスの文字表示
         _self.jigyosyoCode = _self.jimusyo[ht.row].jimusyoBango;
         _self.jigyosyoCode += ' ' + _self.jimusyo[ht.row].serviceJigyo;
         _self.selectButton = _self.jimusyo[ht.row].teikyoService;
@@ -315,8 +341,13 @@ export default {
           teikyoCode: _self.jimusyo[ht.row].teikyoCode,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-        this.returndata = returns;
-        _self.$emit('parent-service-select', returns);
+
+        returns['seikyu_year'] = _self.seikyu_year;
+        returns['seikyu_month'] = _self.seikyu_month;
+        returns['teikyo_year'] = _self.year;
+        returns['teikyo_month'] = _self.month;
+        _self.returndata = returns;
+        _self.$emit('parent-service-change', returns);
 
         _self.header_dialog = false;
       });
@@ -350,34 +381,88 @@ export default {
         teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
+      returns['seikyu_year'] = moment()
+        .add('month', 1)
+        .startOf('month')
+        .format('YYYY');
+      returns['seikyu_month'] = moment()
+        .add('month', 1)
+        .startOf('month')
+        .format('MM');
+      returns['teikyo_year'] = moment().year();
+      returns['teikyo_month'] = moment().format('MM');
+      console.log(returns);
       this.returndata = returns;
-      console.log(this.returndata);
       this.$emit('parent-service-select', returns);
     },
     /**************
      * 検索ボタンを押下
      */
-    serachButton: function () {
-      console.log(this.returndata);
+    searchButton: function () {
+      if (!this.returndata) {
+        this.defaultSettings();
+      }
+      this.returndata['seikyu_year'] = this.seikyu_year;
+      this.returndata['seikyu_month'] = this.seikyu_month;
+      this.returndata['teikyo_year'] = this.year;
+      this.returndata['teikyo_month'] = this.month;
+      this.$emit('parent-service-select', this.returndata);
     },
+    /**************
+     * 月の選択 ダイアログの日付を押下
+     */
     monthSelect: function () {
       let split = this.picker.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      this.$emit('parent-calendar', split);
+      if (this.dialog_type == 'teikyo') {
+        this.year = split[0];
+        this.month = split[1];
+        this.calendarClick(0);
+      }
+      if (this.dialog_type == 'seikyu') {
+        this.seikyu_year = split[0];
+        this.seikyu_month = split[1];
+        this.calendarClick(3);
+      }
+      // this.$emit('parent-calendar', split);
 
       this.datepicker_dialog = false;
     },
     //カレンダーボタンの日付遷移
-    //1:前月 2:翌月
+    // 提供月 1:前月 2:翌月
+    // 請求月 3:前月 4:翌月
     calendarClick: function (type) {
       let date = this.year + this.month + '01';
-      if (type == 1) {
+      let seikyu_date = this.seikyu_year + this.seikyu_month + '01';
+      if (type == 3) {
+        //請求月を「←（前月）」「→（翌月）」で変更した場合は、提供月も自動で請求月の前月表示
+        this.seikyu_year = moment(seikyu_date)
+          .subtract(1, 'months')
+          .format('YYYY');
+        this.seikyu_month = moment(seikyu_date)
+          .subtract(1, 'months')
+          .format('MM');
+        seikyu_date = this.seikyu_year + '-' + this.seikyu_month + '-01';
+        this.year = moment(seikyu_date).subtract(1, 'months').format('YYYY');
+        this.month = moment(seikyu_date).subtract(1, 'months').format('MM');
+      } else if (type == 4) {
+        //請求月を「←（前月）」「→（翌月）」で変更した場合は、提供月も自動で請求月の前月表示
+        this.seikyu_year = moment(seikyu_date).add(1, 'months').format('YYYY');
+        this.seikyu_month = moment(seikyu_date).add(1, 'months').format('MM');
+        seikyu_date = this.seikyu_year + '-' + this.seikyu_month + '-01';
+
+        this.year = moment(seikyu_date).add(-1, 'months').format('YYYY');
+        this.month = moment(seikyu_date).add(-1, 'months').format('MM');
+      } else if (type == 1) {
         this.year = moment(date).subtract(1, 'months').format('YYYY');
         this.month = moment(date).subtract(1, 'months').format('MM');
-      } else {
+      } else if (type == 2) {
         this.year = moment(date).add(1, 'months').format('YYYY');
         this.month = moment(date).add(1, 'months').format('MM');
+      }
+      //請求月と提供月が同じになった場合
+      if (this.year == this.seikyu_year && this.month == this.seikyu_month) {
+        this.seikyu_year = moment(seikyu_date).add(1, 'months').format('YYYY');
+        this.seikyu_month = moment(seikyu_date).add(1, 'months').format('MM');
       }
     },
     calenderChange: function (e) {
@@ -394,7 +479,18 @@ export default {
     comboClick: function () {
       this.header_dialog = true;
     },
-    inputCalendarClick: function () {
+    /**********
+     * カレンダーdialogの表示
+     */
+    inputCalendarClick: function (dialog_type) {
+      this.dialog_type = dialog_type;
+      //提供月
+      let picker = '';
+      if (dialog_type == 'teikyo') picker = this.year + '-' + this.month;
+      if (dialog_type == 'seikyu')
+        picker = this.seikyu_year + '-' + this.seikyu_month;
+
+      this.picker = picker;
       this.datepicker_dialog = true;
     },
     branzMaxim: function () {

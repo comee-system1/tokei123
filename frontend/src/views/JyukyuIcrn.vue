@@ -44,7 +44,7 @@
           </v-row>
 
           <v-row class="mt-0" no-gutters>
-            <v-col cols="7" class="mt-1">
+            <v-col cols="7">
               <label>ソート</label>
               <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
                 <v-btn
@@ -134,12 +134,6 @@
             :itemsSourceChanged="onItemsSourceChanged"
             :itemsSource="viewdata"
           >
-            <wj-flex-grid-column
-              v-for="column in headerList"
-              :key="column.item"
-              cssClass="cell-img"
-              :cellTemplate="tplImage"
-            />
           </wj-flex-grid>
         </v-col>
       </v-row>
@@ -159,6 +153,7 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import ls from '@/utiles/localStorage';
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
@@ -171,6 +166,8 @@ const daiTitle = '受給者証情報';
 const chuTitle = '利用者負担';
 const rowHeaderheight = 20;
 const rowheight = 25;
+const styleDefault = '';
+const boderSolid = '1px solid';
 let siborikomiSearch = 0;
 let siborikomiSearch2 = 0;
 let alphabet = [
@@ -290,7 +287,6 @@ export default {
         { val: 1, name: 'カナ' },
         { val: 2, name: '受給者番号' },
       ],
-      tplImage: CellMaker.makeImage(),
       viewdataAll: [],
       viewdata: [],
     };
@@ -298,8 +294,8 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = this.getlocalStorage(keySort);
-      this.alphaSearch = this.getlocalStorage(keyAlp);
+      this.sortSearch = ls.getlocalStorage(keySort);
+      this.alphaSearch = ls.getlocalStorage(keyAlp);
     });
   },
   computed: {
@@ -321,14 +317,6 @@ export default {
     },
   },
   methods: {
-    getlocalStorage: function (key) {
-      let tmpval = localStorage.getItem(key);
-      if (tmpval == null) {
-        return 0;
-      } else {
-        return Number(tmpval);
-      }
-    },
     onInitializejyukyuIcrnGrid: function (flexGrid) {
       flexGrid.beginUpdate();
       // クリックイベント
@@ -359,6 +347,7 @@ export default {
 
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < 16; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         col.binding = this.headerList[colIndex].dataname;
@@ -368,9 +357,9 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
 
-        if (colIndex > 0) {
-          col.cssClass = '';
-          col.cellTemplate = '';
+        if (colIndex == 0) {
+          col.cssClass = styleDefault;
+          col.cellTemplate = CellMaker.makeImage();
         }
 
         if (colIndex == 10 || colIndex == 14) {
@@ -378,7 +367,7 @@ export default {
         } else if (colIndex == 3) {
           col.format = fmtYmd;
         } else {
-          col.format = '';
+          col.format = styleDefault;
         }
 
         for (let rowindex = 0; rowindex < 3; rowindex++) {
@@ -407,7 +396,7 @@ export default {
         e.col == 9 ||
         e.col == 14
       ) {
-        e.cell.style.borderRight = '1px solid';
+        e.cell.style.borderRight = boderSolid;
       }
 
       if (e.panel == flexGrid.columnHeaders) {
@@ -423,8 +412,8 @@ export default {
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = '';
-          e.cell.style.borderBottom = '';
+          e.cell.style.backgroundColor = styleDefault;
+          e.cell.style.borderBottom = styleDefault;
 
           if (e.col == flexGrid.columns.length - 1) {
             e.cell.style.backgroundColor = bgClrInput;
@@ -437,9 +426,10 @@ export default {
             (e.col == 8 && !tmpitem.syougaisyu) ||
             (e.col == 9 && !tmpitem.syougaisienkbn) ||
             (e.col == 10 && !tmpitem.futanjyougen) ||
-            (e.col == 11 && !tmpitem.jyougenkanri) ||
-            (e.col == 12 && !tmpitem.syokujiteikyo) ||
-            (e.col == 13 && !tmpitem.tokubetukyufu)
+            // (e.col == 11 && !tmpitem.jyougenkanri) ||
+            (e.col == 12 && tmpitem.jyougenumuval && !tmpitem.jyougenkanri) ||
+            (e.col == 13 && tmpitem.jyougenumuval && !tmpitem.syokujiteikyo) ||
+            (e.col == 14 && tmpitem.jyougenumuval && !tmpitem.tokubetukyufu)
           ) {
             e.cell.style.backgroundColor = bgClrError;
           }
@@ -502,6 +492,8 @@ export default {
           syougaisyu: '2',
           syougaisienkbn: '3',
           futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
+          jyougenumu: '有',
+          jyougenumuval: true,
           jyougenkanri:
             '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
           syokujiteikyo: '4',
@@ -535,6 +527,10 @@ export default {
             tmpviewdata[i].syougaisyu = '';
             tmpviewdata[i].syougaisienkbn = '';
             tmpviewdata[i].futanjyougen = '';
+            if (i == 12) {
+              tmpviewdata[i].jyougenumu = '';
+              tmpviewdata[i].jyougenumuval = false;
+            }
             tmpviewdata[i].jyougenkanri = '';
             tmpviewdata[i].syokujiteikyo = '';
             tmpviewdata[i].tokubetukyufu = '';
@@ -548,10 +544,10 @@ export default {
               //       ('00' + (currentDate.getMonth() + 1)).slice(-2)
               //   )
               // );
-              tmpviewdata[i].isnyusho = 'true';
+              tmpviewdata[i].isnyusho = true;
             }
             if (i == 14) {
-              tmpviewdata[i].istaisyo = 'true';
+              tmpviewdata[i].istaisyo = true;
             }
           }
         }
@@ -567,12 +563,12 @@ export default {
       this.userFilter();
     },
     sortUser: function (sortType) {
-      localStorage.setItem(keySort, sortType);
+      ls.setlocalStorage(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      localStorage.setItem(keyAlp, Number(key));
+      ls.setlocalStorage(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },
@@ -691,7 +687,7 @@ div#jyukyuicrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1266px !important;
+  min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -770,10 +766,10 @@ div#jyukyuicrn {
       align-items: center;
       text-align: center;
     }
-    // .wj-cell-maker {
-    //   width: 70%;
-    //   height: 70%;
-    // }
+    .wj-cell-maker {
+      width: 15px;
+      height: 15px;
+    }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }

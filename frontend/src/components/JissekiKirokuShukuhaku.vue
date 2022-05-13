@@ -11,12 +11,6 @@
             <label>受給者証番号</label>
             <wj-combo-box :isReadOnly="true" class="user-box zyukyusya-num" v-bind:text="zyukyusyaNum"></wj-combo-box>
           </div>
-        </v-row>
-        <v-row class="row-2">
-          <div class="keiyakuryo-block">
-            <label>契約支給量</label>
-            <wj-combo-box :isReadOnly="true" v-bind:text= sikyuryoData class="keiyakusikyu-box user-box"></wj-combo-box>
-          </div>
           <v-btn-toggle mandatory class="denbun-toggle">
             <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
             <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
@@ -38,15 +32,14 @@
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="開始時間" binding="jstime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="終了時間" binding="jetime" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="往" binding="gei" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="復" binding="sou" :width="'5*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="時間数" binding="kasanh_mn" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="夜間支援等体制加算" binding="kasanj" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="食事提供加算" binding="kasans" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験利用支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column header="重度障害者支援加算(研修修了者)" binding="kasanj" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="備考" binding="biko" :width="'21*'" :wordWrap=true></wj-flex-grid-column>
+      <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="帰宅時支援加算" binding="kasank" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="日中支援加算" binding="kasannc" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="医療連携体制加算" binding="kasani" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="地域移行加算" binding="kasanti" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="備考" binding="biko" :width="'22*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-flex-grid
@@ -70,7 +63,7 @@
 </template>
 
 <script>
-import { getOriginalDetailData } from '../data/JissekiKirokuTsushoData.js'
+import { getOriginalDetailData } from '../data/JissekiKirokuNyushoData.js'
 import '@grapecity/wijmo.touch';
 import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
@@ -88,11 +81,7 @@ export default{
     return{
       currentPageTitle: this.$route.name,
       detailGridData:this.getGridData(apiResult),
-      sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
-      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      jikansuTotal: getJikansuTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      taikenRiyoTotal: getTaikenRiyoTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      subGridData:this.getSubGridData(apiResult),
+      subGridData:this.getSubGridData(apiResult)
     }
   },
   methods: {
@@ -102,7 +91,6 @@ export default{
 
       // 空のヘッダー行とフッター行を追加/////////////////////////////////////////////
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       let headerpanel = flexGrid.columnHeaders;
       let footerPanel = flexGrid.columnFooters;
@@ -111,21 +99,13 @@ export default{
       let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let headerRanges = [
-        new wjGrid.CellRange(0,0,2,0),
-        new wjGrid.CellRange(0,1,2,1),
-        new wjGrid.CellRange(0,2,0,11),
-        new wjGrid.CellRange(1,2,2,2),
-        new wjGrid.CellRange(1,3,2,3),
-        new wjGrid.CellRange(1,4,2,4),
-        new wjGrid.CellRange(1,5,1,6),
-        new wjGrid.CellRange(1,8,2,8),
-        new wjGrid.CellRange(1,9,2,9),
-        new wjGrid.CellRange(1,10,2,10),
-        new wjGrid.CellRange(1,11,2,11),
+        new wjGrid.CellRange(0,0,1,0),
+        new wjGrid.CellRange(0,1,1,1),
+        new wjGrid.CellRange(0,2,0,9),
+        new wjGrid.CellRange(0,10,1,10),
       ];
       let footerRanges = [
-        new wjGrid.CellRange(0,0,0,4),
-        new wjGrid.CellRange(0,5,0,6)
+        new wjGrid.CellRange(0,0,0,2)
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
@@ -147,39 +127,40 @@ export default{
 
       // 改行指定不要のヘッダー・フッターの内容を設定する
       // ヘッダー0行目
-      headerpanel.setCellData(0, 2, "サービス提供実績");
-      // ヘッダー1行目
-      headerpanel.setCellData(1, 3, "開始時間");
-      headerpanel.setCellData(1, 4, "終了時間");
-      headerpanel.setCellData(1, 5, "送迎加算");
-      headerpanel.setCellData(1, 7, "訪問支援加算");
-      headerpanel.setCellData(1, 8, "食事提供加算");
-      headerpanel.setCellData(1, 11, "備考");
+      headerpanel.setCellData(0, 2, "支援実績");
+      headerpanel.setCellData(0, 10, "備考");
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
-      footerPanel.setCellData(0, 5, this.sougeiTotal);
-      footerPanel.setCellData(0, 7, this.jikansuTotal);
-      footerPanel.setCellData(0, 9, this.taikenRiyoTotal);
 
       // ヘッダーとフッターの高さを調整
-      flexGrid.columnHeaders.rows[1].height = 25;
+      flexGrid.columnHeaders.rows[1].height = 45;
       // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
         if(panel.cellType == wjGrid.CellType.ColumnHeader){
-          // 改行指定が必要なヘッダーセルの内容を設定
+          // ヘッダーの改行位置の設定
           if(r == 0 && c == 0){
             cell.innerHTML = '日<br/>付';
           }else if (r == 0 && c == 1) {
             cell.innerHTML = '曜<br/>日';
           }else if (r == 1 && c == 2) {
             cell.innerHTML = 'サービス提供<br/>の状況';
+          }else if(r == 1 && c == 3){
+            cell.innerHTML = '夜間支援等<br/>体制加算';
+          }else if(r == 1 && c == 4){
+            cell.innerHTML = '食事提供<br/>加算';
+          }else if(r == 1 && c == 5){
+            cell.innerHTML = '入院時支援<br/>特別加算';
+          }else if(r == 1 && c == 6){
+            cell.innerHTML = '帰宅時<br/>支援加算';
+          }else if(r == 1 && c == 7){
+            cell.innerHTML = '日中<br/>支援加算';
+          }else if(r == 1 && c == 8){
+            cell.innerHTML = '医療連携<br/>体制加算';
           }else if(r == 1 && c == 9){
-            cell.innerHTML = '体験利用<br/>支援加算';
-          }else if(r == 1 && c == 10){
-            cell.innerHTML = '重度障害者<br/>支援加算<br/>(研修修了者)';
+            cell.innerHTML = '地域<br/>移行加算';
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
@@ -192,7 +173,7 @@ export default{
           }
 
           //備考欄を左寄せにする
-          if(c == 11){
+          if(c == 10){
             s.textAlign = "left";
           }
         }
@@ -203,10 +184,10 @@ export default{
             s.borderTop = "1px solid rgba(0,0,0,.2)";
           }
 
-          if(c >= 3 && c <= 10){
+          if(c >= 3 && c <= 9){
             // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
-          }else if(c == 11){
+          }else if(c == 10){
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";
           }
@@ -225,9 +206,14 @@ export default{
           s.backgroundColor= "#eeeeee";
           s.fontWeight="bold";
         }
+        if(r == 1 && (c == 5 || c == 6)){
+          // 空欄セルをグレーにする
+          s.backgroundColor= "#cccccc";
+        }
       }
     },
     getGridData:function(data){
+      // グリッド表示用データの作成
       let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
       let gridData = [];
       for(let i = 0; i<kirokuMeiData.length; i++){
@@ -236,18 +222,16 @@ export default{
         let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
         gridData.push(
           {
-            id:kirokuMeiData[i]["id"],
             rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
             youbi:WeekChars[date.getDay()],
             jyokyo:kirokuMeiData[i]["jyokyo"],
-            jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-            jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-            gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-            sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-            kasanh_mn:kirokuMeiData[i]["kasanh_mn"] == "0" ? "":kirokuMeiData[i]["kasanh_mn"],
-            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-            kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
             kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
+            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+            kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
+            kasank:kirokuMeiData[i]["kasank"] == 0 ? "":kirokuMeiData[i]["kasank"],
+            kasannc:kirokuMeiData[i]["kasannc"] == 0 ? "":kirokuMeiData[i]["kasannc"],
+            kasani:kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
+            kasanti:kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
             biko:kirokuMeiData[i]["biko"],
           }
         )
@@ -255,8 +239,11 @@ export default{
       return gridData;
     },
     getSubGridData:function(data){
+      // サブグリッド表示用データの作成
       let riyouKaishibi = data['riyo_inf'][0]['staymd'];
       let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+      let taishoDate = data['riyo_inf'][0]['taiymd'];
+      let taishogoSanteibi = data['riyo_inf'][0]['ttymd'];
       let subGridData = [];
       subGridData.push(
         {
@@ -268,10 +255,19 @@ export default{
           Column5: "当月算定日数",
           Column6: tougetsuSantei + "日"
         },
+        {
+          Column0: "地域移行加算",
+          Column1: "退所日",
+          Column2: dateFilter(taishoDate),
+          Column3: "退所後算定日",
+          Column4: dateFilter(taishogoSanteibi),
+          Column5: "",
+          Column6: ""
+        }
       )
       return subGridData;
-    },
-  }
+    }
+  },
 }
 
 // 西暦＋年月日フィルター
@@ -294,46 +290,11 @@ function thirtythDayFilter(riyouKaishibi){
 // 曜日変換用
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
-// 送迎の合計の算出
-function getSougeiTotal(data){
-  let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['sou']){
-      totalCount++ ;
-    }
-  }
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['gei']){
-      totalCount++ ;
-    }
-  }
-  return totalCount;
-}
-
-// 訪問支援加算時間数の合計の算出
-function getJikansuTotal(data){
-  let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasanh_mn'] != "0"){
-      totalCount++ ;
-    }
-  }
-  return totalCount;
-}
-
-// 体験利用支援加算の合計の算出
-function getTaikenRiyoTotal(data){
-  let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasantkn'] > 0){
-      totalCount++ ;
-    }
-  }
-  return totalCount;
-}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/scss/common.scss';
+/* 利用者情報エリアのスタイル */
 *{
   padding:0;
   margin:0;
@@ -341,13 +302,13 @@ function getTaikenRiyoTotal(data){
 
 @media screen and (max-width: 1366px){
   #detailGrid {
-    height: 62vh;
+    height: 64vh;
   }
 }
 
 @media screen and (min-width: 1367px){
   #detailGrid {
-    height: 75vh;
+    height: 76vh;
   }
 }
 </style>

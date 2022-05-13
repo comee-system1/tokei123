@@ -1,7 +1,13 @@
+$grid_unselectable_cells:#fffeed;
+
 #jisseki-kiroku {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px !important;
+
+  input{
+    font-family: 'メイリオ';
+  }
 
   .container.jissekikiroku{
     padding:4px;
@@ -28,36 +34,52 @@
   }
     .user-info label{
       font-size:14px;
-      font-weight:bold;
-      margin-right:10px;
+      background-color: $selected_color;
+      display: inline-block;
+      width: 120px;
+      height: 31px;
+      padding-top: 5px;
+      margin-right:8px;
+      border-radius: 4px;
+      text-align: center;
     }
 
   .riyousya-block,.jukyusyasho-block,.keiyakuryo-block{
-    border-bottom:1px solid #ccc;
     float:left;
   }
 
   .riyousya-block{
-    width:227px;
+    width:315px;
   }
 
   .jukyusyasho-block{
-    margin-left:20px;
-    width:269px;
+    margin-left:10px;
+    width:265px;
   }
 
   .keiyakuryo-block{
-    width:216px;
+    width:250px;
   }
 
   .user-box{
     border:none;
-    width:150px;
+    width:185px;
+    background-color: $light_yellow;
+    border: thin solid rgba(0, 0, 0, 0.12);
+    border-radius: 0 !important;
+  }
+
+  .user-box.zyukyusya-num{
+    width:135px;
   }
 
   .v-input--selection-controls{
     padding:0;
     margin:0;
+  }
+
+  .row-2{
+    margin-top:4px;
   }
 
   .keiyakusikyu-box {
@@ -67,11 +89,12 @@
 
   .denbun-toggle{
     margin-left:20px;
+    margin-top:2px;
   }
 
   /* グリッドのスタイル */
   #detailGrid {
-    margin-top:10px;
+    margin-top:4px;
     font-size:12px;
     color:#333333 !important;
     ::-webkit-scrollbar {
@@ -84,6 +107,9 @@
     ::-webkit-scrollbar-thumb {
       background: $brawn;
       border-radius: 0px;
+    }
+    .wj-cell:not(.wj-header) {
+      background: $grid_unselectable_cells;
     }
   }
 
@@ -102,6 +128,9 @@
   #subGrid {
     font-size:12px;
     color:#333333 !important;
+    .wj-cell:not(.wj-header) {
+      background: $grid_unselectable_cells;
+    }
   }
 
   /* 一旦グリッドの枠線を表示しない */

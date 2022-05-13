@@ -55,11 +55,11 @@
       :allowResizing="true"
       :allowSorting="false"
     >
-      <wj-flex-grid-column header="確" binding="kakutei" :width="30" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
+      <wj-flex-grid-column header="確" binding="kakutei" :width="31" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
       <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
       <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :width="110" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
       <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="印" binding="active" :width="25" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
+      <wj-flex-grid-column header="印" binding="print" :width="25" :isReadOnly="true" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-combo-box
@@ -71,6 +71,7 @@
   </div>
 </template>
 <script>
+import { getOriginalDetailData } from '../data/JissekiKirokuUserSearchData.js'
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
@@ -81,28 +82,18 @@ import VueAxios from 'vue-axios';
 
 Vue.use(VueAxios, axios);
 
+// APIの戻り値をObjectに変換
+let apiResult = JSON.parse(getOriginalDetailData());
+
 let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 //let userUrl = 'http://local-tokei/';
-let userDataAll = [];
 let userDataSelect = [];
 let checkAll = '';
 let userCount = 0;
 let textSearch = '';
 let sortSearch = '';
 let alphaSearch = '';
-let alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
+let alphabet = ['全','ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ'];
 export default {
   data() {
     return {
@@ -117,8 +108,10 @@ export default {
     };
   },
   methods: {
+    // ソートボタン押下時のイベント
     sortUser: function (sortType) {
       sortSearch = sortType;
+      // 全員3もしくは受給者番号ボタン押下時はコードではなく受給者番号を表示する
       if (sortSearch == 3) {
         this.riyocodeFlag = false;
         this.jyukyunoFlag = true;
@@ -128,15 +121,18 @@ export default {
       }
       this.userFilter();
     },
-    onAlphabet: function (key) {
-      alphaSearch = key;
-      this.userFilter();
-    },
     onTextChangedUser: function (s) {
+      // カナ検索欄に入力された文字を取得して書き換え
       textSearch = s.text;
       this.userFilter();
     },
+    onAlphabet: function (key) {
+      // どのカナボタンを押下したか番号を取得して書き換え
+      alphaSearch = key;
+      this.userFilter();
+    },
     onselectedIndexChanged: function (s) {
+      // 全選択・全解除の選択値を取得して書き換え
       checkAll = s.selectedIndex;
       this.userFilter();
     },
@@ -157,33 +153,41 @@ export default {
       //     jidoid: response.data[i]['jidoid'],
       //     kzkname: response.data[i]['kzkname'],
       //     kakutei: response.data[i]['kakutei'],
-      //     active: response.data[i]['active'],
+      //     print: response.data[i]['print'],
       //   });
       // }
 
       //axiosを利用しないとき下記有効
-      console.log(response);
-      userCount = 100;
-      for (let i = 0; i < userCount; i++) {
-        riyo_inf.push({
-          riid: '5500' + i,
-          riyocode: '123456' + (Math.floor(Math.random() * 9) + 1),
-          names: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          jukyuid: i * 10,
-          jyukyuno: '876543210' + (Math.floor(Math.random() * 9) + 1),
-          sityoid: i * 30,
-          jidoid: i * 40,
-          kzkname: '東経家族' + i,
-          kakutei: require('@/assets/kaku_15px.png'),
-          active: false,
-        });
+      // console.log(response);
+      if(!response){
+        response = apiResult['riyo_inf'];
+      }
+      let kakuteiFlag = false;
+      for (let i = 0; i < response.length; i++) {
+        if(response[i]['kakutei'] == 2 || response[i]['kakutei'] == 3 ){
+          kakuteiFlag = true;
+        }else{
+          kakuteiFlag = false;
+        }
+        riyo_inf.push(
+          {
+            riid: response[i]['riid'],
+            riyocode: response[i]['riyocode'],
+            names: response[i]['names'],
+            kana: response[i]['kana'],
+            jukyuid: response[i]['jukyuid'],
+            jyukyuno: response[i]['jyukyuno'],
+            sityoid: response[i]['sityoid'],
+            jidoid: response[i]['jidoid'],
+            kzkname: response[i]['kzkname'],
+            kakutei: kakuteiFlag == true ? require('@/assets/kaku_15px.png'):"",
+            print: '',
+          }
+        )
       }
       //--axiosを利用しないとき下記有効
-
       usersData['riyo_inf'] = riyo_inf;
-      userDataAll = usersData;
-      userDataSelect = userDataAll;
+      userDataSelect = usersData;
 
       this.userFilter();
       return riyo_inf;
@@ -191,51 +195,52 @@ export default {
 
     userFilter() {
       let data = [];
-
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (checkAll == '1') value.active = true;
-        if (checkAll == '2') value.active = false;
+        // 印刷チェックの制御
+        if (checkAll == '1') value.print = '〇';
+        if (checkAll == '2') value.print = '';
+        // カナ検索の文字が一致していたら行の値一式を配列に追加する
         if (value.names.indexOf(textSearch) != -1) {
           data.push(value);
         }
       });
       if (alphaSearch > 0) {
-        let get = [];
+        let alphaSortedData = [];
         data.forEach(function (value) {
           switch (alphaSearch) {
             case 1:
-              if (value.kana.match(/^[ア-オ]/)) get.push(value);
+              if (value.kana.match(/^[ア-オ]/)) alphaSortedData.push(value);
               break;
             case 2:
-              if (value.kana.match(/^[カ-コ]/)) get.push(value);
+              if (value.kana.match(/^[カ-コ]/)) alphaSortedData.push(value);
               break;
             case 3:
-              if (value.kana.match(/^[サ-ソ]/)) get.push(value);
+              if (value.kana.match(/^[サ-ソ]/)) alphaSortedData.push(value);
               break;
             case 4:
-              if (value.kana.match(/^[タ-ト]/)) get.push(value);
+              if (value.kana.match(/^[タ-ト]/)) alphaSortedData.push(value);
               break;
             case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
+              if (value.kana.match(/^[ナ-ノ]/)) alphaSortedData.push(value);
               break;
             case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
+              if (value.kana.match(/^[ハ-ホ]/)) alphaSortedData.push(value);
               break;
             case 7:
-              if (value.kana.match(/^[マ-モ]/)) get.push(value);
+              if (value.kana.match(/^[マ-モ]/)) alphaSortedData.push(value);
               break;
             case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
+              if (value.kana.match(/^[ヤ-ヨ]/)) alphaSortedData.push(value);
               break;
             case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
+              if (value.kana.match(/^[ラ-ロ]/)) alphaSortedData.push(value);
               break;
             case 10:
-              if (value.kana.match(/^[ワ-ン]/)) get.push(value);
+              if (value.kana.match(/^[ワ-ン]/)) alphaSortedData.push(value);
               break;
           }
         });
-        data = get;
+        data = alphaSortedData;
       }
 
       //コード順でソート
@@ -262,7 +267,9 @@ export default {
           return 0;
         });
       }
-      this.$emit('child-user', data);
+      // ソートして利用者一覧に表示するデータを一式親コンポーネントに送る
+      this.$emit('child-userslist', data);
+      // ソートしたデータでグリッド表示データを上書きする
       this.usersData = data;
     },
     userFilter2() {
@@ -300,7 +307,7 @@ export default {
       //     flexGrid.alternatingRowStep = 0;
 
       //     //初回のユーザ選択値
-      //     _self.$emit('child-select', 0);
+      //     _self.$emit('child-selectedrow', 0);
       //   })
       //   .catch(function (error) {
       //     console.log(error);
@@ -328,16 +335,26 @@ export default {
       flexGrid.alternatingRowStep = 0;
 
       //初回のユーザ選択値
-      _self.$emit('child-select', 0);
+      _self.$emit('child-selectedrow', 0);
 
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
-        ht = flexGrid.hitTest(e.pageX, e.pageY);
+        let hPage  = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         if (e.target.innerText.length > 0) {
-          let row = ht._row;
+          let row = hPage._row;
           _self.$emit('child-event', userDataSelect['riyo_inf'][row].riyocode);
-          _self.$emit('child-select', row);
+          //利用者一覧の何行目が選択されたかを送る
+          _self.$emit('child-selectedrow', row);
+        }
+        //印刷箇所を押下
+        if (ht.cellType == wjGrid.CellType.Cell && ht.col == 3) {
+          let p = flexGrid.getCellData(ht.row, 3);
+          let mark = '';
+          if (p == '〇') mark = '';
+          if (p == '') mark = '〇';
+          _self.usersData[ht.row]['print'] = mark;
+          flexGrid.setCellData(ht.row, 3, mark);
         }
       });
     },
@@ -371,6 +388,9 @@ div#user-list_scrollbar {
   font-size: 12px;
   .wj-cell:not(.wj-header) {
     background: $grid_background;
+    &:nth-child(4) {
+      background-color: $white;
+    }
   }
 
   .wj-cells

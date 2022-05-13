@@ -249,7 +249,7 @@ export default {
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
-          jyukyuno: '876543210' + (Math.floor(Math.random() * 9) + 1),
+          jyukyuno: '876543210' + i,
           sityoid: i * 30,
           jidoid: i * 40,
           kzkname: '東経家族' + i,
