@@ -186,7 +186,7 @@ export default {
         },
         {
           jyukyusyabango: '8765432100',
-          name: '222重度障害者支援加算Ⅱ2',
+          name: '重度障害者支援加算Ⅱ2',
           date: {
             day1: 2,
             day2: 2,
@@ -213,10 +213,12 @@ export default {
         {
           jyukyusyabango: '8765432100',
           name: '栄養マネジメント加算',
+          date: {},
         },
         {
           jyukyusyabango: '8765432100',
           name: '療養食加算',
+          date: {},
         },
         {
           jyukyusyabango: '8765432100',
@@ -233,6 +235,7 @@ export default {
         {
           jyukyusyabango: '8765432100',
           name: '入院・外泊時加算',
+          date: {},
         },
         {
           jyukyusyabango: '8765432100',
@@ -299,8 +302,8 @@ export default {
               { name: '利用日' },
               { name: '入院・退院日' },
               { name: '外泊日' },
-              { name: '住居外利用' },
-              { name: '家賃' },
+              { name: '住居外利用', jyukyogairiyoFlag: true },
+              { name: '家賃', yatinFlag: true },
             ],
             meals: ['朝食', '昼食', '夕食'],
             mealsKey: ['breakfast', 'lunch', 'dinner'],
@@ -340,6 +343,10 @@ export default {
         );
       }
       this.gridItemName = hendo;
+
+      //表示されるカラム
+      this.viewColumn();
+
       this.mainGrid.itemsSource = [];
     },
     // 変動情報ダイアログの表示
@@ -349,6 +356,45 @@ export default {
     // 加算追加ダイアログの表示
     openDialog_Add() {
       this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
+    },
+    //表示されるカラムの指定
+    viewColumn: function () {
+      let rowColumn = [];
+      let hendoRowsCount = 0; // 変動情報の行数
+      let taiseiKobetsuRowsCount = 0; // 体制個別の行数
+      let kobetsuCount = 0; // 個別の行数
+      for (let i = 0; i < this.gridItemName[0].shisetsuNyusho.length; i++) {
+        // 光熱水費があるとき
+        if (this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
+          rowColumn.push(
+            this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
+          );
+        } else if (this.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+          // 食事フラグがあるとき
+          for (let j = 0; j < this.gridItemName[0].mealsKey.length; j++) {
+            rowColumn.push(this.gridItemName[0].mealsKey[j]);
+          }
+        } else {
+          rowColumn.push(this.gridItemName[0].shisetsuNyusho[i].name);
+        }
+      }
+      hendoRowsCount = rowColumn.length;
+
+      for (let i = 0; i < this.gridItemName[0].taisei_kobetu.length; i++) {
+        rowColumn.push(this.gridItemName[0].taisei_kobetu[i].name);
+      }
+      taiseiKobetsuRowsCount = rowColumn.length;
+
+      for (let i = 0; i < this.gridItemName[0].kobetu.length; i++) {
+        rowColumn.push(this.gridItemName[0].kobetu[i].name);
+      }
+      kobetsuCount = rowColumn.length;
+
+      // +1 はタイトルの部分を追加
+      this.hendoRowsCount = hendoRowsCount + 1;
+      this.taiseiKobetsuRowsCount = taiseiKobetsuRowsCount + 1;
+      this.kobetsuCount = kobetsuCount + 1;
+      this.rowColumn = rowColumn;
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
     getSelectUserChildComponent: function (data) {
@@ -364,7 +410,6 @@ export default {
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
       // 値の設定
-      //  this.mainGrid.columns.clear();
       this.changeHndoJyoho();
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
@@ -429,7 +474,6 @@ export default {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       this.deleteGridFlag = true;
       this.mainGrid.itemsSource = [];
-      this.deleteGridFlag = false;
     },
     onitemsSourceChanged: function (flexGrid) {
       let _self = this;
@@ -473,7 +517,7 @@ function methodCellSettingDefault(flexGrid, _self) {
     flexGrid.columns.push(new wjGrid.Column());
   }
   let row = 0;
-  row = getHendoRows(_self) + _self.gridItemName[0].kasanRow;
+  row = _self.hendoRowsCount + _self.gridItemName[0].kasanRow;
 
   _self.kasanRow = row;
   flexGrid.rows.clear();
@@ -491,9 +535,9 @@ function methodCellSettingDefault(flexGrid, _self) {
   flexGrid.rows[2].height = 38;
   flexGrid.rows[3].height = 38;
   if (_self.gridItemName[0].taisei_kobetu.length == 1)
-    flexGrid.rows[getHendoRows(_self)].height = 100;
+    flexGrid.rows[_self.hendoRowsCount].height = 100;
   if (_self.gridItemName[0].taisei_kobetu.length == 2)
-    flexGrid.rows[getHendoRows(_self)].height = 50;
+    flexGrid.rows[_self.hendoRowsCount].height = 50;
   if (_self.gridItemName[0].kobetu.length == 1)
     flexGrid.rows[_self.kasanRow - 1].height = 50;
 
@@ -513,10 +557,10 @@ function methodCellSettingDefault(flexGrid, _self) {
     flexGrid.setCellData(0, i, date);
   }
   //最終日だけ日付がつぶれるので幅を大きくし対応
-  flexGrid.columns[lastdate + 3].width = '2.5*';
+  flexGrid.columns[lastdate + 3].width = '2.6*';
   //合計
   flexGrid.setCellData(0, lastdate + 4, _self.gridItemName[0].heads[1]);
-  flexGrid.columns[lastdate + 4].width = 50;
+  flexGrid.columns[lastdate + 4].width = 35;
   //金額
   flexGrid.setCellData(0, lastdate + 5, _self.gridItemName[0].heads[2]);
   flexGrid.columns[lastdate + 5].width = 70;
@@ -526,7 +570,7 @@ function methodCellSettingDefault(flexGrid, _self) {
  */
 function methodWriteJyoho(flexGrid, _self) {
   let hendoRows_st = 1; //変動情報の始まりの行
-  let kasanRows_st = getHendoRows(_self); // 加算情報の始まり
+  let kasanRows_st = _self.hendoRowsCount; // 加算情報の始まり
   flexGrid.setCellData(hendoRows_st, 0, _self.gridItemName[0].column[0]); //変動情報
 
   let row = 0;
@@ -593,142 +637,180 @@ function methodWriteJyoho(flexGrid, _self) {
  */
 function methodCellClickEvent(flexGrid, _self) {
   flexGrid.hostElement.addEventListener('click', function (e) {
-    let ht = flexGrid.hitTest(e);
-    // console.log(ht.target.innerHTML);
-    let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+    if (_self.userDataSelect[0]['jyukyusyabango']) {
+      let ht = flexGrid.hitTest(e);
+      // console.log(ht.target.innerHTML);
+      let hPage = flexGrid.hitTest(e.pageX, e.pageY);
 
-    // 矢印下の箱を押下
-    // 変動情報ダイアログ 入退院
-    let regexp = /^<span class="d-none">termFlag_[0-9].*<\/span>/;
-    if (ht.target.innerHTML.match(regexp)) {
-      let selectKey = e.target.id.split('-')[1];
-      let params = {};
-      params = {
-        selectKey: selectKey,
-        byouinName: _self.nyutaiinData[0].date[selectKey].byouinName,
-        nyuuinbi: _self.nyutaiinData[0].date[selectKey].start_date,
-        taiinbi: _self.nyutaiinData[0].date[selectKey].end_date,
-        //入院用
-        nyuuinbiShiseturiyo:
-          _self.nyutaiinData[0].date[selectKey].nyuuinbiShiseturiyo,
-        nyuuinbiBreakfast:
-          _self.nyutaiinData[0].date[selectKey].nyuuinbiBreakfast,
-        nyuuinbiLunch: _self.nyutaiinData[0].date[selectKey].nyuuinbiLunch,
-        nyuuinbiDinner: _self.nyutaiinData[0].date[selectKey].nyuuinbiDinner,
-        //退院用
-        taiinbiShiseturiyo:
-          _self.nyutaiinData[0].date[selectKey].taiinbiShiseturiyo,
-        taiinbiBreakfast:
-          _self.nyutaiinData[0].date[selectKey].taiinbiBreakfast,
-        taiinbiLunch: _self.nyutaiinData[0].date[selectKey].taiinbiLunch,
-        taiinbiDinner: _self.nyutaiinData[0].date[selectKey].taiinbiDinner,
-        taiinbiAida: _self.nyutaiinData[0].date[selectKey].taiinbiAida,
-      };
-      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params, 'nyutaiin');
-    }
-
-    // 変動情報ダイアログ 外泊
-    regexp = /^<span class="d-none">gaihaku_termFlag_[0-9].*<\/span>/;
-    if (ht.target.innerHTML.match(regexp)) {
-      let selectKey = e.target.id.split('-')[1];
-      let params = {};
-      params = {
-        selectKey: selectKey,
-        byouinName: _self.gaihakuData[0].date[selectKey].byouinName,
-        nyuuinbi: _self.gaihakuData[0].date[selectKey].start_date,
-        taiinbi: _self.gaihakuData[0].date[selectKey].end_date,
-        //入院用
-        nyuuinbiShiseturiyo:
-          _self.gaihakuData[0].date[selectKey].nyuuinbiShiseturiyo,
-        nyuuinbiBreakfast:
-          _self.gaihakuData[0].date[selectKey].nyuuinbiBreakfast,
-        nyuuinbiLunch: _self.gaihakuData[0].date[selectKey].nyuuinbiLunch,
-        nyuuinbiDinner: _self.gaihakuData[0].date[selectKey].nyuuinbiDinner,
-        //退院用
-        taiinbiShiseturiyo:
-          _self.gaihakuData[0].date[selectKey].taiinbiShiseturiyo,
-        taiinbiBreakfast: _self.gaihakuData[0].date[selectKey].taiinbiBreakfast,
-        taiinbiLunch: _self.gaihakuData[0].date[selectKey].taiinbiLunch,
-        taiinbiDinner: _self.gaihakuData[0].date[selectKey].taiinbiDinner,
-        taiinbiAida: _self.gaihakuData[0].date[selectKey].taiinbiAida,
-      };
-
-      _self.$refs.dialog_kikantuika.parentFromOpenDialog(params, 'gaihaku');
-    }
-
-    // 変動情報ダイアログ
-    // 各加算情報編集用
-    for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
-      if (ht.target.innerText == _self.gridItemName[0].taisei_kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'taisei_kobetu');
+      // 矢印下の箱を押下
+      // 変動情報ダイアログ 入退院
+      let regexp = /^<span class="d-none">termFlag_[0-9].*<\/span>/;
+      if (ht.target.innerHTML.match(regexp)) {
+        let selectKey = e.target.id.split('-')[1];
+        let params = {};
+        params = {
+          selectKey: selectKey,
+          byouinName: _self.nyutaiinData[0].date[selectKey].byouinName,
+          nyuuinbi: _self.nyutaiinData[0].date[selectKey].start_date,
+          taiinbi: _self.nyutaiinData[0].date[selectKey].end_date,
+          //入院用
+          nyuuinbiShiseturiyo:
+            _self.nyutaiinData[0].date[selectKey].nyuuinbiShiseturiyo,
+          nyuuinbiBreakfast:
+            _self.nyutaiinData[0].date[selectKey].nyuuinbiBreakfast,
+          nyuuinbiLunch: _self.nyutaiinData[0].date[selectKey].nyuuinbiLunch,
+          nyuuinbiDinner: _self.nyutaiinData[0].date[selectKey].nyuuinbiDinner,
+          //退院用
+          taiinbiShiseturiyo:
+            _self.nyutaiinData[0].date[selectKey].taiinbiShiseturiyo,
+          taiinbiBreakfast:
+            _self.nyutaiinData[0].date[selectKey].taiinbiBreakfast,
+          taiinbiLunch: _self.nyutaiinData[0].date[selectKey].taiinbiLunch,
+          taiinbiDinner: _self.nyutaiinData[0].date[selectKey].taiinbiDinner,
+          taiinbiAida: _self.nyutaiinData[0].date[selectKey].taiinbiAida,
+        };
+        _self.$refs.dialog_kikantuika.parentFromOpenDialog(
+          params,
+          'nyutaiin_add'
+        );
       }
-    }
-    for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
-      if (ht.target.innerText == _self.gridItemName[0].kobetu[i].name) {
-        _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'kobetu');
-      }
-    }
-    // 4列目より前は何もしない
-    // 3行目より上は何もしない
-    if (hPage.col < startPoint) {
-      return false;
-    }
-    if (hPage.row <= 3 && ht.target.innerText.length == 0) {
-      return false;
-    }
-    // 最終日以降の2列は何もしない
-    if (_self.lastdate + startPoint <= hPage.col) {
-      return false;
-    }
 
-    let redMaruRegexp = /^<div class="d-none">blue-maru<\/div>/;
-    let redBatsuRegexp = /^<div class="d-none">blue--batsu<\/div>/;
-    let redNoneRegexp = /^<div class="blue--text bg"><\/div>/;
-    let redNoneRegexp2 =
-      /^<div class="blue--text bg"><div class="d-none">blue-maru<\/div><\/div>/;
-    //let total = flexGrid.getCellData(hPage.row, _self.lastdate + 3, false);
-    // クリックをした位置
-    let d = 'day' + (hPage.col - 3); //日付
-    _self.dayPoint = { day: d, dayrow: hPage.row };
-    // 青〇の置き換え
-    if (ht.target.innerHTML.match(redMaruRegexp)) {
-      e.target.innerHTML = '<div class="d-none">blue--batsu</div>×';
-      _self.alertMessageFlag = true;
-      _self.editGridFlag = true;
-      _self.selectedPoint = 3; // 青×の表示
+      // 変動情報ダイアログ 外泊
+      regexp = /^<span class="d-none">gaihaku_termFlag_[0-9].*<\/span>/;
+      if (ht.target.innerHTML.match(regexp)) {
+        let selectKey = e.target.id.split('-')[1];
+        let params = {};
+        params = {
+          selectKey: selectKey,
+          byouinName: _self.gaihakuData[0].date[selectKey].byouinName,
+          nyuuinbi: _self.gaihakuData[0].date[selectKey].start_date,
+          taiinbi: _self.gaihakuData[0].date[selectKey].end_date,
+          //入院用
+          nyuuinbiShiseturiyo:
+            _self.gaihakuData[0].date[selectKey].nyuuinbiShiseturiyo,
+          nyuuinbiBreakfast:
+            _self.gaihakuData[0].date[selectKey].nyuuinbiBreakfast,
+          nyuuinbiLunch: _self.gaihakuData[0].date[selectKey].nyuuinbiLunch,
+          nyuuinbiDinner: _self.gaihakuData[0].date[selectKey].nyuuinbiDinner,
+          //退院用
+          taiinbiShiseturiyo:
+            _self.gaihakuData[0].date[selectKey].taiinbiShiseturiyo,
+          taiinbiBreakfast:
+            _self.gaihakuData[0].date[selectKey].taiinbiBreakfast,
+          taiinbiLunch: _self.gaihakuData[0].date[selectKey].taiinbiLunch,
+          taiinbiDinner: _self.gaihakuData[0].date[selectKey].taiinbiDinner,
+          taiinbiAida: _self.gaihakuData[0].date[selectKey].taiinbiAida,
+        };
+
+        _self.$refs.dialog_kikantuika.parentFromOpenDialog(params, 'gaihaku');
+      }
+
+      // 変動情報ダイアログ
+      // 各加算情報編集用
+      for (let i = 0; i < _self.gridItemName[0].taisei_kobetu.length; i++) {
+        if (
+          ht.target.innerText == _self.gridItemName[0].taisei_kobetu[i].name
+        ) {
+          _self.$refs.dialog_kasantuika.parentFromOpenDialog(
+            i,
+            'taisei_kobetu'
+          );
+        }
+      }
+      for (let i = 0; i < _self.gridItemName[0].kobetu.length; i++) {
+        if (ht.target.innerText == _self.gridItemName[0].kobetu[i].name) {
+          _self.$refs.dialog_kasantuika.parentFromOpenDialog(i, 'kobetu');
+        }
+      }
+      // 4列目より前は何もしない
+      // 3行目より上は何もしない
+      if (hPage.col < startPoint) {
+        return false;
+      }
+      if (hPage.row <= 3 && ht.target.innerText.length == 0) {
+        return false;
+      }
+      // 最終日以降の2列は何もしない
+      if (_self.lastdate + startPoint <= hPage.col) {
+        return false;
+      }
+
+      let redMaruRegexp = /^<div class="d-none">blue-maru<\/div>/;
+      let redBatsuRegexp = /^<div class="d-none">blue--batsu<\/div>/;
+      let redNoneRegexp = /^<div class="blue--text bg"><\/div>/;
+      let redNoneRegexp2 =
+        /^<div class="blue--text bg"><div class="d-none">blue-maru<\/div><\/div>/;
+      //let total = flexGrid.getCellData(hPage.row, _self.lastdate + 3, false);
+      // クリックをした位置
+      let d = 'day' + (hPage.col - 3); //日付
+      _self.dayPoint = { day: d, dayrow: hPage.row };
+      // 青〇の置き換え
+      if (ht.target.innerHTML.match(redMaruRegexp)) {
+        e.target.innerHTML = '<div class="d-none">blue--batsu</div>×';
+        _self.alertMessageFlag = true;
+        _self.editGridFlag = true;
+        _self.selectedPoint = 3; // 青×の表示
+      }
+      // 青×の置き換え
+      else if (ht.target.innerHTML.match(redBatsuRegexp)) {
+        e.target.innerHTML = '';
+        _self.alertMessageFlag = true;
+        _self.editGridFlag = true;
+        _self.selectedPoint = 0; // 空欄の表示
+      }
+      // スペースの置き換え
+      else if (
+        ht.target.innerHTML.match(redNoneRegexp) ||
+        ht.target.innerHTML.match(redNoneRegexp2)
+      ) {
+        e.target.innerHTML =
+          '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
+        _self.alertMessageFlag = true;
+        _self.editGridFlag = true;
+        _self.selectedPoint = 2; // 青〇の表示
+      }
+      //初回空欄の置き換え
+      else if (ht.target.innerHTML == '') {
+        e.target.innerHTML =
+          '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
+        _self.alertMessageFlag = true;
+        _self.editGridFlag = true;
+        _self.selectedPoint = 2; // 青〇の表示
+      }
       _self.mainGrid.itemsSource = [];
-    }
-    // 青×の置き換え
-    else if (ht.target.innerHTML.match(redBatsuRegexp)) {
-      e.target.innerHTML = '';
-      _self.alertMessageFlag = true;
-      _self.editGridFlag = true;
-      _self.selectedPoint = 0; // 空欄の表示
-      _self.mainGrid.itemsSource = [];
-    }
-    // スペースの置き換え
-    else if (
-      ht.target.innerHTML.match(redNoneRegexp) ||
-      ht.target.innerHTML.match(redNoneRegexp2)
-    ) {
-      e.target.innerHTML =
-        '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
-      _self.alertMessageFlag = true;
-      _self.editGridFlag = true;
-      _self.selectedPoint = 2; // 青〇の表示
-      _self.mainGrid.itemsSource = [];
-    }
-    //初回空欄の置き換え
-    else if (ht.target.innerHTML == '') {
-      e.target.innerHTML =
-        '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
-      _self.alertMessageFlag = true;
-      _self.editGridFlag = true;
-      _self.selectedPoint = 2; // 青〇の表示
-      _self.mainGrid.itemsSource = [];
+      //値を配列に登録
+      // edittingUse(_self, hPage, d);
+    } else {
+      alert('ユーザーを選択してください。');
     }
   });
 }
+/**************
+ * 値の変更
+ */
+// function edittingUse(_self, hPage, d) {
+//   if (
+//     _self.rowColumn[hPage.row - 1] == 'breakfast' ||
+//     _self.rowColumn[hPage.row - 1] == 'lunch' ||
+//     _self.rowColumn[hPage.row - 1] == 'dinner'
+//   ) {
+//     _self.mealsData[_self.rowColumn[hPage.row - 1]][0][d] = _self.selectedPoint;
+//   }
+//   if (_self.rowColumn[hPage.row - 1] == 'kounetsuSuihiFlag') {
+//     _self.kounetusuihi[0][d] = _self.selectedPoint;
+//   }
+//   //体制・個別
+//   let taiseiRow = hPage.row - _self.hendoRowsCount;
+//   if (taiseiRow >= 0 && _self.gridItemName[0]['taisei_kobetu'][taiseiRow]) {
+//     _self.gridItemName[0]['taisei_kobetu'][taiseiRow]['date'][d] =
+//       _self.selectedPoint;
+//   }
+//   //個別
+//   let kobetsuRow = hPage.row - _self.taiseiKobetsuRowsCount;
+//   if (kobetsuRow >= 0 && _self.gridItemName[0].kobetu[kobetsuRow]) {
+//     _self.gridItemName[0].kobetu[kobetsuRow]['date'][d] = _self.selectedPoint;
+//   }
+// }
 
 /***
  * 値の登録処理
@@ -737,34 +819,42 @@ function methodSettingPoint(flexGrid, _self) {
   //利用日の設定
   settingRiyoubi(flexGrid, _self);
   //入院・退院日の設定
-  if (_self.deleteGridFlag == true && _self.selectType == 'nyutaiin') {
+  if (_self.deleteGridFlag == true && _self.selectType == 'nyutaiin_add') {
     deleteNyuTaiin(flexGrid, _self);
+  } else if (_self.editGridFlag == true && _self.selectType == 'nyutaiin_add') {
+    editNyuTaiin(flexGrid, _self);
   } else if (_self.selectType == 'nyutaiin_add') {
     insertNyuTaiin(flexGrid, _self);
-  } else if (_self.editGridFlag == true && _self.selectType == 'nyutaiin') {
-    editNyuTaiin(flexGrid, _self);
   } else {
     settingNyuTaiin(flexGrid, _self);
   }
   //外泊の設定
   if (_self.deleteGridFlag == true && _self.selectType == 'gaihaku') {
     deleteGaihaku(flexGrid, _self);
-  } else if (_self.selectType == 'gaihaku_add') {
-    insertGaihaku(flexGrid, _self);
   } else if (_self.editGridFlag == true && _self.selectType == 'gaihaku') {
     editGaihaku(flexGrid, _self);
+  } else if (_self.selectType == 'gaihaku_add') {
+    insertGaihaku(flexGrid, _self);
   } else {
     settingGaihaku(flexGrid, _self);
   }
-  //食事の設定
-  if (_self.editGridFlag == true) {
-    editMeals(flexGrid, _self);
-  } else {
-    settingMeals(flexGrid, _self);
-  }
 
   for (let i = 0; i <= _self.gridItemName[0]['shisetsuNyusho'].length; i++) {
+    if (
+      _self.gridItemName[0]['shisetsuNyusho'][i] &&
+      _self.gridItemName[0]['shisetsuNyusho'][i].mealFlag == true
+    ) {
+      //食事の設定
+      if (_self.editGridFlag == true) {
+        editMeals(flexGrid, _self);
+      } else {
+        settingMeals(flexGrid, _self);
+      }
+    }
+
     //光熱水費があるとき
+    //光熱費以外のほかのデータがあるとき(家賃等)
+    //適宜editとsettingの関数を追加していくapiの取得方法による
     if (
       _self.gridItemName[0]['shisetsuNyusho'][i] &&
       _self.gridItemName[0]['shisetsuNyusho'][i].kounetsuSuihiFlag ==
@@ -785,30 +875,12 @@ function methodSettingPoint(flexGrid, _self) {
     settingKasan(flexGrid, _self);
   }
 }
-/********************
- * 変動情報の行数取得
- */
-function getHendoRows(_self) {
-  // mealFlagがある時はmeals分を加える
-  let rows = 0;
-  for (let i = 0; i < _self.gridItemName[0]['shisetsuNyusho'].length; i++) {
-    if (i == 3) {
-      //食事のとき
-      if (_self.gridItemName[0].shisetsuNyusho[i].mealFlag) {
-        rows = rows + _self.gridItemName[0].meals.length;
-      } else {
-        rows++;
-      }
-    }
-    rows++;
-  }
-  return rows;
-}
+
 /*****************
  * 加算情報編集
  */
 function editKasan(flexGrid, _self) {
-  let rows = getHendoRows(_self);
+  let rows = _self.hendoRowsCount;
 
   //体制+個別用の配列番号
   if (rows <= _self.dayPoint.dayrow) {
@@ -859,7 +931,7 @@ function settingKasan(flexGrid, _self) {
  * 加算情報登録
  */
 function createKasan(flexGrid, _self) {
-  let rows = getHendoRows(_self);
+  let rows = _self.hendoRowsCount;
 
   _self.gridItemName[0].taisei_kobetu.forEach(function (elements) {
     let total = 0;
@@ -895,7 +967,7 @@ function createKasan(flexGrid, _self) {
  * 光熱水費
  */
 function editKounetusui(flexGrid, _self) {
-  let rows = getHendoRows(_self) - 1;
+  let rows = _self.hendoRowsCount - 1;
   let kounetusuihi = _self.kounetusuihi;
   if (_self.dayPoint['dayrow'] == rows) {
     kounetusuihi[0][_self.dayPoint['day']] = _self.selectedPoint;
@@ -966,7 +1038,7 @@ function settingKounetusui(flexGrid, _self) {
     }
   }
 
-  let rows = getHendoRows(_self) - 1;
+  let rows = _self.hendoRowsCount - 1;
   if (_self.kounetusuihi > 0) {
     kounetusuihi = [];
     kounetusuihi = _self.kounetusuihi;
@@ -1979,7 +2051,7 @@ function methodCellMerge(flexGrid, _self) {
   let range = [];
   //todo if文の条件をキーの値に変更する
   //宿泊型自立訓練
-  let hendoRow = getHendoRows(_self);
+  let hendoRow = _self.hendoRowsCount;
   let lastRow = _self.kasanRow - 1;
   if (_self.teikyoCode == '34') {
     range = [
@@ -2045,16 +2117,19 @@ function methodCellMerge(flexGrid, _self) {
   for (let i = hendoRow; i <= lastRow; i++) {
     range.push(new wjGrid.CellRange(i, 2, i, 3));
   }
-
-  let mm = new wjGrid.MergeManager(flexGrid);
-  mm.getMergedRange = function (panel, r, c) {
-    for (let h = 0; h < range.length; h++) {
-      if (range[h].contains(r, c)) {
-        return range[h];
+  try {
+    let mm = new wjGrid.MergeManager(flexGrid);
+    mm.getMergedRange = function (panel, r, c) {
+      for (let h = 0; h < range.length; h++) {
+        if (range[h].contains(r, c)) {
+          return range[h];
+        }
       }
-    }
-  };
-  flexGrid.mergeManager = mm;
+    };
+    flexGrid.mergeManager = mm;
+  } catch (e) {
+    console.log(e);
+  }
 }
 </script>
 <style lang="scss">
@@ -2078,7 +2153,6 @@ div#kobeturiyo {
     display: inline-block;
     width: 140px;
     height: 100%;
-    padding-top: 5px;
   }
   // 受給者証状況用のエリアボックス
   .jyukyusyaBox {

@@ -417,11 +417,7 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
-        //選択した要素の取得
-        if (e.target.innerText.length > 0) {
-          let row = hPage._row;
-          _self.$emit('child-select', row);
-        }
+
         //印刷箇所を押下
         if (ht.cellType == wjGrid.CellType.Cell && ht.col == 2) {
           let p = flexGrid.getCellData(ht.row, 2);
@@ -430,6 +426,11 @@ export default {
           if (p == '') mark = '〇';
           _self.usersData[ht.row]['print'] = mark;
           flexGrid.setCellData(ht.row, 2, mark);
+        } else if (e.target.innerText.length > 0) {
+          //選択した要素の取得
+
+          let row = hPage._row;
+          _self.$emit('child-select', row);
         }
       });
     },
