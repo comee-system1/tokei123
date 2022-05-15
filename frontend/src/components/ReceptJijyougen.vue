@@ -64,7 +64,7 @@
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'koban'"
+        :binding="'kobanSorts'"
         :header="verticalHeader[4]"
         :width="30"
         align="center"
@@ -144,9 +144,8 @@
       ></wj-flex-grid-column>
     </wj-flex-grid>
     <div id="menubar">
-      <v-btn elevation="2" outlined tile block>事業所未登録</v-btn>
+      <v-btn elevation="2" outlined tile block>事業所未使用</v-btn>
       <v-btn elevation="2" outlined tile mt-1 block>事業所追加</v-btn>
-      <v-btn elevation="2" outlined tile mt-1 block>項目並替え</v-btn>
     </div>
   </div>
 </template>
@@ -297,35 +296,69 @@ export default {
     getData: function () {
       let receptData = [];
       for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < Math.floor(Math.random() * 5) + 2; j++) {
-          receptData.push({
-            sityoson: '東経市',
-            jyukyusyaBango: '1000' + i,
-            code: 10000000,
-            riyousyamei: '東経太郎' + i,
-            kana: 'トウケイタロウ',
-            jyougenicon: '自',
-            jyougengaku: '南山事務所',
-            riyosyafutan: 9000,
-            resehanei: '',
-            koban: j + 1,
-            jigyosyobango: '1000000' + i + j,
-            jigyosyomei: 'ひまわり園',
-            teikyoservice: '22 生活介護',
-            souhiyougaku: '',
-            riyosyafutangaku: '',
-            kanrikekkafutangaku: '',
-            kanrikekka: '',
-            resekakutei: '',
-            print: '',
-            complateFlag: false, // 確定状態
-          });
-        }
+        //  for (let j = 0; j < Math.floor(Math.random() * 5) + 2; j++) {
+        receptData.push({
+          sityoson: '東経市',
+          jyukyusyaBango: '1000',
+          //  jyukyusyaBango: '1000' + i,
+          code: 10000000,
+          riyousyamei: '東経太郎' + i,
+          kana: 'トウケイタロウ',
+          jyougenicon: '自',
+          jyougengaku: '南山事務所',
+          riyosyafutan: 9000,
+          resehanei: '',
+          //kobanSorts: j + 1,
+          kobanSorts: i + 1,
+          // jigyosyobango: '1000000' + i + j,
+          jigyosyobango: '1000000' + i,
+          jigyosyomei: 'ひまわり園',
+          teikyoservice: '22 生活介護',
+          souhiyougaku: '',
+          riyosyafutangaku: '',
+          kanrikekkafutangaku: '',
+          kanrikekka: '',
+          resekakutei: '',
+          print: '',
+          complateFlag: false, // 確定状態
+          fixFlag: i % 4 == 0,
+        });
+        //  }
+      }
+      for (let i = 0; i < 3; i++) {
+        //  for (let j = 0; j < Math.floor(Math.random() * 5) + 2; j++) {
+        receptData.push({
+          sityoson: '東経市',
+          jyukyusyaBango: '1001',
+          //  jyukyusyaBango: '1000' + i,
+          code: 10000000,
+          riyousyamei: '東経太郎' + i,
+          kana: 'トウケイタロウ',
+          jyougenicon: '自',
+          jyougengaku: '南山事務所',
+          riyosyafutan: 9000,
+          resehanei: '',
+          //kobanSorts: j + 1,
+          kobanSorts: i + 1,
+          // jigyosyobango: '1000000' + i + j,
+          jigyosyobango: '1000000' + i,
+          jigyosyomei: 'ひまわり園',
+          teikyoservice: '22 生活介護',
+          souhiyougaku: '',
+          riyosyafutangaku: '',
+          kanrikekkafutangaku: '',
+          kanrikekka: '',
+          resekakutei: '',
+          print: '',
+          complateFlag: false, // 確定状態
+          fixFlag: i % 3 == 0,
+        });
+        //  }
       }
       // 項番でソート
       receptData.sort((a, b) => {
-        if (a.koban < b.koban) return -1;
-        if (a.koban > b.koban) return 1;
+        if (a.kobanSorts < b.kobanSorts) return -1;
+        if (a.kobanSorts > b.kobanSorts) return 1;
         return 0;
       });
       // 受給者番号でソート
@@ -335,7 +368,12 @@ export default {
         return 0;
       });
 
-      //jyukyusyaBangoをキーに変更し、グループ化をする
+      //項番をキャスト
+      for (let i = 0; i < receptData.length; i++) {
+        receptData[i]['kobanSorts'] = String(receptData[i]['kobanSorts']);
+      }
+
+      //jyukyusyaBango をキーに変更し、グループ化をする
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
         //配列の要素数を指定する
@@ -348,6 +386,7 @@ export default {
           }
         }
       }
+
       //マージ用の配列を作成
       let merge = [];
       array.forEach(function (elem, key) {
@@ -393,6 +432,7 @@ export default {
         let ht = flexGrid.hitTest(e);
         // console.log(ht.target.innerHTML);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        let text = ht.target.innerText;
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
           //編集カラムを押下
@@ -444,8 +484,55 @@ export default {
               _self.allData[hPage.row]['complateFlag'] = true;
             }
           }
+
+          // 順番列を押下
+          // グループ化された項番を一度クリアし、クリックした順番に番号を振りなおす
+          if (hPage.col == 7) {
+            //クリックした際の受給者番号取得
+            let jB = _self.getClickJyukyusyaBango(hPage);
+            //受給者番号が持つ行数の取得
+            let jBrow = _self.getJyukyusyaBangoRow(jB);
+
+            if (text == '') {
+              // 順番の最大値を取得
+              let numbers = [];
+              for (let i = jBrow.first; i < jBrow.last; i++) {
+                numbers.push(_self.allData[i].kobanSorts);
+              }
+              var max = numbers.reduce(function (a, b) {
+                return Math.max(a, b);
+              });
+              let num = max + 1;
+              flexGrid.setCellData(hPage.row, 7, num);
+              _self.allData[hPage.row].kobanSorts = num;
+            } else {
+              for (let i = jBrow.first; i < jBrow.last; i++) {
+                flexGrid.setCellData(i, 7, '');
+                _self.allData[i].kobanSorts = '';
+              }
+            }
+          }
         }
       });
+    },
+    /*************
+     * クリックした際の受給者番号取得
+     */
+    getClickJyukyusyaBango: function (hPage) {
+      return this.allData[hPage.row].jyukyusyaBango;
+    },
+    /*************
+     * 受給者番号が持つ行数の取得
+     */
+    getJyukyusyaBangoRow: function (jb) {
+      let data = [];
+      for (let i = 0; i < this.merge.length; i++) {
+        let key = this.merge[i].k;
+        if (key == jb) {
+          data.push(this.merge[i]);
+        }
+      }
+      return data[0];
     },
     /********
      * セルを編集
@@ -499,6 +586,7 @@ export default {
         let text = e.cell.innerText;
 
         let classname = '';
+
         if (
           text == _self.verticalHeader[0] ||
           text == _self.verticalHeader[1] ||
@@ -517,14 +605,23 @@ export default {
         ) {
           classname = 'text-center';
         }
-        if (text == '〇' || text == '●') {
-          classname = 'vertical';
+        // if (text == '〇' || text == '●') {
+        //   classname = 'vertical';
+        // }
+        // if (text == 'complete') {
+        //   classname = 'complete';
+        // } else if (text == 'delete') {
+        //   classname = 'delete';
+        // }
+
+        // 固定行データ
+        let fixbackground = '';
+        if (_self.allData[e.row].fixFlag) {
+          if (e.panel == flexGrid.cells) {
+            fixbackground = 'fixbackground';
+          }
         }
-        if (text == 'complete') {
-          classname = 'complete';
-        } else if (text == 'delete') {
-          classname = 'delete';
-        }
+
         if (classname) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +
@@ -532,6 +629,10 @@ export default {
             '">' +
             html +
             '</div>';
+        }
+        if (fixbackground) {
+          e.cell.innerHTML =
+            '<span class="' + fixbackground + '">' + html + '</span>';
         }
       });
     },
@@ -633,6 +734,19 @@ div#recept-jijyougen {
     writing-mode: vertical-rl;
     letter-spacing: 0.2em;
     text-align: center;
+  }
+
+  .fixbackground {
+    background-color: $grid_background;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: left !important;
+    display: block;
+    padding: 5px 0px 0px 5px;
   }
 
   .complete {

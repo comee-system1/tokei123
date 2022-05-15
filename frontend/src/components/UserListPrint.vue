@@ -188,11 +188,14 @@ export default {
     };
   },
   methods: {
-    setChildTeikyocode(teikyoCode) {
-      if (this.useTeikyoCode && this.useTeikyoCode != teikyoCode) {
+    setChildTeikyocode(teikyoCode, serachbutton) {
+      if (serachbutton) {
+        this.usersData = this.createUser();
+      } else if (this.useTeikyoCode && this.useTeikyoCode != teikyoCode) {
         //以前の状態とコードが異なる際に、ユーザの一覧をクリアする
         this.usersData = [];
       }
+
       this.useTeikyoCode = teikyoCode;
     },
     sortUser: function (sortType) {

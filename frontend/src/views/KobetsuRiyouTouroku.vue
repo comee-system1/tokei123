@@ -351,11 +351,19 @@ export default {
     },
     // 変動情報ダイアログの表示
     openDialog_Term(type) {
-      this.$refs.dialog_kikantuika.parentFromOpenDialog('', type);
+      if (this.userDataSelect[0]['jyukyusyabango']) {
+        this.$refs.dialog_kikantuika.parentFromOpenDialog('', type);
+      } else {
+        alert('ユーザを選択してください。');
+      }
     },
     // 加算追加ダイアログの表示
     openDialog_Add() {
-      this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
+      if (this.userDataSelect[0]['jyukyusyabango']) {
+        this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
+      } else {
+        alert('ユーザを選択してください。');
+      }
     },
     //表示されるカラムの指定
     viewColumn: function () {
@@ -420,6 +428,12 @@ export default {
       let m = moment(this.year + '-' + this.month + '-01');
       this.lastdate = m.daysInMonth();
       this.changeHndoJyoho();
+      if (serviceArgument['search_button']) {
+        this.$refs.user_list_print.setChildTeikyocode(
+          this.teikyoCode,
+          serviceArgument['search_button']
+        );
+      }
     },
     /***************
      * ヘッダメニューのサービスを変更したとき
@@ -779,7 +793,7 @@ function methodCellClickEvent(flexGrid, _self) {
       }
       _self.mainGrid.itemsSource = [];
       //値を配列に登録
-      // edittingUse(_self, hPage, d);
+      edittingUse(_self, hPage, d);
     } else {
       alert('ユーザーを選択してください。');
     }
@@ -788,29 +802,29 @@ function methodCellClickEvent(flexGrid, _self) {
 /**************
  * 値の変更
  */
-// function edittingUse(_self, hPage, d) {
-//   if (
-//     _self.rowColumn[hPage.row - 1] == 'breakfast' ||
-//     _self.rowColumn[hPage.row - 1] == 'lunch' ||
-//     _self.rowColumn[hPage.row - 1] == 'dinner'
-//   ) {
-//     _self.mealsData[_self.rowColumn[hPage.row - 1]][0][d] = _self.selectedPoint;
-//   }
-//   if (_self.rowColumn[hPage.row - 1] == 'kounetsuSuihiFlag') {
-//     _self.kounetusuihi[0][d] = _self.selectedPoint;
-//   }
-//   //体制・個別
-//   let taiseiRow = hPage.row - _self.hendoRowsCount;
-//   if (taiseiRow >= 0 && _self.gridItemName[0]['taisei_kobetu'][taiseiRow]) {
-//     _self.gridItemName[0]['taisei_kobetu'][taiseiRow]['date'][d] =
-//       _self.selectedPoint;
-//   }
-//   //個別
-//   let kobetsuRow = hPage.row - _self.taiseiKobetsuRowsCount;
-//   if (kobetsuRow >= 0 && _self.gridItemName[0].kobetu[kobetsuRow]) {
-//     _self.gridItemName[0].kobetu[kobetsuRow]['date'][d] = _self.selectedPoint;
-//   }
-// }
+function edittingUse(_self, hPage, d) {
+  if (
+    _self.rowColumn[hPage.row - 1] == 'breakfast' ||
+    _self.rowColumn[hPage.row - 1] == 'lunch' ||
+    _self.rowColumn[hPage.row - 1] == 'dinner'
+  ) {
+    _self.mealsData[_self.rowColumn[hPage.row - 1]][0][d] = _self.selectedPoint;
+  }
+  if (_self.rowColumn[hPage.row - 1] == 'kounetsuSuihiFlag') {
+    _self.kounetusuihi[0][d] = _self.selectedPoint;
+  }
+  //体制・個別
+  let taiseiRow = hPage.row - _self.hendoRowsCount;
+  if (taiseiRow >= 0 && _self.gridItemName[0]['taisei_kobetu'][taiseiRow]) {
+    _self.gridItemName[0]['taisei_kobetu'][taiseiRow]['date'][d] =
+      _self.selectedPoint;
+  }
+  //個別
+  let kobetsuRow = hPage.row - _self.taiseiKobetsuRowsCount;
+  if (kobetsuRow >= 0 && _self.gridItemName[0].kobetu[kobetsuRow]) {
+    _self.gridItemName[0].kobetu[kobetsuRow]['date'][d] = _self.selectedPoint;
+  }
+}
 
 /***
  * 値の登録処理

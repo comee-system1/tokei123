@@ -346,7 +346,9 @@ export default {
         returns['seikyu_month'] = _self.seikyu_month;
         returns['teikyo_year'] = _self.year;
         returns['teikyo_month'] = _self.month;
+        returns['search_button'] = false;
         _self.returndata = returns;
+
         _self.$emit('parent-service-change', returns);
 
         _self.header_dialog = false;
@@ -391,8 +393,8 @@ export default {
         .format('MM');
       returns['teikyo_year'] = moment().year();
       returns['teikyo_month'] = moment().format('MM');
-      console.log(returns);
       this.returndata = returns;
+      this.returndata['search_button'] = false;
       this.$emit('parent-service-select', returns);
     },
     /**************
@@ -406,6 +408,7 @@ export default {
       this.returndata['seikyu_month'] = this.seikyu_month;
       this.returndata['teikyo_year'] = this.year;
       this.returndata['teikyo_month'] = this.month;
+      this.returndata['search_button'] = true;
       this.$emit('parent-service-select', this.returndata);
     },
     /**************
