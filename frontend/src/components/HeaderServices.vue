@@ -208,7 +208,7 @@ export default {
       seikyu_year: moment().add('month', 1).startOf('month').format('YYYY'),
       seikyu_month: moment().add('month', 1).startOf('month').format('MM'),
       picker: '',
-      header_dialog: false,
+      header_dialog: true,
       datepicker_dialog: false,
       defaultSetting: this.defaultSettings(),
       returndata: '', // 検索ボタンを押下時に選択値を渡す変数
@@ -216,15 +216,48 @@ export default {
       storage: {},
     };
   },
+  created: function () {
+    let storage = {};
+    try {
+      storage = {
+        jimusyoBango: ls.getlocalStorageEncript('jimusyoBango'),
+        serviceJigyo: ls.getlocalStorageEncript('serviceJigyo'),
+        teikyoService: ls.getlocalStorageEncript('teikyoService'),
+        selectRow: ls.getlocalStorageEncript('selectRow'),
+      };
+      this.storage = storage;
+    } catch (e) {
+      console.log(e);
+    }
+    //strageにデータが登録してある時
+    if (storage.selectRow) {
+      this.header_dialog = false;
+
+      let defaultdata = [];
+      for (let i = 0; i <= this.jimusyo.length; i++) {
+        if (i == ls.getlocalStorageEncript('selectRow')) {
+          defaultdata = this.jimusyo[i];
+          this.select = i;
+          break;
+        }
+      }
+      this.jigyosyoCode =
+        defaultdata.jimusyoBango + ' ' + defaultdata.serviceJigyo;
+      this.selectButton = defaultdata.teikyoService;
+
+      let returns = {};
+      returns = {
+        jimusyoBango: this.jimusyo[storage.selectRow].jimusyoBango,
+        serviceJigyo: this.jimusyo[storage.selectRow].serviceJigyo,
+        teikyoCode: this.jimusyo[storage.selectRow].teikyoCode,
+        teikyoService: this.jimusyo[storage.selectRow].teikyoService,
+      };
+      this.returndata = returns;
+    }
+  },
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      // let storage = {
-      //   jimusyoBango: ls.getlocalStorageEncript('jimusyoBango'),
-      //   serviceJigyo: ls.getlocalStorageEncript('serviceJigyo'),
-      //   teikyoService: ls.getlocalStorageEncript('teikyoService'),
-      // };
-      console.log(ls.getlocalStorageEncript('jimusyoBango'));
     });
   },
   methods: {
@@ -354,6 +387,7 @@ export default {
           'teikyoService',
           _self.jimusyo[ht.row].teikyoService
         );
+        ls.setlocalStorageEncript('selectRow', ht.row);
         let returns = {};
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
@@ -383,52 +417,11 @@ export default {
       this.createJimusyo();
       this.jigyosyoCode = '事業者コード・提供サービスを選択してください。';
       this.selectButton = '';
-      // //初期データはdefaultFlagが有効のものを利用
-      // let defaultdata = [];
-      // for (let i = 0; i <= this.jimusyo.length; i++) {
-      //   if (this.jimusyo[i]['defaultFlag']) {
-      //     defaultdata = this.jimusyo[i];
-      //     this.select = i;
-      //     break;
-      //   }
-      // }
-
-      // this.jigyosyoCode =
-      //   defaultdata.jimusyoBango + ' ' + defaultdata.serviceJigyo;
-      // this.selectButton = defaultdata.teikyoService;
-      //let returns = {};
-      //初期状態は何も返さない
-      /*
-      returns = {
-        jimusyoBango: defaultdata.jimusyoBango,
-        serviceJigyo: defaultdata.serviceJigyo,
-        teikyoCode: defaultdata.teikyoCode,
-        teikyoService: defaultdata.teikyoService,
-      };
-      
-      returns['seikyu_year'] = moment()
-        .add('month', 1)
-        .startOf('month')
-        .format('YYYY');
-      returns['seikyu_month'] = moment()
-        .add('month', 1)
-        .startOf('month')
-        .format('MM');
-      returns['teikyo_year'] = moment().year();
-      returns['teikyo_month'] = moment().format('MM');
-      this.returndata = returns;
-      this.returndata['search_button'] = false;
-      console.log(returns);
-      this.$emit('parent-service-select', returns);
-      */
     },
     /**************
      * 検索ボタンを押下
      */
     searchButton: function () {
-      if (!this.returndata) {
-        this.defaultSettings();
-      }
       this.screenFlag = false;
       this.returndata['seikyu_year'] = this.seikyu_year;
       this.returndata['seikyu_month'] = this.seikyu_month;

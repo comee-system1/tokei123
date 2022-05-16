@@ -23,7 +23,7 @@
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
                 <v-card class="pr-2 text-center" elevation="0" :min-width="80">
-                  <label class="greyLabel">利用者名</label>
+                  <label class="greyLabel pt-1">利用者名</label>
                 </v-card>
                 <v-card class="pa-1 light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
@@ -33,7 +33,7 @@
                   elevation="0"
                   :min-width="80"
                 >
-                  <label class="greyLabel">受給者番号</label>
+                  <label class="greyLabel pt-1">受給者番号</label>
                 </v-card>
                 <v-card class="pa-1 light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].jyukyusyabango }}
@@ -371,41 +371,38 @@ export default {
       let hendoRowsCount = 0; // 変動情報の行数
       let taiseiKobetsuRowsCount = 0; // 体制個別の行数
       let kobetsuCount = 0; // 個別の行数
-      if (this.gridItemName[0]) {
-        for (let i = 0; i < this.gridItemName[0].shisetsuNyusho.length; i++) {
-          // 光熱水費があるとき
-          if (this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
-            rowColumn.push(
-              this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
-            );
-          } else if (this.gridItemName[0].shisetsuNyusho[i].mealFlag) {
-            // 食事フラグがあるとき
-            for (let j = 0; j < this.gridItemName[0].mealsKey.length; j++) {
-              rowColumn.push(this.gridItemName[0].mealsKey[j]);
-            }
-          } else {
-            rowColumn.push(this.gridItemName[0].shisetsuNyusho[i].name);
+      for (let i = 0; i < this.gridItemName[0].shisetsuNyusho.length; i++) {
+        // 光熱水費があるとき
+        if (this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag) {
+          rowColumn.push(
+            this.gridItemName[0].shisetsuNyusho[i].kounetsuSuihiFlag
+          );
+        } else if (this.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+          // 食事フラグがあるとき
+          for (let j = 0; j < this.gridItemName[0].mealsKey.length; j++) {
+            rowColumn.push(this.gridItemName[0].mealsKey[j]);
           }
+        } else {
+          rowColumn.push(this.gridItemName[0].shisetsuNyusho[i].name);
         }
-
-        hendoRowsCount = rowColumn.length;
-
-        for (let i = 0; i < this.gridItemName[0].taisei_kobetu.length; i++) {
-          rowColumn.push(this.gridItemName[0].taisei_kobetu[i].name);
-        }
-        taiseiKobetsuRowsCount = rowColumn.length;
-
-        for (let i = 0; i < this.gridItemName[0].kobetu.length; i++) {
-          rowColumn.push(this.gridItemName[0].kobetu[i].name);
-        }
-        kobetsuCount = rowColumn.length;
-
-        // +1 はタイトルの部分を追加
-        this.hendoRowsCount = hendoRowsCount + 1;
-        this.taiseiKobetsuRowsCount = taiseiKobetsuRowsCount + 1;
-        this.kobetsuCount = kobetsuCount + 1;
-        this.rowColumn = rowColumn;
       }
+      hendoRowsCount = rowColumn.length;
+
+      for (let i = 0; i < this.gridItemName[0].taisei_kobetu.length; i++) {
+        rowColumn.push(this.gridItemName[0].taisei_kobetu[i].name);
+      }
+      taiseiKobetsuRowsCount = rowColumn.length;
+
+      for (let i = 0; i < this.gridItemName[0].kobetu.length; i++) {
+        rowColumn.push(this.gridItemName[0].kobetu[i].name);
+      }
+      kobetsuCount = rowColumn.length;
+
+      // +1 はタイトルの部分を追加
+      this.hendoRowsCount = hendoRowsCount + 1;
+      this.taiseiKobetsuRowsCount = taiseiKobetsuRowsCount + 1;
+      this.kobetsuCount = kobetsuCount + 1;
+      this.rowColumn = rowColumn;
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
     getSelectUserChildComponent: function (data) {
@@ -494,8 +491,8 @@ export default {
     },
     onitemsSourceChanged: function (flexGrid) {
       let _self = this;
-      // セル初期カラム情報
       try {
+        // セル初期カラム情報
         methodCellSettingDefault(flexGrid, _self);
         // 情報タイトルパーツの書き込み
         methodWriteJyoho(flexGrid, _self);
@@ -509,21 +506,18 @@ export default {
     },
     // グリッドイニシアライズ
     onInitialized: function (flexGrid) {
-      try {
-        //初回の提供サービスコードを渡す
-        this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
+      //初回の提供サービスコードを渡す
+      this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
 
-        this.mainGrid = flexGrid;
-        flexGrid.autoSizeColumns();
-        let _self = this;
-        // セル情報のフォーマット指定
-        methodCellFormatSetting(flexGrid, _self);
+      this.mainGrid = flexGrid;
+      flexGrid.autoSizeColumns();
+      let _self = this;
+      // セル情報のフォーマット指定
+      methodCellFormatSetting(flexGrid, _self);
 
-        //セルのクリックイベント
-        methodCellClickEvent(flexGrid, _self);
-      } catch (e) {
-        console.log(e);
-      }
+      //セルのクリックイベント
+      methodCellClickEvent(flexGrid, _self);
+
       let data = [];
       flexGrid.itemsSource = data;
     },
@@ -541,8 +535,9 @@ function methodCellSettingDefault(flexGrid, _self) {
     flexGrid.columns.push(new wjGrid.Column());
   }
   let row = 0;
-  row = _self.hendoRowsCount + _self.gridItemName[0].kasanRow;
-
+  if (_self.gridItemName[0]) {
+    row = _self.hendoRowsCount + _self.gridItemName[0].kasanRow;
+  }
   _self.kasanRow = row;
   flexGrid.rows.clear();
   while (flexGrid.rows.length < row) {
