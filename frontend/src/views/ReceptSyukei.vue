@@ -281,7 +281,11 @@ export default {
      * アルファベットの絞り込み
      */
     onAlphabet: function (key) {
-      this.$refs.tajougenChild.parentAlphabet(key);
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentAlphabet(key);
+      } else {
+        this.$refs.tajougenChild.parentAlphabet(key);
+      }
     },
     /*****************
      * タブを切り替えた際の表示切替

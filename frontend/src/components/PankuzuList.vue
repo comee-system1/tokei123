@@ -24,6 +24,7 @@ export default {
 <style scoped>
 .pankuzu-list {
   background-color: lightgrey;
+  z-index: 5;
 }
 
 .pankuzu-list p {

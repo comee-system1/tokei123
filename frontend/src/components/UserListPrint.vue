@@ -189,13 +189,10 @@ export default {
   },
   methods: {
     setChildTeikyocode(teikyoCode, serachbutton) {
+      // this.usersData = [];
       if (serachbutton) {
         this.usersData = this.createUser();
-      } else if (this.useTeikyoCode && this.useTeikyoCode != teikyoCode) {
-        //以前の状態とコードが異なる際に、ユーザの一覧をクリアする
-        this.usersData = [];
       }
-
       this.useTeikyoCode = teikyoCode;
     },
     sortUser: function (sortType) {

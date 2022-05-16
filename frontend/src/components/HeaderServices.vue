@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex md12 class="basic-info" style="position: relative">
+    <v-flex md12 class="basic-info" style="position: relative; z-index: 5">
       <div class="service-selection-area">
         <label>サービス</label>
         <v-btn
@@ -126,21 +126,11 @@
         v-model="header_dialog"
         width="600"
         content-class="header_dialogs"
+        persistent
+        no-click-animation
       >
         <v-card class="pa-2">
           <v-container>
-            <v-btn
-              elevation="2"
-              icon
-              small
-              absolute
-              top
-              right
-              @click="header_dialog = false"
-              class="closeButton"
-              color="secondary"
-              ><v-icon dark small> mdi-close </v-icon></v-btn
-            >
             <wj-flex-grid
               :itemsSource="jimusyo"
               :headersVisibility="'Column'"
@@ -191,13 +181,16 @@
         </v-date-picker>
       </v-dialog>
     </v-flex>
+    <v-row id="screen_dialog" v-show="screenFlag">
+      <v-col> 検索ボタンを押してください。 </v-col>
+    </v-row>
   </v-layout>
 </template>
 
 <script>
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
-
+import ls from '@/utiles/localStorage';
 export default {
   props: {
     seikyuflag: { type: Boolean },
@@ -219,7 +212,20 @@ export default {
       datepicker_dialog: false,
       defaultSetting: this.defaultSettings(),
       returndata: '', // 検索ボタンを押下時に選択値を渡す変数
+      screenFlag: false, // 検索ボタン押下前にデータエリアにスクリーンを行う
+      storage: {},
     };
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      // ビュー全体がレンダリングされた後にのみ実行されるコード
+      // let storage = {
+      //   jimusyoBango: ls.getlocalStorageEncript('jimusyoBango'),
+      //   serviceJigyo: ls.getlocalStorageEncript('serviceJigyo'),
+      //   teikyoService: ls.getlocalStorageEncript('teikyoService'),
+      // };
+      console.log(ls.getlocalStorageEncript('jimusyoBango'));
+    });
   },
   methods: {
     createJimusyo: function () {
@@ -324,8 +330,11 @@ export default {
     },
     onInitializedJimusyo: function (grid) {
       //this.createJimusyo();
+      //初期選択状態を解除
+      grid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       let _self = this;
-      grid.select(this.select, 1);
+      //初期選択状態
+      //grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
         var ht = grid.hitTest(e);
         ht = grid.hitTest(e.pageX, e.pageY);
@@ -333,7 +342,18 @@ export default {
         _self.jigyosyoCode = _self.jimusyo[ht.row].jimusyoBango;
         _self.jigyosyoCode += ' ' + _self.jimusyo[ht.row].serviceJigyo;
         _self.selectButton = _self.jimusyo[ht.row].teikyoService;
-
+        ls.setlocalStorageEncript(
+          'jimusyoBango',
+          _self.jimusyo[ht.row].jimusyoBango
+        );
+        ls.setlocalStorageEncript(
+          'serviceJigyo',
+          _self.jimusyo[ht.row].serviceJigyo
+        );
+        ls.setlocalStorageEncript(
+          'teikyoService',
+          _self.jimusyo[ht.row].teikyoService
+        );
         let returns = {};
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
@@ -341,16 +361,14 @@ export default {
           teikyoCode: _self.jimusyo[ht.row].teikyoCode,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-
         returns['seikyu_year'] = _self.seikyu_year;
         returns['seikyu_month'] = _self.seikyu_month;
         returns['teikyo_year'] = _self.year;
         returns['teikyo_month'] = _self.month;
         returns['search_button'] = false;
         _self.returndata = returns;
-
         _self.$emit('parent-service-change', returns);
-
+        _self.screenFlag = true;
         _self.header_dialog = false;
       });
       grid.itemFormatter = function (panel, r, c, cell) {
@@ -363,26 +381,31 @@ export default {
     },
     defaultSettings: function () {
       this.createJimusyo();
+      this.jigyosyoCode = '事業者コード・提供サービスを選択してください。';
+      this.selectButton = '';
+      // //初期データはdefaultFlagが有効のものを利用
+      // let defaultdata = [];
+      // for (let i = 0; i <= this.jimusyo.length; i++) {
+      //   if (this.jimusyo[i]['defaultFlag']) {
+      //     defaultdata = this.jimusyo[i];
+      //     this.select = i;
+      //     break;
+      //   }
+      // }
 
-      //初期データはdefaultFlagが有効のものを利用
-      let defaultdata = [];
-      for (let i = 0; i <= this.jimusyo.length; i++) {
-        if (this.jimusyo[i]['defaultFlag']) {
-          defaultdata = this.jimusyo[i];
-          this.select = i;
-          break;
-        }
-      }
-      this.jigyosyoCode =
-        defaultdata.jimusyoBango + ' ' + defaultdata.serviceJigyo;
-      this.selectButton = defaultdata.teikyoService;
-      let returns = {};
+      // this.jigyosyoCode =
+      //   defaultdata.jimusyoBango + ' ' + defaultdata.serviceJigyo;
+      // this.selectButton = defaultdata.teikyoService;
+      //let returns = {};
+      //初期状態は何も返さない
+      /*
       returns = {
         jimusyoBango: defaultdata.jimusyoBango,
         serviceJigyo: defaultdata.serviceJigyo,
         teikyoCode: defaultdata.teikyoCode,
         teikyoService: defaultdata.teikyoService,
       };
+      
       returns['seikyu_year'] = moment()
         .add('month', 1)
         .startOf('month')
@@ -395,7 +418,9 @@ export default {
       returns['teikyo_month'] = moment().format('MM');
       this.returndata = returns;
       this.returndata['search_button'] = false;
+      console.log(returns);
       this.$emit('parent-service-select', returns);
+      */
     },
     /**************
      * 検索ボタンを押下
@@ -404,6 +429,7 @@ export default {
       if (!this.returndata) {
         this.defaultSettings();
       }
+      this.screenFlag = false;
       this.returndata['seikyu_year'] = this.seikyu_year;
       this.returndata['seikyu_month'] = this.seikyu_month;
       this.returndata['teikyo_year'] = this.year;
@@ -533,7 +559,19 @@ export default {
     background-color: $white;
   }
 }
-
+#screen_dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.46;
+  background-color: rgb(33, 33, 33);
+  border-color: rgb(33, 33, 33);
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  padding: 0;
+  margin: 0;
+}
 .service {
   &.v-btn {
     border: 1px solid $light-gray;

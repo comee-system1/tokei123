@@ -33,7 +33,6 @@
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="kasanList"
-                :selectedIndex="0"
                 :selectedIndexChanged="onKasanIndexChanged"
               >
               </wj-combo-box>

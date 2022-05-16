@@ -3,6 +3,7 @@
     <wj-flex-grid
       id="grid_jijyougen"
       :initialized="onInitialized"
+      :itemsSourceChanged="onitemsSourceChanged"
       :allowMerging="6"
       :headersVisibility="'Column'"
       :alternatingRowStep="0"
@@ -144,9 +145,76 @@
       ></wj-flex-grid-column>
     </wj-flex-grid>
     <div id="menubar">
-      <v-btn elevation="2" outlined tile block>事業所未使用</v-btn>
-      <v-btn elevation="2" outlined tile mt-1 block>事業所追加</v-btn>
+      <v-btn
+        elevation="2"
+        outlined
+        tile
+        block
+        id="jigyosyoMisiyo"
+        @click="jigyosyoMisiyo()"
+        >事業所未使用</v-btn
+      >
+      <v-btn
+        elevation="2"
+        outlined
+        tile
+        mt-1
+        block
+        id="jigyosyoAdd"
+        @click="jigyosyoAddList()"
+        >事業所追加</v-btn
+      >
     </div>
+    <!--事業所追加押下確認ダイアログ-->
+    <v-dialog v-model="jigyosyoAdd.flag" width="500">
+      <wj-flex-grid
+        :initialized="onAddInitialized"
+        :allowMerging="6"
+        :headersVisibility="'Column'"
+        :alternatingRowStep="0"
+        :allowDragging="false"
+        :allowResizing="false"
+        :deferResizing="false"
+        :allowSorting="false"
+        :itemsSource="receptParts"
+      >
+        <wj-flex-grid-column
+          :binding="'regist_lists'"
+          :header="'登録済 他サービス事業所一覧'"
+          align="center"
+          width="*"
+          :isReadOnly="true"
+        ></wj-flex-grid-column>
+        <wj-flex-grid-column
+          :binding="'regist_select'"
+          :header="'選択'"
+          align="center"
+          :width="32"
+          :isReadOnly="true"
+        ></wj-flex-grid-column>
+      </wj-flex-grid>
+    </v-dialog>
+    <!--事業所未使用押下確認ダイアログ-->
+    <v-dialog v-model="jigyosyoMisiyoConfirm.flag" width="500">
+      <v-card class="pa-4">
+        <v-card-text class="pa-0"
+          >{{ jigyosyoMisiyoConfirm.message }}
+        </v-card-text>
+        <v-card-actions class="pa-0">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="darken-1"
+            text
+            @click="jigyosyoMisiyoConfirm.flag = false"
+          >
+            キャンセル
+          </v-btn>
+          <v-btn color=" darken-1" text @click="jigyosyoMisiyoAdd()">
+            はい
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -155,6 +223,8 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjCore from '@grapecity/wijmo';
+
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
 
 Vue.use(VueAxios, axios);
@@ -176,9 +246,11 @@ export default {
         '利用者負担\n上限金額',
         '総費用額',
       ],
-      receptData: [],
+      receptData: this.getData(),
       mainFlexGrid: [],
       editGridFlag: false,
+      jigyosyoMisiyoConfirm: { flag: false, message: '' }, // 事業所未使用
+      jigyosyoAdd: { flag: false },
     };
   },
   components: {},
@@ -321,7 +393,8 @@ export default {
           resekakutei: '',
           print: '',
           complateFlag: false, // 確定状態
-          fixFlag: i % 4 == 0,
+          fixFlag: i % 4 == 0, //変更不可データ
+          viewflag: true, //表示状態
         });
         //  }
       }
@@ -351,10 +424,26 @@ export default {
           resekakutei: '',
           print: '',
           complateFlag: false, // 確定状態
-          fixFlag: i % 3 == 0,
+          fixFlag: i % 3 == 0, //変更不可データ
+          viewflag: true, //表示状態
         });
         //  }
       }
+
+      // データ配列の成型
+      receptData = this.fixDefaultTypeArray(receptData);
+
+      //マージ用の配列を作成
+      let merge = this.createMergeArray(receptData);
+
+      this.merge = merge;
+      this.allData = receptData;
+      return receptData;
+    },
+    /******************
+     * データ配列の成型
+     */
+    fixDefaultTypeArray: function (receptData) {
       // 項番でソート
       receptData.sort((a, b) => {
         if (a.kobanSorts < b.kobanSorts) return -1;
@@ -372,7 +461,20 @@ export default {
       for (let i = 0; i < receptData.length; i++) {
         receptData[i]['kobanSorts'] = String(receptData[i]['kobanSorts']);
       }
+      // viewFlagがtrueのデータのみ取得
+      let returns = [];
+      for (let i = 0; i < receptData.length; i++) {
+        if (receptData[i]['viewflag'] == true) {
+          returns.push(receptData[i]);
+        }
+      }
 
+      return returns;
+    },
+    /********************
+     * マージ作成用の配列を作成
+     */
+    createMergeArray: function (receptData) {
       //jyukyusyaBango をキーに変更し、グループ化をする
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
@@ -387,7 +489,6 @@ export default {
         }
       }
 
-      //マージ用の配列を作成
       let merge = [];
       array.forEach(function (elem, key) {
         merge.push({
@@ -396,20 +497,25 @@ export default {
           last: elem.length + elem[0].j,
         });
       });
-      this.merge = merge;
-      this.allData = receptData;
-      return receptData;
+      return merge;
     },
+    onitemsSourceChanged: function (flexGrid) {
+      this.mainFlexGrid = flexGrid;
+      let array = this.receptData;
+      let merge = this.createMergeArray(array);
+      this.merge = merge;
 
+      // データセルのマージ
+      this.createCellMerge(flexGrid);
+    },
     onInitialized: function (flexGrid) {
-      let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
 
       // セルのマージ
-      this.createCellMerge(flexGrid);
+      //this.createCellMerge(flexGrid);
 
       //セルのクリックイベント
       this.clickEventCell(flexGrid, _self);
@@ -420,9 +526,64 @@ export default {
       // セルの値を編集
       this.edittingCell(flexGrid, _self);
 
-      flexGrid.itemsSource = griddata;
+      //flexGrid.itemsSource = griddata;
     },
+    /******************
+     * 事務所追加ボタンを押下
+     */
+    jigyosyoAddList: function () {
+      // 編集列の選択値を取得
+      this.jigyosyoAdd.flag = true;
+      alert('aaa');
+      console.log(this.hensyuTarget);
+      console.log(this.hensyuTargetRow);
+    },
+    /******************
+     * 事務所未使用ボタンを押下
+     */
+    jigyosyoMisiyo: function () {
+      // 編集列の選択値を取得
+      let jM = this.hensyuTarget.jigyosyomei;
+      let tS = this.hensyuTarget.teikyoservice;
+      let message = jM + ' ' + tS + 'を未使用に設定します。よろしいですか？';
 
+      this.jigyosyoMisiyoConfirm.flag = true;
+      this.jigyosyoMisiyoConfirm.message = message;
+    },
+    /*************
+     * 事業所未使用ボタンのはいを実行
+     */
+    jigyosyoMisiyoAdd: function () {
+      // 入力した利用者の「上限額管理計算」に〇が表示される
+      // 変更場所の受給者番号取得
+      let jB = this.getClickJyukyusyaBango(this.hensyuTargetRow);
+      //受給者番号が持つ行数の取得
+      let jBrow = this.getJyukyusyaBangoRow(jB);
+      //クリックした行数
+      let row = this.hensyuTargetRow;
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        this.mainFlexGrid.setCellData(i, 6, '〇');
+      }
+      this.jigyosyoMisiyoConfirm.flag = false;
+      document.getElementById('menubar').style.display = 'none';
+      this.mainFlexGrid.setCellData(row, 13, ' ');
+
+      let get = [];
+      let data = this.allData;
+      let i = 0;
+      data.forEach(function (value) {
+        if (i != row) {
+          // 非表示用
+          // 非表示の際はviewflagをfalseにする
+          value.viewflag = false;
+          get.push(value);
+        }
+        i++;
+      });
+      this.receptData = get;
+      this.allData = get;
+      this.mainFlexGrid.itemsSource = [];
+    },
     /****************
      * セルのクリックイベント
      */
@@ -437,13 +598,12 @@ export default {
         if (ht.cellType == wjGrid.CellType.Cell) {
           //編集カラムを押下
           if (hPage.col == 13) {
+            let element = document.getElementById('menubar');
             if (flexGrid.getCellData(hPage.row, 13) == '〇') {
-              let element = document.getElementById('menubar');
               flexGrid.setCellData(hPage.row, 13, ' ');
               _self.allData[hPage.row]['hensyu'] = '';
               element.style.display = 'none';
             } else {
-              let element = document.getElementById('menubar');
               for (let i = 0; i < _self.allData.length; i++) {
                 flexGrid.setCellData(i, 13, '');
                 _self.allData[i]['hensyu'] = '';
@@ -454,9 +614,20 @@ export default {
                 let mark = '〇';
                 flexGrid.setCellData(hPage.row, 13, mark);
                 _self.allData[hPage.row]['hensyu'] = mark;
+                // 編集対象のデータを保持
+                _self.hensyuTarget = _self.allData[hPage.row];
+                // 編集対象の行
+                _self.hensyuTargetRow = hPage.row;
                 element.style.top = e.pageY + 'px';
                 element.style.left = e.pageX + 'px';
                 element.style.display = 'block';
+                // fixFlagがtrueの時は、事業所未使用を非表示にする
+                document.getElementById('jigyosyoMisiyo').style.display =
+                  'block';
+                if (_self.allData[hPage.row]['fixFlag']) {
+                  document.getElementById('jigyosyoMisiyo').style.display =
+                    'none';
+                }
               }
             }
           }
@@ -489,7 +660,7 @@ export default {
           // グループ化された項番を一度クリアし、クリックした順番に番号を振りなおす
           if (hPage.col == 7) {
             //クリックした際の受給者番号取得
-            let jB = _self.getClickJyukyusyaBango(hPage);
+            let jB = _self.getClickJyukyusyaBango(hPage.row);
             //受給者番号が持つ行数の取得
             let jBrow = _self.getJyukyusyaBangoRow(jB);
 
@@ -518,8 +689,8 @@ export default {
     /*************
      * クリックした際の受給者番号取得
      */
-    getClickJyukyusyaBango: function (hPage) {
-      return this.allData[hPage.row].jyukyusyaBango;
+    getClickJyukyusyaBango: function (row) {
+      return this.allData[row].jyukyusyaBango;
     },
     /*************
      * 受給者番号が持つ行数の取得
@@ -570,7 +741,14 @@ export default {
             (pt_souhiyou > 0 && value) ||
             (pt_riyousyafutan > 0 && value)
           ) {
-            flexGrid.setCellData(e.row, 6, '〇');
+            // 総費用額と利用者負担額の欄に入力後、入力した利用者の「上限額管理計算」に〇が表示される
+            // 変更場所の受給者番号取得
+            let jB = _self.getClickJyukyusyaBango(e.row);
+            //受給者番号が持つ行数の取得
+            let jBrow = _self.getJyukyusyaBangoRow(jB);
+            for (let i = jBrow.first; i < jBrow.last; i++) {
+              flexGrid.setCellData(i, 6, '〇');
+            }
             flexGrid.setCellData(e.row, 15, '');
           }
         }
@@ -615,14 +793,14 @@ export default {
         // }
 
         // 固定行データ
-        let fixbackground = '';
-        if (_self.allData[e.row].fixFlag) {
+        if (_self.allData[e.row] && _self.allData[e.row].fixFlag) {
           if (e.panel == flexGrid.cells) {
-            fixbackground = 'fixbackground';
+            e.cell.style.background = '#fffeed';
           }
         }
 
-        if (classname) {
+        //if (classname) {
+        if (e.panel == flexGrid.columnHeaders) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +
             classname +
@@ -630,9 +808,18 @@ export default {
             html +
             '</div>';
         }
-        if (fixbackground) {
-          e.cell.innerHTML =
-            '<span class="' + fixbackground + '">' + html + '</span>';
+        //}
+        if (e.panel == flexGrid.cells && e.col == 6) {
+          e.cell.innerHTML = '<div "' + classname + '">' + html + '</div>';
+          wjCore.setCss(e.cell, {
+            display: 'table',
+            tableLayout: 'absolute',
+            verticalAlign: 'middle',
+          });
+          wjCore.setCss(e.cell.children[0], {
+            display: 'table-cell',
+            verticalAlign: 'middle',
+          });
         }
       });
     },
@@ -652,10 +839,10 @@ export default {
       panel.setCellData(0, 14, '上限管理後');
       panel.setCellData(0, 16, _self.verticalHeader[2]);
       panel.setCellData(0, 17, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 80;
+      flexGrid.columnHeaders.rows[1].height = 90;
     },
     /**************
-     * ヘッダセルのマージ
+     * 全体セルのマージ
      */
     createCellMerge: function (flexGrid) {
       let headerRanges = [
@@ -668,6 +855,7 @@ export default {
         new wjGrid.CellRange(0, 16, 1, 16), //レセプト確定
         new wjGrid.CellRange(0, 17, 1, 17), //印刷
       ];
+      // データセル用のマージ配列の作成
       let ranges = [];
       for (let i = 0; i < this.merge.length; i++) {
         for (let j = 0; j <= 6; j++) {
@@ -681,7 +869,10 @@ export default {
           );
         }
       }
+
       let mm = new wjGrid.MergeManager(flexGrid);
+      console.log(ranges);
+
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
@@ -698,6 +889,7 @@ export default {
           }
         }
       };
+
       flexGrid.mergeManager = mm;
     },
   },
@@ -727,6 +919,10 @@ div#recept-jijyougen {
     justify-content: center;
   }
 
+  .wj-state-selected,
+  .wj-state-last-selected {
+    color: $font_color;
+  }
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;
@@ -734,19 +930,6 @@ div#recept-jijyougen {
     writing-mode: vertical-rl;
     letter-spacing: 0.2em;
     text-align: center;
-  }
-
-  .fixbackground {
-    background-color: $grid_background;
-    text-align: left;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    text-align: left !important;
-    display: block;
-    padding: 5px 0px 0px 5px;
   }
 
   .complete {
@@ -767,10 +950,13 @@ div#recept-jijyougen {
     position: absolute;
     background-color: $white;
     min-width: 80px;
-    min-height: 60px;
     border: 1px solid $light-gray;
     top: 0;
     left: 0;
+
+    #jigyosyoMisiyo {
+      color: $red;
+    }
   }
 }
 </style>

@@ -32,7 +32,6 @@
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="sichosonList"
-                :selectedIndex="0"
                 :selectedIndexChanged="onSichosonIndexChanged"
               >
               </wj-combo-box>
@@ -64,7 +63,6 @@
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="svcList"
-                :selectedIndex="0"
                 :selectedIndexChanged="onSvcIndexChanged"
               >
               </wj-combo-box>
