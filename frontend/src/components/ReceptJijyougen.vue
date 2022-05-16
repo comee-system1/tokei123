@@ -168,7 +168,6 @@
     <!--事業所追加押下確認ダイアログ-->
     <v-dialog v-model="jigyosyoAdd.flag" width="500">
       <wj-flex-grid
-        :initialized="onAddInitialized"
         :allowMerging="6"
         :headersVisibility="'Column'"
         :alternatingRowStep="0"
@@ -177,10 +176,23 @@
         :deferResizing="false"
         :allowSorting="false"
         :itemsSource="receptParts"
+        id="receptParts"
       >
         <wj-flex-grid-column
-          :binding="'regist_lists'"
+          :binding="'jigyosyobango'"
           :header="'登録済 他サービス事業所一覧'"
+          align="center"
+          width="*"
+          :isReadOnly="true"
+        ></wj-flex-grid-column>
+        <wj-flex-grid-column
+          :binding="'jigyosyomei'"
+          align="center"
+          width="*"
+          :isReadOnly="true"
+        ></wj-flex-grid-column>
+        <wj-flex-grid-column
+          :binding="'teikyoservice'"
           align="center"
           width="*"
           :isReadOnly="true"
@@ -193,6 +205,7 @@
           :isReadOnly="true"
         ></wj-flex-grid-column>
       </wj-flex-grid>
+      <v-btn>追加</v-btn>
     </v-dialog>
     <!--事業所未使用押下確認ダイアログ-->
     <v-dialog v-model="jigyosyoMisiyoConfirm.flag" width="500">
@@ -251,6 +264,7 @@ export default {
       editGridFlag: false,
       jigyosyoMisiyoConfirm: { flag: false, message: '' }, // 事業所未使用
       jigyosyoAdd: { flag: false },
+      receptParts: [],
     };
   },
   components: {},
@@ -534,10 +548,24 @@ export default {
     jigyosyoAddList: function () {
       // 編集列の選択値を取得
       this.jigyosyoAdd.flag = true;
-      alert('aaa');
       console.log(this.hensyuTarget);
       console.log(this.hensyuTargetRow);
+      console.log(this.allData);
+      //受給者番号が同じデータのみ表示
+      let jyukyusyaBango = this.hensyuTarget.jyukyusyaBango;
+      let array = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        if (jyukyusyaBango == this.allData[i].jyukyusyaBango) {
+          array.push({
+            jigyosyobango: this.allData[i].jigyosyobango,
+            jigyosyomei: this.allData[i].jigyosyomei,
+            teikyoservice: this.allData[i].teikyoservice,
+          });
+        }
+      }
+      this.receptParts = array;
     },
+
     /******************
      * 事務所未使用ボタンを押下
      */
@@ -571,17 +599,19 @@ export default {
       let get = [];
       let data = this.allData;
       let i = 0;
+      let _self = this;
       data.forEach(function (value) {
-        if (i != row) {
+        if (i == row) {
           // 非表示用
-          // 非表示の際はviewflagをfalseにする
-          value.viewflag = false;
+          _self.allData[i]['viewflag'] = false;
+        } else {
           get.push(value);
+          _self.allData[i]['viewflag'] = true;
         }
         i++;
       });
       this.receptData = get;
-      this.allData = get;
+      //this.allData = get;
       this.mainFlexGrid.itemsSource = [];
     },
     /****************
@@ -601,21 +631,21 @@ export default {
             let element = document.getElementById('menubar');
             if (flexGrid.getCellData(hPage.row, 13) == '〇') {
               flexGrid.setCellData(hPage.row, 13, ' ');
-              _self.allData[hPage.row]['hensyu'] = '';
+              _self.receptData[hPage.row]['hensyu'] = '';
               element.style.display = 'none';
             } else {
-              for (let i = 0; i < _self.allData.length; i++) {
+              for (let i = 0; i < _self.receptData.length; i++) {
                 flexGrid.setCellData(i, 13, '');
-                _self.allData[i]['hensyu'] = '';
+                _self.receptData[i]['hensyu'] = '';
               }
               element.style.display = 'none';
 
               if (flexGrid.getCellData(hPage.row, 13) == '') {
                 let mark = '〇';
                 flexGrid.setCellData(hPage.row, 13, mark);
-                _self.allData[hPage.row]['hensyu'] = mark;
+                _self.receptData[hPage.row]['hensyu'] = mark;
                 // 編集対象のデータを保持
-                _self.hensyuTarget = _self.allData[hPage.row];
+                _self.hensyuTarget = _self.receptData[hPage.row];
                 // 編集対象の行
                 _self.hensyuTargetRow = hPage.row;
                 element.style.top = e.pageY + 'px';
@@ -624,7 +654,7 @@ export default {
                 // fixFlagがtrueの時は、事業所未使用を非表示にする
                 document.getElementById('jigyosyoMisiyo').style.display =
                   'block';
-                if (_self.allData[hPage.row]['fixFlag']) {
+                if (_self.receptData[hPage.row]['fixFlag']) {
                   document.getElementById('jigyosyoMisiyo').style.display =
                     'none';
                 }
@@ -636,23 +666,23 @@ export default {
             let mark = '〇';
             if (flexGrid.getCellData(hPage.row, 17) == '〇') mark = '';
             flexGrid.setCellData(hPage.row, 17, mark);
-            _self.allData[hPage.row]['print'] = mark;
+            _self.receptData[hPage.row]['print'] = mark;
           }
           // レセプト確定カラムを押下
           if (hPage.col == 16) {
             if (ht.target.innerText == '〇') {
               flexGrid.setCellData(hPage.row, 16, '');
-              _self.allData[hPage.row]['resekakutei'] = '';
+              _self.receptData[hPage.row]['resekakutei'] = '';
             }
             if (ht.target.innerText == 'complete') {
               flexGrid.setCellData(hPage.row, 16, 'delete');
-              _self.allData[hPage.row]['resekakutei'] = 'delete';
-              _self.allData[hPage.row]['complateFlag'] = false;
+              _self.receptData[hPage.row]['resekakutei'] = 'delete';
+              _self.receptData[hPage.row]['complateFlag'] = false;
             }
             if (ht.target.innerText == 'delete') {
               flexGrid.setCellData(hPage.row, 16, 'complete');
-              _self.allData[hPage.row]['resekakutei'] = 'complete';
-              _self.allData[hPage.row]['complateFlag'] = true;
+              _self.receptData[hPage.row]['resekakutei'] = 'complete';
+              _self.receptData[hPage.row]['complateFlag'] = true;
             }
           }
 
@@ -911,7 +941,7 @@ div#recept-jijyougen {
   .wj-header.wj-cell {
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: normal;
   }
 
