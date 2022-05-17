@@ -31,6 +31,7 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
+      :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
       :autoRowHeights="true"
@@ -63,12 +64,19 @@ let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   props:['userListData','riyousya','zyukyusyaNum'],
+  watch:{
+    riyousya:function(){
+      this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
+      this.kinkyuShienTotal = getKinkyuShienTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.detailGridData = this.getGridData(apiResult);
+      this.gridchageFlag = true;
+    }
+  },
   data(){
     return{
-      currentPageTitle: this.$route.name,
-      detailGridData:this.getGridData(apiResult),
-      kinkyuShienTotal:getKinkyuShienTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
+      detailGridData:this.getGridData(),
+      sikyuryoData: "",
+      kinkyuShienTotal: 0,
     }
   },
   methods: {
@@ -168,25 +176,48 @@ export default{
         }
       }
     },
+    onInitializeDetailGridChanged:function(flexGrid){
+      if(this.gridchageFlag){
+        let footerPanel = flexGrid.columnFooters;
+        footerPanel.setCellData(0, 5, this.kinkyuShienTotal);
+        this.gridchageFlag = false;
+      }
+    },
     getGridData:function(data){
-      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+      // グリッド表示用データの作成
       let gridData = [];
-      for(let i = 0; i<kirokuMeiData.length; i++){
-        // 曜日表示用に文字列の日付をDate型に変換
-        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      if(data != null){
+        let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+        for(let i = 0; i<kirokuMeiData.length; i++){
+          // 曜日表示用に文字列の日付をDate型に変換
+          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+          gridData.push(
+            {
+              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi:WeekChars[date.getDay()],
+              keitai:kirokuMeiData[i]["keitai"],
+              kasandk:kirokuMeiData[i]["kasandk"] == "0" ? "":kirokuMeiData[i]["kasandk"],
+              kasansyo:kirokuMeiData[i]["kasansyo"] == "0" ? "":kirokuMeiData[i]["kasansyo"],
+              kasanknk:kirokuMeiData[i]["kasanknk"],
+              kasankk:kirokuMeiData[i]["kasankk"] == "0" ? "":kirokuMeiData[i]["kasankk"],
+              kasanjt:kirokuMeiData[i]["kasanjt"] == "0" ? "":kirokuMeiData[i]["kasanjt"],
+              biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+            }
+          )
+        }
+      }else{
         gridData.push(
           {
-            id:kirokuMeiData[i]["id"],
-            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-            youbi:WeekChars[date.getDay()],
-            keitai:kirokuMeiData[i]["keitai"],
-            kasandk:kirokuMeiData[i]["kasandk"] == "0" ? "":kirokuMeiData[i]["kasandk"],
-            kasansyo:kirokuMeiData[i]["kasansyo"] == "0" ? "":kirokuMeiData[i]["kasansyo"],
-            kasanknk:kirokuMeiData[i]["kasanknk"],
-            kasankk:kirokuMeiData[i]["kasankk"] == "0" ? "":kirokuMeiData[i]["kasankk"],
-            kasanjt:kirokuMeiData[i]["kasanjt"] == "0" ? "":kirokuMeiData[i]["kasanjt"],
-            biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+            rymd: "",
+            youbi: "",
+            keitai: "",
+            kasandk: "",
+            kasansyo: "",
+            kasanknk: "",
+            kasankk: "",
+            kasanjt: "",
+            biko: "",
           }
         )
       }

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="headerAndNav">
     <!-- temporary    メニューを常に画面最上部に表示 -->
     <!-- hide-overlay メニュー表示時の背景を少し暗くする -->
     <v-navigation-drawer
@@ -75,10 +75,71 @@
         <v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
       </div>
 
+      <v-card
+        class="ml-10 mt-1 d-flex flex-row"
+        color="transparent"
+        elevation="0"
+        height="100%"
+      >
+        <label style="padding-top: 2px">日付</label>
+        <v-btn
+          @click="inputCalendarClick()"
+          tile
+          outlined
+          class="service"
+          height="85%"
+          width="150px"
+          light
+          disabled
+          >{{ year }}年{{ month }}月{{ date }}日
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
+          </div>
+        </v-btn>
+        <v-btn
+          elevation="0"
+          color="white"
+          class="pa-0 ml-1"
+          x-small
+          height="85%"
+          style="min-width: auto; border-radius: 3px"
+          tile
+          disabled
+          @click="calendarClick(1)"
+        >
+          <v-icon>mdi-arrow-left-bold</v-icon>
+        </v-btn>
+        <v-btn
+          elevation="0"
+          color="white"
+          class="pa-0 ml-1"
+          x-small
+          height="85%"
+          style="min-width: auto; border-radius: 3px"
+          tile
+          disabled
+          @click="calendarClick(2)"
+        >
+          <v-icon>mdi-arrow-right-bold</v-icon>
+        </v-btn>
+        <v-btn
+          elevation="0"
+          color="white"
+          class="coditionbtn pa-0 ml-1"
+          x-small
+          height="85%"
+          width="50px"
+          style="min-width: auto; border-radius: 3px"
+          tile
+          disabled
+          @click="searchButton()"
+          >更新
+        </v-btn>
+      </v-card>
       <v-spacer></v-spacer>
       <v-toolbar-title>【社会福祉法人東経福祉会】</v-toolbar-title>
       <v-spacer></v-spacer>
-
+      <v-spacer></v-spacer>
       <div class="text-center">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -111,10 +172,13 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
   data() {
     return {
       drawer: true,
+      picker:
+        moment().year() + '-' + moment().format('M') + '-' + moment().date(),
       pageTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
@@ -196,6 +260,15 @@ export default {
       ],
     };
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      // ビュー全体がレンダリングされた後にのみ実行されるコード
+      let split = this.picker.split('-');
+      this.year = split[0];
+      this.month = split[1];
+      this.date = split[2];
+    });
+  },
   watch: {
     $route() {
       this.pageTitle = this.$route.name;
@@ -204,22 +277,72 @@ export default {
 };
 </script>
 
-<style scoped>
-.nav-list-name {
-  border-top: 1px solid #808080;
-}
+<style lang="scss" >
+@import '@/assets/scss/common.scss';
+div#headerAndNav {
+  .nav-list-name {
+    border-top: 1px solid #808080;
+  }
 
-.kenbunroku-logo {
-  padding-top: 10px;
-  margin: auto;
-}
+  .kenbunroku-logo {
+    padding-top: 10px;
+    margin: auto;
+  }
 
-.v-toolbar__title {
-  font-size: 15px;
-}
+  .v-toolbar__title {
+    font-size: 15px;
+  }
 
-.v-list .v-list-item--active .v-list-item__title{
-  color:white;
-}
+  .v-list .v-list-item--active .v-list-item__title {
+    color: white;
+  }
+  .service {
+    &.v-btn {
+      margin-left: 10px;
+      border: 1px solid $light-gray;
+      background-color: $white;
+      color: $font_color;
+      border-radius: 30px;
+      font-size: 14px;
+      font-family: 'メイリオ';
+    }
+  }
 
+  .coditionbtn {
+    margin-left: 10px;
+    border: 1px solid $light-gray;
+    background-color: $white;
+    color: $font_color;
+    border-radius: 30px;
+    font-size: 14px;
+    font-family: 'メイリオ';
+    display: none;
+  }
+}
+#headerAndNavDatepicker {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 20px;
+  left: 100px;
+  width: 300px;
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(7)
+    .v-btn__content {
+    color: blue;
+  }
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(1)
+    .v-btn__content {
+    color: red;
+  }
+}
 </style>

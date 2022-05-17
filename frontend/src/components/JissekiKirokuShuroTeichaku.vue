@@ -76,12 +76,19 @@ let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   props:['userListData','riyousya','zyukyusyaNum'],
+  watch:{
+    riyousya:function(){
+      this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
+      this.detailGridData = this.getGridData(apiResult);
+      this.subGridData = this.getSubGridData(apiResult);
+      this.gridchageFlag = true;
+    }
+  },
   data(){
     return{
-      currentPageTitle: this.$route.name,
-      detailGridData:this.getGridData(apiResult),
-      sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
-      subGridData:this.getSubGridData(apiResult),
+      detailGridData:this.getGridData(),
+      sikyuryoData:"",
+      subGridData:this.getSubGridData(),
     }
   },
   methods: {
@@ -191,38 +198,64 @@ export default{
       }
     },
     getGridData:function(data){
-      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+      // グリッド表示用データの作成
       let gridData = [];
-      for(let i = 0; i<kirokuMeiData.length; i++){
-        // 曜日表示用に文字列の日付をDate型に変換
-        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      if(data != null){
+        let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+        for(let i = 0; i<kirokuMeiData.length; i++){
+          // 曜日表示用に文字列の日付をDate型に変換
+          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+          gridData.push(
+            {
+              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi:WeekChars[date.getDay()],
+              keitai:kirokuMeiData[i]["keitai"],
+              kasantkt:kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
+              kasantren:kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
+              biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+            }
+          )
+        }
+      }else{
         gridData.push(
           {
-            id:kirokuMeiData[i]["id"],
-            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-            youbi:WeekChars[date.getDay()],
-            keitai:kirokuMeiData[i]["keitai"],
-            kasantkt:kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
-            kasantren:kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
-            biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+            rymd: "",
+            youbi: "",
+            keitai: "",
+            kasantkt: "",
+            kasantren: "",
+            biko: "",
           }
         )
       }
       return gridData;
     },
     getSubGridData:function(data){
-      let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+      // サブグリッド表示用データの作成
       let subGridData = [];
-      subGridData.push(
-        {
-          Column0: "初期加算",
-          Column1: "利用開始日",
-          Column2: dateFilter(riyouKaishibi),
-          Column3: "支援レポート共有日",
-          Column4: thirtythDayFilter(riyouKaishibi),
-        },
-      )
+      if(data != null){
+        let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+        subGridData.push(
+          {
+            Column0: "初期加算",
+            Column1: "利用開始日",
+            Column2: dateFilter(riyouKaishibi),
+            Column3: "支援レポート共有日",
+            Column4: thirtythDayFilter(riyouKaishibi),
+          },
+        )
+      }else{
+        subGridData.push(
+          {
+            Column0: "初期加算",
+            Column1: "利用開始日",
+            Column2: "",
+            Column3: "支援レポート共有日",
+            Column4: "",
+          },
+        )
+      }
       return subGridData;
     },
   }

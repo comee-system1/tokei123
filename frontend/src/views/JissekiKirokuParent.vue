@@ -10,7 +10,8 @@
         <v-col class="leftArea">
           <UserList
             @child-userslist="getUserListData"
-            @child-selectedrow="getSelectedRow">
+            @child-selectedrow="getSelectedRow"
+            :selectedService ="selectedService">
           </UserList>
         </v-col>
         <v-col class="rightArea">

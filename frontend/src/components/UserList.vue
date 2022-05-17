@@ -50,6 +50,7 @@
       :headersVisibility="'Column'"
       :selectionMode="3"
       :initialized="onInitializedUser"
+      :itemsSourceChanged="onItemsSourceChanged"
       :itemsSource="usersData"
       :allowDragging="false"
       :allowResizing="true"
@@ -94,7 +95,15 @@ let textSearch = '';
 let sortSearch = '';
 let alphaSearch = '';
 let alphabet = ['全','ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ'];
+
 export default {
+  props:['selectedService'],
+  watch:{
+    selectedService:function(){
+      // this.onInitializedUser();
+      this.createUser();
+    }
+  },
   data() {
     return {
       usersData: [],
@@ -275,6 +284,10 @@ export default {
     userFilter2() {
       return true;
     },
+    onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
     onInitializedUser: function (flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
@@ -317,15 +330,15 @@ export default {
       //axiosを利用しない時下記1行有効
       _self.usersData = _self.createUser();
 
-      let i = 0;
-      while (flexGrid.columns.length < 3) {
-        let clm = new wjGrid.Column();
-        if (i == 0) clm.width = '2*';
-        if (i == 1) clm.width = '2*';
-        if (i == 2) clm.width = '1*';
-        flexGrid.columns.push(clm);
-        i++;
-      }
+      // let i = 0;
+      // while (flexGrid.columns.length < 3) {
+      //   let clm = new wjGrid.Column();
+      //   if (i == 0) clm.width = '2*';
+      //   if (i == 1) clm.width = '2*';
+      //   if (i == 2) clm.width = '1*';
+      //   flexGrid.columns.push(clm);
+      //   i++;
+      // }
 
       while (flexGrid.rows.length < userCount) {
         flexGrid.rows.push(new wjGrid.Row());
@@ -335,7 +348,8 @@ export default {
       flexGrid.alternatingRowStep = 0;
 
       //初回のユーザ選択値
-      _self.$emit('child-selectedrow', 0);
+      // _self.$emit('child-selectedrow', 0);
+      // flexGrid.selection = new wjGrid.CellRange(-1);
 
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
