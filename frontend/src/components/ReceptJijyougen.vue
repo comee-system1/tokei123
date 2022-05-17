@@ -59,7 +59,7 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'resehanei'"
+        :binding="'jyougengakukanrikeisan'"
         :width="30"
         :isReadOnly="true"
         align="center"
@@ -283,7 +283,6 @@ export default {
       console.log(type);
       for (let i = 0; i < this.allData.length; i++) {
         let mark = this.mainFlexGrid.getCellData(i, 15);
-        console.log(mark);
         if (mark == '〇') {
           this.mainFlexGrid.setCellData(i, 15, 'complete');
 
@@ -380,12 +379,7 @@ export default {
         this.allData[i]['print'] = mark;
       }
     },
-    /***********
-     * 親コンポーネントの上限管理計算へ反映ボタン
-     */
-    parentReceptCalc() {
-      alert('aaa');
-    },
+
     getData: function () {
       let receptData = [];
       for (let i = 0; i < 4; i++) {
@@ -400,15 +394,15 @@ export default {
           jyougenicon: '自',
           jyougengaku: '南山事務所',
           riyosyafutan: 9000,
-          resehanei: '',
+          jyougengakukanrikeisan: '',
           //kobanSorts: j + 1,
           kobanSorts: i + 1,
           // jigyosyobango: '1000000' + i + j,
           jigyosyobango: '1000000' + i,
           jigyosyomei: 'ひまわり園',
           teikyoservice: '22 生活介護',
-          souhiyougaku: '',
-          riyosyafutangaku: '',
+          souhiyougaku: i % 4 > 0 ? '' : 98500,
+          riyosyafutangaku: i % 4 > 0 ? '' : 18500,
           kanrikekkafutangaku: '',
           kanrikekka: '',
           resekakutei: '',
@@ -431,15 +425,15 @@ export default {
           jyougenicon: '自',
           jyougengaku: '南山事務所',
           riyosyafutan: 9000,
-          resehanei: '',
+          jyougengakukanrikeisan: '',
           //kobanSorts: j + 1,
           kobanSorts: i + 1,
           // jigyosyobango: '1000000' + i + j,
           jigyosyobango: '1000000' + i,
           jigyosyomei: 'ひまわり園',
           teikyoservice: '22 生活介護',
-          souhiyougaku: '',
-          riyosyafutangaku: '',
+          souhiyougaku: i % 4 > 0 ? '' : 98500,
+          riyosyafutangaku: i % 4 > 0 ? '' : 18500,
           kanrikekkafutangaku: '',
           kanrikekka: '',
           resekakutei: '',
@@ -492,6 +486,26 @@ export default {
 
       return returns;
     },
+
+    /***********
+     * 親コンポーネントの上限管理計算へ反映ボタン
+     */
+    parentReceptCalc: function () {
+      // 計算の実施、計算方法がわからないので、とりあえず
+      // 総費用額+利用者負担額
+      // 管理結果は1
+      for (let i = 0; i < this.receptData.length; i++) {
+        if (this.receptData[i]['jyougengakukanrikeisan'] == '〇') {
+          let calc =
+            this.receptData[i].souhiyougaku +
+            this.receptData[i].riyosyafutangaku;
+          this.receptData[i]['kanrikekkafutangaku'] = calc;
+          this.receptData[i]['kanrikekka'] = 1;
+        }
+      }
+      this.mainFlexGrid.refresh();
+    },
+
     /********************
      * マージ作成用の配列を作成
      */
@@ -539,59 +553,39 @@ export default {
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
 
-      // セルのマージ
-      //this.createCellMerge(flexGrid);
-
       //セルのクリックイベント
       this.clickEventCell(flexGrid, _self);
-
-      //セルのフォーマット指定
-      //this.createCellFormat(flexGrid, _self, _self.receptData);
 
       // セルの値を編集
       this.edittingCell(flexGrid, _self);
 
       //flexGrid.itemsSource = griddata;
     },
+
     /*****************************
      * 事業所追加用ダイアログ追加ボタン
      */
     add: function () {
-      console.log(this.receptParts);
-      console.log(this.receptData);
-      for (let i = 0; i < this.receptParts.length; i++) {
-        this.allData[this.receptParts[i]['key']]['viewflag'] =
-          this.receptParts[i].regist_select;
-        this.allData[this.receptParts[i]['key']]['sityoson'] = 'aaaa';
-      }
-      this.receptData = this.allData;
-      console.log(this.receptData);
-      this.mainFlexGrid.refresh();
-
-      //this.jigyosyoAdd.flag = false;
-      //document.getElementById('menubar').style.display = 'none';
-      /*
       // 入力した利用者の「上限額管理計算」に〇が表示される
-      // 変更場所の受給者番号取得
-      let jB = this.getClickJyukyusyaBango(this.hensyuTargetRow);
-      //受給者番号が持つ行数の取得
-      let jBrow = this.getJyukyusyaBangoRow(jB);
-      for (let i = jBrow.first; i < jBrow.last; i++) {
-        this.mainFlexGrid.setCellData(i, 6, '〇');
-      }
+      this.setJyougenKanriCalc();
 
-      // viewflagが0以上のデータのみ表示対象
-      let data = [];
+      let _self = this;
+      this.receptParts.forEach(function (value) {
+        _self.allData[value['key']]['viewflag'] = value['regist_select'];
+        _self.allData[value['key']]['hensyu'] = '';
+      });
+
+      // viewFlagが1以上のデータのみ取得
+      let returns = [];
       for (let i = 0; i < this.allData.length; i++) {
-        if (this.allData[i].viewflag > 0) {
-          data.push(this.allData[i]);
+        if (this.allData[i]['viewflag'] >= 1) {
+          returns.push(this.allData[i]);
         }
       }
-      this.receptData = data;
-      this.mainFlexGrid.itemsSource = [];
+      this.receptData = returns;
+      this.mainFlexGrid.refresh();
       this.jigyosyoAdd.flag = false;
       document.getElementById('menubar').style.display = 'none';
-      */
     },
     /*****************************
      * 事業所追加用
@@ -704,16 +698,10 @@ export default {
      */
     jigyosyoMisiyoAdd: function () {
       // 入力した利用者の「上限額管理計算」に〇が表示される
-      // 変更場所の受給者番号取得
-      let jB = this.getClickJyukyusyaBango(this.hensyuTargetRow);
-      //受給者番号が持つ行数の取得
-      let jBrow = this.getJyukyusyaBangoRow(jB);
+      this.setJyougenKanriCalc();
+
       //クリックした行数
       let row = this.hensyuTargetRow;
-      for (let i = jBrow.first; i < jBrow.last; i++) {
-        this.mainFlexGrid.setCellData(i, 6, '〇');
-      }
-
       this.jigyosyoMisiyoConfirm.flag = false;
       document.getElementById('menubar').style.display = 'none';
       this.mainFlexGrid.setCellData(row, 13, '');
@@ -834,6 +822,23 @@ export default {
         }
       });
     },
+
+    /*********************
+     * データを変更した際に上限額管理計算に〇を表示
+     */
+    setJyougenKanriCalc: function (row) {
+      // 変更場所の受給者番号取得
+      if (!row) {
+        row = this.hensyuTargetRow;
+      }
+      let jB = this.getClickJyukyusyaBango(row);
+      //受給者番号が持つ行数の取得
+      let jBrow = this.getJyukyusyaBangoRow(jB);
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        this.mainFlexGrid.setCellData(i, 6, '〇');
+        this.receptData[i]['jyougengakukanrikeisan'] = '〇';
+      }
+    },
     /*************
      * クリックした際の受給者番号取得
      */
@@ -858,11 +863,18 @@ export default {
      */
     edittingCell: function (flexGrid, _self) {
       flexGrid.beginningEdit.addHandler(function (senders, args) {
-        if (_self.allData[args.row].complateFlag) {
+        if (_self.receptData[args.row].complateFlag) {
           if (args.col == 13 || args.col == 14) {
             args.cancel = true;
           }
         }
+        if (_self.receptData[args.row].fixFlag) {
+          if (args.col == 11 || args.col == 12) {
+            args.cancel = true;
+          }
+        }
+        if (args.col == 14) args.cancel = true;
+        if (args.col == 15) args.cancel = true;
       });
       flexGrid.cellEditEnding.addHandler((s, e) => {
         let col = s.columns[e.col];
@@ -891,12 +903,7 @@ export default {
           ) {
             // 総費用額と利用者負担額の欄に入力後、入力した利用者の「上限額管理計算」に〇が表示される
             // 変更場所の受給者番号取得
-            let jB = _self.getClickJyukyusyaBango(e.row);
-            //受給者番号が持つ行数の取得
-            let jBrow = _self.getJyukyusyaBangoRow(jB);
-            for (let i = jBrow.first; i < jBrow.last; i++) {
-              flexGrid.setCellData(i, 6, '〇');
-            }
+            this.setJyougenKanriCalc(e.row);
             flexGrid.setCellData(e.row, 15, '');
           }
         }
@@ -932,14 +939,6 @@ export default {
         ) {
           classname = 'text-center';
         }
-        // if (text == '〇' || text == '●') {
-        //   classname = 'vertical';
-        // }
-        // if (text == 'complete') {
-        //   classname = 'complete';
-        // } else if (text == 'delete') {
-        //   classname = 'delete';
-        // }
 
         // 固定行データ
         let background = '';
@@ -955,6 +954,7 @@ export default {
               }
             }
           }
+          if (e.col == 14 || e.col == 15) e.cell.style.background = '#fffeed';
         }
 
         //if (classname) {
@@ -1104,9 +1104,13 @@ div#recept-jijyougen {
     justify-content: center;
   }
 
+  .wj-cell.wj-state-multi-selected {
+    color: $font_color !important;
+  }
+
   .wj-state-selected,
   .wj-state-last-selected {
-    color: $font_color;
+    color: $font_color !important;
   }
   .vertical {
     text-orientation: upright;
@@ -1138,10 +1142,6 @@ div#recept-jijyougen {
     border: 1px solid $light-gray;
     top: 0;
     left: 0;
-
-    #jigyosyoMisiyo {
-      color: $red;
-    }
   }
 }
 </style>
