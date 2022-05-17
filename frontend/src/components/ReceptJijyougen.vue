@@ -166,46 +166,53 @@
       >
     </div>
     <!--事業所追加押下確認ダイアログ-->
-    <v-dialog v-model="jigyosyoAdd.flag" width="500">
-      <wj-flex-grid
-        :allowMerging="6"
-        :headersVisibility="'Column'"
-        :alternatingRowStep="0"
-        :allowDragging="false"
-        :allowResizing="false"
-        :deferResizing="false"
-        :allowSorting="false"
-        :itemsSource="receptParts"
-        id="receptParts"
-      >
-        <wj-flex-grid-column
-          :binding="'jigyosyobango'"
-          :header="'登録済 他サービス事業所一覧'"
-          align="center"
-          width="*"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'jigyosyomei'"
-          align="center"
-          width="*"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'teikyoservice'"
-          align="center"
-          width="*"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'regist_select'"
-          :header="'選択'"
-          align="center"
-          :width="32"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-      </wj-flex-grid>
-      <v-btn>追加</v-btn>
+    <v-dialog v-model="jigyosyoAdd.flag" width="600">
+      <div style="position: relative">
+        <wj-flex-grid
+          :allowMerging="6"
+          :headersVisibility="'Column'"
+          :alternatingRowStep="0"
+          :allowDragging="false"
+          :allowResizing="false"
+          :deferResizing="false"
+          :allowSorting="false"
+          :itemsSource="receptParts"
+          :initialized="onAddInitialized"
+          class="receptParts"
+        >
+          <wj-flex-grid-column
+            :binding="'jigyosyobango'"
+            :header="'登録済 他サービス事業所一覧'"
+            align="center"
+            width="*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'jigyosyomei'"
+            align="center"
+            width="*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'teikyoservice'"
+            align="center"
+            width="2*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'regist_select'"
+            :header="'選択'"
+            align="center"
+            width="1*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+        <v-row class="receptPartsArea mt-n2" no-gutters>
+          <v-col cols="12">
+            <v-btn small @click="add()">追加</v-btn>
+          </v-col>
+        </v-row>
+      </div>
     </v-dialog>
     <!--事業所未使用押下確認ダイアログ-->
     <v-dialog v-model="jigyosyoMisiyoConfirm.flag" width="500">
@@ -264,7 +271,7 @@ export default {
       editGridFlag: false,
       jigyosyoMisiyoConfirm: { flag: false, message: '' }, // 事業所未使用
       jigyosyoAdd: { flag: false },
-      receptParts: [],
+      receptParts: [], // レセプト追加用
     };
   },
   components: {},
@@ -408,7 +415,7 @@ export default {
           print: '',
           complateFlag: false, // 確定状態
           fixFlag: i % 4 == 0, //変更不可データ
-          viewflag: true, //表示状態
+          viewflag: i % 4 > 0 ? 1 : 2, //表示状態
         });
         //  }
       }
@@ -439,7 +446,7 @@ export default {
           print: '',
           complateFlag: false, // 確定状態
           fixFlag: i % 3 == 0, //変更不可データ
-          viewflag: true, //表示状態
+          viewflag: i % 3 > 0 ? 1 : 2, //表示状態
         });
         //  }
       }
@@ -475,10 +482,10 @@ export default {
       for (let i = 0; i < receptData.length; i++) {
         receptData[i]['kobanSorts'] = String(receptData[i]['kobanSorts']);
       }
-      // viewFlagがtrueのデータのみ取得
+      // viewFlagが1以上のデータのみ取得
       let returns = [];
       for (let i = 0; i < receptData.length; i++) {
-        if (receptData[i]['viewflag'] == true) {
+        if (receptData[i]['viewflag'] >= 1) {
           returns.push(receptData[i]);
         }
       }
@@ -517,14 +524,18 @@ export default {
       this.mainFlexGrid = flexGrid;
       let array = this.receptData;
       let merge = this.createMergeArray(array);
+      let _self = this;
       this.merge = merge;
-
       // データセルのマージ
       this.createCellMerge(flexGrid);
+
+      //セルのフォーマット指定
+      this.createCellFormat(flexGrid, _self, array);
     },
     onInitialized: function (flexGrid) {
       this.mainFlexGrid = flexGrid;
       let _self = this;
+
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
 
@@ -535,12 +546,103 @@ export default {
       this.clickEventCell(flexGrid, _self);
 
       //セルのフォーマット指定
-      this.createCellFormat(flexGrid, _self);
+      //this.createCellFormat(flexGrid, _self, _self.receptData);
 
       // セルの値を編集
       this.edittingCell(flexGrid, _self);
 
       //flexGrid.itemsSource = griddata;
+    },
+    /*****************************
+     * 事業所追加用ダイアログ追加ボタン
+     */
+    add: function () {
+      console.log(this.receptParts);
+      console.log(this.receptData);
+      for (let i = 0; i < this.receptParts.length; i++) {
+        this.allData[this.receptParts[i]['key']]['viewflag'] =
+          this.receptParts[i].regist_select;
+        this.allData[this.receptParts[i]['key']]['sityoson'] = 'aaaa';
+      }
+      this.receptData = this.allData;
+      console.log(this.receptData);
+      this.mainFlexGrid.refresh();
+
+      //this.jigyosyoAdd.flag = false;
+      //document.getElementById('menubar').style.display = 'none';
+      /*
+      // 入力した利用者の「上限額管理計算」に〇が表示される
+      // 変更場所の受給者番号取得
+      let jB = this.getClickJyukyusyaBango(this.hensyuTargetRow);
+      //受給者番号が持つ行数の取得
+      let jBrow = this.getJyukyusyaBangoRow(jB);
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        this.mainFlexGrid.setCellData(i, 6, '〇');
+      }
+
+      // viewflagが0以上のデータのみ表示対象
+      let data = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        if (this.allData[i].viewflag > 0) {
+          data.push(this.allData[i]);
+        }
+      }
+      this.receptData = data;
+      this.mainFlexGrid.itemsSource = [];
+      this.jigyosyoAdd.flag = false;
+      document.getElementById('menubar').style.display = 'none';
+      */
+    },
+    /*****************************
+     * 事業所追加用
+     */
+    onAddInitialized: function (flexGrid) {
+      this.addFlexGrid = flexGrid;
+      let _self = this;
+      // セルのクリックイベント
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        let text = ht.target.innerText;
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          // 〇を記載
+          if (text.length == 0) {
+            flexGrid.setCellData(hPage.row, 3, 1);
+            _self.receptParts[hPage.row]['regist_select'] = 1;
+          }
+        }
+      });
+
+      //セルのフォーマット
+      flexGrid.formatItem.addHandler(function (s, e) {
+        let text = e.cell.innerText;
+        let classname = '';
+        if (text == 0) {
+          text = '';
+        } else if (text == 1) {
+          text = '〇';
+        } else if (text == 2) {
+          text = '〇';
+          classname = 'fixgrey';
+        }
+        e.cell.innerHTML =
+          '<div class="text-center ' + classname + '">' + text + '</div>';
+      });
+      //セルのマージ
+      let headerRanges = [
+        new wjGrid.CellRange(0, 0, 0, 2), //基本情報
+      ];
+      let mm = new wjGrid.MergeManager(flexGrid);
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
     },
     /******************
      * 事務所追加ボタンを押下
@@ -548,18 +650,38 @@ export default {
     jigyosyoAddList: function () {
       // 編集列の選択値を取得
       this.jigyosyoAdd.flag = true;
-      console.log(this.hensyuTarget);
-      console.log(this.hensyuTargetRow);
-      console.log(this.allData);
-      //受給者番号が同じデータのみ表示
+      //表示中のデータを取得
+      let jud = [];
+      for (let i = 0; i < this.receptData.length; i++) {
+        jud.push({
+          jigyosyobango: this.receptData[i].jigyosyobango,
+          jyukyusyaBango: this.receptData[i].jyukyusyaBango,
+        });
+      }
+      // 表示データの選択に〇を表示する
       let jyukyusyaBango = this.hensyuTarget.jyukyusyaBango;
       let array = [];
       for (let i = 0; i < this.allData.length; i++) {
         if (jyukyusyaBango == this.allData[i].jyukyusyaBango) {
+          let viewflag = 0;
+          for (let j = 0; j < jud.length; j++) {
+            if (this.allData[i]['viewflag'] == 2) {
+              viewflag = 2;
+            } else if (
+              jud[j]['jigyosyobango'] == this.allData[i]['jigyosyobango'] &&
+              jud[j]['jyukyusyaBango'] == this.allData[i]['jyukyusyaBango']
+            ) {
+              viewflag = 1;
+            }
+          }
+          this.allData[i]['viewflag'] = viewflag;
           array.push({
+            key: i,
             jigyosyobango: this.allData[i].jigyosyobango,
+            jyukyusyaBango: this.allData[i].jyukyusyaBango,
             jigyosyomei: this.allData[i].jigyosyomei,
             teikyoservice: this.allData[i].teikyoservice,
+            regist_select: viewflag,
           });
         }
       }
@@ -574,7 +696,6 @@ export default {
       let jM = this.hensyuTarget.jigyosyomei;
       let tS = this.hensyuTarget.teikyoservice;
       let message = jM + ' ' + tS + 'を未使用に設定します。よろしいですか？';
-
       this.jigyosyoMisiyoConfirm.flag = true;
       this.jigyosyoMisiyoConfirm.message = message;
     },
@@ -592,26 +713,23 @@ export default {
       for (let i = jBrow.first; i < jBrow.last; i++) {
         this.mainFlexGrid.setCellData(i, 6, '〇');
       }
+
       this.jigyosyoMisiyoConfirm.flag = false;
       document.getElementById('menubar').style.display = 'none';
-      this.mainFlexGrid.setCellData(row, 13, ' ');
-
+      this.mainFlexGrid.setCellData(row, 13, '');
       let get = [];
-      let data = this.allData;
+      let data = this.receptData;
       let i = 0;
-      let _self = this;
       data.forEach(function (value) {
-        if (i == row) {
+        if (i != row) {
+          value.hensyu = '';
           // 非表示用
-          _self.allData[i]['viewflag'] = false;
-        } else {
           get.push(value);
-          _self.allData[i]['viewflag'] = true;
         }
         i++;
       });
+
       this.receptData = get;
-      //this.allData = get;
       this.mainFlexGrid.itemsSource = [];
     },
     /****************
@@ -720,7 +838,7 @@ export default {
      * クリックした際の受給者番号取得
      */
     getClickJyukyusyaBango: function (row) {
-      return this.allData[row].jyukyusyaBango;
+      return this.receptData[row].jyukyusyaBango;
     },
     /*************
      * 受給者番号が持つ行数の取得
@@ -788,7 +906,8 @@ export default {
     /*****************
      * セルのフォーマット指定
      */
-    createCellFormat: function (flexGrid, _self) {
+    createCellFormat: function (flexGrid, _self, data) {
+      let _selfdata = data;
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
         let text = e.cell.innerText;
@@ -823,9 +942,18 @@ export default {
         // }
 
         // 固定行データ
-        if (_self.allData[e.row] && _self.allData[e.row].fixFlag) {
-          if (e.panel == flexGrid.cells) {
-            e.cell.style.background = '#fffeed';
+        let background = '';
+        if (e.panel == flexGrid.cells) {
+          if (e.col <= 5) e.cell.style.background = '#fffeed';
+
+          if (e.col >= 7) {
+            if (_selfdata[e.row]) {
+              if (_selfdata[e.row].fixFlag) {
+                e.cell.style.background = '#fffeed';
+              } else {
+                e.cell.style.background = '#fff';
+              }
+            }
           }
         }
 
@@ -839,6 +967,9 @@ export default {
             '</div>';
         }
         //}
+        if (background) {
+          e.cell.innerHTML = '<div "' + background + '">' + html + '</div>';
+        }
         if (e.panel == flexGrid.cells && e.col == 6) {
           e.cell.innerHTML = '<div "' + classname + '">' + html + '</div>';
           wjCore.setCss(e.cell, {
@@ -869,7 +1000,7 @@ export default {
       panel.setCellData(0, 14, '上限管理後');
       panel.setCellData(0, 16, _self.verticalHeader[2]);
       panel.setCellData(0, 17, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 90;
+      flexGrid.columnHeaders.rows[1].height = 100;
     },
     /**************
      * 全体セルのマージ
@@ -901,7 +1032,6 @@ export default {
       }
 
       let mm = new wjGrid.MergeManager(flexGrid);
-      console.log(ranges);
 
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -927,6 +1057,31 @@ export default {
 </script>
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
+
+div.receptParts {
+  background-color: $white;
+  padding: 2%;
+  border: none;
+  div .wj-cell {
+    font-size: 12px;
+  }
+  .fixgrey {
+    background-color: $light-gray;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 4px;
+  }
+}
+div.receptPartsArea {
+  background-color: $white;
+  width: 100%;
+  margin: 0;
+  text-align: right;
+  padding: 0px 15px 15px 0px;
+}
 
 div#recept-jijyougen {
   #grid_jijyougen {

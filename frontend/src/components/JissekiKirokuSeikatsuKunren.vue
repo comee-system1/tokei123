@@ -31,6 +31,7 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
+      :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
       :autoRowHeights="true"
@@ -85,18 +86,31 @@ let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   props:['userListData','riyousya','zyukyusyaNum'],
+  watch:{
+    riyousya:function(){
+      this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
+      this.tsushoTotal = apiResult['riyo_inf'][0]['gokei_tusho'],
+      this.houmonTotal1 = apiResult['riyo_inf'][0]['gokei_homon1'],
+      this.houmonTotal2 = apiResult['riyo_inf'][0]['gokei_homon2'],
+      this.sougeiTotal = getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.iryoRenkeiTotal = getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.taikenRiyoTotal = getTaikenRiyoTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
+      this.detailGridData = this.getGridData(apiResult);
+      this.subGridData = this.getSubGridData(apiResult);
+      this.gridchageFlag = true;
+    }
+  },
   data(){
     return{
-      currentPageTitle: this.$route.name,
-      detailGridData:this.getGridData(apiResult),
-      sikyuryoData:apiResult['riyo_inf'][0]['sikyuryo'],
-      tsushoTotal:apiResult['riyo_inf'][0]['gokei_tusho'],
-      houmonTotal1:apiResult['riyo_inf'][0]['gokei_homon1'],
-      houmonTotal2:apiResult['riyo_inf'][0]['gokei_homon2'],
-      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      iryoRenkeiTotal: getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      taikenRiyoTotal: getTaikenRiyoTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      subGridData:this.getSubGridData(apiResult),
+      detailGridData: this.getGridData(),
+      sikyuryoData: "",
+      tsushoTotal: 0,
+      houmonTotal1: 0,
+      houmonTotal2: 0,
+      sougeiTotal: 0,
+      iryoRenkeiTotal: 0,
+      taikenRiyoTotal: 0,
+      subGridData: this.getSubGridData(),
     }
   },
   methods: {
@@ -231,6 +245,18 @@ export default{
         }
       }
     },
+    onInitializeDetailGridChanged:function(flexGrid){
+      if(this.gridchageFlag){
+        let footerPanel = flexGrid.columnFooters;
+        footerPanel.setCellData(0, 4, this.tsushoTotal);
+        footerPanel.setCellData(0, 6, this.sougeiTotal);
+        footerPanel.setCellData(0, 10, this.iryoRenkeiTotal);
+        footerPanel.setCellData(0, 11, this.taikenRiyoTotal);
+        footerPanel.setCellData(1, 4, "1時間未満 : " + this.houmonTotal1);
+        footerPanel.setCellData(1, 5, "1時間以上 : " + this.houmonTotal2);
+        this.gridchageFlag = false;
+      }
+    },
     onInitializeSubGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -246,48 +272,83 @@ export default{
       }
     },
     getGridData:function(data){
-      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+      // グリッド表示用データの作成
       let gridData = [];
-      for(let i = 0; i<kirokuMeiData.length; i++){
-        // 曜日表示用に文字列の日付をDate型に変換
-        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      if(data != null){
+        let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+        for(let i = 0; i<kirokuMeiData.length; i++){
+          // 曜日表示用に文字列の日付をDate型に変換
+          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+          gridData.push(
+            {
+              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi:WeekChars[date.getDay()],
+              jyokyo:kirokuMeiData[i]["jyokyo"],
+              keitai:kirokuMeiData[i]["keitai"],
+              jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
+              jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
+              gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
+              sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
+              kasant:kirokuMeiData[i]["kasant"] == 0 ? "":kirokuMeiData[i]["kasant"],
+              kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+              kasani:kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
+              kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+              biko:kirokuMeiData[i]["biko"],
+            }
+          )
+        }
+      }else{
         gridData.push(
           {
-            id:kirokuMeiData[i]["id"],
-            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-            youbi:WeekChars[date.getDay()],
-            jyokyo:kirokuMeiData[i]["jyokyo"],
-						keitai:kirokuMeiData[i]["keitai"],
-            jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-            jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-            gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-            sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-            kasant:kirokuMeiData[i]["kasant"] == 0 ? "":kirokuMeiData[i]["kasant"],
-            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-            kasani:kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
-            kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-            biko:kirokuMeiData[i]["biko"],
+            rymd: "",
+            youbi: "",
+            jyokyo: "",
+            keitai: "",
+            jstime: "",
+            jetime: "",
+            gei: "",
+            sou: "",
+            kasant: "",
+            kasans: "",
+            kasani: "",
+            kasantkn: "",
+            biko: "",
           }
         )
       }
       return gridData;
     },
     getSubGridData:function(data){
-      let riyouKaishibi = data['riyo_inf'][0]['staymd'];
-      let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+      // サブグリッド表示用データの作成
       let subGridData = [];
-      subGridData.push(
-        {
-          Column0: "初期加算",
-          Column1: "利用開始日",
-          Column2: dateFilter(riyouKaishibi),
-          Column3: "30日目",
-          Column4: thirtythDayFilter(riyouKaishibi),
-          Column5: "当月算定日数",
-          Column6: tougetsuSantei + "日"
-        },
-      )
+      if(data != null){
+        let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+        let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+        subGridData.push(
+          {
+            Column0: "初期加算",
+            Column1: "利用開始日",
+            Column2: dateFilter(riyouKaishibi),
+            Column3: "30日目",
+            Column4: thirtythDayFilter(riyouKaishibi),
+            Column5: "当月算定日数",
+            Column6: tougetsuSantei + "日"
+          },
+        )
+      }else{
+        subGridData.push(
+          {
+            Column0: "初期加算",
+            Column1: "利用開始日",
+            Column2: "",
+            Column3: "30日目",
+            Column4: "",
+            Column5: "当月算定日数",
+            Column6: "",
+          },
+        )
+      }
       return subGridData;
     },
   }

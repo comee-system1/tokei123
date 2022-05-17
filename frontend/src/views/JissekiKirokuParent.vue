@@ -14,17 +14,17 @@
           </UserList>
         </v-col>
         <v-col class="rightArea">
-          <SeikatsuKaigo v-if="searchArgument=='22 生活介護'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKaigo>
-          <Tanki v-else-if="searchArgument=='24 短期入所'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Tanki>
-          <ShisetsuNyusho v-else-if="searchArgument=='32 施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShisetsuNyusho>
-          <Shukuhaku v-else-if="searchArgument=='34 宿泊型自立訓練'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Shukuhaku>
-          <KinoKunren v-else-if="searchArgument=='41 自立訓練(機能訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KinoKunren>
-          <SeikatsuKunren v-else-if="searchArgument=='42 自立訓練(生活訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKunren>
-          <ShuroIko v-else-if="searchArgument=='43 就労移行支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroIko>
-          <ShurokeizokuA v-else-if="searchArgument=='45 就労継続支援A型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuA>
-          <ShurokeizokuB v-else-if="searchArgument=='46 就労継続支援B型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuB>
-          <ShuroTeichaku v-else-if="searchArgument=='47 就労定着支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroTeichaku>
-          <JiritsuSeikatsu v-else-if="searchArgument=='35 自立生活援助'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></JiritsuSeikatsu>
+          <SeikatsuKaigo v-if="selectedService=='22 生活介護'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKaigo>
+          <Tanki v-else-if="selectedService=='24 短期入所'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Tanki>
+          <ShisetsuNyusho v-else-if="selectedService=='32 施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShisetsuNyusho>
+          <Shukuhaku v-else-if="selectedService=='34 宿泊型自立訓練'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Shukuhaku>
+          <KinoKunren v-else-if="selectedService=='41 自立訓練(機能訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KinoKunren>
+          <SeikatsuKunren v-else-if="selectedService=='42 自立訓練(生活訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKunren>
+          <ShuroIko v-else-if="selectedService=='43 就労移行支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroIko>
+          <ShurokeizokuA v-else-if="selectedService=='45 就労継続支援A型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuA>
+          <ShurokeizokuB v-else-if="selectedService=='46 就労継続支援B型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuB>
+          <ShuroTeichaku v-else-if="selectedService=='47 就労定着支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroTeichaku>
+          <JiritsuSeikatsu v-else-if="selectedService=='35 自立生活援助'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></JiritsuSeikatsu>
         </v-col>
       </v-row>
     </v-container>
@@ -71,11 +71,18 @@ export default{
       daycount: daycount,
       dateArgument: '',
       searchArgument: '',
+      selectedService: '',
       userListData: [], // 利用者一覧表示データ
       selectedRow: '', // 利用者一覧の選択行
       riyousya: '',
       zyukyusyaNum: '',
     };
+  },
+  watch:{
+    selectedService: function(){
+      this.riyousya = '';
+      this.zyukyusyaNum = '';
+    }
   },
   methods: {
     parentCalendar(dateArgument) {
@@ -87,7 +94,7 @@ export default{
       this.createInfo();
     },
     parentSearch(searchArgument) {
-      this.searchArgument = searchArgument.teikyoService;
+      this.selectedService = searchArgument.teikyoService;
     },
     getUserListData: function(data){
       // 利用者一覧で表示されているデータ一式を取得

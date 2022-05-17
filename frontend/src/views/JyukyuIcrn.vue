@@ -294,8 +294,8 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = ls.getlocalStorage(keySort);
-      this.alphaSearch = ls.getlocalStorage(keyAlp);
+      this.sortSearch = ls.getlocalStorageEncript(keySort);
+      this.alphaSearch = ls.getlocalStorageEncript(keyAlp);
     });
   },
   computed: {
@@ -563,12 +563,12 @@ export default {
       this.userFilter();
     },
     sortUser: function (sortType) {
-      ls.setlocalStorage(keySort, sortType);
+      ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      ls.setlocalStorage(keyAlp, Number(key));
+      ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },

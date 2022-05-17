@@ -253,6 +253,13 @@ export default {
         teikyoService: this.jimusyo[storage.selectRow].teikyoService,
       };
       this.returndata = returns;
+
+      this.returndata['seikyu_year'] = this.seikyu_year;
+      this.returndata['seikyu_month'] = this.seikyu_month;
+      this.returndata['teikyo_year'] = this.year;
+      this.returndata['teikyo_month'] = this.month;
+      this.returndata['search_button'] = true;
+      this.$emit('parent-service-select', this.returndata);
     }
   },
   mounted: function () {

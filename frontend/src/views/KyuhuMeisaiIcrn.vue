@@ -528,12 +528,12 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.dispPageType = ls.getlocalStorage(keyPage);
-      this.dispTotalOnly = ls.getlocalStorage(keyTotal);
-      this.sortSearch = ls.getlocalStorage(keySort);
-      this.alphaSearch = ls.getlocalStorage(keyAlp);
-      this.selSvc = ls.getlocalStorage(keySvc);
-      this.selSichoson = ls.getlocalStorage(keySichoson);
+      this.dispPageType = Number(ls.getlocalStorageEncript(keyPage));
+      this.dispTotalOnly = Number(ls.getlocalStorageEncript(keyTotal));
+      this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
+      this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
+      this.selSvc = Number(ls.getlocalStorageEncript(keySvc));
+      this.selSichoson = Number(ls.getlocalStorageEncript(keySichoson));
       this.pageChange(this.dispPageType);
     });
   },
@@ -1130,7 +1130,7 @@ export default {
       return tmpviewdata;
     },
     pageChange: function (pageType) {
-      ls.setlocalStorage(keyPage, pageType);
+      ls.setlocalStorageEncript(keyPage, pageType);
       this.dispPageType = pageType;
       if (this.dispPageType == 0) {
         document.getElementById(grdNameSeikyu).style.display = styleBlock;
@@ -1143,31 +1143,31 @@ export default {
       }
     },
     dispTotal: function (dispType) {
-      ls.setlocalStorage(keyTotal, dispType);
+      ls.setlocalStorageEncript(keyTotal, dispType);
       this.dispTotalOnly = dispType;
       if (this.dispTotalOnly == 1) {
         this.selSvc = 0;
-        ls.setlocalStorage(keySvc, this.selSvc);
+        ls.setlocalStorageEncript(keySvc, this.selSvc);
       }
       this.userFilter();
     },
     sortUser: function (sortType) {
-      ls.setlocalStorage(keySort, sortType);
+      ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      ls.setlocalStorage(keyAlp, Number(key));
+      ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },
     onSvcIndexChanged: function (s) {
-      ls.setlocalStorage(keySvc, s.selectedValue);
+      ls.setlocalStorageEncript(keySvc, s.selectedValue);
       this.selSvc = s.selectedValue;
       this.userFilter();
     },
     onSichosonIndexChanged: function (s) {
-      ls.setlocalStorage(keySichoson, s.selectedValue);
+      ls.setlocalStorageEncript(keySichoson, s.selectedValue);
       this.selSichoson = s.selectedValue;
       this.userFilter();
     },

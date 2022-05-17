@@ -31,6 +31,7 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
+      :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
       :autoRowHeights="true"
@@ -66,14 +67,25 @@ let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   props:['userListData','riyousya','zyukyusyaNum'],
+  watch:{
+    riyousya:function(){
+      this.sikyuryoData = apiResult['riyo_inf'][0]['keiyakuryo'];
+      this.sougeiTotal = getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.iryoRenkeiTotal = getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.teiinChokaTotal = getTeiinChokaTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.detailGridData = this.getGridData(apiResult);
+      this.gridchageFlag = true;
+    }
+  },
   data(){
     return{
       currentPageTitle: this.$route.name,
-      detailGridData:this.getGridData(apiResult),
-      sikyuryoData:apiResult['riyo_inf'][0]['keiyakuryo'],
-      sougeiTotal: getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      iryoRenkeiTotal: getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      teiinChokaTotal: getTeiinChokaTotal(apiResult['riyo_inf'][0]['kiroku_mei'])
+      detailGridData:this.getGridData(),
+      sikyuryoData:"",
+      sougeiTotal: 0,
+      iryoRenkeiTotal: 0,
+      teiinChokaTotal: 0,
+      gridchageFlag:false
     }
   },
   methods: {
@@ -193,28 +205,56 @@ export default{
         }
       }
     },
+    onInitializeDetailGridChanged:function(flexGrid){
+      if(this.gridchageFlag){
+        let footerPanel = flexGrid.columnFooters;
+        footerPanel.setCellData(0, 4, this.sougeiTotal);
+        footerPanel.setCellData(0, 7, this.iryoRenkeiTotal);
+        footerPanel.setCellData(0, 10, this.teiinChokaTotal);
+        this.gridchageFlag = false;
+      }
+    },
     getGridData:function(data){
-      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+      // グリッド表示用データの作成
       let gridData = [];
-      for(let i = 0; i<kirokuMeiData.length; i++){
-        // 曜日表示用に文字列の日付をDate型に変換
-        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      if(data != null){
+        let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+        for(let i = 0; i<kirokuMeiData.length; i++){
+          // 曜日表示用に文字列の日付をDate型に変換
+          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+          gridData.push(
+            {
+              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi:WeekChars[date.getDay()],
+              nissu:kirokuMeiData[i]["nissu"] == 0 ? "":kirokuMeiData[i]["nissu"],
+              jyokyo:kirokuMeiData[i]["jyokyo"],
+              gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
+              sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
+              kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+              iryo:kirokuMeiData[i]["iryo"] == 0 ? "":kirokuMeiData[i]["iryo"],
+              kinkyu:kirokuMeiData[i]["kinkyu"] == 0 ? "":kirokuMeiData[i]["kinkyu"],
+              jyudo:kirokuMeiData[i]["jyudo"] == 0 ? "":kirokuMeiData[i]["jyudo"],
+              chokatk:kirokuMeiData[i]["chokatk"] == 0 ? "":kirokuMeiData[i]["chokatk"],
+              biko:kirokuMeiData[i]["biko"],
+            }
+          )
+        }
+      }else{
         gridData.push(
           {
-            id:kirokuMeiData[i]["id"],
-            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-            youbi:WeekChars[date.getDay()],
-						nissu:kirokuMeiData[i]["nissu"] == 0 ? "":kirokuMeiData[i]["nissu"],
-            jyokyo:kirokuMeiData[i]["jyokyo"],
-            gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-            sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-            kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-            iryo:kirokuMeiData[i]["iryo"] == 0 ? "":kirokuMeiData[i]["iryo"],
-						kinkyu:kirokuMeiData[i]["kinkyu"] == 0 ? "":kirokuMeiData[i]["kinkyu"],
-            jyudo:kirokuMeiData[i]["jyudo"] == 0 ? "":kirokuMeiData[i]["jyudo"],
-            chokatk:kirokuMeiData[i]["chokatk"] == 0 ? "":kirokuMeiData[i]["chokatk"],
-            biko:kirokuMeiData[i]["biko"],
+            rymd:"",
+            youbi:"",
+            nissu:"",
+            jyokyo:"",
+            gei:"",
+            sou:"",
+            kasans:"",
+            iryo:"",
+            kinkyu:"",
+            jyudo:"",
+            chokatk:"",
+            biko:"",
           }
         )
       }

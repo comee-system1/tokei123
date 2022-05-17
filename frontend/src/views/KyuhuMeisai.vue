@@ -35,12 +35,12 @@
                 <wj-flex-grid-column binding="Column10" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
-            <v-col cols="5">
-              <div class="confirmTitle pa-1 white--text">
-                確定済:2021.08.08 13:36 (担当者:大正 雅夫)
+            <v-col cols="4">
+              <div class="confirmTitle pl-2 mb-1 white--text">
+                確定済:2021.08.08 14:19 (担当者:大正 雅夫)
               </div>
               <v-row no-gutters justify="end">
-                <v-col cols="10">
+                <v-col cols="11">
                   <wj-flex-grid
                     id="styousonGrid"
                     :itemsSource="styousonGridData"
@@ -106,9 +106,12 @@
               </v-row>
             </v-col>
           </v-row>
-          <v-tabs class="mb-1">
-            <v-tab>サービス明細欄</v-tab>
-            <v-tab>請求額集計欄</v-tab>
+          <v-tabs class="mb-1" height="30px" v-model="tab" @change="tabChange">
+            <v-tab href="#serviceMeisai">サービス明細欄</v-tab>
+            <!-- <v-tab href="#seikyugakuSyukei">請求額集計欄</v-tab> -->
+            <v-tab class="text-caption" href="#JijyougenkanriJimsyo"
+              >自上限管理事業所入力</v-tab
+            >
           </v-tabs>
           <v-row no-gutters>
             <v-col>
@@ -155,11 +158,11 @@
           <v-row  no-gutters>
             <v-col>
               <wj-flex-grid
-                id="sarvissusyubetuGrid"
-                :itemsSource="sarvissusyubetuGridData"
+                id="servicessyubetuGrid"
+                :itemsSource="servicessyubetuGridData"
                 :headersVisibility="'None'"
                 :autoGenerateColumns="false"
-                :initialized="onInitializeSarvissusyubetuGrid"
+                :initialized="onInitializeServicessyubetuGrid"
                 :allowResizing="false"
                 :allowDragging="false"
               >
@@ -176,32 +179,16 @@
               </wj-flex-grid>
             </v-col>
           </v-row>
-          <!-- <v-row  no-gutters>
+          <v-row  no-gutters>
             <v-col>
-              <wj-flex-grid
-                id="sarvissusyubetuGrid"
-                :itemsSource="sarvissusyubetuGridData"
-                :headersVisibility="'None'"
-                :autoGenerateColumns="false"
-                :initialized="onInitializeSarvissusyubetuGrid"
-                :allowResizing="false"
-                :allowDragging="false"
-              >
-                <wj-flex-grid-column binding="Column0" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column1" :width="'3*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column2" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column3" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column4" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column5" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column6" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column7" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column8" :width="'1.5*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column9" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column10" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column11" :width="'3*'" :wordWrap="true"></wj-flex-grid-column>
-              </wj-flex-grid>
+              <div v-if="ServiceMeisaiFlag">
+                <kyuhu-meisairan></kyuhu-meisairan>
+              </div>
+              <div v-if="JijyougenkanriJimsyoFlag">
+                <recept-jijyougen></recept-jijyougen>
+              </div>
             </v-col>
-          </v-row> -->
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -211,31 +198,33 @@
 <script>
 import ServiceSelection from '../components/HeaderServices.vue';
 import UserList from '../components/UserList';
-
-import { getOriginalDetailData } from '../data/JissekiKirokuNyushoData.js'
 import * as wjGrid from '@grapecity/wijmo.grid';
+import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
+import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 
 let daycount = 0;
-
-// APIの戻り値をObjectに変換
-let apiResult = JSON.parse(getOriginalDetailData());
 
 export default {
   components: {
     ServiceSelection,
     UserList,
+    KyuhuMeisairan,
+    ReceptJijyougen,
   },
   data() {
     return {
       daycount: daycount,
       dateArgument: '',
       searchArgument: '',
-      kyuhujukyuyaGridData:this.getKyuhujukyuyaGridData(apiResult),
-      styousonGridData:this.getStyousonGridData(apiResult),
-      jigyousyaGridData:this.getJigyousyaGridData(apiResult),
-      tiikikubunGridData:this.getTiikikubunGridData(apiResult),
-      riyousyahutanGridData:this.getRiyousyahutanGridData(apiResult),
-      sarvissusyubetuGridData:this.getSarvissusyubetuGridData(apiResult),
+      kyuhujukyuyaGridData:this.getKyuhujukyuyaGridData(),
+      styousonGridData:this.getStyousonGridData(),
+      jigyousyaGridData:this.getJigyousyaGridData(),
+      tiikikubunGridData:this.getTiikikubunGridData(),
+      riyousyahutanGridData:this.getRiyousyahutanGridData(),
+      servicessyubetuGridData:this.getServicessyubetuGridData(),
+      tab: 'ServiceMeisai', // タブの初期状態
+      ServiceMeisaiFlag: true, // ServiceMeisaiFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
     };
   },
   methods: {
@@ -267,11 +256,12 @@ export default {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
+        s.textAlign = 'center';
         if(r == 0 || r == 1 || r == 2){
           s.backgroundColor = "#eee"
         }
-        if(c == 0){
-          s.textAlign = 'center';
+        if(r == 1 && c == 1 || r == 2 && c == 2){
+          s.textAlign = 'left';
         }
       }
     },
@@ -320,12 +310,10 @@ export default {
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
+        s.textAlign = 'center';
         s.fontWeight = "normal";
         if(r == 0 || r == 1 || r == 2){
           s.backgroundColor = "#eee"
-        }
-        if(c == 0){
-          s.textAlign = 'center';
         }
       }
     },
@@ -387,11 +375,12 @@ export default {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
+        s.textAlign = 'center'
         if(r == 0 || r == 1 || r == 2){
           s.backgroundColor = "#eee"
         }
-        if(c == 0){
-          s.textAlign = 'center';
+        if(r == 1 && c == 1){
+          s.textAlign = 'left';
         }
       }
     },
@@ -455,14 +444,11 @@ export default {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
+        s.textAlign = 'center'
         if(r == 0 || r == 1 || r == 2){
           s.backgroundColor = "#eee"
         }
-        if(c == 0){
-          s.textAlign = 'center';
-        }
         if(r == 0 && c == 0){
-          s.textAlign = 'center'
           cell.style.display = 'none'
         }
         if((r == 0 && c == 1)|| (r == 1 && c == 0)){
@@ -475,7 +461,7 @@ export default {
         if(r == 0 && c == 1){
           s.borderRadius = '4px 0 0 0'
         }
-        if (r == 0 && c == 2) {
+        if(r == 0 && c == 2) {
           s.borderTop = '1px solid rgba(0,0,0,.2)'
         }
         if(r == 1 && c == 0){
@@ -516,6 +502,7 @@ export default {
       let cellRanges = [
         new wjGrid.CellRange(0,8,0,17),
         new wjGrid.CellRange(0,18,0,19),
+        new wjGrid.CellRange(0,20,0,27),
         new wjGrid.CellRange(1,1,1,7),
         new wjGrid.CellRange(1,18,1,20),
         new wjGrid.CellRange(1,22,1,24),
@@ -540,15 +527,48 @@ export default {
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
-        s.fontWeight = "normal";
+        s.fontWeight = 'normal';
+        s.textAlign = 'center';
+        if(r == 0) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+        }
+        if(r == 0 && c == 0) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+          s.borderLeft = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '4px 0 0 0'
+        }
+        if(r == 1 && c == 0) {
+          s.borderLeft = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '0 0 0 4px'
+        }
+        if(r == 0 && c == 18 || r == 2 && c == 25) {
+          s.borderBottom = '1px solid rgba(0,0,0,.2)'
+          s.borderRight = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '0 4px 0 0'
+        }
+        if(r == 1 && c == 18|| c ==21 || c ==22 || c == 25) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+          s.top = '18px'
+          s.height = '20px'
+        }
+        if(r == 1 && c == 25) {
+          s.borderRadius = '0 4px 0 0'
+        }
         if(r == 1 && c == 0) {
           cell.innerHTML = '利用者負担上限額<br/>管理事業所';
         }
+        
         if(r == 0 || r == 1 || r == 2) {
           s.backgroundColor = "#eee"
         }
         if((c == 0) || (c == 1 && r == 1 ) || (c == 1 && r == 2) || (c == 8 && r == 0) || (c == 18 && r == 1) || (c == 22 && r == 1)){
           s.textAlign = 'center';
+        }
+        if(r == 0 && c == 20) {
+          cell.style.display = 'none'
+        }
+        if(r == 2 && c == 8) {
+          s.borderRadius = '0 0 4px 0'
         }
       }
     },
@@ -597,7 +617,7 @@ export default {
       )
       return riyousyahutanGridData;
     },
-    onInitializeSarvissusyubetuGrid:function(flexGrid){
+    onInitializeServicessyubetuGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -629,21 +649,21 @@ export default {
           s.backgroundColor = "#eee"
         }
         if(r == 0 && c == 0) {
-          s.lineHeight = "87px"
+          s.lineHeight = "57px"
         }
       }
     },
-    getSarvissusyubetuGridData:function(){
+    getServicessyubetuGridData:function(){
       let sarvisno1 = "22";
-      let sarvissusyubetuGridData = [];
-      sarvissusyubetuGridData.push(
+      let servicessyubetuGridData = [];
+      servicessyubetuGridData.push(
         {
           Column0: "サービス種別",
           Column1: sarvisno1,
           Column2: "開始年月日",
-          Column3: "平成23年11月11日",
+          Column3: "2019年11月11日",
           Column4: "終了年月日",
-          Column5: "令和3年7月30日",
+          Column5: "2021年7月30日",
           Column6: "利用日数",
           Column7: "12",
           Column8: "入院人数",
@@ -652,9 +672,9 @@ export default {
           Column0: "",
           Column1: "32",
           Column2: "開始年月日",
-          Column3: "平成23年11月11日",
+          Column3: "2019年11月11日",
           Column4: "終了年月日",
-          Column5: "令和3年7月30日",
+          Column5: "2021年7月30日",
           Column6: "利用日数",
           Column7: "0",
           Column8: "入院人数",
@@ -664,17 +684,28 @@ export default {
           Column0: "",
           Column1: "32",
           Column2: "開始年月日",
-          Column3: "平成23年11月11日",
+          Column3: "2019年11月11日",
           Column4: "終了年月日",
-          Column5: "令和3年7月30日",
+          Column5: "2021年7月30日",
           Column6: "利用日数",
           Column7: "0",
           Column8: "入院人数",
           Column9: "7",
         }
       )
-      return sarvissusyubetuGridData;
-    }
+      return servicessyubetuGridData;
+    },
+    /*****************
+     * タブを切り替えた際の表示切替
+     */
+    tabChange: function () {
+      this.ServiceMeisaiFlag = false;
+      this.JijyougenkanriJimsyoFlag = false;
+      if (this.tab == 'serviceMeisai') this.ServiceMeisaiFlag = true;
+      if (this.tab == 'JijyougenkanriJimsyo')
+        // this.SeikyugakuSyukeioFlag = true;
+        this.JijyougenkanriJimsyoFlag = true;
+    },
   }
 }
 </script>
@@ -683,9 +714,9 @@ export default {
 @import '@/assets/scss/common.scss';
 
 #kyuhumeisai {
-  font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px !important;
+  font-size: 14px;
 
   .leftArea {
     min-width: 275px;
@@ -698,18 +729,24 @@ export default {
     max-width: none;
     width: 1020px;
     margin-left:4px;
+    font-size: 12px;
+    .wj-cell  {
+      padding: 0;
+    }
   }
   .confirmTitle {
     font-size: $cell_fontsize;
     background-color: $red;
     color: $white;
     animation-name: fadeInAnime;
+    text-align: center;
     animation-duration: 1s;
     animation-fill-mode: forwards;
     opacity: 0;
   }
   .v-tab {
     margin-right: 15px;
+    font-size: 12px;
   }
   .v-tab:not(.v-tab--active) {
     border: 1px solid rgba(0,0,0,.2);
@@ -722,8 +759,16 @@ export default {
     border: none;
     border-radius: 4px 4px 0 0;
   }
+  &.wj-content {
+    border: none;
+  }
 }
-#tiikikubunGrid {
+#tiikikubunGrid{
+  &.wj-content {
+    border: none;
+  }
+}
+#riyousyahutanGrid {
   &.wj-content {
     border: none;
   }

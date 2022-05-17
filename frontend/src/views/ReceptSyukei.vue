@@ -8,7 +8,7 @@
     ></header-services>
 
     <v-container fluid class="jijyougen-container">
-      <v-row>
+      <v-row no-gutters>
         <v-col cols="8">
           <v-tabs height="30" v-model="tab" @change="tabChange">
             <v-tab class="text-caption" href="#recept">レセプト集計</v-tab>
@@ -43,8 +43,8 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="8" style="width: 800px">
+      <v-row class="pt-0 mt-0">
+        <v-col cols="8">
           <v-row class="mt-0">
             <v-col cols="6" class="pt-1">
               <v-row>
@@ -151,7 +151,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col>
+        <v-col cols="2">
           <v-btn class="mt-5">検索</v-btn>
         </v-col>
       </v-row>

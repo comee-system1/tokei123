@@ -243,9 +243,9 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = ls.getlocalStorage(keySort);
-      this.alphaSearch = ls.getlocalStorage(keyAlp);
-      this.selKasan = ls.getlocalStorage(keyKasan);
+      this.sortSearch = ls.getlocalStorageEncript(keySort);
+      this.alphaSearch = ls.getlocalStorageEncript(keyAlp);
+      this.selKasan = ls.getlocalStorageEncript(keyKasan);
     });
   },
   methods: {
@@ -580,7 +580,7 @@ export default {
       return tmpviewdata;
     },
     onKasanIndexChanged: function (s) {
-      ls.setlocalStorage(keyKasan, s.selectedValue);
+      ls.setlocalStorageEncript(keyKasan, s.selectedValue);
       this.selKasan = s.selectedValue;
       this.userFilter();
     },
@@ -589,12 +589,12 @@ export default {
       this.userFilter();
     },
     sortUser: function (sortType) {
-      ls.setlocalStorage(keySort, sortType);
+      ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
     onAlphabet: function (key) {
-      ls.setlocalStorage(keyAlp, Number(key));
+      ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },

@@ -34,6 +34,7 @@
           :headersVisibility="'None'"
           :autoGenerateColumns="false"
           :initialized="onInitializeJippisanteigakuGrid"
+          :itemsSourceChanged="onInitializeJippisanteigakuGridChanged"
           :allowResizing="false"
           :allowDragging="false"
         >
@@ -54,6 +55,7 @@
       :headersVisibility="'Column'"
       :autoGenerateColumns="false"
       :initialized="onInitializeDetailGrid"
+      :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
       :autoRowHeights="true"
@@ -109,15 +111,27 @@ let apiResult = JSON.parse(getOriginalDetailData());
 
 export default{
   props:['userListData','riyousya','zyukyusyaNum'],
+  watch:{
+    riyousya:function(){
+      this.tkkfhiumuData = apiResult['riyo_inf'][0]['tkkfhiumu'];
+      this.tkkfhiData = apiResult['riyo_inf'][0]['tkkfhi'];
+      this.detailGridData = this.getGridData(apiResult);
+      this.nyuinGaihakuTotal = getNyuinGaihakuTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
+      this.subGridData = this.getSubGridData(apiResult);
+      this.jippisanteigakuGridData = this.getjippisanteigakuGridData(apiResult);
+      this.gridchageFlag = true;
+    }
+  },
   data(){
     return{
       currentPageTitle: this.$route.name,
-      detailGridData:this.getGridData(apiResult),
-      nyuinGaihakuTotal: getNyuinGaihakuTotal(apiResult['riyo_inf'][0]['kiroku_mei']),
-      tkkfhiumuData:apiResult['riyo_inf'][0]['tkkfhiumu'],
-      tkkfhiData:apiResult['riyo_inf'][0]['tkkfhi'],
-      subGridData:this.getSubGridData(apiResult),
-      jippisanteigakuGridData:this.getjippisanteigakuGridData(apiResult),
+      detailGridData:this.getGridData(),
+      nyuinGaihakuTotal: 0,
+      tkkfhiumuData:"",
+      tkkfhiData:"",
+      subGridData:this.getSubGridData(),
+      jippisanteigakuGridData:this.getjippisanteigakuGridData(),
+      gridchageFlag:false
     }
   },
   methods: {
@@ -229,6 +243,12 @@ export default{
         }
       }
     },
+    onInitializeDetailGridChanged:function(flexGrid){
+      if(this.gridchageFlag){
+        let footerPanel = flexGrid.columnFooters;
+        footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
+      }
+    },
     onInitializeSubGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -295,29 +315,56 @@ export default{
         }
       }
     },
+    onInitializeJippisanteigakuGridChanged:function(flexGrid){
+      if(this.gridchageFlag){
+        flexGrid.cells.rows[0].height = 20;
+        flexGrid.cells.rows[1].height = 20;
+        this.gridchageFlag = false;
+      }
+    },
     getGridData:function(data){
       // グリッド表示用データの作成
-      let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
       let gridData = [];
-      for(let i = 0; i<kirokuMeiData.length; i++){
-        // 曜日表示用に文字列の日付をDate型に変換
-        let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
-        let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+      if(data != null){
+        let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
+        for(let i = 0; i<kirokuMeiData.length; i++){
+          // 曜日表示用に文字列の日付をDate型に変換
+          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
+          gridData.push(
+            {
+              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi:WeekChars[date.getDay()],
+              jyokyo:kirokuMeiData[i]["jyokyo"],
+              kasan1:kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
+              kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
+              kasanti:kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
+              kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+              kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
+              sasa:kirokuMeiData[i]["sasa"],
+              shiru:kirokuMeiData[i]["shiru"],
+              syuu:kirokuMeiData[i]["syuu"],
+              konetu:kirokuMeiData[i]["konetu"] == 0 ? "":kirokuMeiData[i]["konetu"],
+              biko:kirokuMeiData[i]["biko"],
+            }
+          )
+        }
+      }else{
         gridData.push(
           {
-            rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-            youbi:WeekChars[date.getDay()],
-            jyokyo:kirokuMeiData[i]["jyokyo"],
-            kasan1:kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
-            kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
-            kasanti:kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
-            kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-            kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
-            sasa:kirokuMeiData[i]["sasa"],
-            shiru:kirokuMeiData[i]["shiru"],
-            syuu:kirokuMeiData[i]["syuu"],
-            konetu:kirokuMeiData[i]["konetu"] == 0 ? "":kirokuMeiData[i]["konetu"],
-            biko:kirokuMeiData[i]["biko"],
+            rymd:"",
+            youbi:"",
+            jyokyo:"",
+            kasan1:"",
+            kasan2:"",
+            kasanti:"",
+            kasantkn:"",
+            kasanj:"",
+            sasa:"",
+            shiru:"",
+            syuu:"",
+            konetu:"",
+            biko:"",
           }
         )
       }
@@ -325,72 +372,127 @@ export default{
     },
     getSubGridData:function(data){
       // サブグリッド表示用データの作成
-      let riyouKaishibi = data['riyo_inf'][0]['staymd'];
-      let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
-      let taishoDate = data['riyo_inf'][0]['taiymd'];
-      let taishogoSanteibi = data['riyo_inf'][0]['ttymd'];
       let subGridData = [];
-      subGridData.push(
-        {
-          Column0: "入所時特別支援加算",
-          Column1: "利用開始日",
-          Column2: dateFilter(riyouKaishibi),
-          Column3: "30日目",
-          Column4: thirtythDayFilter(riyouKaishibi),
-          Column5: "当月算定日数",
-          Column6: tougetsuSantei + "日"
-        },
-        {
-          Column0: "地域移行支援",
-          Column1: "退所日",
-          Column2: dateFilter(taishoDate),
-          Column3: "退所後算定日",
-          Column4: dateFilter(taishogoSanteibi),
-          Column5: "",
-          Column6: ""
-        }
-      )
+      if(data != null){
+        let riyouKaishibi = data['riyo_inf'][0]['staymd'];
+        let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
+        let taishoDate = data['riyo_inf'][0]['taiymd'];
+        let taishogoSanteibi = data['riyo_inf'][0]['ttymd'];
+        subGridData.push(
+          {
+            Column0: "入所時特別支援加算",
+            Column1: "利用開始日",
+            Column2: dateFilter(riyouKaishibi),
+            Column3: "30日目",
+            Column4: thirtythDayFilter(riyouKaishibi),
+            Column5: "当月算定日数",
+            Column6: tougetsuSantei + "日"
+          },
+          {
+            Column0: "地域移行支援",
+            Column1: "退所日",
+            Column2: dateFilter(taishoDate),
+            Column3: "退所後算定日",
+            Column4: dateFilter(taishogoSanteibi),
+            Column5: "",
+            Column6: ""
+          }
+        )
+      }else{
+        subGridData.push(
+          {
+            Column0: "入所時特別支援加算",
+            Column1: "利用開始日",
+            Column2: "",
+            Column3: "30日目",
+            Column4: "",
+            Column5: "当月算定日数",
+            Column6: ""
+          },
+          {
+            Column0: "地域移行支援",
+            Column1: "退所日",
+            Column2: "",
+            Column3: "退所後算定日",
+            Column4: "",
+            Column5: "",
+            Column6: ""
+          }
+        )
+      }
       return subGridData;
     },
     getjippisanteigakuGridData:function(data){
-      let sTankaAsa = data['riyo_inf'][0]['tnka_syk_a'];
-      let sTankaHiru = data['riyo_inf'][0]['tnka_syk_h'];
-      let sTankaYoru = data['riyo_inf'][0]['tnka_syk_y'];
-      let sTankaDay = data['riyo_inf'][0]['tnka_syk_d'];
-      let kTankaDay = data['riyo_inf'][0]['tnka_kns_d'];
-      let kTankaMonth = data['riyo_inf'][0]['tnka_kns_m'];
       let jippisanteigakuGridData = [];
-      jippisanteigakuGridData.push(
-        {
-          Column0: "実費算定額",
-          Column1: "食費の単価(円/日)",
-          Column2: "食費の単価",
-          Column3: "食費の単価",
-          Column4: "食費の単価",
-          Column5: "光熱水費の単価(円/日)",
-          Column6: "光熱水費の単価",
-        },
-        {
-          Column0: "実費算定額",
-          Column1: "朝食",
-          Column2: "昼食",
-          Column3: "夕食",
-          Column4: "一日",
-          Column5: "一日",
-          Column6: "一月",
-        },
-        {
-          Column0: "実費算定額",
-          Column1: sTankaAsa,
-          Column2: sTankaHiru,
-          Column3: sTankaYoru,
-          Column4: sTankaDay,
-          Column5: kTankaDay,
-          Column6: kTankaMonth,
-        }
-      )
+      if(data != null){
+        let sTankaAsa = data['riyo_inf'][0]['tnka_syk_a'];
+        let sTankaHiru = data['riyo_inf'][0]['tnka_syk_h'];
+        let sTankaYoru = data['riyo_inf'][0]['tnka_syk_y'];
+        let sTankaDay = data['riyo_inf'][0]['tnka_syk_d'];
+        let kTankaDay = data['riyo_inf'][0]['tnka_kns_d'];
+        let kTankaMonth = data['riyo_inf'][0]['tnka_kns_m'];
+        jippisanteigakuGridData.push(
+          {
+            Column0: "実費算定額",
+            Column1: "食費の単価(円/日)",
+            Column2: "食費の単価",
+            Column3: "食費の単価",
+            Column4: "食費の単価",
+            Column5: "光熱水費の単価(円/日)",
+            Column6: "光熱水費の単価",
+          },
+          {
+            Column0: "実費算定額",
+            Column1: "朝食",
+            Column2: "昼食",
+            Column3: "夕食",
+            Column4: "一日",
+            Column5: "一日",
+            Column6: "一月",
+          },
+          {
+            Column0: "実費算定額",
+            Column1: sTankaAsa,
+            Column2: sTankaHiru,
+            Column3: sTankaYoru,
+            Column4: sTankaDay,
+            Column5: kTankaDay,
+            Column6: kTankaMonth,
+          }
+        )
+      }else{
+        jippisanteigakuGridData.push(
+          {
+            Column0: "実費算定額",
+            Column1: "食費の単価(円/日)",
+            Column2: "食費の単価",
+            Column3: "食費の単価",
+            Column4: "食費の単価",
+            Column5: "光熱水費の単価(円/日)",
+            Column6: "光熱水費の単価",
+          },
+          {
+            Column0: "実費算定額",
+            Column1: "朝食",
+            Column2: "昼食",
+            Column3: "夕食",
+            Column4: "一日",
+            Column5: "一日",
+            Column6: "一月",
+          },
+          {
+            Column0: "実費算定額",
+            Column1: "",
+            Column2: "",
+            Column3: "",
+            Column4: "",
+            Column5: "",
+            Column6: "",
+          }
+        )
+      }
       return jippisanteigakuGridData;
-    }
+    },
   },
 }
 
