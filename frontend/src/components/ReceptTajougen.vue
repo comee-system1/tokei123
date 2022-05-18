@@ -170,17 +170,15 @@ export default {
     /*******************
      * 確定登録・解除ボタン
      */
-    parentDefineButton(type) {
-      console.log(type);
+    parentDefineButton() {
       for (let i = 0; i < this.allData.length; i++) {
         let mark = this.mainFlexGrid.getCellData(i, 15);
         console.log(mark);
         if (mark == '〇') {
           this.mainFlexGrid.setCellData(i, 15, 'complete');
 
-          this.allData[i]['complateFlag'] = true;
+          this.receptData[i]['complateFlag'] = true;
         }
-        //this.allData[i]['print'] = mark;
       }
     },
     /*******************
@@ -514,7 +512,7 @@ export default {
       panel.setCellData(0, 13, '上限管理後');
       panel.setCellData(0, 15, _self.verticalHeader[2]);
       panel.setCellData(0, 16, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 80;
+      flexGrid.columnHeaders.rows[1].height = 90;
     },
     /**************
      * ヘッダセルのマージ
@@ -551,6 +549,12 @@ div#recept-tajyougen {
   #grid_tajyougen {
     height: 52vh;
   }
+  .wj-header.wj-cell {
+    div {
+      font-size: 14px;
+    }
+  }
+
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;

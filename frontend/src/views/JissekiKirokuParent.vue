@@ -18,6 +18,7 @@
           <SeikatsuKaigo v-if="selectedService=='22 生活介護'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKaigo>
           <Tanki v-else-if="selectedService=='24 短期入所'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Tanki>
           <ShisetsuNyusho v-else-if="selectedService=='32 施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShisetsuNyusho>
+          <KeikatekiShisetsuNyusho v-else-if="selectedService=='32 経過的施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KeikatekiShisetsuNyusho>
           <Shukuhaku v-else-if="selectedService=='34 宿泊型自立訓練'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Shukuhaku>
           <KinoKunren v-else-if="selectedService=='41 自立訓練(機能訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KinoKunren>
           <SeikatsuKunren v-else-if="selectedService=='42 自立訓練(生活訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKunren>
@@ -37,6 +38,7 @@ import ServiceSelection from '../components/HeaderServices.vue';
 import UserList from '../components/UserList';
 import SeikatsuKaigo from '../components/JissekiKirokuSeikatsuKaigo.vue';
 import ShisetsuNyusho from '../components/JissekiKirokuShisetsuNyusho.vue';
+import KeikatekiShisetsuNyusho from '../components/JissekiKirokuKeikatekiShisetsuNyusho.vue';
 import Tanki from '../components/JissekiKirokuTanki.vue';
 import Shukuhaku from '../components/JissekiKirokuShukuhaku.vue';
 import KinoKunren from '../components/JissekiKirokuKinoKunren.vue';
@@ -46,6 +48,7 @@ import ShurokeizokuA from '../components/JissekiKirokuShurokeizokuA.vue';
 import ShurokeizokuB from '../components/JissekiKirokuShurokeizokuB.vue';
 import ShuroTeichaku from '../components/JissekiKirokuShuroTeichaku.vue';
 import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
+
 
 import moment from 'moment';
 
@@ -58,6 +61,7 @@ export default{
     SeikatsuKaigo,
     Tanki,
     ShisetsuNyusho,
+    KeikatekiShisetsuNyusho,
     Shukuhaku,
     KinoKunren,
     SeikatsuKunren,

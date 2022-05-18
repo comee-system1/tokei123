@@ -147,6 +147,17 @@
     <div id="menubar">
       <v-btn
         elevation="2"
+        icon
+        small
+        absolute
+        top
+        right
+        @click="menubar_close()"
+        color="secondary"
+        ><v-icon dark small> mdi-close </v-icon></v-btn
+      >
+      <v-btn
+        elevation="2"
         outlined
         tile
         block
@@ -279,14 +290,13 @@ export default {
     /*******************
      * 確定登録・解除ボタン
      */
-    parentDefineButton(type) {
-      console.log(type);
-      for (let i = 0; i < this.allData.length; i++) {
-        let mark = this.mainFlexGrid.getCellData(i, 15);
+    parentDefineButton() {
+      for (let i = 0; i < this.receptData.length; i++) {
+        let mark = this.receptData[i]['resekakutei'];
         if (mark == '〇') {
-          this.mainFlexGrid.setCellData(i, 15, 'complete');
-
-          this.allData[i]['complateFlag'] = true;
+          this.mainFlexGrid.setCellData(i, 16, 'complete');
+          this.receptData[i]['resekakutei'] = 'complete';
+          this.receptData[i]['complateFlag'] = true;
         }
         //this.allData[i]['print'] = mark;
       }
@@ -444,13 +454,10 @@ export default {
         });
         //  }
       }
-
       // データ配列の成型
       receptData = this.fixDefaultTypeArray(receptData);
-
       //マージ用の配列を作成
       let merge = this.createMergeArray(receptData);
-
       this.merge = merge;
       this.allData = receptData;
       return receptData;
@@ -488,7 +495,7 @@ export default {
     },
 
     /***********
-     * 親コンポーネントの上限管理計算へ反映ボタン
+     * 親コンポーネントの上限管理計算ボタン
      */
     parentReceptCalc: function () {
       // 計算の実施、計算方法がわからないので、とりあえず
@@ -501,6 +508,8 @@ export default {
             this.receptData[i].riyosyafutangaku;
           this.receptData[i]['kanrikekkafutangaku'] = calc;
           this.receptData[i]['kanrikekka'] = 1;
+          this.receptData[i]['jyougengakukanrikeisan'] = '●';
+          this.receptData[i]['resekakutei'] = '〇';
         }
       }
       this.mainFlexGrid.refresh();
@@ -510,26 +519,29 @@ export default {
      * マージ作成用の配列を作成
      */
     createMergeArray: function (receptData) {
-      //jyukyusyaBango をキーに変更し、グループ化をする
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
-        //配列の要素数を指定する
-        array[receptData[i]['jyukyusyaBango']] = [];
-        for (let j = 0; j < receptData.length; j++) {
-          if (
-            receptData[i]['jyukyusyaBango'] == receptData[j]['jyukyusyaBango']
-          ) {
-            array[receptData[i]['jyukyusyaBango']].push({ j });
-          }
-        }
+        array.push({
+          row: i,
+          jyukyusyaBango: receptData[i]['jyukyusyaBango'],
+        });
       }
+      const groupBy = function (xs, key) {
+        return xs.reduce(function (rv, x) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+      };
 
+      const mergeGroup = groupBy(array, 'jyukyusyaBango');
       let merge = [];
-      array.forEach(function (elem, key) {
+      Object.keys(mergeGroup).map((key) => {
+        let firsts = mergeGroup[key][0].row;
+        let lasts = mergeGroup[key][mergeGroup[key].length - 1].row + 1;
         merge.push({
           k: key,
-          first: elem[0].j,
-          last: elem.length + elem[0].j,
+          first: firsts,
+          last: lasts,
         });
       });
       return merge;
@@ -693,6 +705,14 @@ export default {
       this.jigyosyoMisiyoConfirm.flag = true;
       this.jigyosyoMisiyoConfirm.message = message;
     },
+    /**************
+     * 編集用メニューを閉じる
+     */
+    menubar_close: function () {
+      this.mainFlexGrid.setCellData(this.hensyuTargetRow, 13, ' ');
+      this.receptData[this.hensyuTargetRow]['hensyu'] = '';
+      document.getElementById('menubar').style.display = 'none';
+    },
     /*************
      * 事業所未使用ボタンのはいを実行
      */
@@ -777,18 +797,28 @@ export default {
           // レセプト確定カラムを押下
           if (hPage.col == 16) {
             if (ht.target.innerText == '〇') {
-              flexGrid.setCellData(hPage.row, 16, '');
-              _self.receptData[hPage.row]['resekakutei'] = '';
+              _self.editReseKaku(hPage.row, '');
+            }
+            if (ht.target.innerText == '') {
+              // 上限管理計算の値が●であることの確認
+              let jyougengakukanrikeisan =
+                _self.receptData[hPage.row].jyougengakukanrikeisan;
+              if (jyougengakukanrikeisan == '●') {
+                _self.editReseKaku(hPage.row, '〇');
+              }
             }
             if (ht.target.innerText == 'complete') {
               flexGrid.setCellData(hPage.row, 16, 'delete');
-              _self.receptData[hPage.row]['resekakutei'] = 'delete';
-              _self.receptData[hPage.row]['complateFlag'] = false;
+              _self.editReseKaku(hPage.row, 'delete');
             }
             if (ht.target.innerText == 'delete') {
               flexGrid.setCellData(hPage.row, 16, 'complete');
-              _self.receptData[hPage.row]['resekakutei'] = 'complete';
-              _self.receptData[hPage.row]['complateFlag'] = true;
+              // 上限管理計算の値が●であることの確認
+              let jyougengakukanrikeisan =
+                _self.receptData[hPage.row].jyougengakukanrikeisan;
+              if (jyougengakukanrikeisan == '●') {
+                _self.editReseKaku(hPage.row, 'complete');
+              }
             }
           }
 
@@ -804,18 +834,18 @@ export default {
               // 順番の最大値を取得
               let numbers = [];
               for (let i = jBrow.first; i < jBrow.last; i++) {
-                numbers.push(_self.allData[i].kobanSorts);
+                numbers.push(_self.receptData[i].kobanSorts);
               }
               var max = numbers.reduce(function (a, b) {
                 return Math.max(a, b);
               });
               let num = max + 1;
               flexGrid.setCellData(hPage.row, 7, num);
-              _self.allData[hPage.row].kobanSorts = num;
+              _self.receptData[hPage.row].kobanSorts = num;
             } else {
               for (let i = jBrow.first; i < jBrow.last; i++) {
                 flexGrid.setCellData(i, 7, '');
-                _self.allData[i].kobanSorts = '';
+                _self.receptData[i].kobanSorts = '';
               }
             }
           }
@@ -823,6 +853,25 @@ export default {
       });
     },
 
+    /*********************
+     * レセプト確定の値を指定する
+     */
+    editReseKaku: function (row, code) {
+      // 変更場所の受給者番号取得
+      let jB = this.getClickJyukyusyaBango(row);
+      //受給者番号が持つ行数の取得
+      let jBrow = this.getJyukyusyaBangoRow(jB);
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        this.mainFlexGrid.setCellData(i, 16, code);
+        this.receptData[i]['resekakutei'] = code;
+        if (code == 'delete') {
+          this.receptData[i]['complateFlag'] = false;
+        }
+        if (code == 'complete') {
+          this.receptData[i]['complateFlag'] = true;
+        }
+      }
+    },
     /*********************
      * データを変更した際に上限額管理計算に〇を表示
      */
@@ -883,13 +932,6 @@ export default {
           DataType.Number,
           col.format
         );
-
-        // console.log('length=>' + _self.allData.length);
-        // console.log('row=>' + e.row);
-        // console.log('col=>' + e.col);
-        // console.log('value=>' + value);
-        // console.log(isNumber(value));
-
         let pt_souhiyou = flexGrid.getCellData(e.row, 11);
         let pt_riyousyafutan = flexGrid.getCellData(e.row, 12);
         if (e.col == 11 || e.col == 12) {
@@ -941,23 +983,24 @@ export default {
         }
 
         // 固定行データ
-        let background = '';
         if (e.panel == flexGrid.cells) {
           if (e.col <= 5) e.cell.style.background = '#fffeed';
-
-          if (e.col >= 7) {
+          if (e.col >= 7 && e.col < 14) {
             if (_selfdata[e.row]) {
               if (_selfdata[e.row].fixFlag) {
                 e.cell.style.background = '#fffeed';
+                e.cell.style.color = '#333';
               } else {
                 e.cell.style.background = '#fff';
+                if (e.col >= 8 && e.col < 13) {
+                  e.cell.style.color = '#2196F3';
+                }
               }
             }
           }
           if (e.col == 14 || e.col == 15) e.cell.style.background = '#fffeed';
         }
 
-        //if (classname) {
         if (e.panel == flexGrid.columnHeaders) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +
@@ -966,10 +1009,29 @@ export default {
             html +
             '</div>';
         }
-        //}
-        if (background) {
-          e.cell.innerHTML = '<div "' + background + '">' + html + '</div>';
+
+        if (e.panel == flexGrid.cells) {
+          if (e.col == 5 || e.col == 14) {
+            e.cell.innerHTML =
+              '<div style="text-align:right;width:100%;">' + html + '</div>';
+          }
+          if (e.col == 11 || e.col == 12) {
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
+          }
+          if (e.col == 16) {
+            if (text == 'complete') {
+              e.cell.innerHTML = '<div class="complete">complete</div>';
+            } else if (text == 'delete') {
+              e.cell.innerHTML = '<div class="delete">delete</div>';
+            } else {
+              e.cell.innerHTML =
+                '<div class="receptKakutei">' + html + '</div>';
+            }
+          }
         }
+
         if (e.panel == flexGrid.cells && e.col == 6) {
           e.cell.innerHTML = '<div "' + classname + '">' + html + '</div>';
           wjCore.setCss(e.cell, {
@@ -1029,6 +1091,15 @@ export default {
             )
           );
         }
+        let j = 16;
+        ranges.push(
+          new wjGrid.CellRange(
+            this.merge[i].first,
+            j,
+            this.merge[i].last - 1,
+            j
+          )
+        );
       }
 
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -1123,25 +1194,48 @@ div#recept-jijyougen {
 
   .complete {
     background-image: url('@/assets/kaku_15px.png');
-    text-indent: -9999px;
     background-position: center;
     background-repeat: no-repeat;
+    display: block;
+    width: 100%;
+    text-indent: -9999px;
   }
   .delete {
     background-image: url('@/assets/kesu_15px.png');
-    text-indent: -9999px;
     background-position: center;
     background-repeat: no-repeat;
+    display: block;
+    width: 100%;
+    text-indent: -9999px;
   }
 
   #menubar {
     display: none;
     position: absolute;
-    background-color: $white;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid $black;
     min-width: 80px;
-    border: 1px solid $light-gray;
     top: 0;
     left: 0;
+    padding: 30px 10px;
+    button {
+      background-color: $white;
+      &:first-child {
+        position: absolute;
+        top: 5px;
+        left: auto;
+        right: 5px;
+        z-index: 1;
+        border: 1px solid $light-gray;
+      }
+    }
+  }
+
+  .receptKakutei {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 </style>

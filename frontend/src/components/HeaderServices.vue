@@ -131,6 +131,18 @@
       >
         <v-card class="pa-2">
           <v-container>
+            <v-btn
+              elevation="2"
+              icon
+              small
+              absolute
+              top
+              right
+              @click="header_dialog_close()"
+              class="closeButton"
+              color="secondary"
+              ><v-icon dark small> mdi-close </v-icon></v-btn
+            >
             <wj-flex-grid
               :itemsSource="jimusyo"
               :headersVisibility="'Column'"
@@ -258,7 +270,7 @@ export default {
       this.returndata['seikyu_month'] = this.seikyu_month;
       this.returndata['teikyo_year'] = this.year;
       this.returndata['teikyo_month'] = this.month;
-      this.returndata['search_button'] = true;
+      this.returndata['search_button'] = false;
       this.$emit('parent-service-select', this.returndata);
     }
   },
@@ -268,6 +280,12 @@ export default {
     });
   },
   methods: {
+    header_dialog_close: function () {
+      this.header_dialog = false;
+      if (this.storage.selectRow == 0) {
+        this.screenFlag = true;
+      }
+    },
     createJimusyo: function () {
       let data = [];
       data.push({
@@ -294,6 +312,13 @@ export default {
         teikyoCode: 32,
         teikyoService: '32 施設入所支援',
         defaultFlag: true,
+      });
+      data.push({
+        jimusyoBango: '11123405',
+        serviceJigyo: '障害者入所施設 ひまわり園',
+        teikyoCode: 32,
+        teikyoService: '32 経過的施設入所支援',
+        defaultFlag: false,
       });
       data.push({
         jimusyoBango: '11123405',

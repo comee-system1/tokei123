@@ -39,12 +39,12 @@
           :allowDragging="false"
         >
           <wj-flex-grid-column binding="Column0" :width="'7*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column1" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column2" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column3" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column4" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column5" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column6" :width="'10*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column1" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column2" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column3" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column4" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column5" :width="'12*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column6" :width="'12*'" :wordWrap=true></wj-flex-grid-column>
         </wj-flex-grid>
       </v-col>
     </v-row>
@@ -65,9 +65,8 @@
       <wj-flex-grid-column header="サービス提供の状況"  binding="jyokyo" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="入院・外泊時加算" binding="kasan1" :width="'9*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="入院時支援特別加算" binding="kasan2" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
+      <wj-flex-grid-column header="自活訓練加算" binding="kasan3" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="地域移行加算" binding="kasanti" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="体験宿泊支援加算" binding="kasantkn" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-      <wj-flex-grid-column header="重度障害者支援加算" binding="kasanj" :width="'9*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="朝食" binding="sasa" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="昼食" binding="shiru" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
       <wj-flex-grid-column header="夕食" binding="syuu" :width="'5*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -90,7 +89,6 @@
       <wj-flex-grid-column binding="Column3" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column binding="Column4" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column binding="Column5" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
-      <wj-flex-grid-column binding="Column6" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
     </wj-flex-grid>
   </div>
 </template>
@@ -124,6 +122,7 @@ export default{
   },
   data(){
     return{
+      currentPageTitle: this.$route.name,
       detailGridData: this.getGridData(),
       nyuinGaihakuTotal: 0,
       tkkfhiumuData: "",
@@ -203,9 +202,9 @@ export default{
       let headerRanges = [
         new wjGrid.CellRange(0,0,1,0),
         new wjGrid.CellRange(0,1,1,1),
-        new wjGrid.CellRange(0,2,0,7),
-        new wjGrid.CellRange(0,8,0,11),
-        new wjGrid.CellRange(0,12,1,12),
+        new wjGrid.CellRange(0,2,0,6),
+        new wjGrid.CellRange(0,7,0,10),
+        new wjGrid.CellRange(0,11,1,11),
       ];
       let footerRanges = [
         new wjGrid.CellRange(0,0,0,2)
@@ -231,8 +230,8 @@ export default{
       // 改行指定不要のヘッダー・フッターの内容を設定する
       // ヘッダー0行目
       headerpanel.setCellData(0, 2, "支援実績");
-      headerpanel.setCellData(0, 8, "食費・光熱水費実績");
-      headerpanel.setCellData(0, 12, "備考");
+      headerpanel.setCellData(0, 7, "食費・光熱水費実績");
+      headerpanel.setCellData(0, 11, "備考");
       // フッター0行目
       footerPanel.setCellData(0, 0, "合計");
       footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
@@ -257,11 +256,9 @@ export default{
           }else if(r == 1 && c == 4){
             cell.innerHTML = '入院時支援<br/>特別加算';
           }else if(r == 1 && c == 5){
-            cell.innerHTML = '地域移行<br/>加算';
+            cell.innerHTML = '自活訓練<br/>加算';
           }else if(r == 1 && c == 6){
-            cell.innerHTML = '体験宿泊<br/>支援加算';
-          }else if(r == 1 && c == 7){
-            cell.innerHTML = '重度障害者<br/>支援加算';
+            cell.innerHTML = '地域移行<br/>加算';
           }
         }
         else if(panel.cellType == wjGrid.CellType.Cell){
@@ -274,7 +271,7 @@ export default{
           }
 
           //備考欄を左寄せにする
-          if(c == 12){
+          if(c == 11){
             s.textAlign = "left";
           }
         }
@@ -285,10 +282,10 @@ export default{
             s.borderTop = "1px solid rgba(0,0,0,.2)";
           }
 
-          if(c >= 1 && c <= 11){
+          if(c >= 1 && c <= 10){
             // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
-          }else if(c == 12){
+          }else if(c == 11){
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";
           }
@@ -309,13 +306,13 @@ export default{
       flexGrid.itemFormatter = function(panel,r,c,cell){
         let s = cell.style;
         s.textAlign = 'center';
-        if(c == 0 || c == 1 || c == 3 || c == 5){
+        if(c == 0 || c == 1 || c == 3){
           // セルをヘッダーの色にする
           s.backgroundColor= "#eeeeee";
           s.fontWeight="bold";
         }
 
-        if(r == 1 && (c == 5 || c == 6)){
+        if(c == 5){
           // 空欄セルをグレーにする
           s.backgroundColor= "#cccccc";
         }
@@ -337,7 +334,7 @@ export default{
             Column2: "食費の単価",
             Column3: "食費の単価",
             Column4: "食費の単価",
-            Column5: "光熱水費の単価(円/日)",
+            Column5: "光熱水費の単価",
             Column6: "光熱水費の単価",
           },
           {
@@ -346,8 +343,8 @@ export default{
             Column2: "昼食",
             Column3: "夕食",
             Column4: "一日",
-            Column5: "一日",
-            Column6: "一月",
+            Column5: "一日(円/日)",
+            Column6: "一月(円/月)",
           },
           {
             Column0: "実費算定額",
@@ -367,7 +364,7 @@ export default{
             Column2: "食費の単価",
             Column3: "食費の単価",
             Column4: "食費の単価",
-            Column5: "光熱水費の単価(円/日)",
+            Column5: "光熱水費の単価",
             Column6: "光熱水費の単価",
           },
           {
@@ -376,8 +373,8 @@ export default{
             Column2: "昼食",
             Column3: "夕食",
             Column4: "一日",
-            Column5: "一日",
-            Column6: "一月",
+            Column5: "一日(円/日)",
+            Column6: "一月(円/月)",
           },
           {
             Column0: "実費算定額",
@@ -408,9 +405,8 @@ export default{
               jyokyo:kirokuMeiData[i]["jyokyo"],
               kasan1:kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
               kasan2:kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
+              kasan3:kirokuMeiData[i]["kasan3"] == 0 ? "":kirokuMeiData[i]["kasan3"],
               kasanti:kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
-              kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-              kasanj:kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
               sasa:kirokuMeiData[i]["sasa"],
               shiru:kirokuMeiData[i]["shiru"],
               syuu:kirokuMeiData[i]["syuu"],
@@ -427,9 +423,8 @@ export default{
             jyokyo: "",
             kasan1: "",
             kasan2: "",
+            kasan3: "",
             kasanti: "",
-            kasantkn: "",
-            kasanj: "",
             sasa: "",
             shiru: "",
             syuu: "",
@@ -444,49 +439,27 @@ export default{
       // サブグリッド表示用データの作成
       let subGridData = [];
       if(data != null){
-        let riyouKaishibi = data['riyo_inf'][0]['staymd'];
-        let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
         let taishoDate = data['riyo_inf'][0]['taiymd'];
         let taishogoSanteibi = data['riyo_inf'][0]['ttymd'];
         subGridData.push(
           {
-            Column0: "入所時特別支援加算",
-            Column1: "利用開始日",
-            Column2: dateFilter(riyouKaishibi),
-            Column3: "30日目",
-            Column4: thirtythDayFilter(riyouKaishibi),
-            Column5: "当月算定日数",
-            Column6: tougetsuSantei + "日"
-          },
-          {
-            Column0: "地域移行支援",
+            Column0: "地域移行加算",
             Column1: "退所日",
             Column2: dateFilter(taishoDate),
             Column3: "退所後算定日",
             Column4: dateFilter(taishogoSanteibi),
-            Column5: "",
-            Column6: ""
+            Column5: ""
           }
         )
       }else{
         subGridData.push(
           {
-            Column0: "入所時特別支援加算",
-            Column1: "利用開始日",
-            Column2: "",
-            Column3: "30日目",
-            Column4: "",
-            Column5: "当月算定日数",
-            Column6: ""
-          },
-          {
-            Column0: "地域移行支援",
+            Column0: "地域移行加算",
             Column1: "退所日",
             Column2: "",
             Column3: "退所後算定日",
             Column4: "",
-            Column5: "",
-            Column6: ""
+            Column5: ""
           }
         )
       }
@@ -499,17 +472,6 @@ export default{
 function dateFilter(date){
   let datearr = (date.substr(0, 4) + '年' + date.substr(4, 2) + '月' + date.substr(6, 2) + '日');
   return datearr;
-}
-
-// 30日目変換用
-function thirtythDayFilter(riyouKaishibi){
-  let datearr = (riyouKaishibi.substr(0, 4) + '/' + riyouKaishibi.substr(4, 2) + '/' + riyouKaishibi.substr(6, 2)).split('/');
-  let thirtythDay = new Date(datearr[0], datearr[1] - 1, datearr[2]);
-  thirtythDay.setDate(thirtythDay.getDate() + 29);
-  thirtythDay = thirtythDay.getFullYear() + '年' +
-                ( '00' + (thirtythDay.getMonth() + 1) ).slice( -2 ) + '月' +
-                ( '00' + (thirtythDay.getDate()) ).slice( -2 )  + '日';
-  return thirtythDay;
 }
 
 // 曜日変換用
@@ -591,13 +553,13 @@ function getNyuinGaihakuTotal(data){
 
 @media screen and (max-width: 1366px){
   #detailGrid {
-    height: 58vh;
+    height: 62vh;
   }
 }
 
 @media screen and (min-width: 1367px){
   #detailGrid {
-    height: 72vh;
+    height: 75vh;
   }
 }
 </style>

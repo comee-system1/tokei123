@@ -243,7 +243,11 @@ export default {
      * 確定登録・解除ボタン
      */
     defineButton: function (type) {
-      this.$refs.tajougenChild.parentDefineButton(type);
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentDefineButton(type);
+      } else {
+        this.$refs.tajougenChild.parentDefineButton(type);
+      }
     },
     /**************
      * 並び順変更

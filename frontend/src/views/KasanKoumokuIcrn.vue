@@ -15,7 +15,7 @@
               <v-btn-toggle class="flex-wrap" mandatory>
                 <v-btn
                   v-for="n in userSelList"
-                  :key="n"
+                  :key="n.val"
                   small
                   color="secondary"
                   dark
@@ -45,7 +45,7 @@
               <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
                 <v-btn
                   v-for="n in sortSelList"
-                  :key="n"
+                  :key="n.val"
                   small
                   color="secondary"
                   dark
@@ -243,9 +243,9 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = ls.getlocalStorageEncript(keySort);
-      this.alphaSearch = ls.getlocalStorageEncript(keyAlp);
-      this.selKasan = ls.getlocalStorageEncript(keyKasan);
+      this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
+      this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
+      this.selKasan = Number(ls.getlocalStorageEncript(keyKasan));
     });
   },
   methods: {

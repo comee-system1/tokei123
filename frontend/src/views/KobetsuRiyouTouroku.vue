@@ -441,7 +441,7 @@ export default {
     parentServiceChange: function (serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
-      this.userDataSelect[0] = [];
+      //this.userDataSelect[0] = [];
       this.changeHndoJyoho();
     },
     //変動情報ダイアログの登録ボタン押下
@@ -508,7 +508,6 @@ export default {
     onInitialized: function (flexGrid) {
       //初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
-
       this.mainGrid = flexGrid;
       flexGrid.autoSizeColumns();
       let _self = this;

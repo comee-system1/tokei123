@@ -9,6 +9,7 @@
       color="#4d4d4d"
       width="280px"
       temporary
+      style="z-index: 11"
     >
       <v-list-item>
         <p class="kenbunroku-logo">
@@ -69,10 +70,10 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="#348498" dark dense height="30px">
+    <v-app-bar app color="#348498" dark dense height="30px" style="z-index: 10">
       <div class="d-flex align-center">
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
+        <!-- <v-toolbar-title>{{ pageTitle }}</v-toolbar-title> -->
       </div>
 
       <v-card
@@ -177,6 +178,9 @@ export default {
   data() {
     return {
       drawer: true,
+      year: moment().year(),
+      month: moment().format('MM'),
+      date: moment().date(),
       picker:
         moment().year() + '-' + moment().format('M') + '-' + moment().date(),
       pageTitle: this.$route.name,

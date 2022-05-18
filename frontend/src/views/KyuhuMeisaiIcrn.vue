@@ -14,7 +14,7 @@
               <v-btn-toggle class="flex-wrap" v-model="dispPageType">
                 <v-btn
                   v-for="n in pageSelList"
-                  :key="n"
+                  :key="n.val"
                   small
                   color="secondary"
                   dark
@@ -44,7 +44,7 @@
               <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
                 <v-btn
                   v-for="n in dispSelList"
-                  :key="n"
+                  :key="n.val"
                   small
                   color="secondary"
                   dark
@@ -73,7 +73,7 @@
               <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
                 <v-btn
                   v-for="n in sortSelList"
-                  :key="n"
+                  :key="n.val"
                   small
                   color="secondary"
                   dark
