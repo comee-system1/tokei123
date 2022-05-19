@@ -150,6 +150,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+import * as wjcCore from '@grapecity/wijmo';
 
 Vue.use(VueAxios, axios);
 
@@ -392,7 +393,9 @@ export default {
       //   });
 
       //axiosを利用しない時下記1行有効
-      _self.usersData = _self.createUser();
+      if (_self.usersData.length == 0) {
+        _self.usersData = _self.createUser();
+      }
 
       let i = 0;
       while (flexGrid.columns.length < 3) {
@@ -407,13 +410,37 @@ export default {
       while (flexGrid.rows.length < userCount) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      flexGrid.formatItem.addHandler(userCell);
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.cell.children.length == 0) {
+          if (e.panel == s.cells && e.col == 1) {
+            let tooltip = new wjcCore.Tooltip();
+            //let note = this.usersData[e.row].kana;
+            let note = '<small>' + _self.usersData[e.row].kana + '</small>';
+            wjcCore.toggleClass(e.cell, 'wj-has-notes');
+            tooltip.setTooltip(e.cell, note);
+          }
+
+          let align = 'left';
+          let str = e.cell.innerHTML;
+          str = '<div>' + str + '</div>';
+          e.cell.innerHTML = str.replace(',', '');
+          wjCore.setCss(e.cell, {
+            display: 'table',
+            tableLayout: 'fixed',
+          });
+          wjCore.setCss(e.cell.children[0], {
+            display: 'table-cell',
+            textAlign: align,
+            verticalAlign: 'middle',
+          });
+        }
+      });
+
       // configure the grid
       flexGrid.alternatingRowStep = 0;
 
       //初回のユーザ選択値
       // _self.$emit('child-select', 0);
-
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
@@ -436,24 +463,6 @@ export default {
     },
   },
 };
-
-function userCell(s, e) {
-  if (e.cell.children.length == 0) {
-    let align = 'left';
-    let str = e.cell.innerHTML;
-    str = '<div>' + str + '</div>';
-    e.cell.innerHTML = str.replace(',', '');
-    wjCore.setCss(e.cell, {
-      display: 'table',
-      tableLayout: 'fixed',
-    });
-    wjCore.setCss(e.cell.children[0], {
-      display: 'table-cell',
-      textAlign: align,
-      verticalAlign: 'middle',
-    });
-  }
-}
 </script>
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
@@ -467,7 +476,6 @@ div#user-list-print_scrollbar {
       background-color: $white;
     }
   }
-
   .wj-cells
     .wj-row:hover
     .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {

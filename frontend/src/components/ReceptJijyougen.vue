@@ -369,8 +369,8 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jigyosyobango < b.jigyosyobango) return 1;
-          if (a.jigyosyobango > b.jigyosyobango) return -1;
+          if (a.jyukyusyaBango < b.jyukyusyaBango) return 1;
+          if (a.jyukyusyaBango > b.jyukyusyaBango) return -1;
           return 0;
         });
       }
@@ -430,8 +430,8 @@ export default {
           jyukyusyaBango: '1001',
           //  jyukyusyaBango: '1000' + i,
           code: 10000000,
-          riyousyamei: '東経太郎' + i,
-          kana: 'トウケイタロウ',
+          riyousyamei: '北経太郎' + 3,
+          kana: 'キタケイタロウ',
           jyougenicon: '自',
           jyougengaku: '南山事務所',
           riyosyafutan: 9000,

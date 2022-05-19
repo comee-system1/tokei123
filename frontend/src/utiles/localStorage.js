@@ -10,11 +10,11 @@ function setlocalStorageEncript(key,val) {
   var utf8_plain = crypto.enc.Utf8.parse(val);
   var encrypted = crypto.AES.encrypt( utf8_plain, txt_key );
   var encrypted_strings = encrypted.toString();
-  localStorage.setItem(key, encrypted_strings.toString());
+  sessionStorage.setItem(key, encrypted_strings.toString());
 
 }
 function getlocalStorageEncript(key) {
-  const ecryptedData = localStorage.getItem(key)
+  const ecryptedData = sessionStorage.getItem(key)
   if (ecryptedData == null) {
     return 0;
   } else {

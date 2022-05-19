@@ -427,13 +427,15 @@ export default {
       this.month = serviceArgument['teikyo_month'];
       let m = moment(this.year + '-' + this.month + '-01');
       this.lastdate = m.daysInMonth();
-      this.changeHndoJyoho();
       if (serviceArgument['search_button']) {
+        this.userDataSelect[0]['riyosyo'] = '';
+        this.userDataSelect[0]['jyukyusyabango'] = '';
         this.$refs.user_list_print.setChildTeikyocode(
           this.teikyoCode,
           serviceArgument['search_button']
         );
       }
+      this.changeHndoJyoho();
     },
     /***************
      * ヘッダメニューのサービスを変更したとき
@@ -441,7 +443,8 @@ export default {
     parentServiceChange: function (serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
-      //this.userDataSelect[0] = [];
+      this.userDataSelect[0]['riyosyo'] = '';
+      this.userDataSelect[0]['jyukyusyabango'] = '';
       this.changeHndoJyoho();
     },
     //変動情報ダイアログの登録ボタン押下
@@ -795,9 +798,12 @@ function methodCellClickEvent(flexGrid, _self) {
         _self.editGridFlag = true;
         _self.selectedPoint = 2; // 青〇の表示
       }
-      _self.mainGrid.itemsSource = [];
+      //_self.mainGrid.itemsSource = [];
       //値を配列に登録
       edittingUse(_self, hPage, d);
+      editMeals(flexGrid, _self);
+      editKounetusui(flexGrid, _self);
+      editKasan(flexGrid, _self);
     } else {
       alert('ユーザーを選択してください。');
     }
@@ -843,6 +849,7 @@ function methodSettingPoint(flexGrid, _self) {
     editNyuTaiin(flexGrid, _self);
   } else if (_self.selectType == 'nyutaiin_add') {
     insertNyuTaiin(flexGrid, _self);
+    _self.editGridFlag = true;
   } else {
     settingNyuTaiin(flexGrid, _self);
   }
@@ -853,10 +860,18 @@ function methodSettingPoint(flexGrid, _self) {
     editGaihaku(flexGrid, _self);
   } else if (_self.selectType == 'gaihaku_add') {
     insertGaihaku(flexGrid, _self);
+    _self.editGridFlag = true;
   } else {
     settingGaihaku(flexGrid, _self);
   }
 
+  settingHendoKasan(flexGrid, _self);
+}
+
+/******************
+ * 変動情報＋加算情報の登録
+ */
+function settingHendoKasan(flexGrid, _self) {
   for (let i = 0; i <= _self.gridItemName[0]['shisetsuNyusho'].length; i++) {
     if (
       _self.gridItemName[0]['shisetsuNyusho'][i] &&
@@ -901,7 +916,7 @@ function editKasan(flexGrid, _self) {
   let rows = _self.hendoRowsCount;
 
   //体制+個別用の配列番号
-  if (rows <= _self.dayPoint.dayrow) {
+  if (_self.dayPoint && rows <= _self.dayPoint.dayrow) {
     // 変動情報と体制・個別を合わせたものより大きい場合は個別用配列を利用する
     if (
       rows + _self.gridItemName[0]['taisei_kobetu'].length <=
@@ -987,7 +1002,7 @@ function createKasan(flexGrid, _self) {
 function editKounetusui(flexGrid, _self) {
   let rows = _self.hendoRowsCount - 1;
   let kounetusuihi = _self.kounetusuihi;
-  if (_self.dayPoint['dayrow'] == rows) {
+  if (_self.dayPoint && _self.dayPoint['dayrow'] == rows) {
     kounetusuihi[0][_self.dayPoint['day']] = _self.selectedPoint;
 
     if (_self.selectedPoint == 2) {
@@ -1039,8 +1054,8 @@ function settingKounetusui(flexGrid, _self) {
     day28: 2,
     day30: 2,
     day31: 2,
-    total: 18,
-    money: 1800,
+    total: 14,
+    money: 1400,
   });
 
   //選択された受給者番号のデータのみ対象にする
@@ -1231,7 +1246,11 @@ function editMeals(flexGrid, _self) {
   let dinner = _self.mealsData['dinner'];
   //朝食を0とするためdayrow-4(列数)を行う
   //食事のデータがあるもののみ更新
-  if (_self.gridItemName[0].meals[_self.dayPoint.dayrow - 4]) {
+
+  if (
+    _self.dayPoint &&
+    _self.gridItemName[0].meals[_self.dayPoint.dayrow - 4]
+  ) {
     if (
       _self.gridItemName[0].mealsKey[_self.dayPoint.dayrow - 4] == 'breakfast'
     ) {

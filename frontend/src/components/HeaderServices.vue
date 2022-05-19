@@ -94,7 +94,7 @@
         </span>
 
         <v-btn class="pa-1 ml-3" :width="60" small @click="searchButton()">
-          検索
+          確定
         </v-btn>
       </div>
 
@@ -194,7 +194,7 @@
       </v-dialog>
     </v-flex>
     <v-row id="screen_dialog" v-show="screenFlag">
-      <v-col> 検索ボタンを押してください。 </v-col>
+      <v-col class="text-h2"> 確定ボタンを押してください。</v-col>
     </v-row>
   </v-layout>
 </template>
@@ -232,9 +232,7 @@ export default {
     let storage = {};
     try {
       storage = {
-        jimusyoBango: ls.getlocalStorageEncript('jimusyoBango'),
         serviceJigyo: ls.getlocalStorageEncript('serviceJigyo'),
-        teikyoService: ls.getlocalStorageEncript('teikyoService'),
         selectRow: ls.getlocalStorageEncript('selectRow'),
       };
       this.storage = storage;
@@ -247,7 +245,7 @@ export default {
 
       let defaultdata = [];
       for (let i = 0; i <= this.jimusyo.length; i++) {
-        if (i == ls.getlocalStorageEncript('selectRow')) {
+        if (this.jimusyo[i].uid == ls.getlocalStorageEncript('selectRow')) {
           defaultdata = this.jimusyo[i];
           this.select = i;
           break;
@@ -259,10 +257,10 @@ export default {
 
       let returns = {};
       returns = {
-        jimusyoBango: this.jimusyo[storage.selectRow].jimusyoBango,
-        serviceJigyo: this.jimusyo[storage.selectRow].serviceJigyo,
-        teikyoCode: this.jimusyo[storage.selectRow].teikyoCode,
-        teikyoService: this.jimusyo[storage.selectRow].teikyoService,
+        jimusyoBango: defaultdata.jimusyoBango,
+        serviceJigyo: defaultdata.serviceJigyo,
+        teikyoCode: defaultdata.teikyoCode,
+        teikyoService: defaultdata.teikyoService,
       };
       this.returndata = returns;
 
@@ -289,24 +287,28 @@ export default {
     createJimusyo: function () {
       let data = [];
       data.push({
+        uid: 1,
         jimusyoBango: '11123404',
         serviceJigyo: '生活介護支援事務所 ひまわり園',
         teikyoCode: 21,
         teikyoService: '21 医療介護',
       });
       data.push({
+        uid: 2,
         jimusyoBango: '11123405',
         serviceJigyo: '生活介護支援事務所 ひまわり園',
         teikyoCode: 22,
         teikyoService: '22 生活介護',
       });
       data.push({
+        uid: 3,
         jimusyoBango: '11123405',
         serviceJigyo: '短期入所施設 ひまわり園',
         teikyoCode: 24,
         teikyoService: '24 短期入所',
       });
       data.push({
+        uid: 4,
         jimusyoBango: '11123405',
         serviceJigyo: '障害者入所施設 ひまわり園',
         teikyoCode: 32,
@@ -314,6 +316,7 @@ export default {
         defaultFlag: true,
       });
       data.push({
+        uid: 5,
         jimusyoBango: '11123405',
         serviceJigyo: '障害者入所施設 ひまわり園',
         teikyoCode: 32,
@@ -321,6 +324,7 @@ export default {
         defaultFlag: false,
       });
       data.push({
+        uid: 6,
         jimusyoBango: '11123405',
         serviceJigyo: '知的障害者入所施設 ひまわり園',
         teikyoCode: 33,
@@ -328,6 +332,7 @@ export default {
         defaultFlag: false,
       });
       data.push({
+        uid: 7,
         jimusyoBango: '111200030',
         serviceJigyo: '知的障害者入所施設 東経園',
         teikyoCode: 34,
@@ -335,48 +340,56 @@ export default {
         defaultFlag: false,
       });
       data.push({
+        uid: 8,
         jimusyoBango: '111200031',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 41,
         teikyoService: '41 自立訓練(機能訓練)',
       });
       data.push({
+        uid: 9,
         jimusyoBango: '111200032',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 42,
         teikyoService: '42 自立訓練(生活訓練)',
       });
       data.push({
+        uid: 10,
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 43,
         teikyoService: '43 就労移行支援',
       });
       data.push({
+        uid: 11,
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 44,
         teikyoService: '44 就労移行支援',
       });
       data.push({
+        uid: 12,
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 45,
         teikyoService: '45 就労継続支援A型',
       });
       data.push({
+        uid: 13,
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 46,
         teikyoService: '46 就労継続支援B型',
       });
       data.push({
+        uid: 14,
         jimusyoBango: '111200033',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 47,
         teikyoService: '47 就労定着支援',
       });
       data.push({
+        uid: 15,
         jimusyoBango: '111200038',
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 35,
@@ -407,19 +420,15 @@ export default {
         _self.jigyosyoCode = _self.jimusyo[ht.row].jimusyoBango;
         _self.jigyosyoCode += ' ' + _self.jimusyo[ht.row].serviceJigyo;
         _self.selectButton = _self.jimusyo[ht.row].teikyoService;
-        ls.setlocalStorageEncript(
-          'jimusyoBango',
-          _self.jimusyo[ht.row].jimusyoBango
-        );
-        ls.setlocalStorageEncript(
-          'serviceJigyo',
-          _self.jimusyo[ht.row].serviceJigyo
-        );
-        ls.setlocalStorageEncript(
-          'teikyoService',
-          _self.jimusyo[ht.row].teikyoService
-        );
-        ls.setlocalStorageEncript('selectRow', ht.row);
+        // ストレージに保存
+        let teikyoService = {
+          jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
+          serviceJigyo: _self.jimusyo[ht.row].serviceJigyo,
+          teikyoService: _self.jimusyo[ht.row].teikyoService,
+        };
+
+        ls.setlocalStorageEncript('serviceJigyo', teikyoService);
+        ls.setlocalStorageEncript('selectRow', _self.jimusyo[ht.row].uid);
         let returns = {};
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
@@ -589,13 +598,26 @@ export default {
   top: 0;
   left: 0;
   opacity: 0.46;
-  background-color: rgb(33, 33, 33);
+  background-color: rgb(33, 33, 33, 1);
   border-color: rgb(33, 33, 33);
   width: 100%;
   height: 100%;
   z-index: 4;
   padding: 0;
   margin: 0;
+  div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    -webkit-text-stroke: 1px #000;
+    text-stroke: 1px #000;
+    z-index: 10;
+  }
 }
 .service {
   &.v-btn {
