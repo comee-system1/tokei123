@@ -10,15 +10,10 @@
     <v-container fluid class="jijyougen-container">
       <v-row no-gutters>
         <v-col cols="8">
-          <v-tabs height="30" v-model="tab" @change="tabChange">
-            <v-tab class="text-caption" href="#recept">レセプト集計</v-tab>
-            <v-tab class="text-caption" href="#TajyougenkanriJimsyo"
-              >他上限管理事業所入力</v-tab
-            >
-            <v-tab class="text-caption" href="#JijyougenkanriJimsyo"
-              >自上限管理事業所入力</v-tab
-            >
-          </v-tabs>
+          <tab-menu-blue
+            @parent_tab_menu="parent_tab_menu"
+            :tabmenu="tabMenus"
+          ></tab-menu-blue>
         </v-col>
         <v-col>
           <v-row no-gutters>
@@ -202,6 +197,7 @@ import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import ReceptTajougen from '../components/ReceptTajougen.vue';
 import ReceptJijyougen from '../components/ReceptJijyougen.vue';
+import TabMenuBlue from '../components/TabMenuBlue.vue';
 
 const riyosyaCombo = ['全員'];
 const jyougenkanriCombo = ['指定なし'];
@@ -227,18 +223,37 @@ export default {
       year: moment().year(),
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
-      tab: 'JijyougenkanriJimsyo', // タブの初期状態
+
       receptFlag: false, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
+      tabMenus: [
+        { href: '#recept', text: 'レセプト集計' },
+        { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
+        { href: '#JijyougenkanriJimsyo', text: '自上限管理事業所入力' },
+      ],
     };
   },
   components: {
     HeaderServices,
     ReceptTajougen,
     ReceptJijyougen,
+    TabMenuBlue,
   },
   methods: {
+    /**************
+     * 子コンポーネントtabmenublueで選択した値を取得
+     */
+    parent_tab_menu: function (args) {
+      this.receptFlag = false;
+      this.TajyougenkanriJimsyoFlag = false;
+      this.JijyougenkanriJimsyoFlag = false;
+      if (args.selectTab == 'recept') this.receptFlag = true;
+      if (args.selectTab == 'TajyougenkanriJimsyo')
+        this.TajyougenkanriJimsyoFlag = true;
+      if (args.selectTab == 'JijyougenkanriJimsyo')
+        this.JijyougenkanriJimsyoFlag = true;
+    },
     /***************
      * 確定登録・解除ボタン
      */
@@ -290,19 +305,6 @@ export default {
       } else {
         this.$refs.tajougenChild.parentAlphabet(key);
       }
-    },
-    /*****************
-     * タブを切り替えた際の表示切替
-     */
-    tabChange: function () {
-      this.receptFlag = false;
-      this.TajyougenkanriJimsyoFlag = false;
-      this.JijyougenkanriJimsyoFlag = false;
-      if (this.tab == 'recept') this.receptFlag = true;
-      if (this.tab == 'TajyougenkanriJimsyo')
-        this.TajyougenkanriJimsyoFlag = true;
-      if (this.tab == 'JijyougenkanriJimsyo')
-        this.JijyougenkanriJimsyoFlag = true;
     },
   },
 };
