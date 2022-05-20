@@ -1,7 +1,13 @@
 $pc: 1336px;
+$width: 1600px;
 
 @mixin pc {
   @media screen and (min-width: ($pc)) {
+    @content;
+  }
+}
+@mixin max-width {
+  @media screen and (min-width: ($width)) {
     @content;
   }
 }

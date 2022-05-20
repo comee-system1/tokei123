@@ -1,6 +1,6 @@
 $grid_unselectable_cells:#fffeed;
 
-#jisseki-kiroku {
+#jisseki-kiroku, #seikyu-sho {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px !important;
@@ -9,7 +9,7 @@ $grid_unselectable_cells:#fffeed;
     font-family: 'メイリオ';
   }
 
-  .container.jissekikiroku{
+  .container.jissekikiroku, .container.seikyusho{
     padding:4px;
   }
 
@@ -88,7 +88,7 @@ $grid_unselectable_cells:#fffeed;
   }
 
   .denbun-toggle{
-    margin-left:20px;
+    margin-left:0px;
     margin-top:2px;
   }
 
@@ -119,12 +119,7 @@ $grid_unselectable_cells:#fffeed;
     align-items: center;
     color:#333333 !important;
   }
-
-  /* 一旦グリッドの枠線を表示しない */
-  /* #detailGrid.wj-control.wj-content.wj-flexgrid {
-    border: 2px solid #348498;
-  } */
-
+  
   #subGrid {
     font-size:12px;
     color:#333333 !important;
@@ -132,10 +127,5 @@ $grid_unselectable_cells:#fffeed;
       background: $grid_unselectable_cells;
     }
   }
-
-  /* 一旦グリッドの枠線を表示しない */
-  /* #subGrid.wj-control.wj-content.wj-flexgrid {
-    border: 2px solid #348498;
-  } */
 
 }
