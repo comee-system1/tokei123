@@ -2,17 +2,81 @@
   <div>
     <v-row no-gutters>
       <v-col>
+        <wj-flex-grid
+          id="riyousyahutanGrid"
+          :itemsSource="riyousyahutanGridData"
+          :headersVisibility="'None'"
+          :autoGenerateColumns="false"
+          :initialized="onInitializeRiyousyahutanGrid"
+          :allowResizing="false"
+          :allowDragging="false"
+        >
+          <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column3" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column4" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column5" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column6" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column7" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column8" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column9" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column10" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column11" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column12" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column13" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column14" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column15" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column16" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column17" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column18" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column19" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column20" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column21" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column22" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column23" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column24" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column25" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column26" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column27" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-col>
+    </v-row>
+    <v-row  no-gutters>
+      <v-col>
+        <wj-flex-grid
+          id="servicessyubetuGrid"
+          :itemsSource="servicessyubetuGridData"
+          :headersVisibility="'None'"
+          :autoGenerateColumns="false"
+          :initialized="onInitializeServicessyubetuGrid"
+          :allowResizing="false"
+          :allowDragging="false"
+        >
+          <wj-flex-grid-column binding="Column0" :width="150" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column1" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column3" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column4" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column5" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column6" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column7" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column8" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="Column9" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-col>
+    </v-row>
+    <v-row no-gutters>
+      <v-col>
       <wj-flex-grid
         id="kyuhu-meisairan"
-        :headersVisibility="'None'"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
+        :headersVisibility="'Column'"
         :initialized="onInitialized"
+        :autoGenerateColumns="false"
         :isReadOnly="true"
         :allowDragging="false"
         :allowResizing="false"
         :deferResizing="false"
-        :allowSorting="false"
       >
         <wj-flex-grid-column
           :width="20"
@@ -27,27 +91,32 @@
         <wj-flex-grid-column
           :binding="'servicecode1'"
           :header="'サービスコード'"
-          width="0.5*"
+          :width="100"
+          allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode2'"
-          width="0.5*"
+          :width="100"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode3'"
-          width="0.5*"
+          :width="100"
+          allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode4'"
-          width="0.5*"
+          :width="100"
+          allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode5'"
-          width="0.5*"
+          :width="100"
+          allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode6'"
-          width="0.5*"
+          :width="100"
+          allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'tanisuu'"
@@ -73,6 +142,9 @@
           :header="'摘要'"
           width="3*"
         ></wj-flex-grid-column>
+        <div class="service-addbutton">
+          <a href="">サービス内容を追加</a>
+        </div>
       </wj-flex-grid>
       </v-col>
     </v-row>
@@ -89,17 +161,219 @@ export default {
     return {
       year: moment().year(),
       month: moment().format('MM'),
+      riyousyahutanGridData:this.getRiyousyahutanGridData(),
+      servicessyubetuGridData:this.getServicessyubetuGridData(),
       data: [],
       allData: [],
-      dateArgument: '',
       mainTableGrid: '',
       griddata: [],
-      selectedUser: '',
       tplImage: CellMaker.makeImage({}),
-      servieGrid: '',
     };
   },
   methods: {
+    
+    onInitializeRiyousyahutanGrid:function(flexGrid){
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
+      // セルの結合/////////////////////////////////////////////////////////////////
+      let mm = new wjGrid.MergeManager(flexGrid);
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(0,8,0,17),
+        new wjGrid.CellRange(0,18,0,19),
+        new wjGrid.CellRange(0,20,0,27),
+        new wjGrid.CellRange(1,1,1,7),
+        new wjGrid.CellRange(1,18,1,20),
+        new wjGrid.CellRange(1,22,1,24),
+        new wjGrid.CellRange(1,25,1,27),
+        new wjGrid.CellRange(1,0,2,0),
+        new wjGrid.CellRange(2,1,2,7),
+        new wjGrid.CellRange(2,8,2,27),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function(panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+
+       // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
+        let s = cell.style;
+        s.fontWeight = 'normal';
+        s.textAlign = 'center';
+        s.backgroundColor= "#fff";
+        if(c == 0 || (r != 0 && c == 1) || (r == 0 && c == 8) || (r == 1 && c == 18) || (r == 1 && c == 22)){
+          s.backgroundColor = "#eee";
+        }
+        if(r == 1 && c == 0) {
+          cell.innerHTML = '利用者負担上限額<br/>管理事業所';
+        }
+        // グリッド非表示スタイル
+        if(r == 0) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+        }
+        if(r == 0 && c == 0) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+          s.borderLeft = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '4px 0 0 0'
+        }
+        if(r == 1 && c == 0) {
+          s.borderLeft = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '0 0 0 4px'
+        }
+        if(r == 0 && c == 18 || r == 2 && c == 25) {
+          s.borderBottom = '1px solid rgba(0,0,0,.2)'
+          s.borderRight = '1px solid rgba(0,0,0,.2)'
+          s.borderRadius = '0 4px 0 0'
+        }
+        if(r == 1 && c == 18|| c ==21 || c ==22 || c == 25) {
+          s.borderTop = '1px solid rgba(0,0,0,.2)'
+          s.top = '20px'
+          s.height = '22px'
+        }
+        if(r == 1 && c == 25) {
+          s.borderRadius = '0 4px 0 0'
+        }
+        if(r == 0 && c == 20) {
+          cell.style.display = 'none'
+        }
+        if(r == 2 && c == 8) {
+          s.borderRadius = '0 0 4px 0'
+        }
+      }
+    },
+    getRiyousyahutanGridData:function(){
+      let zyougengaku1 = "1";
+      let zyougengaku2 = "1";
+      let zyougengaku3 = "0";
+      let zyougengaku4 = "0";
+      let zyougengaku5 = "0";
+      let zyougengaku6 = "1";
+      let zyougengaku7 = "2";
+      let gementaisyousya = "１：無";
+      let riyousyahutanGridData = [];
+      riyousyahutanGridData.push(
+        {
+          Column0: "利用者負担上限月額①",
+          Column1: zyougengaku1,
+          Column2: zyougengaku2,
+          Column3: zyougengaku3,
+          Column4: zyougengaku4,
+          Column5: zyougengaku5,
+          Column6: zyougengaku6,
+          Column7: zyougengaku7,
+          Column8: "開始年月日",
+          Column18:gementaisyousya,
+        },
+        {
+          Column0: "",
+          Column1: "指定事業所番号",
+          Column8: "1",
+          Column9: "1",
+          Column10: "2",
+          Column11: "1",
+          Column12: "0",
+          Column13: "0",
+          Column14: "0",
+          Column15: "0",
+          Column16: "1",
+          Column17: "1",
+          Column18: "管理結果",
+          Column22: "管理結果額",
+        },
+        {
+          Column1: "事業所名",
+        }
+      )
+      return riyousyahutanGridData;
+    },
+    onInitializeServicessyubetuGrid:function(flexGrid){
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
+      // セルの結合/////////////////////////////////////////////////////////////////
+      let mm = new wjGrid.MergeManager(flexGrid);
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(0,0,2,0),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function(panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+
+       // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
+        let s = cell.style;
+        s.textAlign = 'center';
+        s.fontWeight = "normal";
+                s.backgroundColor= "#eee";
+        if(c == 1 || c == 3 || c == 5 ||  c == 7 ||  c == 9){
+          s.backgroundColor = "#fff";
+        }
+        if(r == 0 && c == 0) {
+          s.lineHeight = "57px"
+        }
+      }
+    },
+    getServicessyubetuGridData:function(){
+      let sarvisno1 = "22";
+      let servicessyubetuGridData = [];
+      servicessyubetuGridData.push(
+        {
+          Column0: "サービス種別",
+          Column1: sarvisno1,
+          Column2: "開始年月日",
+          Column3: "2019年11月11日",
+          Column4: "終了年月日",
+          Column5: "2021年7月30日",
+          Column6: "利用日数",
+          Column7: "12",
+          Column8: "入院人数",
+        },
+        {
+          Column0: "",
+          Column1: "32",
+          Column2: "開始年月日",
+          Column3: "2019年11月11日",
+          Column4: "終了年月日",
+          Column5: "2021年7月30日",
+          Column6: "利用日数",
+          Column7: "0",
+          Column8: "入院人数",
+          Column9: "7",
+        },
+        {
+          Column0: "",
+          Column1: "32",
+          Column2: "開始年月日",
+          Column3: "2019年11月11日",
+          Column4: "終了年月日",
+          Column5: "2021年7月30日",
+          Column6: "利用日数",
+          Column7: "0",
+          Column8: "入院人数",
+          Column9: "7",
+        }
+      )
+      return servicessyubetuGridData;
+    },
     getData: function () {
       let data = [];
       for (let i = 0; i <= 12; i++) {
@@ -122,31 +396,43 @@ export default {
     },
     onInitialized: function (grid) {
       let griddata = this.getData();
-      while (grid.rows.length < griddata.length) {
-        grid.rows.push(new wjGrid.Row());
-      }
 
+      // サービス内容追加ボタン用フッター行を追加/////////////////////////////////////////////
+      grid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      let footerPanel = grid.columnFooters;
+      
       // セルの結合/////////////////////////////////////////////////////////////////
-      let cellRanges = [
-        new wjGrid.CellRange(1,0,12,0),
+      let headerRanges = [
         new wjGrid.CellRange(0,2,0,7),
       ];
-      let mm = new wjGrid.MergeManager(grid);
+      
+      let cellRanges = [
+        new wjGrid.CellRange(0,0,12,0),
+      ];
+      let mm = new wjGrid.MergeManager();
 
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function (panel, r, c) {
-        for (let h = 0; h < cellRanges.length; h++) {
-          if (cellRanges[h].contains(r, c)) {
-            return cellRanges[h];
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        } else if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let f = 0; f < cellRanges.length; f++) {
+            if (cellRanges[f].contains(r, c)) {
+              return cellRanges[f];
+            }
           }
         }
       };
       grid.mergeManager = mm;
-      
-      this.mainTableGrid = grid;
-      this.griddata = griddata;
+
       grid.itemsSource = griddata;
 
+      // フッター0行目
+      footerPanel.setCellData(0, 0,);
 
       // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
@@ -154,36 +440,31 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center';
-        if((c == 0) || (r === 0)){
-          s.backgroundColor = "#eee";
-          s.color = "#000";
+        s.color = "#000";
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+        // ヘッダーのスタイルをカスタマイズ
+          if(r === 0){
+            s.backgroundColor = "#eee";
+          }
         }
-        if(r == 1 &&  c == 0) {
-          cell.innerHTML = '給付明細欄';
-          s.display ="flex";
-          s.alignItems = "center";
+        if (panel.cellType == wjGrid.CellType.Cell) {
+        // セルのスタイルをカスタマイズ
+          if(c == 0){
+            s.backgroundColor = "#eee";
+            cell.innerHTML = '給付明細欄';
+            s.display ="flex";
+            s.alignItems = "center";
+          }
+          if(c == 1){
+            s.textAlign = 'left';
+            s.paddingLeft = '4px';
+          }
         }
-        if(c == 1){
-          s.textAlign = 'left';
-          s.paddingLeft = '4px';
-        }
-        if(r == 0 &&  c == 1) {
-          cell.innerHTML = 'サービス内容';
-        }
-        if(r == 0 &&  c == 2) {
-          cell.innerHTML = 'サービスコード';
-        }
-        if(r == 0 &&  c == 8) {
-          cell.innerHTML = '単位数';
-        }
-        if(r == 0 &&  c == 9) {
-          cell.innerHTML = '回数';
-        }
-        if(r == 0 &&  c == 10) {
-          cell.innerHTML = 'サービス単位回数';
-        }
-        if(r == 0 &&  c == 11) {
-          cell.innerHTML = '摘要';
+        if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+        // フッターのスタイルをカスタマイズ
+          if(!(r == 0 && c == 0)){
+            s.backgroundColor = "#fff";
+          }
         }
       }
     },
@@ -193,4 +474,38 @@ export default {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
+
+#kyuhu-meisairan {
+  position: relative;
+  .wj-cell.wj-alt{
+    background: #fffeed;
+  }
+  .service-addbutton {
+    position: absolute;
+    left: 23px;
+    bottom: 1px;
+    z-index: 1;
+
+    a {
+    padding: 1px 0 0 10px;
+    width: 150px;
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #333;
+    color: #000;
+    font-size: 11px;
+    border-radius: 15px;
+    text-decoration: none;
+    background-image: url('../assets/plus_gray_15px.png');
+    background-position: top 1px right 2px;
+    background-repeat: no-repeat;
+    }
+  }
+}
+@media screen and (max-width: 1366px){
+  #kyuhu-meisairan {
+    max-height: 227px;
+  }
+}
+
 </style>

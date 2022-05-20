@@ -56,7 +56,7 @@
       :allowResizing="true"
       :allowSorting="false"
     >
-      <wj-flex-grid-column header="確" binding="kakutei" :width="31" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
+      <wj-flex-grid-column header="確" binding="kakutei" :width="28" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
       <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
       <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :width="110" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
       <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
@@ -289,6 +289,18 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onInitializedUser: function (flexGrid) {
+      // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function(panel,r,c,cell){
+        // グリッド内共通スタイル
+        let s = cell.style;
+        if(panel.cellType == wjGrid.CellType.ColumnHeader){
+          // ヘッダーの改行位置の設定
+          if(r == 0 && c == 0){
+            cell.innerHTML = '確<br/>';
+            s.textAlign = 'center';
+          }
+        }
+      }
       this.userGrid = flexGrid;
       let _self = this;
       //axiosを利用する時下記有効
@@ -436,6 +448,10 @@ div#user-list_scrollbar {
   ::-webkit-scrollbar-thumb {
     background: $brawn;
     border-radius: 0px;
+  }
+
+  .wj-cell-maker{
+    height:15px;
   }
 
   @media screen and (max-width: 1366px){

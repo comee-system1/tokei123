@@ -252,11 +252,20 @@ export default {
      * 登録ボタンを押下
      */
     kikantuika_dialog_regist: function () {
+      // 日付エラーチェック
+      let nyuuinbi = moment(this.nyuuinbi).format('YYYY-M-D');
+      let taiinbi = moment(this.taiinbi).format('YYYY-M-D');
+      //比較
+      let diff = moment(this.taiinbi).diff(moment(this.nyuuinbi));
+      if (diff < 0 || !this.taiinbi || !this.nyuuinbi) {
+        alert('日付の指定に誤りがあります。');
+        return false;
+      }
       this.registData = {
         type: this.type, // nyutaiin や gaihaku等
         selectKey: this.selectKey, // nyuutaiinやgaihakuの配列のキー
-        nyuuinbi: moment(this.nyuuinbi).format('YYYY-M-D'),
-        taiinbi: moment(this.taiinbi).format('YYYY-M-D'),
+        nyuuinbi: nyuuinbi,
+        taiinbi: taiinbi,
         nyuuinbiShiseturiyo: this.nyuuinbiShiseturiyo,
         nyuuinbiBreakfast: this.nyuuinbiBreakfast,
         nyuuinbiLunch: this.nyuuinbiLunch,

@@ -90,7 +90,7 @@
       :autoSearch="true"
       :headersVisibility="'Column'"
       :selectionMode="3"
-      style="height: 55vh"
+      :style="gridHeight"
       :initialized="onInitializedUser"
       :itemsSourceChanged="onItemsSourceChanged"
       :itemsSource="usersData"
@@ -186,9 +186,27 @@ export default {
       riyocodeFlag: true,
       jyukyunoFlag: false,
       useTeikyoCode: '',
+      gridHeight: '',
     };
   },
+  mounted: function () {
+    this.handleResize;
+    window.addEventListener('resize', this.handleResize);
+  },
   methods: {
+    handleResize: function () {
+      let height = window.innerHeight;
+      let ht = '';
+      if (height > 800) {
+        ht = 68;
+      } else if (height > 700) {
+        ht = 60;
+      } else {
+        ht = 55;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
+    },
+
     setChildTeikyocode(teikyoCode, serachbutton) {
       // this.usersData = [];
       if (serachbutton) {
@@ -345,9 +363,6 @@ export default {
       }
       this.$emit('child-user', data);
       this.usersData = data;
-    },
-    userFilter2() {
-      return true;
     },
     onItemsSourceChanged(flexGrid) {
       // 初期選択を解除

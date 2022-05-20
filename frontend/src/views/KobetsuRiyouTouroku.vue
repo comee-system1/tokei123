@@ -102,7 +102,7 @@
             :deferResizing="false"
             :allowSorting="false"
             :selectionMode="'None'"
-            style="height: 65vh"
+            :style="gridHeight"
           ></wj-flex-grid>
         </v-col>
       </v-row>
@@ -155,6 +155,7 @@ export default {
       alertMessageFlag: false, // 変更時のアラートメッセージ
       editGridFlag: false, // grid編集状態フラグ
       kasanRow: 0, // 加算情報の行数
+      gridHeight: '', // グリッドの高さ
     };
   },
   components: {
@@ -163,7 +164,21 @@ export default {
     DialogKikantuika,
     DialogKasantuika,
   },
+  mounted: function () {
+    this.handleResize;
+    window.addEventListener('resize', this.handleResize);
+  },
   methods: {
+    handleResize: function () {
+      let height = window.innerHeight;
+      let ht = 65;
+      if (height > 800) {
+        ht = 75;
+      } else if (height > 700) {
+        ht = 70;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
+    },
     // 変動情報の切り替え配列
     changeHndoJyoho: function () {
       let hendo = [];
@@ -418,6 +433,8 @@ export default {
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
       // 値の設定
+      this.selectType = '';
+      this.editGridFlag = '';
       this.changeHndoJyoho();
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
@@ -1345,8 +1362,8 @@ function settingGaihaku(flexGrid, _self) {
       {
         byouinName: '東経国立病院',
         start_date: '2022-5-25',
-        end_date: '2022-5-27',
-        diff_date: 3,
+        end_date: '2022-6-2',
+        diff_date: 9,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1357,7 +1374,28 @@ function settingGaihaku(flexGrid, _self) {
         taiinbiDinner: true,
         day25: 'gaihaku_arrow_start-0', //文字列のあとに下記にあるdateのキーを指定
         day26: 'gaihaku_arrow-0',
-        day27: 'gaihaku_arrow_end-0',
+        day27: 'gaihaku_arrow-0',
+        day28: 'gaihaku_arrow-0',
+        day29: 'gaihaku_arrow-0',
+        day30: 'gaihaku_arrow-0',
+        day31: 'gaihaku_arrow-0',
+      },
+      {
+        byouinName: '東経国立病院',
+        start_date: '2022-5-20',
+        end_date: '2022-5-22',
+        diff_date: 2,
+        nyuuinbiShiseturiyo: 1,
+        nyuuinbiBreakfast: true,
+        nyuuinbiLunch: false,
+        nyuuinbiDinner: true,
+        taiinbiShiseturiyo: 1,
+        taiinbiBreakfast: true,
+        taiinbiLunch: true,
+        taiinbiDinner: true,
+        day20: 'gaihaku_arrow_start-1', //文字列のあとに下記にあるdateのキーを指定
+        day21: 'gaihaku_arrow-1',
+        day22: 'gaihaku_arrow_end-1',
       },
     ],
   });
@@ -1377,18 +1415,15 @@ function settingGaihaku(flexGrid, _self) {
   }
 
   //矢印の作成
-  _self.gaihakuData = gaihaku;
-  setGaihakuCreateArrows(gaihaku, _self, flexGrid);
-
-  /*
-  if (_self.gaihakuData.length == 0) {
-    setGaihakuCreateArrows(gaihaku, _self, flexGrid);
-    _self.gaihakuData = gaihaku;
-  } else {
-    gaihaku = _self.gaihakuData;
-    setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+  if (gaihaku.length > 0) {
+    if (_self.gaihakuData.length == 0) {
+      setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+      _self.gaihakuData = gaihaku;
+    } else {
+      gaihaku = _self.gaihakuData;
+      setGaihakuCreateArrows(gaihaku, _self, flexGrid);
+    }
   }
-  */
 }
 /*********
  * 外泊の編集
@@ -1410,8 +1445,22 @@ function editGaihaku(flexGrid, _self) {
   //秒に変換してloopを行う
   let st = new Date(_self.$refs.dialog_kikantuika.registData.nyuuinbi);
   let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
+  //日付の差分
+  var diff = ed - st;
+  diff = parseInt(diff / 1000 / 60 / 60 / 24) + 1;
+
+  let firstmonth = st.getMonth();
+  let lastmonth = ed.getMonth();
+
   let firstday = st.getDate();
-  let lastday = ed.getDate();
+  let lastday = '';
+
+  if (firstmonth != lastmonth) {
+    let firstyear = st.getFullYear();
+    lastday = new Date(firstyear, firstmonth - 1, 0).getDate();
+  } else {
+    lastday = ed.getDate();
+  }
   let num = 0;
 
   gaihaku[0]['date'][selectKey]['start_date'] =
@@ -1437,8 +1486,8 @@ function editGaihaku(flexGrid, _self) {
   gaihaku[0]['date'][selectKey]['taiinbiAida'] =
     _self.$refs.dialog_kikantuika.registData.taiinbiAida;
 
-  gaihaku[0]['date'][selectKey]['diff_date'] =
-    lastday - firstday + _self.plusOne;
+  gaihaku[0]['date'][selectKey]['diff_date'] = diff;
+
   gaihaku[0]['date'][selectKey]['byouinName'] =
     _self.$refs.dialog_kikantuika.registData.byouinName;
 
@@ -1448,7 +1497,12 @@ function editGaihaku(flexGrid, _self) {
     if (num == 0) {
       gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow_start-' + selectKey;
     } else if (num == lastday - firstday) {
-      gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow_end-' + selectKey;
+      if (firstmonth != lastmonth) {
+        // 月跨ぎの際は線のみの表示
+        gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow-' + selectKey;
+      } else {
+        gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow_end-' + selectKey;
+      }
     } else {
       gaihaku[0]['date'][selectKey][day] = 'gaihaku_arrow-' + selectKey;
     }
@@ -1515,6 +1569,23 @@ function insertGaihaku(flexGrid, _self) {
   _self.gaihakuData = gaihaku;
 }
 
+/**************
+ * 開始日と終了日取得
+ */
+function getFirstDateLastDate(data, j) {
+  let firstmonth = new Date(data[0].date[j].start_date).getMonth();
+  let lastmonth = new Date(data[0].date[j].end_date).getMonth();
+  let firstday = '';
+  let lastday = '';
+  firstday = new Date(data[0].date[j].start_date).getDate();
+  if (firstmonth != lastmonth) {
+    let firstyear = new Date(data[0].date[j].start_date).getFullYear();
+    lastday = new Date(firstyear, firstmonth - 1, 0).getDate();
+  } else {
+    lastday = new Date(data[0].date[j].end_date).getDate();
+  }
+  return [firstday, lastday];
+}
 /***********
  * 矢印作成
  */
@@ -1523,8 +1594,7 @@ function createdArrows(data, _self, flexGrid, row) {
   if (data[0] != undefined) {
     for (let j = 0; j < data[0].date.length; j++) {
       if (data[0].date[j]) {
-        let firstday = new Date(data[0].date[j].start_date).getDate();
-        let lastday = new Date(data[0].date[j].end_date).getDate();
+        let [firstday, lastday] = getFirstDateLastDate(data, j);
         for (let i = firstday; i <= lastday; i++) {
           data[0].date[j]['dayCount' + i] = false;
         }
@@ -1552,8 +1622,7 @@ function createdArrows(data, _self, flexGrid, row) {
 
     for (let j = 0; j < data[0].date.length; j++) {
       if (data[0].date[j]) {
-        let firstday = new Date(data[0].date[j].start_date).getDate();
-        let lastday = new Date(data[0].date[j].end_date).getDate();
+        let [firstday, lastday] = getFirstDateLastDate(data, j);
         for (let i = firstday; i <= lastday; i++) {
           let d = 'day' + i;
           let dc = 'dayCount' + i;
@@ -1566,11 +1635,13 @@ function createdArrows(data, _self, flexGrid, row) {
           } else {
             flexGrid.setCellData(row, i + 3, data[0].date[j][d]);
           }
-          total++;
         }
       }
     }
 
+    for (let j = 0; j < data[0].date.length; j++) {
+      total += data[0].date[j].diff_date;
+    }
     flexGrid.setCellData(row, _self.lastdate + 4, total);
   }
   return;
@@ -1623,8 +1694,8 @@ function settingNyuTaiin(flexGrid, _self) {
       {
         byouinName: '西経国立病院',
         start_date: '2022-5-28',
-        end_date: '2022-5-30',
-        diff_date: 3,
+        end_date: '2022-6-3',
+        diff_date: 7,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1635,7 +1706,8 @@ function settingNyuTaiin(flexGrid, _self) {
         taiinbiDinner: true,
         day28: 'arrow_start-1',
         day29: 'arrow-1',
-        day30: 'arrow_end-1',
+        day30: 'arrow-1',
+        day31: 'arrow-1',
       },
       {
         byouinName: '北経国立病院',
@@ -1700,8 +1772,22 @@ function editNyuTaiin(flexGrid, _self) {
   //秒に変換してloopを行う
   let st = new Date(_self.$refs.dialog_kikantuika.registData.nyuuinbi);
   let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
+  //日付の差分
+  var diff = ed - st;
+  diff = parseInt(diff / 1000 / 60 / 60 / 24) + 1;
+
+  let firstmonth = st.getMonth();
+  let lastmonth = ed.getMonth();
+
   let firstday = st.getDate();
-  let lastday = ed.getDate();
+  let lastday = '';
+
+  if (firstmonth != lastmonth) {
+    let firstyear = st.getFullYear();
+    lastday = new Date(firstyear, firstmonth - 1, 0).getDate();
+  } else {
+    lastday = ed.getDate();
+  }
   let num = 0;
 
   nyutaiin[0]['date'][selectKey]['start_date'] =
@@ -1727,8 +1813,8 @@ function editNyuTaiin(flexGrid, _self) {
   nyutaiin[0]['date'][selectKey]['taiinbiAida'] =
     _self.$refs.dialog_kikantuika.registData.taiinbiAida;
 
-  nyutaiin[0]['date'][selectKey]['diff_date'] =
-    lastday - firstday + _self.plusOne;
+  nyutaiin[0]['date'][selectKey]['diff_date'] = diff;
+
   nyutaiin[0]['date'][selectKey]['byouinName'] =
     _self.$refs.dialog_kikantuika.registData.byouinName;
 
@@ -1738,7 +1824,12 @@ function editNyuTaiin(flexGrid, _self) {
     if (num == 0) {
       nyutaiin[0]['date'][selectKey][day] = 'arrow_start-' + selectKey;
     } else if (num == lastday - firstday) {
-      nyutaiin[0]['date'][selectKey][day] = 'arrow_end-' + selectKey;
+      if (firstmonth != lastmonth) {
+        // 月跨ぎの際は線のみの表示
+        nyutaiin[0]['date'][selectKey][day] = 'arrow-' + selectKey;
+      } else {
+        nyutaiin[0]['date'][selectKey][day] = 'arrow_end-' + selectKey;
+      }
     } else {
       nyutaiin[0]['date'][selectKey][day] = 'arrow-' + selectKey;
     }
@@ -2406,8 +2497,17 @@ div#kobeturiyo {
       border-left: 6px solid $red;
       border-bottom: 6px solid transparent;
       position: absolute;
-      left: 4px;
+      left: 8%;
       top: -8px;
+      transform: translateX(-50%);
+      -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      @include pc {
+        left: 10%;
+      }
+      @include max-width {
+        left: 14%;
+      }
     }
   }
 

@@ -94,7 +94,7 @@
         </span>
 
         <v-btn class="pa-1 ml-3" :width="60" small @click="searchButton()">
-          確定
+          更新
         </v-btn>
       </div>
 
@@ -194,7 +194,10 @@
       </v-dialog>
     </v-flex>
     <v-row id="screen_dialog" v-show="screenFlag">
-      <v-col class="text-h2"> 確定ボタンを押してください。</v-col>
+      <v-col class="text-h2">
+        <p>条件が変更されました。</p>
+        <p>更新ボタンを押してください。</p>
+      </v-col>
     </v-row>
   </v-layout>
 </template>

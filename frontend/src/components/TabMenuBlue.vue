@@ -14,7 +14,7 @@
 export default {
   data() {
     return {
-      tab: 'JijyougenkanriJimsyo', // タブの初期状態
+      tab: 'recept', // タブの初期状態
     };
   },
   props: ['tabmenu'],
