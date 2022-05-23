@@ -3,6 +3,7 @@
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
+      @parent-service-select="parentServiceSelect($event, serviceArgument)"
     ></header-services>
 
     <v-container class="user-info" fluid>
@@ -523,6 +524,7 @@ export default {
       viewdata: [],
       viewkyufudataAll: [],
       viewkyufudata: [],
+      serviceArgument: '', // ヘッダメニューのサービス選択
     };
   },
   mounted: function () {
@@ -1417,6 +1419,13 @@ export default {
         });
       }
       this.viewkyufudata = tmpviewdata;
+    },
+    //ヘッダメニューのサービス初回選択 検索ボタン
+    parentServiceSelect: function () {
+      this.viewdataAll = [];
+      this.viewdata = [];
+      this.viewkyufudataAll = [];
+      this.viewkyufudata = [];
     },
   },
 };

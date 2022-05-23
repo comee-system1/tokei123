@@ -181,8 +181,6 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       date: moment().date(),
-      picker:
-        moment().year() + '-' + moment().format('M') + '-' + moment().date(),
       pageTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
@@ -264,15 +262,7 @@ export default {
       ],
     };
   },
-  mounted: function () {
-    this.$nextTick(function () {
-      // ビュー全体がレンダリングされた後にのみ実行されるコード
-      let split = this.picker.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      this.date = split[2];
-    });
-  },
+  mounted: function () {},
   watch: {
     $route() {
       this.pageTitle = this.$route.name;
