@@ -97,9 +97,9 @@ let alphaSearch = '';
 let alphabet = ['全','ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ'];
 
 export default {
-  props:['selectedService'],
-  watch:{
-    selectedService:function(){
+  props: ['selectedService'],
+  watch: {
+    selectedService:function() {
       // this.onInitializedUser();
       this.createUser();
     }
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     // ソートボタン押下時のイベント
-    sortUser: function (sortType) {
+    sortUser:function(sortType) {
       sortSearch = sortType;
       // 全員3もしくは受給者番号ボタン押下時はコードではなく受給者番号を表示する
       if (sortSearch == 3) {
@@ -130,22 +130,22 @@ export default {
       }
       this.userFilter();
     },
-    onTextChangedUser: function (s) {
+    onTextChangedUser:function(s) {
       // カナ検索欄に入力された文字を取得して書き換え
       textSearch = s.text;
       this.userFilter();
     },
-    onAlphabet: function (key) {
+    onAlphabet:function(key) {
       // どのカナボタンを押下したか番号を取得して書き換え
       alphaSearch = key;
       this.userFilter();
     },
-    onselectedIndexChanged: function (s) {
+    onselectedIndexChanged:function(s) {
       // 全選択・全解除の選択値を取得して書き換え
       checkAll = s.selectedIndex;
-      this.userFilter();
+      this.userFilter(s);
     },
-    createUser: function (response) {
+    createUser:function(response) {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
@@ -168,14 +168,14 @@ export default {
 
       //axiosを利用しないとき下記有効
       // console.log(response);
-      if(!response){
+      if (!response) {
         response = apiResult['riyo_inf'];
       }
       let kakuteiFlag = false;
       for (let i = 0; i < response.length; i++) {
-        if(response[i]['kakutei'] == 2 || response[i]['kakutei'] == 3 ){
+        if (response[i]['kakutei'] == 2 || response[i]['kakutei'] == 3 ) {
           kakuteiFlag = true;
-        }else{
+        } else {
           kakuteiFlag = false;
         }
         riyo_inf.push(
@@ -201,10 +201,9 @@ export default {
       this.userFilter();
       return riyo_inf;
     },
-
-    userFilter() {
+    userFilter(s) {
       let data = [];
-      userDataSelect['riyo_inf'].forEach(function (value) {
+      userDataSelect['riyo_inf'].forEach(function(value) {
         // 印刷チェックの制御
         if (checkAll == '1') value.print = '〇';
         if (checkAll == '2') value.print = '';
@@ -215,7 +214,7 @@ export default {
       });
       if (alphaSearch > 0) {
         let alphaSortedData = [];
-        data.forEach(function (value) {
+        data.forEach(function(value) {
           switch (alphaSearch) {
             case 1:
               if (value.kana.match(/^[ア-オ]/)) alphaSortedData.push(value);
@@ -276,6 +275,9 @@ export default {
           return 0;
         });
       }
+      if (s) {
+        s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
+      }
       // ソートして利用者一覧に表示するデータを一式親コンポーネントに送る
       this.$emit('child-userslist', data);
       // ソートしたデータでグリッド表示データを上書きする
@@ -288,14 +290,14 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
-    onInitializedUser: function (flexGrid) {
+    onInitializedUser: function(flexGrid) {
       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル
         let s = cell.style;
-        if(panel.cellType == wjGrid.CellType.ColumnHeader){
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           // ヘッダーの改行位置の設定
-          if(r == 0 && c == 0){
+          if (r == 0 && c == 0) {
             cell.innerHTML = '確<br/>';
             s.textAlign = 'center';
           }
@@ -364,7 +366,7 @@ export default {
       // flexGrid.selection = new wjGrid.CellRange(-1);
 
       flexGrid.hostElement.addEventListener('click', function (e) {
-        var ht = flexGrid.hitTest(e);
+        let ht = flexGrid.hitTest(e);
         let hPage  = flexGrid.hitTest(e.pageX, e.pageY);
         //選択した要素の取得
         if (e.target.innerText.length > 0) {
@@ -450,17 +452,17 @@ div#user-list_scrollbar {
     border-radius: 0px;
   }
 
-  .wj-cell-maker{
+  .wj-cell-maker {
     height:15px;
   }
 
-  @media screen and (max-width: 1366px){
+  @media screen and (max-width: 1366px) {
     #userListGrid {
       height: 57vh;
     }
   }
 
-  @media screen and (min-width: 1367px){
+  @media screen and (min-width: 1367px) {
     #userListGrid {
       height: 71vh;
     }

@@ -163,10 +163,35 @@ export default {
       receptData: [],
       mainFlexGrid: [],
       editGridFlag: false,
+      filterText: {}, // 検索項目
     };
   },
   components: {},
   methods: {
+    /*************
+     * 上限管理事のフィルタリンク
+     */
+    child_Jyougenkanriji(text) {
+      // フィルタリングの実施
+      this.filterText = { jyougenkanriji: text };
+      this.filtered();
+    },
+    /***************************
+     * 絞り込みの実施
+     */
+    filtered: function () {
+      this.receptData = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        if (
+          this.allData[i]['jyougengaku'].indexOf(
+            this.filterText.jyougenkanriji
+          ) != -1
+        ) {
+          this.receptData.push(this.allData[i]);
+        }
+      }
+    },
+
     /*******************
      * 確定登録・解除ボタン
      */
@@ -190,34 +215,54 @@ export default {
       data.forEach(function (value) {
         switch (alphaSearch) {
           case 1:
-            if (value.kana.match(/^[ア-オ]/)) get.push(value);
+            if (value.kana.match(/^[ア-オ]/)) {
+              get.push(value);
+            }
             break;
           case 2:
-            if (value.kana.match(/^[カ-コ]/)) get.push(value);
+            if (value.kana.match(/^[カ-コ]/)) {
+              get.push(value);
+            }
             break;
           case 3:
-            if (value.kana.match(/^[サ-ソ]/)) get.push(value);
+            if (value.kana.match(/^[サ-ソ]/)) {
+              get.push(value);
+            }
             break;
           case 4:
-            if (value.kana.match(/^[タ-ト]/)) get.push(value);
+            if (value.kana.match(/^[タ-ト]/)) {
+              get.push(value);
+            }
             break;
           case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
+            if (value.kana.match(/^[ナ-ノ]/)) {
+              get.push(value);
+            }
             break;
           case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
+            if (value.kana.match(/^[ハ-ホ]/)) {
+              get.push(value);
+            }
             break;
           case 7:
-            if (value.kana.match(/^[マ-モ]/)) get.push(value);
+            if (value.kana.match(/^[マ-モ]/)) {
+              get.push(value);
+            }
             break;
           case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
+            if (value.kana.match(/^[ヤ-ヨ]/)) {
+              get.push(value);
+            }
             break;
           case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
+            if (value.kana.match(/^[ラ-ロ]/)) {
+              get.push(value);
+            }
             break;
           case 10:
-            if (value.kana.match(/^[ワ-ン]/)) get.push(value);
+            if (value.kana.match(/^[ワ-ン]/)) {
+              get.push(value);
+            }
             break;
         }
       });
@@ -233,24 +278,36 @@ export default {
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.riyousyamei < b.riyousyamei) return -1;
-          if (a.riyousyamei > b.riyousyamei) return 1;
+          if (a.riyousyamei < b.riyousyamei) {
+            return -1;
+          }
+          if (a.riyousyamei > b.riyousyamei) {
+            return 1;
+          }
           return 0;
         });
       }
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code < b.code) return -1;
-          if (a.code > b.code) return 1;
+          if (a.code < b.code) {
+            return -1;
+          }
+          if (a.code > b.code) {
+            return 1;
+          }
           return 0;
         });
       }
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jigyosyobango < b.jigyosyobango) return -1;
-          if (a.jigyosyobango > b.jigyosyobango) return 1;
+          if (a.jigyosyobango < b.jigyosyobango) {
+            return -1;
+          }
+          if (a.jigyosyobango > b.jigyosyobango) {
+            return 1;
+          }
           return 0;
         });
       }
@@ -263,7 +320,9 @@ export default {
      */
     parentSelectAll(type) {
       let mark = '';
-      if (type == 1) mark = '〇';
+      if (type == 1) {
+        mark = '〇';
+      }
       for (let i = 0; i < this.allData.length; i++) {
         this.mainFlexGrid.setCellData(i, 16, mark);
         this.allData[i]['print'] = mark;
@@ -302,7 +361,7 @@ export default {
           riyousyamei: Math.floor(Math.random() * 10) + '東経太郎',
           kana: 'トウケイタロウ',
           jyougenicon: '他',
-          jyougengaku: '南山事務所',
+          jyougengaku: '南山事務所' + (i % 4),
           riyosyafutan: Math.random() * 10000000,
           resehanei: '',
           koban: 1,
@@ -320,6 +379,7 @@ export default {
       }
 
       this.allData = receptData;
+      this.receptData = receptData;
       return receptData;
     },
 
@@ -350,7 +410,6 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         //レセプト確定セルを押下し、確定アイコンの表示
         let ht = flexGrid.hitTest(e);
-        // console.log(ht.target.innerHTML);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
@@ -378,8 +437,6 @@ export default {
               _self.allData[hPage.row]['complateFlag'] = true;
             }
           }
-          //  alert(hPage.row);
-          //flexGrid.setCellData(e.row, 6, '〇');
         }
       });
     },

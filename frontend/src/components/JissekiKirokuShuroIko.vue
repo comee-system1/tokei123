@@ -86,10 +86,14 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
 
-export default{
-  props:['userListData','riyousya','zyukyusyaNum'],
-  watch:{
-    riyousya:function(){
+export default {
+  props: {
+    userListData: String,
+    riyousya: String,
+    zyukyusyaNum: String,
+  },
+  watch: {
+    riyousya:function() {
       this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
       this.sougeiTotal = getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
       this.jikansuTotal =  getJikansuTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
@@ -102,8 +106,8 @@ export default{
       this.gridchageFlag = true;
     }
   },
-  data(){
-    return{
+  data() {
+    return {
       detailGridData: this.getGridData(),
       sikyuryoData: "",
       sougeiTotal: 0,
@@ -116,7 +120,7 @@ export default{
     }
   },
   methods: {
-    onInitializeDetailGrid: function(flexGrid) {
+    onInitializeDetailGrid:function(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -167,7 +171,7 @@ export default{
               return headerRanges[h];
             }
           }
-        }else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           for (let f = 0; f < footerRanges.length; f++) {
             if (footerRanges[f].contains(r, c)) {
               return footerRanges[f];
@@ -206,61 +210,58 @@ export default{
       flexGrid.columnFooters.rows[1].height = 20;
       flexGrid.columnFooters.rows[2].height = 20;
       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
-        if(panel.cellType == wjGrid.CellType.ColumnHeader){
-          if(r == 0 && c == 0){
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          if (r == 0 && c == 0) {
             cell.innerHTML = '日<br/>付';
-          }else if (r == 0 && c == 1) {
+          } else if (r == 0 && c == 1) {
             cell.innerHTML = '曜<br/>日';
-          }else if (r == 1 && c == 2) {
+          } else if (r == 1 && c == 2) {
             cell.innerHTML = 'サービス提供<br/>の状況';
-          }else if (r == 1 && c == 8) {
+          } else if (r == 1 && c == 8) {
             cell.innerHTML = '食事提供<br/>加算';
-          }else if (r == 1 && c == 9) {
+          } else if (r == 1 && c == 9) {
             cell.innerHTML = '医療連携<br/>体制加算';
-          }else if (r == 1 && c == 10) {
+          } else if (r == 1 && c == 10) {
             cell.innerHTML = '通勤訓練<br/>加算';
-          }else if (r == 1 && c == 11) {
+          } else if (r == 1 && c == 11) {
             cell.innerHTML = '体験利用<br/>支援加算';
-          }else if (r == 1 && c == 12) {
+          } else if (r == 1 && c == 12) {
             cell.innerHTML = '支援計画会議<br/>実施加算';
-          }else if (r == 1 && c == 13) {
+          } else if (r == 1 && c == 13) {
             cell.innerHTML = '移行準備支援<br/>体制加算';
           }
-        }
-        else if(panel.cellType == wjGrid.CellType.Cell){
+        } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
-          if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
+          if (panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
-          }
-          else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
+          } else if (panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
           }
 
           //備考欄を左寄せにする
-          if(c == 14){
+          if (c == 14) {
             s.textAlign = "left";
           }
-        }
-        else if(panel.cellType == wjGrid.CellType.ColumnFooter){
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           // フッターのスタイル
           // フッターの上部に線を表示する
-          if(r == 0){
+          if (r == 0) {
             s.borderTop = "1px solid rgba(0,0,0,.2)";
           }
 
-          if(c >= 5 && c <= 12 || c == 14){
+          if (c >= 5 && c <= 12 || c == 14) {
             // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
           }
         }
       }
     },
-    onInitializeDetailGridChanged:function(flexGrid){
-      if(this.gridchageFlag){
+    onInitializeDetailGridChanged:function(flexGrid) {
+      if (this.gridchageFlag) {
         let footerPanel = flexGrid.columnFooters;
         footerPanel.setCellData(0, 5, this.sougeiTotal);
         footerPanel.setCellData(0, 7, this.jikansuTotal);
@@ -271,50 +272,50 @@ export default{
         this.gridchageFlag = false;
       }
     },
-    onInitializeSubGrid:function(flexGrid){
+    onInitializeSubGrid:function(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
         let s = cell.style;
         s.textAlign = 'center';
-        if(c == 0 || c == 1 || c == 3 || c == 5){
+        if (c == 0 || c == 1 || c == 3 || c == 5) {
           // セルをヘッダーの色にする
           s.backgroundColor= "#eeeeee";
           s.fontWeight="bold";
         }
       }
     },
-    getGridData:function(data){
+    getGridData:function(data) {
       // グリッド表示用データの作成
       let gridData = [];
-      if(data != null){
+      if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for(let i = 0; i<kirokuMeiData.length; i++){
+        for (let i = 0; i<kirokuMeiData.length; i++) {
           // 曜日表示用に文字列の日付をDate型に変換
           let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-              youbi:WeekChars[date.getDay()],
-              jyokyo:kirokuMeiData[i]["jyokyo"],
-              jstime:kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-              jetime:kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-              gei:kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-              sou:kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-              kasanh_mn:kirokuMeiData[i]["kasanh_mn"] == 0 ? "":kirokuMeiData[i]["kasanh_mn"],
-              kasans:kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-              kasani:kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
-              kasantu:kirokuMeiData[i]["kasantu"] == 0 ? "":kirokuMeiData[i]["kasantu"],
-              kasantkn:kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-              kasankai:kirokuMeiData[i]["kasankai"] == 0 ? "":kirokuMeiData[i]["kasankai"],
-              kasang:kirokuMeiData[i]["kasang"] == 0 ? "":kirokuMeiData[i]["kasang"],
-              biko:kirokuMeiData[i]["biko"],
+              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi: WeekChars[date.getDay()],
+              jyokyo: kirokuMeiData[i]["jyokyo"],
+              jstime: kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
+              jetime: kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
+              gei: kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
+              sou: kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
+              kasanh_mn: kirokuMeiData[i]["kasanh_mn"] == 0 ? "":kirokuMeiData[i]["kasanh_mn"],
+              kasans: kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
+              kasani: kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
+              kasantu: kirokuMeiData[i]["kasantu"] == 0 ? "":kirokuMeiData[i]["kasantu"],
+              kasantkn: kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
+              kasankai: kirokuMeiData[i]["kasankai"] == 0 ? "":kirokuMeiData[i]["kasankai"],
+              kasang: kirokuMeiData[i]["kasang"] == 0 ? "":kirokuMeiData[i]["kasang"],
+              biko: kirokuMeiData[i]["biko"],
             }
           )
         }
-      }else{
+      } else {
         gridData.push(
           {
             rymd: "",
@@ -337,10 +338,10 @@ export default{
       }
       return gridData;
     },
-    getSubGridData:function(data){
+    getSubGridData:function(data) {
       // サブグリッド表示用データの作成
       let subGridData = [];
-      if(data != null){
+      if (data != null) {
         let riyouKaishibi = data['riyo_inf'][0]['staymd'];
         let tougetsuSantei = data['riyo_inf'][0]['ms2_kaisu'];
         subGridData.push(
@@ -354,7 +355,7 @@ export default{
             Column6: tougetsuSantei + "日"
           },
         )
-      }else{
+      } else {
         subGridData.push(
           {
             Column0: "初期加算",
@@ -373,13 +374,13 @@ export default{
 }
 
 // 西暦＋年月日フィルター
-function dateFilter(date){
+function dateFilter(date) {
   let datearr = (date.substr(0, 4) + '年' + date.substr(4, 2) + '月' + date.substr(6, 2) + '日');
   return datearr;
 }
 
 // 30日目変換用
-function thirtythDayFilter(riyouKaishibi){
+function thirtythDayFilter(riyouKaishibi) {
   let datearr = (riyouKaishibi.substr(0, 4) + '/' + riyouKaishibi.substr(4, 2) + '/' + riyouKaishibi.substr(6, 2)).split('/');
   let thirtythDay = new Date(datearr[0], datearr[1] - 1, datearr[2]);
   thirtythDay.setDate(thirtythDay.getDate() + 29);
@@ -393,15 +394,15 @@ function thirtythDayFilter(riyouKaishibi){
 const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 
 // 送迎の合計の算出
-function getSougeiTotal(data){
+function getSougeiTotal(data) {
   let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['sou']){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['sou']) {
       totalCount++ ;
     }
   }
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['gei']){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['gei']) {
       totalCount++ ;
     }
   }
@@ -409,10 +410,10 @@ function getSougeiTotal(data){
 }
 
 // 訪問支援加算時間数の合計の算出
-function getJikansuTotal(data){
+function getJikansuTotal(data) {
   let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasanh_mn'] != "0"){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['kasanh_mn'] != "0") {
       totalCount++ ;
     }
   }
@@ -420,10 +421,10 @@ function getJikansuTotal(data){
 }
 
 // 医療連携体制加算の合計の算出
-function getIryoRenkeiTotal(data){
+function getIryoRenkeiTotal(data) {
   let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasani'] > 0){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['kasani'] > 0) {
       totalCount++ ;
     }
   }
@@ -431,10 +432,10 @@ function getIryoRenkeiTotal(data){
 }
 
 // 体験利用支援加算の合計の算出
-function getTaikenRiyoTotal(data){
+function getTaikenRiyoTotal(data) {
   let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasantkn'] > 0){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['kasantkn'] > 0) {
       totalCount++ ;
     }
   }
@@ -442,10 +443,10 @@ function getTaikenRiyoTotal(data){
 }
 
 // 移行準備支援体制加算の月の合計を算出
-function getIkojunbiKasanTotal(data){
+function getIkojunbiKasanTotal(data) {
   let totalCount = 0;
-  for(let i = 0; i < data.length; i++){
-    if(data[i]['kasang']){
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]['kasang']) {
       totalCount++ ;
     }
   }
@@ -459,13 +460,13 @@ function getIkojunbiKasanTotal(data){
   margin:0;
 }
 
-@media screen and (max-width: 1366px){
+@media screen and (max-width: 1366px) {
   #detailGrid {
     height: 62vh;
   }
 }
 
-@media screen and (min-width: 1367px){
+@media screen and (min-width: 1367px) {
   #detailGrid {
     height: 75vh;
   }

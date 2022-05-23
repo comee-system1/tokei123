@@ -605,34 +605,54 @@ export default {
         this.viewdataAll.forEach(function (value) {
           switch (alpval) {
             case 1:
-              if (value.kana.match(/^[ア-オ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ア-オ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 2:
-              if (value.kana.match(/^[カ-コ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[カ-コ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 3:
-              if (value.kana.match(/^[サ-ソ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[サ-ソ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 4:
-              if (value.kana.match(/^[タ-ト]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[タ-ト]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ナ-ノ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ハ-ホ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 7:
-              if (value.kana.match(/^[マ-モ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[マ-モ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ヤ-ヨ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ラ-ロ]/)) {
+                tmpviewdata.push(value);
+              }
               break;
             case 10:
-              if (value.kana.match(/^[ワ-ン]/)) tmpviewdata.push(value);
+              if (value.kana.match(/^[ワ-ン]/)) {
+                tmpviewdata.push(value);
+              }
               break;
           }
         });
@@ -652,8 +672,12 @@ export default {
       //コード順でソート
       if (this.sortSearch == 0) {
         tmpviewdata.sort((a, b) => {
-          if (a.id < b.id) return -1;
-          if (a.id > b.id) return 1;
+          if (a.id < b.id) {
+            return -1;
+          }
+          if (a.id > b.id) {
+            return 1;
+          }
           if (a.kbn !== b.kbn) {
             return a.kbn - b.kbn;
           }
@@ -662,8 +686,12 @@ export default {
       //利用者名でソート
       if (this.sortSearch == 1) {
         tmpviewdata.sort((a, b) => {
-          if (a.kana < b.kana) return -1;
-          if (a.kana > b.kana) return 1;
+          if (a.kana < b.kana) {
+            return -1;
+          }
+          if (a.kana > b.kana) {
+            return 1;
+          }
           if (a.kbn !== b.kbn) {
             return a.kbn - b.kbn;
           }
@@ -672,8 +700,12 @@ export default {
       //受給者番号でソート
       if (this.sortSearch == 2) {
         tmpviewdata.sort((a, b) => {
-          if (a.no < b.no) return -1;
-          if (a.no > b.no) return 1;
+          if (a.no < b.no) {
+            return -1;
+          }
+          if (a.no > b.no) {
+            return 1;
+          }
           if (a.kbn !== b.kbn) {
             return a.kbn - b.kbn;
           }

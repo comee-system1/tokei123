@@ -68,6 +68,7 @@
                   <wj-combo-box
                     :items-source="jyougenkanriCombo"
                     class="ml-1 w-100"
+                    :selectedIndexChanged="onJyougenkanriCombo"
                   ></wj-combo-box>
                 </v-col>
               </v-row>
@@ -200,7 +201,7 @@ import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
 
 const riyosyaCombo = ['全員'];
-const jyougenkanriCombo = ['指定なし'];
+const jyougenkanriCombo = [];
 
 const alphabet = [
   '全',
@@ -224,8 +225,8 @@ export default {
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
 
-      receptFlag: true, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
+      receptFlag: false, // receptの初期表示状態
+      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
@@ -240,7 +241,24 @@ export default {
     ReceptJijyougen,
     TabMenuBlue,
   },
+  created: function () {
+    // 上限管理事用コンボボックス
+    this.jyougenkanriCombo = [
+      '指定なし',
+      '南山事務所0',
+      '南山事務所1',
+      '南山事務所2',
+      '南山事務所3',
+    ];
+  },
   methods: {
+    /*********************
+     * 上限管理事変更
+     */
+    onJyougenkanriCombo: function (e) {
+      // 他上限管理事業所の関数を実行
+      this.$refs.tajougenChild.child_Jyougenkanriji(e.text);
+    },
     /**************
      * 子コンポーネントtabmenublueで選択した値を取得
      */
@@ -248,11 +266,15 @@ export default {
       this.receptFlag = false;
       this.TajyougenkanriJimsyoFlag = false;
       this.JijyougenkanriJimsyoFlag = false;
-      if (args.selectTab == 'recept') this.receptFlag = true;
-      if (args.selectTab == 'TajyougenkanriJimsyo')
+      if (args.selectTab == 'recept') {
+        this.receptFlag = true;
+      }
+      if (args.selectTab == 'TajyougenkanriJimsyo') {
         this.TajyougenkanriJimsyoFlag = true;
-      if (args.selectTab == 'JijyougenkanriJimsyo')
+      }
+      if (args.selectTab == 'JijyougenkanriJimsyo') {
         this.JijyougenkanriJimsyoFlag = true;
+      }
     },
     /***************
      * 確定登録・解除ボタン

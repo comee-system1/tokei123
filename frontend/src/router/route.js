@@ -33,7 +33,7 @@ const routes = [
     },
     {
         path:'/JissekiKiroku',
-        name:'実績記録表',
+        name:'実績記録票',
         component: JissekiKirokuParent
     },
     {

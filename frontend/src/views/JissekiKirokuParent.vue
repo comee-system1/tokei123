@@ -54,8 +54,8 @@ import moment from 'moment';
 
 let daycount = 0;
 
-export default{
-  components:{
+export default {
+  components: {
     ServiceSelection,
     UserList,
     SeikatsuKaigo,
@@ -71,8 +71,8 @@ export default{
     ShuroTeichaku,
     JiritsuSeikatsu
   },
-  data(){
-    return{
+  data() {
+    return {
       daycount: daycount,
       dateArgument: '',
       searchArgument: '',
@@ -83,8 +83,8 @@ export default{
       zyukyusyaNum: '',
     };
   },
-  watch:{
-    selectedService: function(){
+  watch: {
+    selectedService:function() {
       this.riyousya = '';
       this.zyukyusyaNum = '';
     }
@@ -101,16 +101,16 @@ export default{
     parentSearch(searchArgument) {
       this.selectedService = searchArgument.teikyoService;
     },
-    getUserListData: function(data){
+    getUserListData:function(data) {
       // 利用者一覧で表示されているデータ一式を取得
       this.userListData = data;
     },
-    getSelectedRow: function(data){
+    getSelectedRow:function(data) {
       // 利用者一覧の選択行を取得
       this.selectedRow = data;
       this.getSelectedUserData();
     },
-    getSelectedUserData(){
+    getSelectedUserData() {
       let selectedUser = this.userListData[this.selectedRow];
       this.riyousya = selectedUser['riyocode'] + "  " + selectedUser['names'];
       this.zyukyusyaNum = selectedUser['jyukyuno'];
@@ -121,4 +121,9 @@ export default{
 
 <style lang="scss">
   @import '@/assets/scss/common.scss';
+
+  // 仮の対応
+  div#jisseki-kiroku .transparent{
+    visibility:hidden;
+  }
 </style>

@@ -96,6 +96,19 @@
         <v-btn class="pa-1 ml-3" :width="60" small @click="searchButton()">
           更新
         </v-btn>
+        <!-- ↓ 請求一覧画面用 -->
+        <span v-if="seikyushoflag">
+          <span v-if="isActive === false">
+            <span class="seikyusho-status">請求書未完了</span>
+            <v-btn v-on:click="kanryoToggleSwitch()" class="pa-1 ml-3 kanryo-touroku" :width="60" small>完了登録</v-btn>
+          </span>
+          <span v-else>
+            <span class="seikyusho-status">請求書完了済</span>
+            <v-btn v-on:click="kanryoToggleSwitch()" class="pa-1 ml-3 kanryo-touroku" :width="60" small>完了登録</v-btn>
+            <span class="tantousya">完了日:R03/08/09 14:23 担当者 : 明治 正雄</span>
+          </span>
+        </span>
+        <!-- ↑ 請求一覧画面用 -->
       </div>
 
       <v-row
@@ -214,6 +227,7 @@ export default {
     searchButtonFlag: { type: Boolean },
     registButtonFlag: { type: Boolean },
     alertMessageFlag: { type: Boolean },
+    seikyushoflag: { type: Boolean },
   },
 
   data() {
@@ -229,6 +243,7 @@ export default {
       returndata: '', // 検索ボタンを押下時に選択値を渡す変数
       screenFlag: false, // 検索ボタン押下前にデータエリアにスクリーンを行う
       storage: {},
+      isActive: false
     };
   },
   created: function () {
@@ -565,6 +580,9 @@ export default {
     branzMinmum: function () {
       document.exitFullscreen();
     },
+    kanryoToggleSwitch: function() {
+    this.isActive = !this.isActive
+   }
   },
 };
 </script>
@@ -618,7 +636,7 @@ export default {
     text-align: center;
     color: #fff;
     -webkit-text-stroke: 1px #000;
-    text-stroke: 1px #000;
+    // text-stroke: 1px #000;
     z-index: 10;
   }
 }
@@ -690,5 +708,24 @@ export default {
   background-size: 30px 30px;
   background-repeat: no-repeat;
   background-position: 50% 50%;
+}
+
+.seikyusho-status{
+  margin-left:50px;
+  background: #fcd7e0;
+  color:red;
+  font-weight: bold;
+  padding:4px 10px;
+}
+
+.kanryo-touroku{
+  width:100px !important;
+}
+
+.tantousya{
+  font-size:12px;
+  background: #fcd7e0;
+  margin-left:10px;
+  padding:2px 10px;
 }
 </style>

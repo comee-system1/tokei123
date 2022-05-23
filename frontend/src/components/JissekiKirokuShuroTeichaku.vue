@@ -74,25 +74,29 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
 
-export default{
-  props:['userListData','riyousya','zyukyusyaNum'],
-  watch:{
-    riyousya:function(){
+export default {
+  props: {
+    userListData: String,
+    riyousya: String,
+    zyukyusyaNum: String,
+  },
+  watch: {
+    riyousya:function() {
       this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
       this.detailGridData = this.getGridData(apiResult);
       this.subGridData = this.getSubGridData(apiResult);
       this.gridchageFlag = true;
     }
   },
-  data(){
-    return{
-      detailGridData:this.getGridData(),
-      sikyuryoData:"",
-      subGridData:this.getSubGridData(),
+  data() {
+    return {
+      detailGridData: this.getGridData(),
+      sikyuryoData: "",
+      subGridData: this.getSubGridData(),
     }
   },
   methods: {
-    onInitializeDetailGrid: function(flexGrid) {
+    onInitializeDetailGrid:function(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -121,7 +125,7 @@ export default{
               return headerRanges[h];
             }
           }
-        }else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           for (let f = 0; f < footerRanges.length; f++) {
             if (footerRanges[f].contains(r, c)) {
               return footerRanges[f];
@@ -140,84 +144,81 @@ export default{
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
-        if(panel.cellType == wjGrid.CellType.ColumnHeader){
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           // 改行指定が必要なヘッダーセルの内容を設定
-          if(r == 0 && c == 0){
+          if (r == 0 && c == 0) {
             cell.innerHTML = '日<br/>付';
-          }else if (r == 0 && c == 1) {
+          } else if (r == 0 && c == 1) {
             cell.innerHTML = '曜<br/>日';
           }
-        }
-        else if(panel.cellType == wjGrid.CellType.Cell){
+        } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
-          if(panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)){
+          if (panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
-          }
-          else if(panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)){
+          } else if (panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
           }
 
           //備考欄を左寄せにする
-          if(c == 5){
+          if (c == 5) {
             s.textAlign = "left";
           }
-        }
-        else if(panel.cellType == wjGrid.CellType.ColumnFooter){
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           // フッターのスタイル
           // フッターの上部に線を表示する
-          if(r == 0){
+          if (r == 0) {
             s.borderTop = "1px solid rgba(0,0,0,.2)";
           }
 
-          if(c >= 2 && c <= 4){
+          if (c >= 2 && c <= 4) {
             // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
-          }else if(c == 5){
+          } else if (c == 5) {
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";
           }
         }
       }
     },
-    onInitializeSubGrid:function(flexGrid){
+    onInitializeSubGrid:function(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
         let s = cell.style;
         s.textAlign = 'center';
-        if(c == 0 || c == 1 || c == 3 || c == 5){
+        if (c == 0 || c == 1 || c == 3 || c == 5) {
           // セルをヘッダーの色にする
           s.backgroundColor= "#eeeeee";
           s.fontWeight="bold";
         }
       }
     },
-    getGridData:function(data){
+    getGridData:function(data) {
       // グリッド表示用データの作成
       let gridData = [];
-      if(data != null){
+      if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for(let i = 0; i<kirokuMeiData.length; i++){
+        for (let i = 0; i<kirokuMeiData.length; i++) {
           // 曜日表示用に文字列の日付をDate型に変換
           let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd:Number(kirokuMeiData[i]["rymd"].substr(6,2)),
-              youbi:WeekChars[date.getDay()],
-              keitai:kirokuMeiData[i]["keitai"],
-              kasantkt:kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
-              kasantren:kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
-              biko:kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              youbi: WeekChars[date.getDay()],
+              keitai: kirokuMeiData[i]["keitai"],
+              kasantkt: kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
+              kasantren: kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
+              biko: kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
             }
           )
         }
-      }else{
+      } else {
         gridData.push(
           {
             rymd: "",
@@ -231,10 +232,10 @@ export default{
       }
       return gridData;
     },
-    getSubGridData:function(data){
+    getSubGridData:function(data) {
       // サブグリッド表示用データの作成
       let subGridData = [];
-      if(data != null){
+      if (data != null) {
         let riyouKaishibi = data['riyo_inf'][0]['staymd'];
         subGridData.push(
           {
@@ -245,7 +246,7 @@ export default{
             Column4: thirtythDayFilter(riyouKaishibi),
           },
         )
-      }else{
+      } else {
         subGridData.push(
           {
             Column0: "初期加算",
@@ -262,13 +263,13 @@ export default{
 }
 
 // 西暦＋年月日フィルター
-function dateFilter(date){
+function dateFilter(date) {
   let datearr = (date.substr(0, 4) + '年' + date.substr(4, 2) + '月' + date.substr(6, 2) + '日');
   return datearr;
 }
 
 // 30日目変換用
-function thirtythDayFilter(riyouKaishibi){
+function thirtythDayFilter(riyouKaishibi) {
   let datearr = (riyouKaishibi.substr(0, 4) + '/' + riyouKaishibi.substr(4, 2) + '/' + riyouKaishibi.substr(6, 2)).split('/');
   let thirtythDay = new Date(datearr[0], datearr[1] - 1, datearr[2]);
   thirtythDay.setDate(thirtythDay.getDate() + 29);
@@ -288,13 +289,13 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
   margin:0;
 }
 
-@media screen and (max-width: 1366px){
+@media screen and (max-width: 1366px) {
   #detailGrid {
     height: 62vh;
   }
 }
 
-@media screen and (min-width: 1367px){
+@media screen and (min-width: 1367px) {
   #detailGrid {
     height: 75vh;
   }
