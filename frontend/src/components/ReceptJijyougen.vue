@@ -309,47 +309,93 @@ export default {
       let data = this.allData;
       data.forEach(function (value) {
         switch (alphaSearch) {
+          case 0:
+            get.push(value);
+            break;
           case 1:
-            if (value.kana.match(/^[ア-オ]/)) get.push(value);
+            if (value.kana.match(/^[ア-オ]/)) {
+              get.push(value);
+            }
             break;
           case 2:
-            if (value.kana.match(/^[カ-コ]/)) get.push(value);
+            if (value.kana.match(/^[カ-コ]/)) {
+              get.push(value);
+            }
             break;
           case 3:
-            if (value.kana.match(/^[サ-ソ]/)) get.push(value);
+            if (value.kana.match(/^[サ-ソ]/)) {
+              get.push(value);
+            }
             break;
           case 4:
-            if (value.kana.match(/^[タ-ト]/)) get.push(value);
+            if (value.kana.match(/^[タ-ト]/)) {
+              get.push(value);
+            }
             break;
           case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
+            if (value.kana.match(/^[ナ-ノ]/)) {
+              get.push(value);
+            }
             break;
           case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
+            if (value.kana.match(/^[ハ-ホ]/)) {
+              get.push(value);
+            }
             break;
           case 7:
-            if (value.kana.match(/^[マ-モ]/)) get.push(value);
+            if (value.kana.match(/^[マ-モ]/)) {
+              get.push(value);
+            }
             break;
           case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
+            if (value.kana.match(/^[ヤ-ヨ]/)) {
+              get.push(value);
+            }
             break;
           case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
+            if (value.kana.match(/^[ラ-ロ]/)) {
+              get.push(value);
+            }
             break;
           case 10:
-            if (value.kana.match(/^[ワ-ン]/)) get.push(value);
+            if (value.kana.match(/^[ワ-ン]/)) {
+              get.push(value);
+            }
             break;
         }
       });
       data = get;
-
       this.receptData = data;
+    },
+    /******************
+     * 親コンポーネントの絞り込み
+     */
+    parentFilter(type) {
+      let array = [];
+      if (type == 1) {
+        array = this.allData;
+      } else {
+        for (let i = 0; i < this.receptData.length; i++) {
+          if (type == 2) {
+            //上限管理済み
+            if (this.receptData[i].kanrikekka) {
+              array.push(this.receptData[i]);
+            }
+          } else if (type == 3) {
+            //未処理
+            if (!this.receptData[i].kanrikekka) {
+              array.push(this.receptData[i]);
+            }
+          }
+        }
+      }
+      this.receptData = array;
     },
     /******************
      * 親コンポーネントのソート
      */
     parentSort(type) {
-      let array = this.allData;
+      let array = this.receptData;
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {

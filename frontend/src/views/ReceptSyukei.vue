@@ -50,6 +50,7 @@
                   <wj-combo-box
                     :items-source="riyosyaCombo"
                     class="ml-1 w-100"
+                    :selectedIndexChanged="onRiyosyaCombo"
                   ></wj-combo-box>
                 </v-col>
               </v-row>
@@ -66,7 +67,14 @@
                 </v-col>
                 <v-col>
                   <wj-combo-box
+                    v-if="TajyougenkanriJimsyoFlag"
                     :items-source="jyougenkanriCombo"
+                    class="ml-1 w-100"
+                    :selectedIndexChanged="onJyougenkanriCombo"
+                  ></wj-combo-box>
+                  <wj-combo-box
+                    v-if="JijyougenkanriJimsyoFlag"
+                    :items-source="taServiceCombo"
                     class="ml-1 w-100"
                     :selectedIndexChanged="onJyougenkanriCombo"
                   ></wj-combo-box>
@@ -84,7 +92,11 @@
                   <v-row no-gutters class="mt-1">
                     <v-col>
                       <v-card
-                        class="text-center"
+                        :class="{
+                          'text-center': true,
+                          grey: sortFlag.kanaFlag,
+                          'lighten-2': sortFlag.kanaFlag,
+                        }"
                         @click="sort(1)"
                         outlined
                         tile
@@ -93,12 +105,28 @@
                       </v-card>
                     </v-col>
                     <v-col>
-                      <v-card class="text-center" @click="sort(2)" outlined tile
+                      <v-card
+                        :class="{
+                          'text-center': true,
+                          grey: sortFlag.codeFlag,
+                          'lighten-2': sortFlag.codeFlag,
+                        }"
+                        @click="sort(2)"
+                        outlined
+                        tile
                         >コード</v-card
                       >
                     </v-col>
                     <v-col>
-                      <v-card class="text-center" @click="sort(3)" outlined tile
+                      <v-card
+                        :class="{
+                          'text-center': true,
+                          grey: sortFlag.bangoFlag,
+                          'lighten-2': sortFlag.bangoFlag,
+                        }"
+                        @click="sort(3)"
+                        outlined
+                        tile
                         >受給者番号</v-card
                       >
                     </v-col>
@@ -115,18 +143,26 @@
                   <v-row no-gutters class="mt-1">
                     <v-col>
                       <v-card
-                        class="text-center"
                         @click="filter(1)"
                         outlined
                         tile
+                        :class="{
+                          'text-center': true,
+                          grey: filterFlag.allFlag,
+                          'lighten-2': filterFlag.allFlag,
+                        }"
                       >
                         全員
                       </v-card>
                     </v-col>
                     <v-col>
                       <v-card
-                        class="text-center"
-                        @click="filter(1)"
+                        :class="{
+                          'text-center': true,
+                          grey: filterFlag.jyogenFlag,
+                          'lighten-2': filterFlag.jyogenFlag,
+                        }"
+                        @click="filter(2)"
                         outlined
                         tile
                         >上限管理済</v-card
@@ -134,8 +170,12 @@
                     </v-col>
                     <v-col>
                       <v-card
-                        class="text-center"
-                        @click="filter(1)"
+                        :class="{
+                          'text-center': true,
+                          grey: filterFlag.misyoriFlag,
+                          'lighten-2': filterFlag.misyoriFlag,
+                        }"
+                        @click="filter(3)"
                         outlined
                         tile
                         >未処理</v-card
@@ -153,17 +193,20 @@
       </v-row>
       <v-row no-gutters class="mt-1">
         <v-col cols="4">
-          <v-btn
-            small
-            v-for="(str, k) in alphabet"
-            :key="k"
-            class="pa-0"
-            outlined
-            min-width="30"
-            @click="onAlphabet(k)"
-          >
-            {{ str }}
-          </v-btn>
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              small
+              outlined
+              v-for="(n, k) in alphabet"
+              :key="n"
+              :width="30"
+              p-0
+              style="min-width: auto"
+              @click="onAlphabet(k)"
+            >
+              {{ n }}
+            </v-btn>
+          </v-btn-toggle>
         </v-col>
         <v-col cols="6">
           <span v-if="TajyougenkanriJimsyoFlag"
@@ -200,8 +243,9 @@ import ReceptTajougen from '../components/ReceptTajougen.vue';
 import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
 
-const riyosyaCombo = ['全員'];
+const riyosyaCombo = [];
 const jyougenkanriCombo = [];
+const taServiceCombo = [];
 
 const alphabet = [
   '全',
@@ -224,15 +268,18 @@ export default {
       year: moment().year(),
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
+      taServiceCombo: taServiceCombo,
 
       receptFlag: false, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
+      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
         { href: '#JijyougenkanriJimsyo', text: '自上限管理事業所入力' },
       ],
+      sortFlag: { kanaFlag: true, codeFlag: false, bangoFlag: false },
+      filterFlag: { allFlag: true, jyogenFlag: false, misyoriFlag: false },
     };
   },
   components: {
@@ -242,6 +289,8 @@ export default {
     TabMenuBlue,
   },
   created: function () {
+    // 利用者コンボボックス
+    this.riyosyaCombo = ['全員', '今月入居者', '今月退去者'];
     // 上限管理事用コンボボックス
     this.jyougenkanriCombo = [
       '指定なし',
@@ -250,6 +299,7 @@ export default {
       '南山事務所2',
       '南山事務所3',
     ];
+    this.taServiceCombo = ['指定なし'];
   },
   methods: {
     /*********************
@@ -257,7 +307,14 @@ export default {
      */
     onJyougenkanriCombo: function (e) {
       // 他上限管理事業所の関数を実行
-      this.$refs.tajougenChild.child_Jyougenkanriji(e.text);
+      this.$refs.tajougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
+    },
+    /*********************
+     * 利用者変更
+     */
+    onRiyosyaCombo: function (e) {
+      // 他上限管理事業所の関数を実行
+      this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
     },
     /**************
      * 子コンポーネントtabmenublueで選択した値を取得
@@ -287,9 +344,45 @@ export default {
       }
     },
     /**************
+     * 絞り込み
+     */
+    filter: function (type) {
+      this.filterFlag.allFlag = false;
+      this.filterFlag.jyogenFlag = false;
+      this.filterFlag.misyoriFlag = false;
+      if (type == 1) {
+        this.filterFlag.allFlag = true;
+      }
+      if (type == 2) {
+        this.filterFlag.jyogenFlag = true;
+      }
+      if (type == 3) {
+        this.filterFlag.misyoriFlag = true;
+      }
+
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentFilter(type);
+      } else {
+        this.$refs.tajougenChild.parentFilter(type);
+      }
+    },
+    /**************
      * 並び順変更
      */
     sort: function (type) {
+      this.sortFlag.kanaFlag = false;
+      this.sortFlag.codeFlag = false;
+      this.sortFlag.bangoFlag = false;
+      if (type == 1) {
+        this.sortFlag.kanaFlag = true;
+      }
+      if (type == 2) {
+        this.sortFlag.codeFlag = true;
+      }
+      if (type == 3) {
+        this.sortFlag.bangoFlag = true;
+      }
+
       if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentSort(type);
       } else {

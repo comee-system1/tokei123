@@ -163,35 +163,12 @@ export default {
       receptData: [],
       mainFlexGrid: [],
       editGridFlag: false,
-      filterText: {}, // 検索項目
+      filterTextJyogen: {}, // 検索項目
+      filterTextRiyosya: {}, // 検索項目
     };
   },
   components: {},
   methods: {
-    /*************
-     * 上限管理事のフィルタリンク
-     */
-    child_Jyougenkanriji(text) {
-      // フィルタリングの実施
-      this.filterText = { jyougenkanriji: text };
-      this.filtered();
-    },
-    /***************************
-     * 絞り込みの実施
-     */
-    filtered: function () {
-      this.receptData = [];
-      for (let i = 0; i < this.allData.length; i++) {
-        if (
-          this.allData[i]['jyougengaku'].indexOf(
-            this.filterText.jyougenkanriji
-          ) != -1
-        ) {
-          this.receptData.push(this.allData[i]);
-        }
-      }
-    },
-
     /*******************
      * 確定登録・解除ボタン
      */
@@ -211,9 +188,13 @@ export default {
      */
     parentAlphabet(alphaSearch) {
       let get = [];
-      let data = this.allData;
+      this.filtered();
+      let data = this.receptData;
       data.forEach(function (value) {
         switch (alphaSearch) {
+          case 0:
+            get.push(value);
+            break;
           case 1:
             if (value.kana.match(/^[ア-オ]/)) {
               get.push(value);
@@ -267,14 +248,79 @@ export default {
         }
       });
       data = get;
-
       this.receptData = data;
+    },
+    /*************
+     * 利用者のフィルタリンク
+     */
+    child_Riyosya(text, key) {
+      // フィルタリングの実施
+      this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
+      console.log(this.filterTextRiyosya);
+      this.filtered();
+    },
+    /*************
+     * 上限管理事のフィルタリンク
+     */
+    child_Jyougenkanriji(text, key) {
+      // フィルタリングの実施
+      this.filterTextJyogen = { jyougenkanrijiKey: key, jyougenkanriji: text };
+      this.filtered();
+    },
+    /***************************
+     * 絞り込みの実施
+     */
+    filtered: function () {
+      this.receptData = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        // 検索条件がないとき
+        if (
+          (this.filterTextJyogen.jyougenkanrijiKey == 0 ||
+            !this.filterTextJyogen.jyougenkanrijiKey) &&
+          (this.filterTextRiyosya.riyosyaKey == 0 ||
+            !this.filterTextRiyosya.riyosyaKey)
+        ) {
+          this.receptData.push(this.allData[i]);
+        } else {
+          if (
+            this.allData[i]['jyougengaku'].indexOf(
+              this.filterTextJyogen.jyougenkanriji
+            ) != -1
+          ) {
+            this.receptData.push(this.allData[i]);
+          }
+        }
+      }
+    },
+    /******************
+     * 親コンポーネントの絞り込み
+     */
+    parentFilter(type) {
+      let array = [];
+      if (type == 1) {
+        array = this.allData;
+      } else {
+        for (let i = 0; i < this.receptData.length; i++) {
+          if (type == 2) {
+            //上限管理済み
+            if (this.receptData[i].kanrikekka.length > 0) {
+              array.push(this.receptData[i]);
+            }
+          } else if (type == 3) {
+            //未処理
+            if (this.receptData[i].kanrikekka.length == 0) {
+              array.push(this.receptData[i]);
+            }
+          }
+        }
+      }
+      this.receptData = array;
     },
     /******************
      * 親コンポーネントのソート
      */
     parentSort(type) {
-      let array = this.allData;
+      let array = this.receptData;
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
@@ -314,6 +360,7 @@ export default {
 
       this.receptData = array;
       this.mainFlexGrid.itemsSource = [];
+      //this.mainFlexGrid.refresh();
     },
     /**********************
      * 親コンポーネントの全選択/全解除

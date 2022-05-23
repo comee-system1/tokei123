@@ -26,7 +26,7 @@
               outlined
               tile
               @click="sortUser(2)"
-              >全員2</v-card
+              >今月入居者</v-card
             >
           </v-col>
           <v-col>
@@ -35,7 +35,7 @@
               outlined
               tile
               @click="sortUser(3)"
-              >全員3</v-card
+              >今月退去者</v-card
             >
           </v-col>
         </v-row>
