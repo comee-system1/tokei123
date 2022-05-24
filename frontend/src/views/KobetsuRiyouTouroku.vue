@@ -1614,15 +1614,15 @@ function createdArrows(data, _self, flexGrid, row) {
     for (let i = firstday; i <= lastday; i.setDate(i.getDate() + 1)) {
       let days = i.getDate();
       let d = 'day' + days;
-      if (doubleCheckFlag[d] > 1) {
-        flexGrid.setCellData(
-          row,
-          days + 3,
-          data[0].date[j][d].replace('start', 'double')
-        );
-      } else {
-        flexGrid.setCellData(row, days + 3, data[0].date[j][d]);
-      }
+      // if (doubleCheckFlag[d] > 1) {
+      //   flexGrid.setCellData(
+      //     row,
+      //     days + 3,
+      //     data[0].date[j][d].replace('start', 'double')
+      //   );
+      // } else {
+      flexGrid.setCellData(row, days + 3, data[0].date[j][d]);
+      //}
     }
   }
   let total = 0;
