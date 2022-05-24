@@ -57,7 +57,10 @@
                 :itemsSource="basicData"
                 :headersVisibility="'Column'"
                 :autoGenerateColumns="false"
+                :allowAddNew="false"
+                :allowDelete="false"
                 :allowDragging="false"
+                :allowPinning="false"
                 :allowResizing="false"
                 :allowSorting="false"
                 :isReadOnly="true"
@@ -81,6 +84,9 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 :isReadOnly="true"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowPinning="false"
                 :alternatingRowStep="0"
                 style="height: 20vh"
               >
@@ -110,7 +116,14 @@
                 <wj-flex-grid-column
                   :binding="'value'"
                   :header="'施設体制+個別による加算'"
-                  :allowMerging="true"
+                  :autoGenerateColumns="false"
+                  :allowDragging="false"
+                  :allowResizing="false"
+                  :allowSorting="false"
+                  :isReadOnly="true"
+                  :allowAddNew="false"
+                  :allowDelete="false"
+                  :allowPinning="false"
                   width="*"
                 ></wj-flex-grid-column>
               </wj-flex-grid>
@@ -151,6 +164,10 @@
               :allowResizing="false"
               :deferResizing="false"
               :allowSorting="false"
+              :autoGenerateColumns="false"
+              :allowAddNew="false"
+              :allowDelete="false"
+              :allowPinning="false"
               :allowMerging="'ColumnHeaders'"
               :alternatingRowStep="0"
             >
@@ -219,12 +236,12 @@ export default {
     HeaderServices,
   },
 
-  mounted: function () {
+  mounted() {
     this.handleResize;
     window.addEventListener('resize', this.handleResize);
   },
   methods: {
-    handleResize: function () {
+    handleResize() {
       //windowサイズ
       let lot = 4;
       let lot3 = 2;
@@ -283,7 +300,7 @@ export default {
       );
       return data;
     },
-    getdateData: function () {
+    getdateData() {
       let data = [];
       data = [
         {
@@ -364,12 +381,12 @@ export default {
       return array;
     },
 
-    getBasicData: function () {
+    getBasicData() {
       let basicdata = [];
       basicdata = [{ value: '身体拘束廃止未実装減算' }];
       return this.setlist(basicdata, minRow10);
     },
-    getBasicAdd: function () {
+    getBasicAdd() {
       let basicdata = [];
       basicdata = [
         { value: '夜勤職員配置体制加算' },
@@ -381,7 +398,7 @@ export default {
       ];
       return this.setlist(basicdata, minRow10);
     },
-    getBasicPlus: function () {
+    getBasicPlus() {
       let basicdata = [];
       basicdata = [
         { value: '重度障害者支援加算Ⅱ2' },
@@ -391,7 +408,7 @@ export default {
       ];
       return this.setlist(basicdata, minRow20);
     },
-    setlist: function (basicdata, minRow) {
+    setlist(basicdata, minRow) {
       let i = 0;
       let data = [];
       if (minRow <= basicdata.length) minRow = basicdata.length;
@@ -405,7 +422,7 @@ export default {
       }
       return data;
     },
-    onInitializedBasic: function (flexGrid) {
+    onInitializedBasic(flexGrid) {
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         var s = cell.style;
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -413,7 +430,7 @@ export default {
         }
       };
     },
-    onInitializedAdd: function (flexGrid) {
+    onInitializedAdd(flexGrid) {
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         var s = cell.style;
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -421,7 +438,7 @@ export default {
         }
       };
     },
-    onInitializedPlus: function (flexGrid) {
+    onInitializedPlus(flexGrid) {
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         var s = cell.style;
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -429,11 +446,11 @@ export default {
         }
       };
     },
-    onInitializedDate: function (flexGrid) {
+    onInitializedDate(flexGrid) {
       flexGrid.rowHeaders.columns[0].width = 20;
       flexGrid.columnHeaders.rows[0].height = 48;
       flexGrid.rows.defaultSize = 34;
-      flexGrid.formatItem.addHandler(cellEdit);
+      flexGrid.formatItem.addHandler(this.cellEdit);
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         if (_self.checkbox == false) return false;
@@ -447,10 +464,10 @@ export default {
         }
       });
     },
-    registPage: function () {
+    registPage() {
       alert('事業所情報登録ページに遷移を予定');
     },
-    checkingRegist: function () {
+    checkingRegist() {
       if (this.checkflag == 0) {
         this.buildcheck = buildcheck[1];
         this.checkbutton = checkbutton[1];
@@ -461,35 +478,38 @@ export default {
         this.checkflag = 0;
       }
     },
+
+    cellEdit(s, e) {
+      if (e.cell.children.length == 0) {
+        let align = 'center';
+        let str = '';
+        if (isDate.isDate(e.cell.innerText)) {
+          str = dateFormatString.dateFormatString(
+            e.cell.innerText,
+            define_week
+          );
+        } else if (e.cell.innerText == '1') {
+          str = '〇';
+        } else if (e.cell.innerText == '2') {
+          str = '×';
+        } else {
+          str = e.cell.innerText;
+        }
+
+        e.cell.innerHTML = '<div class="text-caption">' + str + '</div>';
+        wjCore.setCss(e.cell, {
+          display: 'table',
+          tableLayout: 'fixed',
+        });
+        wjCore.setCss(e.cell.children[0], {
+          display: 'table-cell',
+          textAlign: align,
+          verticalAlign: 'middle',
+        });
+      }
+    },
   },
 };
-
-function cellEdit(s, e) {
-  if (e.cell.children.length == 0) {
-    let align = 'center';
-    let str = '';
-    if (isDate.isDate(e.cell.innerText)) {
-      str = dateFormatString.dateFormatString(e.cell.innerText, define_week);
-    } else if (e.cell.innerText == '1') {
-      str = '〇';
-    } else if (e.cell.innerText == '2') {
-      str = '×';
-    } else {
-      str = e.cell.innerText;
-    }
-
-    e.cell.innerHTML = '<div class="text-caption">' + str + '</div>';
-    wjCore.setCss(e.cell, {
-      display: 'table',
-      tableLayout: 'fixed',
-    });
-    wjCore.setCss(e.cell.children[0], {
-      display: 'table-cell',
-      textAlign: align,
-      verticalAlign: 'middle',
-    });
-  }
-}
 </script>
 <style lang="scss" >
 @import '@/assets/scss/common.scss';

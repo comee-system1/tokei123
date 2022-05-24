@@ -69,7 +69,7 @@ export default {
     zyukyusyaNum: String,
   },
   watch: {
-    riyousya:function() {
+    riyousya() {
       this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
       this.kinkyuShienTotal = getKinkyuShienTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
       this.detailGridData = this.getGridData(apiResult);
@@ -78,13 +78,13 @@ export default {
   },
   data() {
     return {
-      detailGridData:this.getGridData(),
+      detailGridData: this.getGridData(),
       sikyuryoData: "",
       kinkyuShienTotal: 0,
     }
   },
   methods: {
-    onInitializeDetailGrid:function(flexGrid) {
+    onInitializeDetailGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -177,14 +177,14 @@ export default {
         }
       }
     },
-    onInitializeDetailGridChanged:function(flexGrid) {
+    onInitializeDetailGridChanged(flexGrid) {
       if (this.gridchageFlag) {
         let footerPanel = flexGrid.columnFooters;
         footerPanel.setCellData(0, 5, this.kinkyuShienTotal);
         this.gridchageFlag = false;
       }
     },
-    getGridData:function(data) {
+    getGridData(data) {
       // グリッド表示用データの作成
       let gridData = [];
       if (data != null) {
@@ -234,7 +234,7 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 function getKinkyuShienTotal(data) {
   let totalCount = 0;
   for (let i = 0; i < data.length; i++) {
-    if (data[i]['kasanknk'] == 1 || data[i]['kasanknk'] == 2 ) {
+    if (data[i]['kasanknk'] == 1 || data[i]['kasanknk'] == 2) {
       totalCount++ ;
     }
   }

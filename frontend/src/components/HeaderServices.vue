@@ -100,12 +100,26 @@
         <span v-if="seikyushoflag">
           <span v-if="isActive === false">
             <span class="seikyusho-status">請求書未完了</span>
-            <v-btn v-on:click="kanryoToggleSwitch()" class="pa-1 ml-3 kanryo-touroku" :width="60" small>完了登録</v-btn>
+            <v-btn
+              v-on:click="kanryoToggleSwitch()"
+              class="pa-1 ml-3 kanryo-touroku"
+              :width="60"
+              small
+              >完了登録</v-btn
+            >
           </span>
           <span v-else>
             <span class="seikyusho-status">請求書完了済</span>
-            <v-btn v-on:click="kanryoToggleSwitch()" class="pa-1 ml-3 kanryo-touroku" :width="60" small>完了登録</v-btn>
-            <span class="tantousya">完了日:R03/08/09 14:23 担当者 : 明治 正雄</span>
+            <v-btn
+              v-on:click="kanryoToggleSwitch()"
+              class="pa-1 ml-3 kanryo-touroku"
+              :width="60"
+              small
+              >完了登録</v-btn
+            >
+            <span class="tantousya"
+              >完了日:R03/08/09 14:23 担当者 : 明治 正雄</span
+            >
           </span>
         </span>
         <!-- ↑ 請求一覧画面用 -->
@@ -243,7 +257,7 @@ export default {
       returndata: '', // 検索ボタンを押下時に選択値を渡す変数
       screenFlag: false, // 検索ボタン押下前にデータエリアにスクリーンを行う
       storage: {},
-      isActive: false
+      isActive: false,
     };
   },
   created: function () {
@@ -432,6 +446,12 @@ export default {
       //初期選択状態
       //grid.select(this.select, 1);
       grid.hostElement.addEventListener('click', function (e) {
+        let storage = {
+          serviceJigyo: ls.getlocalStorageEncript('serviceJigyo'),
+          selectRow: ls.getlocalStorageEncript('selectRow'),
+        };
+        // storageに初期データが保存されていないときは、screenを外す
+
         var ht = grid.hitTest(e);
         ht = grid.hitTest(e.pageX, e.pageY);
         //サービスの文字表示
@@ -461,7 +481,13 @@ export default {
         returns['search_button'] = false;
         _self.returndata = returns;
         _self.$emit('parent-service-change', returns);
-        _self.screenFlag = true;
+
+        // storage保存前の値を確認
+        if (storage.selectRow == 0) {
+          _self.screenFlag = false;
+        } else {
+          _self.screenFlag = true;
+        }
         _self.header_dialog = false;
       });
       grid.itemFormatter = function (panel, r, c, cell) {
@@ -580,9 +606,9 @@ export default {
     branzMinmum: function () {
       document.exitFullscreen();
     },
-    kanryoToggleSwitch: function() {
-    this.isActive = !this.isActive
-   }
+    kanryoToggleSwitch: function () {
+      this.isActive = !this.isActive;
+    },
   },
 };
 </script>
@@ -710,22 +736,22 @@ export default {
   background-position: 50% 50%;
 }
 
-.seikyusho-status{
-  margin-left:50px;
+.seikyusho-status {
+  margin-left: 50px;
   background: #fcd7e0;
-  color:red;
+  color: red;
   font-weight: bold;
-  padding:4px 10px;
+  padding: 4px 10px;
 }
 
-.kanryo-touroku{
-  width:100px !important;
+.kanryo-touroku {
+  width: 100px !important;
 }
 
-.tantousya{
-  font-size:12px;
+.tantousya {
+  font-size: 12px;
   background: #fcd7e0;
-  margin-left:10px;
-  padding:2px 10px;
+  margin-left: 10px;
+  padding: 2px 10px;
 }
 </style>

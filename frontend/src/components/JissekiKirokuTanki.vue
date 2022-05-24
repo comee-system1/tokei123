@@ -72,7 +72,7 @@ export default {
     zyukyusyaNum: String,
   },
   watch: {
-    riyousya:function() {
+    riyousya() {
       this.sikyuryoData = apiResult['riyo_inf'][0]['keiyakuryo'];
       this.sougeiTotal = getSougeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
       this.iryoRenkeiTotal = getIryoRenkeiTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
@@ -92,7 +92,7 @@ export default {
     }
   },
   methods: {
-    onInitializeDetailGrid:function(flexGrid) {
+    onInitializeDetailGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -205,7 +205,7 @@ export default {
         }
       }
     },
-    onInitializeDetailGridChanged:function(flexGrid) {
+    onInitializeDetailGridChanged(flexGrid) {
       if (this.gridchageFlag) {
         let footerPanel = flexGrid.columnFooters;
         footerPanel.setCellData(0, 4, this.sougeiTotal);
@@ -214,7 +214,7 @@ export default {
         this.gridchageFlag = false;
       }
     },
-    getGridData:function(data) {
+    getGridData(data) {
       // グリッド表示用データの作成
       let gridData = [];
       if (data != null) {

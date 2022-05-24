@@ -114,7 +114,7 @@ export default {
     zyukyusyaNum: String,
   },
   watch:{
-    riyousya:function() {
+    riyousya() {
       this.gridchageFlag = true;
       this.tkkfhiumuData = apiResult['riyo_inf'][0]['tkkfhiumu'];
       this.tkkfhiData = apiResult['riyo_inf'][0]['tkkfhi'] +" 円";
@@ -136,7 +136,7 @@ export default {
     }
   },
   methods: {
-    onInitializeJippisanteigakuGrid:function(flexGrid) {
+    onInitializeJippisanteigakuGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -185,13 +185,13 @@ export default {
         }
       }
     },
-    onInitializeJippisanteigakuGridChanged:function(flexGrid) {
+    onInitializeJippisanteigakuGridChanged(flexGrid) {
       if (this.gridchageFlag) {
         flexGrid.cells.rows[0].height = 20;
         flexGrid.cells.rows[1].height = 20;
       }
     },
-    onInitializeDetailGrid:function(flexGrid) {
+    onInitializeDetailGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -294,14 +294,14 @@ export default {
         }
       }
     },
-    onInitializeDetailGridChanged:function(flexGrid) {
+    onInitializeDetailGridChanged(flexGrid) {
       if (this.gridchageFlag) {
         let footerPanel = flexGrid.columnFooters;
         footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
         this.gridchageFlag = false;
       }
     },
-    onInitializeSubGrid:function(flexGrid) {
+    onInitializeSubGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -320,7 +320,7 @@ export default {
         }
       }
     },
-    getjippisanteigakuGridData:function(data) {
+    getjippisanteigakuGridData(data) {
       let jippisanteigakuGridData = [];
       if (data != null) {
         let sTankaAsa = data['riyo_inf'][0]['tnka_syk_a'];
@@ -391,7 +391,7 @@ export default {
       }
       return jippisanteigakuGridData;
     },
-    getGridData:function(data) {
+    getGridData(data) {
       // グリッド表示用データの作成
       let gridData = [];
       if (data != null) {
@@ -437,7 +437,7 @@ export default {
       }
       return gridData;
     },
-    getSubGridData:function(data) {
+    getSubGridData(data) {
       // サブグリッド表示用データの作成
       let subGridData = [];
       if (data != null) {

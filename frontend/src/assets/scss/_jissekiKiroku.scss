@@ -114,12 +114,9 @@ $grid_unselectable_cells:#fffeed;
   }
 
   #detailGrid .wj-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color:#333333 !important;
   }
-  
+
   #subGrid {
     font-size:12px;
     color:#333333 !important;
@@ -128,4 +125,13 @@ $grid_unselectable_cells:#fffeed;
     }
   }
 
+}
+
+#jisseki-kiroku{
+  #detailGrid .wj-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#333333 !important;
+  }
 }

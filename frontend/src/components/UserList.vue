@@ -99,7 +99,7 @@ let alphabet = ['全','ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ
 export default {
   props: ['selectedService'],
   watch: {
-    selectedService:function() {
+    selectedService() {
       // this.onInitializedUser();
       this.createUser();
     }
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     // ソートボタン押下時のイベント
-    sortUser:function(sortType) {
+    sortUser(sortType) {
       sortSearch = sortType;
       // 全員3もしくは受給者番号ボタン押下時はコードではなく受給者番号を表示する
       if (sortSearch == 3) {
@@ -130,22 +130,22 @@ export default {
       }
       this.userFilter();
     },
-    onTextChangedUser:function(s) {
+    onTextChangedUser(s) {
       // カナ検索欄に入力された文字を取得して書き換え
       textSearch = s.text;
       this.userFilter();
     },
-    onAlphabet:function(key) {
+    onAlphabet(key) {
       // どのカナボタンを押下したか番号を取得して書き換え
       alphaSearch = key;
       this.userFilter();
     },
-    onselectedIndexChanged:function(s) {
+    onselectedIndexChanged(s) {
       // 全選択・全解除の選択値を取得して書き換え
       checkAll = s.selectedIndex;
       this.userFilter(s);
     },
-    createUser:function(response) {
+    createUser(response) {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
@@ -290,7 +290,7 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
-    onInitializedUser: function(flexGrid) {
+    onInitializedUser(flexGrid) {
       // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル

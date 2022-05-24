@@ -12,29 +12,44 @@
         <v-row no-gutters class="mt-1">
           <v-col>
             <v-card
-              class="text-caption text-center"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: filterFlag.allFlag,
+                'lighten-2': filterFlag.allFlag,
+              }"
               outlined
               tile
-              @click="sortUser(1)"
+              @click="filterUser(1)"
             >
               全員
             </v-card>
           </v-col>
           <v-col>
             <v-card
-              class="text-caption text-center"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: filterFlag.nyukyoFlag,
+                'lighten-2': filterFlag.nyukyoFlag,
+              }"
               outlined
               tile
-              @click="sortUser(2)"
+              @click="filterUser(2)"
               >今月入居者</v-card
             >
           </v-col>
           <v-col>
             <v-card
-              class="text-caption text-center"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: filterFlag.taikyoFlag,
+                'lighten-2': filterFlag.taikyoFlag,
+              }"
               outlined
               tile
-              @click="sortUser(3)"
+              @click="filterUser(3)"
               >今月退去者</v-card
             >
           </v-col>
@@ -42,17 +57,27 @@
         <v-row no-gutters class="mt-1">
           <v-col>
             <v-card
-              class="text-caption text-center"
               outlined
               tile
               @click="sortUser(1)"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: sortFlag.codeFlag,
+                'lighten-2': sortFlag.codeFlag,
+              }"
             >
               コード
             </v-card>
           </v-col>
           <v-col>
             <v-card
-              class="text-caption text-center"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: sortFlag.kanaFlag,
+                'lighten-2': sortFlag.kanaFlag,
+              }"
               outlined
               tile
               @click="sortUser(2)"
@@ -61,7 +86,12 @@
           </v-col>
           <v-col>
             <v-card
-              class="text-caption text-center"
+              :class="{
+                'text-center': true,
+                'text-caption': true,
+                grey: sortFlag.bangoFlag,
+                'lighten-2': sortFlag.bangoFlag,
+              }"
               outlined
               tile
               @click="sortUser(3)"
@@ -72,12 +102,12 @@
       </v-col>
     </v-row>
     <div class="mt-1">
-      <v-btn-toggle class="flex-wrap">
+      <v-btn-toggle class="flex-wrap" mandatory>
         <v-btn
           outlined
           v-for="(n, k) in alphabet"
           :key="n"
-          :width="11"
+          :width="25"
           p-0
           style="min-width: auto; padding: 9px; height: 10px"
           @click="onAlphabet(k)"
@@ -94,8 +124,11 @@
       :initialized="onInitializedUser"
       :itemsSourceChanged="onItemsSourceChanged"
       :itemsSource="usersData"
+      :allowAddNew="false"
+      :allowDelete="false"
       :allowDragging="false"
-      :allowResizing="true"
+      :allowPinning="false"
+      :allowResizing="false"
       :allowSorting="false"
     >
       <wj-flex-grid-column
@@ -155,13 +188,9 @@ import * as wjcCore from '@grapecity/wijmo';
 Vue.use(VueAxios, axios);
 
 let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
-//let userUrl = 'http://local-tokei/';
+// let userUrl = 'http:// local-tokei/';
 let userDataSelect = [];
-let checkAll = '';
 let userCount = 0;
-let textSearch = '';
-let sortSearch = '';
-let alphaSearch = '';
 let alphabet = [
   '全',
   'ア',
@@ -187,9 +216,16 @@ export default {
       jyukyunoFlag: false,
       useTeikyoCode: '',
       gridHeight: '',
+      filterFlag: { allFlag: true, nyukyoFlag: false, taikyoFlag: false },
+      sortFlag: { kanaFlag: false, codeFlag: true, bangoFlag: false },
+      alphaSearch: 0, // アルファベット検索
+      sortSearch: '', // 並び順
+      checkAll: '', // すべてチェック
+      textSearch: '',
+      filterSearch: 1, // 全員・入居者・など
     };
   },
-  mounted: function () {
+  mounted() {
     this.handleResize;
     window.addEventListener('resize', this.handleResize);
   },
@@ -215,8 +251,19 @@ export default {
       this.useTeikyoCode = teikyoCode;
     },
     sortUser: function (sortType) {
-      sortSearch = sortType;
-      if (sortSearch == 3) {
+      this.sortFlag.kanaFlag = false;
+      this.sortFlag.codeFlag = false;
+      this.sortFlag.bangoFlag = false;
+      if (sortType == 1) {
+        this.sortFlag.codeFlag = true;
+      } else if (sortType == 2) {
+        this.sortFlag.kanaFlag = true;
+      } else if (sortType == 3) {
+        this.sortFlag.bangoFlag = true;
+      }
+
+      this.sortSearch = sortType;
+      if (this.sortSearch == 3) {
         this.riyocodeFlag = false;
         this.jyukyunoFlag = true;
       } else {
@@ -225,23 +272,37 @@ export default {
       }
       this.userFilter();
     },
-    onAlphabet: function (key) {
-      alphaSearch = key;
+    filterUser: function (sortType) {
+      this.filterFlag.allFlag = false;
+      this.filterFlag.nyukyoFlag = false;
+      this.filterFlag.taikyoFlag = false;
+      if (sortType == 1) {
+        this.filterFlag.allFlag = true;
+      } else if (sortType == 2) {
+        this.filterFlag.nyukyoFlag = true;
+      } else if (sortType == 3) {
+        this.filterFlag.taikyoFlag = true;
+      }
+      this.filterSearch = sortType;
       this.userFilter();
     },
-    onTextChangedUser: function (s) {
-      textSearch = s.text;
+    onAlphabet(key) {
+      this.alphaSearch = key;
       this.userFilter();
     },
-    onselectedIndexChanged: function (s) {
-      checkAll = s.selectedIndex;
+    onTextChangedUser(s) {
+      this.textSearch = s.text;
+      this.userFilter();
+    },
+    onselectedIndexChanged(s) {
+      this.checkAll = s.selectedIndex;
       this.userFilter(s);
     },
-    createUser: function (response) {
+    createUser(response) {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
-      //axiosを利用するとき下記有効
+      // axiosを利用するとき下記有効
       // for (let i = 0; i < response.data.length; i++) {
       //   riyo_inf.push({
       //     riid: response.data[i]['riid'],
@@ -258,7 +319,7 @@ export default {
       //   });
       // }
 
-      //axiosを利用しないとき下記有効
+      // axiosを利用しないとき下記有効
       console.log(response);
       userCount = 100;
       for (let i = 0; i < userCount; i++) {
@@ -273,10 +334,12 @@ export default {
           jidoid: i * 40,
           kzkname: '東経家族' + i,
           kakutei: 0,
+          nyukyo: i % 2,
+          taikyo: i % 4,
           print: '',
         });
       }
-      //--axiosを利用しないとき下記有効
+      // --axiosを利用しないとき下記有効
 
       usersData['riyo_inf'] = riyo_inf;
       userDataSelect = usersData;
@@ -287,80 +350,109 @@ export default {
 
     userFilter(s) {
       let data = [];
-
+      let _self = this;
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (checkAll == '1') value.print = '〇';
-        if (checkAll == '2') value.print = '';
-        if (value.names.indexOf(textSearch) != -1) {
+        if (_self.checkAll == '1') value.print = '〇';
+        if (_self.checkAll == '2') value.print = '';
+        if (
+          value.names.indexOf(_self.textSearch) != -1 &&
+          (_self.filterSearch == 1 ||
+            (_self.filterSearch == 2 && value.nyukyo == 1) ||
+            (_self.filterSearch == 3 && value.taikyo == 1))
+        ) {
           data.push(value);
         }
       });
-      if (alphaSearch > 0) {
-        let get = [];
-        data.forEach(function (value) {
-          switch (alphaSearch) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) get.push(value);
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) get.push(value);
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) get.push(value);
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) get.push(value);
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) get.push(value);
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) get.push(value);
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) get.push(value);
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) get.push(value);
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) get.push(value);
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) get.push(value);
-              break;
-          }
-        });
-        data = get;
-      }
+      let get = [];
+      data.forEach(function (value) {
+        switch (_self.alphaSearch) {
+          case 0:
+            get.push(value);
+            break;
+          case 1:
+            if (value.kana.match(/^[ア-オ]/)) {
+              get.push(value);
+            }
+            break;
+          case 2:
+            if (value.kana.match(/^[カ-コ]/)) {
+              get.push(value);
+            }
+            break;
+          case 3:
+            if (value.kana.match(/^[サ-ソ]/)) {
+              get.push(value);
+            }
+            break;
+          case 4:
+            if (value.kana.match(/^[タ-ト]/)) {
+              get.push(value);
+            }
+            break;
+          case 5:
+            if (value.kana.match(/^[ナ-ノ]/)) {
+              get.push(value);
+            }
+            break;
+          case 6:
+            if (value.kana.match(/^[ハ-ホ]/)) {
+              get.push(value);
+            }
+            break;
+          case 7:
+            if (value.kana.match(/^[マ-モ]/)) {
+              get.push(value);
+            }
+            break;
+          case 8:
+            if (value.kana.match(/^[ヤ-ヨ]/)) {
+              get.push(value);
+            }
+            break;
+          case 9:
+            if (value.kana.match(/^[ラ-ロ]/)) {
+              get.push(value);
+            }
+            break;
+          case 10:
+            if (value.kana.match(/^[ワ-ン]/)) {
+              get.push(value);
+            }
+            break;
+        }
+      });
 
-      //コード順でソート
-      if (sortSearch == 1) {
+      data = get;
+
+      // コード順でソート
+      if (this.sortSearch == 1) {
         data.sort((a, b) => {
           if (a.riyocode < b.riyocode) return -1;
           if (a.riyocode > b.riyocode) return 1;
           return 0;
         });
       }
-      //利用者名でソート
-      if (sortSearch == 2) {
+      // 利用者名でソート
+      if (this.sortSearch == 2) {
         data.sort((a, b) => {
           if (a.kana < b.kana) return -1;
           if (a.kana > b.kana) return 1;
           return 0;
         });
       }
-      //受給者番号でソート
-      if (sortSearch == 3) {
+      // 受給者番号でソート
+      if (this.sortSearch == 3) {
         data.sort((a, b) => {
           if (a.jyukyuno < b.jyukyuno) return -1;
           if (a.jyukyuno > b.jyukyuno) return 1;
           return 0;
         });
       }
+
       if (s) {
-        s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
+        s.selectedIndex = 0; // どの値を選択しても初期状態に戻す
       }
+
       this.$emit('child-user', data);
       this.usersData = data;
     },
@@ -368,10 +460,10 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
-    onInitializedUser: function (flexGrid) {
+    onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
-      //axiosを利用する時下記有効
+      // axiosを利用する時下記有効
       // const axiosApi = axios.create({
       //   headers: {
       //     'Content-Type': 'application/json',
@@ -399,7 +491,7 @@ export default {
       //     // configure the grid
       //     flexGrid.alternatingRowStep = 0;
 
-      //     //初回のユーザ選択値
+      //     // 初回のユーザ選択値
       //     _self.$emit('child-select', 0);
       //   })
       //   .catch(function (error) {
@@ -407,7 +499,7 @@ export default {
       //     alert('error');
       //   });
 
-      //axiosを利用しない時下記1行有効
+      // axiosを利用しない時下記1行有効
       if (_self.usersData.length == 0) {
         _self.usersData = _self.createUser();
       }
@@ -429,7 +521,7 @@ export default {
         if (e.cell.children.length == 0) {
           if (e.panel == s.cells && e.col == 1) {
             let tooltip = new wjcCore.Tooltip();
-            //let note = this.usersData[e.row].kana;
+            // let note = this.usersData[e.row].kana;
             let note = '<small>' + _self.usersData[e.row].kana + '</small>';
             wjcCore.toggleClass(e.cell, 'wj-has-notes');
             tooltip.setTooltip(e.cell, note);
@@ -454,13 +546,13 @@ export default {
       // configure the grid
       flexGrid.alternatingRowStep = 0;
 
-      //初回のユーザ選択値
+      // 初回のユーザ選択値
       // _self.$emit('child-select', 0);
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
 
-        //印刷箇所を押下
+        // 印刷箇所を押下
         if (ht.cellType == wjGrid.CellType.Cell && ht.col == 2) {
           let p = flexGrid.getCellData(ht.row, 2);
           let mark = '';
@@ -469,7 +561,7 @@ export default {
           _self.usersData[ht.row]['print'] = mark;
           flexGrid.setCellData(ht.row, 2, mark);
         } else if (e.target.innerText.length > 0) {
-          //選択した要素の取得
+          // 選択した要素の取得
 
           let row = hPage._row;
           _self.$emit('child-select', row);

@@ -376,7 +376,7 @@ export default {
       };
       flexGrid.mergeManager = mm;
 
-       // グリッドのスタイルをカスタマイズ
+      // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;

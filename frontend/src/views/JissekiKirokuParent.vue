@@ -11,7 +11,7 @@
           <UserList
             @child-userslist="getUserListData"
             @child-selectedrow="getSelectedRow"
-            :selectedService ="selectedService">
+            :selectedService="selectedService">
           </UserList>
         </v-col>
         <v-col class="rightArea">
@@ -49,7 +49,6 @@ import ShurokeizokuB from '../components/JissekiKirokuShurokeizokuB.vue';
 import ShuroTeichaku from '../components/JissekiKirokuShuroTeichaku.vue';
 import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
 
-
 import moment from 'moment';
 
 let daycount = 0;
@@ -84,7 +83,7 @@ export default {
     };
   },
   watch: {
-    selectedService:function() {
+    selectedService() {
       this.riyousya = '';
       this.zyukyusyaNum = '';
     }
@@ -101,11 +100,11 @@ export default {
     parentSearch(searchArgument) {
       this.selectedService = searchArgument.teikyoService;
     },
-    getUserListData:function(data) {
+    getUserListData(data) {
       // 利用者一覧で表示されているデータ一式を取得
       this.userListData = data;
     },
-    getSelectedRow:function(data) {
+    getSelectedRow(data) {
       // 利用者一覧の選択行を取得
       this.selectedRow = data;
       this.getSelectedUserData();

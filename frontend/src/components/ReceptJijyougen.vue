@@ -283,6 +283,10 @@ export default {
       jigyosyoMisiyoConfirm: { flag: false, message: '' }, // 事業所未使用
       jigyosyoAdd: { flag: false },
       receptParts: [], // レセプト追加用
+      filterTextJyogen: { taServiceKey: 0, taService: '指定なし' }, // 検索項目
+      filterSibori: { type: 1 }, // 絞込
+      alphaSelect: 0,
+      filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
     };
   },
   components: {},
@@ -305,10 +309,69 @@ export default {
      * アルファベット絞り込み
      */
     parentAlphabet(alphaSearch) {
+      this.alphaSelect = alphaSearch;
+      this.receptData = this.filtered();
+    },
+    /*************
+     * 利用者のフィルタリンク
+     */
+    child_Riyosya(text, key) {
+      // フィルタリングの実施
+      this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
+      this.receptData = this.filtered();
+    },
+    /******************
+     * 親コンポーネントの絞り込み
+     */
+    parentFilter(type) {
+      this.filterSibori = { type: type };
+      this.receptData = this.filtered();
+    },
+    /*************
+     * 上限管理事のフィルタリンク
+     */
+    child_Jyougenkanriji(text, key) {
+      // フィルタリングの実施
+      this.filterTextJyogen = { taServiceKey: key, taService: text };
+      this.receptData = this.filtered();
+    },
+    filtered() {
+      let array = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        // 検索条件がないとき
+        if (
+          this.filterTextJyogen.taServiceKey == 0 &&
+          this.filterTextRiyosya.riyosyaKey == 0 &&
+          this.filterSibori.type == 1
+        ) {
+          array.push(this.allData[i]);
+        } else {
+          if (
+            (this.allData[i]['jigyosyomei'].indexOf(
+              this.filterTextJyogen.taService
+            ) != -1 ||
+              this.filterTextJyogen.taServiceKey == 0) &&
+            // 絞り込みトグル
+            (this.filterSibori.type == 1 ||
+              (this.filterSibori.type == 2 &&
+                this.allData[i]['kanrikekka'] == 1) ||
+              (this.filterSibori.type == 3 &&
+                this.allData[i]['kanrikekka'] == '')) &&
+            // 利用者コンボボックス
+            (this.filterTextRiyosya.riyosyaKey == 0 ||
+              (this.filterTextRiyosya.riyosyaKey == 1 &&
+                this.allData[i]['nyukyo'] == 1) ||
+              (this.filterTextRiyosya.riyosyaKey == 2 &&
+                this.allData[i]['taikyo'] == 1))
+          ) {
+            array.push(this.allData[i]);
+          }
+        }
+      }
+      let select = this.alphaSelect;
       let get = [];
-      let data = this.allData;
-      data.forEach(function (value) {
-        switch (alphaSearch) {
+      array.forEach(function (value) {
+        switch (select) {
           case 0:
             get.push(value);
             break;
@@ -364,32 +427,8 @@ export default {
             break;
         }
       });
-      data = get;
-      this.receptData = data;
-    },
-    /******************
-     * 親コンポーネントの絞り込み
-     */
-    parentFilter(type) {
-      let array = [];
-      if (type == 1) {
-        array = this.allData;
-      } else {
-        for (let i = 0; i < this.receptData.length; i++) {
-          if (type == 2) {
-            //上限管理済み
-            if (this.receptData[i].kanrikekka) {
-              array.push(this.receptData[i]);
-            }
-          } else if (type == 3) {
-            //未処理
-            if (!this.receptData[i].kanrikekka) {
-              array.push(this.receptData[i]);
-            }
-          }
-        }
-      }
-      this.receptData = array;
+
+      return get;
     },
     /******************
      * 親コンポーネントのソート
@@ -436,7 +475,7 @@ export default {
       }
     },
 
-    getData: function () {
+    getData() {
       let receptData = [];
       for (let i = 0; i < 4; i++) {
         //  for (let j = 0; j < Math.floor(Math.random() * 5) + 2; j++) {
@@ -455,7 +494,7 @@ export default {
           kobanSorts: i + 1,
           // jigyosyobango: '1000000' + i + j,
           jigyosyobango: '1000000' + i,
-          jigyosyomei: 'ひまわり園',
+          jigyosyomei: 'ひまわり園' + (i % 4),
           teikyoservice: '22 生活介護',
           souhiyougaku: i % 4 > 0 ? '' : 98500,
           riyosyafutangaku: i % 4 > 0 ? '' : 18500,
@@ -466,6 +505,8 @@ export default {
           complateFlag: false, // 確定状態
           fixFlag: i % 4 == 0, //変更不可データ
           viewflag: i % 4 > 0 ? 1 : 2, //表示状態
+          nyukyo: 1,
+          taikyo: 0,
         });
         //  }
       }
@@ -486,7 +527,7 @@ export default {
           kobanSorts: i + 1,
           // jigyosyobango: '1000000' + i + j,
           jigyosyobango: '1000000' + i,
-          jigyosyomei: 'ひまわり園',
+          jigyosyomei: 'ひまわり園' + (i % 3),
           teikyoservice: '22 生活介護',
           souhiyougaku: i % 4 > 0 ? '' : 98500,
           riyosyafutangaku: i % 4 > 0 ? '' : 18500,
@@ -497,6 +538,8 @@ export default {
           complateFlag: false, // 確定状態
           fixFlag: i % 3 == 0, //変更不可データ
           viewflag: i % 3 > 0 ? 1 : 2, //表示状態
+          nyukyo: 0,
+          taikyo: 1,
         });
         //  }
       }
@@ -511,7 +554,7 @@ export default {
     /******************
      * データ配列の成型
      */
-    fixDefaultTypeArray: function (receptData) {
+    fixDefaultTypeArray(receptData) {
       // 項番でソート
       receptData.sort((a, b) => {
         if (a.kobanSorts < b.kobanSorts) return -1;
@@ -543,7 +586,7 @@ export default {
     /***********
      * 親コンポーネントの上限管理計算ボタン
      */
-    parentReceptCalc: function () {
+    parentReceptCalc() {
       // 計算の実施、計算方法がわからないので、とりあえず
       // 総費用額+利用者負担額
       // 管理結果は1
@@ -556,6 +599,11 @@ export default {
           this.receptData[i]['kanrikekka'] = 1;
           this.receptData[i]['jyougengakukanrikeisan'] = '●';
           this.receptData[i]['resekakutei'] = '〇';
+
+          this.allData[i]['kanrikekkafutangaku'] = calc;
+          this.allData[i]['kanrikekka'] = 1;
+          this.allData[i]['jyougengakukanrikeisan'] = '●';
+          this.allData[i]['resekakutei'] = '〇';
         }
       }
       this.mainFlexGrid.refresh();
@@ -564,7 +612,7 @@ export default {
     /********************
      * マージ作成用の配列を作成
      */
-    createMergeArray: function (receptData) {
+    createMergeArray(receptData) {
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
         array.push({
@@ -592,7 +640,7 @@ export default {
       });
       return merge;
     },
-    onitemsSourceChanged: function (flexGrid) {
+    onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
       let array = this.receptData;
       let merge = this.createMergeArray(array);
@@ -604,7 +652,7 @@ export default {
       //セルのフォーマット指定
       this.createCellFormat(flexGrid, _self, array);
     },
-    onInitialized: function (flexGrid) {
+    onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       let _self = this;
 
@@ -623,7 +671,7 @@ export default {
     /*****************************
      * 事業所追加用ダイアログ追加ボタン
      */
-    add: function () {
+    add() {
       // 入力した利用者の「上限額管理計算」に〇が表示される
       this.setJyougenKanriCalc();
 
@@ -648,7 +696,7 @@ export default {
     /*****************************
      * 事業所追加用
      */
-    onAddInitialized: function (flexGrid) {
+    onAddInitialized(flexGrid) {
       this.addFlexGrid = flexGrid;
       let _self = this;
       // セルのクリックイベント
@@ -699,7 +747,7 @@ export default {
     /******************
      * 事務所追加ボタンを押下
      */
-    jigyosyoAddList: function () {
+    jigyosyoAddList() {
       // 編集列の選択値を取得
       this.jigyosyoAdd.flag = true;
       //表示中のデータを取得
@@ -743,7 +791,7 @@ export default {
     /******************
      * 事務所未使用ボタンを押下
      */
-    jigyosyoMisiyo: function () {
+    jigyosyoMisiyo() {
       // 編集列の選択値を取得
       let jM = this.hensyuTarget.jigyosyomei;
       let tS = this.hensyuTarget.teikyoservice;
@@ -754,7 +802,7 @@ export default {
     /**************
      * 編集用メニューを閉じる
      */
-    menubar_close: function () {
+    menubar_close() {
       this.mainFlexGrid.setCellData(this.hensyuTargetRow, 13, ' ');
       this.receptData[this.hensyuTargetRow]['hensyu'] = '';
       document.getElementById('menubar').style.display = 'none';
@@ -762,7 +810,7 @@ export default {
     /*************
      * 事業所未使用ボタンのはいを実行
      */
-    jigyosyoMisiyoAdd: function () {
+    jigyosyoMisiyoAdd() {
       // 入力した利用者の「上限額管理計算」に〇が表示される
       this.setJyougenKanriCalc();
 
@@ -789,7 +837,7 @@ export default {
     /****************
      * セルのクリックイベント
      */
-    clickEventCell: function (flexGrid, _self) {
+    clickEventCell(flexGrid, _self) {
       flexGrid.hostElement.addEventListener('click', function (e) {
         //レセプト確定セルを押下し、確定アイコンの表示
         let ht = flexGrid.hitTest(e);
@@ -902,7 +950,7 @@ export default {
     /*********************
      * レセプト確定の値を指定する
      */
-    editReseKaku: function (row, code) {
+    editReseKaku(row, code) {
       // 変更場所の受給者番号取得
       let jB = this.getClickJyukyusyaBango(row);
       //受給者番号が持つ行数の取得
@@ -921,7 +969,7 @@ export default {
     /*********************
      * データを変更した際に上限額管理計算に〇を表示
      */
-    setJyougenKanriCalc: function (row) {
+    setJyougenKanriCalc(row) {
       // 変更場所の受給者番号取得
       if (!row) {
         row = this.hensyuTargetRow;
@@ -937,13 +985,13 @@ export default {
     /*************
      * クリックした際の受給者番号取得
      */
-    getClickJyukyusyaBango: function (row) {
+    getClickJyukyusyaBango(row) {
       return this.receptData[row].jyukyusyaBango;
     },
     /*************
      * 受給者番号が持つ行数の取得
      */
-    getJyukyusyaBangoRow: function (jb) {
+    getJyukyusyaBangoRow(jb) {
       let data = [];
       for (let i = 0; i < this.merge.length; i++) {
         let key = this.merge[i].k;
@@ -956,7 +1004,7 @@ export default {
     /********
      * セルを編集
      */
-    edittingCell: function (flexGrid, _self) {
+    edittingCell(flexGrid, _self) {
       flexGrid.beginningEdit.addHandler(function (senders, args) {
         if (_self.receptData[args.row].complateFlag) {
           if (args.col == 13 || args.col == 14) {
@@ -1001,7 +1049,7 @@ export default {
     /*****************
      * セルのフォーマット指定
      */
-    createCellFormat: function (flexGrid, _self, data) {
+    createCellFormat(flexGrid, _self, data) {
       let _selfdata = data;
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
@@ -1096,7 +1144,7 @@ export default {
     /**************
      * ヘッダ情報の作成
      */
-    createHeader: function (flexGrid, _self) {
+    createHeader(flexGrid, _self) {
       var extraRow = new wjGrid.Row();
       extraRow.allowMerging = true;
       var panel = flexGrid.columnHeaders;
@@ -1113,7 +1161,7 @@ export default {
     /**************
      * 全体セルのマージ
      */
-    createCellMerge: function (flexGrid) {
+    createCellMerge(flexGrid) {
       let headerRanges = [
         new wjGrid.CellRange(0, 0, 0, 5), //基本情報
         new wjGrid.CellRange(0, 6, 1, 6), //レセプト

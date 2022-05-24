@@ -82,7 +82,7 @@ export default {
     zyukyusyaNum: String,
   },
   watch: {
-    riyousya:function() {
+    riyousya() {
       this.detailGridData = this.getGridData(apiResult);
       this.subGridData = this.getSubGridData(apiResult);
     }
@@ -94,7 +94,7 @@ export default {
     }
   },
   methods: {
-    onInitializeDetailGrid:function(flexGrid) {
+    onInitializeDetailGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -200,7 +200,7 @@ export default {
         }
       }
     },
-    onInitializeSubGrid:function(flexGrid) {
+    onInitializeSubGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -219,7 +219,7 @@ export default {
         }
       }
     },
-    getGridData:function(data) {
+    getGridData(data) {
       // グリッド表示用データの作成
       let gridData = [];
       if (data != null) {
@@ -263,7 +263,7 @@ export default {
       }
       return gridData;
     },
-    getSubGridData:function(data) {
+    getSubGridData(data) {
       // サブグリッド表示用データの作成
       let subGridData = [];
       if (data != null) {

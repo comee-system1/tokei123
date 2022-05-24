@@ -270,9 +270,9 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
 
-      receptFlag: false, // receptの初期表示状態
+      receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
@@ -288,7 +288,7 @@ export default {
     ReceptJijyougen,
     TabMenuBlue,
   },
-  created: function () {
+  created() {
     // 利用者コンボボックス
     this.riyosyaCombo = ['全員', '今月入居者', '今月退去者'];
     // 上限管理事用コンボボックス
@@ -299,27 +299,41 @@ export default {
       '南山事務所2',
       '南山事務所3',
     ];
-    this.taServiceCombo = ['指定なし'];
+    this.taServiceCombo = [
+      '指定なし',
+      'ひまわり園0',
+      'ひまわり園1',
+      'ひまわり園2',
+      'ひまわり園3',
+    ];
   },
   methods: {
     /*********************
      * 上限管理事変更
      */
-    onJyougenkanriCombo: function (e) {
-      // 他上限管理事業所の関数を実行
-      this.$refs.tajougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
+    onJyougenkanriComb(e) {
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
+      } else {
+        // 他上限管理事業所の関数を実行
+        this.$refs.tajougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
+      }
     },
     /*********************
      * 利用者変更
      */
-    onRiyosyaCombo: function (e) {
-      // 他上限管理事業所の関数を実行
-      this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
+    onRiyosyaCombo(e) {
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.child_Riyosya(e.text, e.selectedIndex);
+      } else {
+        // 他上限管理事業所の関数を実行
+        this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
+      }
     },
     /**************
      * 子コンポーネントtabmenublueで選択した値を取得
      */
-    parent_tab_menu: function (args) {
+    parent_tab_menu(args) {
       this.receptFlag = false;
       this.TajyougenkanriJimsyoFlag = false;
       this.JijyougenkanriJimsyoFlag = false;
@@ -336,7 +350,7 @@ export default {
     /***************
      * 確定登録・解除ボタン
      */
-    defineButton: function (type) {
+    defineButton(type) {
       if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentDefineButton(type);
       } else {
@@ -346,7 +360,7 @@ export default {
     /**************
      * 絞り込み
      */
-    filter: function (type) {
+    filter(type) {
       this.filterFlag.allFlag = false;
       this.filterFlag.jyogenFlag = false;
       this.filterFlag.misyoriFlag = false;
@@ -369,7 +383,7 @@ export default {
     /**************
      * 並び順変更
      */
-    sort: function (type) {
+    sort(type) {
       this.sortFlag.kanaFlag = false;
       this.sortFlag.codeFlag = false;
       this.sortFlag.bangoFlag = false;
@@ -392,7 +406,7 @@ export default {
     /*********************
      * 全選択
      */
-    selectAll: function (type) {
+    selectAll(type) {
       if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentSelectAll(type);
       } else {
@@ -402,19 +416,19 @@ export default {
     /********:
      * レセプトへ反映ボタン
      */
-    recept_reflect: function () {
+    recept_reflect() {
       this.$refs.tajougenChild.parentReceptReflect();
     },
     /********:
      * 上限額管理計算へ反映ボタン
      */
-    recept_calc: function () {
+    recept_calc() {
       this.$refs.jijyougenChild.parentReceptCalc();
     },
     /************
      * アルファベットの絞り込み
      */
-    onAlphabet: function (key) {
+    onAlphabet(key) {
       if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentAlphabet(key);
       } else {

@@ -222,7 +222,7 @@ export default {
             // },
             {
               name: '給付明細書',
-              link: '/TemporaryPage',
+              // link: '/TemporaryPage',
               sublists: [
                 {
                   name: '介護給付費明細書',

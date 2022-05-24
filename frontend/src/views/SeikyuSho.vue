@@ -91,10 +91,10 @@ export default {
     }
   },
   methods: {
-    onSichosonIndexChanged:function (s) {
+    onSichosonIndexChanged(s) {
       this.selectedSichoson = s.text;
     },
-    searchClicked:function() {
+    searchClicked() {
       let data = apiResult['dummy'];
       let newData = [];
       let sort = this.selectedSichoson;
@@ -108,7 +108,7 @@ export default {
       }
       this.detailGridData = newData;
     },
-    onselectedIndexChanged:function (s) {
+    onselectedIndexChanged(s) {
       // 全選択・全解除の選択値を取得して書き換え
       let data = this.detailGridData;
       let newData = [];
@@ -121,7 +121,7 @@ export default {
       this.detailGridData = newData;
       s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
     },
-    onInitializeDetailGrid:function(flexGrid) {
+    onInitializeDetailGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -212,11 +212,13 @@ export default {
           // フッターの上部に線を表示する
           if (r == 0) {
             s.borderTop = "1px solid rgba(0,0,0,.2)";
+            s.textAlign = 'center';
           }
 
           if (c >= 2 && c <= 11 ) {
             // セルを薄黄色にする
             s.backgroundColor = "#fffeed";
+            s.textAlign = 'right';
           } else if(c == 12) {
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";
@@ -245,7 +247,7 @@ export default {
         }
       });
     },
-    getCellRanges:function(gridData) {
+    getCellRanges(gridData) {
       let renges = [];
       let firstrow = 0;
       let lastrow = 0;
@@ -334,6 +336,4 @@ div#seikyu-sho .transparent {
   width: 90px;
   }
 }
-
-
 </style>

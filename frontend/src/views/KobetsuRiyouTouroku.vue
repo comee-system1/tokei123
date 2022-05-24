@@ -97,9 +97,11 @@
             :initialized="onInitialized"
             :itemsSourceChanged="onitemsSourceChanged"
             :isReadOnly="true"
+            :allowAddNew="false"
+            :allowDelete="false"
             :allowDragging="false"
+            :allowPinning="false"
             :allowResizing="false"
-            :deferResizing="false"
             :allowSorting="false"
             :selectionMode="'None'"
             :style="gridHeight"
@@ -164,12 +166,12 @@ export default {
     DialogKikantuika,
     DialogKasantuika,
   },
-  mounted: function () {
+  mounted() {
     this.handleResize;
     window.addEventListener('resize', this.handleResize);
   },
   methods: {
-    handleResize: function () {
+    handleResize() {
       let height = window.innerHeight;
       let ht = 65;
       if (height > 800) {
@@ -180,7 +182,7 @@ export default {
       this.gridHeight = 'height:' + ht + 'vh;';
     },
     // 変動情報の切り替え配列
-    changeHndoJyoho: function () {
+    changeHndoJyoho() {
       let hendo = [];
       let items = ['項目', '合計', '金額'];
       let columns = ['変動情報', '加算情報'];
@@ -381,7 +383,7 @@ export default {
       }
     },
     //表示されるカラムの指定
-    viewColumn: function () {
+    viewColumn() {
       let rowColumn = [];
       let hendoRowsCount = 0; // 変動情報の行数
       let taiseiKobetsuRowsCount = 0; // 体制個別の行数
@@ -420,11 +422,11 @@ export default {
       this.rowColumn = rowColumn;
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
-    getSelectUserChildComponent: function (data) {
+    getSelectUserChildComponent(data) {
       this.userListComponentDatas = data;
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
-    setUserSelectPoint: function (row) {
+    setUserSelectPoint(row) {
       this.userDataSelect[0]['riyosyo'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -432,13 +434,14 @@ export default {
 
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
+
       // 値の設定
       this.selectType = '';
       this.editGridFlag = '';
       this.changeHndoJyoho();
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
-    parentServiceSelect: function (serviceArgument) {
+    parentServiceSelect(serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.year = serviceArgument['teikyo_year'];
       this.month = serviceArgument['teikyo_month'];
@@ -457,7 +460,7 @@ export default {
     /***************
      * ヘッダメニューのサービスを変更したとき
      */
-    parentServiceChange: function (serviceArgument) {
+    parentServiceChange(serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.userDataSelect[0]['riyosyo'] = '';
@@ -465,7 +468,7 @@ export default {
       this.changeHndoJyoho();
     },
     //変動情報ダイアログの登録ボタン押下
-    kikantuika_dialog_regist: function () {
+    kikantuika_dialog_regist() {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       let selectKey = this.$refs.dialog_kikantuika.registData.selectKey;
       if (selectKey.length == 0) {
@@ -478,7 +481,7 @@ export default {
       this.mainGrid.itemsSource = [];
     },
     //変動情報ダイアログの登録ボタン押下
-    kasantuika_dialog_regist: function () {
+    kasantuika_dialog_regist() {
       let selectKasanName = this.$refs.dialog_kasantuika.registData.selectName;
       let addType = this.$refs.dialog_kasantuika.registData.addType;
       this.kasanRow = this.kasanRow + 1;
@@ -492,7 +495,7 @@ export default {
       this.mainGrid.itemsSource = [];
     },
     //変動情報ダイアログの削除ボタン押下
-    kasantuika_dialog_delete: function () {
+    kasantuika_dialog_delete() {
       let kasanid = this.$refs.dialog_kasantuika.kasanid;
       let type = this.$refs.dialog_kasantuika.type;
       if (type == 'taisei_kobetu') {
@@ -505,12 +508,12 @@ export default {
       this.mainGrid.itemsSource = [];
     },
     //変動情報ダイアログの削除ボタン押下
-    kikantuika_dialog_delete: function () {
+    kikantuika_dialog_delete() {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       this.deleteGridFlag = true;
       this.mainGrid.itemsSource = [];
     },
-    onitemsSourceChanged: function (flexGrid) {
+    onitemsSourceChanged(flexGrid) {
       let _self = this;
       // セル初期カラム情報
       methodCellSettingDefault(flexGrid, _self);
@@ -522,7 +525,7 @@ export default {
       methodCellMerge(flexGrid, _self);
     },
     // グリッドイニシアライズ
-    onInitialized: function (flexGrid) {
+    onInitialized(flexGrid) {
       //初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.mainGrid = flexGrid;
@@ -819,7 +822,7 @@ function methodCellClickEvent(flexGrid, _self) {
       editKounetusui(flexGrid, _self);
       editKasan(flexGrid, _self);
     } else {
-      alert('ユーザーを選択してください。');
+      alert('利用者を選択してください。');
     }
   });
 }
@@ -867,6 +870,7 @@ function methodSettingPoint(flexGrid, _self) {
   } else {
     settingNyuTaiin(flexGrid, _self);
   }
+
   //外泊の設定
   if (_self.deleteGridFlag == true && _self.selectType == 'gaihaku') {
     deleteGaihaku(flexGrid, _self);
@@ -1358,18 +1362,16 @@ function writeArrowGaihaku(_self, flexGrid, gaihaku) {
       let st = new Date(dateWrite[i].start_date);
       let ed = new Date(dateWrite[i].end_date);
 
-      //日付の差分
-      var diff = ed - st;
-      diff = parseInt(diff / 1000 / 60 / 60 / 24) + 1;
-      gaihaku[0].date[i]['diff_date'] = diff;
-
       let firstmonth = st.getMonth() + 1;
       let lastmonth = ed.getMonth() + 1;
       let firstday = st.getDate();
       let lastday = '';
-      if (firstmonth != lastmonth) {
-        firstday = 1;
-        let firstyear = st.getFullYear();
+      let lastyear = ed.getFullYear();
+      let firstyear = st.getFullYear();
+      if (firstmonth != lastmonth || firstyear != lastyear) {
+        if (!(firstmonth == _self.month && firstyear == _self.year)) {
+          firstday = 1;
+        }
         if (lastmonth == _self.month) {
           lastday = dateWrite[i].end_date.split('-')[2];
         } else {
@@ -1383,14 +1385,17 @@ function writeArrowGaihaku(_self, flexGrid, gaihaku) {
       let num = firstday;
       for (let d = st; d <= ed; d.setDate(d.getDate() + 1)) {
         //当月分だけのリストを作成
-        if (parseInt(_self.month) == d.getMonth() + 1) {
+        if (
+          parseInt(_self.month) == d.getMonth() + 1 &&
+          parseInt(_self.year) == d.getFullYear()
+        ) {
           var days = d.getDate();
           var day = 'day' + days;
           if (num == firstday) {
             // 最初の矢印
-            if (firstmonth != lastmonth) {
+            if (firstmonth != lastmonth || firstyear != lastyear) {
               // 月跨ぎの際は線のみの表示
-              if (firstmonth == _self.month) {
+              if (firstmonth == _self.month && firstyear == _self.year) {
                 gaihaku[0]['date'][i][day] = 'gaihaku_arrow_start-' + i;
               } else {
                 gaihaku[0]['date'][i][day] = 'gaihaku_arrow_start_bar-' + i;
@@ -1400,9 +1405,12 @@ function writeArrowGaihaku(_self, flexGrid, gaihaku) {
             }
           } else if (num == lastday) {
             //最終の矢印
-            if (firstmonth != lastmonth) {
+            if (firstmonth != lastmonth || firstyear != lastyear) {
               // 月跨ぎの際は線のみの表示
-              if (lastmonth == _self.month) {
+              if (
+                lastmonth == parseInt(_self.month) &&
+                lastyear == parseInt(_self.year)
+              ) {
                 gaihaku[0]['date'][i][day] = 'gaihaku_arrow_end-' + i;
               } else {
                 gaihaku[0]['date'][i][day] = 'gaihaku_arrow-' + i;
@@ -1537,7 +1545,6 @@ function editGaihaku(flexGrid, _self) {
 
   gaihaku[0]['date'][selectKey]['byouinName'] =
     _self.$refs.dialog_kikantuika.registData.byouinName;
-
   writeArrowGaihaku(_self, flexGrid, gaihaku);
 }
 /*********
@@ -1592,7 +1599,7 @@ function createdArrows(data, _self, flexGrid, row) {
         if (data[0].date[j][d]) {
           if (doubleCheckFlag[d]) {
             doubleCheckFlag[d] = doubleCheckFlag[d] + 1;
-            data[0].date[j]['dayCount' + i] = true;
+            data[0].date[j]['dayCount' + days] = true;
           } else {
             doubleCheckFlag[d] = 1;
           }
@@ -1662,7 +1669,7 @@ function settingNyuTaiin(flexGrid, _self) {
       {
         byouinName: '西経国立病院',
         start_date: '2022-5-28',
-        end_date: '2022-5-30',
+        end_date: '2022-6-20',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1994,6 +2001,7 @@ function methodCellFormatSetting(flexGrid, _self) {
 
     // 矢印の表示
     if (
+      text.match(/^arrow_double_bar-[0-9].*/) ||
       text.match(/^arrow_start_bar-[0-9].*/) ||
       text.match(/^arrow_start-[0-9].*/) ||
       text.match(/^arrow_double-[0-9].*/)
@@ -2002,8 +2010,11 @@ function methodCellFormatSetting(flexGrid, _self) {
       let date = _self.nyutaiinData[0].date[key];
       // termFlagは矢印を押下した際の表示用文字列
 
-      if (text.match(/^arrow_start_bar-[0-9].*/)) {
-        html = '<div class="red-arrow "><div>&nbsp;</div></div>';
+      if (
+        text.match(/^arrow_start_bar-[0-9].*/) ||
+        text.match(/^arrow_double_bar-[0-9].*/)
+      ) {
+        html = '<div class="red-arrow"><div>&nbsp;</div></div>';
       } else if (text.match(/^arrow_double-[0-9].*/)) {
         html = '<div class="red-arrow_double"><div>&nbsp;</div></div>';
       } else {
@@ -2034,6 +2045,7 @@ function methodCellFormatSetting(flexGrid, _self) {
 
     // 外泊用矢印の表示
     if (
+      text.match(/^gaihaku_arrow_double_bar-[0-9].*/) ||
       text.match(/^gaihaku_arrow_start_bar-[0-9].*/) ||
       text.match(/^gaihaku_arrow_start-[0-9].*/) ||
       text.match(/^gaihaku_arrow_double-[0-9].*/)
@@ -2041,7 +2053,10 @@ function methodCellFormatSetting(flexGrid, _self) {
       let key = text.split('-')[1];
       let date = _self.gaihakuData[0].date[key];
       // termFlagは矢印を押下した際の表示用文字列
-      if (text.match(/^gaihaku_arrow_start_bar-[0-9].*/)) {
+      if (
+        text.match(/^gaihaku_arrow_double_bar-[0-9].*/) ||
+        text.match(/^gaihaku_arrow_start_bar-[0-9].*/)
+      ) {
         html = '<div class="green-arrow "><div>&nbsp;</div></div>';
       } else if (text.match(/^gaihaku_arrow_double-[0-9].*/)) {
         html = '<div class="green-arrow_double"><div>&nbsp;</div></div>';

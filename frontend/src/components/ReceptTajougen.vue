@@ -163,8 +163,10 @@ export default {
       receptData: [],
       mainFlexGrid: [],
       editGridFlag: false,
-      filterTextJyogen: {}, // 検索項目
-      filterTextRiyosya: {}, // 検索項目
+      filterTextJyogen: { jyougenkanrijiKey: 0, jyougenkanriji: '指定なし' }, // 検索項目
+      filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
+      filterSibori: { type: 1 }, // 絞込
+      alphaSelect: 0,
     };
   },
   components: {},
@@ -187,11 +189,65 @@ export default {
      * アルファベット絞り込み
      */
     parentAlphabet(alphaSearch) {
+      this.alphaSelect = alphaSearch;
+      this.receptData = this.filtered();
+    },
+    /*************
+     * 利用者のフィルタリンク
+     */
+    child_Riyosya(text, key) {
+      // フィルタリングの実施
+      this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
+      this.receptData = this.filtered();
+    },
+    /*************
+     * 上限管理事のフィルタリンク
+     */
+    child_Jyougenkanriji(text, key) {
+      // フィルタリングの実施
+      this.filterTextJyogen = { jyougenkanrijiKey: key, jyougenkanriji: text };
+      this.receptData = this.filtered();
+    },
+    /***************************
+     * 絞り込みの実施
+     */
+    filtered() {
+      let array = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        // 検索条件がないとき
+        if (
+          this.filterTextJyogen.jyougenkanrijiKey == 0 &&
+          this.filterTextRiyosya.riyosyaKey == 0 &&
+          this.filterSibori.type == 1
+        ) {
+          array.push(this.allData[i]);
+        } else {
+          if (
+            (this.allData[i]['jyougengaku'].indexOf(
+              this.filterTextJyogen.jyougenkanriji
+            ) != -1 ||
+              this.filterTextJyogen.jyougenkanrijiKey == 0) &&
+            // 絞り込みトグル
+            (this.filterSibori.type == 1 ||
+              (this.filterSibori.type == 2 &&
+                this.allData[i]['kanrikekka'].length > 0) ||
+              (this.filterSibori.type == 3 &&
+                this.allData[i]['kanrikekka'].length == 0)) &&
+            // 利用者コンボボックス
+            (this.filterTextRiyosya.riyosyaKey == 0 ||
+              (this.filterTextRiyosya.riyosyaKey == 1 &&
+                this.allData[i]['nyukyo'] == 1) ||
+              (this.filterTextRiyosya.riyosyaKey == 2 &&
+                this.allData[i]['taikyo'] == 1))
+          ) {
+            array.push(this.allData[i]);
+          }
+        }
+      }
+      let select = this.alphaSelect;
       let get = [];
-      this.filtered();
-      let data = this.receptData;
-      data.forEach(function (value) {
-        switch (alphaSearch) {
+      array.forEach(function (value) {
+        switch (select) {
           case 0:
             get.push(value);
             break;
@@ -247,74 +303,15 @@ export default {
             break;
         }
       });
-      data = get;
-      this.receptData = data;
-    },
-    /*************
-     * 利用者のフィルタリンク
-     */
-    child_Riyosya(text, key) {
-      // フィルタリングの実施
-      this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
-      console.log(this.filterTextRiyosya);
-      this.filtered();
-    },
-    /*************
-     * 上限管理事のフィルタリンク
-     */
-    child_Jyougenkanriji(text, key) {
-      // フィルタリングの実施
-      this.filterTextJyogen = { jyougenkanrijiKey: key, jyougenkanriji: text };
-      this.filtered();
-    },
-    /***************************
-     * 絞り込みの実施
-     */
-    filtered: function () {
-      this.receptData = [];
-      for (let i = 0; i < this.allData.length; i++) {
-        // 検索条件がないとき
-        if (
-          (this.filterTextJyogen.jyougenkanrijiKey == 0 ||
-            !this.filterTextJyogen.jyougenkanrijiKey) &&
-          (this.filterTextRiyosya.riyosyaKey == 0 ||
-            !this.filterTextRiyosya.riyosyaKey)
-        ) {
-          this.receptData.push(this.allData[i]);
-        } else {
-          if (
-            this.allData[i]['jyougengaku'].indexOf(
-              this.filterTextJyogen.jyougenkanriji
-            ) != -1
-          ) {
-            this.receptData.push(this.allData[i]);
-          }
-        }
-      }
+
+      return get;
     },
     /******************
      * 親コンポーネントの絞り込み
      */
     parentFilter(type) {
-      let array = [];
-      if (type == 1) {
-        array = this.allData;
-      } else {
-        for (let i = 0; i < this.receptData.length; i++) {
-          if (type == 2) {
-            //上限管理済み
-            if (this.receptData[i].kanrikekka.length > 0) {
-              array.push(this.receptData[i]);
-            }
-          } else if (type == 3) {
-            //未処理
-            if (this.receptData[i].kanrikekka.length == 0) {
-              array.push(this.receptData[i]);
-            }
-          }
-        }
-      }
-      this.receptData = array;
+      this.filterSibori = { type: type };
+      this.receptData = this.filtered();
     },
     /******************
      * 親コンポーネントのソート
@@ -360,7 +357,7 @@ export default {
 
       this.receptData = array;
       this.mainFlexGrid.itemsSource = [];
-      //this.mainFlexGrid.refresh();
+      // this.mainFlexGrid.refresh();
     },
     /**********************
      * 親コンポーネントの全選択/全解除
@@ -388,7 +385,7 @@ export default {
           let mark = '●';
           this.allData[i]['resehanei'] = mark;
           this.mainFlexGrid.setCellData(i, 6, mark);
-          //〇に変更する
+          // 〇に変更する
           let mark_before = '〇';
           this.mainFlexGrid.setCellData(i, 15, mark_before);
 
@@ -398,7 +395,7 @@ export default {
         }
       }
     },
-    getData: function () {
+    getData() {
       let receptData = [];
       for (let i = 0; i < 30; i++) {
         receptData.push({
@@ -422,6 +419,8 @@ export default {
           resekakutei: '',
           print: '',
           complateFlag: false, // 確定状態
+          nyukyo: i % 2, // 今月入居
+          taikyo: i % 4, // 今月退去
         });
       }
 
@@ -430,7 +429,7 @@ export default {
       return receptData;
     },
 
-    onInitialized: function (flexGrid) {
+    onInitialized(flexGrid) {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
@@ -439,10 +438,10 @@ export default {
       // ヘッダセルのマージ
       this.createHeaderMerge(flexGrid);
 
-      //セルのクリックイベント
+      // セルのクリックイベント
       this.clickEventCell(flexGrid, _self);
 
-      //セルのフォーマット指定
+      // セルのフォーマット指定
       this.createCellFormat(flexGrid, _self);
 
       // セルの値を編集
@@ -453,14 +452,14 @@ export default {
     /****************
      *
      */
-    clickEventCell: function (flexGrid, _self) {
+    clickEventCell(flexGrid, _self) {
       flexGrid.hostElement.addEventListener('click', function (e) {
-        //レセプト確定セルを押下し、確定アイコンの表示
+        // レセプト確定セルを押下し、確定アイコンの表示
         let ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
-          //印刷カラムを押下
+          // 印刷カラムを押下
           if (hPage.col == 16) {
             let mark = '〇';
             if (flexGrid.getCellData(hPage.row, 16) == '〇') mark = '';
@@ -490,7 +489,7 @@ export default {
     /********
      * セルを編集
      */
-    edittingCell: function (flexGrid, _self) {
+    edittingCell(flexGrid, _self) {
       flexGrid.beginningEdit.addHandler(function (senders, args) {
         if (_self.allData[args.row].complateFlag) {
           if (args.col == 13 || args.col == 14) {
@@ -527,7 +526,7 @@ export default {
       });
     },
     // 後ほど消す
-    onItemsSourceChanged: function (flexGrid) {
+    onItemsSourceChanged(flexGrid) {
       let receptData = this.allData;
       console.log('change');
       console.log(this.editGridFlag);
@@ -562,7 +561,7 @@ export default {
     /*****************
      * セルのフォーマット指定
      */
-    createCellFormat: function (flexGrid, _self) {
+    createCellFormat(flexGrid, _self) {
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
 
@@ -591,6 +590,11 @@ export default {
         } else if (text == 'delete') {
           classname = 'delete';
         }
+        if (11 <= e.col || e.col == 5) {
+          e.cell.style.textAlign = 'right';
+          e.cell.style.justifyContent = 'right';
+          e.cell.style.alignItems = 'right';
+        }
         if (classname) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +
@@ -605,7 +609,7 @@ export default {
     /**************
      * ヘッダ情報の作成
      */
-    createHeader: function (flexGrid, _self) {
+    createHeader(flexGrid, _self) {
       var extraRow = new wjGrid.Row();
       extraRow.allowMerging = true;
       var panel = flexGrid.columnHeaders;
@@ -621,15 +625,15 @@ export default {
     /**************
      * ヘッダセルのマージ
      */
-    createHeaderMerge: function (flexGrid) {
+    createHeaderMerge(flexGrid) {
       let headerRanges = [
-        new wjGrid.CellRange(0, 0, 0, 5), //基本情報
-        new wjGrid.CellRange(0, 6, 1, 6), //レセプト
-        new wjGrid.CellRange(1, 3, 1, 4), //上限額管理事業所
-        new wjGrid.CellRange(0, 7, 0, 12), //利用者請求実績
-        new wjGrid.CellRange(0, 13, 0, 14), //上限管理後
-        new wjGrid.CellRange(0, 15, 1, 15), //レセプト確定
-        new wjGrid.CellRange(0, 16, 1, 16), //印刷
+        new wjGrid.CellRange(0, 0, 0, 5), // 基本情報
+        new wjGrid.CellRange(0, 6, 1, 6), // レセプト
+        new wjGrid.CellRange(1, 3, 1, 4), // 上限額管理事業所
+        new wjGrid.CellRange(0, 7, 0, 12), // 利用者請求実績
+        new wjGrid.CellRange(0, 13, 0, 14), // 上限管理後
+        new wjGrid.CellRange(0, 15, 1, 15), // レセプト確定
+        new wjGrid.CellRange(0, 16, 1, 16), // 印刷
       ];
       let mm = new wjGrid.MergeManager(flexGrid);
       mm.getMergedRange = function (panel, r, c) {
