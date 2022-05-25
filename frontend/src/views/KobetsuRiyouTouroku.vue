@@ -686,6 +686,7 @@ function methodCellClickEvent(flexGrid, _self) {
       if (ht.target.innerHTML.match(regexp)) {
         let selectKey = e.target.id.split('-')[1];
         let params = {};
+
         params = {
           selectKey: selectKey,
           byouinName: _self.nyutaiinData[0].date[selectKey].byouinName,
@@ -725,6 +726,8 @@ function methodCellClickEvent(flexGrid, _self) {
           byouinName: _self.gaihakuData[0].date[selectKey].byouinName,
           nyuuinbi: _self.gaihakuData[0].date[selectKey].start_date,
           taiinbi: _self.gaihakuData[0].date[selectKey].end_date,
+          taiinbi_notFlag:
+            _self.gaihakuData[0].date[selectKey].end_date_notFlag,
           // 入院用
           nyuuinbiShiseturiyo:
             _self.gaihakuData[0].date[selectKey].nyuuinbiShiseturiyo,
@@ -1464,7 +1467,7 @@ function settingGaihaku(flexGrid, _self) {
       {
         byouinName: '東経国立病院',
         start_date: '2022-5-20',
-        end_date: '2022-5-22',
+        end_date: '',
         diff_date: 2,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
@@ -1495,6 +1498,19 @@ function settingGaihaku(flexGrid, _self) {
     }
   }
 
+  // 終了日のチェック
+  // 終了日が空欄の時は翌月月末を指定し、未設定のフラグを立てる
+  if (gaihaku.length > 0) {
+    for (let i = 0; i < gaihaku[0].date.length; i++) {
+      if (gaihaku[0].date[i].end_date == '') {
+        gaihaku[0].date[i].end_date = moment()
+          .add('months', 1)
+          .endOf('month')
+          .format('YYYY-MM-DD');
+        gaihaku[0].date[i].end_date_notFlag = true;
+      }
+    }
+  }
   writeArrowGaihaku(_self, flexGrid, gaihaku);
 }
 /*********
@@ -1522,8 +1538,19 @@ function editGaihaku(flexGrid, _self) {
 
   gaihaku[0]['date'][selectKey]['start_date'] =
     _self.$refs.dialog_kikantuika.registData.nyuuinbi;
-  gaihaku[0]['date'][selectKey]['end_date'] =
-    _self.$refs.dialog_kikantuika.registData.taiinbi;
+
+  if (gaihaku[0]['date'][selectKey]['end_date_notFlag']) {
+    // end_date_notFlagがある時は翌月の末
+    gaihaku[0]['date'][selectKey]['end_date'] = moment()
+      .add('months', 1)
+      .endOf('month')
+      .format('YYYY-MM-DD');
+  } else {
+    gaihaku[0]['date'][selectKey]['end_date'] =
+      _self.$refs.dialog_kikantuika.registData.taiinbi;
+  }
+  gaihaku[0]['date'][selectKey]['end_date_notFlag'] =
+    _self.$refs.dialog_kikantuika.registData.taiinbi_notFlag;
   gaihaku[0]['date'][selectKey]['nyuuinbiShiseturiyo'] =
     _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo;
   gaihaku[0]['date'][selectKey]['taiinbiShiseturiyo'] =
@@ -1562,11 +1589,21 @@ function insertGaihaku(flexGrid, _self) {
   let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
   let firstday = st.getDate();
   let lastday = ed.getDate();
+  // 退院日が空欄の時は翌月月末を指定し、未設定のフラグを立てる
+  let enddate = _self.$refs.dialog_kikantuika.registData.taiinbi;
+  let end_date_notFlag = false;
+  let diff_date = lastday - firstday + _self.plusOne;
+  if (_self.$refs.dialog_kikantuika.registData.taiinbi_notFlag) {
+    enddate = moment().add('months', 1).endOf('month').format('YYYY-MM-DD');
+    end_date_notFlag = true;
+    diff_date = '-';
+  }
 
   gaihaku[0]['date'].push({
     start_date: _self.$refs.dialog_kikantuika.registData.nyuuinbi,
-    end_date: _self.$refs.dialog_kikantuika.registData.taiinbi,
-    diff_date: lastday - firstday + _self.plusOne,
+    end_date: enddate,
+    end_date_notFlag: end_date_notFlag,
+    diff_date: diff_date,
     nyuuinbiShiseturiyo:
       _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo,
     taiinbiShiseturiyo:
@@ -1638,7 +1675,21 @@ function createdArrows(data, _self, flexGrid, row) {
   for (let j = 0; j < data[0].date.length; j++) {
     total += data[0].date[j].diff_date;
   }
-  flexGrid.setCellData(row, _self.lastdate + 4, total);
+  // end_date_notFlagの確認
+  // 1件でもあれば有効
+  let end_date_notFlag = false;
+  for (let j = 0; j < data[0].date.length; j++) {
+    if (data[0].date[j].end_date_notFlag) {
+      end_date_notFlag = true;
+      break;
+    }
+  }
+
+  if (end_date_notFlag) {
+    flexGrid.setCellData(row, _self.lastdate + 4, '-');
+  } else {
+    flexGrid.setCellData(row, _self.lastdate + 4, total);
+  }
 
   return;
 }
@@ -1665,7 +1716,7 @@ function settingNyuTaiin(flexGrid, _self) {
       {
         byouinName: '東経国立病院',
         start_date: '2022-5-6',
-        end_date: '',
+        end_date: '2022-5-10',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1713,7 +1764,6 @@ function settingNyuTaiin(flexGrid, _self) {
  */
 function editNyuTaiin(flexGrid, _self) {
   let nyutaiin = [];
-  // console.log(_self.$refs.dialog_kikantuika.registData);
   // 別コンポーネントダイアログのregistDataの値を取得(キーのみ)
   let selectKey = _self.$refs.dialog_kikantuika.registData.selectKey;
   nyutaiin = _self.nyutaiinData;
@@ -1798,14 +1848,19 @@ function insertNyuTaiin(flexGrid, _self) {
   let lastday = ed.getDate();
   // 退院日が空欄の時は翌月月末を指定し、未設定のフラグを立てる
   let enddate = _self.$refs.dialog_kikantuika.registData.taiinbi;
+  let end_date_notFlag = false;
+  let diff_date = lastday - firstday + _self.plusOne;
   if (_self.$refs.dialog_kikantuika.registData.taiinbi_notFlag) {
     enddate = moment().add('months', 1).endOf('month').format('YYYY-MM-DD');
+    end_date_notFlag = true;
+    diff_date = '-';
   }
 
   nyutaiin[0]['date'].push({
     start_date: _self.$refs.dialog_kikantuika.registData.nyuuinbi,
     end_date: enddate,
-    diff_date: lastday - firstday + _self.plusOne,
+    end_date_notFlag: end_date_notFlag,
+    diff_date: diff_date,
     nyuuinbiShiseturiyo:
       _self.$refs.dialog_kikantuika.registData.nyuuinbiShiseturiyo,
     taiinbiShiseturiyo:
@@ -1821,7 +1876,6 @@ function insertNyuTaiin(flexGrid, _self) {
     byouinName: _self.$refs.dialog_kikantuika.registData.byouinName,
   });
 
-  console.log(nyutaiin);
   // 入退院の矢印作成
   writeArrowNyutaiin(_self, flexGrid, nyutaiin);
 }
@@ -2050,10 +2104,14 @@ function methodCellFormatSetting(flexGrid, _self) {
       }
       let startdate = moment(date['start_date']).format('M/D');
       let end_date = '';
+      let diff_day = '';
+      // 退院日未設定
       if (date['end_date_notFlag']) {
         end_date = '未設定';
+        diff_day = '-';
       } else {
         end_date = moment(date['end_date']).format('M/D');
+        diff_day = date['diff_date'];
       }
       html +=
         '<div class="arrow_box" ><div id="arrow_box-' +
@@ -2065,7 +2123,7 @@ function methodCellFormatSetting(flexGrid, _self) {
         '～' +
         end_date +
         '[' +
-        date['diff_date'] +
+        diff_day +
         ']</div></div>';
     }
 
@@ -2098,7 +2156,17 @@ function methodCellFormatSetting(flexGrid, _self) {
       }
 
       let startdate = moment(date['start_date']).format('M/D');
-      let end_date = moment(date['end_date']).format('M/D');
+      let end_date = '';
+      let diff_day = '';
+      // 退院日未設定
+      if (date['end_date_notFlag']) {
+        end_date = '未設定';
+        diff_day = '-';
+      } else {
+        end_date = moment(date['end_date']).format('M/D');
+        diff_day = date['diff_date'];
+      }
+
       html +=
         '<div class="arrow_box"><div id="arrow_box-' +
         key +
@@ -2109,7 +2177,7 @@ function methodCellFormatSetting(flexGrid, _self) {
         '～' +
         end_date +
         '[' +
-        date['diff_date'] +
+        diff_day +
         ']</div></div>';
     }
     if (text.match(/^gaihaku_arrow-[0-9].*/)) {
@@ -2132,8 +2200,14 @@ function methodCellFormatSetting(flexGrid, _self) {
     ) {
       classname = 'text-center gridBackground ';
       let yen = '';
-      if (text.length > 0 && e.col == _self.lastdate + totalPoint) yen = '円';
+      if (text.length > 0 && e.col == _self.lastdate + totalPoint) {
+        yen = '円';
+      }
+      // if (e.col == _self.lastdate + startPoint) {
+      //   html = '<p>-</p>';
+      // } else {
       html = '<p>' + text + yen + '</p>';
+      //}
     }
 
     // 金額・食事以外をグレー
@@ -2467,6 +2541,9 @@ div#kobeturiyo {
   }
   .lastboard {
     .red-arrow {
+      width: auto !important;
+    }
+    .green-arrow {
       width: auto !important;
     }
   }
