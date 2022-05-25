@@ -7,8 +7,6 @@ import KyuhuMeisaiIcrn from '../views/KyuhuMeisaiIcrn.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
-import JijyougenkanriJimsyo from '../views/JijyougenkanriJimsyo.vue'
-import TajyougenkanriJimsyo from '../views/TajyougenkanriJimsyo.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
@@ -45,16 +43,6 @@ const routes = [
         path:'/ShisetsuTaisei',
         name:'施設体制確認',
         component: ShisetsuTaisei
-    },
-    {
-        path:'/JijyougenkanriJimsyo',
-        name:'自上限管理事務所用',
-        component: JijyougenkanriJimsyo
-    },
-    {
-        path:'/TajyougenkanriJimsyo',
-        name:'他上限管理事務所用',
-        component: TajyougenkanriJimsyo
     },
     {
         path:'/ReceptSyukei',

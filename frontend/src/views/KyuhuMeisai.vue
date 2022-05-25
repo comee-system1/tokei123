@@ -19,8 +19,12 @@
                 :headersVisibility="'None'"
                 :autoGenerateColumns="false"
                 :initialized="onInitializeKyuhujukyuyaGrid"
-                :allowResizing="false"
+                :allowAddNew="false"
+                :allowDelete="false"
                 :allowDragging="false"
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
               >
                 <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
                 <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -49,7 +53,7 @@
                     :initialized="onInitializeStyousonGrid"
                     :allowResizing="false"
                     :allowDragging="false"
-                  >
+                    >
                     <wj-flex-grid-column binding="Column0" :width="200" :wordWrap="true"></wj-flex-grid-column>
                     <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                     <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -69,9 +73,13 @@
                 :itemsSource="jigyousyaGridData"
                 :headersVisibility="'None'"
                 :initialized="onInitializeJigyousyaGrid"
-                :allowResizing="false"
+                :allowAddNew="false"
+                :allowDelete="false"
                 :allowDragging="false"
-              >
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
+                >
                 <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
                 <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                 <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -94,9 +102,13 @@
                     :headersVisibility="'None'"
                     :autoGenerateColumns="false"
                     :initialized="onInitializeTiikikubunGrid"
-                    :allowResizing="false"
+                    :allowAddNew="false"
+                    :allowDelete="false"
                     :allowDragging="false"
-                  >
+                    :allowPinning="false"
+                    :allowResizing="false"
+                    :allowSorting="false"
+                    >
                     <wj-flex-grid-column binding="Column0" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                     <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                     <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>

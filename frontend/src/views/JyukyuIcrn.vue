@@ -12,19 +12,14 @@
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
               <label>利用者</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
-                <v-btn
-                  v-for="n in userSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="siborikomiUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
+              <wj-combo-box
+                v-model="selUser"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                :itemsSource="userSelList"
+                :selectedIndexChanged="onUserIndexChanged"
+              >
+              </wj-combo-box>
             </v-col>
             <v-col cols="6">
               <label>絞込</label>
@@ -169,7 +164,6 @@ const rowHeaderheight = 20;
 const rowheight = 25;
 const styleDefault = '';
 const boderSolid = '1px solid';
-let siborikomiSearch = 0;
 let siborikomiSearch2 = 0;
 let alphabet = [
   '全',
@@ -189,7 +183,7 @@ export default {
   components: {
     HeaderServices,
   },
-  data: function () {
+  data() {
     return {
       alphabet: alphabet,
       errorcnt: '',
@@ -273,6 +267,7 @@ export default {
         },
         { dataname: 'syusei', title: '修正', width: 50, align: 'center' },
       ],
+      selUser: 0,
       userSelList: [
         { val: 0, name: '全員' },
         { val: 1, name: '今月入所者' },
@@ -293,7 +288,7 @@ export default {
       serviceArgument: '', // ヘッダメニューのサービス選択
     };
   },
-  mounted: function () {
+  mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
@@ -301,7 +296,7 @@ export default {
     });
   },
   computed: {
-    errCnt: function () {
+    errCnt() {
       return this.viewdata.filter(
         (x) =>
           !x.koufuymd ||
@@ -319,7 +314,7 @@ export default {
     },
   },
   methods: {
-    onInitializejyukyuIcrnGrid: function (flexGrid) {
+    onInitializejyukyuIcrnGrid(flexGrid) {
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
@@ -466,12 +461,12 @@ export default {
         }
       }
     },
-    searchClicked: function () {
+    searchClicked() {
       // 初期データ読込
       this.viewdataAll = this.loadData();
       this.userFilter();
     },
-    loadData: function () {
+    loadData() {
       let tmpviewdata = [];
       let userCount = 100;
       // ★Date型はmonthが0-11で表現されることに注意
@@ -556,20 +551,20 @@ export default {
       }
       return tmpviewdata;
     },
-    siborikomiUser: function (siborikomiType) {
-      siborikomiSearch = siborikomiType;
+    onUserIndexChanged(s) {
+      this.selUser = s.selectedValue;
       this.userFilter();
     },
-    siborikomiUser2: function (siborikomiType) {
+    siborikomiUser2(siborikomiType) {
       siborikomiSearch2 = siborikomiType;
       this.userFilter();
     },
-    sortUser: function (sortType) {
+    sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet: function (key) {
+    onAlphabet(key) {
       ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
@@ -636,10 +631,10 @@ export default {
         tmpviewdata = this.viewdataAll.concat();
       }
       // 絞込１
-      if (siborikomiSearch == 1) {
+      if (this.selUser == 1) {
         // 今月入所
         tmpviewdata = tmpviewdata.filter((x) => x.isnyusho);
-      } else if (siborikomiSearch == 2) {
+      } else if (this.selUser == 2) {
         // 今月退所
         tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
       }
@@ -710,7 +705,8 @@ export default {
       this.viewdata = tmpviewdata;
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
-    parentServiceSelect: function () {
+    parentServiceSelect(serviceArgument) {
+      console.log(serviceArgument);
       this.viewdataAll = [];
       this.viewdata = [];
     },

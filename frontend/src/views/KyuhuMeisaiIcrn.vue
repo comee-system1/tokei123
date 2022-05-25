@@ -184,6 +184,7 @@ const colCntKyufu = 13;
 const rowheight = 25;
 const rowHeaderheight = 20;
 const fmtYen = 'n0';
+const fmtYmd = 'yyyy/MM/dd'; //'gyy/MM/dd';
 const titleNisu = '日数';
 const titleSeikyugakuSyukei = '請求額集計欄';
 const titleTokubetukyufu = '特別給付費';
@@ -224,7 +225,7 @@ export default {
   components: {
     HeaderServices,
   },
-  data: function () {
+  data() {
     return {
       dispPageType: 0,
       dispTotalOnly: 0,
@@ -527,7 +528,7 @@ export default {
       serviceArgument: '', // ヘッダメニューのサービス選択
     };
   },
-  mounted: function () {
+  mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       this.dispPageType = Number(ls.getlocalStorageEncript(keyPage));
@@ -541,7 +542,7 @@ export default {
   },
   computed: {},
   methods: {
-    onInitializeSeikyuGrid: function (flexGrid) {
+    onInitializeSeikyuGrid(flexGrid) {
       flexGrid.beginUpdate();
 
       // ヘッダの追加と設定
@@ -611,7 +612,7 @@ export default {
 
       flexGrid.endUpdate();
     },
-    onInitializeKyufuGrid: function (flexGrid) {
+    onInitializeKyufuGrid(flexGrid) {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -644,6 +645,8 @@ export default {
 
         if (colIndex == 2 || colIndex >= 8) {
           col.format = fmtYen;
+        } else if (colIndex == 3 || colIndex == 4) {
+          col.format = fmtYmd;
         } else {
           col.format = styleDefault;
         }
@@ -665,14 +668,14 @@ export default {
 
       flexGrid.endUpdate();
     },
-    setImage: function (e, isIns) {
+    setImage(e, isIns) {
       if (isIns) {
         e.panel.setCellData(e.row, e.col, require('@/assets/kaku_15px.png'));
       } else {
         e.panel.setCellData(e.row, e.col, '');
       }
     },
-    setName: function (e, name, no, code) {
+    setName(e, name, no, code) {
       if (!name) {
         if (this.sortSearch == 2) {
           e.panel.setCellData(e.row, e.col, '(' + no + ')');
@@ -892,7 +895,7 @@ export default {
         }
       }
     },
-    itemsSourceChangedSeikyu: function (flexGrid) {
+    itemsSourceChangedSeikyu(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       let total = 0;
@@ -946,11 +949,11 @@ export default {
         }
       }
     },
-    itemsSourceChangedKyufu: function (flexGrid) {
+    itemsSourceChangedKyufu(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
-    searchClicked: function () {
+    searchClicked() {
       if (this.dispPageType == 0) {
         this.viewdataAll = this.loadData(true);
       } else {
@@ -958,7 +961,7 @@ export default {
       }
       this.userFilter();
     },
-    loadData: function (isSeikyu) {
+    loadData(isSeikyu) {
       let tmpviewdata = [];
       let userCount = 101;
       if (isSeikyu) {
@@ -1131,7 +1134,7 @@ export default {
 
       return tmpviewdata;
     },
-    pageChange: function (pageType) {
+    pageChange(pageType) {
       ls.setlocalStorageEncript(keyPage, pageType);
       this.dispPageType = pageType;
       if (this.dispPageType == 0) {
@@ -1144,7 +1147,7 @@ export default {
         this.isBtnDisabled = true;
       }
     },
-    dispTotal: function (dispType) {
+    dispTotal(dispType) {
       ls.setlocalStorageEncript(keyTotal, dispType);
       this.dispTotalOnly = dispType;
       if (this.dispTotalOnly == 1) {
@@ -1153,22 +1156,22 @@ export default {
       }
       this.userFilter();
     },
-    sortUser: function (sortType) {
+    sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet: function (key) {
+    onAlphabet(key) {
       ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
     },
-    onSvcIndexChanged: function (s) {
+    onSvcIndexChanged(s) {
       ls.setlocalStorageEncript(keySvc, s.selectedValue);
       this.selSvc = s.selectedValue;
       this.userFilter();
     },
-    onSichosonIndexChanged: function (s) {
+    onSichosonIndexChanged(s) {
       ls.setlocalStorageEncript(keySichoson, s.selectedValue);
       this.selSichoson = s.selectedValue;
       this.userFilter();
@@ -1421,7 +1424,8 @@ export default {
       this.viewkyufudata = tmpviewdata;
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
-    parentServiceSelect: function () {
+    parentServiceSelect(serviceArgument) {
+      console.log(serviceArgument);
       this.viewdataAll = [];
       this.viewdata = [];
       this.viewkyufudataAll = [];

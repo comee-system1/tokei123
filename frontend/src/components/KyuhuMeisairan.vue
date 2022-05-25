@@ -8,8 +8,13 @@
           :headersVisibility="'None'"
           :autoGenerateColumns="false"
           :initialized="onInitializeRiyousyahutanGrid"
-          :allowResizing="false"
+          :allowAddNew="false"
+          :allowDelete="false"
           :allowDragging="false"
+          :allowPinning="false"
+          :allowResizing="false"
+          :allowSorting="false"
+
         >
           <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -46,23 +51,27 @@
       <v-col>
         <wj-flex-grid
           id="servicessyubetuGrid"
-          :itemsSource="servicessyubetuGridData"
+          :itemsSource="servicesyubetuGridData"
           :headersVisibility="'None'"
           :autoGenerateColumns="false"
           :initialized="onInitializeServicessyubetuGrid"
-          :allowResizing="false"
+          :allowAddNew="false"
+          :allowDelete="false"
           :allowDragging="false"
+          :allowPinning="false"
+          :allowResizing="false"
+          :allowSorting="false"
         >
-          <wj-flex-grid-column binding="Column0" :width="150" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column1" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column3" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column4" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column5" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column6" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column7" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column8" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column9" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="header" :width="150" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="serviceNo" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="headerKaisiYmd" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="kaisiYmd" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="headerSyuryoYmd" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="syuryoYmd" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="headerRiyouNissuu" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="riyouNissuu" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="headerNyuinNissuu" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column binding="nyuinNissuu" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
         </wj-flex-grid>
       </v-col>
     </v-row>
@@ -74,9 +83,13 @@
         :initialized="onInitialized"
         :autoGenerateColumns="false"
         :isReadOnly="true"
-        :allowDragging="false"
-        :allowResizing="false"
         :deferResizing="false"
+        :allowAddNew="false"
+        :allowDelete="false"
+        :allowDragging="false"
+        :allowPinning="false"
+        :allowResizing="false"
+        :allowSorting="false"
       >
         <wj-flex-grid-column
           :width="20"
@@ -85,37 +98,37 @@
         <wj-flex-grid-column
           :binding="'service'"
           :header="'サービス内容'"
-          width="3*"
+          width="3.5*"
           align="center"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode1'"
           :header="'サービスコード'"
-          :width="100"
+          :width="20"
           allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode2'"
-          :width="100"
+          :width="20"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode3'"
-          :width="100"
+          :width="20"
           allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode4'"
-          :width="100"
+          :width="20"
           allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode5'"
-          :width="100"
+          :width="20"
           allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'servicecode6'"
-          :width="100"
+          :width="20"
           allowMerging="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -162,7 +175,7 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       riyousyahutanGridData:this.getRiyousyahutanGridData(),
-      servicessyubetuGridData:this.getServicessyubetuGridData(),
+      servicesyubetuGridData:this.getservicesyubetuGridData(),
       data: [],
       allData: [],
       mainTableGrid: '',
@@ -296,14 +309,20 @@ export default {
       return riyousyahutanGridData;
     },
     onInitializeServicessyubetuGrid:function(flexGrid){
+      // サービス種別の配列数を算出
+      let syubetuCount;
+      syubetuCount = getSyubetuData().length;
+      
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
+      
+      // サービス種別ヘッダーを固定
+      // flexGrid.frozenRow = 0;
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
       let cellRanges = [
-        new wjGrid.CellRange(0,0,2,0),
+        new wjGrid.CellRange(0,0,syubetuCount - 1,0),
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function(panel, r, c) {
@@ -328,77 +347,32 @@ export default {
           s.backgroundColor = "#fff";
         }
         if(r == 0 && c == 0) {
-          s.lineHeight = "57px"
+          cell.innerHTML = 'サービス種別';
+          s.paddingTop = "20px"
         }
       }
     },
-    getServicessyubetuGridData:function(){
-      let sarvisno1 = "22";
-      let servicessyubetuGridData = [];
-      servicessyubetuGridData.push(
-        {
-          Column0: "サービス種別",
-          Column1: sarvisno1,
-          Column2: "開始年月日",
-          Column3: "2019年11月11日",
-          Column4: "終了年月日",
-          Column5: "2021年7月30日",
-          Column6: "利用日数",
-          Column7: "12",
-          Column8: "入院人数",
-        },
-        {
-          Column0: "",
-          Column1: "32",
-          Column2: "開始年月日",
-          Column3: "2019年11月11日",
-          Column4: "終了年月日",
-          Column5: "2021年7月30日",
-          Column6: "利用日数",
-          Column7: "0",
-          Column8: "入院人数",
-          Column9: "7",
-        },
-        {
-          Column0: "",
-          Column1: "32",
-          Column2: "開始年月日",
-          Column3: "2019年11月11日",
-          Column4: "終了年月日",
-          Column5: "2021年7月30日",
-          Column6: "利用日数",
-          Column7: "0",
-          Column8: "入院人数",
-          Column9: "7",
-        }
-      )
-      return servicessyubetuGridData;
+    getservicesyubetuGridData:function(){
+      let servicesyubetuGridData = [];
+      
+      // 挿入したサービス種別データをservicesyubetuGridDataに代入
+      servicesyubetuGridData = getSyubetuData()
+      return servicesyubetuGridData;
     },
     getData: function () {
-      let data = [];
-      for (let i = 0; i <= 12; i++) {
-        data.push({
-          service: '生活介護',
-          servicecode1: '1',
-          servicecode2: '1',
-          servicecode3: '4',
-          servicecode4: '3',
-          servicecode5: '2',
-          servicecode6: i,
-          tanisuu: 669,
-          kaisuu: 1,
-          servicetanisuu: 9300,
-          tekiyou: '',
-        });
-      }
+      let data = getMeisairanData();
       this.allData = data;
       return data;
     },
     onInitialized: function (grid) {
       let griddata = this.getData();
+      let griddatacount;
+      // 給付明細欄の配列の数を算出
+      griddatacount = griddata.length;
 
       // サービス内容追加ボタン用フッター行を追加/////////////////////////////////////////////
       grid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      grid.columnFooters.rows.insert(1, new wjGrid.GroupRow());
       let footerPanel = grid.columnFooters;
       
       // セルの結合/////////////////////////////////////////////////////////////////
@@ -407,7 +381,7 @@ export default {
       ];
       
       let cellRanges = [
-        new wjGrid.CellRange(0,0,12,0),
+        new wjGrid.CellRange(0,0,griddatacount-1,0),
       ];
       let mm = new wjGrid.MergeManager();
 
@@ -443,34 +417,242 @@ export default {
         s.color = "#000";
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
         // ヘッダーのスタイルをカスタマイズ
-          if(r === 0){
+          if (r === 0) {
             s.backgroundColor = "#eee";
           }
         }
         if (panel.cellType == wjGrid.CellType.Cell) {
         // セルのスタイルをカスタマイズ
-          if(c == 0){
+          if (c == 0) {
             s.backgroundColor = "#eee";
             cell.innerHTML = '給付明細欄';
             s.display ="flex";
             s.alignItems = "center";
+            s.borderBottom = 'none';
           }
-          if(c == 1){
+          if (c == 1) {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
+          }
+          if ((c == 8) || (c == 10)) {
+            s.textAlign = 'right';
           }
         }
         if (panel.cellType == wjGrid.CellType.ColumnFooter) {
         // フッターのスタイルをカスタマイズ
           if(!(r == 0 && c == 0)){
             s.backgroundColor = "#fff";
+            s.borderTop = "none";
+          }
+          if(c == 0){
+            s.backgroundColor = "#eee";
+            s.borderTop = "none";
+            s.borderBottom = 'none';
           }
         }
       }
     },
   },
 };
-
+/**************
+ * 
+ *複数桁の数字を一文字づつ取り出す
+ */
+// function numberSplit() {
+  // let numberList = 123456;
+  // let num;
+  // num = numberList.split(',').map(Number)
+  // console.log(num);
+  // return num;
+// }
+/**************
+ * 
+ *サービス種別データを設定
+ */
+function getSyubetuData() {
+  let syubetuData = [];
+  syubetuData.push(
+    {
+      uid: 1,
+      serviceNo:        "22",
+      headerKaisiYmd:   "開始年月日",
+      kaisiYmd:         "2019年11月11日",
+      headerSyuryoYmd:  "終了年月日",
+      syuryoYmd:         "2021年7月30日",
+      headerRiyouNissuu: "利用日数",
+      riyouNissuu:       "12",
+      headerNyuinNissuu: "入院人数",
+      nyuinNissuu:       "32",
+    },
+    {
+      uid: 2,
+      serviceNo:        "23",
+      headerKaisiYmd:   "開始年月日",
+      kaisiYmd:         "2019年11月11日",
+      headerSyuryoYmd:  "終了年月日",
+      syuryoYmd:         "2021年7月30日",
+      headerRiyouNissuu: "利用日数",
+      riyouNissuu:       "12",
+      headerNyuinNissuu: "入院人数",
+      nyuinNissuu:       "32",
+    },
+    {
+      uid: 3,
+      serviceNo:        "31",
+      headerKaisiYmd:   "開始年月日",
+      kaisiYmd:         "2019年11月11日",
+      headerSyuryoYmd:  "終了年月日",
+      syuryoYmd:         "2021年7月30日",
+      headerRiyouNissuu: "利用日数",
+      riyouNissuu:       "12",
+      headerNyuinNissuu: "入院人数",
+      nyuinNissuu:       "32",
+    },
+    {
+      uid: 4,
+      serviceNo:        "32",
+      headerKaisiYmd:   "開始年月日",
+      kaisiYmd:         "2019年11月11日",
+      headerSyuryoYmd:  "終了年月日",
+      syuryoYmd:         "2021年7月30日",
+      headerRiyouNissuu: "利用日数",
+      riyouNissuu:       "18  ",
+      headerNyuinNissuu: "入院人数",
+      nyuinNissuu:       "2",
+    },
+    {
+      uid: 4,
+      serviceNo:        "32",
+      headerKaisiYmd:   "開始年月日",
+      kaisiYmd:         "2019年11月11日",
+      headerSyuryoYmd:  "終了年月日",
+      syuryoYmd:         "2021年7月30日",
+      headerRiyouNissuu: "利用日数",
+      riyouNissuu:       "18  ",
+      headerNyuinNissuu: "入院人数",
+      nyuinNissuu:       "2",
+    }
+  )
+  return syubetuData;
+}
+/**************
+ * 
+ *給付明細欄データを設定
+ */
+function getMeisairanData() {
+  let meisairanData = [];
+  meisairanData.push({
+    service: '生活介護',
+    servicecode1: '1',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生介福祉専門職員配置加算等Ⅰ',
+    servicecode1: '2',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 30,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生介常勤看護職員等配置加算Ⅰ',
+    servicecode1: '3',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生介人員配置体制加算Ⅰ',
+    servicecode1: '1',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生活福祉専門職員配置加算等Ⅰ',
+    servicecode1: '1',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生活福祉専門職員配置加算等Ⅰ',
+    servicecode1: '1',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  meisairanData.push({
+    service: '生活介護',
+    servicecode1: '1',
+    servicecode2: '1',
+    servicecode3: '4',
+    servicecode4: '3',
+    servicecode5: '2',
+    servicecode6: '2',
+    tanisuu: 669,
+    kaisuu: 1,
+    servicetanisuu: 9300,
+    tekiyou: '',
+  });
+  return meisairanData;
+}
+// function getMeisairanData() {
+//   let meisairanData = [];
+//   for (let i = 0; i <= 12; i++) {
+//     meisairanData.push({
+//       service: '生活介護',
+//       servicecode1: '1',
+//       servicecode2: '1',
+//       servicecode3: '4',
+//       servicecode4: '3',
+//       servicecode5: '2',
+//       servicecode6: i,
+//       tanisuu: 669,
+//       kaisuu: 1,
+//       servicetanisuu: 9300,
+//       tekiyou: '',
+//     });
+//   }
+//   return meisairanData;
+// }
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
@@ -500,6 +682,34 @@ export default {
     background-position: top 1px right 2px;
     background-repeat: no-repeat;
     }
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
+  }
+}
+#servicessyubetuGrid {
+  &.wj-flexgrid {
+    max-height: 63px;
+    position: relative;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
   }
 }
 @media screen and (max-width: 1366px){

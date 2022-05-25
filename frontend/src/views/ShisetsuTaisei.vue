@@ -250,10 +250,13 @@ export default {
       if (height < 700) lot3 = 3;
       height = height / lot;
       let height3 = window.innerHeight / lot3;
-
-      document.getElementById('grid1').style.height = height + 'px';
-      document.getElementById('grid2').style.height = height + 'px';
-      document.getElementById('grid3').style.height = height3 + 'px';
+      try {
+        document.getElementById('grid1').style.height = height + 'px';
+        document.getElementById('grid2').style.height = height + 'px';
+        document.getElementById('grid3').style.height = height3 + 'px';
+      } catch (e) {
+        // console.log(e);
+      }
     },
     parentCalendar(dateArgument) {
       this.year = dateArgument[0];

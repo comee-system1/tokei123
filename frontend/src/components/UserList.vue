@@ -53,14 +53,15 @@
       :itemsSourceChanged="onItemsSourceChanged"
       :itemsSource="usersData"
       :allowDragging="false"
-      :allowResizing="true"
+      :allowResizing="false"
       :allowSorting="false"
+      :allowPinning="false"
     >
-      <wj-flex-grid-column header="確" binding="kakutei" :width="28" :word-wrap="false" :allowResizing="true" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
-      <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
-      <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :width="110" :word-wrap="false" :allowResizing="true" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
-      <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :allowResizing="true" :isReadOnly="true"></wj-flex-grid-column>
-      <wj-flex-grid-column header="印" binding="print" :width="25" :isReadOnly="true" :word-wrap="false" :allowResizing="true" class="text-caption"></wj-flex-grid-column>
+      <wj-flex-grid-column header="確" binding="kakutei" :width="28" :word-wrap="false" :isReadOnly="true" :cellTemplate="tplImage"></wj-flex-grid-column>
+      <wj-flex-grid-column header="コード" binding="riyocode" width="2*" :word-wrap="false" :isReadOnly="true" v-if="riyocodeFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="受給者番号" binding="jyukyuno" :width="110" :word-wrap="false" :isReadOnly="true" v-if="jyukyunoFlag"></wj-flex-grid-column>
+      <wj-flex-grid-column header="利用者名" binding="names" width="3*" :word-wrap="false" :isReadOnly="true"></wj-flex-grid-column>
+      <wj-flex-grid-column header="印" binding="print" :width="25" :isReadOnly="true" :word-wrap="false" class="text-caption"></wj-flex-grid-column>
     </wj-flex-grid>
 
     <wj-combo-box

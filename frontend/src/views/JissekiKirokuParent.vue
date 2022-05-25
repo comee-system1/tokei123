@@ -1,7 +1,6 @@
 <template>
   <div id="jisseki-kiroku">
     <ServiceSelection
-      @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-service-select="parentSearch($event, searchArgument)"
       :seikyuflag="true">
     </ServiceSelection>
@@ -15,18 +14,7 @@
           </UserList>
         </v-col>
         <v-col class="rightArea">
-          <SeikatsuKaigo v-if="selectedService=='22 生活介護'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKaigo>
-          <Tanki v-else-if="selectedService=='24 短期入所'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Tanki>
-          <ShisetsuNyusho v-else-if="selectedService=='32 施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShisetsuNyusho>
-          <KeikatekiShisetsuNyusho v-else-if="selectedService=='32 経過的施設入所支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KeikatekiShisetsuNyusho>
-          <Shukuhaku v-else-if="selectedService=='34 宿泊型自立訓練'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></Shukuhaku>
-          <KinoKunren v-else-if="selectedService=='41 自立訓練(機能訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></KinoKunren>
-          <SeikatsuKunren v-else-if="selectedService=='42 自立訓練(生活訓練)'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></SeikatsuKunren>
-          <ShuroIko v-else-if="selectedService=='43 就労移行支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroIko>
-          <ShurokeizokuA v-else-if="selectedService=='45 就労継続支援A型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuA>
-          <ShurokeizokuB v-else-if="selectedService=='46 就労継続支援B型'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShurokeizokuB>
-          <ShuroTeichaku v-else-if="selectedService=='47 就労定着支援'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></ShuroTeichaku>
-          <JiritsuSeikatsu v-else-if="selectedService=='35 自立生活援助'" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></JiritsuSeikatsu>
+          <component :is="displayComponent" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></component>
         </v-col>
       </v-row>
     </v-container>
@@ -37,6 +25,7 @@
 import ServiceSelection from '../components/HeaderServices.vue';
 import UserList from '../components/UserList';
 import SeikatsuKaigo from '../components/JissekiKirokuSeikatsuKaigo.vue';
+import KeikatekiSeikatsuKaigo from '../components/JissekiKirokuKeikatekiSeikatsuKaigo.vue';
 import ShisetsuNyusho from '../components/JissekiKirokuShisetsuNyusho.vue';
 import KeikatekiShisetsuNyusho from '../components/JissekiKirokuKeikatekiShisetsuNyusho.vue';
 import Tanki from '../components/JissekiKirokuTanki.vue';
@@ -44,42 +33,27 @@ import Shukuhaku from '../components/JissekiKirokuShukuhaku.vue';
 import KinoKunren from '../components/JissekiKirokuKinoKunren.vue';
 import SeikatsuKunren from '../components/JissekiKirokuSeikatsuKunren.vue';
 import ShuroIko from '../components/JissekiKirokuShuroIko.vue';
+import ShuroIkoYosei from '../components/JissekiKirokuShuroIkoYosei.vue';
 import ShurokeizokuA from '../components/JissekiKirokuShurokeizokuA.vue';
 import ShurokeizokuB from '../components/JissekiKirokuShurokeizokuB.vue';
 import ShuroTeichaku from '../components/JissekiKirokuShuroTeichaku.vue';
 import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
 
-import moment from 'moment';
-
-let daycount = 0;
-
 export default {
   components: {
     ServiceSelection,
-    UserList,
-    SeikatsuKaigo,
-    Tanki,
-    ShisetsuNyusho,
-    KeikatekiShisetsuNyusho,
-    Shukuhaku,
-    KinoKunren,
-    SeikatsuKunren,
-    ShuroIko,
-    ShurokeizokuA,
-    ShurokeizokuB,
-    ShuroTeichaku,
-    JiritsuSeikatsu
+    UserList
   },
   data() {
     return {
-      daycount: daycount,
-      dateArgument: '',
       searchArgument: '',
       selectedService: '',
       userListData: [], // 利用者一覧表示データ
       selectedRow: '', // 利用者一覧の選択行
-      riyousya: '',
-      zyukyusyaNum: '',
+      riyousya: '', //利用者一覧で選択された利用者
+      zyukyusyaNum: '', //利用者一覧で選択された利用者の受給者番号
+      displayComponent: '', //描画するコンポーネント
+      displayCode: '', //描画するサービスのコード
     };
   },
   watch: {
@@ -89,16 +63,16 @@ export default {
     }
   },
   methods: {
-    parentCalendar(dateArgument) {
-      this.year = dateArgument[0];
-      this.month = dateArgument[1];
-      let m = moment(this.year + '-' + this.month + '-01');
-      this.daycount = m.daysInMonth();
-      daycount = this.daycount;
-      this.createInfo();
-    },
     parentSearch(searchArgument) {
       this.selectedService = searchArgument.teikyoService;
+      if (searchArgument.teikyoCode == 22 && searchArgument.teikyoService.includes('経過的')) {
+        this.displayCode = '02';
+      } else if (searchArgument.teikyoCode == 32 && searchArgument.teikyoService.includes('経過的')) {
+        this.displayCode = '03';
+      } else {
+        this.displayCode = searchArgument.teikyoCode;
+      }
+      this.displayComponent = services[0][this.displayCode];
     },
     getUserListData(data) {
       // 利用者一覧で表示されているデータ一式を取得
@@ -116,6 +90,23 @@ export default {
     }
   }
 }
+
+const services =[{
+  '22': SeikatsuKaigo,
+  '02': KeikatekiSeikatsuKaigo,
+  '24': Tanki,
+  '32': ShisetsuNyusho,
+  '03': KeikatekiShisetsuNyusho,
+  '34': Shukuhaku,
+  '41': KinoKunren,
+  '42': SeikatsuKunren,
+  '43': ShuroIko,
+  '44': ShuroIkoYosei,
+  '45': ShurokeizokuA,
+  '46': ShurokeizokuB,
+  '47': ShuroTeichaku,
+  '35': JiritsuSeikatsu,
+}];
 </script>
 
 <style lang="scss">

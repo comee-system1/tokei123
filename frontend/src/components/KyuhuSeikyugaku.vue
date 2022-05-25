@@ -8,9 +8,12 @@
             :alternatingRowStep="0"
             :initialized="onInitialized"
             :isReadOnly="true"
-            :allowDragging="false"
-            :allowResizing="false"
             :deferResizing="false"
+            :allowAddNew="false"
+            :allowDelete="false"
+            :allowDragging="false"
+            :allowPinning="false"
+            :allowResizing="false"
             :allowSorting="false"
           >
           </wj-flex-grid>
@@ -33,11 +36,10 @@ export default {
     getData: function () {
       let serviceData = [];
       let servicecount;
-      // サービス数3と仮定
-      servicecount = 3;
+      servicecount = getServiceCount();
       for (let i = 0; i < servicecount; i++) {
         serviceData.push({
-          uid: 1,
+          uid: i,
           teikyoService:  '医療介護', //提供サービス
           servicecode: '21',// サービス種類コード
           serviceriyounissu: '10',// 利用日数
@@ -56,100 +58,15 @@ export default {
           tokubetutaisakuhi: Math.random() * 10000,
           zititaizyoseibun: Math.random() * 10000,
         });
-        serviceData.push({
-          uid: 2,
-          teikyoService:  '生活介護', //提供サービス
-          servicecode: '22',// サービス種類コード
-          serviceriyounissu: '12',// 利用日数
-          kyuhutanisu: Math.random() * 10000,
-          tanisutanka: Math.random() * 10000,
-          souhiyougaku: Math.random() * 10000,
-          itiwarisoutougaku: Math.random() * 1000,
-          riyousyahutan2: Math.random() * 10000,
-          jyougengetugaku: Math.random() * 10000,
-          jigyousyagenmengaku: Math.random() * 10000,
-          genmenriyousyahutan1: Math.random() * 10000,
-          tyouseigohutan: Math.random() * 10000,
-          jyougenriyousyahutangaku: Math.random() * 10000,
-          ketteiriyousyahutangaku: Math.random() * 10000,
-          kyuhuhi: Math.random() * 10000,
-          tokubetutaisakuhi: Math.random() * 10000,
-          zititaizyoseibun: Math.random() * 10000,
-        });
-        serviceData.push({
-          uid: 3,
-          teikyoService:  '短期入所', //提供サービス
-          servicecode: '32',// サービス種類コード
-          serviceriyounissu: '13',// 利用日数
-          kyuhutanisu: Math.random() * 10000,
-          tanisutanka: Math.random() * 10000,
-          souhiyougaku: Math.random() * 10000,
-          itiwarisoutougaku: Math.random() * 1000,
-          riyousyahutan2: Math.random() * 10000,
-          jyougengetugaku: Math.random() * 10000,
-          jigyousyagenmengaku: Math.random() * 10000,
-          genmenriyousyahutan1: Math.random() * 10000,
-          tyouseigohutan: Math.random() * 10000,
-          jyougenriyousyahutangaku: Math.random() * 10000,
-          ketteiriyousyahutangaku: Math.random() * 10000,
-          kyuhuhi: Math.random() * 10000,
-          tokubetutaisakuhi: Math.random() * 10000,
-          zititaizyoseibun: Math.random() * 10000,
-        });
-        serviceData.push({
-          uid: 4,
-          teikyoService:  '共同生活援助', //提供サービス
-          servicecode: '33',// サービス種類コード
-          serviceriyounissu: '4',// 利用日数
-          kyuhutanisu: Math.random() * 10000,
-          tanisutanka: Math.random() * 10000,
-          souhiyougaku: Math.random() * 10000,
-          itiwarisoutougaku: Math.random() * 1000,
-          riyousyahutan2: Math.random() * 10000,
-          jyougengetugaku: Math.random() * 10000,
-          jigyousyagenmengaku: Math.random() * 10000,
-          genmenriyousyahutan1: Math.random() * 10000,
-          tyouseigohutan: Math.random() * 10000,
-          jyougenriyousyahutangaku: Math.random() * 10000,
-          ketteiriyousyahutangaku: Math.random() * 10000,
-          kyuhuhi: Math.random() * 10000,
-          tokubetutaisakuhi: Math.random() * 10000,
-          zititaizyoseibun: Math.random() * 10000,
-        });
-        serviceData.push({
-          uid: 5,
-          teikyoService:  '宿泊型自立訓練', //提供サービス
-          servicecode: '34',// サービス種類コード
-          serviceriyounissu: '10',// 利用日数
-          kyuhutanisu: Math.random() * 10000,
-          tanisutanka: Math.random() * 10000,
-          souhiyougaku: Math.random() * 10000,
-          itiwarisoutougaku: Math.random() * 1000,
-          riyousyahutan2: Math.random() * 10000,
-          jyougengetugaku: Math.random() * 10000,
-          jigyousyagenmengaku: Math.random() * 10000,
-          genmenriyousyahutan1: Math.random() * 10000,
-          tyouseigohutan: Math.random() * 10000,
-          jyougenriyousyahutangaku: Math.random() * 10000,
-          ketteiriyousyahutangaku: Math.random() * 10000,
-          kyuhuhi: Math.random() * 10000,
-          tokubetutaisakuhi: Math.random() * 10000,
-          zititaizyoseibun: Math.random() * 10000,
-        });
-        serviceData.push({
-        });
       }
       this.allData = serviceData;
       return serviceData;
     },
     onInitialized: function (flexGrid) {
-      // サービス数3
-      serviceData
       let serviceData = this.allData;
       let servicecount;
       let cellcount;
-      // サービス数3と仮定
-      servicecount = 3;
+      servicecount = getServiceCount();
       // セル構成するために必要なループ数を決定
       if (servicecount < 4 ) {
           // サービスの数が3以下だった場合、空セルを表示
@@ -210,13 +127,13 @@ export default {
       flexGrid.setCellData(11, 0, '調整後利用者負担');
       flexGrid.setCellData(12, 0, '上限額管理後利用者');
       flexGrid.setCellData(13, 0, '決定利用者負担額');
-      flexGrid.setCellData(14, 0, '請請求額');
+      flexGrid.setCellData(14, 0, '請求額');
       flexGrid.setCellData(14, 1, '給付日');
       flexGrid.setCellData(15, 1, '特別対策費');
       flexGrid.setCellData(16, 0, '自治体助成分請求書');
       flexGrid.setCellData(1, cellcount-1, '合計');
       // サービスが入力されている2行目には円/日をセット
-      for (let i = 0; i <= servicecount; i++) {
+      for (let i = 1; i <= servicecount; i++) {
         flexGrid.setCellData(2, i * 3, '日');
       }
       // サービスが入力されている4行目には円/単位をセット
@@ -224,7 +141,6 @@ export default {
         flexGrid.setCellData(4, i * 3 + 1, '円/単位');
       }
       // サービスの値をセット
-      console.log(serviceData);
       for (let i = 0; i < servicecount; i++) {
         flexGrid.setCellData(1, ((i + 1)  * 3 - 1) , serviceData[i]['servicecode']);
         flexGrid.setCellData(1, ((i + 1)  * 3) , serviceData[i]['teikyoService']);
@@ -323,15 +239,60 @@ export default {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
+        s.textAlign = 'right'
+        // ヘッダー色変更・中央寄せ
+        if ((r == 0) || (c == 0) || (c == 1)) {
+        s.backgroundColor = "#eee";
         s.textAlign = 'center'
-        if((r == 0) || (c == 0) || (c == 1)){
-          s.backgroundColor = "#eee";
+        }
+        // 請求額中央寄せ
+        if ((r == 9) && (c == 0)) {
+            s.display ="flex";
+            s.alignItems = "center";
+            s.justifyContent = "center";
+        }
+        // A型減免セル中央寄せ
+        if ((r == 14) && (c == 0)) {
+            s.display ="flex";
+            s.alignItems = "center";
+            s.justifyContent = "center";
+        }
+        // 合計セル中央寄せ
+        if ((r == 1) && (c == cellcount -1)) {
+            s.display ="flex";
+            s.alignItems = "center";
+            s.justifyContent = "center";
+            s.backgroundColor = "#eee";
+        }
+        // 数値右寄せ
+        if ((r == 3) && (c == cellcount -1) ) {
+          s.textAlign = 'right'
+        }
+        // サービスコード・種類、利用日数、単位数単価中央寄せ
+        for (let i = 0; i <= servicecount; i++) {
+          // サービスコード
+          if ((r == 1) && (i * 3 + 1) ) {
+            s.textAlign = 'center'
+          }
+          // 利用日数
+          if ((r == 2) && (i * 3 + 1)) {
+            s.textAlign = 'center'
+          }
+          // 単位数単価
+          if ((r == 4) && ((i * 3 + 1) && (c != cellcount -1))) {
+            s.textAlign = 'center'
+          }
         }
       }
-
     },
   },
 };
+// サービス種別の数を算出
+function getServiceCount() {
+  // サービス種別の数3と仮定
+  let count = 3;
+  return count;
+}
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';

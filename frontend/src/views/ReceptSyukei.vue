@@ -311,7 +311,7 @@ export default {
     /*********************
      * 上限管理事変更
      */
-    onJyougenkanriComb(e) {
+    onJyougenkanriCombo(e) {
       if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
       } else {

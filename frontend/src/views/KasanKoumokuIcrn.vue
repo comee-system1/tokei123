@@ -13,19 +13,14 @@
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
               <label>利用者</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
-                <v-btn
-                  v-for="n in userSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="siborikomiUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
+              <wj-combo-box
+                v-model="selUser"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                :itemsSource="userSelList"
+                :selectedIndexChanged="onUserIndexChanged"
+              >
+              </wj-combo-box>
             </v-col>
             <v-col cols="6">
               <label>加算</label>
@@ -158,7 +153,6 @@ const totalNinzuTitle = '人数';
 const totalTaniTitle = '単位数';
 const rowHeaderheight = 20;
 const rowheight = 25;
-let siborikomiSearch = 0;
 let alphabet = [
   '全',
   'ア',
@@ -177,7 +171,7 @@ export default {
   components: {
     HeaderServices,
   },
-  data: function () {
+  data() {
     return {
       alphabet: alphabet,
       errorcnt: '',
@@ -226,6 +220,7 @@ export default {
           kasanval: 0,
         },
       ],
+      selUser: 0,
       userSelList: [
         { val: 0, name: '全員' },
         { val: 1, name: '今月入所者' },
@@ -242,7 +237,7 @@ export default {
       serviceArgument: '', // ヘッダメニューのサービス選択
     };
   },
-  mounted: function () {
+  mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
@@ -251,7 +246,7 @@ export default {
     });
   },
   methods: {
-    loadKasan: function () {
+    loadKasan() {
       return [
         { val: 0, kbn: 0, name: '指定なし' },
         { val: 1, kbn: 1, name: '夜間職員配置体制加算' },
@@ -271,7 +266,7 @@ export default {
         { val: 15, kbn: 2, name: '栄養マネジメント加算' },
       ];
     },
-    onInitializekasanKoumokuIcrnGrid: function (flexGrid) {
+    onInitializekasanKoumokuIcrnGrid(flexGrid) {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.frozenColumns = 5;
@@ -504,12 +499,12 @@ export default {
       }
       flexGrid.endUpdate();
     },
-    searchClicked: function () {
+    searchClicked() {
       // 初期データ読込
       this.viewdataAll = this.loadData();
       this.userFilter();
     },
-    loadData: function () {
+    loadData() {
       let tmpviewdata = [];
       let userCount = 100;
       // ★Date型はmonthが0-11で表現されることに注意
@@ -581,21 +576,21 @@ export default {
       }
       return tmpviewdata;
     },
-    onKasanIndexChanged: function (s) {
+    onUserIndexChanged(s) {
+      this.selUser = s.selectedValue;
+      this.userFilter();
+    },
+    onKasanIndexChanged(s) {
       ls.setlocalStorageEncript(keyKasan, s.selectedValue);
       this.selKasan = s.selectedValue;
       this.userFilter();
     },
-    siborikomiUser: function (siborikomiType) {
-      siborikomiSearch = siborikomiType;
-      this.userFilter();
-    },
-    sortUser: function (sortType) {
+    sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet: function (key) {
+    onAlphabet(key) {
       ls.setlocalStorageEncript(keyAlp, Number(key));
       this.alphaSearch = Number(key);
       this.userFilter();
@@ -663,10 +658,10 @@ export default {
       }
 
       // 絞込１
-      if (siborikomiSearch == 1) {
+      if (this.selUser == 1) {
         // 今月入所
         tmpviewdata = tmpviewdata.filter((x) => x.isNyusyo);
-      } else if (siborikomiSearch == 2) {
+      } else if (this.selUser == 2) {
         // 今月退所
         tmpviewdata = tmpviewdata.filter((x) => x.isTaisyo);
       }
@@ -716,7 +711,8 @@ export default {
       this.viewdata = tmpviewdata;
     },
     //ヘッダメニューのサービス初回選択 検索ボタン
-    parentServiceSelect: function () {
+    parentServiceSelect(serviceArgument) {
+      console.log(serviceArgument);
       this.viewdataAll = [];
       this.viewdata = [];
     },

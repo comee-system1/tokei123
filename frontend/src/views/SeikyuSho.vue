@@ -42,6 +42,8 @@
           :allowResizing="false"
           :allowDragging="false"
           :autoRowHeights="true"
+          :allowPinning="false"
+          :allowSorting="false"
         >
           <wj-flex-grid-column header="市町村名" binding="sname" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
           <wj-flex-grid-column header="区分" binding="svcname" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
@@ -66,6 +68,7 @@
 import ServiceSelection from '../components/HeaderServices.vue';
 import { getOriginalDetailData } from '../data/SeikyuShoData.js'
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wijmo from '@grapecity/wijmo';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
@@ -246,6 +249,18 @@ export default {
           flexGrid.setCellData(firstrow, 12, mark);
         }
       });
+
+      flexGrid.formatItem.addHandler((s,e)=>{
+        if(e.panel.cellType == wjGrid.CellType.Cell && e.col == 12){
+          wijmo.addClass(e.cell,"verticalCenterCustom")
+        }
+        if(e.panel.cellType == wjGrid.CellType.Cell && e.col == 11){
+          wijmo.addClass(e.cell,"verticalBottomCustom")
+        }
+        if(e.panel.cellType == wjGrid.CellType.ColumnFooter && e.col >= 2){
+          wijmo.addClass(e.cell,"verticalRightCustom")
+        }
+      });
     },
     getCellRanges(gridData) {
       let renges = [];
@@ -314,6 +329,7 @@ div#seikyu-sho .transparent {
     text-align: center;
   }
 }
+
 .print-selecter {
   margin-right: 0;
   margin-left: auto;
@@ -336,4 +352,29 @@ div#seikyu-sho .transparent {
   width: 90px;
   }
 }
+
+#detailGrid .wj-header:not(.verticalRightCustom) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color:#333333 !important;
+}
+
+.wj-flexgrid .wj-cell.verticalCenterCustom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wj-flexgrid .wj-cell.verticalBottomCustom{
+  display: flex;
+  justify-content: right;
+  align-items: flex-end;
+}
+
+.wj-flexgrid .wj-cell.verticalRightCustom{
+  display: flex;
+  justify-content: right;
+}
+
 </style>

@@ -34,6 +34,8 @@
       :allowResizing="false"
       :allowDragging="false"
       :autoRowHeights="true"
+      :allowPinning="false"
+      :allowSorting="false"
     >
       <wj-flex-grid-column header="日付" binding="rymd" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column header="曜日" binding="youbi" :width="'3*'" :wordWrap=true></wj-flex-grid-column>
@@ -51,6 +53,8 @@
       :initialized="onInitializeSubGrid"
       :allowResizing="false"
       :allowDragging="false"
+      :allowPinning="false"
+      :allowSorting="false"
     >
       <wj-flex-grid-column binding="Column0" :width="'16*'" :wordWrap=true></wj-flex-grid-column>
       <wj-flex-grid-column binding="Column1" :width="'14*'" :wordWrap=true></wj-flex-grid-column>
@@ -214,7 +218,7 @@ export default {
               keitai: kirokuMeiData[i]["keitai"],
               kasantkt: kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
               kasantren: kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
-              biko: kirokuMeiData[i]["biko"] == 0 ? "":kirokuMeiData[i]["biko"],
+              biko: kirokuMeiData[i]["biko"],
             }
           )
         }

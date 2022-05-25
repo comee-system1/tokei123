@@ -254,18 +254,24 @@ export default {
     kikantuika_dialog_regist: function () {
       // 日付エラーチェック
       let nyuuinbi = moment(this.nyuuinbi).format('YYYY-M-D');
-      let taiinbi = moment(this.taiinbi).format('YYYY-M-D');
-      //比較
-      let diff = moment(this.taiinbi).diff(moment(this.nyuuinbi));
-      if (diff < 0 || !this.taiinbi || !this.nyuuinbi) {
-        alert('日付の指定に誤りがあります。');
-        return false;
+      let taiinbi = '';
+      let taiinbi_notFlag = false;
+      if (this.taiinbi) {
+        taiinbi = moment(this.taiinbi).format('YYYY-M-D');
+        let diff = moment(this.taiinbi).diff(moment(this.nyuuinbi));
+        if (diff < 0 || !this.nyuuinbi) {
+          alert('日付の指定に誤りがあります。');
+          return false;
+        }
+      } else {
+        taiinbi_notFlag = true;
       }
       this.registData = {
         type: this.type, // nyutaiin や gaihaku等
         selectKey: this.selectKey, // nyuutaiinやgaihakuの配列のキー
         nyuuinbi: nyuuinbi,
         taiinbi: taiinbi,
+        taiinbi_notFlag: taiinbi_notFlag,
         nyuuinbiShiseturiyo: this.nyuuinbiShiseturiyo,
         nyuuinbiBreakfast: this.nyuuinbiBreakfast,
         nyuuinbiLunch: this.nyuuinbiLunch,
@@ -298,7 +304,11 @@ export default {
       this.selectKey = data ? data.selectKey : '';
       this.nyuuinbi = data ? data.nyuuinbi : '';
       this.byouinName = data ? data.byouinName : '';
-      this.taiinbi = data ? data.taiinbi : '';
+      if (data.taiinbi_notFlag) {
+        this.taiinbi = '';
+      } else {
+        this.taiinbi = data ? data.taiinbi : '';
+      }
       this.nyuuinbiShiseturiyo = data ? data.nyuuinbiShiseturiyo : 0;
       this.nyuuinbiBreakfast = data ? data.nyuuinbiBreakfast : 0;
       this.nyuuinbiLunch = data ? data.nyuuinbiLunch : 0;

@@ -11,47 +11,13 @@
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <v-card
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: filterFlag.allFlag,
-                'lighten-2': filterFlag.allFlag,
-              }"
-              outlined
-              tile
-              @click="filterUser(1)"
+            <wj-combo-box
+              id="filterCombo"
+              :itemsSource="filterCombo"
+              :initialized="initComboFilter"
+              :displayMemberPath="'text'"
             >
-              全員
-            </v-card>
-          </v-col>
-          <v-col>
-            <v-card
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: filterFlag.nyukyoFlag,
-                'lighten-2': filterFlag.nyukyoFlag,
-              }"
-              outlined
-              tile
-              @click="filterUser(2)"
-              >今月入居者</v-card
-            >
-          </v-col>
-          <v-col>
-            <v-card
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: filterFlag.taikyoFlag,
-                'lighten-2': filterFlag.taikyoFlag,
-              }"
-              outlined
-              tile
-              @click="filterUser(3)"
-              >今月退去者</v-card
-            >
+            </wj-combo-box>
           </v-col>
         </v-row>
         <v-row no-gutters class="mt-1">
@@ -216,6 +182,7 @@ export default {
       jyukyunoFlag: false,
       useTeikyoCode: '',
       gridHeight: '',
+      filterCombo: this.getFilterCombo(),
       filterFlag: { allFlag: true, nyukyoFlag: false, taikyoFlag: false },
       sortFlag: { kanaFlag: false, codeFlag: true, bangoFlag: false },
       alphaSearch: 0, // アルファベット検索
@@ -242,7 +209,33 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
-
+    /*************************
+     * 絞り込みコンボボックス
+     */
+    initComboFilter(combo) {
+      let _self = this;
+      combo.selectedIndexChanged.addHandler(function (sender) {
+        _self.filterUser(sender.selectedValue.key);
+      });
+    },
+    getFilterCombo() {
+      let filterCombo = [];
+      filterCombo.push(
+        {
+          key: 1,
+          text: '全員',
+        },
+        {
+          key: 2,
+          text: '今月入居者',
+        },
+        {
+          key: 3,
+          text: '今月退去者',
+        }
+      );
+      return filterCombo;
+    },
     setChildTeikyocode(teikyoCode, serachbutton) {
       // this.usersData = [];
       if (serachbutton) {
@@ -250,7 +243,7 @@ export default {
       }
       this.useTeikyoCode = teikyoCode;
     },
-    sortUser: function (sortType) {
+    sortUser(sortType) {
       this.sortFlag.kanaFlag = false;
       this.sortFlag.codeFlag = false;
       this.sortFlag.bangoFlag = false;
@@ -272,7 +265,7 @@ export default {
       }
       this.userFilter();
     },
-    filterUser: function (sortType) {
+    filterUser(sortType) {
       this.filterFlag.allFlag = false;
       this.filterFlag.nyukyoFlag = false;
       this.filterFlag.taikyoFlag = false;
@@ -298,7 +291,7 @@ export default {
       this.checkAll = s.selectedIndex;
       this.userFilter(s);
     },
-    createUser(response) {
+    createUser(response = []) {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
@@ -325,7 +318,7 @@ export default {
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
-          riyocode: '123456' + (Math.floor(Math.random() * 9) + 1),
+          riyocode: '123456' + i,
           names: '東経太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
@@ -345,7 +338,7 @@ export default {
       userDataSelect = usersData;
 
       this.userFilter();
-      return riyo_inf;
+      return this.usersData;
     },
 
     userFilter(s) {
@@ -425,7 +418,7 @@ export default {
       data = get;
 
       // コード順でソート
-      if (this.sortSearch == 1) {
+      if (this.sortSearch == '' || this.sortSearch == 1) {
         data.sort((a, b) => {
           if (a.riyocode < b.riyocode) return -1;
           if (a.riyocode > b.riyocode) return 1;
@@ -577,6 +570,9 @@ export default {
 div#user-list-print_scrollbar {
   padding: 0;
   width: 275px;
+  #filterCombo {
+    width: 100%;
+  }
   .wj-cell:not(.wj-header) {
     background: $grid_background;
     &:nth-child(3) {

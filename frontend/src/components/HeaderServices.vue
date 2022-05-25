@@ -269,7 +269,7 @@ export default {
       };
       this.storage = storage;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
     //strageにデータが登録してある時
     if (storage.selectRow) {
@@ -304,11 +304,6 @@ export default {
       this.$emit('parent-service-select', this.returndata);
     }
   },
-  mounted: function () {
-    this.$nextTick(function () {
-      // ビュー全体がレンダリングされた後にのみ実行されるコード
-    });
-  },
   methods: {
     header_dialog_close: function () {
       this.header_dialog = false;
@@ -318,111 +313,112 @@ export default {
     },
     createJimusyo: function () {
       let data = [];
+      let uid = 1;
+      let bango = 4;
       data.push({
-        uid: 1,
-        jimusyoBango: '11123404',
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
         serviceJigyo: '生活介護支援事務所 ひまわり園',
         teikyoCode: 21,
-        teikyoService: '21 医療介護',
+        teikyoService: '21 療養介護',
       });
       data.push({
-        uid: 2,
-        jimusyoBango: '11123405',
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
         serviceJigyo: '生活介護支援事務所 ひまわり園',
         teikyoCode: 22,
         teikyoService: '22 生活介護',
       });
       data.push({
-        uid: 3,
-        jimusyoBango: '11123405',
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
+        serviceJigyo: '生活介護支援事務所 ひまわり園',
+        teikyoCode: 22,
+        teikyoService: '22 経過的生活介護',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
         serviceJigyo: '短期入所施設 ひまわり園',
         teikyoCode: 24,
         teikyoService: '24 短期入所',
       });
       data.push({
-        uid: 4,
-        jimusyoBango: '11123405',
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
         serviceJigyo: '障害者入所施設 ひまわり園',
         teikyoCode: 32,
         teikyoService: '32 施設入所支援',
         defaultFlag: true,
       });
       data.push({
-        uid: 5,
-        jimusyoBango: '11123405',
+        uid: uid++,
+        jimusyoBango: '1112340' + bango++,
         serviceJigyo: '障害者入所施設 ひまわり園',
         teikyoCode: 32,
         teikyoService: '32 経過的施設入所支援',
         defaultFlag: false,
       });
       data.push({
-        uid: 6,
-        jimusyoBango: '11123405',
-        serviceJigyo: '知的障害者入所施設 ひまわり園',
-        teikyoCode: 33,
-        teikyoService: '33 共同生活援助',
-        defaultFlag: false,
-      });
-      data.push({
-        uid: 7,
-        jimusyoBango: '111200030',
+        uid: uid++,
+        jimusyoBango: '111200030' + bango++,
         serviceJigyo: '知的障害者入所施設 東経園',
         teikyoCode: 34,
         teikyoService: '34 宿泊型自立訓練',
         defaultFlag: false,
       });
       data.push({
-        uid: 8,
-        jimusyoBango: '111200031',
+        uid: uid++,
+        jimusyoBango: '111200031' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 41,
         teikyoService: '41 自立訓練(機能訓練)',
       });
       data.push({
-        uid: 9,
-        jimusyoBango: '111200032',
+        uid: uid++,
+        jimusyoBango: '111200032' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 42,
         teikyoService: '42 自立訓練(生活訓練)',
       });
       data.push({
-        uid: 10,
-        jimusyoBango: '111200033',
+        uid: uid++,
+        jimusyoBango: '111200033' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 43,
         teikyoService: '43 就労移行支援',
       });
       data.push({
-        uid: 11,
-        jimusyoBango: '111200033',
+        uid: uid++,
+        jimusyoBango: '111200033' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 44,
-        teikyoService: '44 就労移行支援',
+        teikyoService: '44 就労移行支援（養成）',
       });
       data.push({
-        uid: 12,
-        jimusyoBango: '111200033',
+        uid: uid++,
+        jimusyoBango: '111200033' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 45,
         teikyoService: '45 就労継続支援A型',
       });
       data.push({
-        uid: 13,
-        jimusyoBango: '111200033',
+        uid: uid++,
+        jimusyoBango: '111200033' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 46,
         teikyoService: '46 就労継続支援B型',
       });
       data.push({
-        uid: 14,
-        jimusyoBango: '111200033',
+        uid: uid++,
+        jimusyoBango: '111200033' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 47,
         teikyoService: '47 就労定着支援',
       });
       data.push({
-        uid: 15,
-        jimusyoBango: '111200038',
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
         teikyoCode: 35,
         teikyoService: '35 自立生活援助',
