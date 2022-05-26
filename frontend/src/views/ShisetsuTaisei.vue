@@ -236,7 +236,7 @@ export default {
     HeaderServices,
   },
 
-  mounted() {
+  updated() {
     this.handleResize;
     window.addEventListener('resize', this.handleResize);
   },

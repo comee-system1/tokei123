@@ -141,6 +141,8 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
+import sysConst from '@/utiles/const';
+import * as wijmo from '@grapecity/wijmo';
 
 Vue.use(VueAxios, axios);
 
@@ -167,6 +169,8 @@ export default {
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterSibori: { type: 1 }, // 絞込
       alphaSelect: 0,
+      editedCells: [],
+      completeJudgeButton: 0, // 確定登録・解除ボタン判定
     };
   },
   components: {},
@@ -174,14 +178,20 @@ export default {
     /*******************
      * 確定登録・解除ボタン
      */
-    parentDefineButton() {
-      for (let i = 0; i < this.allData.length; i++) {
-        let mark = this.mainFlexGrid.getCellData(i, 15);
-        console.log(mark);
-        if (mark == '〇') {
-          this.mainFlexGrid.setCellData(i, 15, 'complete');
-
-          this.receptData[i]['complateFlag'] = true;
+    parentDefineButton(type) {
+      this.completeJudgeButton = type;
+      for (let i = 0; i < this.receptData.length; i++) {
+        if (type == 2) {
+          // 確定解除
+          this.mainFlexGrid.setCellData(i, 15, '');
+          this.receptData[i]['complateFlag'] = false;
+        } else {
+          let mark = this.mainFlexGrid.getCellData(i, 15);
+          //   let _self = this;
+          if (mark == '〇') {
+            this.mainFlexGrid.setCellData(i, 15, 'complete');
+            this.receptData[i]['complateFlag'] = true;
+          }
         }
       }
     },
@@ -414,8 +424,9 @@ export default {
           teikyoservice: '22 生活介護',
           souhiyougaku: Math.random() * 10000000,
           riyosyafutangaku: Math.random() * 10000000,
-          kanrikekkafutangaku: '',
-          kanrikekka: '',
+          blueFlag: i % 4 == 3, // 上限額管理事業所が同一法人で別事業所の場合
+          kanrikekkafutangaku: i % 4 == 3 ? 1000 * i * 3 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
+          kanrikekka: i % 4 == 3 ? i * 3 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
           resekakutei: '',
           print: '',
           complateFlag: false, // 確定状態
@@ -473,15 +484,18 @@ export default {
               _self.allData[hPage.row]['resekakutei'] = '';
             }
             if (ht.target.innerText == 'complete') {
-              flexGrid.setCellData(hPage.row, 15, 'delete');
-              _self.allData[hPage.row]['resekakutei'] = 'delete';
+              flexGrid.setCellData(hPage.row, 15, '');
+              //flexGrid.setCellData(hPage.row, 15, 'delete');
+              _self.allData[hPage.row]['resekakutei'] = '';
               _self.allData[hPage.row]['complateFlag'] = false;
             }
+            /*
             if (ht.target.innerText == 'delete') {
               flexGrid.setCellData(hPage.row, 15, 'complete');
               _self.allData[hPage.row]['resekakutei'] = 'complete';
               _self.allData[hPage.row]['complateFlag'] = true;
             }
+            */
           }
         }
       });
@@ -491,12 +505,24 @@ export default {
      */
     edittingCell(flexGrid, _self) {
       flexGrid.beginningEdit.addHandler(function (senders, args) {
-        if (_self.allData[args.row].complateFlag) {
+        if (_self.receptData[args.row].complateFlag) {
           if (args.col == 13 || args.col == 14) {
             args.cancel = true;
           }
         }
+        if (
+          _self.receptData[args.row].blueFlag ||
+          _self.receptData[args.row].complateFlag
+        ) {
+          if (args.col == 13 || args.col == 14) {
+            args.cancel = true;
+          }
+        }
+        if (args.col == 16) {
+          args.cancel = true;
+        }
       });
+
       flexGrid.cellEditEnding.addHandler((s, e) => {
         let col = s.columns[e.col];
         let value = changeType(
@@ -505,12 +531,7 @@ export default {
           col.format
         );
 
-        // console.log('length=>' + _self.allData.length);
-        // console.log('row=>' + e.row);
-        // console.log('col=>' + e.col);
-        // console.log('value=>' + value);
-        // console.log(isNumber(value));
-
+        let pt6 = flexGrid.getCellData(e.row, 6);
         let pt13 = flexGrid.getCellData(e.row, 13);
         let pt14 = flexGrid.getCellData(e.row, 14);
         if (e.col == 13 || e.col == 14) {
@@ -521,6 +542,13 @@ export default {
           } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
             flexGrid.setCellData(e.row, 6, '〇');
             flexGrid.setCellData(e.row, 15, '');
+            // 数値入力後、レセプト反映が●の場合、負担額の背景をピンクにする
+            // 編集をしたデータの配列を保持
+            if (pt6 == '●') {
+              if (s.activeEditor.value != s.getCellData(e.row, e.col, true)) {
+                _self.editedCells.push(e.range);
+              }
+            }
           }
         }
       });
@@ -564,7 +592,6 @@ export default {
     createCellFormat(flexGrid, _self) {
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
-
         let text = e.cell.innerText;
 
         let classname = '';
@@ -590,11 +617,45 @@ export default {
         } else if (text == 'delete') {
           classname = 'delete';
         }
-        if (11 <= e.col || e.col == 5) {
-          e.cell.style.textAlign = 'right';
-          e.cell.style.justifyContent = 'right';
-          e.cell.style.alignItems = 'right';
+        if (e.panel != flexGrid.columnHeaders) {
+          if (11 <= e.col || e.col == 5) {
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
+          }
         }
+
+        if (e.panel != flexGrid.columnHeaders) {
+          if (_self.receptData[e.row].blueFlag && e.col < 16) {
+            e.cell.style.color = sysConst.COLOR.fontColor;
+            e.cell.style.background = sysConst.COLOR.gridBackground;
+          } else {
+            e.cell.style.color = sysConst.COLOR.fontColor;
+            e.cell.style.background = sysConst.COLOR.white;
+          }
+          if ((e.col >= 0 && e.col <= 5) || (e.col >= 7 && e.col <= 12)) {
+            e.cell.style.background = sysConst.COLOR.gridBackground;
+          }
+
+          // レセプト反映後に数値を変えたとき
+          wijmo.removeClass(e.cell, 'edited-cell');
+          for (var i = 0; i < _self.editedCells.length; i++) {
+            if (_self.editedCells[i].equals(e.range)) {
+              wijmo.addClass(e.cell, 'edited-cell');
+            }
+          }
+
+          // 確定登録ボタンを押下
+          if (_self.completeJudgeButton == 1) {
+            if (e.col == 13 || e.col == 14) {
+              // 文字が入っていれば背景を黄色
+              if (flexGrid.getCellData(e.row, e.col)) {
+                e.cell.style.background = sysConst.COLOR.gridBackground;
+              }
+            }
+          }
+        }
+
         if (classname) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +
@@ -604,6 +665,7 @@ export default {
             '</div>';
         }
       });
+      this.completeJudgeButton = 0;
     },
 
     /**************
@@ -657,11 +719,6 @@ div#recept-tajyougen {
   #grid_tajyougen {
     height: 52vh;
   }
-  .wj-header.wj-cell {
-    div {
-      font-size: 14px;
-    }
-  }
 
   .wj-flexgrid .wj-cell {
     display: flex;
@@ -669,11 +726,20 @@ div#recept-tajyougen {
     font-size: 12px;
     font-weight: normal;
   }
+  .wj-header.wj-cell {
+    font-size: 14px;
+    text-align: center !important;
+  }
+  .wj-cell.wj-state-selected {
+    color: $font_color;
+  }
 
   .wj-flexgrid .wj-cell.wj-align-center {
     justify-content: center;
   }
-
+  .wj-cell.edited-cell {
+    background-color: pink !important;
+  }
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;

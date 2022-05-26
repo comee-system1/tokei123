@@ -79,8 +79,8 @@
       <v-col>
       <wj-flex-grid
         id="kyuhu-meisairan"
-        :headersVisibility="'Column'"
         :initialized="onInitialized"
+        :headersVisibility="'All'"
         :autoGenerateColumns="false"
         :isReadOnly="true"
         :deferResizing="false"
@@ -90,12 +90,7 @@
         :allowPinning="false"
         :allowResizing="false"
         :allowSorting="false"
-      >
-        <wj-flex-grid-column
-          :width="20"
-          :wordWrap="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
+      ><wj-flex-grid-column
           :binding="'service'"
           :header="'サービス内容'"
           width="3.5*"
@@ -317,7 +312,9 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       
       // サービス種別ヘッダーを固定
-      // flexGrid.frozenRow = 0;
+      flexGrid.frozenColumns = 1;
+      flexGrid.frozenRows = 1;
+
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);
       // 結合するセルの範囲を指定
@@ -367,20 +364,29 @@ export default {
     onInitialized: function (grid) {
       let griddata = this.getData();
       let griddatacount;
+      // グリッドの選択を無効にする
+      grid.selectionMode = wjGrid.SelectionMode.None;
+
+      // ヘッダーを固定
+      // grid.frozenColumns = 0;
+
       // 給付明細欄の配列の数を算出
       griddatacount = griddata.length;
 
+      // ヘッダー列を追加/////////////////////////////////////////////
+      grid.rowHeaders.rows.insert(0, new wjGrid.Row());
+      let headerpanel = grid.rowHeaders;
+
       // サービス内容追加ボタン用フッター行を追加/////////////////////////////////////////////
       grid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
-      grid.columnFooters.rows.insert(1, new wjGrid.GroupRow());
       let footerPanel = grid.columnFooters;
       
       // セルの結合/////////////////////////////////////////////////////////////////
-      let headerRanges = [
-        new wjGrid.CellRange(0,2,0,7),
+      let headerColumnRanges = [
+        new wjGrid.CellRange(0,1,0,6),
       ];
       
-      let cellRanges = [
+      let headerRowRanges = [
         new wjGrid.CellRange(0,0,griddatacount-1,0),
       ];
       let mm = new wjGrid.MergeManager();
@@ -388,15 +394,15 @@ export default {
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
+          for (let h = 0; h < headerColumnRanges.length; h++) {
+            if (headerColumnRanges[h].contains(r, c)) {
+              return headerColumnRanges[h];
             }
           }
-        } else if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let f = 0; f < cellRanges.length; f++) {
-            if (cellRanges[f].contains(r, c)) {
-              return cellRanges[f];
+        } else if (panel.cellType == wjGrid.CellType.RowHeader) {
+          for (let f = 0; f < headerRowRanges.length; f++) {
+            if (headerRowRanges[f].contains(r, c)) {
+              return headerRowRanges[f];
             }
           }
         }
@@ -405,6 +411,8 @@ export default {
 
       grid.itemsSource = griddata;
 
+      // 列ヘッダー0行目
+      headerpanel.setCellData(0, 0, "給付明細欄");
       // フッター0行目
       footerPanel.setCellData(0, 0,);
 
@@ -416,55 +424,38 @@ export default {
         s.textAlign = 'center';
         s.color = "#000";
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-        // ヘッダーのスタイルをカスタマイズ
+        // ヘッダー行のスタイルをカスタマイズ
           if (r === 0) {
             s.backgroundColor = "#eee";
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.RowHeader) {
+        // ヘッダー列のスタイルをカスタマイズ
+          if (c == 0) {
+            s.writingMode = 'vertical-rl';
+            s.borderBottom = 'none';
+            s.paddingRight = '4px'
           }
         }
         if (panel.cellType == wjGrid.CellType.Cell) {
         // セルのスタイルをカスタマイズ
           if (c == 0) {
-            s.backgroundColor = "#eee";
-            cell.innerHTML = '給付明細欄';
-            s.display ="flex";
-            s.alignItems = "center";
-            s.borderBottom = 'none';
-          }
-          if (c == 1) {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
           }
-          if ((c == 8) || (c == 10)) {
+          if ((c == 7) || (c == 9)) {
             s.textAlign = 'right';
           }
         }
         if (panel.cellType == wjGrid.CellType.ColumnFooter) {
         // フッターのスタイルをカスタマイズ
-          if(!(r == 0 && c == 0)){
-            s.backgroundColor = "#fff";
-            s.borderTop = "none";
-          }
-          if(c == 0){
-            s.backgroundColor = "#eee";
-            s.borderTop = "none";
-            s.borderBottom = 'none';
-          }
+          s.backgroundColor = "#fff";
         }
       }
     },
   },
 };
-/**************
- * 
- *複数桁の数字を一文字づつ取り出す
- */
-// function numberSplit() {
-  // let numberList = 123456;
-  // let num;
-  // num = numberList.split(',').map(Number)
-  // console.log(num);
-  // return num;
-// }
+
 /**************
  * 
  *サービス種別データを設定
@@ -535,124 +526,79 @@ function getSyubetuData() {
   )
   return syubetuData;
 }
+
 /**************
  * 
  *給付明細欄データを設定
  */
 function getMeisairanData() {
   let meisairanData = [];
-  meisairanData.push({
-    service: '生活介護',
-    servicecode1: '1',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生介福祉専門職員配置加算等Ⅰ',
-    servicecode1: '2',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 30,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生介常勤看護職員等配置加算Ⅰ',
-    servicecode1: '3',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生介人員配置体制加算Ⅰ',
-    servicecode1: '1',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生活福祉専門職員配置加算等Ⅰ',
-    servicecode1: '1',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生活福祉専門職員配置加算等Ⅰ',
-    servicecode1: '1',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
-  meisairanData.push({
-    service: '生活介護',
-    servicecode1: '1',
-    servicecode2: '1',
-    servicecode3: '4',
-    servicecode4: '3',
-    servicecode5: '2',
-    servicecode6: '2',
-    tanisuu: 669,
-    kaisuu: 1,
-    servicetanisuu: 9300,
-    tekiyou: '',
-  });
+
+  //暫定敵に7つ分のサービスコード
+  let noCount = 7; 
+  let servicecode = [];
+  for (let f = 0; f < noCount; f++) {
+    servicecode.push(
+      Math.floor(Math.random() * 555555).toString()
+    );
+  }
+  //let meisairanCode = numberSplit(servicecode);
+
+  let smp = [];
+  smp.push(
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生活介護'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
+  );
+  for(let i = 0 ; i< smp.length; i++){
+    let arrayCode = smp[i].code.split('');
+    meisairanData.push({
+      service: smp[i].name,
+      servicecode1: arrayCode[0],
+      servicecode2: arrayCode[1],
+      servicecode3: arrayCode[2],
+      servicecode4: arrayCode[3],
+      servicecode5: arrayCode[4],
+      servicecode6: arrayCode[5],
+      tanisuu: '669'+i*20,
+      kaisuu: 1,
+      servicetanisuu: 9300,
+      tekiyou: '',
+    });
+  }
+
+  // 表示数11未満だった場合空の行を追加
+  if (meisairanData.length < 11) {
+    let meisairanDataCount
+    meisairanDataCount = meisairanData.length
+    for (let f = 0; f < (11 - meisairanDataCount); f++) {
+      meisairanData.push({
+      service: '',
+      servicecode1: '',
+      servicecode2: '',
+      servicecode3: '',
+      servicecode4: '',
+      servicecode5: '',
+      servicecode6: '',
+      tanisuu: '',
+      kaisuu: '',
+      servicetanisuu: '',
+      tekiyou: '',
+    });
+    }
+  }
   return meisairanData;
 }
-// function getMeisairanData() {
-//   let meisairanData = [];
-//   for (let i = 0; i <= 12; i++) {
-//     meisairanData.push({
-//       service: '生活介護',
-//       servicecode1: '1',
-//       servicecode2: '1',
-//       servicecode3: '4',
-//       servicecode4: '3',
-//       servicecode5: '2',
-//       servicecode6: i,
-//       tanisuu: 669,
-//       kaisuu: 1,
-//       servicetanisuu: 9300,
-//       tekiyou: '',
-//     });
-//   }
-//   return meisairanData;
-// }
+
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';

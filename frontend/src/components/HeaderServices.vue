@@ -307,9 +307,6 @@ export default {
   methods: {
     header_dialog_close: function () {
       this.header_dialog = false;
-      if (this.storage.selectRow == 0) {
-        this.screenFlag = true;
-      }
     },
     createJimusyo: function () {
       let data = [];

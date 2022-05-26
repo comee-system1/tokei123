@@ -228,26 +228,26 @@ export default {
       let gridData = [];
       if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for (let i = 0; i<kirokuMeiData.length; i++) {
+        kirokuMeiData.forEach(rowData => {
           // 曜日表示用に文字列の日付をDate型に変換
-          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let datearr = (rowData["rymd"].substr(0, 4) + '/' + rowData["rymd"].substr(4, 2) + '/' + rowData["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              rymd: Number(rowData["rymd"].substr(6,2)),
               youbi: WeekChars[date.getDay()],
-              jyokyo: kirokuMeiData[i]["jyokyo"],
-              kasanj: kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
-              kasans: kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-              kasan2: kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
-              kasank: kirokuMeiData[i]["kasank"] == 0 ? "":kirokuMeiData[i]["kasank"],
-              kasannc: kirokuMeiData[i]["kasannc"] == 0 ? "":kirokuMeiData[i]["kasannc"],
-              kasani: kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
-              kasanti: kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
-              biko: kirokuMeiData[i]["biko"],
+              jyokyo: rowData["jyokyo"],
+              kasanj: rowData["kasanj"] == 0 ? "":rowData["kasanj"],
+              kasans: rowData["kasans"] == 0 ? "":rowData["kasans"],
+              kasan2: rowData["kasan2"] == 0 ? "":rowData["kasan2"],
+              kasank: rowData["kasank"] == 0 ? "":rowData["kasank"],
+              kasannc: rowData["kasannc"] == 0 ? "":rowData["kasannc"],
+              kasani: rowData["kasani"] == 0 ? "":rowData["kasani"],
+              kasanti: rowData["kasanti"] == 0 ? "":rowData["kasanti"],
+              biko: rowData["biko"],
             }
           )
-        }
+        });
       } else {
         gridData.push(
           {

@@ -23,7 +23,7 @@
               ></v-col
             >
             <v-col cols="3"
-              ><v-btn small class="w-100" @click="defineButton(0)"
+              ><v-btn small class="w-100" @click="defineButton(2)"
                 >一括確定解除</v-btn
               ></v-col
             >
@@ -270,9 +270,9 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
 
-      receptFlag: true, // receptの初期表示状態
+      receptFlag: false, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },

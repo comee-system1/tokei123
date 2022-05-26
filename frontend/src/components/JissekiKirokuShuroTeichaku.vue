@@ -207,21 +207,21 @@ export default {
       let gridData = [];
       if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for (let i = 0; i<kirokuMeiData.length; i++) {
+        kirokuMeiData.forEach(rowData => {
           // 曜日表示用に文字列の日付をDate型に変換
-          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let datearr = (rowData["rymd"].substr(0, 4) + '/' + rowData["rymd"].substr(4, 2) + '/' + rowData["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              rymd: Number(rowData["rymd"].substr(6,2)),
               youbi: WeekChars[date.getDay()],
-              keitai: kirokuMeiData[i]["keitai"],
-              kasantkt: kirokuMeiData[i]["kasantkt"] == "0" ? "":kirokuMeiData[i]["kasantkt"],
-              kasantren: kirokuMeiData[i]["kasantren"] == "0" ? "":kirokuMeiData[i]["kasantren"],
-              biko: kirokuMeiData[i]["biko"],
+              keitai: rowData["keitai"],
+              kasantkt: rowData["kasantkt"] == "0" ? "":rowData["kasantkt"],
+              kasantren: rowData["kasantren"] == "0" ? "":rowData["kasantren"],
+              biko: rowData["biko"],
             }
           )
-        }
+        });
       } else {
         gridData.push(
           {

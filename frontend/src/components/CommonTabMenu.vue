@@ -3,7 +3,6 @@
   id="common-tab"
   height="25"
   v-model="tab"
-  hide-slider="false"
   @change="tabChange">
     <v-tab
       class="text-caption"
@@ -52,6 +51,9 @@ export default {
       font-weight: 700;
       border: none;
       border-radius: 4px 4px 0 0;
+    }
+    .v-tabs-slider {
+      display: none;
     }
   }
 </style>

@@ -191,24 +191,24 @@ export default {
       let gridData = [];
       if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for (let i = 0; i<kirokuMeiData.length; i++) {
+        kirokuMeiData.forEach(rowData => {
           // 曜日表示用に文字列の日付をDate型に変換
-          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let datearr = (rowData["rymd"].substr(0, 4) + '/' + rowData["rymd"].substr(4, 2) + '/' + rowData["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              rymd: Number(rowData["rymd"].substr(6,2)),
               youbi: WeekChars[date.getDay()],
-              keitai: kirokuMeiData[i]["keitai"],
-              kasandk: kirokuMeiData[i]["kasandk"] == "0" ? "":kirokuMeiData[i]["kasandk"],
-              kasansyo: kirokuMeiData[i]["kasansyo"] == "0" ? "":kirokuMeiData[i]["kasansyo"],
-              kasanknk: kirokuMeiData[i]["kasanknk"],
-              kasankk: kirokuMeiData[i]["kasankk"] == "0" ? "":kirokuMeiData[i]["kasankk"],
-              kasanjt: kirokuMeiData[i]["kasanjt"] == "0" ? "":kirokuMeiData[i]["kasanjt"],
-              biko: kirokuMeiData[i]["biko"],
+              keitai: rowData["keitai"],
+              kasandk: rowData["kasandk"] == "0" ? "":rowData["kasandk"],
+              kasansyo: rowData["kasansyo"] == "0" ? "":rowData["kasansyo"],
+              kasanknk: rowData["kasanknk"],
+              kasankk: rowData["kasankk"] == "0" ? "":rowData["kasankk"],
+              kasanjt: rowData["kasanjt"] == "0" ? "":rowData["kasanjt"],
+              biko: rowData["biko"],
             }
           )
-        }
+        });
       } else {
         gridData.push(
           {
@@ -235,11 +235,11 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 // 緊急時支援加算合計算出用
 function getKinkyuShienTotal(data) {
   let totalCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['kasanknk'] == 1 || data[i]['kasanknk'] == 2) {
+  data.forEach(rowData => {
+    if (rowData['kasanknk'] == 1 || rowData['kasanknk'] == 2) {
       totalCount++ ;
     }
-  }
+  });
   return totalCount;
 }
 </script>

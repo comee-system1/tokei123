@@ -106,7 +106,9 @@ export default {
         newData = apiResult['dummy'];
       } else {
         data.forEach(function (value) {
-          if (sort == value.sname) newData.push(value);
+          if (sort == value.sname) {
+            newData.push(value);
+          }
         });
       }
       this.detailGridData = newData;
@@ -117,8 +119,12 @@ export default {
       let newData = [];
       data.forEach(function(value) {
         // 印刷チェックの制御
-        if (s.selectedIndex == '1') value.print = '〇';
-        if (s.selectedIndex == '2') value.print = '';
+        if (s.selectedIndex == '1') {
+          value.print = '〇';
+        }
+        if (s.selectedIndex == '2') {
+          value.print = '';
+        }
         newData.push(value);
       });
       this.detailGridData = newData;
@@ -243,8 +249,12 @@ export default {
         if (ht.cellType == wjGrid.CellType.Cell && ht.col == 12) {
           let p = flexGrid.getCellData(firstrow, 12);
           let mark = '';
-          if (p == '〇') mark = '';
-          if (p == '') mark = '〇';
+          if (p == '〇') {
+            mark = '';
+          }
+          if (p == '') {
+            mark = '〇';
+          }
           _self.detailGridData[firstrow]['print'] = mark;
           flexGrid.setCellData(firstrow, 12, mark);
         }

@@ -257,6 +257,8 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
+import '@/assets/scss/common.scss';
+import sysConst from '@/utiles/const';
 
 Vue.use(VueAxios, axios);
 
@@ -287,6 +289,8 @@ export default {
       filterSibori: { type: 1 }, // 絞込
       alphaSelect: 0,
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
+      completeJudgeButton: 0, // 確定登録・解除ボタン判定
+      editBackColorCell: [],
     };
   },
   components: {},
@@ -294,7 +298,8 @@ export default {
     /*******************
      * 確定登録・解除ボタン
      */
-    parentDefineButton() {
+    parentDefineButton(type) {
+      /*
       for (let i = 0; i < this.receptData.length; i++) {
         let mark = this.receptData[i]['resekakutei'];
         if (mark == '〇') {
@@ -303,6 +308,25 @@ export default {
           this.receptData[i]['complateFlag'] = true;
         }
         //this.allData[i]['print'] = mark;
+      }
+      */
+      this.completeJudgeButton = type;
+
+      for (let i = 0; i < this.receptData.length; i++) {
+        if (type == 2) {
+          // 確定解除
+          this.mainFlexGrid.setCellData(i, 16, '');
+          this.receptData[i]['resekakutei'] = '';
+          this.receptData[i]['complateFlag'] = false;
+        } else {
+          let mark = this.receptData[i]['resekakutei'];
+          //   let _self = this;
+          if (mark == '〇') {
+            this.mainFlexGrid.setCellData(i, 16, 'complete');
+            this.receptData[i]['resekakutei'] = 'complete';
+            this.receptData[i]['complateFlag'] = true;
+          }
+        }
       }
     },
     /*******************
@@ -890,9 +914,11 @@ export default {
           }
           // レセプト確定カラムを押下
           if (hPage.col == 16) {
+            /*
             if (ht.target.innerText == '〇') {
               _self.editReseKaku(hPage.row, '');
             }
+
             if (ht.target.innerText == '') {
               // 上限管理計算の値が●であることの確認
               let jyougengakukanrikeisan =
@@ -901,10 +927,12 @@ export default {
                 _self.editReseKaku(hPage.row, '〇');
               }
             }
+            */
             if (ht.target.innerText == 'complete') {
-              flexGrid.setCellData(hPage.row, 16, 'delete');
-              _self.editReseKaku(hPage.row, 'delete');
+              flexGrid.setCellData(hPage.row, 16, '');
+              _self.editReseKaku(hPage.row, '');
             }
+            /*
             if (ht.target.innerText == 'delete') {
               flexGrid.setCellData(hPage.row, 16, 'complete');
               // 上限管理計算の値が●であることの確認
@@ -914,6 +942,7 @@ export default {
                 _self.editReseKaku(hPage.row, 'complete');
               }
             }
+            */
           }
 
           // 順番列を押下
@@ -955,11 +984,16 @@ export default {
       let jB = this.getClickJyukyusyaBango(row);
       //受給者番号が持つ行数の取得
       let jBrow = this.getJyukyusyaBangoRow(jB);
+
+      // 確定解除した際の背景色を白に戻す配列
       for (let i = jBrow.first; i < jBrow.last; i++) {
         this.mainFlexGrid.setCellData(i, 16, code);
         this.receptData[i]['resekakutei'] = code;
-        if (code == 'delete') {
+        if (code == '') {
           this.receptData[i]['complateFlag'] = false;
+          if (this.receptData[i]['fixFlag'] == 0) {
+            this.editBackColorCell.push(i);
+          }
         }
         if (code == 'complete') {
           this.receptData[i]['complateFlag'] = true;
@@ -1007,7 +1041,12 @@ export default {
     edittingCell(flexGrid, _self) {
       flexGrid.beginningEdit.addHandler(function (senders, args) {
         if (_self.receptData[args.row].complateFlag) {
-          if (args.col == 13 || args.col == 14) {
+          if (
+            args.col == 11 ||
+            args.col == 12 ||
+            args.col == 13 ||
+            args.col == 14
+          ) {
             args.cancel = true;
           }
         }
@@ -1093,6 +1132,23 @@ export default {
             }
           }
           if (e.col == 14 || e.col == 15) e.cell.style.background = '#fffeed';
+        }
+
+        if (e.panel != flexGrid.columnHeaders) {
+          // 確定登録ボタンを押下
+          if (_self.completeJudgeButton == 1) {
+            if (e.col == 11 || e.col == 12) {
+              // 文字が入っていれば背景を黄色
+              if (flexGrid.getCellData(e.row, e.col)) {
+                e.cell.style.background = sysConst.COLOR.gridBackground;
+              }
+            }
+          }
+          // editBackColorCellに値が入っていれば、セルを白にする
+          // console.log(_self.editBackColorCell);
+          if (_self.editBackColorCell.indexOf(e.row) != -1) {
+            e.cell.style.background = sysConst.COLOR.white;
+          }
         }
 
         if (e.panel == flexGrid.columnHeaders) {

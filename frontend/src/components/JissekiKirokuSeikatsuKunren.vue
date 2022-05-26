@@ -281,28 +281,28 @@ export default {
       let gridData = [];
       if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for (let i = 0; i<kirokuMeiData.length; i++) {
+        kirokuMeiData.forEach(rowData => {
           // 曜日表示用に文字列の日付をDate型に変換
-          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let datearr = (rowData["rymd"].substr(0, 4) + '/' + rowData["rymd"].substr(4, 2) + '/' + rowData["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              rymd: Number(rowData["rymd"].substr(6,2)),
               youbi: WeekChars[date.getDay()],
-              jyokyo: kirokuMeiData[i]["jyokyo"],
-              keitai: kirokuMeiData[i]["keitai"],
-              jstime: kirokuMeiData[i]["jstime"] == "00:00" ? "":kirokuMeiData[i]["jstime"],
-              jetime: kirokuMeiData[i]["jetime"] == "00:00" ? "":kirokuMeiData[i]["jetime"],
-              gei: kirokuMeiData[i]["gei"] == 0 ? "":kirokuMeiData[i]["gei"],
-              sou: kirokuMeiData[i]["sou"] == 0 ? "":kirokuMeiData[i]["sou"],
-              kasant: kirokuMeiData[i]["kasant"] == 0 ? "":kirokuMeiData[i]["kasant"],
-              kasans: kirokuMeiData[i]["kasans"] == 0 ? "":kirokuMeiData[i]["kasans"],
-              kasani: kirokuMeiData[i]["kasani"] == 0 ? "":kirokuMeiData[i]["kasani"],
-              kasantkn: kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-              biko: kirokuMeiData[i]["biko"],
+              jyokyo: rowData["jyokyo"],
+              keitai: rowData["keitai"],
+              jstime: rowData["jstime"] == "00:00" ? "":rowData["jstime"],
+              jetime: rowData["jetime"] == "00:00" ? "":rowData["jetime"],
+              gei: rowData["gei"] == 0 ? "":rowData["gei"],
+              sou: rowData["sou"] == 0 ? "":rowData["sou"],
+              kasant: rowData["kasant"] == 0 ? "":rowData["kasant"],
+              kasans: rowData["kasans"] == 0 ? "":rowData["kasans"],
+              kasani: rowData["kasani"] == 0 ? "":rowData["kasani"],
+              kasantkn: rowData["kasantkn"] == 0 ? "":rowData["kasantkn"],
+              biko: rowData["biko"],
             }
           )
-        }
+        });
       } else {
         gridData.push(
           {
@@ -382,38 +382,36 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 // 送迎の合計の算出
 function getSougeiTotal(data) {
   let totalCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['sou']) {
+  data.forEach(rowData => {
+    if (rowData['sou']) {
       totalCount++ ;
     }
-  }
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['gei']) {
+    if (rowData['gei']) {
       totalCount++ ;
     }
-  }
+  });
   return totalCount;
 }
 
 // 医療連携体制加算の合計の算出
 function getIryoRenkeiTotal(data) {
   let totalCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['kasani'] > 0) {
+  data.forEach(rowData => {
+    if (rowData['kasani'] > 0) {
       totalCount++ ;
     }
-  }
+  });
   return totalCount;
 }
 
 // 体験利用支援加算の合計の算出
 function getTaikenRiyoTotal(data) {
   let totalCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['kasantkn'] > 0) {
+  data.forEach(rowData => {
+    if (rowData['kasantkn'] > 0) {
       totalCount++ ;
     }
-  }
+  });
   return totalCount;
 }
 </script>

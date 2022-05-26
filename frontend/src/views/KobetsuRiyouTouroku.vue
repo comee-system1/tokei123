@@ -166,7 +166,7 @@ export default {
     DialogKikantuika,
     DialogKasantuika,
   },
-  mounted() {
+  updated() {
     this.handleResize;
     window.addEventListener('resize', this.handleResize);
   },

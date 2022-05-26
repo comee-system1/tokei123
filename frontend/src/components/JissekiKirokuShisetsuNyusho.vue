@@ -406,28 +406,28 @@ export default {
       let gridData = [];
       if (data != null) {
         let kirokuMeiData = data['riyo_inf'][0]['kiroku_mei'];
-        for (let i = 0; i<kirokuMeiData.length; i++) {
+        kirokuMeiData.forEach(rowData => {
           // 曜日表示用に文字列の日付をDate型に変換
-          let datearr = (kirokuMeiData[i]["rymd"].substr(0, 4) + '/' + kirokuMeiData[i]["rymd"].substr(4, 2) + '/' + kirokuMeiData[i]["rymd"].substr(6, 2)).split('/');
+          let datearr = (rowData["rymd"].substr(0, 4) + '/' + rowData["rymd"].substr(4, 2) + '/' + rowData["rymd"].substr(6, 2)).split('/');
           let date = new Date(datearr[0], datearr[1] - 1, datearr[2]);
           gridData.push(
             {
-              rymd: Number(kirokuMeiData[i]["rymd"].substr(6,2)),
+              rymd: Number(rowData["rymd"].substr(6,2)),
               youbi: WeekChars[date.getDay()],
-              jyokyo: kirokuMeiData[i]["jyokyo"],
-              kasan1: kirokuMeiData[i]["kasan1"] == 0 ? "":kirokuMeiData[i]["kasan1"],
-              kasan2: kirokuMeiData[i]["kasan2"] == 0 ? "":kirokuMeiData[i]["kasan2"],
-              kasanti: kirokuMeiData[i]["kasanti"] == 0 ? "":kirokuMeiData[i]["kasanti"],
-              kasantkn: kirokuMeiData[i]["kasantkn"] == 0 ? "":kirokuMeiData[i]["kasantkn"],
-              kasanj: kirokuMeiData[i]["kasanj"] == 0 ? "":kirokuMeiData[i]["kasanj"],
-              sasa: kirokuMeiData[i]["sasa"],
-              shiru: kirokuMeiData[i]["shiru"],
-              syuu: kirokuMeiData[i]["syuu"],
-              konetu: kirokuMeiData[i]["konetu"] == 0 ? "":kirokuMeiData[i]["konetu"],
-              biko: kirokuMeiData[i]["biko"],
+              jyokyo: rowData["jyokyo"],
+              kasan1: rowData["kasan1"] == 0 ? "":rowData["kasan1"],
+              kasan2: rowData["kasan2"] == 0 ? "":rowData["kasan2"],
+              kasanti: rowData["kasanti"] == 0 ? "":rowData["kasanti"],
+              kasantkn: rowData["kasantkn"] == 0 ? "":rowData["kasantkn"],
+              kasanj: rowData["kasanj"] == 0 ? "":rowData["kasanj"],
+              sasa: rowData["sasa"],
+              shiru: rowData["shiru"],
+              syuu: rowData["syuu"],
+              konetu: rowData["konetu"] == 0 ? "":rowData["konetu"],
+              biko: rowData["biko"],
             }
           )
-        }
+        });
       } else {
         gridData.push(
           {
@@ -527,11 +527,11 @@ const WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
 // 入院・外泊時加算の合計の算出
 function getNyuinGaihakuTotal(data) {
   let totalCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]['kasan1'] > 0) {
+   data.forEach(rowData => {
+    if (rowData['kasan1'] > 0) {
       totalCount++ ;
     }
-  }
+  });
   return totalCount;
 }
 
