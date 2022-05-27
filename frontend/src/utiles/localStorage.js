@@ -3,6 +3,16 @@ import crypto from 'crypto-js';
 var txt_key = "0123456789ABCDEF0123456789ABCDEF";
 
 
+const KEY = {
+  KyufuMeisaiPage:'keyval00001',
+  TotalOnlyDisp:'keyval00002',
+  Sort : 'keyval00003',
+  Service:'keyval00004',
+  Sichoson:'keyval00005',
+  Alphabet:'keyval00006',
+  Kasan:'keyval00007',
+};
+
 /***********
  * key: 名前 val : 値
  */
@@ -24,6 +34,7 @@ function getlocalStorageEncript(key) {
   }
 }
 export default {
+  KEY,
     setlocalStorageEncript,
     getlocalStorageEncript,
 };

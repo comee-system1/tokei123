@@ -28,14 +28,17 @@
             </v-col>
             <v-col cols="6">
               <label>市町村</label>
-              <wj-combo-box
+              <wj-menu
                 v-model="selSichoson"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="sichosonList"
                 :selectedIndexChanged="onSichosonIndexChanged"
+                :header="
+                  sichosonList.filter((x) => x.val == selSichoson)[0].name
+                "
               >
-              </wj-combo-box>
+              </wj-menu>
             </v-col>
           </v-row>
           <v-row class="mt-0" no-gutters>
@@ -57,16 +60,17 @@
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="3" xl="3" class="mt-1">
+            <v-col cols="4" xl="3" class="mt-1">
               <label>サービス</label>
-              <wj-combo-box
+              <wj-menu
                 v-model="selSvc"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="svcList"
                 :selectedIndexChanged="onSvcIndexChanged"
+                :header="svcList.filter((x) => x.val == selSvc)[0].name"
               >
-              </wj-combo-box>
+              </wj-menu>
             </v-col>
             <v-col cols="5" class="mt-1">
               <label>ソート</label>
@@ -174,12 +178,12 @@ import HeaderServices from '../components/HeaderServices.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keyPage = 'keyval00001';
-const keyTotal = 'keyval00002';
-const keySort = 'keyval00003';
-const keySvc = 'keyval00004';
-const keySichoson = 'keyval00005';
-const keyAlp = 'keyval00006';
+const keyPage = ls.KEY.KyufuMeisaiPage;
+const keyTotal = ls.KEY.TotalOnlyDisp;
+const keySort = ls.KEY.Sort;
+const keySvc = ls.KEY.Service;
+const keySichoson = ls.KEY.Sichoson;
+const keyAlp = ls.KEY.Alphabet;
 const colCntSeikyu = 22;
 const colCntKyufu = 13;
 const rowHeaderheight = sysConst.GRDROWHEIGHT.Header;
@@ -201,7 +205,7 @@ const styleBold = 'bold';
 const boderSolid = '1px solid';
 const alignRight = 'right';
 const bgClrTotal = sysConst.COLOR.gridTotalBackground;
-const bgClrMiniTotal = '#FFFFCC';
+const bgClrMiniTotal = sysConst.COLOR.gridMiniTotalBackground;
 const styleBlock = 'block';
 const styleNone = 'none';
 const grdNameSeikyu = 'seikyuGrid';
@@ -964,7 +968,7 @@ export default {
     },
     loadData(isSeikyu) {
       let tmpviewdata = [];
-      let userCount = 101;
+      let userCount = 102;
       if (isSeikyu) {
         let cnt = 0;
         for (let i = 0; i < userCount; i++) {
@@ -1168,14 +1172,18 @@ export default {
       this.userFilter();
     },
     onSvcIndexChanged(s) {
-      ls.setlocalStorageEncript(keySvc, s.selectedValue);
-      this.selSvc = s.selectedValue;
-      this.userFilter();
+      if (s.selectedIndex != -1) {
+        ls.setlocalStorageEncript(keySvc, s.selectedValue);
+        this.selSvc = s.selectedValue;
+        this.userFilter();
+      }
     },
     onSichosonIndexChanged(s) {
-      ls.setlocalStorageEncript(keySichoson, s.selectedValue);
-      this.selSichoson = s.selectedValue;
-      this.userFilter();
+      if (s.selectedIndex != -1) {
+        ls.setlocalStorageEncript(keySichoson, s.selectedValue);
+        this.selSichoson = s.selectedValue;
+        this.userFilter();
+      }
     },
     userFilter() {
       if (this.dispPageType == 0) {
@@ -1443,7 +1451,7 @@ div#KyuhuMeisaiIcrn {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1350px !important;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
@@ -1496,7 +1504,9 @@ div#KyuhuMeisaiIcrn {
       }
     }
   }
-
+  .wj-menu {
+    width: 200px;
+  }
   #seikyuGrid,
   #kyufuGrid {
     color: $font_color;
@@ -1559,6 +1569,17 @@ div#KyuhuMeisaiIcrn {
   .wj-combobox .wj-input-group input.wj-form-control {
     width: 150px;
     flex-grow: 1;
+  }
+  .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-btn,
+  .wj-viewer
+    .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-applybutton {
+    border-left: none;
   }
 }
 </style>

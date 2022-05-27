@@ -13,25 +13,27 @@
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
               <label>利用者</label>
-              <wj-combo-box
+              <wj-menu
                 v-model="selUser"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="userSelList"
                 :selectedIndexChanged="onUserIndexChanged"
+                :header="userSelList.filter((x) => x.val == selUser)[0].name"
               >
-              </wj-combo-box>
+              </wj-menu>
             </v-col>
             <v-col cols="6">
               <label>加算</label>
-              <wj-combo-box
+              <wj-menu
                 v-model="selKasan"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="kasanList"
                 :selectedIndexChanged="onKasanIndexChanged"
+                :header="kasanList.filter((x) => x.val == selKasan)[0].name"
               >
-              </wj-combo-box>
+              </wj-menu>
             </v-col>
           </v-row>
 
@@ -133,13 +135,13 @@ import HeaderServices from '../components/HeaderServices.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keySort = 'keyval00003';
-const keyAlp = 'keyval00006';
-const keyKasan = 'keyval00007';
+const keySort = ls.KEY.Sort;
+const keyAlp = ls.KEY.Alphabet;
+const keyKasan = ls.KEY.Kasan;
 const styleDefault = '';
 const styleNormal = 'normal';
-const bgClrSelKasan = '#FFECCC';
-const bgClrSelKasanData = '#FFF6E8';
+const bgClrSelKasan = sysConst.COLOR.gridHeaderRemarkBackground;
+const bgClrSelKasanData = sysConst.COLOR.gridRemarkBackground;
 const bgClrTotal = sysConst.COLOR.gridTotalBackground;
 const boderSolid = '1px solid';
 const alignRight = 'right';
@@ -578,13 +580,17 @@ export default {
       return tmpviewdata;
     },
     onUserIndexChanged(s) {
-      this.selUser = s.selectedValue;
-      this.userFilter();
+      if (s.selectedIndex != -1) {
+        this.selUser = s.selectedValue;
+        this.userFilter();
+      }
     },
     onKasanIndexChanged(s) {
-      ls.setlocalStorageEncript(keyKasan, s.selectedValue);
-      this.selKasan = s.selectedValue;
-      this.userFilter();
+      if (s.selectedIndex != -1) {
+        ls.setlocalStorageEncript(keyKasan, s.selectedValue);
+        this.selKasan = s.selectedValue;
+        this.userFilter();
+      }
     },
     sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
@@ -729,13 +735,16 @@ div#KasanKoumokuIcrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1350px !important;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
     display: block;
+  }
+  .wj-menu {
+    width: 250px;
   }
 
   .user-info {
@@ -846,6 +855,17 @@ div#KasanKoumokuIcrn {
 
   .v-btn-toggle > .v-btn {
     width: 90px;
+  }
+  .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-btn,
+  .wj-viewer
+    .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-applybutton {
+    border-left: none;
   }
 }
 </style>

@@ -74,7 +74,8 @@ import sysConst from '@/utiles/const';
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
 let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
-const boderSolid = '1px solid';
+const darkLine = '1px solid #333';
+const boldLine = '2px solid #333';
 
 export default {
   components: {
@@ -214,20 +215,21 @@ export default {
           }
 
           if (r == 0 && (c == 0 || c == 1 || c == 2 || c == 8 || c == 11)) {
-            s.borderRight = boderSolid;
+            s.borderRight = darkLine;
           } else if (r == 1 && (c == 7)) {
-            s.borderRight = boderSolid;
+            s.borderRight = darkLine;
           } else if (r == 1 && (c == 5 || c == 10)) {
-            s.borderLeft = boderSolid;
-            s.borderRight = boderSolid;
+            s.borderLeft = boldLine;
+            s.borderRight = boldLine;
+            s.borderTop = boldLine;
           }
 
           if (r == 0 && (c == 0 || c == 1 || c == 11 || c == 12)) {
-            s.borderBottom = boderSolid;
+            s.borderBottom = darkLine;
           }
 
           if (c >= 2 && c <= 10) {
-            s.borderBottom = boderSolid;
+            s.borderBottom = darkLine;
           }
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
@@ -238,12 +240,12 @@ export default {
           }
 
           if (c == 0 || c == 1) {
-            s.borderRight = boderSolid;
+            s.borderRight = darkLine;
           } else if(c == 5 || c == 10) {
-            s.borderLeft = boderSolid;
-            s.borderRight = boderSolid;
+            s.borderLeft = boldLine;
+            s.borderRight = boldLine;
           } else if (c == 7 || c == 11) {
-            s.borderRight = boderSolid;
+            s.borderRight = darkLine;
           } else if (c == 12) {
             s.backgroundColor = sysConst.COLOR.white;
             cell.innerHTML = '<div class="printCell">'+cell.innerHTML+'</div>';
@@ -255,13 +257,13 @@ export default {
           if (c == 0 || c == 11 || c == 12) {
             borderRowCol1.forEach(row => {
               if (r == row) {
-                s.borderBottom = boderSolid;
+                s.borderBottom = darkLine;
               }
             });
           } else {
             borderRow.forEach(row => {
               if (r == row) {
-                s.borderBottom = boderSolid;
+                s.borderBottom = darkLine;
               }
             });
             if (borderRow.indexOf(r) == -1) {
@@ -273,16 +275,17 @@ export default {
           // フッターのスタイル
           // フッターの上部に線を表示する
           if (r == 0) {
-            s.borderTop = boderSolid;
-            s.borderBottom = boderSolid;
+            s.borderTop = darkLine;
+            s.borderBottom = darkLine;
             s.textAlign = 'center';
           }
 
           if (c == 0 || c == 7 || c == 11) {
-            s.borderRight = boderSolid;
+            s.borderRight = darkLine;
           } else if (c == 5 || c == 10) {
-            s.borderLeft = boderSolid;
-            s.borderRight = boderSolid;
+            s.borderLeft = boldLine;
+            s.borderRight = boldLine;
+            s.borderBottom = boldLine;
           }
 
           if (c >= 2 && c <= 11 ) {
@@ -424,10 +427,6 @@ div#seikyu-sho .transparent {
 }
 
 div#seikyu-sho{
-  #detailGrid.wj-control.wj-content.wj-flexgrid {
-    border: 1px solid;
-  }
-
   #detailGrid .wj-header:not(.verticalRightCustom) {
     display: flex;
     justify-content: center;

@@ -15,7 +15,11 @@ const COLOR = {
     gridHoverBackground:'#ccffcc',
     gridSelectedBackground:'#80adbf',
     gridSelectedColor:'#fff',
+    gridMiniTotalBackground:'#FFFFCC',
     gridTotalBackground:'#CEFCFC',
+    gridNoneBackground:'#E2E2E2',
+    gridHeaderRemarkBackground:'#FFECCC',
+    gridRemarkBackground:'#FFF6E8',
 };
 
 const FORMAT = {

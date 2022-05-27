@@ -74,9 +74,11 @@ import '@grapecity/wijmo.vue2.grid.filter'
 import "@grapecity/wijmo.vue2.grid.search";
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
+const darkLine = '1px solid #333';
 
 export default {
   props: {
@@ -159,12 +161,24 @@ export default {
           } else if (r == 0 && c == 1) {
             cell.innerHTML = '曜<br/>日';
           }
+
+          if (r == 0 || r == 1) {
+            s.borderBottom = darkLine;
+          }
+
+          if (c == 1 || (r == 1 && c == 2) || c == 4) {
+            s.borderRight = darkLine;
+          }
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
           if (panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
           } else if (panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)) {
             cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
+          }
+
+          if (c == 1 || c == 2 || c == 4) {
+            s.borderRight = darkLine;
           }
 
           //備考欄を左寄せにする
@@ -175,12 +189,16 @@ export default {
           // フッターのスタイル
           // フッターの上部に線を表示する
           if (r == 0) {
-            s.borderTop = "1px solid rgba(0,0,0,.2)";
+            s.borderTop = darkLine;
+          }
+
+          if (c == 0 || c == 2 || c == 4) {
+            s.borderRight = darkLine;
           }
 
           if (c >= 2 && c <= 4) {
             // セルを薄黄色にする
-            s.backgroundColor = "#fffeed";
+            s.backgroundColor = sysConst.COLOR.gridBackground;
           } else if (c == 5) {
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";

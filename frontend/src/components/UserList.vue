@@ -270,7 +270,6 @@ export default {
       // }
 
       // axiosを利用しないとき下記有効
-      console.log(response);
       response = apiResult['riyo_inf'];
       let kakuteiFlag = false;
       for (let i = 0; i < response.length; i++) {

@@ -12,14 +12,15 @@
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
               <label>利用者</label>
-              <wj-combo-box
+              <wj-menu
                 v-model="selUser"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="userSelList"
                 :selectedIndexChanged="onUserIndexChanged"
+                :header="userSelList.filter((x) => x.val == selUser)[0].name"
               >
-              </wj-combo-box>
+              </wj-menu>
             </v-col>
             <v-col cols="6">
               <label>絞込</label>
@@ -94,14 +95,14 @@
           </v-row>
           <v-spacer style="height: 50px"></v-spacer>
           <v-row no-gutters justify="end">
-            <v-col cols="4" xl="3" class="mr-1">
+            <v-col cols="5" xl="3" class="mr-1">
               <v-row class="border-bottom">
                 <v-col class="pa-2" cols="4">
                   <label class="errorlabel">
                     <b>エラー</b>
                   </label>
                 </v-col>
-                <v-col class="pa-2" cols="*">
+                <v-col class="pa-2 pr-0" cols="*">
                   <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
                 </v-col>
               </v-row>
@@ -152,8 +153,8 @@ import HeaderServices from '../components/HeaderServices.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keySort = 'keyval00003';
-const keyAlp = 'keyval00006';
+const keySort = ls.KEY.Sort;
+const keyAlp = ls.KEY.Alphabet;
 const strMaru = '○';
 const bgClrInput = sysConst.COLOR.white;
 const bgClrError = sysConst.COLOR.gridErrBackground;
@@ -391,6 +392,7 @@ export default {
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 1) ||
         (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 10) ||
         e.col == 0 ||
+        e.col == 8 ||
         e.col == 9 ||
         e.col == 14
       ) {
@@ -415,10 +417,14 @@ export default {
 
           if (e.col == flexGrid.columns.length - 1) {
             e.cell.style.backgroundColor = bgClrInput;
+          } else if (e.col == 6) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           } else if (
+            (e.col == 1 && tmpitem.err.length > 0) ||
+            (e.col == 2 && tmpitem.err.length > 0) ||
             (e.col == 3 && !tmpitem.koufuymd) ||
             (e.col == 4 && !tmpitem.engo) ||
-            (e.col == 5 && !tmpitem.jitibangou) ||
+            (e.col == 5 && tmpitem.err.length > 0 && !tmpitem.jitibangou) ||
             (e.col == 6 && !tmpitem.jyukyukbn) ||
             (e.col == 7 && !tmpitem.jyukyuname) ||
             (e.col == 8 && !tmpitem.syougaisyu) ||
@@ -484,8 +490,8 @@ export default {
           kana: 'トウケイタロウ' + i,
           koufuymd: new Date('2015', Number('04') - 1, '26'),
           engo: '第一東経市',
-          jitibangou: String('9000' + Math.floor(Math.random() * 10) + 1),
-          jyukyukbn: '1',
+          jitibangou: '',
+          jyukyukbn: '',
           jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
           syougaisyu: '2',
           syougaisienkbn: '3',
@@ -514,6 +520,9 @@ export default {
             tmpviewdata[i].name = tmpviewdata[i - 1].name;
             tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
             tmpviewdata[i].koufuymd = new Date('2020', Number('04') - 1, '27');
+            tmpviewdata[i].jitibangou = String(
+              '9000' + Math.floor(Math.random() * 10) + 1
+            );
           }
           if (i % 3 == 0) {
             tmpviewdata[i].err = require('@/assets/error_20px.png');
@@ -553,8 +562,10 @@ export default {
       return tmpviewdata;
     },
     onUserIndexChanged(s) {
-      this.selUser = s.selectedValue;
-      this.userFilter();
+      if (s.selectedIndex != -1) {
+        this.selUser = s.selectedValue;
+        this.userFilter();
+      }
     },
     siborikomiUser2(siborikomiType) {
       siborikomiSearch2 = siborikomiType;
@@ -723,13 +734,17 @@ div#jyukyuicrn {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1350px !important;
+  min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
     display: block;
+  }
+
+  .wj-menu {
+    width: 200px;
   }
 
   .user-info {
@@ -840,6 +855,18 @@ div#jyukyuicrn {
 
   .v-btn-toggle > .v-btn {
     width: 90px;
+  }
+
+  .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-btn,
+  .wj-viewer
+    .wj-control
+    .wj-input-group
+    .wj-input-group-btn:last-child:not(:first-child)
+    > .wj-applybutton {
+    border-left: none;
   }
 }
 </style>
