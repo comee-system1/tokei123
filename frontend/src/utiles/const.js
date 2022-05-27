@@ -11,11 +11,25 @@ const COLOR = {
     pink:'#f5d6e6',
     selectedColor:'#eee',
     gridBackground:'#fffeed',
+    gridErrBackground:'mistyrose',
     gridHoverBackground:'#ccffcc',
     gridSelectedBackground:'#80adbf',
     gridSelectedColor:'#fff',
+    gridTotalBackground:'#CEFCFC',
+};
+
+const FORMAT = {
+    Num:'n0',
+    Ymd:'yyyy/MM/dd',
+    GYmd: 'gyy/MM/dd',
+};
+const GRDROWHEIGHT = {
+    Header:20,
+    Row:25,
 };
 
 export default {
     COLOR,
+    FORMAT,
+    GRDROWHEIGHT,
 }

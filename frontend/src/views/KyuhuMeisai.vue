@@ -8,7 +8,12 @@
     <v-container fluid class="container">
       <v-row no-gutters>
         <v-col class="leftArea">
-          <UserList></UserList>
+          <user-list-print
+            ref="user_list_print"
+            @child-select="setUserSelectPoint"
+            @child-user="getSelectUserChildComponent"
+          >
+          </user-list-print>
         </v-col>
         <v-col class="rightArea kyuhumeisai">
           <v-row no-gutters justify="space-between">
@@ -139,7 +144,7 @@
 
 <script>
 import ServiceSelection from '../components/HeaderServices.vue';
-import UserList from '../components/UserList';
+import UserListPrint from '../components/UserListPrint.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import CommonTabMenu from '../components/CommonTabMenu.vue';
 import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
@@ -151,12 +156,14 @@ export default {
   components: {
     CommonTabMenu,
     ServiceSelection,
-    UserList,
+    UserListPrint,
     KyuhuMeisairan,
     KyuhuSeikyugaku,
   },
   data() {
     return {
+      userListComponentDatas: [], // ユーザー一覧データ
+      userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
       daycount: daycount,
       dateArgument: '',
       searchArgument: '',
@@ -243,7 +250,7 @@ export default {
           Column1: "東経　さおり",
         },
         {
-          Column0: "支給者決定に係る障害社児氏名",
+          Column0: "支給決定に係る障害児氏名",
           Column1: "",
         }
       )
@@ -436,11 +443,30 @@ export default {
           Column2: tiikikubun,
         },
         {
-          Column0: "就労継続支援A型事業者負担減免措置実施",
+          Column0: "就労継続支援Ａ型事業者負担減免措置実施",
           Column2: "１：無",
         }
       )
     return tiikikubunGridData;
+    },
+    // 左メニューで作成されたユーザ一覧の取得を行う
+    getSelectUserChildComponent(data) {
+      this.userListComponentDatas = data;
+    },
+    // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
+    setUserSelectPoint(row) {
+      this.userDataSelect[0]['riyosyo'] =
+        this.userListComponentDatas[row].riyocode +
+        ' ' +
+        this.userListComponentDatas[row].names;
+
+      this.userDataSelect[0]['jyukyusyabango'] =
+        this.userListComponentDatas[row].jyukyuno;
+
+      console.log(31232);
+      // 値の設定
+      this.selectType = '';
+      this.editGridFlag = '';
     },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
@@ -482,7 +508,7 @@ export default {
     margin-left:4px;
     font-size: 12px;
     .wj-cell  {
-      padding: 1px 0;
+      padding: 0;
     }
   }
   .confirmTitle {

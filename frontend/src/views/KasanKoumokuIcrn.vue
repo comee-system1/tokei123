@@ -131,6 +131,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
 import ls from '@/utiles/localStorage';
+import sysConst from '@/utiles/const';
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
@@ -139,20 +140,20 @@ const styleDefault = '';
 const styleNormal = 'normal';
 const bgClrSelKasan = '#FFECCC';
 const bgClrSelKasanData = '#FFF6E8';
-const bgClrTotal = '#CEFCFC';
+const bgClrTotal = sysConst.COLOR.gridTotalBackground;
 const boderSolid = '1px solid';
 const alignRight = 'right';
 const writingModeTategeki = 'vertical-rl';
-const fmtYen = 'n0';
-const fmtYmd = 'yyyy/MM/dd'; //'gyy/MM/dd';
+const fmtYen = sysConst.FORMAT.Num;
+const fmtYmd = sysConst.FORMAT.Ymd;
 const nisuTitle = '日数';
 const taiseiTitle = '施設体制加算';
 const kobetuTitle = '個別加算';
 const totalTitle = '合計';
 const totalNinzuTitle = '人数';
 const totalTaniTitle = '単位数';
-const rowHeaderheight = 20;
-const rowheight = 25;
+const rowHeaderheight = sysConst.GRDROWHEIGHT.Header;
+const rowheight = sysConst.GRDROWHEIGHT.Row;
 let alphabet = [
   '全',
   'ア',

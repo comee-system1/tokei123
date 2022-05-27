@@ -47,11 +47,15 @@
                   <label class="serach">利用者</label>
                 </v-col>
                 <v-col>
-                  <wj-combo-box
-                    :items-source="riyosyaCombo"
-                    class="ml-1 w-100"
+                  <wj-menu
+                    :itemsSource="riyosyaCombo"
+                    class="ml-1 w-100 customCombobox"
                     :selectedIndexChanged="onRiyosyaCombo"
-                  ></wj-combo-box>
+                    :isRequired="true"
+                    :displayMemberPath="'text'"
+                    selectedValuePath="'key'"
+                    header="全員"
+                  ></wj-menu>
                 </v-col>
               </v-row>
             </v-col>
@@ -66,18 +70,28 @@
                   >
                 </v-col>
                 <v-col>
-                  <wj-combo-box
+                  <wj-menu
                     v-if="TajyougenkanriJimsyoFlag"
                     :items-source="jyougenkanriCombo"
-                    class="ml-1 w-100"
+                    class="ml-1 w-100 customCombobox"
                     :selectedIndexChanged="onJyougenkanriCombo"
-                  ></wj-combo-box>
-                  <wj-combo-box
+                    :isRequired="true"
+                    :displayMemberPath="'text'"
+                    selectedValuePath="'key'"
+                    header="指定なし"
+                  >
+                  </wj-menu>
+
+                  <wj-menu
                     v-if="JijyougenkanriJimsyoFlag"
                     :items-source="taServiceCombo"
-                    class="ml-1 w-100"
+                    class="ml-1 w-100 customCombobox"
                     :selectedIndexChanged="onJyougenkanriCombo"
-                  ></wj-combo-box>
+                    :isRequired="true"
+                    :displayMemberPath="'text'"
+                    selectedValuePath="'key'"
+                    header="指定なし"
+                  ></wj-menu>
                 </v-col>
               </v-row>
             </v-col>
@@ -270,9 +284,9 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
 
-      receptFlag: false, // receptの初期表示状態
+      receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
@@ -290,44 +304,99 @@ export default {
   },
   created() {
     // 利用者コンボボックス
-    this.riyosyaCombo = ['全員', '今月入居者', '今月退去者'];
+    this.riyosyaCombo.push(
+      {
+        key: 1,
+        text: '全員',
+      },
+      {
+        key: 2,
+        text: '今月入居者',
+      },
+      {
+        key: 3,
+        text: '今月退去者',
+      }
+    );
     // 上限管理事用コンボボックス
-    this.jyougenkanriCombo = [
-      '指定なし',
-      '南山事務所0',
-      '南山事務所1',
-      '南山事務所2',
-      '南山事務所3',
-    ];
-    this.taServiceCombo = [
-      '指定なし',
-      'ひまわり園0',
-      'ひまわり園1',
-      'ひまわり園2',
-      'ひまわり園3',
-    ];
+    this.jyougenkanriCombo.push(
+      {
+        key: 0,
+        text: '指定なし',
+      },
+      {
+        key: 1,
+        text: '南山事務所0',
+      },
+      {
+        key: 2,
+        text: '南山事務所1',
+      },
+      {
+        key: 3,
+        text: '南山事務所2',
+      },
+      {
+        key: 4,
+        text: '南山事務所3',
+      }
+    );
+    this.taServiceCombo.push(
+      {
+        key: 0,
+        text: '指定なし',
+      },
+      {
+        key: 1,
+        text: 'ひまわり園0',
+      },
+      {
+        key: 2,
+        text: 'ひまわり園1',
+      },
+      {
+        key: 3,
+        text: 'ひまわり園2',
+      },
+      {
+        key: 4,
+        text: 'ひまわり園3',
+      }
+    );
   },
   methods: {
     /*********************
      * 上限管理事変更
      */
     onJyougenkanriCombo(e) {
-      if (this.JijyougenkanriJimsyoFlag) {
-        this.$refs.jijyougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
-      } else {
-        // 他上限管理事業所の関数を実行
-        this.$refs.tajougenChild.child_Jyougenkanriji(e.text, e.selectedIndex);
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        if (this.JijyougenkanriJimsyoFlag) {
+          this.$refs.jijyougenChild.child_Jyougenkanriji(
+            e.text,
+            e.selectedIndex
+          );
+        } else {
+          // 他上限管理事業所の関数を実行
+          this.$refs.tajougenChild.child_Jyougenkanriji(
+            e.text,
+            e.selectedIndex
+          );
+        }
       }
     },
     /*********************
      * 利用者変更
      */
     onRiyosyaCombo(e) {
-      if (this.JijyougenkanriJimsyoFlag) {
-        this.$refs.jijyougenChild.child_Riyosya(e.text, e.selectedIndex);
-      } else {
-        // 他上限管理事業所の関数を実行
-        this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        if (this.JijyougenkanriJimsyoFlag) {
+          this.$refs.jijyougenChild.child_Riyosya(e.text, e.selectedIndex);
+        } else {
+          // 他上限管理事業所の関数を実行
+          this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
+        }
       }
     },
     /**************
@@ -454,6 +523,11 @@ div#tajyougen {
   }
   .w-100 {
     width: 100%;
+  }
+}
+div.customCombobox {
+  .wj-btn.wj-btn-default {
+    border-left: none !important;
   }
 }
 </style>

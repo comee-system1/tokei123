@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialogFlag" width="500">
-    <v-card class="pa-2">
+    <v-card class="pa-2" id="dialogKikantuika">
       <v-card-title class="text-h5"> {{ dateTitle }} </v-card-title>
       <v-container>
         <v-btn
@@ -25,6 +25,7 @@
                 :language="ja"
                 class="input_picker"
                 :format="DatePickerFormat"
+                :clear-button="true"
                 :value="nyuuinbi"
                 v-model="nyuuinbi"
               ></datepicker>
@@ -100,6 +101,7 @@
                 class="input_picker"
                 :format="DatePickerFormat"
                 :value="taiinbi"
+                :clear-button="true"
                 v-model="taiinbi"
               ></datepicker>
               <v-card class="d-flex" color="lighten-2" flat tile>
@@ -253,6 +255,10 @@ export default {
      */
     kikantuika_dialog_regist: function () {
       // 日付エラーチェック
+      if (!this.nyuuinbi) {
+        alert('入院日を入力してください');
+        return false;
+      }
       let nyuuinbi = moment(this.nyuuinbi).format('YYYY-M-D');
       let taiinbi = '';
       let taiinbi_notFlag = false;
@@ -323,5 +329,34 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import '@/assets/scss/common.scss';
+#dialogKikantuika {
+  .input_picker {
+    width: fit-content;
+    display: inline-block;
+    position: relative;
+
+    .vdp-datepicker__clear-button {
+      position: absolute;
+      top: 0;
+      left: auto;
+      right: -55px;
+      width: 50px;
+      border: 1px solid #ccc;
+      padding: 1px 0px;
+      text-align: center;
+      span {
+        display: none;
+      }
+      &:hover {
+        background-color: #ddd;
+      }
+      &:after {
+        content: 'クリア';
+        font-size: 12px;
+      }
+    }
+  }
+}
 </style>

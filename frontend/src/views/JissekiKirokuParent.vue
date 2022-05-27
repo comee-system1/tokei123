@@ -2,6 +2,7 @@
   <div id="jisseki-kiroku">
     <ServiceSelection
       @parent-service-select="parentSearch($event, searchArgument)"
+      @parent-service-change="parentChange($event, searchArgument)"
       :seikyuflag="true">
     </ServiceSelection>
     <v-container class="jissekikiroku" fluid>
@@ -14,7 +15,12 @@
           </UserList>
         </v-col>
         <v-col class="rightArea">
-          <component :is="displayComponent" :riyousya="riyousya" :zyukyusyaNum="zyukyusyaNum"></component>
+          <component
+            :is="displayComponent"
+            :riyousya="riyousya"
+            :zyukyusyaNum="zyukyusyaNum"
+            :changedService="changedService">
+          </component>
         </v-col>
       </v-row>
     </v-container>
@@ -38,7 +44,7 @@ import ShurokeizokuA from '../components/JissekiKirokuShurokeizokuA.vue';
 import ShurokeizokuB from '../components/JissekiKirokuShurokeizokuB.vue';
 import ShuroTeichaku from '../components/JissekiKirokuShuroTeichaku.vue';
 import JiritsuSeikatsu from '../components/JissekiKirokuJiritsuSeikatsu.vue';
-
+import JissekiKirokuRyoyoKaigo from '../components/JissekiKirokuRyoyoKaigo.vue';
 export default {
   components: {
     ServiceSelection,
@@ -54,6 +60,7 @@ export default {
       zyukyusyaNum: '', //利用者一覧で選択された利用者の受給者番号
       displayComponent: '', //描画するコンポーネント
       displayCode: '', //描画するサービスのコード
+      changedService: '',
     };
   },
   watch: {
@@ -63,6 +70,9 @@ export default {
     }
   },
   methods: {
+    parentChange(searchArgument){
+      this.changedService = searchArgument.teikyoService;
+    },
     parentSearch(searchArgument) {
       this.selectedService = searchArgument.teikyoService;
       if (searchArgument.teikyoCode == 22 && searchArgument.teikyoService.includes('経過的')) {
@@ -92,6 +102,7 @@ export default {
 }
 
 const services =[{
+  '21': JissekiKirokuRyoyoKaigo,
   '22': SeikatsuKaigo,
   '02': KeikatekiSeikatsuKaigo,
   '24': Tanki,

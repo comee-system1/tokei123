@@ -641,7 +641,6 @@ function methodWriteJyoho(flexGrid, _self) {
   // 加算情報
   // 体制・個別
   flexGrid.setCellData(kasanRows_st, 0, _self.gridItemName[0].column[1]);
-
   flexGrid.setCellData(
     kasanRows_st,
     1,
@@ -1466,8 +1465,8 @@ function settingGaihaku(flexGrid, _self) {
 
       {
         byouinName: '東経国立病院',
-        start_date: '2022-5-20',
-        end_date: '',
+        start_date: '2022-5-21',
+        end_date: '2022-5-23',
         diff_date: 2,
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
@@ -1675,21 +1674,7 @@ function createdArrows(data, _self, flexGrid, row) {
   for (let j = 0; j < data[0].date.length; j++) {
     total += data[0].date[j].diff_date;
   }
-  // end_date_notFlagの確認
-  // 1件でもあれば有効
-  let end_date_notFlag = false;
-  for (let j = 0; j < data[0].date.length; j++) {
-    if (data[0].date[j].end_date_notFlag) {
-      end_date_notFlag = true;
-      break;
-    }
-  }
-
-  if (end_date_notFlag) {
-    flexGrid.setCellData(row, _self.lastdate + 4, '-');
-  } else {
-    flexGrid.setCellData(row, _self.lastdate + 4, total);
-  }
+  flexGrid.setCellData(row, _self.lastdate + 4, total);
 
   return;
 }
@@ -1716,7 +1701,7 @@ function settingNyuTaiin(flexGrid, _self) {
       {
         byouinName: '東経国立病院',
         start_date: '2022-5-6',
-        end_date: '2022-5-10',
+        end_date: '',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -1776,11 +1761,19 @@ function editNyuTaiin(flexGrid, _self) {
   // 秒に変換してloopを行う
   let st = new Date(_self.$refs.dialog_kikantuika.registData.nyuuinbi);
   let ed = new Date(_self.$refs.dialog_kikantuika.registData.taiinbi);
+  let lastyear = ed.getFullYear();
+  let lastmonth = ed.getMonth() + 1;
+  // let firstyear = st.getFullYear();
+  console.log(lastyear);
   // 日付の差分
   var diff = ed - st;
   diff = parseInt(diff / 1000 / 60 / 60 / 24) + 1;
   nyutaiin[0]['date'][selectKey]['start_date'] =
     _self.$refs.dialog_kikantuika.registData.nyuuinbi;
+  // 退院日が当年月の場合は end_date_notFlagをfalseにする
+  if (parseInt(_self.month) == lastmonth && _self.year == lastyear) {
+    nyutaiin[0]['date'][selectKey]['end_date_notFlag'] = false;
+  }
 
   if (nyutaiin[0]['date'][selectKey]['end_date_notFlag']) {
     // end_date_notFlagがある時は翌月の末
@@ -2104,14 +2097,12 @@ function methodCellFormatSetting(flexGrid, _self) {
       }
       let startdate = moment(date['start_date']).format('M/D');
       let end_date = '';
-      let diff_day = '';
+      let diff_day = (diff_day = date['diff_date']);
       // 退院日未設定
       if (date['end_date_notFlag']) {
         end_date = '未設定';
-        diff_day = '-';
       } else {
         end_date = moment(date['end_date']).format('M/D');
-        diff_day = date['diff_date'];
       }
       html +=
         '<div class="arrow_box" ><div id="arrow_box-' +
@@ -2157,14 +2148,12 @@ function methodCellFormatSetting(flexGrid, _self) {
 
       let startdate = moment(date['start_date']).format('M/D');
       let end_date = '';
-      let diff_day = '';
+      let diff_day = date['diff_date'];
       // 退院日未設定
       if (date['end_date_notFlag']) {
         end_date = '未設定';
-        diff_day = '-';
       } else {
         end_date = moment(date['end_date']).format('M/D');
-        diff_day = date['diff_date'];
       }
 
       html +=

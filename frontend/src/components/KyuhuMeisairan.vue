@@ -14,7 +14,6 @@
           :allowPinning="false"
           :allowResizing="false"
           :allowSorting="false"
-
         >
           <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -62,6 +61,9 @@
           :allowResizing="false"
           :allowSorting="false"
         >
+          <div class="servicessyubetu-title">
+            サービス種別
+          </div>
           <wj-flex-grid-column binding="header" :width="150" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="serviceNo" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="headerKaisiYmd" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
@@ -90,7 +92,10 @@
         :allowPinning="false"
         :allowResizing="false"
         :allowSorting="false"
-      ><wj-flex-grid-column
+        ><div class="kyuhu-meisairan-title">
+        給付明細欄
+        </div>
+        <wj-flex-grid-column
           :binding="'service'"
           :header="'サービス内容'"
           width="3.5*"
@@ -244,8 +249,8 @@ export default {
         }
         if(r == 1 && c == 18|| c ==21 || c ==22 || c == 25) {
           s.borderTop = '1px solid rgba(0,0,0,.2)'
-          s.top = '20px'
-          s.height = '22px'
+          s.top = '18px'
+          s.height = '20px'
         }
         if(r == 1 && c == 25) {
           s.borderRadius = '0 4px 0 0'
@@ -278,7 +283,7 @@ export default {
           Column5: zyougengaku5,
           Column6: zyougengaku6,
           Column7: zyougengaku7,
-          Column8: "開始年月日",
+          Column8: "就労継続支援Ａ型事業者負担減免対象者",
           Column18:gementaisyousya,
         },
         {
@@ -310,10 +315,6 @@ export default {
       
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
-      
-      // サービス種別ヘッダーを固定
-      flexGrid.frozenColumns = 1;
-      flexGrid.frozenRows = 1;
 
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -343,10 +344,6 @@ export default {
         if(c == 1 || c == 3 || c == 5 ||  c == 7 ||  c == 9){
           s.backgroundColor = "#fff";
         }
-        if(r == 0 && c == 0) {
-          cell.innerHTML = 'サービス種別';
-          s.paddingTop = "20px"
-        }
       }
     },
     getservicesyubetuGridData:function(){
@@ -372,10 +369,6 @@ export default {
 
       // 給付明細欄の配列の数を算出
       griddatacount = griddata.length;
-
-      // ヘッダー列を追加/////////////////////////////////////////////
-      grid.rowHeaders.rows.insert(0, new wjGrid.Row());
-      let headerpanel = grid.rowHeaders;
 
       // サービス内容追加ボタン用フッター行を追加/////////////////////////////////////////////
       grid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
@@ -411,8 +404,6 @@ export default {
 
       grid.itemsSource = griddata;
 
-      // 列ヘッダー0行目
-      headerpanel.setCellData(0, 0, "給付明細欄");
       // フッター0行目
       footerPanel.setCellData(0, 0,);
 
@@ -431,10 +422,8 @@ export default {
         }
         if (panel.cellType == wjGrid.CellType.RowHeader) {
         // ヘッダー列のスタイルをカスタマイズ
-          if (c == 0) {
-            s.writingMode = 'vertical-rl';
-            s.borderBottom = 'none';
-            s.paddingRight = '4px'
+          if (c === 0) {
+            s.borderBottom = "none";
           }
         }
         if (panel.cellType == wjGrid.CellType.Cell) {
@@ -450,6 +439,9 @@ export default {
         if (panel.cellType == wjGrid.CellType.ColumnFooter) {
         // フッターのスタイルをカスタマイズ
           s.backgroundColor = "#fff";
+          if ((c == 0) || (c == 0)) {
+            s.borderTop = "none";
+          }
         }
       }
     },
@@ -558,6 +550,54 @@ function getMeisairanData() {
       code:Math.floor(Math.random() * 555555).toString(),
       name:'生介人員配置体制加算Ⅰ'
     },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生活介護'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生活介護'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介福祉専門職員配置加算等Ⅰ'
+    },
+    {
+      code:Math.floor(Math.random() * 555555).toString(),
+      name:'生介人員配置体制加算Ⅰ'
+    },
   );
   for(let i = 0 ; i< smp.length; i++){
     let arrayCode = smp[i].code.split('');
@@ -602,11 +642,43 @@ function getMeisairanData() {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
-
+// サービス種別グリッドの修正
+#servicessyubetuGrid {
+  .servicessyubetu-title {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    z-index: 2;
+  }
+  &.wj-flexgrid {
+    max-height: 58px;
+    position: relative;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
+  }
+}
+// 給付明細欄グリッドの修正
 #kyuhu-meisairan {
   position: relative;
-  .wj-cell.wj-alt{
+  .wj-cell.wj-alt {
     background: #fffeed;
+  }
+  .kyuhu-meisairan-title {
+    position: absolute;
+    writing-mode: vertical-rl;
+    top: 90px;
+    left: 2px;
+    z-index: 2;
+
   }
   .service-addbutton {
     position: absolute;
@@ -641,26 +713,9 @@ function getMeisairanData() {
     border-radius: 0px;
   }
 }
-#servicessyubetuGrid {
-  &.wj-flexgrid {
-    max-height: 63px;
-    position: relative;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: $light-gray;
-    border-radius: 0px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: $brawn;
-    border-radius: 0px;
-  }
-}
 @media screen and (max-width: 1366px){
   #kyuhu-meisairan {
-    max-height: 227px;
+    max-height: 247px;
   }
 }
 

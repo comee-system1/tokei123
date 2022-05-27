@@ -94,22 +94,12 @@ export default {
       while (flexGrid.rows.length < 17) {
           flexGrid.rows.push(new wjGrid.Row());
       }
-
-      // セルの成形
+      
+      // ヘッダーセルの成形
       flexGrid.frozenColumns = 1;
       flexGrid.frozenColumns = 2;
       flexGrid.columns[0].width = 80;
       flexGrid.columns[1].width = 170;
-      // サービス明細表示部分のセルを成形
-      for (let h = 0; h < servicecount; h++) {
-        flexGrid.columns[2 + 3 * h].width = 35;
-        flexGrid.columns[3 + 3 * h].width = 35;
-        flexGrid.columns[4 + 3 * h].width = 90;
-      }
-      flexGrid.columns.defaultSize = 160;
-      flexGrid.rows.defaultSize = 20;
-      flexGrid.alternatingRowStep = 0;
-      flexGrid.isReadOnly = true;
       flexGrid.setCellData(0, 2, '請求額集計欄');
       flexGrid.setCellData(1, 0, 'サービス種類コード');
       flexGrid.setCellData(2, 0, 'サービス利用日数');
@@ -132,6 +122,17 @@ export default {
       flexGrid.setCellData(15, 1, '特別対策費');
       flexGrid.setCellData(16, 0, '自治体助成分請求書');
       flexGrid.setCellData(1, cellcount-1, '合計');
+      // 値の入力がないセルの成形
+      flexGrid.columns.defaultSize = 160;
+      flexGrid.rows.defaultSize = 20;
+      flexGrid.alternatingRowStep = 0;
+      flexGrid.isReadOnly = true;
+      // 値が入力されているセルの幅調整
+      for (let h = 0; h < servicecount; h++) {
+        flexGrid.columns[2 + 3 * h].width = 35;
+        flexGrid.columns[3 + 3 * h].width = 35;
+        flexGrid.columns[4 + 3 * h].width = 90;
+      }
       // サービスが入力されている2行目には円/日をセット
       for (let i = 1; i <= servicecount; i++) {
         flexGrid.setCellData(2, i * 3, '日');
@@ -290,7 +291,7 @@ export default {
 // サービス種別の数を算出
 function getServiceCount() {
   // サービス種別の数3と仮定
-  let count = 3;
+  let count = 7;
   return count;
 }
 </script>

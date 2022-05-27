@@ -69,10 +69,12 @@ import ServiceSelection from '../components/HeaderServices.vue';
 import { getOriginalDetailData } from '../data/SeikyuShoData.js'
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
+import sysConst from '@/utiles/const';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
 let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
+const boderSolid = '1px solid';
 
 export default {
   components: {
@@ -152,6 +154,14 @@ export default {
 				new wjGrid.CellRange(0,12,1,12)
       ];
       let cellRanges = this.getCellRanges(this.detailGridData);
+      let borderRowCol1 = [];
+      let borderRow = [];
+      cellRanges.forEach(range => {
+        if (range._col == 0) {
+          borderRowCol1.push(range._row);
+          borderRow.push(range._row2);
+        }
+      });
       let footerRanges = [
         new wjGrid.CellRange(0,0,0,1)
       ];
@@ -202,33 +212,84 @@ export default {
           if (r == 0 && c == 11) {
             cell.innerHTML = 'A + B<br/>請求金額';
           }
+
+          if (r == 0 && (c == 0 || c == 1 || c == 2 || c == 8 || c == 11)) {
+            s.borderRight = boderSolid;
+          } else if (r == 1 && (c == 7)) {
+            s.borderRight = boderSolid;
+          } else if (r == 1 && (c == 5 || c == 10)) {
+            s.borderLeft = boderSolid;
+            s.borderRight = boderSolid;
+          }
+
+          if (r == 0 && (c == 0 || c == 1 || c == 11 || c == 12)) {
+            s.borderBottom = boderSolid;
+          }
+
+          if (c >= 2 && c <= 10) {
+            s.borderBottom = boderSolid;
+          }
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
           if (c == 0 || c == 1) {
             s.textAlign = 'left';
-          }
-
-          if (c >= 2 && c <= 11) {
+          } else if (c >= 2 && c <= 11) {
             s.textAlign = 'right';
           }
 
-          if (c == 12) {
-            s.backgroundColor = "#fff";
+          if (c == 0 || c == 1) {
+            s.borderRight = boderSolid;
+          } else if(c == 5 || c == 10) {
+            s.borderLeft = boderSolid;
+            s.borderRight = boderSolid;
+          } else if (c == 7 || c == 11) {
+            s.borderRight = boderSolid;
+          } else if (c == 12) {
+            s.backgroundColor = sysConst.COLOR.white;
             cell.innerHTML = '<div class="printCell">'+cell.innerHTML+'</div>';
+          } else {
+            s.borderLeft = "none";
+            s.borderRight = "1px solid rgba(0,0,0,.2)";
           }
+
+          if (c == 0 || c == 11 || c == 12) {
+            borderRowCol1.forEach(row => {
+              if (r == row) {
+                s.borderBottom = boderSolid;
+              }
+            });
+          } else {
+            borderRow.forEach(row => {
+              if (r == row) {
+                s.borderBottom = boderSolid;
+              }
+            });
+            if (borderRow.indexOf(r) == -1) {
+              s.borderBottom = "1px solid rgba(0,0,0,.2)";
+            }
+          }
+
         } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           // フッターのスタイル
           // フッターの上部に線を表示する
           if (r == 0) {
-            s.borderTop = "1px solid rgba(0,0,0,.2)";
+            s.borderTop = boderSolid;
+            s.borderBottom = boderSolid;
             s.textAlign = 'center';
+          }
+
+          if (c == 0 || c == 7 || c == 11) {
+            s.borderRight = boderSolid;
+          } else if (c == 5 || c == 10) {
+            s.borderLeft = boderSolid;
+            s.borderRight = boderSolid;
           }
 
           if (c >= 2 && c <= 11 ) {
             // セルを薄黄色にする
-            s.backgroundColor = "#fffeed";
+            s.backgroundColor = sysConst.COLOR.gridBackground;
             s.textAlign = 'right';
-          } else if(c == 12) {
+          } else if (c == 12) {
             // 空欄セルをグレーにする
             s.backgroundColor = "#cccccc";
           }
@@ -302,7 +363,6 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-
 *{
   padding:0;
   margin:0;
@@ -363,28 +423,33 @@ div#seikyu-sho .transparent {
   }
 }
 
-#detailGrid .wj-header:not(.verticalRightCustom) {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color:#333333 !important;
-}
+div#seikyu-sho{
+  #detailGrid.wj-control.wj-content.wj-flexgrid {
+    border: 1px solid;
+  }
 
-.wj-flexgrid .wj-cell.verticalCenterCustom {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  #detailGrid .wj-header:not(.verticalRightCustom) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#333333 !important;
+  }
 
-.wj-flexgrid .wj-cell.verticalBottomCustom{
-  display: flex;
-  justify-content: right;
-  align-items: flex-end;
-}
+  .wj-flexgrid .wj-cell.verticalCenterCustom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.wj-flexgrid .wj-cell.verticalRightCustom{
-  display: flex;
-  justify-content: right;
-}
+  .wj-flexgrid .wj-cell.verticalBottomCustom{
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+  }
 
+  .wj-flexgrid .wj-cell.verticalRightCustom{
+    display: flex;
+    justify-content: right;
+  }
+}
 </style>

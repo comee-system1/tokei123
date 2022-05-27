@@ -11,13 +11,16 @@
         </v-row>
         <v-row no-gutters class="mt-1">
           <v-col>
-            <wj-combo-box
-              id="filterCombo"
+            <wj-menu
+              id="comboFilters"
+              :initialized="initComboFilters"
+              :isRequired="true"
+              style="width: 100%"
               :itemsSource="filterCombo"
-              :initialized="initComboFilter"
               :displayMemberPath="'text'"
+              selectedValuePath="'key'"
             >
-            </wj-combo-box>
+            </wj-menu>
           </v-col>
         </v-row>
         <v-row no-gutters class="mt-1">
@@ -134,12 +137,18 @@
       ></wj-flex-grid-column>
     </wj-flex-grid>
 
-    <wj-combo-box
-      :itemsSource="selects"
-      :isDroppedDown="isDroppedDown"
-      :isRequired="false"
-      :selectedIndexChanged="onselectedIndexChanged"
-    ></wj-combo-box>
+    <wj-menu
+      :header="'全選択/全解除'"
+      :itemClicked="onselectedIndexChanged"
+      style="width: 100%"
+    >
+      <wj-menu-item>
+        <b>印刷を全選択</b>
+      </wj-menu-item>
+      <wj-menu-item>
+        <b>印刷を全解除</b>
+      </wj-menu-item>
+    </wj-menu>
   </div>
 </template>
 <script>
@@ -152,8 +161,6 @@ import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
 
 Vue.use(VueAxios, axios);
-
-let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 // let userUrl = 'http:// local-tokei/';
 let userDataSelect = [];
 let userCount = 0;
@@ -174,7 +181,6 @@ export default {
   data() {
     return {
       usersData: [],
-      selects: selects,
       isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
@@ -212,10 +218,14 @@ export default {
     /*************************
      * 絞り込みコンボボックス
      */
-    initComboFilter(combo) {
+    initComboFilters(combo) {
       let _self = this;
+      combo.header = this.filterCombo[0].text;
       combo.selectedIndexChanged.addHandler(function (sender) {
-        _self.filterUser(sender.selectedValue.key);
+        if (sender.selectedIndex != -1) {
+          combo.header = _self.filterCombo[sender.selectedIndex].text;
+          _self.filterUser(sender.selectedIndex + 1);
+        }
       });
     },
     getFilterCombo() {
@@ -345,8 +355,8 @@ export default {
       let data = [];
       let _self = this;
       userDataSelect['riyo_inf'].forEach(function (value) {
-        if (_self.checkAll == '1') value.print = '〇';
-        if (_self.checkAll == '2') value.print = '';
+        if (_self.checkAll == '0') value.print = '〇';
+        if (_self.checkAll == '1') value.print = '';
         if (
           value.names.indexOf(_self.textSearch) != -1 &&
           (_self.filterSearch == 1 ||
@@ -567,6 +577,11 @@ export default {
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
 
+div#comboFilters {
+  .wj-btn.wj-btn-default {
+    border-left: none;
+  }
+}
 div#user-list-print_scrollbar {
   padding: 0;
   width: 275px;

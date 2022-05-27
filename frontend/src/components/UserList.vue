@@ -133,6 +133,14 @@ let userDataSelect = [];
 let userCount = 0;
 let alphabet = ['全','ア','カ','サ','タ','ナ','ハ','マ','ヤ','ラ','ワ',];
 export default {
+  props: {
+    selectedService: String,
+  },
+  watch: {
+    selectedService() {
+      this.createUser();
+    }
+  },
   data() {
     return {
       usersData: [],
@@ -238,6 +246,9 @@ export default {
       this.userFilter(s);
     },
     createUser(response = []) {
+      if(this.selectedService == '21 療養介護'){
+        this.usersData=[];
+      } else {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
@@ -287,14 +298,12 @@ export default {
         )
       }
       // --axiosを利用しないとき下記有効
-
       usersData['riyo_inf'] = riyo_inf;
       userDataSelect = usersData;
-
       this.userFilter();
+      }
       return this.usersData;
     },
-
     userFilter(s) {
       let data = [];
       let _self = this;

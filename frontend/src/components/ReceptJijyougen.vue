@@ -1117,21 +1117,23 @@ export default {
 
         // 固定行データ
         if (e.panel == flexGrid.cells) {
-          if (e.col <= 5) e.cell.style.background = '#fffeed';
+          if (e.col <= 5)
+            e.cell.style.background = sysConst.COLOR.gridBackground;
           if (e.col >= 7 && e.col < 14) {
             if (_selfdata[e.row]) {
               if (_selfdata[e.row].fixFlag) {
-                e.cell.style.background = '#fffeed';
-                e.cell.style.color = '#333';
+                e.cell.style.background = sysConst.COLOR.gridBackground;
+                e.cell.style.color = sysConst.COLOR.fontColor;
               } else {
-                e.cell.style.background = '#fff';
+                e.cell.style.background = sysConst.COLOR.white;
                 if (e.col >= 8 && e.col < 13) {
                   e.cell.style.color = '#2196F3';
                 }
               }
             }
           }
-          if (e.col == 14 || e.col == 15) e.cell.style.background = '#fffeed';
+          if (e.col == 14 || e.col == 15)
+            e.cell.style.background = sysConst.COLOR.gridBackground;
         }
 
         if (e.panel != flexGrid.columnHeaders) {
