@@ -25,7 +25,6 @@
                 :language="ja"
                 class="input_picker"
                 :format="DatePickerFormat"
-                :clear-button="true"
                 :value="nyuuinbi"
                 v-model="nyuuinbi"
               ></datepicker>

@@ -200,21 +200,12 @@ export default {
   },
   mounted() {
     this.handleResize;
+  },
+  created() {
     window.addEventListener('resize', this.handleResize);
   },
+
   methods: {
-    handleResize: function () {
-      let height = window.innerHeight;
-      let ht = '';
-      if (height > 800) {
-        ht = 68;
-      } else if (height > 700) {
-        ht = 60;
-      } else {
-        ht = 55;
-      }
-      this.gridHeight = 'height:' + ht + 'vh;';
-    },
     /*************************
      * 絞り込みコンボボックス
      */
@@ -570,6 +561,21 @@ export default {
           _self.$emit('child-select', row);
         }
       });
+    },
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    handleResize: function () {
+      let height = window.innerHeight;
+      let ht = '';
+      if (height > 800) {
+        ht = 68;
+      } else if (height > 700) {
+        ht = 60;
+      } else {
+        ht = 50;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
     },
   },
 };
