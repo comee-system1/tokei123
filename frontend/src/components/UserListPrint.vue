@@ -13,6 +13,7 @@
           <v-col>
             <wj-menu
               id="comboFilters"
+              class="combo"
               :initialized="initComboFilters"
               :isRequired="true"
               style="width: 100%"
@@ -615,6 +616,19 @@ div#user-list-print_scrollbar {
   .wj-cells .wj-cell.wj-state-selected {
     background: $grid_selected_background;
     color: $grid_selected_color;
+  }
+
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
+  .combo:focus {
+    background-color: #fff;
+  }
+  #comboFilters_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 
   ::-webkit-scrollbar {
