@@ -200,13 +200,9 @@ export default {
       flexGrid.autoSizeColumns();
       // セル情報のフォーマット指定
       this.methodCellFormatSetting(flexGrid);
-      //flexGrid.formatItem.addHandler(this.editCell);
-
       // セルのクリックイベント
       this.methodCellClickEvent(flexGrid);
-
-      let data = [];
-      flexGrid.itemsSource = data;
+      //flexGrid.itemsSource = [];
     },
     /*******************************
      * ヘッダメニューのサービス初回選択 検索ボタン
@@ -424,95 +420,63 @@ export default {
      */
     settingMeals() {
       let meals = getMeal();
-
-      // 選択された受給者番号のデータのみ対象にする
+      // 食事行の開始位置
+      let mealsRowSt = this.rowCounts.mealsRowSt;
+      // 食事を食事のキーに合わせる
       // apiが利用されたら不要
-      let breakfastdata = meals[0];
-      let breakfast = [];
-      for (let i = 0; i < breakfastdata.length; i++) {
-        if (
-          this.userDataSelect[0]['jyukyusyabango'] ==
-          breakfastdata[i]['jyukyusyabango']
-        ) {
-          breakfast.push(breakfastdata[i]);
+      let mk = meals;
+      meals = [];
+      for (let i = 0; i < this.gridItemName[0].mealsKey.length; i++) {
+        if (this.gridItemName[0].mealsKey[i] == 'breakfast') {
+          meals.push(mk[0]);
         }
-      }
-      let lunchdata = meals[1];
-      let lunch = [];
-      for (let i = 0; i < lunchdata.length; i++) {
-        if (
-          this.userDataSelect[0]['jyukyusyabango'] ==
-          lunchdata[i]['jyukyusyabango']
-        ) {
-          lunch.push(lunchdata[i]);
+        if (this.gridItemName[0].mealsKey[i] == 'lunch') {
+          meals.push(mk[1]);
         }
-      }
-      let dinnerdata = meals[2];
-      let dinner = [];
-      for (let i = 0; i < dinnerdata.length; i++) {
-        if (
-          this.userDataSelect[0]['jyukyusyabango'] ==
-          dinnerdata[i]['jyukyusyabango']
-        ) {
-          dinner.push(dinnerdata[i]);
+        if (this.gridItemName[0].mealsKey[i] == 'dinner') {
+          meals.push(mk[2]);
         }
-      }
-      // ここまで
-
-      if (breakfast.length > 0) {
-        for (let i = 0; i <= this.lastdate; i++) {
-          let d = 'day' + (i + 1);
-          this.mainGrid.setCellData(4, i + startPoint, breakfast[0][d]);
-        }
-        this.mainGrid.setCellData(
-          4,
-          this.lastdate + startPoint,
-          breakfast[0]['total']
-        );
-        this.mainGrid.setCellData(
-          4,
-          this.lastdate + totalPoint,
-          breakfast[0]['money']
-        );
       }
 
-      if (lunch.length > 0) {
-        for (let i = 0; i <= this.lastdate; i++) {
-          let d = 'day' + (i + 1);
-          this.mainGrid.setCellData(5, i + startPoint, lunch[0][d]);
+      for (let i = 0; i < meals.length; i++) {
+        let ml = meals[i];
+        let mealsdata = [];
+        let mealsType = this.gridItemName[0].mealsKey[i];
+        if (mealsType) {
+          for (let j = 0; j < ml.length; j++) {
+            // 選択された受給者番号のデータのみ対象にする
+            // apiが利用されたら不要
+            if (
+              this.userDataSelect[0]['jyukyusyabango'] ==
+              ml[j]['jyukyusyabango']
+            ) {
+              mealsdata.push(ml[j]);
+            }
+          }
+          for (let j = 0; j < mealsdata.length; j++) {
+            for (let i = 0; i <= this.lastdate; i++) {
+              let d = 'day' + (i + 1);
+              this.mainGrid.setCellData(
+                mealsRowSt,
+                i + startPoint,
+                mealsdata[0][d]
+              );
+            }
+            this.mainGrid.setCellData(
+              mealsRowSt,
+              this.lastdate + startPoint,
+              mealsdata[0]['total']
+            );
+            this.mainGrid.setCellData(
+              mealsRowSt,
+              this.lastdate + totalPoint,
+              mealsdata[0]['money']
+            );
+          }
+          this.mealsData[mealsType] = mealsdata;
+          mealsRowSt++;
         }
-        this.mainGrid.setCellData(
-          5,
-          this.lastdate + startPoint,
-          lunch[0]['total']
-        );
-        this.mainGrid.setCellData(
-          5,
-          this.lastdate + totalPoint,
-          lunch[0]['money']
-        );
       }
-
-      if (dinner.length > 0) {
-        for (let i = 0; i <= this.lastdate; i++) {
-          let d = 'day' + (i + 1);
-          this.mainGrid.setCellData(6, i + startPoint, dinner[0][d]);
-        }
-        this.mainGrid.setCellData(
-          6,
-          this.lastdate + startPoint,
-          dinner[0]['total']
-        );
-        this.mainGrid.setCellData(
-          6,
-          this.lastdate + totalPoint,
-          dinner[0]['money']
-        );
-      }
-
-      this.mealsData['breakfast'] = breakfast;
-      this.mealsData['lunch'] = lunch;
-      this.mealsData['dinner'] = dinner;
     },
 
     /********
@@ -612,104 +576,64 @@ export default {
      * 食事の編集
      */
     edittingMeals() {
-      let breakfast = this.mealsData['breakfast'];
-      let lunch = this.mealsData['lunch'];
-      let dinner = this.mealsData['dinner'];
-      // 朝食を0とするためdayrow-4(列数)を行う
-      // 食事のデータがあるもののみ更新
       if (
         this.dayPoint &&
         this.gridItemName[0].meals[this.dayPoint.dayrow - 4]
       ) {
-        if (
-          this.gridItemName[0].mealsKey[this.dayPoint.dayrow - 4] == 'breakfast'
-        ) {
-          breakfast[0][this.dayPoint['day']] = this.selectedPoint;
-          if (this.selectedPoint == 2) {
-            breakfast[0]['total'] = breakfast[0]['total'] + 1;
-            breakfast[0]['money'] =
-              breakfast[0]['money'] + this.gridItemName[0].mealsCount[0];
-          } else if (this.selectedPoint == 3) {
-            breakfast[0]['total'] = breakfast[0]['total'] - 1;
-            breakfast[0]['money'] =
-              breakfast[0]['money'] - this.gridItemName[0].mealsCount[0];
-          }
-        } else if (
-          this.gridItemName[0].mealsKey[this.dayPoint.dayrow - 4] == 'lunch'
-        ) {
-          lunch[0][this.dayPoint['day']] = this.selectedPoint;
-
-          if (this.selectedPoint == 2) {
-            lunch[0]['total'] = lunch[0]['total'] + 1;
-            lunch[0]['money'] =
-              lunch[0]['money'] + this.gridItemName[0].mealsCount[1];
-          } else if (this.selectedPoint == 3) {
-            lunch[0]['total'] = lunch[0]['total'] - 1;
-            lunch[0]['money'] =
-              lunch[0]['money'] - this.gridItemName[0].mealsCount[1];
-          }
-        } else if (
-          this.gridItemName[0].mealsKey[this.dayPoint.dayrow - 4] == 'dinner'
-        ) {
-          dinner[0][this.dayPoint['day']] = this.selectedPoint;
-          if (this.selectedPoint == 2) {
-            dinner[0]['total'] = dinner[0]['total'] + 1;
-            dinner[0]['money'] =
-              dinner[0]['money'] + this.gridItemName[0].mealsCount[2];
-          } else if (this.selectedPoint == 3) {
-            dinner[0]['total'] = dinner[0]['total'] - 1;
-            dinner[0]['money'] =
-              dinner[0]['money'] - this.gridItemName[0].mealsCount[2];
-          }
+        let mealsKey = this.gridItemName[0].mealsKey[this.dayPoint.dayrow - 4];
+        let mealsCount =
+          this.gridItemName[0].mealsCount[this.dayPoint.dayrow - 4];
+        let data = this.mealsData[mealsKey];
+        data[0][this.dayPoint.day] = this.selectedPoint;
+        let calc = this.mealCalc(data, mealsCount);
+        data[0]['total'] = calc.total;
+        data[0]['money'] = calc.money;
+        this.mealsData[mealsKey] = data;
+      }
+      let mealsrow = this.rowCounts.mealsRowSt;
+      for (let k = 0; k < this.gridItemName[0].mealsKey.length; k++) {
+        let mkey = this.gridItemName[0].mealsKey[k];
+        for (let i = 0; i <= this.lastdate; i++) {
+          let d = 'day' + (i + 1);
+          this.mainGrid.setCellData(
+            mealsrow,
+            i + startPoint,
+            this.mealsData[mkey][0][d]
+          );
         }
+        this.mainGrid.setCellData(
+          mealsrow,
+          this.lastdate + startPoint,
+          this.mealsData[mkey][0]['total']
+        );
+        this.mainGrid.setCellData(
+          mealsrow,
+          this.lastdate + totalPoint,
+          this.mealsData[mkey][0]['money']
+        );
+        mealsrow++;
       }
-      for (let i = 0; i <= this.lastdate; i++) {
-        let d = 'day' + (i + 1);
-        this.mainGrid.setCellData(4, i + startPoint, breakfast[0][d]);
-      }
-      for (let i = 0; i <= this.lastdate; i++) {
-        let d = 'day' + (i + 1);
-        this.mainGrid.setCellData(5, i + startPoint, lunch[0][d]);
-      }
-      for (let i = 0; i <= this.lastdate; i++) {
-        let d = 'day' + (i + 1);
-        this.mainGrid.setCellData(6, i + startPoint, dinner[0][d]);
-      }
+    },
 
-      this.mainGrid.setCellData(
-        4,
-        this.lastdate + startPoint,
-        breakfast[0]['total']
-      );
-      this.mainGrid.setCellData(
-        4,
-        this.lastdate + totalPoint,
-        breakfast[0]['money']
-      );
-      this.mainGrid.setCellData(
-        5,
-        this.lastdate + startPoint,
-        lunch[0]['total']
-      );
-      this.mainGrid.setCellData(
-        5,
-        this.lastdate + totalPoint,
-        lunch[0]['money']
-      );
-      this.mainGrid.setCellData(
-        6,
-        this.lastdate + startPoint,
-        dinner[0]['total']
-      );
-      this.mainGrid.setCellData(
-        6,
-        this.lastdate + totalPoint,
-        dinner[0]['money']
-      );
-
-      this.mealsData['breakfast'] = breakfast;
-      this.mealsData['lunch'] = lunch;
-      this.mealsData['dinner'] = dinner;
+    /********************
+     * 食事の合計と金額の計算
+     */
+    mealCalc(arg, mealsCount) {
+      let rtn = {};
+      rtn = { total: arg[0]['total'], money: arg[0]['money'] };
+      if (this.selectedPoint == 2) {
+        rtn = {
+          total: arg[0]['total'] + 1,
+          money: arg[0]['money'] + mealsCount,
+        };
+      }
+      if (this.selectedPoint == 3) {
+        rtn = {
+          total: arg[0]['total'] - 1,
+          money: arg[0]['money'] - mealsCount,
+        };
+      }
+      return rtn;
     },
     /******************
      * 光熱水費の設定
@@ -794,11 +718,22 @@ export default {
       // 変動情報＋体制個別+個別の行数
       kobetsuCount = rowColumn.length;
 
+      // 食事の開始位置
+      let mealsRowSt = 0;
+      for (let i = 0; i < this.gridItemName[0].shisetsuNyusho.length; i++) {
+        // 食事が発生するまでのカウント
+        if (this.gridItemName[0].shisetsuNyusho[i].mealFlag) {
+          break;
+        }
+        mealsRowSt++;
+      }
+
       return {
         hendoRowsCount: hendoRowsCount + 1,
         taiseiKobetsuRowsCount: taiseiKobetsuRowsCount + 1,
         kobetsuCount: kobetsuCount + 1,
         rowColumn: rowColumn,
+        mealsRowSt: mealsRowSt + 1,
       };
 
       // +1 はタイトルの部分を追加
@@ -1003,45 +938,27 @@ export default {
           classname = 'text-center gridBackground backGray';
         }
 
-        // 〇の表示
-        // 1:手入力不可〇
         if (
-          text == 1 &&
-          e.col != _self.lastdate + startPoint &&
-          e.col != _self.lastdate + totalPoint
-        ) {
-          classname = 'text-center gridBackground';
-          html = '<span>〇</span>';
-        }
-        // 青〇の表示
-        // 2:手入力可青〇
-        if (
-          text == 2 &&
+          e.col > 3 &&
           e.col != _self.lastdate + startPoint &&
           e.col != _self.lastdate + totalPoint
         ) {
           classname = 'text-center';
-          html =
-            '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
-        }
-        // 青×の表示
-        // 3:手入力可青×
-        if (
-          text == 3 &&
-          e.col != _self.lastdate + startPoint &&
-          e.col != _self.lastdate + totalPoint
-        ) {
-          classname = 'text-center';
-          html =
-            '<div class="blue--text bg"><div class="d-none">blue--batsu</div>×</div>';
-        }
-        // 0:空欄
-        if (
-          text == 0 &&
-          e.col != _self.lastdate + startPoint &&
-          e.col != _self.lastdate + totalPoint
-        ) {
-          html = '';
+          if (text == 1) {
+            html = '<p>〇</p>';
+            classname += ' gridBackground';
+          }
+          if (text == 2) {
+            html = '<span>〇</span>';
+            classname += ' blue--text';
+          }
+          if (text == 3) {
+            html = '×';
+            classname += ' blue--text';
+          }
+          if (text == 0) {
+            html = '';
+          }
         }
 
         if (e.col == 1 || e.col == 2) {
@@ -1061,26 +978,6 @@ export default {
           display: 'table-cell',
           verticalAlign: 'middle',
         });
-      });
-    },
-
-    /*************************
-     * セルのフォーマット変更
-     */
-    editCell(s, e) {
-      let html = e.cell.innerHTML;
-      //  let text = e.cell.innerText;
-      let classname = '';
-
-      e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
-
-      wjCore.setCss(e.cell, {
-        display: 'table',
-        tableLayout: 'absolute',
-      });
-      wjCore.setCss(e.cell.children[0], {
-        display: 'table-cell',
-        verticalAlign: 'middle',
       });
     },
 
@@ -1799,50 +1696,19 @@ export default {
             return false;
           }
 
-          let redMaruRegexp = /^<div class="d-none">blue-maru<\/div>/;
-          let redBatsuRegexp = /^<div class="d-none">blue--batsu<\/div>/;
-          let redNoneRegexp = /^<div class="blue--text bg"><\/div>/;
-          let redNoneRegexp2 =
-            /^<div class="blue--text bg"><div class="d-none">blue-maru<\/div><\/div>/;
-          // let total = flexGrid.getCellData(hPage.row, _self.lastdate + 3, false);
           // クリックをした位置
           let d = 'day' + (hPage.col - 3); // 日付
           _self.dayPoint = { day: d, dayrow: hPage.row };
-          // 青〇の置き換え
-          if (ht.target.innerHTML.match(redMaruRegexp)) {
-            e.target.innerHTML = '<div class="d-none">blue--batsu</div>×';
-            _self.alertMessageFlag = true;
-            _self.editGridFlag = true;
-            _self.selectedPoint = 3; // 青×の表示
+          let selectedPoint = 0;
+          if (ht.target.innerText == '〇') {
+            selectedPoint = 3;
           }
-          // 青×の置き換え
-          else if (ht.target.innerHTML.match(redBatsuRegexp)) {
-            e.target.innerHTML = '';
-            _self.alertMessageFlag = true;
-            _self.editGridFlag = true;
-            _self.selectedPoint = 0; // 空欄の表示
+          if (ht.target.innerText == '') {
+            selectedPoint = 2;
           }
-          // スペースの置き換え
-          else if (
-            ht.target.innerHTML.match(redNoneRegexp) ||
-            ht.target.innerHTML.match(redNoneRegexp2)
-          ) {
-            e.target.innerHTML =
-              '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
-            _self.alertMessageFlag = true;
-            _self.editGridFlag = true;
-            _self.selectedPoint = 2; // 青〇の表示
-          }
-          // 初回空欄の置き換え
-          else if (ht.target.innerHTML == '') {
-            e.target.innerHTML =
-              '<div class="blue--text bg"><div class="d-none">blue-maru</div>〇</div>';
-            _self.alertMessageFlag = true;
-            _self.editGridFlag = true;
-            _self.selectedPoint = 2; // 青〇の表示
-          }
-          // _self.mainGrid.itemsSource = [];
-          // 値を配列に登録
+          _self.selectedPoint = selectedPoint;
+
+          // 値を配列に登録s
           _self.edittingUse(_self, hPage, d);
           _self.edittingMeals();
           _self.edittingKounetusui();
@@ -2101,14 +1967,6 @@ export default {
      * 値の変更
      */
     edittingUse(_self, hPage, d) {
-      if (
-        _self.rowCounts.rowColumn[hPage.row - 1] == 'breakfast' ||
-        _self.rowCounts.rowColumn[hPage.row - 1] == 'lunch' ||
-        _self.rowCounts.rowColumn[hPage.row - 1] == 'dinner'
-      ) {
-        _self.mealsData[_self.rowCounts.rowColumn[hPage.row - 1]][0][d] =
-          _self.selectedPoint;
-      }
       if (_self.rowCounts.rowColumn[hPage.row - 1] == 'kounetsuSuihiFlag') {
         _self.kounetusuihi[0][d] = _self.selectedPoint;
       }

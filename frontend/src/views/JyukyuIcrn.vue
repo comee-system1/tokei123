@@ -868,5 +868,9 @@ div#jyukyuicrn {
     > .wj-applybutton {
     border-left: none;
   }
+  .wj-control.wj-menu:hover {
+    background: #e1e1e1;
+    transition: 1s;
+  }
 }
 </style>

@@ -19,7 +19,8 @@
             :is="displayComponent"
             :riyousya="riyousya"
             :zyukyusyaNum="zyukyusyaNum"
-            :changedService="changedService">
+            :changedService="changedService"
+            :startingOnSunday="startingOnSunday">
           </component>
         </v-col>
       </v-row>
@@ -61,6 +62,7 @@ export default {
       displayComponent: '', //描画するコンポーネント
       displayCode: '', //描画するサービスのコード
       changedService: '',
+      startingOnSunday: true, //trueは日曜はじまり
     };
   },
   watch: {

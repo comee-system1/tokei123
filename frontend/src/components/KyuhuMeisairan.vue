@@ -64,15 +64,15 @@
           <div class="servicessyubetu-title">
             サービス種別
           </div>
-          <wj-flex-grid-column binding="header" :width="150" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="150" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="serviceNo" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="headerKaisiYmd" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="kaisiYmd" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="headerSyuryoYmd" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="syuryoYmd" :width="'2*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="headerRiyouNissuu" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="riyouNissuu" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="headerNyuinNissuu" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+          <wj-flex-grid-column :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
           <wj-flex-grid-column binding="nyuinNissuu" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
         </wj-flex-grid>
       </v-col>
@@ -168,6 +168,7 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
+import sysConst from '@/utiles/const';
 
 export default {
   data() {
@@ -222,9 +223,9 @@ export default {
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
-        s.backgroundColor= "#fff";
+        s.backgroundColor= sysConst.COLOR.white;
         if(c == 0 || (r != 0 && c == 1) || (r == 0 && c == 8) || (r == 1 && c == 18) || (r == 1 && c == 22)){
-          s.backgroundColor = "#eee";
+          s.backgroundColor = sysConst.COLOR.selectedColor;
         }
         if(r == 1 && c == 0) {
           cell.innerHTML = '利用者負担上限額<br/>管理事業所';
@@ -248,6 +249,7 @@ export default {
           s.borderRadius = '0 4px 0 0'
         }
         if(r == 1 && c == 18|| c ==21 || c ==22 || c == 25) {
+          // 管理結果、管理結果額のセル幅を調整
           s.borderTop = '1px solid rgba(0,0,0,.2)'
           s.top = '18px'
           s.height = '20px'
@@ -340,9 +342,21 @@ export default {
         let s = cell.style;
         s.textAlign = 'center';
         s.fontWeight = "normal";
-                s.backgroundColor= "#eee";
+        s.backgroundColor = sysConst.COLOR.selectedColor;
         if(c == 1 || c == 3 || c == 5 ||  c == 7 ||  c == 9){
-          s.backgroundColor = "#fff";
+          s.backgroundColor = sysConst.COLOR.white;
+        }
+        if(c == 2){
+          cell.innerHTML = '開始年月日';
+        }
+        if(c == 4){
+          cell.innerHTML = '終了年月日';
+        }
+        if(c == 6){
+          cell.innerHTML = '利用日数';
+        }
+        if(c == 8){
+          cell.innerHTML = '入院人数';
         }
       }
     },
@@ -363,9 +377,6 @@ export default {
       let griddatacount;
       // グリッドの選択を無効にする
       grid.selectionMode = wjGrid.SelectionMode.None;
-
-      // ヘッダーを固定
-      // grid.frozenColumns = 0;
 
       // 給付明細欄の配列の数を算出
       griddatacount = griddata.length;
@@ -413,11 +424,11 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center';
-        s.color = "#000";
+        s.color = sysConst.COLOR.black;
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
         // ヘッダー行のスタイルをカスタマイズ
           if (r === 0) {
-            s.backgroundColor = "#eee";
+            s.backgroundColor = sysConst.COLOR.selectedColor;
           }
         }
         if (panel.cellType == wjGrid.CellType.RowHeader) {
@@ -438,10 +449,7 @@ export default {
         }
         if (panel.cellType == wjGrid.CellType.ColumnFooter) {
         // フッターのスタイルをカスタマイズ
-          s.backgroundColor = "#fff";
-          if ((c == 0) || (c == 0)) {
-            s.borderTop = "none";
-          }
+          s.backgroundColor = sysConst.COLOR.gridBackground;
         }
       }
     },
@@ -458,64 +466,32 @@ function getSyubetuData() {
     {
       uid: 1,
       serviceNo:        "22",
-      headerKaisiYmd:   "開始年月日",
-      kaisiYmd:         "2019年11月11日",
-      headerSyuryoYmd:  "終了年月日",
-      syuryoYmd:         "2021年7月30日",
-      headerRiyouNissuu: "利用日数",
+      kaisiYmd:         "2022年3月23日",
+      syuryoYmd:         "2022年7月30日",
       riyouNissuu:       "12",
-      headerNyuinNissuu: "入院人数",
-      nyuinNissuu:       "32",
+      nyuinNissuu:       "31",
     },
     {
       uid: 2,
-      serviceNo:        "23",
-      headerKaisiYmd:   "開始年月日",
-      kaisiYmd:         "2019年11月11日",
-      headerSyuryoYmd:  "終了年月日",
-      syuryoYmd:         "2021年7月30日",
-      headerRiyouNissuu: "利用日数",
-      riyouNissuu:       "12",
-      headerNyuinNissuu: "入院人数",
-      nyuinNissuu:       "32",
-    },
-    {
-      uid: 3,
-      serviceNo:        "31",
-      headerKaisiYmd:   "開始年月日",
-      kaisiYmd:         "2019年11月11日",
-      headerSyuryoYmd:  "終了年月日",
-      syuryoYmd:         "2021年7月30日",
-      headerRiyouNissuu: "利用日数",
-      riyouNissuu:       "12",
-      headerNyuinNissuu: "入院人数",
-      nyuinNissuu:       "32",
-    },
-    {
-      uid: 4,
       serviceNo:        "32",
-      headerKaisiYmd:   "開始年月日",
-      kaisiYmd:         "2019年11月11日",
-      headerSyuryoYmd:  "終了年月日",
-      syuryoYmd:         "2021年7月30日",
-      headerRiyouNissuu: "利用日数",
-      riyouNissuu:       "18  ",
-      headerNyuinNissuu: "入院人数",
-      nyuinNissuu:       "2",
-    },
-    {
-      uid: 4,
-      serviceNo:        "32",
-      headerKaisiYmd:   "開始年月日",
-      kaisiYmd:         "2019年11月11日",
-      headerSyuryoYmd:  "終了年月日",
-      syuryoYmd:         "2021年7月30日",
-      headerRiyouNissuu: "利用日数",
-      riyouNissuu:       "18  ",
-      headerNyuinNissuu: "入院人数",
-      nyuinNissuu:       "2",
+      kaisiYmd:         "2022年3月23日",
+      syuryoYmd:         "2022年7月30日",
+      riyouNissuu:       "12",
+      nyuinNissuu:       "31",
     }
   )
+  // データが3未満だった場合空の行を追加
+  if (syubetuData.length < 3) {
+    for (let f = 0; syubetuData.length < 3; f++) {
+      syubetuData.push({
+        serviceNo:        "",
+        kaisiYmd:         "",
+        syuryoYmd:         "",
+        riyouNissuu:       "",
+        nyuinNissuu:       ""
+      });
+    }
+  }
   return syubetuData;
 }
 
@@ -524,116 +500,94 @@ function getSyubetuData() {
  *給付明細欄データを設定
  */
 function getMeisairanData() {
+  let meisairanSmpData = [];
   let meisairanData = [];
-
-  //暫定敵に7つ分のサービスコード
-  let noCount = 7; 
-  let servicecode = [];
-  for (let f = 0; f < noCount; f++) {
-    servicecode.push(
-      Math.floor(Math.random() * 555555).toString()
-    );
-  }
-  //let meisairanCode = numberSplit(servicecode);
-
-  let smp = [];
-  smp.push(
+  meisairanSmpData.push(
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生活介護'
+      code:'222131',
+      name:'生活介護１４'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
+      code:'226005',
+      name:'生介常勤看護職員等配置加算１１'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
+      code:'226037',
+      name:'生介福祉専門職員配置等加算Ⅰ'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
+      code:'227062',
+      name:'生介人員配置体制加算１１'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
+      code:'226716',
+      name:'生介障害者支援施設処遇改善加算Ⅰ'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生活介護'
+      code:'322231',
+      name:'施設入所３４'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
+      code:'325690',
+      name:'施入重度障害者支援加算Ⅰ１'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
+      code:'326070',
+      name:'施入地域生活移行個別支援特別加算Ⅰ'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
+      code:'326085',
+      name:'施入夜間看護体制加算'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
+      code:'327025',
+      name:'施入口腔衛生管理体制加算'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生活介護'
+      code:'327074',
+      name:'施入夜勤職員配置体制加算５'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
+      code:'32Z001',
+      name:'施入身体拘束廃止未実施減算'
     },
     {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
-    },
-    {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介福祉専門職員配置加算等Ⅰ'
-    },
-    {
-      code:Math.floor(Math.random() * 555555).toString(),
-      name:'生介人員配置体制加算Ⅰ'
-    },
+      code:'326715',
+      name:'施入処遇改善加算Ⅰ'
+    }
   );
-  for(let i = 0 ; i< smp.length; i++){
-    let arrayCode = smp[i].code.split('');
+  for(let i = 0 ; i < meisairanSmpData.length; i++){
+    let arrayCode = meisairanSmpData[i].code.split('');
     meisairanData.push({
-      service: smp[i].name,
+      service: meisairanSmpData[i].name,
       servicecode1: arrayCode[0],
       servicecode2: arrayCode[1],
       servicecode3: arrayCode[2],
       servicecode4: arrayCode[3],
       servicecode5: arrayCode[4],
       servicecode6: arrayCode[5],
-      tanisuu: '669'+i*20,
+      tanisuu: '66'+i,
       kaisuu: 1,
       servicetanisuu: 9300,
       tekiyou: '',
     });
   }
-
-  // 表示数11未満だった場合空の行を追加
+  // 表示数11未満だった場合、空の行を追加
   if (meisairanData.length < 11) {
-    let meisairanDataCount
-    meisairanDataCount = meisairanData.length
-    for (let f = 0; f < (11 - meisairanDataCount); f++) {
+    for (let f = 0; meisairanData.length < 11; f++) {
       meisairanData.push({
-      service: '',
-      servicecode1: '',
-      servicecode2: '',
-      servicecode3: '',
-      servicecode4: '',
-      servicecode5: '',
-      servicecode6: '',
-      tanisuu: '',
-      kaisuu: '',
-      servicetanisuu: '',
-      tekiyou: '',
-    });
+        service: '',
+        servicecode1: '',
+        servicecode2: '',
+        servicecode3: '',
+        servicecode4: '',
+        servicecode5: '',
+        servicecode6: '',
+        tanisuu: '',
+        kaisuu: '',
+        servicetanisuu: '',
+        tekiyou: '',
+      });
     }
   }
   return meisairanData;
@@ -692,7 +646,7 @@ function getMeisairanData() {
     display: inline-block;
     background: #fff;
     border: 1px solid #333;
-    color: #000;
+    color: black;
     font-size: 11px;
     border-radius: 15px;
     text-decoration: none;

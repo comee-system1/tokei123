@@ -1,19 +1,19 @@
 <template>
   <div id="kyuhumeisai">
-    <ServiceSelection
+    <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
+      @parent-search="parentSearch($event, searchArgument)"
       :seikyuflag="true"
-    >
-    </ServiceSelection>
+      :searchButtonFlag="true"
+      :registButtonFlag="false"
+    ></header-services>
     <v-container fluid class="container">
       <v-row no-gutters>
         <v-col class="leftArea">
-          <user-list-print
-            ref="user_list_print"
-            @child-select="setUserSelectPoint"
-            @child-user="getSelectUserChildComponent"
-          >
-          </user-list-print>
+          <UserList
+            @child-userslist="getUserListData"
+            @child-selectedrow="getSelectedRow">
+          </UserList>
         </v-col>
         <v-col class="rightArea kyuhumeisai">
           <v-row no-gutters justify="space-between">
@@ -143,33 +143,34 @@
 </template>
 
 <script>
-import ServiceSelection from '../components/HeaderServices.vue';
-import UserListPrint from '../components/UserListPrint.vue';
+import HeaderServices from '../components/HeaderServices.vue';
+import UserList from '../components/UserList';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import CommonTabMenu from '../components/CommonTabMenu.vue';
 import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
 import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
+import sysConst from '@/utiles/const';
 
 let daycount = 0;
 
 export default {
   components: {
+    HeaderServices,
     CommonTabMenu,
-    ServiceSelection,
-    UserListPrint,
+    UserList,
     KyuhuMeisairan,
     KyuhuSeikyugaku,
   },
   data() {
     return {
-      userListComponentDatas: [], // ユーザー一覧データ
-      userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
+      userListData: [], // 利用者一覧表示データ
+      selectedRow: '', // 利用者一覧の選択行
       daycount: daycount,
       dateArgument: '',
       searchArgument: '',
-      kyuhujukyuyaGridData:this.getKyuhujukyuyaGridData(),
+      kyuhujukyuyaGridData:[],
       styousonGridData:this.getStyousonGridData(),
-      jigyousyaGridData:this.getJigyousyaGridData(),
+      jigyousyaGridData:[], 
       tiikikubunGridData:this.getTiikikubunGridData(),
       // タブの制御Flag
       ServiceMeisaiFlag: true, // ServiceMeisaiFlagの初期表示状態
@@ -182,6 +183,7 @@ export default {
   },
   methods: {
     onInitializeKyuhujukyuyaGrid:function(flexGrid){
+      this.getKyuhujukyuyaGridData();
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -203,33 +205,34 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
-
+      console.log(this.returns);
        // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center';
-        s.backgroundColor= "#eee";
-        if(c != 0){
-          s.backgroundColor = "#fff";
+        s.backgroundColor = sysConst.COLOR.white;
+        if(c == 0){
+          s.backgroundColor = sysConst.COLOR.selectedColor;
         }
         if(r == 1 && c == 1 || r == 2 && c == 2){
           s.textAlign = 'left';
+          s.paddingLeft = '4px';
         }
       }
     },
     getKyuhujukyuyaGridData:function(){
-      let jukyuno1 = "1";
-      let jukyuno2 = "1";
-      let jukyuno3 = "0";
-      let jukyuno4 = "0";
-      let jukyuno5 = "0";
-      let jukyuno6 = "1";
-      let jukyuno7 = "2";
-      let jukyuno8 = "3";
-      let jukyuno9 = "4";
-      let jukyuno10 = "0";
+      let jukyuno1 = "";
+      let jukyuno2 = "";
+      let jukyuno3 = "";
+      let jukyuno4 = "";
+      let jukyuno5 = "";
+      let jukyuno6 = "";
+      let jukyuno7 = "";
+      let jukyuno8 = "";
+      let jukyuno9 = "";
+      let jukyuno10 = "";
       let kyuhujukyuyaGridData = [];
       kyuhujukyuyaGridData.push(
         {
@@ -246,17 +249,18 @@ export default {
           Column10: jukyuno10,
         },
         {
-          Column0: "支給者決定障害者等氏名",
-          Column1: "東経　さおり",
+          Column0: "支給決定障害者等氏名",
+          Column1: "",
         },
         {
           Column0: "支給決定に係る障害児氏名",
           Column1: "",
         }
       )
-      return kyuhujukyuyaGridData;
+    this.kyuhujukyuyaGridData = kyuhujukyuyaGridData;
     },
     onInitializeStyousonGrid:function(flexGrid){
+      this.getJigyousyaGridData();
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -266,9 +270,9 @@ export default {
         let s = cell.style;
         s.textAlign = 'center';
         s.fontWeight = "normal";
-        s.backgroundColor= "#eee";
-        if(c != 0){
-          s.backgroundColor = "#fff";
+        s.backgroundColor = sysConst.COLOR.white;
+        if(c == 0){
+          s.backgroundColor= sysConst.COLOR.selectedColor;
         }
       }
     },
@@ -331,12 +335,13 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center'
-        s.backgroundColor= "#eee";
-        if(c != 0){
-          s.backgroundColor = "#fff";
+        s.backgroundColor = sysConst.COLOR.white;
+        if(c == 0){
+          s.backgroundColor = sysConst.COLOR.selectedColor;
         }
         if(r == 1 && c == 1){
           s.textAlign = 'left';
+          s.paddingLeft = '4px';
         }
       }
     },
@@ -371,7 +376,8 @@ export default {
           Column1: "障害者支援施設 ひまわり園",
         }
       )
-      return jigyousyaGridData;
+      this.jigyousyaGridData = jigyousyaGridData;
+      // return jigyousyaGridData;
     },
     onInitializeTiikikubunGrid:function(flexGrid){
       // グリッドの選択を無効にする
@@ -401,9 +407,9 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center'
-        s.backgroundColor= "#eee";
+        s.backgroundColor= sysConst.COLOR.selectedColor;
         if((r == 0 && c == 2) || (r == 1 && c == 2)){
-          s.backgroundColor = "#fff";
+          s.backgroundColor = sysConst.COLOR.white;
         }
         if(r == 0 && c == 0){
           cell.style.display = 'none'
@@ -449,25 +455,34 @@ export default {
       )
     return tiikikubunGridData;
     },
-    // 左メニューで作成されたユーザ一覧の取得を行う
-    getSelectUserChildComponent(data) {
+    // 左メニューで作成されたユーザ一覧の取得
+    getUserListData(data) {
       this.userListComponentDatas = data;
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
-    setUserSelectPoint(row) {
-      this.userDataSelect[0]['riyosyo'] =
-        this.userListComponentDatas[row].riyocode +
-        ' ' +
-        this.userListComponentDatas[row].names;
+    getSelectedRow(row) {
+      this.userData = {userData:1};
+      this.getKyuhujukyuyaGridData();
 
-      this.userDataSelect[0]['jyukyusyabango'] =
-        this.userListComponentDatas[row].jyukyuno;
+      // 受給者番号を分割
+      let jyukyunoSplit = [];
+      jyukyunoSplit = this.userListComponentDatas[row]['jyukyuno'].split('');
 
-      console.log(31232);
-      // 値の設定
-      this.selectType = '';
-      this.editGridFlag = '';
+      // 受給者番号の表示
+      this.kyuhujukyuyaGridData[0]['Column1'] =jyukyunoSplit[0];
+      this.kyuhujukyuyaGridData[0]['Column2'] =jyukyunoSplit[1];
+      this.kyuhujukyuyaGridData[0]['Column3'] =jyukyunoSplit[2];
+      this.kyuhujukyuyaGridData[0]['Column4'] =jyukyunoSplit[3];
+      this.kyuhujukyuyaGridData[0]['Column5'] =jyukyunoSplit[4];
+      this.kyuhujukyuyaGridData[0]['Column6'] =jyukyunoSplit[5];
+      this.kyuhujukyuyaGridData[0]['Column7'] =jyukyunoSplit[6];
+      this.kyuhujukyuyaGridData[0]['Column8'] =jyukyunoSplit[7];
+      this.kyuhujukyuyaGridData[0]['Column9'] =jyukyunoSplit[8];
+      this.kyuhujukyuyaGridData[0]['Column10'] =jyukyunoSplit[9];
+      // 支給決定障害者等氏名の表示
+      this.kyuhujukyuyaGridData[1]['Column1'] = this.userListComponentDatas[row]['names'];
     },
+
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
      */

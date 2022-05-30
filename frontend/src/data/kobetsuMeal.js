@@ -28,8 +28,8 @@ export function getMeal() {
   lunch.push({
     jyukyusyabango: '8765432100',
     day1: 2,
-    day2: 2,
-    day3: 2,
+    day2: 3,
+    day3: 3,
     day4: 2,
     day5: 2,
     day6: 2,
@@ -50,8 +50,8 @@ export function getMeal() {
   });
   dinner.push({
     jyukyusyabango: '8765432100',
-    day1: 2,
-    day2: 2,
+    day1: 3,
+    day2: 3,
     day3: 2,
     day4: 2,
     day5: 2,
@@ -68,8 +68,8 @@ export function getMeal() {
     day28: 2,
     day30: 2,
     day31: 2,
-    total: 18,
-    money: 9000,
+    total: 16,
+    money: 8000,
   });
 
 

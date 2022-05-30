@@ -165,9 +165,11 @@
           </v-list>
         </v-menu>
       </div>
-      <v-icon>mdi-magnify</v-icon>
+      <v-icon>mdi-printer-search</v-icon>
       <v-icon>mdi-printer</v-icon>
       <v-icon>mdi-file-excel</v-icon>
+      <v-icon v-if="isMaximize" @click="maximize">mdi-arrow-collapse</v-icon>
+      <v-icon v-if="!isMaximize" @click="maximize">mdi-arrow-expand</v-icon>
     </v-app-bar>
   </div>
 </template>
@@ -178,6 +180,7 @@ export default {
   data() {
     return {
       drawer: true,
+      isMaximize: false,
       year: moment().year(),
       month: moment().format('MM'),
       date: moment().date(),
@@ -266,6 +269,16 @@ export default {
   watch: {
     $route() {
       this.pageTitle = this.$route.name;
+    },
+  },
+  methods: {
+    maximize() {
+      this.isMaximize = !this.isMaximize;
+      if (this.isMaximize) {
+        document.body.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
     },
   },
 };

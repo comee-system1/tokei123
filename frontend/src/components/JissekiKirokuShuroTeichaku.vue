@@ -85,13 +85,13 @@ export default {
     userListData: String,
     riyousya: String,
     zyukyusyaNum: String,
+    startingOnSunday: Boolean,
   },
   watch: {
     riyousya() {
       this.sikyuryoData = apiResult['riyo_inf'][0]['sikyuryo'];
       this.detailGridData = this.getGridData(apiResult);
       this.subGridData = this.getSubGridData(apiResult);
-      this.gridchageFlag = true;
     }
   },
   data() {
@@ -149,6 +149,9 @@ export default {
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
+
+      let startingOnSunday = this.startingOnSunday;
+
       // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル
@@ -171,10 +174,24 @@ export default {
           }
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
-          if (panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)) {
-            cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
-          } else if (panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)) {
-            cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
+          s.borderBottom = "1px solid rgba(0,0,0,.2)";
+
+          if (panel.rows[r].dataItem.youbi=="土") {
+            if (c == 0 || c == 1) {
+              cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
+            }
+
+            if (startingOnSunday) {
+              s.borderBottom = darkLine;
+            }
+          } else if (panel.rows[r].dataItem.youbi=="日") {
+            if (c == 0 || c == 1) {
+              cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
+            }
+
+            if (!startingOnSunday) {
+              s.borderBottom = darkLine;
+            }
           }
 
           if (c == 1 || c == 2 || c == 4) {

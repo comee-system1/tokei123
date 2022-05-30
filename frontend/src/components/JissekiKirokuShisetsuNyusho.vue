@@ -123,10 +123,11 @@ export default {
     userListData: String,
     riyousya: String,
     zyukyusyaNum: String,
+    startingOnSunday: Boolean,
   },
   watch: {
     riyousya() {
-      this.gridchageFlag = true;
+      this.gridchangeFlag = true;
       this.tkkfhiumuData = apiResult['riyo_inf'][0]['tkkfhiumu'];
       this.tkkfhiData = apiResult['riyo_inf'][0]['tkkfhi'] +" 円";
       this.nyuinGaihakuTotal = getNyuinGaihakuTotal(apiResult['riyo_inf'][0]['kiroku_mei']);
@@ -143,7 +144,7 @@ export default {
       tkkfhiData: "",
       subGridData: this.getSubGridData(),
       jippisanteigakuGridData: this.getjippisanteigakuGridData(),
-      gridchageFlag: false
+      gridchangeFlag: false
     }
   },
   methods: {
@@ -171,6 +172,7 @@ export default {
       };
       flexGrid.mergeManager = mm;
 
+      // ヘッダーとフッターの高さを調整
       flexGrid.cells.rows[0].height = 20;
       flexGrid.cells.rows[1].height = 20;
 
@@ -197,7 +199,7 @@ export default {
       }
     },
     onInitializeJippisanteigakuGridChanged(flexGrid) {
-      if (this.gridchageFlag) {
+      if (this.gridchangeFlag) {
         flexGrid.cells.rows[0].height = 20;
         flexGrid.cells.rows[1].height = 20;
       }
@@ -254,6 +256,9 @@ export default {
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 45;
+
+      let startingOnSunday = this.startingOnSunday;
+
       // グリッドのスタイルをカスタマイズ
       flexGrid.itemFormatter = function(panel,r,c,cell) {
         // グリッド内共通スタイル
@@ -289,10 +294,24 @@ export default {
 
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
-          if (panel.rows[r].dataItem.youbi=="土" && (c == 0 || c == 1)) {
-            cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
-          } else if (panel.rows[r].dataItem.youbi=="日" && (c == 0 || c == 1)) {
-            cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
+          s.borderBottom = "1px solid rgba(0,0,0,.2)";
+
+          if (panel.rows[r].dataItem.youbi=="土") {
+            if (c == 0 || c == 1) {
+              cell.innerHTML = "<div class='blue--text'>"+ cell.innerHTML +"</div>";
+            }
+
+            if (startingOnSunday) {
+              s.borderBottom = darkLine;
+            }
+          } else if (panel.rows[r].dataItem.youbi=="日") {
+            if (c == 0 || c == 1) {
+              cell.innerHTML = "<div class='red--text'>"+ cell.innerHTML +"</div>";
+            }
+
+            if (!startingOnSunday) {
+              s.borderBottom = darkLine;
+            }
           }
 
           if (c == 1 || c == 2 || c == 7 || c == 11) {
@@ -325,10 +344,10 @@ export default {
       }
     },
     onInitializeDetailGridChanged(flexGrid) {
-      if (this.gridchageFlag) {
+      if (this.gridchangeFlag) {
         let footerPanel = flexGrid.columnFooters;
         footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
-        this.gridchageFlag = false;
+        this.gridchangeFlag = false;
       }
     },
     onInitializeSubGrid(flexGrid) {
