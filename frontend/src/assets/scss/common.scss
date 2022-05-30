@@ -17,6 +17,9 @@ $grid_hover_background: #ccffcc !important;
 $grid_selected_background: #80adbf !important;
 $grid_selected_color:  #fff !important;
 
+// 必須マークカラー
+$Hissu_Color:#ce3e47;
+
 $cell_fontsize:12px;
 @import "_mixins";
 @import "_jyogenkanri";

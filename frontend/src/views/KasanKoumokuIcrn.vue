@@ -869,7 +869,10 @@ div#KasanKoumokuIcrn {
   }
   .wj-control.wj-menu:hover {
     background: #e1e1e1;
-    transition: 1s;
+  }
+  .wj-listbox.wj-menu-items
+    .wj-listbox-item:not(.wj-state-disabled):not(.wj-separator) {
+    background: $white;
   }
 }
 </style>

@@ -138,10 +138,6 @@
             >登録</v-btn
           >
         </v-col>
-        <v-col cols="1*" class="ml-1 text-end">
-          <v-btn x-small @click="branzMaxim">最大化</v-btn><br />
-          <v-btn x-small @click="branzMinmum">最大化解除</v-btn>
-        </v-col>
       </v-row>
       <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
         ※情報が変更されています。登録を行ってください※
@@ -592,12 +588,6 @@ export default {
 
       this.picker = picker;
       this.datepicker_dialog = true;
-    },
-    branzMaxim: function () {
-      document.body.requestFullscreen();
-    },
-    branzMinmum: function () {
-      document.exitFullscreen();
     },
     kanryoToggleSwitch: function () {
       this.isActive = !this.isActive;

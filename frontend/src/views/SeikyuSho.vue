@@ -24,13 +24,14 @@
             <v-btn small color="secondary" dark outlined>一  覧</v-btn>
           </v-btn-toggle>
         </div>
-        <wj-combo-box
+        <wj-menu
           id="printCombo"
-          :itemsSource="selects"
-          :isDroppedDown="isDroppedDown"
-          :isRequired="false"
-          :selectedIndexChanged="onselectedIndexChanged"
-        ></wj-combo-box>
+          :header="'全選択/全解除'"
+          :itemClicked="onselectedIndexChanged"
+        >
+          <wj-menu-item><b>印刷を全選択</b></wj-menu-item>
+          <wj-menu-item><b>印刷を全解除</b></wj-menu-item>
+        </wj-menu>
       </v-row>
       <v-row no-gutters>
         <wj-flex-grid
@@ -73,7 +74,7 @@ import sysConst from '@/utiles/const';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
-let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
+// let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 const darkLine = '1px solid #333';
 const boldLine = '2px solid #333';
 
@@ -90,7 +91,7 @@ export default {
         { val: 3, name: '南経市' },
         { val: 3, name: '北経市' },
       ],
-      selects: selects,
+      // selects: selects,
       detailGridData: apiResult['dummy'],
       isDroppedDown: false,
       selectedSichoson:"指定なし",
@@ -122,10 +123,10 @@ export default {
       let newData = [];
       data.forEach(function(value) {
         // 印刷チェックの制御
-        if (s.selectedIndex == '1') {
+        if (s.selectedIndex == '0') {
           value.print = '〇';
         }
-        if (s.selectedIndex == '2') {
+        if (s.selectedIndex == '1') {
           value.print = '';
         }
         newData.push(value);
@@ -388,7 +389,7 @@ div#seikyu-sho .transparent {
   }
 }
 
-.service-selecter{
+div#seikyu-sho .service-selecter{
   label {
     display: inline-block;
     margin-top: 2px;
@@ -403,7 +404,7 @@ div#seikyu-sho .transparent {
   }
 }
 
-.print-selecter {
+div#seikyu-sho .print-selecter {
   margin-right: 0;
   margin-left: auto;
   label {
@@ -426,12 +427,17 @@ div#seikyu-sho .transparent {
   }
 }
 
+div#seikyu-sho #printCombo{
+  width:150px;
+  color:$font_color !important;
+}
+
 div#seikyu-sho{
   #detailGrid .wj-header:not(.verticalRightCustom) {
     display: flex;
     justify-content: center;
     align-items: center;
-    color:#333333 !important;
+    color:$font_color !important;
   }
 
   .wj-flexgrid .wj-cell.verticalCenterCustom {

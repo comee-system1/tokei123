@@ -20,6 +20,8 @@ const COLOR = {
     gridNoneBackground:'#E2E2E2',
     gridHeaderRemarkBackground:'#FFECCC',
     gridRemarkBackground:'#FFF6E8',
+    HissuMarkColor:'#ce3e47',
+
 };
 
 const FORMAT = {
