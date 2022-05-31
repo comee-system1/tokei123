@@ -23,9 +23,9 @@
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
                 <v-card class="pr-2 text-center" elevation="0" :min-width="80">
-                  <label class="greyLabel pt-1">利用者名</label>
+                  <label class="greyLabel">利用者名</label>
                 </v-card>
-                <v-card class="pa-1 light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
                 <v-card
@@ -33,17 +33,17 @@
                   elevation="0"
                   :min-width="80"
                 >
-                  <label class="greyLabel pt-1">受給者番号</label>
+                  <label class="greyLabel">受給者番号</label>
                 </v-card>
-                <v-card class="pa-1 light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="180" outlined tile>
                   {{ userDataSelect[0].jyukyusyabango }}
                 </v-card>
               </v-card>
             </v-col>
             <v-col class="text-end">
               生活支援変動情報:
-              <v-btn class="pa-3" small>
-                <v-icon x-small class="white mr-3 pa-1 rounded-circle">
+              <v-btn x-small>
+                <v-icon x-small class="white mr-3 rounded-circle">
                   mdi-download
                 </v-icon>
                 個別取込</v-btn
@@ -961,9 +961,6 @@ export default {
           }
         }
 
-        if (e.col == 1 || e.col == 2) {
-          classname += ' pa-1';
-        }
         // 最終日の右側に線を引く
         if (e.col == _self.lastdate + startPoint - 1) {
           classname += ' lastboard';
@@ -1006,8 +1003,8 @@ export default {
 
       flexGrid.frozenColumns = 4;
       flexGrid.frozenRows = 1;
-      flexGrid.columns[0].width = 32;
-      flexGrid.columns[1].width = 32;
+      flexGrid.columns[0].width = 25;
+      flexGrid.columns[1].width = 25;
       flexGrid.columns[2].width = '8*';
       flexGrid.columns[3].width = '8*';
 
@@ -1020,7 +1017,7 @@ export default {
       this.edittingTaiseiHeight(1, flexGrid);
       this.edittingTaiseiHeight(2, flexGrid);
 
-      flexGrid.rows.defaultSize = 32;
+      flexGrid.rows.defaultSize = 24;
       flexGrid.setCellData(0, 0, '');
       // 項目
       flexGrid.setCellData(0, 1, this.gridItemName[0].heads[0]);
@@ -1179,6 +1176,7 @@ export default {
           new wjGrid.CellRange(1, 1, 1, 3), // 利用日
           new wjGrid.CellRange(2, 1, 2, 3), // 入退院
           new wjGrid.CellRange(3, 1, 3, 3), // 外泊
+          new wjGrid.CellRange(4, 1, 4, 2), // 食事
           new wjGrid.CellRange(5, 1, 5, 2), // 食事
         ];
       }
@@ -1202,6 +1200,7 @@ export default {
           new wjGrid.CellRange(1, 1, 1, 3), // 利用日
           new wjGrid.CellRange(2, 1, 2, 3), // 入退院
           new wjGrid.CellRange(3, 1, 3, 3), // 外泊
+          new wjGrid.CellRange(4, 1, 4, 2), // 食事
           new wjGrid.CellRange(5, 1, 5, 2), // 食事
           new wjGrid.CellRange(6, 1, 6, 2), // 食事
           new wjGrid.CellRange(7, 1, hendoRow - 1, 2), // 光熱水費
@@ -2037,6 +2036,9 @@ div#kobeturiyo {
   }
   .wj-cells {
     font-size: $cell_fontsize;
+  }
+  .wj-cell {
+    padding: 1px !important;
   }
   .wj-cells .wj-cell.wj-state-selected {
     background-color: $light-white !important;

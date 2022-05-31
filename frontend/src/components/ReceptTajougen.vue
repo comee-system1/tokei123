@@ -11,6 +11,7 @@
       :deferResizing="false"
       :allowSorting="false"
       :itemsSource="receptData"
+      :style="gridHeight"
     >
       <wj-flex-grid-column
         :binding="'sityoson'"
@@ -32,7 +33,7 @@
         :binding="'riyousyamei'"
         :header="'利用者名'"
         align="center"
-        width="2*"
+        width="3*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -81,14 +82,14 @@
       <wj-flex-grid-column
         :binding="'jigyosyomei'"
         :header="'事業所名'"
-        width="2*"
+        width="3*"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'teikyoservice'"
         :header="'提供\nサービス'"
-        width="2*"
+        width="3*"
         align="center"
         :multiLine="true"
         :isReadOnly="true"
@@ -114,7 +115,7 @@
       <wj-flex-grid-column
         :binding="'kanrikekkafutangaku'"
         :header="centerHeader[1]"
-        width="3*"
+        width="2*"
         align="center"
         :multiLine="true"
       ></wj-flex-grid-column>
@@ -171,10 +172,30 @@ export default {
       alphaSelect: 0,
       editedCells: [],
       completeJudgeButton: 0, // 確定登録・解除ボタン判定
+      gridHeight: '', // グリッドの高さ
     };
   },
   components: {},
+  mounted() {
+    this.handleResize();
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+  },
   methods: {
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    handleResize() {
+      let height = window.innerHeight;
+      let ht = 54;
+      if (height > 800) {
+        ht = 65;
+      } else if (height > 700) {
+        ht = 58;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
+    },
     /*******************
      * 確定登録・解除ボタン
      */
@@ -682,7 +703,8 @@ export default {
       panel.setCellData(0, 13, '上限管理後');
       panel.setCellData(0, 15, _self.verticalHeader[2]);
       panel.setCellData(0, 16, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 90;
+      flexGrid.columnHeaders.rows[1].height = 80;
+      flexGrid.rows.defaultSize = 20;
     },
     /**************
      * ヘッダセルのマージ
@@ -716,10 +738,6 @@ export default {
 @import '@/assets/scss/common.scss';
 
 div#recept-tajyougen {
-  #grid_tajyougen {
-    height: 52vh;
-  }
-
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;

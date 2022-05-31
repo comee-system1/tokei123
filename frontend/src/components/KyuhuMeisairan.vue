@@ -83,7 +83,6 @@
         id="kyuhu-meisairan"
         :initialized="onInitialized"
         :headersVisibility="'All'"
-        :autoGenerateColumns="false"
         :isReadOnly="true"
         :deferResizing="false"
         :allowAddNew="false"
@@ -155,9 +154,6 @@
           :header="'摘要'"
           width="3*"
         ></wj-flex-grid-column>
-        <div class="service-addbutton">
-          <a href="">サービス内容を追加</a>
-        </div>
       </wj-flex-grid>
       </v-col>
     </v-row>
@@ -223,7 +219,7 @@ export default {
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
-        s.backgroundColor= sysConst.COLOR.white;
+        s.backgroundColor= sysConst.COLOR.gridBackground;
         if(c == 0 || (r != 0 && c == 1) || (r == 0 && c == 8) || (r == 1 && c == 18) || (r == 1 && c == 22)){
           s.backgroundColor = sysConst.COLOR.selectedColor;
         }
@@ -344,7 +340,7 @@ export default {
         s.fontWeight = "normal";
         s.backgroundColor = sysConst.COLOR.selectedColor;
         if(c == 1 || c == 3 || c == 5 ||  c == 7 ||  c == 9){
-          s.backgroundColor = sysConst.COLOR.white;
+          s.backgroundColor = sysConst.COLOR.gridBackground;
         }
         if(c == 2){
           cell.innerHTML = '開始年月日';
@@ -380,10 +376,6 @@ export default {
 
       // 給付明細欄の配列の数を算出
       griddatacount = griddata.length;
-
-      // サービス内容追加ボタン用フッター行を追加/////////////////////////////////////////////
-      grid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
-      let footerPanel = grid.columnFooters;
       
       // セルの結合/////////////////////////////////////////////////////////////////
       let headerColumnRanges = [
@@ -415,16 +407,14 @@ export default {
 
       grid.itemsSource = griddata;
 
-      // フッター0行目
-      footerPanel.setCellData(0, 0,);
-
       // グリッドのスタイルをカスタマイズ
       grid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center';
-        s.color = sysConst.COLOR.black;
+        s.color= sysConst.COLOR.fontColor;
+        s.backgroundColor = sysConst.COLOR.selectedColor
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
         // ヘッダー行のスタイルをカスタマイズ
           if (r === 0) {
@@ -435,21 +425,21 @@ export default {
         // ヘッダー列のスタイルをカスタマイズ
           if (c === 0) {
             s.borderBottom = "none";
+            s.backgroundColor = sysConst.COLOR.selectedColor;
           }
         }
         if (panel.cellType == wjGrid.CellType.Cell) {
         // セルのスタイルをカスタマイズ
+          s.backgroundColor= sysConst.COLOR.gridBackground;
           if (c == 0) {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
           }
           if ((c == 7) || (c == 9)) {
             s.textAlign = 'right';
+            s.paddingRight = '4px';
+            
           }
-        }
-        if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-        // フッターのスタイルをカスタマイズ
-          s.backgroundColor = sysConst.COLOR.gridBackground;
         }
       }
     },
@@ -467,17 +457,17 @@ function getSyubetuData() {
       uid: 1,
       serviceNo:        "22",
       kaisiYmd:         "2022年3月23日",
-      syuryoYmd:         "2022年7月30日",
-      riyouNissuu:       "12",
-      nyuinNissuu:       "31",
+      syuryoYmd:         "",
+      riyouNissuu:       "31",
+      nyuinNissuu:       "",
     },
     {
       uid: 2,
       serviceNo:        "32",
       kaisiYmd:         "2022年3月23日",
-      syuryoYmd:         "2022年7月30日",
-      riyouNissuu:       "12",
-      nyuinNissuu:       "31",
+      syuryoYmd:         "",
+      riyouNissuu:       "31",
+      nyuinNissuu:       "",
     }
   )
   // データが3未満だった場合空の行を追加
@@ -505,55 +495,94 @@ function getMeisairanData() {
   meisairanSmpData.push(
     {
       code:'222131',
-      name:'生活介護１４'
+      name:'生活介護１４',
+      smptanisuu: '669',
+      smpkaisuu: 31,
+      smpservicetanisuu: 20739,
     },
     {
       code:'226005',
-      name:'生介常勤看護職員等配置加算１１'
+      name:'生介常勤看護職員等配置加算１１',
+      smptanisuu: '84',
+      smpkaisuu: 31,
+      smpservicetanisuu: 2604,
     },
     {
       code:'226037',
-      name:'生介福祉専門職員配置等加算Ⅰ'
+      name:'生介福祉専門職員配置等加算Ⅰ',
+      smptanisuu: '15',
+      smpkaisuu: 31,
+      smpservicetanisuu: 465,
     },
     {
       code:'227062',
-      name:'生介人員配置体制加算１１'
+      name:'生介人員配置体制加算１１',
+      smptanisuu: '265',
+      smpkaisuu: 31,
+      smpservicetanisuu: 8215,
     },
     {
       code:'226716',
-      name:'生介障害者支援施設処遇改善加算Ⅰ'
+      name:'生介障害者支援施設処遇改善加算Ⅰ',
+      smptanisuu: '1409',
+      smpkaisuu: 1,
+      smpservicetanisuu: 1409,
     },
     {
       code:'322231',
-      name:'施設入所３４'
+      name:'施設入所３４',
+      smptanisuu: '201',
+      smpkaisuu: 31,
+      smpservicetanisuu: 6231,
     },
     {
       code:'325690',
-      name:'施入重度障害者支援加算Ⅰ１'
+      name:'施入重度障害者支援加算Ⅰ１',
+      smptanisuu: '28',
+      smpkaisuu: 31,
+      smpservicetanisuu: 868,
     },
     {
       code:'326070',
-      name:'施入地域生活移行個別支援特別加算Ⅰ'
+      name:'施入地域生活移行個別支援特別加算Ⅰ',
+      smptanisuu: '12',
+      smpkaisuu: 31,
+      smpservicetanisuu: 372,
     },
     {
       code:'326085',
-      name:'施入夜間看護体制加算'
+      name:'施入夜間看護体制加算',
+      smptanisuu: '60',
+      smpkaisuu: 31,
+      smpservicetanisuu: 1860,
     },
     {
       code:'327025',
-      name:'施入口腔衛生管理体制加算'
+      name:'施入口腔衛生管理体制加算',
+      smptanisuu: '30',
+      smpkaisuu: 1,
+      smpservicetanisuu: 30,
     },
     {
       code:'327074',
-      name:'施入夜勤職員配置体制加算５'
+      name:'施入夜勤職員配置体制加算５',
+      smptanisuu: '39',
+      smpkaisuu: 31,
+      smpservicetanisuu: 1209,
     },
     {
       code:'32Z001',
-      name:'施入身体拘束廃止未実施減算'
+      name:'施入身体拘束廃止未実施減算',
+      smptanisuu: '-5',
+      smpkaisuu:22,
+      smpservicetanisuu: -110,
     },
     {
       code:'326715',
-      name:'施入処遇改善加算Ⅰ'
+      name:'施入処遇改善加算Ⅰ',
+      smptanisuu: '900',
+      smpkaisuu: 1,
+      smpservicetanisuu: 900,
     }
   );
   for(let i = 0 ; i < meisairanSmpData.length; i++){
@@ -566,15 +595,31 @@ function getMeisairanData() {
       servicecode4: arrayCode[3],
       servicecode5: arrayCode[4],
       servicecode6: arrayCode[5],
-      tanisuu: '66'+i,
-      kaisuu: 1,
-      servicetanisuu: 9300,
+      tanisuu: meisairanSmpData[i].smptanisuu,
+      kaisuu: meisairanSmpData[i].smpkaisuu,
+      servicetanisuu: meisairanSmpData[i].smpservicetanisuu,
       tekiyou: '',
     });
   }
-  // 表示数11未満だった場合、空の行を追加
-  if (meisairanData.length < 11) {
-    for (let f = 0; meisairanData.length < 11; f++) {
+  // 空行を追加
+  meisairanData.push({
+    code:'',
+    name:'',
+    service: '',
+    servicecode1: '',
+    servicecode2: '',
+    servicecode3: '',
+    servicecode4: '',
+    servicecode5: '',
+    servicecode6: '',
+    tanisuu: '',
+    kaisuu: '',
+    servicetanisuu: '',
+    tekiyou: '',
+  });
+  // 表示数12未満だった場合、空の行を追加
+  if (meisairanData.length < 12) {
+    for (let f = 0; meisairanData.length < 12; f++) {
       meisairanData.push({
         service: '',
         servicecode1: '',
@@ -598,6 +643,9 @@ function getMeisairanData() {
 @import '@/assets/scss/common.scss';
 // サービス種別グリッドの修正
 #servicessyubetuGrid {
+  .wj-cell  {
+      color: #333;
+    }
   .servicessyubetu-title {
     position: absolute;
     top: 20px;
@@ -622,10 +670,10 @@ function getMeisairanData() {
 }
 // 給付明細欄グリッドの修正
 #kyuhu-meisairan {
+  .wj-cell  {
+      color: #333;
+    }
   position: relative;
-  .wj-cell.wj-alt {
-    background: #fffeed;
-  }
   .kyuhu-meisairan-title {
     position: absolute;
     writing-mode: vertical-rl;
@@ -633,27 +681,6 @@ function getMeisairanData() {
     left: 2px;
     z-index: 2;
 
-  }
-  .service-addbutton {
-    position: absolute;
-    left: 23px;
-    bottom: 1px;
-    z-index: 1;
-
-    a {
-    padding: 1px 0 0 10px;
-    width: 150px;
-    display: inline-block;
-    background: #fff;
-    border: 1px solid #333;
-    color: black;
-    font-size: 11px;
-    border-radius: 15px;
-    text-decoration: none;
-    background-image: url('../assets/plus_gray_15px.png');
-    background-position: top 1px right 2px;
-    background-repeat: no-repeat;
-    }
   }
   ::-webkit-scrollbar {
     width: 10px;

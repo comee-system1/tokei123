@@ -185,6 +185,7 @@ export default {
       month: moment().format('MM'),
       date: moment().date(),
       pageTitle: this.$route.name,
+      pageParentTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
         { title: 'パスワード変更' },
@@ -197,6 +198,13 @@ export default {
           lists: [
             { name: '基本事業者', link: '/TemporaryPage' },
             { name: 'サービス提供事業所', link: '/TemporaryPage' },
+          ],
+        },
+        {
+          name: '利用者情報',
+          lists: [
+            { name: '基本台帳登録', link: '/TemporaryPage' },
+            { name: '受給者証登録', link: '/JyukyuTouroku' },
           ],
         },
         {
@@ -266,9 +274,20 @@ export default {
     };
   },
   mounted: function () {},
+  created() {
+    document.addEventListener('fullscreenchange', () => {
+      // document.fullscreenElement は、全画面モードにある要素があれば
+      // それを指します。要素がなければ、このプロパティの値は null に
+      // あります。
+      if (!document.fullscreenElement) {
+        this.isMaximize = false;
+      }
+    });
+  },
   watch: {
     $route() {
       this.pageTitle = this.$route.name;
+      this.pageParentTitle = this.$route.name;
     },
   },
   methods: {

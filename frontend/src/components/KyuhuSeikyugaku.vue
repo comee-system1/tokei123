@@ -38,22 +38,22 @@ export default {
       let serviceData = [];
       serviceSmpData.push(
         {
-          teikyoService:  '施設入所支援', //提供サービス
-          servicecode: '32',// サービス種類コード
-          serviceriyounissu: '31',// 利用日数
+          smpTeikyoService:  '施設入所支援', //提供サービス
+          smpServicecode: '32',// サービス種類コード
+          smpServiceriyounissu: '31',// 利用日数
         },
         {
-          teikyoService:  '生活介護', //提供サービス
-          servicecode: '22',// サービス種類コード
-          serviceriyounissu: '31',// 利用日数
+          smpTeikyoService:  '生活介護', //提供サービス
+          smpServicecode: '22',// サービス種類コード
+          smpServiceriyounissu: '31',// 利用日数
         }
       );
       for (let i = 0; i < serviceSmpData.length; i++) {
         serviceData.push({
           uid: i,
-          teikyoService: serviceSmpData[i].teikyoService, //提供サービス
-          servicecode: serviceSmpData[i].servicecode,// サービス種類コード
-          serviceriyounissu: serviceSmpData[i].serviceriyounissu,// 利用日数
+          teikyoService: serviceSmpData[i].smpTeikyoService, //提供サービス
+          servicecode: serviceSmpData[i].smpServicecode,// サービス種類コード
+          serviceriyounissu: serviceSmpData[i].smpServiceriyounissu,// 利用日数
           kyuhutanisu: Math.floor(Math.random() * 100000),
           tanisutanka: "11.32",
           souhiyougaku: Math.floor(Math.random() * 1000000),
@@ -249,6 +249,8 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'right'
+        s.paddingRight = '4px';
+        s.backgroundColor = sysConst.COLOR.gridBackground;
         // ヘッダー色変更・中央寄せ
         if ((r == 0) || (c == 0) || (c == 1)) {
         s.backgroundColor = sysConst.COLOR.selectedColor;
@@ -276,6 +278,7 @@ export default {
         // 数値右寄せ
         if ((r == 3) && (c == cellcount -1) ) {
           s.textAlign = 'right'
+          s.paddingRight = '4px';
         }
         // サービスコード・種類、利用日数、単位数単価中央寄せ
         for (let i = 0; i <= serviceData.length; i++) {
@@ -302,7 +305,7 @@ export default {
 #kyuhu-seikyugaku {
   .wj-cells .wj-cell.wj-state-selected {
     background: white;
-    color: black;
+    color: #333;
   }
 }
 

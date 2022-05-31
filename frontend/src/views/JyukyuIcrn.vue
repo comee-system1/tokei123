@@ -11,16 +11,19 @@
         <v-col cols="6" xl="5">
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
-              <label>利用者</label>
-              <wj-menu
-                v-model="selUser"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                :itemsSource="userSelList"
-                :selectedIndexChanged="onUserIndexChanged"
-                :header="userSelList.filter((x) => x.val == selUser)[0].name"
-              >
-              </wj-menu>
+              <v-row class="mt-0 pa-0" no-gutters>
+                <label>利用者</label>
+                <wj-menu
+                  id="comboFilters"
+                  class="combo"
+                  :itemsSource="userSelList"
+                  :initialized="initComboFilters"
+                  style="width: 270px"
+                  selectedValuePath="val"
+                  displayMemberPath="name"
+                >
+                </wj-menu>
+              </v-row>
             </v-col>
             <v-col cols="6">
               <label>絞込</label>
@@ -316,6 +319,22 @@ export default {
     },
   },
   methods: {
+    initComboFilters(combo) {
+      let _self = this;
+      if (combo.hostElement.id == 'comboFilters') {
+        combo.header = this.userSelList[0].name;
+        combo.selectedIndexChanged.addHandler(function (sender) {
+          if (sender.selectedIndex != -1) {
+            combo.header = _self.userSelList[sender.selectedIndex].name;
+            alert(combo.header);
+            // _self.selUser = sender.selectedValue;
+            // _self.userFilter();
+          }
+          // let f = document.activeElement;
+          // f.blur();
+        });
+      }
+    },
     onInitializejyukyuIcrnGrid(flexGrid) {
       flexGrid.beginUpdate();
       // クリックイベント
@@ -560,12 +579,6 @@ export default {
         }
       }
       return tmpviewdata;
-    },
-    onUserIndexChanged(s) {
-      if (s.selectedIndex != -1) {
-        this.selUser = s.selectedValue;
-        this.userFilter();
-      }
     },
     siborikomiUser2(siborikomiType) {
       siborikomiSearch2 = siborikomiType;
@@ -857,23 +870,24 @@ div#jyukyuicrn {
     width: 90px;
   }
 
-  .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-btn,
-  .wj-viewer
-    .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-applybutton {
-    border-left: none;
+  div#comboFilters {
+    .wj-btn.wj-btn-default {
+      border-left: none;
+    }
   }
-  .wj-control.wj-menu:hover {
-    background: #e1e1e1;
+  .combo:hover {
+    background-color: #e1e1e1;
   }
-  .wj-listbox.wj-menu-items
-    .wj-listbox-item:not(.wj-state-disabled):not(.wj-separator) {
-    background: $white;
+
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 }
 </style>

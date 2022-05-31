@@ -12,6 +12,7 @@
       :deferResizing="false"
       :allowSorting="false"
       :itemsSource="receptData"
+      :style="gridHeight"
     >
       <wj-flex-grid-column
         :binding="'sityoson'"
@@ -32,7 +33,7 @@
         :binding="'riyousyamei'"
         :header="'利用者名'"
         align="center"
-        width="2*"
+        width="3*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -60,14 +61,14 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'jyougengakukanrikeisan'"
-        :width="30"
+        :width="24"
         :isReadOnly="true"
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'kobanSorts'"
         :header="verticalHeader[4]"
-        :width="30"
+        :width="24"
         align="center"
         valign="middle"
         :isReadOnly="true"
@@ -83,14 +84,14 @@
       <wj-flex-grid-column
         :binding="'jigyosyomei'"
         :header="'事業所名'"
-        width="2*"
+        width="3*"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'teikyoservice'"
         :header="'提供\nサービス'"
-        width="2*"
+        width="3*"
         align="center"
         :multiLine="true"
         :isReadOnly="true"
@@ -114,7 +115,7 @@
       <wj-flex-grid-column
         :binding="'hensyu'"
         :header="verticalHeader[5]"
-        :width="30"
+        :width="24"
         align="center"
         :multiLine="true"
         :isReadOnly="true"
@@ -122,7 +123,7 @@
       <wj-flex-grid-column
         :binding="'kanrikekkafutangaku'"
         :header="centerHeader[1]"
-        width="3*"
+        width="2*"
         align="center"
         :multiLine="true"
       ></wj-flex-grid-column>
@@ -130,17 +131,17 @@
         :binding="'kanrikekka'"
         :header="verticalHeader[1]"
         align="center"
-        :width="30"
+        :width="24"
         :multiLine="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'resekakutei'"
-        :width="30"
+        :width="24"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         binding="print"
-        :width="30"
+        :width="24"
         :isReadOnly="true"
       ></wj-flex-grid-column>
     </wj-flex-grid>
@@ -291,10 +292,30 @@ export default {
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       completeJudgeButton: 0, // 確定登録・解除ボタン判定
       editBackColorCell: [],
+      gridHeight: '', // グリッドの高さ
     };
   },
   components: {},
+  mounted() {
+    this.handleResize();
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+  },
   methods: {
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    handleResize() {
+      let height = window.innerHeight;
+      let ht = 54;
+      if (height > 800) {
+        ht = 65;
+      } else if (height > 700) {
+        ht = 58;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
+    },
     /*******************
      * 確定登録・解除ボタン
      */
@@ -1215,6 +1236,7 @@ export default {
       panel.setCellData(0, 16, _self.verticalHeader[2]);
       panel.setCellData(0, 17, _self.verticalHeader[3]);
       flexGrid.columnHeaders.rows[1].height = 100;
+      flexGrid.rows.defaultSize = 20;
     },
     /**************
      * 全体セルのマージ
@@ -1285,7 +1307,7 @@ div.receptParts {
   background-color: $white;
   padding: 2%;
   border: none;
-  div .wj-cell {
+  .wj-cell {
     font-size: 12px;
   }
   .fixgrey {
@@ -1309,6 +1331,10 @@ div.receptPartsArea {
 div#recept-jijyougen {
   #grid_jijyougen {
     height: 52vh;
+
+    .wj-cell {
+      padding: 1px;
+    }
   }
   .wj-flexgrid .wj-cell {
     display: flex;

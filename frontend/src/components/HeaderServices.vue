@@ -138,6 +138,14 @@
             >登録</v-btn
           >
         </v-col>
+        <v-col class="ml-5 text-end" cols="1*">
+          <v-btn
+            v-if="confirmRegistButtonFlag"
+            color="cyan darken-3"
+            class="white--text registButton"
+            >確定登録</v-btn
+          >
+        </v-col>
       </v-row>
       <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
         ※情報が変更されています。登録を行ってください※
@@ -236,6 +244,7 @@ export default {
     receptFlag: { type: Boolean },
     searchButtonFlag: { type: Boolean },
     registButtonFlag: { type: Boolean },
+    confirmRegistButtonFlag: { type: Boolean },
     alertMessageFlag: { type: Boolean },
     seikyushoflag: { type: Boolean },
   },

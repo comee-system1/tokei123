@@ -10,10 +10,15 @@ import TemporaryPage from '../views/TemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
+import JyukyuTouroku from '../../../../SIHMAIN/frontend/src/views/JyukyuTouroku.vue'
 
 Vue.use(VueRouter)
-
 const routes = [
+    {
+        path:'/JyukyuTouroku',
+        name:'受給者証登録',
+        component:JyukyuTouroku
+    },
     {
         path:'/JyukyuIcrn',
         name:'利用者受給者証一覧',

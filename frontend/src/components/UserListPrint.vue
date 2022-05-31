@@ -218,6 +218,8 @@ export default {
           combo.header = _self.filterCombo[sender.selectedIndex].text;
           _self.filterUser(sender.selectedIndex + 1);
         }
+        let f = document.activeElement;
+        f.blur();
       });
     },
     getFilterCombo() {
@@ -512,6 +514,9 @@ export default {
       while (flexGrid.rows.length < userCount) {
         flexGrid.rows.push(new wjGrid.Row());
       }
+      flexGrid.columnHeaders.rows.defaultSize = 24;
+      flexGrid.rows.defaultSize = 22;
+
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.cell.children.length == 0) {
           if (e.panel == s.cells && e.col == 1) {
@@ -601,6 +606,9 @@ div#user-list-print_scrollbar {
       background-color: $white;
     }
   }
+  .wj-cell {
+    padding: 1px !important;
+  }
   .wj-cells
     .wj-row:hover
     .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
@@ -618,12 +626,18 @@ div#user-list-print_scrollbar {
     color: $grid_selected_color;
   }
 
+  .wj-form-control {
+    font-size: 12px;
+  }
+
   .combo:hover {
     background-color: #e1e1e1;
   }
+
   .combo:focus {
     background-color: #fff;
   }
+
   #comboFilters_dropdown {
     .wj-listbox-item {
       background-color: $white !important;

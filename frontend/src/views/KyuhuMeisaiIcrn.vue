@@ -35,7 +35,9 @@
                 :itemsSource="sichosonList"
                 :selectedIndexChanged="onSichosonIndexChanged"
                 :header="
-                  sichosonList.filter((x) => x.val == selSichoson)[0].name
+                  selSichoson == null
+                    ? sichosonList[0].name
+                    : sichosonList.filter((x) => x.val == selSichoson)[0].name
                 "
               >
               </wj-menu>
@@ -68,7 +70,11 @@
                 displayMemberPath="name"
                 :itemsSource="svcList"
                 :selectedIndexChanged="onSvcIndexChanged"
-                :header="svcList.filter((x) => x.val == selSvc)[0].name"
+                :header="
+                  selSvc == null
+                    ? svcList[0].name
+                    : svcList.filter((x) => x.val == selSvc)[0].name
+                "
               >
               </wj-menu>
             </v-col>

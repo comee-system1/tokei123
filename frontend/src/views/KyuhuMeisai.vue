@@ -6,6 +6,7 @@
       :seikyuflag="true"
       :searchButtonFlag="true"
       :registButtonFlag="false"
+      :confirmRegistButtonFlag="true"
     ></header-services>
     <v-container fluid class="container">
       <v-row no-gutters>
@@ -212,7 +213,8 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center';
-        s.backgroundColor = sysConst.COLOR.white;
+        s.color = sysConst.COLOR.fontColor;
+        s.backgroundColor = sysConst.COLOR.gridBackground;
         if(c == 0){
           s.backgroundColor = sysConst.COLOR.selectedColor;
         }
@@ -270,7 +272,7 @@ export default {
         let s = cell.style;
         s.textAlign = 'center';
         s.fontWeight = "normal";
-        s.backgroundColor = sysConst.COLOR.white;
+        s.backgroundColor = sysConst.COLOR.gridBackground;
         if(c == 0){
           s.backgroundColor= sysConst.COLOR.selectedColor;
         }
@@ -335,7 +337,8 @@ export default {
         let s = cell.style;
         s.fontWeight = "normal";
         s.textAlign = 'center'
-        s.backgroundColor = sysConst.COLOR.white;
+        s.color = sysConst.COLOR.fontColor;
+        s.backgroundColor = sysConst.COLOR.gridBackground;
         if(c == 0){
           s.backgroundColor = sysConst.COLOR.selectedColor;
         }
@@ -409,7 +412,7 @@ export default {
         s.textAlign = 'center'
         s.backgroundColor= sysConst.COLOR.selectedColor;
         if((r == 0 && c == 2) || (r == 1 && c == 2)){
-          s.backgroundColor = sysConst.COLOR.white;
+          s.backgroundColor = sysConst.COLOR.gridBackground;
         }
         if(r == 0 && c == 0){
           cell.style.display = 'none'
@@ -505,7 +508,9 @@ export default {
   font-family: 'メイリオ';
   min-width: 1266px !important;
   font-size: 14px;
-
+    .wj-cell  {
+      color: #333;
+    }
   .container {
     padding: 4px;
   }
@@ -528,7 +533,7 @@ export default {
   }
   .confirmTitle {
     font-size: $cell_fontsize;
-    background-color: $red;
+    background-color: #ce3e47;
     color: $white;
     animation-name: fadeInAnime;
     text-align: center;

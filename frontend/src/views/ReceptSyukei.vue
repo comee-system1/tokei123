@@ -7,7 +7,7 @@
       :receptFlag="false"
     ></header-services>
 
-    <v-container fluid class="jijyougen-container">
+    <v-container fluid class="jijyougen-container mt-0">
       <v-row no-gutters>
         <v-col cols="8">
           <tab-menu-blue
@@ -28,17 +28,20 @@
               ></v-col
             >
             <v-col cols="6*" align="right">
-              <v-btn @click="recept_reflect" v-if="TajyougenkanriJimsyoFlag"
+              <v-btn
+                @click="recept_reflect"
+                v-if="TajyougenkanriJimsyoFlag"
+                small
                 >レセプトへ反映</v-btn
               >
-              <v-btn @click="recept_calc" v-if="JijyougenkanriJimsyoFlag"
+              <v-btn @click="recept_calc" v-if="JijyougenkanriJimsyoFlag" small
                 >上限管理計算</v-btn
               >
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="pt-0 mt-0">
+      <v-row class="pt-0 mt-0" no-gutters>
         <v-col cols="8">
           <v-row class="mt-0">
             <v-col cols="6" class="pt-1">
@@ -50,7 +53,7 @@
                   <wj-menu
                     :itemsSource="riyosyaCombo"
                     class="ml-1 w-100 customCombobox"
-                    :selectedIndexChanged="onRiyosyaCombo"
+                    :itemClicked="onRiyosyaCombo"
                     :isRequired="true"
                     :displayMemberPath="'text'"
                     selectedValuePath="'key'"
@@ -60,7 +63,7 @@
               </v-row>
             </v-col>
             <v-col cols="6" class="pt-1">
-              <v-row>
+              <v-row no-gutters>
                 <v-col cols="3">
                   <label class="serach" v-if="TajyougenkanriJimsyoFlag"
                     >上限管理事</label
@@ -86,7 +89,7 @@
                     v-if="JijyougenkanriJimsyoFlag"
                     :items-source="taServiceCombo"
                     class="ml-1 w-100 customCombobox"
-                    :selectedIndexChanged="onJyougenkanriCombo"
+                    :itemClicked="onJyougenkanriCombo"
                     :isRequired="true"
                     :displayMemberPath="'text'"
                     selectedValuePath="'key'"
@@ -96,9 +99,9 @@
               </v-row>
             </v-col>
           </v-row>
-          <v-row class="mt-0">
-            <v-col cols="6" class="pt-1">
-              <v-row>
+          <v-row class="mt-0" no-gutters>
+            <v-col cols="6">
+              <v-row no-gutter>
                 <v-col cols="2">
                   <label class="serach">ソート</label>
                 </v-col>
@@ -148,10 +151,10 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="6" class="pt-1">
-              <v-row>
+            <v-col cols="6">
+              <v-row no-gutter>
                 <v-col cols="3">
-                  <label class="serach">絞込</label>
+                  <label class="serach text-center">絞込</label>
                 </v-col>
                 <v-col>
                   <v-row no-gutters class="mt-1">
@@ -202,7 +205,7 @@
           </v-row>
         </v-col>
         <v-col cols="2">
-          <v-btn class="mt-5">検索</v-btn>
+          <v-btn class="ml-2 mt-1" small>検索</v-btn>
         </v-col>
       </v-row>
       <v-row no-gutters class="mt-1">
@@ -384,6 +387,8 @@ export default {
           );
         }
       }
+      let f = document.activeElement;
+      f.blur();
     },
     /*********************
      * 利用者変更
@@ -398,6 +403,8 @@ export default {
           this.$refs.tajougenChild.child_Riyosya(e.text, e.selectedIndex);
         }
       }
+      let f = document.activeElement;
+      f.blur();
     },
     /**************
      * 子コンポーネントtabmenublueで選択した値を取得
@@ -513,6 +520,13 @@ div#tajyougen {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px;
+  .jijyougen-container {
+    padding: 4px;
+  }
+  .container {
+    padding: 4px;
+    margin-top: 16px;
+  }
   label {
     &.serach {
       display: inline-block;
@@ -528,6 +542,12 @@ div#tajyougen {
 div.customCombobox {
   .wj-btn.wj-btn-default {
     border-left: none !important;
+  }
+  &:hover {
+    background-color: #e1e1e1;
+  }
+  &:focus {
+    background-color: #fff;
   }
 }
 </style>

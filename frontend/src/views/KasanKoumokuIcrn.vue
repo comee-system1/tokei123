@@ -13,25 +13,57 @@
           <v-row class="mt-0" no-gutters>
             <v-col cols="6">
               <label>利用者</label>
-              <wj-menu
+              <!-- <wj-menu
                 v-model="selUser"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="userSelList"
                 :selectedIndexChanged="onUserIndexChanged"
-                :header="userSelList.filter((x) => x.val == selUser)[0].name"
+                :header="
+                  selUser == null
+                    ? userSelList[0].name
+                    : userSelList.filter((x) => x.val == selUser)[0].name
+                "
+              >
+              </wj-menu> -->
+              <wj-menu
+                id="comboFilters1"
+                class="combo"
+                :itemsSource="userSelList"
+                :initialized="initComboFilters"
+                :isRequired="true"
+                style="width: 270px"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                v-model="selUser"
               >
               </wj-menu>
             </v-col>
             <v-col cols="6">
               <label>加算</label>
-              <wj-menu
+              <!-- <wj-menu
                 v-model="selKasan"
                 selectedValuePath="val"
                 displayMemberPath="name"
                 :itemsSource="kasanList"
                 :selectedIndexChanged="onKasanIndexChanged"
-                :header="kasanList.filter((x) => x.val == selKasan)[0].name"
+                :header="
+                  selKasan == null
+                    ? kasanList[0].name
+                    : kasanList.filter((x) => x.val == selKasan)[0].name
+                "
+              >
+              </wj-menu> -->
+              <wj-menu
+                id="comboFilters2"
+                class="combo"
+                :itemsSource="kasanList"
+                :initialized="initComboFilters"
+                :isRequired="true"
+                style="width: 270px"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                v-model="selKasan"
               >
               </wj-menu>
             </v-col>
@@ -249,6 +281,30 @@ export default {
     });
   },
   methods: {
+    initComboFilters(combo) {
+      let _self = this;
+      if (combo.hostElement.id == 'comboFilters1') {
+        combo.header = this.userSelList[0].name;
+        combo.selectedIndexChanged.addHandler(function (sender) {
+          if (sender.selectedIndex != -1) {
+            combo.header = _self.userSelList[sender.selectedIndex].name;
+            _self.selUser = sender.selectedValue;
+            _self.userFilter();
+          }
+        });
+      } else if (combo.hostElement.id == 'comboFilters2') {
+        combo.header = this.kasanList[0].name;
+        combo.selectedIndexChanged.addHandler(function (sender) {
+          if (sender.selectedIndex != -1) {
+            combo.header = _self.kasanList[sender.selectedIndex].name;
+            _self.selKasan = sender.selectedValue;
+            _self.userFilter();
+          }
+        });
+      }
+      let f = document.activeElement;
+      f.blur();
+    },
     loadKasan() {
       return [
         { val: 0, kbn: 0, name: '指定なし' },
@@ -579,19 +635,19 @@ export default {
       }
       return tmpviewdata;
     },
-    onUserIndexChanged(s) {
-      if (s.selectedIndex != -1) {
-        this.selUser = s.selectedValue;
-        this.userFilter();
-      }
-    },
-    onKasanIndexChanged(s) {
-      if (s.selectedIndex != -1) {
-        ls.setlocalStorageEncript(keyKasan, s.selectedValue);
-        this.selKasan = s.selectedValue;
-        this.userFilter();
-      }
-    },
+    // onUserIndexChanged(s) {
+    //   if (s.selectedIndex != -1) {
+    //     this.selUser = s.selectedValue;
+    //     this.userFilter();
+    //   }
+    // },
+    // onKasanIndexChanged(s) {
+    //   if (s.selectedIndex != -1) {
+    //     ls.setlocalStorageEncript(keyKasan, s.selectedValue);
+    //     this.selKasan = s.selectedValue;
+    //     this.userFilter();
+    //   }
+    // },
     sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
@@ -856,23 +912,27 @@ div#KasanKoumokuIcrn {
   .v-btn-toggle > .v-btn {
     width: 90px;
   }
-  .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-btn,
-  .wj-viewer
-    .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-applybutton {
-    border-left: none;
+
+  div#comboFilters1,
+  div#comboFilters2 {
+    .wj-btn.wj-btn-default {
+      border-left: none;
+    }
   }
-  .wj-control.wj-menu:hover {
-    background: #e1e1e1;
+  .combo:hover {
+    background-color: #e1e1e1;
   }
-  .wj-listbox.wj-menu-items
-    .wj-listbox-item:not(.wj-state-disabled):not(.wj-separator) {
-    background: $white;
+
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters1_dropdown,
+  #comboFilters2_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 }
 </style>
