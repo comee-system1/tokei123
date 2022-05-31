@@ -52,16 +52,10 @@
                 @click="openDialog_Term('add_new')"
                 >受給者証新規登録</a
               >
-              <a
-                class="ml-1 copy-button"
-                style="width: 100px"
-                @click="openDialog_Term('copy_last')"
-                >前回コピー</a
-              >
               <v-card
                 elevation="0"
                 class="d-flex flex-row-reverse"
-                style="width: calc(100% - 250px)"
+                style="width: calc(100% - 150px)"
                 flat
                 tile
               >
@@ -108,7 +102,7 @@
               <JyukyuTourokuSikyuryo> </JyukyuTourokuSikyuryo>
             </v-card>
           </v-row>
-          <v-row no-gutters class="center-area-bottom d-flex flex-row">
+          <v-row no-gutters class="center-area-bottom d-flex flex-row-reverse">
             <a class="regist-button" @click="openDialog_Term('regist')"
               >登 録</a
             >

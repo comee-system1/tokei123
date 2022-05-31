@@ -891,6 +891,11 @@ export default {
         let text = ht.target.innerText;
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
+          // 編集を行うセルを選択状態にする
+          if (hPage.col == 11 || hPage.col == 12) {
+            flexGrid.startEditing(true, hPage.row, hPage.col);
+          }
+
           //編集カラムを押下
           if (hPage.col == 13) {
             let element = document.getElementById('menubar');

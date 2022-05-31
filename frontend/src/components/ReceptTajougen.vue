@@ -63,6 +63,7 @@
         :binding="'resehanei'"
         :width="30"
         :isReadOnly="true"
+        align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'koban'"
@@ -130,8 +131,13 @@
         :binding="'resekakutei'"
         :width="30"
         :isReadOnly="true"
+        align="center"
       ></wj-flex-grid-column>
-      <wj-flex-grid-column binding="print" :width="30"></wj-flex-grid-column>
+      <wj-flex-grid-column
+        binding="print"
+        :width="30"
+        align="center"
+      ></wj-flex-grid-column>
     </wj-flex-grid>
   </div>
 </template>
@@ -491,6 +497,11 @@ export default {
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
+          // 編集を行うセルを選択状態にする
+          if (hPage.col == 13 || hPage.col == 14) {
+            flexGrid.startEditing(true, hPage.row, hPage.col);
+          }
+
           // 印刷カラムを押下
           if (hPage.col == 16) {
             let mark = '〇';
@@ -638,8 +649,15 @@ export default {
         } else if (text == 'delete') {
           classname = 'delete';
         }
+        // if (e.panel != flexGrid.columnHeaders) {
+        //   if (11 <= e.col || e.col == 5) {
+        //     e.cell.style.textAlign = 'right';
+        //     e.cell.style.justifyContent = 'right';
+        //     e.cell.style.alignItems = 'right';
+        //   }
+        // }
         if (e.panel != flexGrid.columnHeaders) {
-          if (11 <= e.col || e.col == 5) {
+          if (e.col == 5 || e.col == 11 || e.col == 12) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
@@ -743,10 +761,12 @@ div#recept-tajyougen {
     align-items: center;
     font-size: 12px;
     font-weight: normal;
+    padding: 0px;
   }
   .wj-header.wj-cell {
     font-size: 14px;
     text-align: center !important;
+    padding: 4px 6px 3px 6px;
   }
   .wj-cell.wj-state-selected {
     color: $font_color;

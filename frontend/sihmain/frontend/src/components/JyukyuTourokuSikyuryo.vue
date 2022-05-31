@@ -17,31 +17,93 @@
             {{ item.servicename }}
           </v-card>
         </v-row>
-        <v-row v-show="item.sikyuryotou" no-gutters class="sikyuryo-sikyuryotou-row">
-          <v-col backgroudcolor="red">
-            <v-card elevation="0" class="sikyuryo-title-length4 d-flex flex-row" style="height: 50px; padding-top: 15px;" flat tile>
-              支給量等
-            </v-card>
-            <p class="required">*</p>	
-          </v-col>
-          <v-col>
-            <v-radio-group v-model="sikyuryotou" class="sikyuryo-sikyuryotou-group">
-              <v-row no-gutters style="width: 80%">
-                <v-radio label="当該月の日数より８日除いた日数" :key="1" :value="1"></v-radio>
-              </v-row>
-              <v-row no-gutters style="width: 80%">
+        <v-row v-show="item.sikyuryotouDisp" no-gutters class="sikyuryo-sikyuryotou-row">
+          <v-card elevation="0" class="sikyuryo-title-length4 d-flex flex-row" style="height: 50px; padding-top: 15px;" flat tile>
+            支給量等
+          </v-card>
+          <p class="required">*</p>	
+          <v-radio-group v-model="sikyuryotou" class="sikyuryo-sikyuryotou-group">
+            <v-card elevation="0" flat tile>
+              <v-radio label="当該月の日数より８日除いた日数" :key="1" :value="1"></v-radio>
+              <v-card elevation="0" class="d-flex flex-row" flat tile>
                 <v-radio label="" :key="0" :value="0"></v-radio>
                 <wj-combo-box
                   class="sikyuryo-sikyuryotou-input"
                   :textChanged="onTextChanged"
-                  placeholder="番号を入力"
-                ></wj-combo-box>日／月
-              </v-row>
+                ></wj-combo-box>
+                <label style="padding-top: 4px;padding-left: 4px;">日／月</label>
+              </v-card>
+            </v-card>
+          </v-radio-group>
+        </v-row>
+        <v-row v-show="item.sikyukikanDisp" no-gutters class="sikyuryo-sikyukikan-row">
+          <v-card elevation="0" class="sikyuryo-title-length4 d-flex flex-row" flat tile>
+            支給期間
+          </v-card>
+          <p class="required">*</p>	
+          <v-card elevation="0" class="sikyuryo-sikyukikan-picker d-flex flex-row">
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="sienkubunymdStart"
+              v-model="sienkubunymdStart"
+              placeholder="開始日を選択"
+            ></datepicker>
+            &nbsp;～&nbsp;
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="sienkubunymdEnd"
+              v-model="sienkubunymdEnd"
+              placeholder="終了日を選択"
+            ></datepicker>
+          </v-card>
+        </v-row>
+        <v-row v-show="item.kasankoumokuDisp" no-gutters class="sikyuryo-kasankoumoku-row">
+          <v-card elevation="0" class="sikyuryo-title-length4 d-flex flex-row" style="height: 50px; padding-top: 15px;" flat tile>
+            加算項目
+          </v-card>
+          <v-card elevation="0" flat tile>
+            <wj-flex-grid
+              id="gridKasankoumoku"
+              :initialized="onInitializedKasankoumoku"
+              :itemsSource="item.sikyuryoKasankoumokuData"
+              :headersVisibility="'None'"
+              :autoGenerateColumns="false"
+              :allowAddNew="false"
+              :allowDelete="false"
+              :allowDragging="false"
+              :allowPinning="false"
+              :allowResizing="false"
+              :allowSorting="false"
+              :isReadOnly="true"
+              :alternatingRowStep="0"
+              :selectionMode="'None'"
+              style="width: 300px;height: 51px;border-bottom: none;border-right: none;"
+            >
+              <wj-flex-grid-column
+                :binding="'value'"
+                :allowMerging="true"
+                width="*"
+              ></wj-flex-grid-column>
+            </wj-flex-grid>
+          </v-card>
+        </v-row>
+        <v-row v-show="item.keikasotiDisp" no-gutters class="sikyuryo-keikasoti-row">
+          <v-card elevation="0" class="sikyuryo-title-length4 d-flex flex-row" flat tile>
+            経過措置
+          </v-card>
+          <v-card elevation="0" class="sikyuryo-keikasoti-selection d-flex flex-row" flat tile>
+            <v-radio-group row v-model="item.keikasoti" class="sikyuryo-keikasoti-group">
+              <v-radio label="非該当" :key="1" :value="1"></v-radio>
+              <v-radio label="該当" :key="0" :value="0"></v-radio>
             </v-radio-group>
-          </v-col>
+          </v-card>
         </v-row>
         <!-- <v-divider style="margin: 4px; color: black;" v-show="serviceSyubetu.length-1!=index"></v-divider> -->
-        <v-divider color="darkgray" height="20px" style="margin: 4px;"></v-divider>
+        <v-divider color="skyblue" height="20px" style="margin: 4px;"></v-divider>
       </v-card>
       <v-row no-gutters class="sikyuryo-button-row">
         <v-card elevation="0" class="sikyuryo-button-new d-flex flex-row" flat tile>
@@ -69,7 +131,7 @@ export default {
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
       serviceSyubetu: this.getServiceSyubetu(),
-      sikyuryotou: 0,
+      sikyuryotou: -1,
     };
   },
   components: {
@@ -82,21 +144,37 @@ export default {
         {
           servicecode: '22',
           servicename: '生活支援',
-          sikyuryotou: false,
-          sikyukikan: true,
-          kasankoumoku: true,
-          keikasoti: true,
+          keikasoti: -1,
+          sikyuryotouDisp: false,
+          sikyukikanDisp: true,
+          kasankoumokuDisp: true,
+          keikasotiDisp: true,
+          sikyuryoKasankoumokuData: [
+            { value: "加算項目を選択" },
+            { value: "" },
+          ],
         },
         {
           servicecode: '32',
           servicename: '施設入所支援',
-          sikyuryotou: true,
-          sikyukikan: true,
-          kasankoumoku: true,
-          keikasoti: true,
+          keikasoti: -1,
+          sikyuryotouDisp: true,
+          sikyukikanDisp: true,
+          kasankoumokuDisp: true,
+          keikasotiDisp: true,
+          sikyuryoKasankoumokuData: [
+            { value: "重度障害者支援加算" },
+            { value: "加算項目を選択" },
+          ],
         },
       );
       return serviceSyubetu;
+    },
+    onInitializedKasankoumoku(grd) {
+      grd.beginUpdate();
+      grd.cells.rows.defaultSize = 25;
+
+      grd.endUpdate();
     },
   },
 };
@@ -173,11 +251,49 @@ div#JyukyuTourokuSikyuryo {
     margin: 4px 4px 0px 4px;
     position: relative;/*相対配置*/
     .sikyuryo-sikyuryotou-group {
+      position: absolute;
       width: 80%;
-      margin-top: 0px;
-      margin-left: -20px;
+      margin-top: -11px;
+      margin-left: 50px;
       padding-top: 0px;
       transform: scale(0.75);
+    }
+    .sikyuryo-sikyuryotou-input {
+      width: 100px;
+      height: 25px;
+    }
+  }
+
+  .sikyuryo-sikyukikan-row {
+    height: 25px;
+    margin: 4px 4px 0px 4px;
+    position: relative;/*相対配置*/
+    .sikyuryo-sikyukikan-picker {
+      padding: 0px 0px 0px 4px;
+    }
+  }
+
+  .sikyuryo-kasankoumoku-row {
+    height: 50px;
+    margin: 4px 4px 0px 4px;
+  }
+  .gridKasankoumoku {
+    
+  }
+
+  .sikyuryo-keikasoti-row {
+    height: 25px;
+    margin: 4px 4px 0px 4px;
+    .sikyuryo-keikasoti-selection {
+      height: 100%;
+      padding-left: 0px;
+      .sikyuryo-keikasoti-group {
+        width: 200px;
+        margin-top: 0px;
+        margin-left: -20px;
+        padding-top: 0px;
+        transform: scale(0.75);
+      }
     }
   }
 }

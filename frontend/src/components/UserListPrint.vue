@@ -608,6 +608,7 @@ div#user-list-print_scrollbar {
   }
   .wj-cell {
     padding: 1px !important;
+    font-size: $cell_fontsize;
   }
   .wj-cells
     .wj-row:hover

@@ -8,13 +8,18 @@
       <v-row no-gutters>
         <div class="service-selecter">
         <label>市町村</label>
-          <wj-combo-box
-            selectedValuePath="val"
-            displayMemberPath="name"
+          <wj-menu
+            id="comboFilters"
+            class="combo"
             :itemsSource="sichosonList"
+            :initialized="initComboFilters"
             :selectedIndexChanged="onSichosonIndexChanged"
+            :displayMemberPath="'text'"
+            :isRequired="true"
+            selectedValuePath="'key'"
+            style="width: 200px"
           >
-          </wj-combo-box>
+          </wj-menu>
           <v-btn class="pa-1 ml-3" :width="60" style="margin-top:2px; margin-right:30px;" small  @click="searchClicked">検索</v-btn>
         </div>
         <div class="print-selecter">
@@ -74,7 +79,6 @@ import sysConst from '@/utiles/const';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
-// let selects = ['全選択/全解除', '印刷を全選択', '印刷を全解除'];
 const darkLine = '1px solid #333';
 const boldLine = '2px solid #333';
 
@@ -85,19 +89,27 @@ export default {
   data() {
     return {
       sichosonList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '東経市' },
-        { val: 2, name: '西経市' },
-        { val: 3, name: '南経市' },
-        { val: 3, name: '北経市' },
+        { key: 0, text: '指定なし' },
+        { key: 1, text: '東経市' },
+        { key: 2, text: '西経市' },
+        { key: 3, text: '南経市' },
+        { key: 4, text: '北経市' },
       ],
-      // selects: selects,
       detailGridData: apiResult['dummy'],
       isDroppedDown: false,
       selectedSichoson:"指定なし",
     }
   },
   methods: {
+  initComboFilters(combo) {
+      let _self = this;
+      combo.header = this.sichosonList[0].text;
+      combo.selectedIndexChanged.addHandler(function (sender) {
+        if (sender.selectedIndex != -1) {
+          combo.header = _self.sichosonList[sender.selectedIndex].text;
+        }
+      });
+    },
     onSichosonIndexChanged(s) {
       this.selectedSichoson = s.text;
     },
@@ -419,20 +431,36 @@ div#seikyu-sho .print-selecter {
     width: 75px;
     text-align: center;
   }
+
   .print-toggle {
     margin-right:10px;
   }
+
   .v-btn-toggle > .v-btn {
   width: 90px;
   }
 }
 
-div#seikyu-sho #printCombo{
-  width:150px;
-  color:$font_color !important;
-}
+div#seikyu-sho {
+  #printCombo {
+    width:150px;
+    color:$font_color !important;
+  }
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
 
-div#seikyu-sho{
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
+  }
+
   #detailGrid .wj-header:not(.verticalRightCustom) {
     display: flex;
     justify-content: center;

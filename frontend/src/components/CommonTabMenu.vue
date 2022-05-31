@@ -16,6 +16,7 @@ export default {
   data() {
     return {
       tab: 'ServiceMeisai', // タブの初期状態
+      tabWidth: this.tabParentWidth, // タブの初期長さ
     };
   },
   props: {
@@ -27,6 +28,9 @@ export default {
       type: String,
       required: false,
       default: '15px',
+    },
+    tabParentWidth: {
+      default: 'auto',
     },
   },
   methods: {
@@ -41,6 +45,7 @@ export default {
     tabmarginSize() {
       return {
         '--tabmargin': this.tabmargin,
+        width: this.tabWidth,
       };
     },
   },
@@ -49,7 +54,6 @@ export default {
 
 <style lang=scss>
 #common-tab {
-  margin-bottom: 4px;
   border-bottom: 2px solid #444;
 
   .v-tab {

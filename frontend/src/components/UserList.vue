@@ -13,6 +13,7 @@
           <v-col>
             <wj-menu
               id="comboFilters"
+              class="combo"
               :itemsSource="filterCombo"
               :initialized="initComboFilters"
               :displayMemberPath="'text'"
@@ -116,6 +117,7 @@
     </wj-menu>
   </div>
 </template>
+
 <script>
 import { getOriginalDetailData } from '../data/JissekiKirokuUserSearchData.js'
 import * as wjCore from '@grapecity/wijmo';
@@ -147,28 +149,40 @@ export default {
   },
   data() {
     return {
+      textSearch: '', //カナ検索に入力される文字
+      filterCombo: this.getFilterCombo(),
       usersData: [],
-      isDroppedDown: false,
       alphabet: alphabet,
       riyo_inf: [],
       riyocodeFlag: true,
       jyukyunoFlag: false,
-      useTeikyoCode: '',
-      filterCombo: this.getFilterCombo(),
       filterFlag: { allFlag: true, nyukyoFlag: false, taikyoFlag: false },
       sortFlag: { kanaFlag: false, codeFlag: true, bangoFlag: false },
       alphaSearch: 0, // アルファベット検索
       sortSearch: '', // 並び順
       checkAll: '', // すべてチェック
-      textSearch: '',
       filterSearch: 1, // 全員・入居者・など
       tplImage: CellMaker.makeImage({}),
     };
   },
   methods: {
-    /*************************
-     * 絞り込みコンボボックス
-     */
+    // カナ検索入力フォーム関連 ////////////////////////////////////
+    onTextChangedUser(s) {
+      this.textSearch = s.text;
+      this.userFilter();
+    },
+    // ソート用コンボボックス関連 ///////////////////////////////////
+    // コンボボックスの値の取得
+    getFilterCombo() {
+      let filterCombo = [];
+      filterCombo.push(
+        { key: 1, text: '全員' },
+        { key: 2, text: '今月入居者' },
+        { key: 3, text: '今月退去者' }
+      );
+      return filterCombo;
+    },
+    // コンボボックスの値を選択したらボックス内に値を表示する
     initComboFilters(combo) {
       let _self = this;
       combo.header = this.filterCombo[0].text;
@@ -177,33 +191,27 @@ export default {
           combo.header = _self.filterCombo[sender.selectedIndex].text;
           _self.filterUser(sender.selectedIndex + 1);
         }
+        let f = document.activeElement;
+        f.blur();
       });
     },
-    getFilterCombo() {
-      let filterCombo = [];
-      filterCombo.push(
-        {
-          key: 1,
-          text: '全員',
-        },
-        {
-          key: 2,
-          text: '今月入居者',
-        },
-        {
-          key: 3,
-          text: '今月退去者',
-        }
-      );
-      return filterCombo;
-    },
-    setChildTeikyocode(teikyoCode, serachbutton) {
-      // this.usersData = [];
-      if (serachbutton) {
-        this.usersData = this.createUser();
+    // コンボボックスの値を選択した時の処理
+    filterUser(sortType) {
+      this.filterFlag.allFlag = false;
+      this.filterFlag.nyukyoFlag = false;
+      this.filterFlag.taikyoFlag = false;
+      if (sortType == 1) {
+        this.filterFlag.allFlag = true;
+      } else if (sortType == 2) {
+        this.filterFlag.nyukyoFlag = true;
+      } else if (sortType == 3) {
+        this.filterFlag.taikyoFlag = true;
       }
-      this.useTeikyoCode = teikyoCode;
+      this.filterSearch = sortType;
+      this.userFilter();
     },
+    // ソート用ボタン関連 /////////////////////////////////////////
+    // ソートボタン押下時の処理
     sortUser(sortType) {
       this.sortFlag.kanaFlag = false;
       this.sortFlag.codeFlag = false;
@@ -226,32 +234,130 @@ export default {
       }
       this.userFilter();
     },
-    filterUser(sortType) {
-      this.filterFlag.allFlag = false;
-      this.filterFlag.nyukyoFlag = false;
-      this.filterFlag.taikyoFlag = false;
-      if (sortType == 1) {
-        this.filterFlag.allFlag = true;
-      } else if (sortType == 2) {
-        this.filterFlag.nyukyoFlag = true;
-      } else if (sortType == 3) {
-        this.filterFlag.taikyoFlag = true;
-      }
-      this.filterSearch = sortType;
-      this.userFilter();
-    },
+    // ソート用カナタブ関連 ////////////////////////////////////////
+    // タブ選択時の処理
     onAlphabet(key) {
       this.alphaSearch = key;
       this.userFilter();
     },
-    onTextChangedUser(s) {
-      this.textSearch = s.text;
-      this.userFilter();
+    // 利用者検索一覧グリッド関連 ///////////////////////////////////
+    // 利用者検索一覧描画時のメソッド
+    onInitializedUser(flexGrid) {
+      // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function(panel,r,c,cell) {
+        // グリッド内共通スタイル
+        let s = cell.style;
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          // ヘッダーの改行位置の設定
+          if (r == 0 && c == 0) {
+            cell.innerHTML = '確<br/>';
+            s.textAlign = 'center';
+          }
+        }
+      }
+      this.userGrid = flexGrid;
+      let _self = this;
+      // axiosを利用する時下記有効
+      // const axiosApi = axios.create({
+      //   headers: {'Content-Type': 'application/json'},
+      // });
+
+      // axiosApi
+      //   .get(userUrl)
+      //   .then(function (response) {
+      //     _self.usersData = _self.createUser(response);
+      //     let i = 0;
+      //     while (flexGrid.columns.length < 3) {
+      //       let clm = new wjGrid.Column();
+      //       if (i == 0) clm.width = '2*';
+      //       if (i == 1) clm.width = '2*';
+      //       if (i == 2) clm.width = '1*';
+      //       flexGrid.columns.push(clm);
+      //       i++;
+      //     }
+      //     while (flexGrid.rows.length < userCount) {
+      //       flexGrid.rows.push(new wjGrid.Row());
+      //     }
+      //     flexGrid.formatItem.addHandler(userCell);
+      //     flexGrid.alternatingRowStep = 0;
+
+      //     // 初回のユーザ選択値
+      //     _self.$emit('child-selectedrow', 0);
+      //   })
+
+      //   .catch(function (error) {
+      //     console.log(error);
+      //     alert('error');
+      //   });
+
+      // axiosを利用しない時下記1行有効
+      if (_self.usersData.length == 0) {
+        _self.usersData =  this.createUser();
+      }
+      while (flexGrid.rows.length < userCount) {
+        flexGrid.rows.push(new wjGrid.Row());
+      }
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.cell.children.length == 0) {
+          if (e.panel == s.cells && e.col == 1) {
+            let tooltip = new wjcCore.Tooltip();
+            let note = '<small>' + _self.usersData[e.row].kana + '</small>';
+            wjcCore.toggleClass(e.cell, 'wj-has-notes');
+            tooltip.setTooltip(e.cell, note);
+          }
+
+          let align = 'left';
+          let str = e.cell.innerHTML;
+          str = '<div>' + str + '</div>';
+          e.cell.innerHTML = str.replace(',', '');
+          wjCore.setCss(e.cell, {
+            display: 'table',
+            tableLayout: 'fixed',
+          });
+          wjCore.setCss(e.cell.children[0], {
+            display: 'table-cell',
+            textAlign: align,
+            verticalAlign: 'middle',
+          });
+        }
+      });
+
+      // configure the grid
+      flexGrid.alternatingRowStep = 0;
+
+      // 初回のユーザ選択値
+      // _self.$emit('child-selectedrow', 0);
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        var ht = flexGrid.hitTest(e);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+
+        // 印刷箇所を押下
+        if (ht.cellType == wjGrid.CellType.Cell && ht.col == 3) {
+          let p = flexGrid.getCellData(ht.row, 3);
+          let mark = '';
+          if (p == '〇') mark = '';
+          if (p == '') mark = '〇';
+          _self.usersData[ht.row]['print'] = mark;
+          flexGrid.setCellData(ht.row, 3, mark);
+        } else if (e.target.innerText.length > 0) {
+          // 選択した要素の取得
+
+          let row = hPage._row;
+          _self.$emit('child-selectedrow', row);
+        }
+      });
     },
+    onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
+    /// 印刷列用コンボボックス関連 ///////////////////////////////////
     onselectedIndexChanged(s) {
       this.checkAll = s.selectedIndex;
       this.userFilter(s);
     },
+    // グリッド表示データの操作 //////////////////////////////////////
+    // グリッドデータの生成
     createUser(response = []) {
       if(this.selectedService == '21 療養介護'){
         this.usersData=[];
@@ -310,6 +416,7 @@ export default {
       }
       return this.usersData;
     },
+    // グリッドデータのソート
     userFilter(s) {
       let data = [];
       let _self = this;
@@ -418,133 +525,10 @@ export default {
       this.$emit('child-userslist', data);
       this.usersData = data;
     },
-    onItemsSourceChanged(flexGrid) {
-      // 初期選択を解除
-      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-    },
-    onInitializedUser(flexGrid) {
-      // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell) {
-        // グリッド内共通スタイル
-        let s = cell.style;
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          // ヘッダーの改行位置の設定
-          if (r == 0 && c == 0) {
-            cell.innerHTML = '確<br/>';
-            s.textAlign = 'center';
-          }
-        }
-      }
-      this.userGrid = flexGrid;
-      let _self = this;
-      // axiosを利用する時下記有効
-      // const axiosApi = axios.create({
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-      // axiosApi
-      //   .get(userUrl)
-      //   .then(function (response) {
-      //     _self.usersData = _self.createUser(response);
-
-      //     let i = 0;
-      //     while (flexGrid.columns.length < 3) {
-      //       let clm = new wjGrid.Column();
-      //       if (i == 0) clm.width = '2*';
-      //       if (i == 1) clm.width = '2*';
-      //       if (i == 2) clm.width = '1*';
-      //       flexGrid.columns.push(clm);
-      //       i++;
-      //     }
-
-      //     while (flexGrid.rows.length < userCount) {
-      //       flexGrid.rows.push(new wjGrid.Row());
-      //     }
-      //     flexGrid.formatItem.addHandler(userCell);
-      //     // configure the grid
-      //     flexGrid.alternatingRowStep = 0;
-
-      //     // 初回のユーザ選択値
-      //     _self.$emit('child-selectedrow', 0);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     alert('error');
-      //   });
-
-      // axiosを利用しない時下記1行有効
-      if (_self.usersData.length == 0) {
-        _self.usersData =  this.createUser();
-      }
-
-      // let i = 0;
-      // while (flexGrid.columns.length < 3) {
-      //   let clm = new wjGrid.Column();
-      //   if (i == 0) clm.width = '2*';
-      //   if (i == 1) clm.width = '2*';
-      //   if (i == 2) clm.width = '1*';
-      //   flexGrid.columns.push(clm);
-      //   i++;
-      // }
-
-      while (flexGrid.rows.length < userCount) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-      flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.cell.children.length == 0) {
-          if (e.panel == s.cells && e.col == 1) {
-            let tooltip = new wjcCore.Tooltip();
-            // let note = this.usersData[e.row].kana;
-            let note = '<small>' + _self.usersData[e.row].kana + '</small>';
-            wjcCore.toggleClass(e.cell, 'wj-has-notes');
-            tooltip.setTooltip(e.cell, note);
-          }
-
-          let align = 'left';
-          let str = e.cell.innerHTML;
-          str = '<div>' + str + '</div>';
-          e.cell.innerHTML = str.replace(',', '');
-          wjCore.setCss(e.cell, {
-            display: 'table',
-            tableLayout: 'fixed',
-          });
-          wjCore.setCss(e.cell.children[0], {
-            display: 'table-cell',
-            textAlign: align,
-            verticalAlign: 'middle',
-          });
-        }
-      });
-
-      // configure the grid
-      flexGrid.alternatingRowStep = 0;
-
-      // 初回のユーザ選択値
-      // _self.$emit('child-selectedrow', 0);
-      flexGrid.hostElement.addEventListener('click', function (e) {
-        var ht = flexGrid.hitTest(e);
-        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
-
-        // 印刷箇所を押下
-        if (ht.cellType == wjGrid.CellType.Cell && ht.col == 3) {
-          let p = flexGrid.getCellData(ht.row, 3);
-          let mark = '';
-          if (p == '〇') mark = '';
-          if (p == '') mark = '〇';
-          _self.usersData[ht.row]['print'] = mark;
-          flexGrid.setCellData(ht.row, 3, mark);
-        } else if (e.target.innerText.length > 0) {
-          // 選択した要素の取得
-
-          let row = hPage._row;
-          _self.$emit('child-selectedrow', row);
-        }
-      });
-    },
   },
 };
 </script>
+
 <style lang="scss" >
 @import '@/assets/scss/common.scss';
 
@@ -558,15 +542,18 @@ div#user-list_scrollbar {
   padding: 0;
   width: 275px;
   font-size: 12px;
+
   #filterCombo {
     width: 100%;
   }
+
   .wj-cell:not(.wj-header) {
     background: $grid_background;
     &:nth-child(4) {
       background-color: $white;
     }
   }
+
   .wj-cells
     .wj-row:hover
     .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
@@ -582,6 +569,21 @@ div#user-list_scrollbar {
   .wj-cells .wj-cell.wj-state-selected {
     background: $grid_selected_background;
     color: $grid_selected_color;
+  }
+
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
+
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 
   ::-webkit-scrollbar {
@@ -603,7 +605,7 @@ div#user-list_scrollbar {
     height:15px;
   }
 
-    @media screen and (max-width: 1366px) {
+  @media screen and (max-width: 1366px) {
     #userListGrid {
       height: 55vh;
     }
