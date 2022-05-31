@@ -117,8 +117,14 @@
 </template>
 <script>
 import moment from 'moment';
-import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
-import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
+// 本番用
+// import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
+// import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
+
+// テスト用
+import UserListPrint from '../../../../100Sogo_WebApl/frontend/src/components/UserListPrint.vue';
+import CommonTabMenu from '../../../../100Sogo_WebApl/frontend/src/components/CommonTabMenu.vue';
+
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon.vue';
 import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun.vue';
 import JyukyuTourokuSikyuryo from '../components/JyukyuTourokuSikyuryo.vue';

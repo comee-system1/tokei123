@@ -11,16 +11,44 @@
     </v-container>
 
     <v-container fluid class="pt-0 mt-0">
-      <JyukyuRirekiView v-if="JyukyuRirekiFlag"></JyukyuRirekiView>
-      <div v-if="JyukyuNyuryokuFlag">bbb</div>
+      <div v-if="JyukyuRirekiFlag">
+        <JyukyuRirekiView
+          :basicFlag="true"
+          :jyukyuFlag="true"
+        ></JyukyuRirekiView>
+        <JyukyuRirekiView
+          :basicFlag="false"
+          :syogaiFlag="true"
+        ></JyukyuRirekiView>
+        <JyukyuRirekiView
+          :basicFlag="false"
+          :ketteiFlag="true"
+        ></JyukyuRirekiView>
+        <JyukyuRirekiView
+          :basicFlag="false"
+          :keikakuFlag="true"
+        ></JyukyuRirekiView>
+        <JyukyuRirekiView
+          :basicFlag="false"
+          :riyousyaFlag="true"
+        ></JyukyuRirekiView>
+      </div>
+      <div v-if="JyukyuNyuryokuFlag">
+        <JyukyuRirekiDetail></JyukyuRirekiDetail>
+      </div>
     </v-container>
   </div>
 </template>
 <script>
 import moment from 'moment';
 
-import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
+// 本番用
+// import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
+// テスト用
+import CommonTabMenu from '../../../../100Sogo_WebApl/frontend/src/components/CommonTabMenu.vue';
+
 import JyukyuRirekiView from '../components/JyukyuRirekiView.vue';
+import JyukyuRirekiDetail from '../components/JyukyuRirekiDetail.vue';
 export default {
   data() {
     return {
@@ -39,20 +67,22 @@ export default {
   components: {
     CommonTabMenu,
     JyukyuRirekiView,
+    JyukyuRirekiDetail,
   },
   methods: {
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
      */
     parent_common_tab_menu: function (args) {
-      this.JyukyuRirekiFlag = false;
-      this.JyukyuNyuryokuFlag = false;
-      if (args.selectTab == 'JyukyuRireki') {
-        this.JyukyuRirekiFlag = true;
-      }
-      if (args.selectTab == 'JyukyuNyuryoku') {
-        this.JyukyuNyuryokuFlag = true;
-      }
+      // this.JyukyuRirekiFlag = false;
+      // this.JyukyuNyuryokuFlag = false;
+      // if (args.selectTab == 'JyukyuRireki') {
+      //   this.JyukyuRirekiFlag = true;
+      // }
+      // if (args.selectTab == 'JyukyuNyuryoku') {
+      //   this.JyukyuNyuryokuFlag = true;
+      // }
+      this.JyukyuNyuryokuFlag = true;
     },
   },
 };
