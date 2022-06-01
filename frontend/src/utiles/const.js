@@ -21,6 +21,7 @@ const COLOR = {
     gridHeaderRemarkBackground:'#FFECCC',
     gridRemarkBackground:'#FFF6E8',
     HissuMarkColor:'#ce3e47',
+    basicGridColor:'#1f7872',
 
 };
 
@@ -31,7 +32,7 @@ const FORMAT = {
 };
 const GRDROWHEIGHT = {
     Header:20,
-    Row:25,
+    Row:20,
 };
 
 export default {

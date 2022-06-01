@@ -8,134 +8,105 @@
 
     <v-container class="user-info" fluid>
       <v-row class="mt-0" no-gutters>
-        <v-col cols="6" xl="5">
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="6">
-              <v-row class="mt-0 pa-0" no-gutters>
-                <label>利用者</label>
-                <wj-menu
-                  id="comboFilters"
-                  class="combo"
-                  :itemsSource="userSelList"
-                  :initialized="initComboFilters"
-                  style="width: 270px"
-                  selectedValuePath="val"
-                  displayMemberPath="name"
-                >
-                </wj-menu>
-              </v-row>
-            </v-col>
-            <v-col cols="6">
-              <label>絞込</label>
-              <v-btn-toggle class="flex-wrap" mandatory>
-                <v-btn
-                  v-for="n in siborikomiSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="siborikomiUser2(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="7">
-              <label>ソート</label>
-              <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
-                <v-btn
-                  v-for="n in sortSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-1" no-gutters>
-            <v-col cols="*">
-              <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-                <v-btn
-                  small
-                  outlined
-                  v-for="(n, k) in alphabet"
-                  :key="n"
-                  :width="30"
-                  p-0
-                  style="min-width: auto"
-                  @click="onAlphabet(k)"
-                >
-                  {{ n }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="1" style="display: flex; align-items: center">
-          <v-row no-gutters>
-            <v-btn style="width: 80px; height: 80px" @click="searchClicked">
-              検索
-            </v-btn>
-          </v-row>
-        </v-col>
-        <v-col cols="*">
-          <v-row>
-            <v-col cols="*" class="mt-3 mr-10">
-              <v-row justify="end">
-                <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-spacer style="height: 50px"></v-spacer>
-          <v-row no-gutters justify="end">
-            <v-col cols="5" xl="3" class="mr-1">
-              <v-row class="border-bottom">
-                <v-col class="pa-2" cols="4">
-                  <label class="errorlabel">
-                    <b>エラー</b>
-                  </label>
-                </v-col>
-                <v-col class="pa-2 pr-0" cols="*">
-                  <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-col>
+        <label>利用者</label>
+        <wj-menu
+          id="comboFilters"
+          class="combo"
+          :itemsSource="userSelList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 270px"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selUser"
+          :itemClicked="onUserClicked"
+        >
+        </wj-menu>
+        <label class="ml-1">絞込</label>
+        <v-btn-toggle class="flex-wrap pa-0" mandatory>
+          <v-btn
+            v-for="n in siborikomiSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            @click="siborikomiUser2(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-btn
+          class="ml-1"
+          style="width: 20px; height: 30px"
+          @click="searchClicked"
+        >
+          検索
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
       </v-row>
 
       <v-row class="mt-1" no-gutters>
-        <v-col>
-          <wj-flex-grid
-            id="jyukyuIcrnGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializejyukyuIcrnGrid"
-            :formatItem="onFormatItem"
-            :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSource="viewdata"
+        <label>ソート</label>
+        <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
+          <v-btn
+            v-for="n in sortSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            @click="sortUser(n.val)"
           >
-          </wj-flex-grid>
-        </v-col>
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+      <v-row class="mt-1" no-gutters>
+        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
+          <v-btn
+            small
+            outlined
+            v-for="(n, k) in alphabet"
+            :key="n"
+            :width="30"
+            p-0
+            style="min-width: auto"
+            @click="onAlphabet(k)"
+          >
+            {{ n }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-spacer></v-spacer>
+        <div class="border-bottom mb-1" style="text-align: center">
+          <label class="errorlabel mr-2">
+            <b>エラー</b>
+          </label>
+          <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
+        </div>
+      </v-row>
+
+      <v-row class="ma-0" no-gutters>
+        <wj-flex-grid
+          id="jyukyuIcrnGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializejyukyuIcrnGrid"
+          :formatItem="onFormatItem"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="viewdata"
+        >
+        </wj-flex-grid>
       </v-row>
     </v-container>
   </div>
@@ -143,13 +114,11 @@
 
 <script>
 import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.touch';
 import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
 import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.core';
-import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
@@ -165,8 +134,6 @@ const fmtYen = sysConst.FORMAT.Num;
 const fmtYmd = sysConst.FORMAT.Ymd;
 const daiTitle = '受給者証情報';
 const chuTitle = '利用者負担';
-const rowHeaderheight = 20;
-const rowheight = 25;
 const styleDefault = '';
 const boderSolid = '1px solid';
 let siborikomiSearch2 = 0;
@@ -320,20 +287,16 @@ export default {
   },
   methods: {
     initComboFilters(combo) {
-      let _self = this;
       if (combo.hostElement.id == 'comboFilters') {
         combo.header = this.userSelList[0].name;
-        combo.selectedIndexChanged.addHandler(function (sender) {
-          if (sender.selectedIndex != -1) {
-            combo.header = _self.userSelList[sender.selectedIndex].name;
-            alert(combo.header);
-            // _self.selUser = sender.selectedValue;
-            // _self.userFilter();
-          }
-          // let f = document.activeElement;
-          // f.blur();
-        });
       }
+    },
+    onUserClicked(s) {
+      s.header = this.userSelList[s.selectedIndex].name;
+      this.selUser = s.selectedValue;
+      this.userFilter();
+      let f = document.activeElement;
+      f.blur();
     },
     onInitializejyukyuIcrnGrid(flexGrid) {
       flexGrid.beginUpdate();
@@ -357,10 +320,10 @@ export default {
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
-      flexGrid.columnHeaders.rows[1].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = 40;
-      flexGrid.cells.rows.defaultSize = rowheight;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
@@ -436,7 +399,7 @@ export default {
 
           if (e.col == flexGrid.columns.length - 1) {
             e.cell.style.backgroundColor = bgClrInput;
-          } else if (e.col == 6) {
+          } else if (e.col == 6 || e.col == 7) {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           } else if (
             (e.col == 1 && tmpitem.err.length > 0) ||
@@ -511,7 +474,8 @@ export default {
           engo: '第一東経市',
           jitibangou: '',
           jyukyukbn: '',
-          jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
+          jyukyuname: '',
+          // jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
           syougaisyu: '2',
           syougaisienkbn: '3',
           futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
@@ -755,9 +719,27 @@ div#jyukyuicrn {
     min-width: 150px;
     display: block;
   }
+  #filterCombo {
+    width: 100%;
+  }
+  div#comboFilters {
+    .wj-btn.wj-btn-default {
+      border-left: none;
+    }
+  }
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
 
-  .wj-menu {
-    width: 200px;
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 
   .user-info {
@@ -765,7 +747,7 @@ div#jyukyuicrn {
     padding: 4px;
     label:not(.errorlabel) {
       display: inline-block;
-      margin-top: 2px;
+      // margin-top: 2px;
       margin-right: 2px;
       padding-top: 2px;
       font-weight: bold;
@@ -814,12 +796,13 @@ div#jyukyuicrn {
       font-size: 0.85em;
     }
   }
+
   #jyukyuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 98vw;
     min-width: 1300px;
-    height: 65vh;
+    height: 63vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -833,6 +816,9 @@ div#jyukyuicrn {
     .wj-cell-maker {
       width: 15px;
       height: 15px;
+    }
+    .wj-cell {
+      padding: 2px;
     }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
@@ -868,26 +854,6 @@ div#jyukyuicrn {
 
   .v-btn-toggle > .v-btn {
     width: 90px;
-  }
-
-  div#comboFilters {
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
-  }
-  .combo:hover {
-    background-color: #e1e1e1;
-  }
-
-  .combo:focus {
-    background-color: #fff;
-  }
-
-  #comboFilters_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
   }
 }
 </style>

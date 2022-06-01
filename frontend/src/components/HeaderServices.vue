@@ -132,18 +132,18 @@
       >
         <v-col class="ml-5 text-end" cols="1*">
           <v-btn
-            v-if="registButtonFlag"
-            color="cyan darken-3"
-            class="white--text registButton"
-            >登録</v-btn
-          >
-        </v-col>
-        <v-col class="ml-5 text-end" cols="1*">
-          <v-btn
             v-if="confirmRegistButtonFlag"
             color="cyan darken-3"
             class="white--text registButton"
             >確定登録</v-btn
+          >
+        </v-col>
+        <v-col class="ml-5 text-end" cols="1*">
+          <v-btn
+            v-if="registButtonFlag"
+            color="cyan darken-3"
+            class="white--text registButton"
+            >登録</v-btn
           >
         </v-col>
       </v-row>

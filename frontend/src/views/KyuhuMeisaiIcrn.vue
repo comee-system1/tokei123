@@ -8,162 +8,145 @@
 
     <v-container class="user-info" fluid>
       <v-row class="mt-0" no-gutters>
-        <v-col cols="9" xl="7">
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="3">
-              <label>内容</label>
-              <v-btn-toggle class="flex-wrap" v-model="dispPageType">
-                <v-btn
-                  v-for="n in pageSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="pageChange(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-            <v-col cols="6">
-              <label>市町村</label>
-              <wj-menu
-                v-model="selSichoson"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                :itemsSource="sichosonList"
-                :selectedIndexChanged="onSichosonIndexChanged"
-                :header="
-                  selSichoson == null
-                    ? sichosonList[0].name
-                    : sichosonList.filter((x) => x.val == selSichoson)[0].name
-                "
-              >
-              </wj-menu>
-            </v-col>
-          </v-row>
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="3" xl="3" class="mt-1">
-              <label>表示</label>
-              <!-- mandatoryは初期選択 -->
-              <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
-                <v-btn
-                  v-for="n in dispSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  :disabled="isBtnDisabled"
-                  @click="dispTotal(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-            <v-col cols="4" xl="3" class="mt-1">
-              <label>サービス</label>
-              <wj-menu
-                v-model="selSvc"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                :itemsSource="svcList"
-                :selectedIndexChanged="onSvcIndexChanged"
-                :header="
-                  selSvc == null
-                    ? svcList[0].name
-                    : svcList.filter((x) => x.val == selSvc)[0].name
-                "
-              >
-              </wj-menu>
-            </v-col>
-            <v-col cols="5" class="mt-1">
-              <label>ソート</label>
-              <!-- mandatoryは初期選択 -->
-              <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
-                <v-btn
-                  v-for="n in sortSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-          <v-row class="mt-1" no-gutters>
-            <v-col cols="*">
-              <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-                <v-btn
-                  small
-                  outlined
-                  v-for="(n, k) in alphabet"
-                  :key="n"
-                  :width="30"
-                  p-0
-                  style="min-width: auto"
-                  @click="onAlphabet(k)"
-                >
-                  {{ n }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="*" style="display: flex; align-items: center">
-          <v-row no-gutters>
-            <v-btn style="width: 80px; height: 80px" @click="searchClicked">
-              検索
-            </v-btn>
-          </v-row>
-        </v-col>
+        <label>内容</label>
+        <v-btn-toggle class="flex-wrap" v-model="dispPageType">
+          <v-btn
+            v-for="n in pageSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            @click="pageChange(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <label class="ml-1">市町村</label>
+        <wj-menu
+          id="comboFilters1"
+          class="combo"
+          :itemsSource="sichosonList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 200px"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selSichoson"
+          :itemClicked="onSichosonClicked"
+        >
+        </wj-menu>
+      </v-row>
+
+      <v-row class="mt-1" no-gutters>
+        <label>表示</label>
+        <!-- mandatoryは初期選択 -->
+        <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
+          <v-btn
+            v-for="n in dispSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            :disabled="isBtnDisabled"
+            @click="dispTotal(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <label class="ml-1">サービス</label>
+        <wj-menu
+          id="comboFilters2"
+          class="combo"
+          :itemsSource="svcList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 200px"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selSvc"
+          :itemClicked="onSvcClicked"
+        >
+        </wj-menu>
+        <label class="ml-1">ソート</label>
+        <!-- mandatoryは初期選択 -->
+        <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
+          <v-btn
+            v-for="n in sortSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            @click="sortUser(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-btn
+          class="ml-1"
+          style="width: 2px; height: 30px"
+          @click="searchClicked"
+        >
+          検索
+        </v-btn>
       </v-row>
       <v-row class="mt-1" no-gutters>
-        <v-col>
-          <wj-flex-grid
-            id="seikyuGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializeSeikyuGrid"
-            :formatItem="onFormatItemSeikyu"
-            :itemsSourceChanged="itemsSourceChangedSeikyu"
-            :itemsSource="viewdata"
+        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
+          <v-btn
+            small
+            outlined
+            v-for="(n, k) in alphabet"
+            :key="n"
+            :width="30"
+            p-0
+            style="min-width: auto"
+            @click="onAlphabet(k)"
           >
-          </wj-flex-grid>
-          <wj-flex-grid
-            id="kyufuGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializeKyufuGrid"
-            :formatItem="onFormatItemKyufu"
-            :itemsSourceChanged="itemsSourceChangedKyufu"
-            :itemsSource="viewkyufudata"
-          >
-          </wj-flex-grid>
-        </v-col>
+            {{ n }}
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+      <v-row class="mt-0" no-gutters>
+        <wj-flex-grid
+          id="seikyuGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializeSeikyuGrid"
+          :formatItem="onFormatItemSeikyu"
+          :itemsSourceChanged="itemsSourceChangedSeikyu"
+          :itemsSource="viewdata"
+        >
+        </wj-flex-grid>
+        <wj-flex-grid
+          id="kyufuGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializeKyufuGrid"
+          :formatItem="onFormatItemKyufu"
+          :itemsSourceChanged="itemsSourceChangedKyufu"
+          :itemsSource="viewkyufudata"
+        >
+        </wj-flex-grid>
       </v-row>
     </v-container>
   </div>
@@ -192,8 +175,6 @@ const keySichoson = ls.KEY.Sichoson;
 const keyAlp = ls.KEY.Alphabet;
 const colCntSeikyu = 22;
 const colCntKyufu = 13;
-const rowHeaderheight = sysConst.GRDROWHEIGHT.Header;
-const rowheight = sysConst.GRDROWHEIGHT.Row;
 const fmtYen = sysConst.FORMAT.Num;
 const fmtYmd = sysConst.FORMAT.Ymd;
 const titleNisu = '日数';
@@ -546,13 +527,50 @@ export default {
       this.dispTotalOnly = Number(ls.getlocalStorageEncript(keyTotal));
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
       this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
-      this.selSvc = Number(ls.getlocalStorageEncript(keySvc));
-      this.selSichoson = Number(ls.getlocalStorageEncript(keySichoson));
       this.pageChange(this.dispPageType);
     });
   },
   computed: {},
   methods: {
+    initComboFilters(combo) {
+      if (combo.hostElement.id == 'comboFilters1') {
+        this.selSichoson = Number(ls.getlocalStorageEncript(keySichoson));
+        let index = this.sichosonList.findIndex(
+          (element) => element.val == this.selSichoson
+        );
+        if (index >= 0) {
+          combo.header = this.sichosonList[index].name;
+        } else {
+          combo.header = this.sichosonList[0].name;
+        }
+      } else if (combo.hostElement.id == 'comboFilters2') {
+        this.selSvc = Number(ls.getlocalStorageEncript(keySvc));
+        let index = this.svcList.findIndex(
+          (element) => element.val == this.selSvc
+        );
+        if (index >= 0) {
+          combo.header = this.svcList[index].name;
+        } else {
+          combo.header = this.svcList[0].name;
+        }
+      }
+    },
+    onSvcClicked(s) {
+      s.header = this.svcList[s.selectedIndex].name;
+      ls.setlocalStorageEncript(keySvc, s.selectedValue);
+      this.selSvc = s.selectedValue;
+      this.userFilter();
+      let f = document.activeElement;
+      f.blur();
+    },
+    onSichosonClicked(s) {
+      s.header = this.sichosonList[s.selectedIndex].name;
+      ls.setlocalStorageEncript(keySichoson, s.selectedValue);
+      this.selSichoson = s.selectedValue;
+      this.userFilter();
+      let f = document.activeElement;
+      f.blur();
+    },
     onInitializeSeikyuGrid(flexGrid) {
       flexGrid.beginUpdate();
 
@@ -564,11 +582,11 @@ export default {
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
-      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
-      flexGrid.columnHeaders.rows[1].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = 50;
       flexGrid.alternatingRowStep = 0;
-      flexGrid.cells.rows.defaultSize = rowheight;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < colCntSeikyu; colIndex++) {
@@ -629,9 +647,9 @@ export default {
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = 50;
-      flexGrid.cells.rows.defaultSize = rowheight;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       flexGrid.alternatingRowStep = 0;
 
@@ -1177,20 +1195,7 @@ export default {
       this.alphaSearch = Number(key);
       this.userFilter();
     },
-    onSvcIndexChanged(s) {
-      if (s.selectedIndex != -1) {
-        ls.setlocalStorageEncript(keySvc, s.selectedValue);
-        this.selSvc = s.selectedValue;
-        this.userFilter();
-      }
-    },
-    onSichosonIndexChanged(s) {
-      if (s.selectedIndex != -1) {
-        ls.setlocalStorageEncript(keySichoson, s.selectedValue);
-        this.selSichoson = s.selectedValue;
-        this.userFilter();
-      }
-    },
+
     userFilter() {
       if (this.dispPageType == 0) {
         this.userFilterSeikyu();
@@ -1466,6 +1471,28 @@ div#KyuhuMeisaiIcrn {
     display: block;
   }
 
+  div#comboFilters1,
+  div#comboFilters2 {
+    .wj-btn.wj-btn-default {
+      border-left: none;
+    }
+  }
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
+
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters1_dropdown,
+  #comboFilters2_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
+  }
+
   .user-info {
     width: auto;
     padding: 4px;
@@ -1510,16 +1537,14 @@ div#KyuhuMeisaiIcrn {
       }
     }
   }
-  .wj-menu {
-    width: 200px;
-  }
+
   #seikyuGrid,
   #kyufuGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 98vw;
     min-width: 1320px;
-    height: 64vh;
+    height: 63vh;
     // max-height: 1080px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -1535,6 +1560,9 @@ div#KyuhuMeisaiIcrn {
     .wj-cell-maker {
       width: 15px;
       height: 15px;
+    }
+    .wj-cell {
+      padding: 2px;
     }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
@@ -1571,28 +1599,6 @@ div#KyuhuMeisaiIcrn {
 
   .v-btn-toggle > .v-btn {
     width: 90px;
-  }
-  .wj-combobox .wj-input-group input.wj-form-control {
-    width: 150px;
-    flex-grow: 1;
-  }
-  .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-btn,
-  .wj-viewer
-    .wj-control
-    .wj-input-group
-    .wj-input-group-btn:last-child:not(:first-child)
-    > .wj-applybutton {
-    border-left: none;
-  }
-  .wj-control.wj-menu:hover {
-    background: #e1e1e1;
-  }
-  .wj-listbox.wj-menu-items
-    .wj-listbox-item:not(.wj-state-disabled):not(.wj-separator) {
-    background: $white;
   }
 }
 </style>

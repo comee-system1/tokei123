@@ -161,6 +161,8 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
 
+require('../../../backend/api/UserListPrint');
+
 Vue.use(VueAxios, axios);
 // let userUrl = 'http:// local-tokei/';
 let userDataSelect = [];
@@ -460,6 +462,7 @@ export default {
     onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
+      // axiosのテスト
       // axiosを利用する時下記有効
       // const axiosApi = axios.create({
       //   headers: {

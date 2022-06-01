@@ -14,19 +14,177 @@
             @parent_tab_menu="parent_tab_menu"
             :tabmenu="tabMenus"
           ></tab-menu-blue>
+
+          <v-row class="pt-0 mt-0" no-gutters>
+            <v-col cols="8">
+              <v-row class="mt-0">
+                <v-col cols="6" class="pt-1">
+                  <v-row>
+                    <v-col cols="2">
+                      <label class="serach">利用者</label>
+                    </v-col>
+                    <v-col>
+                      <wj-menu
+                        :itemsSource="riyosyaCombo"
+                        class="ml-1 w-100 customCombobox"
+                        :itemClicked="onRiyosyaCombo"
+                        :isRequired="true"
+                        :displayMemberPath="'text'"
+                        selectedValuePath="'key'"
+                        header="全員"
+                      ></wj-menu>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="6" class="pt-1">
+                  <v-row no-gutters>
+                    <v-col cols="3">
+                      <label class="serach" v-if="TajyougenkanriJimsyoFlag"
+                        >上限管理事</label
+                      >
+                      <label class="serach" v-if="JijyougenkanriJimsyoFlag"
+                        >他サービス事</label
+                      >
+                    </v-col>
+                    <v-col>
+                      <wj-menu
+                        v-if="TajyougenkanriJimsyoFlag"
+                        :items-source="jyougenkanriCombo"
+                        class="ml-1 w-100 customCombobox"
+                        :selectedIndexChanged="onJyougenkanriCombo"
+                        :isRequired="true"
+                        :displayMemberPath="'text'"
+                        selectedValuePath="'key'"
+                        header="指定なし"
+                      >
+                      </wj-menu>
+
+                      <wj-menu
+                        v-if="JijyougenkanriJimsyoFlag"
+                        :items-source="taServiceCombo"
+                        class="ml-1 w-100 customCombobox"
+                        :itemClicked="onJyougenkanriCombo"
+                        :isRequired="true"
+                        :displayMemberPath="'text'"
+                        selectedValuePath="'key'"
+                        header="指定なし"
+                      ></wj-menu>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row class="mt-0" no-gutters>
+                <v-col cols="6">
+                  <v-row no-gutter>
+                    <v-col cols="2">
+                      <label class="serach">ソート</label>
+                    </v-col>
+                    <v-col>
+                      <v-row no-gutters class="mt-1">
+                        <v-col>
+                          <v-card
+                            :class="{
+                              'text-center': true,
+                              grey: sortFlag.kanaFlag,
+                              'lighten-2': sortFlag.kanaFlag,
+                            }"
+                            @click="sort(1)"
+                            outlined
+                            tile
+                          >
+                            カナ
+                          </v-card>
+                        </v-col>
+                        <v-col>
+                          <v-card
+                            :class="{
+                              'text-center': true,
+                              grey: sortFlag.codeFlag,
+                              'lighten-2': sortFlag.codeFlag,
+                            }"
+                            @click="sort(2)"
+                            outlined
+                            tile
+                            >コード</v-card
+                          >
+                        </v-col>
+                        <v-col>
+                          <v-card
+                            :class="{
+                              'text-center': true,
+                              grey: sortFlag.bangoFlag,
+                              'lighten-2': sortFlag.bangoFlag,
+                            }"
+                            @click="sort(3)"
+                            outlined
+                            tile
+                            >受給者番号</v-card
+                          >
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="6">
+                  <v-row no-gutter>
+                    <v-col cols="3">
+                      <label class="serach text-center">絞込</label>
+                    </v-col>
+                    <v-col>
+                      <v-row no-gutters class="mt-1">
+                        <v-col>
+                          <v-card
+                            @click="filter(1)"
+                            outlined
+                            tile
+                            :class="{
+                              'text-center': true,
+                              grey: filterFlag.allFlag,
+                              'lighten-2': filterFlag.allFlag,
+                            }"
+                          >
+                            全員
+                          </v-card>
+                        </v-col>
+                        <v-col>
+                          <v-card
+                            :class="{
+                              'text-center': true,
+                              grey: filterFlag.jyogenFlag,
+                              'lighten-2': filterFlag.jyogenFlag,
+                            }"
+                            @click="filter(2)"
+                            outlined
+                            tile
+                            >上限管理済</v-card
+                          >
+                        </v-col>
+                        <v-col>
+                          <v-card
+                            :class="{
+                              'text-center': true,
+                              grey: filterFlag.misyoriFlag,
+                              'lighten-2': filterFlag.misyoriFlag,
+                            }"
+                            @click="filter(3)"
+                            outlined
+                            tile
+                            >未処理</v-card
+                          >
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="2">
+              <v-btn class="ml-2 mt-1" small>検索</v-btn>
+            </v-col>
+          </v-row>
         </v-col>
         <v-col>
           <v-row no-gutters>
-            <v-col cols="3"
-              ><v-btn small class="w-100" @click="defineButton(1)"
-                >確定登録</v-btn
-              ></v-col
-            >
-            <v-col cols="3"
-              ><v-btn small class="w-100" @click="defineButton(2)"
-                >一括確定解除</v-btn
-              ></v-col
-            >
             <v-col cols="6*" align="right">
               <v-btn
                 @click="recept_reflect"
@@ -38,176 +196,26 @@
                 >上限管理計算</v-btn
               >
             </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row class="pt-0 mt-0" no-gutters>
-        <v-col cols="8">
-          <v-row class="mt-0">
-            <v-col cols="6" class="pt-1">
-              <v-row>
-                <v-col cols="2">
-                  <label class="serach">利用者</label>
-                </v-col>
-                <v-col>
-                  <wj-menu
-                    :itemsSource="riyosyaCombo"
-                    class="ml-1 w-100 customCombobox"
-                    :itemClicked="onRiyosyaCombo"
-                    :isRequired="true"
-                    :displayMemberPath="'text'"
-                    selectedValuePath="'key'"
-                    header="全員"
-                  ></wj-menu>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="6" class="pt-1">
+            <v-col cols="3">
               <v-row no-gutters>
-                <v-col cols="3">
-                  <label class="serach" v-if="TajyougenkanriJimsyoFlag"
-                    >上限管理事</label
-                  >
-                  <label class="serach" v-if="JijyougenkanriJimsyoFlag"
-                    >他サービス事</label
+                <v-col>
+                  <v-btn small class="w-100" @click="defineButton(1)"
+                    >確定登録</v-btn
                   >
                 </v-col>
+              </v-row>
+              <v-row no-gutters class="mt-1">
                 <v-col>
-                  <wj-menu
-                    v-if="TajyougenkanriJimsyoFlag"
-                    :items-source="jyougenkanriCombo"
-                    class="ml-1 w-100 customCombobox"
-                    :selectedIndexChanged="onJyougenkanriCombo"
-                    :isRequired="true"
-                    :displayMemberPath="'text'"
-                    selectedValuePath="'key'"
-                    header="指定なし"
+                  <v-btn small class="w-100" @click="defineButton(2)"
+                    >一括確定解除</v-btn
                   >
-                  </wj-menu>
-
-                  <wj-menu
-                    v-if="JijyougenkanriJimsyoFlag"
-                    :items-source="taServiceCombo"
-                    class="ml-1 w-100 customCombobox"
-                    :itemClicked="onJyougenkanriCombo"
-                    :isRequired="true"
-                    :displayMemberPath="'text'"
-                    selectedValuePath="'key'"
-                    header="指定なし"
-                  ></wj-menu>
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="6">
-              <v-row no-gutter>
-                <v-col cols="2">
-                  <label class="serach">ソート</label>
-                </v-col>
-                <v-col>
-                  <v-row no-gutters class="mt-1">
-                    <v-col>
-                      <v-card
-                        :class="{
-                          'text-center': true,
-                          grey: sortFlag.kanaFlag,
-                          'lighten-2': sortFlag.kanaFlag,
-                        }"
-                        @click="sort(1)"
-                        outlined
-                        tile
-                      >
-                        カナ
-                      </v-card>
-                    </v-col>
-                    <v-col>
-                      <v-card
-                        :class="{
-                          'text-center': true,
-                          grey: sortFlag.codeFlag,
-                          'lighten-2': sortFlag.codeFlag,
-                        }"
-                        @click="sort(2)"
-                        outlined
-                        tile
-                        >コード</v-card
-                      >
-                    </v-col>
-                    <v-col>
-                      <v-card
-                        :class="{
-                          'text-center': true,
-                          grey: sortFlag.bangoFlag,
-                          'lighten-2': sortFlag.bangoFlag,
-                        }"
-                        @click="sort(3)"
-                        outlined
-                        tile
-                        >受給者番号</v-card
-                      >
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="6">
-              <v-row no-gutter>
-                <v-col cols="3">
-                  <label class="serach text-center">絞込</label>
-                </v-col>
-                <v-col>
-                  <v-row no-gutters class="mt-1">
-                    <v-col>
-                      <v-card
-                        @click="filter(1)"
-                        outlined
-                        tile
-                        :class="{
-                          'text-center': true,
-                          grey: filterFlag.allFlag,
-                          'lighten-2': filterFlag.allFlag,
-                        }"
-                      >
-                        全員
-                      </v-card>
-                    </v-col>
-                    <v-col>
-                      <v-card
-                        :class="{
-                          'text-center': true,
-                          grey: filterFlag.jyogenFlag,
-                          'lighten-2': filterFlag.jyogenFlag,
-                        }"
-                        @click="filter(2)"
-                        outlined
-                        tile
-                        >上限管理済</v-card
-                      >
-                    </v-col>
-                    <v-col>
-                      <v-card
-                        :class="{
-                          'text-center': true,
-                          grey: filterFlag.misyoriFlag,
-                          'lighten-2': filterFlag.misyoriFlag,
-                        }"
-                        @click="filter(3)"
-                        outlined
-                        tile
-                        >未処理</v-card
-                      >
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="2">
-          <v-btn class="ml-2 mt-1" small>検索</v-btn>
         </v-col>
       </v-row>
+
       <v-row no-gutters class="mt-1">
         <v-col cols="4">
           <v-btn-toggle class="flex-wrap" mandatory>
@@ -236,8 +244,21 @@
           >
         </v-col>
         <v-col class="text-right">
-          <v-btn x-small @click="selectAll(1)">全選択</v-btn>
-          <v-btn x-small @click="selectAll(0)" class="ml-1">全解除</v-btn>
+          <!-- <v-btn x-small @click="selectAll(1)">全選択</v-btn>
+          <v-btn x-small @click="selectAll(0)" class="ml-1">全解除</v-btn> -->
+
+          <wj-menu
+            :header="'全選択/全解除'"
+            :itemClicked="onselectedIndexChanged"
+            style="width: auto"
+          >
+            <wj-menu-item>
+              <b>印刷を全選択</b>
+            </wj-menu-item>
+            <wj-menu-item>
+              <b>印刷を全解除</b>
+            </wj-menu-item>
+          </wj-menu>
         </v-col>
       </v-row>
     </v-container>
@@ -287,8 +308,8 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
 
-      receptFlag: true, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
+      receptFlag: false, // receptの初期表示状態
+      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },

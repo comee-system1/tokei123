@@ -9,144 +9,98 @@
 
     <v-container class="user-info" fluid>
       <v-row class="mt-0" no-gutters>
-        <v-col cols="6" xl="5">
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="6">
-              <label>利用者</label>
-              <!-- <wj-menu
-                v-model="selUser"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                :itemsSource="userSelList"
-                :selectedIndexChanged="onUserIndexChanged"
-                :header="
-                  selUser == null
-                    ? userSelList[0].name
-                    : userSelList.filter((x) => x.val == selUser)[0].name
-                "
-              >
-              </wj-menu> -->
-              <wj-menu
-                id="comboFilters1"
-                class="combo"
-                :itemsSource="userSelList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                style="width: 270px"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="selUser"
-              >
-              </wj-menu>
-            </v-col>
-            <v-col cols="6">
-              <label>加算</label>
-              <!-- <wj-menu
-                v-model="selKasan"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                :itemsSource="kasanList"
-                :selectedIndexChanged="onKasanIndexChanged"
-                :header="
-                  selKasan == null
-                    ? kasanList[0].name
-                    : kasanList.filter((x) => x.val == selKasan)[0].name
-                "
-              >
-              </wj-menu> -->
-              <wj-menu
-                id="comboFilters2"
-                class="combo"
-                :itemsSource="kasanList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                style="width: 270px"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="selKasan"
-              >
-              </wj-menu>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-0" no-gutters>
-            <v-col cols="7">
-              <label>ソート</label>
-              <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
-                <v-btn
-                  v-for="n in sortSelList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  @click="sortUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-1" no-gutters>
-            <v-col cols="*">
-              <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-                <v-btn
-                  small
-                  outlined
-                  v-for="(n, k) in alphabet"
-                  :key="n"
-                  :width="30"
-                  p-0
-                  style="min-width: auto"
-                  @click="onAlphabet(k)"
-                >
-                  {{ n }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="1" style="display: flex; align-items: center">
-          <v-row no-gutters>
-            <v-btn style="width: 80px; height: 80px" @click="searchClicked">
-              検索
-            </v-btn>
-          </v-row>
-        </v-col>
-        <v-col cols="*">
-          <v-spacer style="height: 75px"></v-spacer>
-          <v-row no-gutters justify="end">
-            <v-col cols="4" xl="3" class="mr-1">
-              <label class="labelhosoku"> 上段：回数 下段：単位数 </label>
-            </v-col>
-          </v-row>
-        </v-col>
+        <label>利用者</label>
+        <wj-menu
+          id="comboFilters1"
+          class="combo"
+          :itemsSource="userSelList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 270px"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selUser"
+          :itemClicked="onUserClicked"
+        >
+        </wj-menu>
+        <label class="ml-1">加算</label>
+        <wj-menu
+          id="comboFilters2"
+          class="combo"
+          :itemsSource="kasanList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 270px"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selKasan"
+          :itemClicked="onKasanClicked"
+        >
+        </wj-menu>
+        <v-btn
+          class="ml-1"
+          style="width: 20px; height: 30px"
+          @click="searchClicked"
+        >
+          検索
+        </v-btn>
       </v-row>
-
-      <v-row class="mt-0" no-gutters>
-        <v-col>
-          <wj-flex-grid
-            id="kasanKoumokuIcrnGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'None'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializekasanKoumokuIcrnGrid"
-            :formatItem="onFormatItem"
-            :itemsSourceChanging="onItemsSourceChanging"
-            :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSource="viewdata"
+      <v-row class="mt-1" no-gutters>
+        <label>ソート</label>
+        <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
+          <v-btn
+            v-for="n in sortSelList"
+            :key="n.val"
+            small
+            color="secondary"
+            dark
+            outlined
+            @click="sortUser(n.val)"
           >
-          </wj-flex-grid>
-        </v-col>
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+      <v-row class="mt-1" no-gutters>
+        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
+          <v-btn
+            small
+            outlined
+            v-for="(n, k) in alphabet"
+            :key="n"
+            :width="30"
+            p-0
+            style="min-width: auto"
+            @click="onAlphabet(k)"
+          >
+            {{ n }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-spacer></v-spacer>
+        <label class="labelhosoku"> 上段：回数 下段：単位数 </label>
+        <v-spacer></v-spacer>
+      </v-row>
+      <v-row class="mt-0" no-gutters>
+        <wj-flex-grid
+          id="kasanKoumokuIcrnGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'None'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializekasanKoumokuIcrnGrid"
+          :formatItem="onFormatItem"
+          :itemsSourceChanging="onItemsSourceChanging"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="viewdata"
+        >
+        </wj-flex-grid>
       </v-row>
     </v-container>
   </div>
@@ -186,8 +140,6 @@ const kobetuTitle = '個別加算';
 const totalTitle = '合計';
 const totalNinzuTitle = '人数';
 const totalTaniTitle = '単位数';
-const rowHeaderheight = sysConst.GRDROWHEIGHT.Header;
-const rowheight = sysConst.GRDROWHEIGHT.Row;
 let alphabet = [
   '全',
   'ア',
@@ -277,31 +229,36 @@ export default {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
       this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
-      this.selKasan = Number(ls.getlocalStorageEncript(keyKasan));
     });
   },
   methods: {
     initComboFilters(combo) {
-      let _self = this;
       if (combo.hostElement.id == 'comboFilters1') {
         combo.header = this.userSelList[0].name;
-        combo.selectedIndexChanged.addHandler(function (sender) {
-          if (sender.selectedIndex != -1) {
-            combo.header = _self.userSelList[sender.selectedIndex].name;
-            _self.selUser = sender.selectedValue;
-            _self.userFilter();
-          }
-        });
       } else if (combo.hostElement.id == 'comboFilters2') {
-        combo.header = this.kasanList[0].name;
-        combo.selectedIndexChanged.addHandler(function (sender) {
-          if (sender.selectedIndex != -1) {
-            combo.header = _self.kasanList[sender.selectedIndex].name;
-            _self.selKasan = sender.selectedValue;
-            _self.userFilter();
-          }
-        });
+        this.selKasan = Number(ls.getlocalStorageEncript(keyKasan));
+        let index = this.kasanList.findIndex(
+          (element) => element.val == this.selKasan
+        );
+        if (index >= 0) {
+          combo.header = this.kasanList[index].name;
+        } else {
+          combo.header = this.kasanList[0].name;
+        }
       }
+    },
+    onUserClicked(s) {
+      s.header = this.userSelList[s.selectedIndex].name;
+      this.selUser = s.selectedValue;
+      this.userFilter();
+      let f = document.activeElement;
+      f.blur();
+    },
+    onKasanClicked(s) {
+      ls.setlocalStorageEncript(keyKasan, s.selectedValue);
+      s.header = this.kasanList[s.selectedIndex].name;
+      this.selKasan = s.selectedValue;
+      this.userFilter();
       let f = document.activeElement;
       f.blur();
     },
@@ -336,9 +293,9 @@ export default {
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[0].height = rowHeaderheight;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = 100;
-      flexGrid.cells.rows.defaultSize = rowheight;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
 
       flexGrid.endUpdate();
@@ -635,19 +592,7 @@ export default {
       }
       return tmpviewdata;
     },
-    // onUserIndexChanged(s) {
-    //   if (s.selectedIndex != -1) {
-    //     this.selUser = s.selectedValue;
-    //     this.userFilter();
-    //   }
-    // },
-    // onKasanIndexChanged(s) {
-    //   if (s.selectedIndex != -1) {
-    //     ls.setlocalStorageEncript(keyKasan, s.selectedValue);
-    //     this.selKasan = s.selectedValue;
-    //     this.userFilter();
-    //   }
-    // },
+
     sortUser(sortType) {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
@@ -799,8 +744,26 @@ div#KasanKoumokuIcrn {
     min-width: 150px;
     display: block;
   }
-  .wj-menu {
-    width: 250px;
+  div#comboFilters1,
+  div#comboFilters2 {
+    .wj-btn.wj-btn-default {
+      border-left: none;
+    }
+  }
+  .combo:hover {
+    background-color: #e1e1e1;
+  }
+
+  .combo:focus {
+    background-color: #fff;
+  }
+
+  #comboFilters1_dropdown,
+  #comboFilters2_dropdown {
+    .wj-listbox-item {
+      background-color: $white !important;
+      padding: 30px;
+    }
   }
 
   .user-info {
@@ -808,7 +771,7 @@ div#KasanKoumokuIcrn {
     padding: 4px;
     label:not(.labelhosoku) {
       display: inline-block;
-      margin-top: 2px;
+      // margin-top: 2px;
       margin-right: 2px;
       padding-top: 2px;
       font-weight: bold;
@@ -862,7 +825,7 @@ div#KasanKoumokuIcrn {
     font-size: $cell_fontsize;
     width: 98vw;
     min-width: 1300px;
-    height: 65vh;
+    height: 63vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -876,6 +839,9 @@ div#KasanKoumokuIcrn {
     .wj-cell-maker {
       width: 15px;
       height: 15px;
+    }
+    .wj-cell {
+      padding: 2px;
     }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
@@ -911,28 +877,6 @@ div#KasanKoumokuIcrn {
 
   .v-btn-toggle > .v-btn {
     width: 90px;
-  }
-
-  div#comboFilters1,
-  div#comboFilters2 {
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
-  }
-  .combo:hover {
-    background-color: #e1e1e1;
-  }
-
-  .combo:focus {
-    background-color: #fff;
-  }
-
-  #comboFilters1_dropdown,
-  #comboFilters2_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
   }
 }
 </style>
