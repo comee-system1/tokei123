@@ -48,7 +48,7 @@
         :binding="'jyougengaku'"
         :multiLine="true"
         align="center"
-        width="2*"
+        width="3*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -57,6 +57,7 @@
         :multiLine="true"
         align="right"
         format="n0"
+        :width="80"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -98,7 +99,7 @@
       <wj-flex-grid-column
         :binding="'souhiyougaku'"
         :header="centerHeader[3]"
-        width="2*"
+        :width="70"
         align="right"
         :multiLine="true"
         :format="'n0'"
@@ -107,7 +108,7 @@
       <wj-flex-grid-column
         :binding="'riyosyafutangaku'"
         :header="centerHeader[0]"
-        width="2*"
+        :width="60"
         align="right"
         :format="'n0'"
         :multiLine="true"
@@ -116,7 +117,7 @@
       <wj-flex-grid-column
         :binding="'kanrikekkafutangaku'"
         :header="centerHeader[1]"
-        width="2*"
+        :width="65"
         align="center"
         :multiLine="true"
       ></wj-flex-grid-column>
@@ -126,6 +127,7 @@
         align="center"
         :width="30"
         :multiLine="true"
+        :dataMap="customerMap"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'resekakutei'"
@@ -179,6 +181,7 @@ export default {
       editedCells: [],
       completeJudgeButton: 0, // 確定登録・解除ボタン判定
       gridHeight: '', // グリッドの高さ
+      customerMap: [1, 2, 3],
     };
   },
   components: {},
@@ -397,11 +400,13 @@ export default {
       // this.mainFlexGrid.refresh();
     },
     /**********************
-     * 親コンポーネントの全選択/全解除
+     * 親コンポーネントの印刷全選択/全解除
+     * 0:全選択
+     * 1:全解除
      */
     parentSelectAll(type) {
       let mark = '';
-      if (type == 1) {
+      if (type == 0) {
         mark = '〇';
       }
       for (let i = 0; i < this.allData.length; i++) {
@@ -444,16 +449,16 @@ export default {
           jyougenicon: '他',
           jyougengaku: '南山事務所' + (i % 4),
           riyosyafutan: Math.random() * 10000000,
-          resehanei: '',
+          resehanei: i % 4 == 3 ? '●' : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
           koban: 1,
           jigyosyobango: Math.random() * 10000000,
           jigyosyomei: 'ひまわり園',
           teikyoservice: '22 生活介護',
           souhiyougaku: Math.random() * 10000000,
-          riyosyafutangaku: Math.random() * 10000000,
+          riyosyafutangaku: Math.random() * 1000000,
           blueFlag: i % 4 == 3, // 上限額管理事業所が同一法人で別事業所の場合
           kanrikekkafutangaku: i % 4 == 3 ? 1000 * i * 3 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
-          kanrikekka: i % 4 == 3 ? i * 3 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
+          kanrikekka: i % 4 == 3 ? 1 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
           resekakutei: '',
           print: '',
           complateFlag: false, // 確定状態
@@ -467,10 +472,21 @@ export default {
       return receptData;
     },
 
+    getCountries() {
+      return [
+        { id: 0, name: 'アメリカ' },
+        { id: 1, name: 'ドイツ' },
+        { id: 2, name: 'イギリス' },
+        { id: 3, name: '日本' },
+        { id: 4, name: 'イタリア' },
+        { id: 5, name: 'ギリシャ' },
+      ];
+    },
     onInitialized(flexGrid) {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
+
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
       // ヘッダセルのマージ
@@ -566,7 +582,7 @@ export default {
         let pt6 = flexGrid.getCellData(e.row, 6);
         let pt13 = flexGrid.getCellData(e.row, 13);
         let pt14 = flexGrid.getCellData(e.row, 14);
-        if (e.col == 13 || e.col == 14) {
+        if (e.col == 13) {
           if (!isNumber(value) && value.length > 0) {
             e.cancel = true;
             e.stayInEditMode = true;
@@ -657,7 +673,7 @@ export default {
         //   }
         // }
         if (e.panel != flexGrid.columnHeaders) {
-          if (e.col == 5 || e.col == 11 || e.col == 12) {
+          if (e.col == 5 || e.col == 11 || e.col == 12 || e.col == 13) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
@@ -665,7 +681,7 @@ export default {
         }
 
         if (e.panel != flexGrid.columnHeaders) {
-          if (_self.receptData[e.row].blueFlag && e.col < 16) {
+          if (_self.receptData[e.row].blueFlag && e.col < 15) {
             e.cell.style.color = sysConst.COLOR.fontColor;
             e.cell.style.background = sysConst.COLOR.gridBackground;
           } else {
@@ -721,7 +737,7 @@ export default {
       panel.setCellData(0, 13, '上限管理後');
       panel.setCellData(0, 15, _self.verticalHeader[2]);
       panel.setCellData(0, 16, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 80;
+      flexGrid.columnHeaders.rows[1].height = 90;
       flexGrid.rows.defaultSize = 20;
     },
     /**************
@@ -775,9 +791,11 @@ div#recept-tajyougen {
   .wj-flexgrid .wj-cell.wj-align-center {
     justify-content: center;
   }
+
   .wj-cell.edited-cell {
     background-color: pink !important;
   }
+
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;
@@ -799,5 +817,9 @@ div#recept-tajyougen {
     background-position: center;
     background-repeat: no-repeat;
   }
+}
+.wj-grid-listbox {
+  max-height: 100 !important;
+  font-size: 12px;
 }
 </style>
