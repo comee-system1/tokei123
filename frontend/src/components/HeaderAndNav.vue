@@ -25,7 +25,7 @@
             class="nav-list-name"
           >
             <v-list-item-content>
-              <v-list-item-title>
+              <v-list-item-title class="text-subtitle-2">
                 {{ nav_list.name }}
               </v-list-item-title>
             </v-list-item-content>
@@ -40,7 +40,9 @@
             <template v-slot:activator>
               <!-- 下に階層を持つメニューの場合はクリックでメニューを展開 -->
               <v-list-item-content>
-                <v-list-item-title>{{ nav_list.name }}</v-list-item-title>
+                <v-list-item-title class="text-subtitle-2">{{
+                  nav_list.name
+                }}</v-list-item-title>
               </v-list-item-content>
             </template>
             <!-- 下の階層のメニュー -->
