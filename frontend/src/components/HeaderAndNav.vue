@@ -5,7 +5,7 @@
     <v-navigation-drawer
       app
       v-model="drawer"
-      class="grey lighten-4"
+      class="grey lighten-3"
       width="280px"
       temporary
       style="z-index: 11"
@@ -33,7 +33,6 @@
           <v-list-group
             v-else
             :key="nav_list.name"
-            no-action
             class="nav-list-name"
             color="#348498"
           >
@@ -50,14 +49,16 @@
               v-for="(list, index) in nav_list.lists"
               :key="index"
               :to="list.link"
+              class="pl-6"
             >
-              <v-list-item-content style="width: 100%">
+              <v-list-item-content>
                 <v-list-item-title>{{ list.name }}</v-list-item-title>
 
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
                   :key="subindex"
                   :to="sublist.link"
+                  class="sublists"
                 >
                   <v-list-item-content>
                     <v-list-item-title>{{ sublist.name }}</v-list-item-title>
@@ -318,7 +319,6 @@ div#headerAndNav {
   .v-toolbar__title {
     font-size: 15px;
   }
-
   // .v-list .v-list-item--active .v-list-item__title {
   //   color: white;
   // }
@@ -333,7 +333,9 @@ div#headerAndNav {
       font-family: 'メイリオ';
     }
   }
-
+  .v-list-item--active {
+    color: #1976d2;
+  }
   .coditionbtn {
     margin-left: 10px;
     border: 1px solid $light-gray;
