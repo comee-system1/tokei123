@@ -25,7 +25,7 @@
         :binding="'jyukyusyaBango'"
         :header="'受給者番号'"
         align="center"
-        width="3*"
+        :width="100"
         format="'f0'"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -199,7 +199,7 @@ export default {
       let height = window.innerHeight;
       let ht = 54;
       if (height > 800) {
-        ht = 65;
+        ht = 67;
       } else if (height > 700) {
         ht = 58;
       }
@@ -216,11 +216,14 @@ export default {
           this.mainFlexGrid.setCellData(i, 15, '');
           this.receptData[i]['complateFlag'] = false;
         } else {
-          let mark = this.mainFlexGrid.getCellData(i, 15);
           //   let _self = this;
-          if (mark == '〇') {
+          if (
+            this.receptData[i].resehanei == 2 &&
+            this.receptData[i].resekakutei == 1
+          ) {
             this.mainFlexGrid.setCellData(i, 15, 'complete');
             this.receptData[i]['complateFlag'] = true;
+            this.receptData[i].resekakutei = 1;
           }
         }
       }
@@ -409,31 +412,51 @@ export default {
       if (type == 0) {
         mark = '〇';
       }
-      for (let i = 0; i < this.allData.length; i++) {
+      for (let i = 0; i < this.receptData.length; i++) {
         this.mainFlexGrid.setCellData(i, 16, mark);
-        this.allData[i]['print'] = mark;
+        this.receptData[i]['print'] = mark;
+      }
+    },
+    /**********************
+     * 親コンポーネントのレセプト確定全選択/全解除
+     * 2:全選択
+     * 3:全解除
+     */
+    parentDefineAll(type) {
+      let mark = '';
+      if (type == 2) {
+        mark = '〇';
+      }
+      for (let i = 0; i < this.receptData.length; i++) {
+        // レセプト反映が●の時のみ
+        // 確定を全選択
+        if (this.receptData[i].resehanei == 2 && type == 2) {
+          this.mainFlexGrid.setCellData(i, 15, mark);
+          this.receptData[i].resekakutei = 1;
+        }
+        // 全解除
+        if (this.receptData[i].resehanei == 2 && type == 3) {
+          this.mainFlexGrid.setCellData(i, 15, '');
+          this.receptData[i].resekakutei = '';
+        }
       }
     },
     /***********
      * 親コンポーネントのレセプトへ反映ボタン
      */
     parentReceptReflect() {
-      for (let i = 0; i < this.allData.length; i++) {
+      for (let i = 0; i < this.receptData.length; i++) {
         let pt13 = this.mainFlexGrid.getCellData(i, 13);
         let pt14 = this.mainFlexGrid.getCellData(i, 14);
-        let complateFlag = this.allData[i].complateFlag;
+        let complateFlag = this.receptData[i].complateFlag;
         if (pt13 && pt14 && !complateFlag) {
           // ●に変更する
-          let mark = '●';
-          this.allData[i]['resehanei'] = mark;
+          let mark = '2';
+          this.receptData[i]['resehanei'] = mark;
           this.mainFlexGrid.setCellData(i, 6, mark);
-          // 〇に変更する
-          let mark_before = '〇';
-          this.mainFlexGrid.setCellData(i, 15, mark_before);
 
-          this.allData[i]['resekakutei'] = '〇';
-          this.allData[i]['kanrikekkafutangaku'] = pt13;
-          this.allData[i]['kanrikekka'] = pt14;
+          this.receptData[i]['kanrikekkafutangaku'] = pt13;
+          this.receptData[i]['kanrikekka'] = pt14;
         }
       }
     },
@@ -442,14 +465,14 @@ export default {
       for (let i = 0; i < 30; i++) {
         receptData.push({
           sityoson: '東経市',
-          jyukyusyaBango: Math.random() * 10000000,
+          jyukyusyaBango: Math.random() * 10000000000,
           code: Math.random() * 10000000,
           riyousyamei: Math.floor(Math.random() * 10) + '東経太郎',
           kana: 'トウケイタロウ',
           jyougenicon: '他',
           jyougengaku: '南山事務所' + (i % 4),
           riyosyafutan: Math.random() * 10000000,
-          resehanei: i % 4 == 3 ? '●' : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
+          resehanei: i % 4 == 3 ? 2 : '', // 上限額管理事業所が同一法人で別事業所の場合に初期数値の表示
           koban: 1,
           jigyosyobango: Math.random() * 10000000,
           jigyosyomei: 'ひまわり園',
@@ -523,27 +546,28 @@ export default {
             let mark = '〇';
             if (flexGrid.getCellData(hPage.row, 16) == '〇') mark = '';
             flexGrid.setCellData(hPage.row, 16, mark);
-            _self.allData[hPage.row]['print'] = mark;
+            _self.receptData[hPage.row]['print'] = mark;
           }
           // レセプト確定カラムを押下
           if (hPage.col == 15) {
-            if (ht.target.innerText == '〇') {
+            // レセプト反映されているもののみ〇をつける
+            if (_self.receptData[hPage.row].resehanei == 2) {
+              _self.receptData[hPage.row].resekakutei = 1;
+              flexGrid.setCellData(hPage.row, 15, 1);
+            }
+          }
+          // レセプト反映カラムを押下●→〇に変更
+          // レセプト確定が〇の場合空欄にする
+          if (hPage.col == 6) {
+            if (
+              _self.receptData[hPage.row].resehanei == 2 &&
+              !_self.receptData[hPage.row].blueFlag
+            ) {
+              _self.receptData[hPage.row].resehanei = 1;
+              flexGrid.setCellData(hPage.row, 6, 1);
+              _self.receptData[hPage.row].resekakutei = '';
               flexGrid.setCellData(hPage.row, 15, '');
-              _self.allData[hPage.row]['resekakutei'] = '';
             }
-            if (ht.target.innerText == 'complete') {
-              flexGrid.setCellData(hPage.row, 15, '');
-              //flexGrid.setCellData(hPage.row, 15, 'delete');
-              _self.allData[hPage.row]['resekakutei'] = '';
-              _self.allData[hPage.row]['complateFlag'] = false;
-            }
-            /*
-            if (ht.target.innerText == 'delete') {
-              flexGrid.setCellData(hPage.row, 15, 'complete');
-              _self.allData[hPage.row]['resekakutei'] = 'complete';
-              _self.allData[hPage.row]['complateFlag'] = true;
-            }
-            */
           }
         }
       });
@@ -579,26 +603,29 @@ export default {
           col.format
         );
 
-        let pt6 = flexGrid.getCellData(e.row, 6);
+        // let pt6 = flexGrid.getCellData(e.row, 6);
         let pt13 = flexGrid.getCellData(e.row, 13);
         let pt14 = flexGrid.getCellData(e.row, 14);
-        if (e.col == 13) {
-          if (!isNumber(value) && value.length > 0) {
-            e.cancel = true;
-            e.stayInEditMode = true;
-            alert('数値のみの入力になります。');
-          } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
-            flexGrid.setCellData(e.row, 6, '〇');
-            flexGrid.setCellData(e.row, 15, '');
-            // 数値入力後、レセプト反映が●の場合、負担額の背景をピンクにする
-            // 編集をしたデータの配列を保持
-            if (pt6 == '●') {
-              if (s.activeEditor.value != s.getCellData(e.row, e.col, true)) {
-                _self.editedCells.push(e.range);
-              }
-            }
-          }
+        // if (e.col == 13) {
+        if (!isNumber(value) && value.length > 0) {
+          e.cancel = true;
+          e.stayInEditMode = true;
+          alert('数値のみの入力になります。');
+        } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
+          // 管理結果利用負担額と管理結果に数値が入力された場合レセプト反映に1を立てる
+          flexGrid.setCellData(e.row, 6, 1);
+          flexGrid.setCellData(e.row, 15, '');
+          _self.receptData[e.row].resehanei = 1;
+          _self.receptData[e.row].resekakutei = '';
+          // 数値入力後、レセプト反映が●の場合、負担額の背景をピンクにする
+          // 編集をしたデータの配列を保持
+          // if (pt6 == '●') {
+          //   if (s.activeEditor.value != s.getCellData(e.row, e.col, true)) {
+          //     _self.editedCells.push(e.range);
+          //   }
+          // }
         }
+        //}
       });
     },
     // 後ほど消す
@@ -660,29 +687,30 @@ export default {
         ) {
           classname = 'text-center';
         }
-        if (text == 'complete') {
-          classname = 'complete';
-        } else if (text == 'delete') {
-          classname = 'delete';
-        }
-        // if (e.panel != flexGrid.columnHeaders) {
-        //   if (11 <= e.col || e.col == 5) {
-        //     e.cell.style.textAlign = 'right';
-        //     e.cell.style.justifyContent = 'right';
-        //     e.cell.style.alignItems = 'right';
-        //   }
-        // }
+
         if (e.panel != flexGrid.columnHeaders) {
           if (e.col == 5 || e.col == 11 || e.col == 12 || e.col == 13) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
           }
+          if (
+            e.col == 0 ||
+            e.col == 2 ||
+            e.col == 4 ||
+            e.col == 9 ||
+            e.col == 10
+          ) {
+            e.cell.style.textAlign = 'left';
+            e.cell.style.justifyContent = 'left';
+            e.cell.style.alignItems = 'left';
+          }
         }
 
         if (e.panel != flexGrid.columnHeaders) {
           if (_self.receptData[e.row].blueFlag && e.col < 15) {
-            e.cell.style.color = sysConst.COLOR.fontColor;
+            // 上限額管理事業所が同一法人で別事業所の場合テキストを青にする
+            e.cell.style.color = sysConst.COLOR.blueTextColor;
             e.cell.style.background = sysConst.COLOR.gridBackground;
           } else {
             e.cell.style.color = sysConst.COLOR.fontColor;
@@ -707,6 +735,21 @@ export default {
               if (flexGrid.getCellData(e.row, e.col)) {
                 e.cell.style.background = sysConst.COLOR.gridBackground;
               }
+            }
+          }
+
+          // レセプト反映/確定
+          if (e.col == 6 || e.col == 15) {
+            classname = 'text-center';
+            if (text == 1) {
+              html = '〇';
+              if (_self.receptData[e.row].complateFlag) {
+                classname = 'complete';
+                html = 'kaku';
+              }
+            }
+            if (text == 2) {
+              html = '●';
             }
           }
         }

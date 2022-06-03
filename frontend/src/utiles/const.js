@@ -22,6 +22,7 @@ const COLOR = {
     gridRemarkBackground:'#FFF6E8',
     HissuMarkColor:'#ce3e47',
     basicGridColor:'#1f7872',
+    blueTextColor:'#2196F3',
 
 };
 

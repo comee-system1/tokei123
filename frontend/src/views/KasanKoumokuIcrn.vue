@@ -774,9 +774,8 @@ div#KasanKoumokuIcrn {
       // margin-top: 2px;
       margin-right: 2px;
       padding-top: 2px;
-      font-weight: bold;
-      background: #f0ffff;
-      border: 1px solid #7db8ff;
+      background: $view_Title_background;
+      border: none;
       height: 27px;
       width: 60px;
       text-align: center;

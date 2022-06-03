@@ -89,7 +89,7 @@
       class="mt-1"
       :autoSearch="true"
       :headersVisibility="'Column'"
-      :selectionMode="3"
+      :selectionMode="0"
       :style="gridHeight"
       :initialized="onInitializedUser"
       :itemsSourceChanged="onItemsSourceChanged"
@@ -130,11 +130,12 @@
       <wj-flex-grid-column
         header="印"
         binding="print"
-        :width="25"
+        :width="20"
         :word-wrap="false"
         :isReadOnly="true"
         :allowResizing="true"
         class="text-caption"
+        align="center"
       ></wj-flex-grid-column>
     </wj-flex-grid>
 
@@ -160,8 +161,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
-
-require('../../../backend/api/UserListPrint');
+import sysConst from '@/utiles/const';
 
 Vue.use(VueAxios, axios);
 // let userUrl = 'http:// local-tokei/';
@@ -297,10 +297,11 @@ export default {
       this.checkAll = s.selectedIndex;
       this.userFilter(s);
     },
-    createUser(response = []) {
+    createUser() {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
+
       // axiosを利用するとき下記有効
       // for (let i = 0; i < response.data.length; i++) {
       //   riyo_inf.push({
@@ -319,7 +320,6 @@ export default {
       // }
 
       // axiosを利用しないとき下記有効
-      console.log(response);
       userCount = 100;
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
@@ -530,7 +530,12 @@ export default {
             tooltip.setTooltip(e.cell, note);
           }
 
-          let align = 'left';
+          let align = '';
+          if (e.col == 2) {
+            align = 'center';
+          } else {
+            align = 'left';
+          }
           let str = e.cell.innerHTML;
           str = '<div>' + str + '</div>';
           e.cell.innerHTML = str.replace(',', '');
@@ -564,9 +569,18 @@ export default {
           _self.usersData[ht.row]['print'] = mark;
           flexGrid.setCellData(ht.row, 2, mark);
         } else if (e.target.innerText.length > 0) {
-          // 選択した要素の取得
-
           let row = hPage._row;
+
+          if (e.panel != flexGrid.columnHeaders) {
+            flexGrid.itemFormatter = function (panel, r, c, cell) {
+              if (r == hPage.row && panel != flexGrid.columnHeaders) {
+                cell.style.color = sysConst.COLOR.white;
+                cell.style.backgroundColor =
+                  sysConst.COLOR.gridSelectedBackground;
+              }
+            };
+          }
+
           _self.$emit('child-select', row);
         }
       });
@@ -603,12 +617,7 @@ div#user-list-print_scrollbar {
   #filterCombo {
     width: 100%;
   }
-  .wj-cell:not(.wj-header) {
-    background: $grid_background;
-    &:nth-child(3) {
-      background-color: $white;
-    }
-  }
+
   .wj-cell {
     padding: 1px !important;
     font-size: $cell_fontsize;
@@ -617,17 +626,21 @@ div#user-list-print_scrollbar {
     .wj-row:hover
     .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
     transition: all 0s;
-    background: $grid_hover_background;
+    background-color: $grid_hover_background;
   }
 
   .wj-cells .wj-cell.wj-state-multi-selected {
-    background: $grid_selected_background;
+    background-color: $grid_selected_background;
     color: $grid_selected_color;
   }
 
-  .wj-cells .wj-cell.wj-state-selected {
-    background: $grid_selected_background;
-    color: $grid_selected_color;
+  div {
+    &.wj-cells {
+      .wj-cell.wj-state-selected {
+        background-color: $grid_selected_background;
+        color: $grid_selected_color;
+      }
+    }
   }
 
   .wj-form-control {

@@ -5,8 +5,7 @@
     <v-navigation-drawer
       app
       v-model="drawer"
-      dark
-      color="#4d4d4d"
+      class="grey lighten-4"
       width="280px"
       temporary
       style="z-index: 11"
@@ -36,7 +35,6 @@
             :key="nav_list.name"
             no-action
             class="nav-list-name"
-            dark
             color="#348498"
           >
             <template v-slot:activator>
@@ -51,7 +49,7 @@
               :key="index"
               :to="list.link"
             >
-              <v-list-item-content>
+              <v-list-item-content style="width: 100%">
                 <v-list-item-title>{{ list.name }}</v-list-item-title>
 
                 <v-list-item
@@ -319,9 +317,9 @@ div#headerAndNav {
     font-size: 15px;
   }
 
-  .v-list .v-list-item--active .v-list-item__title {
-    color: white;
-  }
+  // .v-list .v-list-item--active .v-list-item__title {
+  //   color: white;
+  // }
   .service {
     &.v-btn {
       margin-left: 10px;

@@ -20,6 +20,11 @@ $grid_selected_color:  #fff !important;
 // 必須マークカラー
 $Hissu_Color:#ce3e47;
 
+//画面部品系
+$view_Title_background : #eee;
+$view_Data_Read_background :  #fffeed;
+$view_Data_Input_background :$white;
+
 $cell_fontsize:12px;
 @import "_mixins";
 @import "_jyogenkanri";

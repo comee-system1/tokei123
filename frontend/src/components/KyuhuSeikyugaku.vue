@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-1">
     <v-row  no-gutters>
       <v-col>
         <wj-flex-grid
@@ -36,44 +36,51 @@ export default {
     getData: function () {
       let serviceSmpData = [];
       let serviceData = [];
-      serviceSmpData.push(
-        {
-          smpTeikyoService:  '施設入所支援', //提供サービス
-          smpServicecode: '32',// サービス種類コード
-          smpServiceriyounissu: '31',// 利用日数
-        },
-        {
-          smpTeikyoService:  '生活介護', //提供サービス
-          smpServicecode: '22',// サービス種類コード
-          smpServiceriyounissu: '31',// 利用日数
+      if (this.$parent.$data.gridReloadFlag == true) {
+        
+        // ユーザー選択時serviceDataに値をセット
+        serviceSmpData.push(
+          {
+            smpTeikyoService:  '施設入所支援', //提供サービス
+            smpServicecode: '32',// サービス種類コード
+            smpServiceriyounissu: '31',// 利用日数
+          },
+          {
+            smpTeikyoService:  '生活介護', //提供サービス
+            smpServicecode: '22',// サービス種類コード
+            smpServiceriyounissu: '31',// 利用日数
+          }
+        );
+        for (let i = 0; i < serviceSmpData.length; i++) {
+          serviceData.push({
+            uid: i,
+            teikyoService: serviceSmpData[i].smpTeikyoService, //提供サービス
+            servicecode: serviceSmpData[i].smpServicecode,// サービス種類コード
+            serviceriyounissu: serviceSmpData[i].smpServiceriyounissu,// 利用日数
+            kyuhutanisu: Math.floor(Math.random() * 100000),
+            tanisutanka: "11.32",
+            souhiyougaku: Math.floor(Math.random() * 1000000),
+            itiwarisoutougaku: Math.floor(Math.random() * 10000),
+            riyousyahutan2: Math.floor(Math.random() * 10000),
+            jyougengetugaku:"9,300",
+            jigyousyagenmengaku: "",
+            genmenriyousyahutan: "",
+            tyouseigohutan: "9,300",
+            jyougenriyousyahutangaku: "",
+            ketteiriyousyahutangaku: "9,300",
+            kyuhuhi: Math.floor(Math.random() * 100000),
+            tokubetutaisakuhi: "",
+            zititaizyoseibun: "",
+          });
         }
-      );
-      for (let i = 0; i < serviceSmpData.length; i++) {
-        serviceData.push({
-          uid: i,
-          teikyoService: serviceSmpData[i].smpTeikyoService, //提供サービス
-          servicecode: serviceSmpData[i].smpServicecode,// サービス種類コード
-          serviceriyounissu: serviceSmpData[i].smpServiceriyounissu,// 利用日数
-          kyuhutanisu: Math.floor(Math.random() * 100000),
-          tanisutanka: "11.32",
-          souhiyougaku: Math.floor(Math.random() * 1000000),
-          itiwarisoutougaku: Math.floor(Math.random() * 10000),
-          riyousyahutan2: Math.floor(Math.random() * 10000),
-          jyougengetugaku:"9,300",
-          jigyousyagenmengaku: "",
-          genmenriyousyahutan: "",
-          tyouseigohutan: "9,300",
-          jyougenriyousyahutangaku: "",
-          ketteiriyousyahutangaku: "9,300",
-          kyuhuhi: Math.floor(Math.random() * 100000),
-          tokubetutaisakuhi: "",
-          zititaizyoseibun: "",
-        });
       }
       this.allData = serviceData;
       return serviceData;
     },
     onInitialized: function (flexGrid) {
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
       let serviceData = this.allData;
       let cellcount;
       // セル構成するために必要なループ数を決定
@@ -94,14 +101,15 @@ export default {
               break;
           }
       } else {
+        // ※ヘッダー２列＋１サービスにつきセル３列＋合計欄１列
         cellcount = 2 + 3 * serviceData.length +1;
       }
       // 空のセルをセット
       while (flexGrid.columns.length < cellcount) {
-          flexGrid.columns.push(new wjGrid.Column());
+        flexGrid.columns.push(new wjGrid.Column());
       }
       while (flexGrid.rows.length < 17) {
-          flexGrid.rows.push(new wjGrid.Row());
+        flexGrid.rows.push(new wjGrid.Row());
       }
       
       // ヘッダーセルの成形
@@ -297,6 +305,11 @@ export default {
         }
       }
     },
+    // ユーザークリック時データを再読み込み
+    reloadSeikyugakuMethod:function() {
+      // 利用者負担上限額グリッド
+      this.serviceData = this.getData();
+    }
   },
 };
 </script>
@@ -304,7 +317,6 @@ export default {
 @import '@/assets/scss/common.scss';
 #kyuhu-seikyugaku {
   .wj-cells .wj-cell.wj-state-selected {
-    background: white;
     color: #333;
   }
 }

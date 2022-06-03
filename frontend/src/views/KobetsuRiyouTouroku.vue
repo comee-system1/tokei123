@@ -2141,9 +2141,7 @@ div#kobeturiyo {
       background-color: $selected_color;
     }
   }
-  .light_yellow {
-    background-color: $light_yellow;
-  }
+
   // 手修正済み
   div.editMark {
     width: 30px;

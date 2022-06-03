@@ -29,10 +29,10 @@
             ></wj-menu>
 
             <label class="ml-1" v-if="TajyougenkanriJimsyoFlag"
-              >上限管理事</label
+              >上限管理事業所</label
             >
             <label class="ml-1" v-if="JijyougenkanriJimsyoFlag"
-              >他サービス事</label
+              >他サービス事業所</label
             >
             <wj-menu
               v-if="TajyougenkanriJimsyoFlag"
@@ -456,8 +456,13 @@ export default {
      * 全選択
      */
     onselectedIndexChanged(s) {
+      // 印刷用
       if (s.selectedIndex == 0 || s.selectedIndex == 1) {
         this.selectAll(s.selectedIndex);
+      }
+      // 確定用
+      if (s.selectedIndex == 2 || s.selectedIndex == 3) {
+        this.defineAll(s.selectedIndex);
       }
     },
     selectAll(type) {
@@ -465,6 +470,13 @@ export default {
         this.$refs.jijyougenChild.parentSelectAll(type);
       } else {
         this.$refs.tajougenChild.parentSelectAll(type);
+      }
+    },
+    defineAll(type) {
+      if (this.JijyougenkanriJimsyoFlag) {
+        this.$refs.jijyougenChild.parentDefineAll(type);
+      } else {
+        this.$refs.tajougenChild.parentDefineAll(type);
       }
     },
     /********:
@@ -518,19 +530,8 @@ div#tajyougen {
   }
 
   .user-info {
-    width: auto;
-    padding: 4px;
     label:not(.errorlabel) {
-      display: inline-block;
-      // margin-top: 2px;
-      margin-right: 2px;
-      padding-top: 2px;
-      font-weight: bold;
-      background: #f0ffff;
-      border: 1px solid #7db8ff;
-      height: 27px;
       min-width: 100px;
-      text-align: center;
     }
   }
 }
