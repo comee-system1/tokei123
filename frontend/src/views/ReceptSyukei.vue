@@ -215,7 +215,7 @@
       </v-row>
     </v-container>
     <v-container fluid class="container">
-      <div v-if="receptFlag">Tab 1 Content</div>
+      <div v-if="receptFlag"><recept-list ref="receptChild"></recept-list></div>
       <div v-if="TajyougenkanriJimsyoFlag">
         <recept-tajougen ref="tajougenChild"></recept-tajougen>
       </div>
@@ -229,6 +229,7 @@
 <script>
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
+import ReceptList from '../components/ReceptList.vue';
 import ReceptTajougen from '../components/ReceptTajougen.vue';
 import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
@@ -260,8 +261,8 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
 
-      receptFlag: false, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
+      receptFlag: true, // receptの初期表示状態
+      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
@@ -274,6 +275,7 @@ export default {
   },
   components: {
     HeaderServices,
+    ReceptList,
     ReceptTajougen,
     ReceptJijyougen,
     TabMenuBlue,
@@ -531,7 +533,7 @@ div#tajyougen {
 
   .user-info {
     label:not(.errorlabel) {
-      min-width: 100px;
+      min-width: 120px;
     }
   }
 }

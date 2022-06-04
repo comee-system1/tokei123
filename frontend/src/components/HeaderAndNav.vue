@@ -22,7 +22,7 @@
             v-if="!nav_list.lists"
             :to="nav_list.link"
             :key="nav_list.name"
-            class="nav-list-name"
+            class="nav-list-name pl-2"
           >
             <v-list-item-content>
               <v-list-item-title class="text-subtitle-2">
@@ -39,7 +39,7 @@
             <template v-slot:activator>
               <!-- 下に階層を持つメニューの場合はクリックでメニューを展開 -->
               <v-list-item-content>
-                <v-list-item-title class="text-subtitle-2">{{
+                <v-list-item-title class="text-subtitle-2 pl-2">{{
                   nav_list.name
                 }}</v-list-item-title>
               </v-list-item-content>
@@ -49,10 +49,12 @@
               v-for="(list, index) in nav_list.lists"
               :key="index"
               :to="list.link"
-              class="pl-6"
+              class="p-0"
             >
               <v-list-item-content>
-                <v-list-item-title>{{ list.name }}</v-list-item-title>
+                <v-list-item-title style="padding-left: 24px">{{
+                  list.name
+                }}</v-list-item-title>
 
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
@@ -61,7 +63,9 @@
                   class="sublists"
                 >
                   <v-list-item-content>
-                    <v-list-item-title>{{ sublist.name }}</v-list-item-title>
+                    <v-list-item-title style="padding-left: 32px">{{
+                      sublist.name
+                    }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-content>
