@@ -36,7 +36,7 @@
             >
             <wj-menu
               v-if="TajyougenkanriJimsyoFlag"
-              :items-source="jyougenkanriCombo"
+              :itemsSource="jyougenkanriCombo"
               class="ml-1 w-100 customCombobox"
               :selectedIndexChanged="onJyougenkanriCombo"
               :isRequired="true"
@@ -49,7 +49,7 @@
 
             <wj-menu
               v-if="JijyougenkanriJimsyoFlag"
-              :items-source="taServiceCombo"
+              :itemsSource="taServiceCombo"
               class="ml-1 w-100 customCombobox"
               :itemClicked="onJyougenkanriCombo"
               :isRequired="true"
@@ -97,8 +97,22 @@
             </v-btn-toggle>
 
             <label class="ml-1">絞込</label>
-
-            <v-btn-toggle class="flex-wrap ml-1" mandatory>
+            <wj-menu
+              v-if="receptFlag"
+              :itemsSource="receptCombo"
+              class="ml-1 w-100 customCombobox"
+              :itemClicked="onReceptCombo"
+              :isRequired="true"
+              :displayMemberPath="'text'"
+              selectedValuePath="'key'"
+              header="全員"
+              style="width: 270px"
+            ></wj-menu>
+            <v-btn-toggle
+              class="flex-wrap ml-1"
+              mandatory
+              v-if="receptFlag != true"
+            >
               <v-btn
                 small
                 color="secondary"
@@ -135,6 +149,9 @@
         <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="6*" align="right">
+              <v-btn @click="receptSyukei" v-if="receptFlag" small
+                >レセプト集計</v-btn
+              >
               <v-btn
                 @click="recept_reflect"
                 v-if="TajyougenkanriJimsyoFlag"
@@ -235,6 +252,7 @@ import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
 
 const riyosyaCombo = [];
+const receptCombo = [];
 const jyougenkanriCombo = [];
 const taServiceCombo = [];
 
@@ -260,6 +278,7 @@ export default {
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
+      receptCombo: receptCombo,
 
       receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
@@ -281,6 +300,33 @@ export default {
     TabMenuBlue,
   },
   created() {
+    // レセプト集計絞込
+    this.receptCombo.push(
+      {
+        key: 1,
+        text: '全員',
+      },
+      {
+        key: 2,
+        text: 'エラーあり',
+      },
+      {
+        key: 3,
+        text: '集計済',
+      },
+      {
+        key: 4,
+        text: '未集計',
+      },
+      {
+        key: 5,
+        text: '確定済',
+      },
+      {
+        key: 6,
+        text: '未確定',
+      }
+    );
     // 利用者コンボボックス
     this.riyosyaCombo.push(
       {
@@ -343,6 +389,17 @@ export default {
     );
   },
   methods: {
+    /*********************
+     * レセプト絞り込み変更
+     */
+    onReceptCombo(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        // こちらに子供に選択データを渡す処理
+      }
+      let f = document.activeElement;
+      f.blur();
+    },
     /*********************
      * 上限管理事変更
      */
