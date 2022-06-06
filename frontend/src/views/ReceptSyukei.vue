@@ -428,7 +428,9 @@ export default {
     onRiyosyaCombo(e) {
       if (e.selectedIndex != -1) {
         e.header = e.text;
-        if (this.JijyougenkanriJimsyoFlag) {
+        if (this.receptFlag) {
+          this.$refs.receptChild.child_Riyosya(e.text, e.selectedIndex);
+        } else if (this.JijyougenkanriJimsyoFlag) {
           this.$refs.jijyougenChild.child_Riyosya(e.text, e.selectedIndex);
         } else {
           // 他上限管理事業所の関数を実行
@@ -537,6 +539,12 @@ export default {
       } else {
         this.$refs.tajougenChild.parentDefineAll(type);
       }
+    },
+    /********:
+     * レセプト集計ボタン
+     */
+    receptSyukei() {
+      this.$refs.receptChild.parentReceptSyukei();
     },
     /********:
      * レセプトへ反映ボタン

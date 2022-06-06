@@ -6,7 +6,7 @@
             id="kyuhu-seikyugaku"
             :headersVisibility="'None'"
             :alternatingRowStep="0"
-            :initialized="onInitialized"
+            :initialized="onInitializedServiceGrid"
             :isReadOnly="true"
             :deferResizing="false"
             :allowAddNew="false"
@@ -28,16 +28,26 @@
 export default {
   data() {
     return {
-      serviceData: this.getData(),
+      serviceData: this.getServiceData(),
+      flexGridList:""
     };
   },
   
   methods: {
-    getData: function () {
+    onInitializedServiceGrid: function (flexGrid) {
+      // グリッドの選択を無効にする
+      this.flexGridList = flexGrid;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      // セルデータセット・成形
+      this.seikyugakuCellSetting(flexGrid);
+    },
+    /**************
+     * セルデータの取得
+     */
+    getServiceData: function () {
       let serviceSmpData = [];
       let serviceData = [];
       if (this.$parent.$data.gridReloadFlag == true) {
-        
         // ユーザー選択時serviceDataに値をセット
         serviceSmpData.push(
           {
@@ -74,35 +84,34 @@ export default {
           });
         }
       }
-      this.allData = serviceData;
       return serviceData;
     },
-    onInitialized: function (flexGrid) {
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      let serviceData = this.allData;
+    /**************
+     * セルデータセット・成形
+     */
+    seikyugakuCellSetting(flexGrid) {
+      let serviceGridData = this.getServiceData();
       let cellcount;
       // セル構成するために必要なループ数を決定
-      if (serviceData.length < 4 ) {
-          // サービスの数が3以下だった場合、空セルを表示
-          switch (serviceData.length) {
-            case 0:
-              cellcount = 7;
-              break;
-            case 1:
-              cellcount = 9;
-              break;
-            case 2:
-              cellcount = 11;
-              break;
-            case 3:
-              cellcount =13;
-              break;
-          }
+      if (serviceGridData.length < 4 ) {
+        // サービスの数が3以下だった場合、空セルを表示
+        switch (serviceGridData.length) {
+          case 0:
+            cellcount = 7;
+            break;
+          case 1:
+            cellcount = 9;
+            break;
+          case 2:
+            cellcount = 11;
+            break;
+          case 3:
+            cellcount =13;
+            break;
+        }
       } else {
         // ※ヘッダー２列＋１サービスにつきセル３列＋合計欄１列
-        cellcount = 2 + 3 * serviceData.length +1;
+        cellcount = 2 + 3 * serviceGridData.length +1;
       }
       // 空のセルをセット
       while (flexGrid.columns.length < cellcount) {
@@ -111,7 +120,7 @@ export default {
       while (flexGrid.rows.length < 17) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      
+
       // ヘッダーセルの成形
       flexGrid.frozenColumns = 1;
       flexGrid.frozenColumns = 2;
@@ -144,47 +153,48 @@ export default {
       flexGrid.rows.defaultSize = 20;
       flexGrid.alternatingRowStep = 0;
       flexGrid.isReadOnly = true;
+
       // 値が入力されているセルの幅調整
-      for (let h = 0; h < serviceData.length; h++) {
+      for (let h = 0; h < serviceGridData.length; h++) {
         flexGrid.columns[2 + 3 * h].width = 35;
         flexGrid.columns[3 + 3 * h].width = 35;
         flexGrid.columns[4 + 3 * h].width = 90;
       }
       // サービスが入力されている2行目には円/日をセット
-      for (let i = 1; i <= serviceData.length; i++) {
+      for (let i = 1; i <= serviceGridData.length; i++) {
         flexGrid.setCellData(2, i * 3, '日');
       }
       // サービスが入力されている4行目には円/単位をセット
-      for (let i = 0; i <= serviceData.length; i++) {
+      for (let i = 0; i <= serviceGridData.length; i++) {
         flexGrid.setCellData(4, i * 3 + 1, '円/単位');
       }
       // サービスの値をセット
-      for (let i = 0; i < serviceData.length; i++) {
-        flexGrid.setCellData(1, ((i + 1)  * 3 - 1) , serviceData[i]['servicecode']);
-        flexGrid.setCellData(1, ((i + 1)  * 3) , serviceData[i]['teikyoService']);
-        flexGrid.setCellData(2, ((i + 1)  * 3 - 1) , serviceData[i]['serviceriyounissu']);
-        flexGrid.setCellData(3, ((i + 1)  * 3 - 1) , serviceData[i]['kyuhutanisu']);
-        flexGrid.setCellData(4, ((i + 1)  * 3 - 1) , serviceData[i]['tanisutanka']);
-        flexGrid.setCellData(5, ((i + 1)  * 3 - 1) , serviceData[i]['souhiyougaku']);
-        flexGrid.setCellData(6, ((i + 1)  * 3 - 1) , serviceData[i]['itiwarisoutougaku']);
-        flexGrid.setCellData(7, ((i + 1)  * 3 - 1) , serviceData[i]['riyousyahutan2']);
-        flexGrid.setCellData(8, ((i + 1)  * 3 - 1) , serviceData[i]['jyougengetugaku']);
-        flexGrid.setCellData(9, ((i + 1)  * 3 - 1) , serviceData[i]['jigyousyagenmengaku']);
-        flexGrid.setCellData(10, ((i + 1)  * 3 - 1) , serviceData[i]['genmenriyousyahutan']);
-        flexGrid.setCellData(11, ((i + 1)  * 3 - 1) , serviceData[i]['tyouseigohutan']);
-        flexGrid.setCellData(12, ((i + 1)  * 3 - 1) , serviceData[i]['jyougenriyousyahutangaku']);
-        flexGrid.setCellData(13, ((i + 1)  * 3 - 1) , serviceData[i]['ketteiriyousyahutangaku']);
-        flexGrid.setCellData(14, ((i + 1)  * 3 - 1) , serviceData[i]['kyuhuhi']);
-        flexGrid.setCellData(15, ((i + 1)  * 3 - 1) , serviceData[i]['tokubetutaisakuhi']);
-        flexGrid.setCellData(16, ((i + 1)  * 3 - 1) , serviceData[i]['zititaizyoseibun']);
+      for (let i = 0; i < serviceGridData.length; i++) {
+        flexGrid.setCellData(1, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['servicecode']);
+        flexGrid.setCellData(1, ((i + 1)  * 3) ,      serviceGridData[i]['teikyoService']);
+        flexGrid.setCellData(2, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['serviceriyounissu']);
+        flexGrid.setCellData(3, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['kyuhutanisu']);
+        flexGrid.setCellData(4, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['tanisutanka']);
+        flexGrid.setCellData(5, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['souhiyougaku']);
+        flexGrid.setCellData(6, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['itiwarisoutougaku']);
+        flexGrid.setCellData(7, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['riyousyahutan2']);
+        flexGrid.setCellData(8, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['jyougengetugaku']);
+        flexGrid.setCellData(9, ((i + 1)  * 3 - 1) ,  serviceGridData[i]['jigyousyagenmengaku']);
+        flexGrid.setCellData(10, ((i + 1)  * 3 - 1) , serviceGridData[i]['genmenriyousyahutan']);
+        flexGrid.setCellData(11, ((i + 1)  * 3 - 1) , serviceGridData[i]['tyouseigohutan']);
+        flexGrid.setCellData(12, ((i + 1)  * 3 - 1) , serviceGridData[i]['jyougenriyousyahutangaku']);
+        flexGrid.setCellData(13, ((i + 1)  * 3 - 1) , serviceGridData[i]['ketteiriyousyahutangaku']);
+        flexGrid.setCellData(14, ((i + 1)  * 3 - 1) , serviceGridData[i]['kyuhuhi']);
+        flexGrid.setCellData(15, ((i + 1)  * 3 - 1) , serviceGridData[i]['tokubetutaisakuhi']);
+        flexGrid.setCellData(16, ((i + 1)  * 3 - 1) , serviceGridData[i]['zititaizyoseibun']);
         // 合計欄
-        flexGrid.setCellData(3,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(4,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(5,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(6,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(7,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(8,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(9,  cellcount - 1 , Math.random() * 10000,);
+        flexGrid.setCellData(3,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(4,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(5,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(6,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(7,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(8,   cellcount - 1 ,  Math.random() * 10000,);
+        flexGrid.setCellData(9,   cellcount - 1 ,  Math.random() * 10000,);
         flexGrid.setCellData(10,  cellcount - 1 , Math.random() * 10000,);
         flexGrid.setCellData(11,  cellcount - 1 , Math.random() * 10000,);
         flexGrid.setCellData(12,  cellcount - 1 , Math.random() * 10000,);
@@ -219,20 +229,20 @@ export default {
       for (let h = 1; h < 17; h++) {
         if (h == 1 || h == 2) {
           // 1，2行目は3、4列目を結合
-          for (let c = 0; c <= serviceData.length; c++) {
+          for (let c = 0; c <= serviceGridData.length; c++) {
             cellRanges.push(
             new wjGrid.CellRange(h,3 * c,h,3 * c + 1),
             );
           }
         } else if (h == 4) {
           // 4行目は2、3列目を結合
-          for (let c = 0; c <= serviceData.length; c++) {
+          for (let c = 0; c <= serviceGridData.length; c++) {
             cellRanges.push(
             new wjGrid.CellRange(h,3 * c - 1,h,3 * c),
             );
           }
         }else {
-          for (let c = 1; c <= serviceData.length; c++) {
+          for (let c = 1; c <= serviceGridData.length; c++) {
             cellRanges.push(
             new wjGrid.CellRange(h,3 * c - 1,h,3 * c + 1),
             );
@@ -289,7 +299,7 @@ export default {
           s.paddingRight = '4px';
         }
         // サービスコード・種類、利用日数、単位数単価中央寄せ
-        for (let i = 0; i <= serviceData.length; i++) {
+        for (let i = 0; i <= serviceGridData.length; i++) {
           // サービスコード
           if ((r == 1) && (i * 3 + 1) ) {
             s.textAlign = 'center'
@@ -307,8 +317,8 @@ export default {
     },
     // ユーザークリック時データを再読み込み
     reloadSeikyugakuMethod:function() {
-      // 利用者負担上限額グリッド
-      this.serviceData = this.getData();
+      // 請求額グリッド再読み込み
+      this.seikyugakuCellSetting(this.flexGridList); 
     }
   },
 };

@@ -24,7 +24,7 @@
                 :itemsSource="kyuhujukyuyaGridData"
                 :headersVisibility="'None'"
                 :autoGenerateColumns="false"
-                :initialized="onInitializeKyuhujukyuyaGrid"
+                :initialized="onInitializedKyuhujukyuyaGrid"
                 :allowAddNew="false"
                 :allowDelete="false"
                 :allowDragging="false"
@@ -56,7 +56,7 @@
                     :itemsSource="styousonGridData"
                     :headersVisibility="'None'"
                     :autoGenerateColumns="false"
-                    :initialized="onInitializeStyousonGrid"
+                    :initialized="onInitializedStyousonGrid"
                     :allowResizing="false"
                     :allowDragging="false"
                     >
@@ -78,7 +78,7 @@
                 id="jigyousyaGrid"
                 :itemsSource="jigyousyaGridData"
                 :headersVisibility="'None'"
-                :initialized="onInitializeJigyousyaGrid"
+                :initialized="onInitializedJigyousyaGrid"
                 :allowAddNew="false"
                 :allowDelete="false"
                 :allowDragging="false"
@@ -107,7 +107,7 @@
                     :itemsSource="tiikikubunGridData"
                     :headersVisibility="'None'"
                     :autoGenerateColumns="false"
-                    :initialized="onInitializeTiikikubunGrid"
+                    :initialized="onInitializedTiikikubunGrid"
                     :allowAddNew="false"
                     :allowDelete="false"
                     :allowDragging="false"
@@ -184,7 +184,7 @@ export default {
     };
   },
   methods: {
-    onInitializeKyuhujukyuyaGrid:function(flexGrid){
+    onInitializedKyuhujukyuyaGrid:function(flexGrid){
       this.getKyuhujukyuyaGridData();
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -258,7 +258,7 @@ export default {
       )
       this.kyuhujukyuyaGridData = kyuhujukyuyaGridData;
     },
-    onInitializeStyousonGrid:function(flexGrid){
+    onInitializedStyousonGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -336,7 +336,7 @@ export default {
       }
       return styousonGridData;
     },
-    onInitializeJigyousyaGrid:function(flexGrid){
+    onInitializedJigyousyaGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -428,7 +428,7 @@ export default {
       }
       return jigyousyaGridData;
     },
-    onInitializeTiikikubunGrid:function(flexGrid){
+    onInitializedTiikikubunGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 

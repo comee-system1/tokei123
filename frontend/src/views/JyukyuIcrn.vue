@@ -7,7 +7,7 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="mt-0" no-gutters>
+      <v-row class="rowStyle mt-0" no-gutters>
         <label>利用者</label>
         <wj-menu
           id="comboFilters"
@@ -15,7 +15,6 @@
           :itemsSource="userSelList"
           :initialized="initComboFilters"
           :isRequired="true"
-          style="width: 270px"
           selectedValuePath="val"
           displayMemberPath="name"
           v-model="selUser"
@@ -38,7 +37,7 @@
         </v-btn-toggle>
         <v-btn
           class="ml-1"
-          style="width: 20px; height: 30px"
+          style="width: 60px; height: 30px; margin-top: -2px"
           @click="searchClicked"
         >
           検索
@@ -47,7 +46,7 @@
         <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
       </v-row>
 
-      <v-row class="mt-1" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <label>ソート</label>
         <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
           <v-btn
@@ -63,23 +62,24 @@
           </v-btn>
         </v-btn-toggle>
       </v-row>
-      <v-row class="mt-1" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
           <v-btn
             small
             outlined
             v-for="(n, k) in alphabet"
             :key="n"
-            :width="30"
-            p-0
-            style="min-width: auto"
+            :width="25"
+            :height="25"
+            :min-width="25"
+            :max-width="25"
             @click="onAlphabet(k)"
           >
             {{ n }}
           </v-btn>
         </v-btn-toggle>
         <v-spacer></v-spacer>
-        <div class="border-bottom mb-1" style="text-align: center">
+        <div class="border-bottom ma-0" style="text-align: center">
           <label class="errorlabel mr-2">
             <b>エラー</b>
           </label>
@@ -87,7 +87,7 @@
         </div>
       </v-row>
 
-      <v-row class="ma-0" no-gutters>
+      <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
           id="jyukyuIcrnGrid"
           :headersVisibility="'Column'"
@@ -714,19 +714,27 @@ div#jyukyuicrn {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
+  .rowStyle {
+    height: 25px;
+  }
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
     display: block;
   }
   #filterCombo {
+    margin-top: -2px;
     width: 100%;
   }
   div#comboFilters {
+    margin-top: -3px;
+    width: 300px;
+    height: 25px;
     .wj-btn.wj-btn-default {
       border-left: none;
     }
   }
+
   .combo:hover {
     background-color: #e1e1e1;
   }
@@ -741,23 +749,8 @@ div#jyukyuicrn {
       padding: 30px;
     }
   }
-
-  .user-info {
-    width: auto;
-    padding: 4px;
-    label:not(.errorlabel) {
-      display: inline-block;
-      // margin-top: 2px;
-      margin-right: 2px;
-      padding-top: 2px;
-      background: $selected_color;
-      border: none;
-      height: 27px;
-      width: 60px;
-      text-align: center;
-    }
-  }
   .errorlabel {
+    background: transparent;
     color: red;
   }
 
@@ -852,7 +845,8 @@ div#jyukyuicrn {
   }
 
   .v-btn-toggle > .v-btn {
-    width: 90px;
+    width: 100px;
+    height: 25px;
   }
 }
 </style>

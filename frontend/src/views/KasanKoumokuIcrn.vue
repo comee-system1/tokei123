@@ -8,7 +8,7 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="mt-0" no-gutters>
+      <v-row class="rowStyle mt-0" no-gutters>
         <label>利用者</label>
         <wj-menu
           id="comboFilters1"
@@ -16,7 +16,6 @@
           :itemsSource="userSelList"
           :initialized="initComboFilters"
           :isRequired="true"
-          style="width: 270px"
           selectedValuePath="val"
           displayMemberPath="name"
           v-model="selUser"
@@ -30,7 +29,6 @@
           :itemsSource="kasanList"
           :initialized="initComboFilters"
           :isRequired="true"
-          style="width: 270px"
           selectedValuePath="val"
           displayMemberPath="name"
           v-model="selKasan"
@@ -39,13 +37,13 @@
         </wj-menu>
         <v-btn
           class="ml-1"
-          style="width: 20px; height: 30px"
+          style="width: 30px; height: 30px; margin-top: -2px"
           @click="searchClicked"
         >
           検索
         </v-btn>
       </v-row>
-      <v-row class="mt-1" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <label>ソート</label>
         <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
           <v-btn
@@ -61,26 +59,27 @@
           </v-btn>
         </v-btn-toggle>
       </v-row>
-      <v-row class="mt-1" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
           <v-btn
             small
             outlined
             v-for="(n, k) in alphabet"
             :key="n"
-            :width="30"
-            p-0
-            style="min-width: auto"
+            :width="25"
+            :height="25"
+            :min-width="25"
+            :max-width="25"
             @click="onAlphabet(k)"
           >
             {{ n }}
           </v-btn>
         </v-btn-toggle>
         <v-spacer></v-spacer>
-        <label class="labelhosoku"> 上段：回数 下段：単位数 </label>
+        <label class="labelhosoku pt-2"> 上段：回数 下段：単位数 </label>
         <v-spacer></v-spacer>
       </v-row>
-      <v-row class="mt-0" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <wj-flex-grid
           id="kasanKoumokuIcrnGrid"
           :headersVisibility="'Column'"
@@ -739,6 +738,9 @@ div#KasanKoumokuIcrn {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
+  .rowStyle {
+    height: 25px;
+  }
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -746,6 +748,9 @@ div#KasanKoumokuIcrn {
   }
   div#comboFilters1,
   div#comboFilters2 {
+    margin-top: -3px;
+    width: 300px;
+    height: 25px;
     .wj-btn.wj-btn-default {
       border-left: none;
     }
@@ -766,59 +771,6 @@ div#KasanKoumokuIcrn {
     }
   }
 
-  .user-info {
-    width: auto;
-    padding: 4px;
-    label:not(.labelhosoku) {
-      display: inline-block;
-      // margin-top: 2px;
-      margin-right: 2px;
-      padding-top: 2px;
-      background: $view_Title_background;
-      border: none;
-      height: 27px;
-      width: 60px;
-      text-align: center;
-    }
-  }
-  .labelhosoku {
-    font-weight: normal;
-  }
-
-  .siborikomi-info,
-  .sort-info {
-    position: relative;
-    display: inline-block;
-    border: 1px solid lightgray;
-    width: 350px;
-    border-radius: 10px;
-
-    .wj-labeled-input {
-      font-size: 14px;
-      position: relative;
-      display: inline-block;
-      width: 120px;
-      height: auto;
-      max-width: 100%;
-      margin: 0 15px 0 0px;
-      padding: 5px 0;
-
-      input[type='radio'] + label {
-        color: black;
-      }
-      input[type='radio']:checked + label {
-        color: blue;
-        font-weight: bold;
-      }
-    }
-  }
-  div.border-bottom {
-    border-bottom: 1px solid red;
-    width: 200px;
-    label {
-      font-size: 0.85em;
-    }
-  }
   #kasanKoumokuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
@@ -875,7 +827,8 @@ div#KasanKoumokuIcrn {
   }
 
   .v-btn-toggle > .v-btn {
-    width: 90px;
+    width: 100px;
+    height: 25px;
   }
 }
 </style>

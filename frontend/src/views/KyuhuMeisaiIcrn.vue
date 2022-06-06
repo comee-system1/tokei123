@@ -7,7 +7,7 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="mt-0" no-gutters>
+      <v-row class="rowStyle mt-0" no-gutters>
         <label>内容</label>
         <v-btn-toggle class="flex-wrap" v-model="dispPageType">
           <v-btn
@@ -38,7 +38,7 @@
         </wj-menu>
       </v-row>
 
-      <v-row class="mt-1" no-gutters>
+      <v-row class="rowStyle mt-2" no-gutters>
         <label>表示</label>
         <!-- mandatoryは初期選択 -->
         <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
@@ -79,6 +79,7 @@
             color="secondary"
             dark
             outlined
+            :width="100"
             @click="sortUser(n.val)"
           >
             {{ n.name }}
@@ -86,7 +87,7 @@
         </v-btn-toggle>
         <v-btn
           class="ml-1"
-          style="width: 2px; height: 30px"
+          style="width: 60px; height: 30px; margin-top: -4px"
           @click="searchClicked"
         >
           検索
@@ -99,16 +100,17 @@
             outlined
             v-for="(n, k) in alphabet"
             :key="n"
-            :width="30"
-            p-0
-            style="min-width: auto"
+            :width="25"
+            :height="25"
+            :min-width="25"
+            :max-width="25"
             @click="onAlphabet(k)"
           >
             {{ n }}
           </v-btn>
         </v-btn-toggle>
       </v-row>
-      <v-row class="mt-0" no-gutters>
+      <v-row class="mt-1" no-gutters>
         <wj-flex-grid
           id="seikyuGrid"
           :headersVisibility="'Column'"
@@ -1465,6 +1467,9 @@ div#KyuhuMeisaiIcrn {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
+  .rowStyle {
+    height: 25px;
+  }
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
@@ -1473,6 +1478,7 @@ div#KyuhuMeisaiIcrn {
 
   div#comboFilters1,
   div#comboFilters2 {
+    margin-top: -3px;
     .wj-btn.wj-btn-default {
       border-left: none;
     }
@@ -1493,21 +1499,21 @@ div#KyuhuMeisaiIcrn {
     }
   }
 
-  .user-info {
-    width: auto;
-    padding: 4px;
-    label {
-      display: inline-block;
-      margin-top: 2px;
-      margin-right: 2px;
-      padding-top: 2px;
-      background: $view_Title_background;
-      border: none;
-      height: 27px;
-      width: 60px;
-      text-align: center;
-    }
-  }
+  // .user-info {
+  //   width: auto;
+  //   padding: 4px;
+  //   label {
+  //     display: inline-block;
+  //     margin-top: 2px;
+  //     margin-right: 2px;
+  //     padding-top: 2px;
+  //     background: $view_Title_background;
+  //     border: none;
+  //     height: 27px;
+  //     width: 60px;
+  //     text-align: center;
+  //   }
+  // }
 
   .siborikomi-info,
   .sort-info {
@@ -1597,7 +1603,8 @@ div#KyuhuMeisaiIcrn {
   }
 
   .v-btn-toggle > .v-btn {
-    width: 90px;
+    width: 100px;
+    height: 25px;
   }
 }
 </style>

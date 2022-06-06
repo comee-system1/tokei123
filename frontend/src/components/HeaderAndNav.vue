@@ -22,10 +22,10 @@
             v-if="!nav_list.lists"
             :to="nav_list.link"
             :key="nav_list.name"
-            class="nav-list-name pl-2"
+            class="nav-list-name"
           >
             <v-list-item-content>
-              <v-list-item-title class="text-subtitle-2">
+              <v-list-item-title class="text-subtitle-2 pl-2">
                 {{ nav_list.name }}
               </v-list-item-title>
             </v-list-item-content>
@@ -52,9 +52,7 @@
               class="p-0"
             >
               <v-list-item-content>
-                <v-list-item-title style="padding-left: 24px">{{
-                  list.name
-                }}</v-list-item-title>
+                <v-list-item-title>{{ list.name }}</v-list-item-title>
 
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
@@ -63,9 +61,7 @@
                   class="sublists"
                 >
                   <v-list-item-content>
-                    <v-list-item-title style="padding-left: 32px">{{
-                      sublist.name
-                    }}</v-list-item-title>
+                    <v-list-item-title>{{ sublist.name }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-content>
@@ -326,6 +322,14 @@ div#headerAndNav {
   // .v-list .v-list-item--active .v-list-item__title {
   //   color: white;
   // }
+  .v-list-item {
+    padding: 0;
+    div.v-list-item__content {
+      div {
+        padding-left: 21px;
+      }
+    }
+  }
   .service {
     &.v-btn {
       margin-left: 10px;
