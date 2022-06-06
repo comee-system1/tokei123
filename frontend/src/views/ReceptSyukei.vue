@@ -216,10 +216,12 @@
             style="width: auto"
           >
             <wj-menu-item>
-              <b>印刷を全選択</b>
+              <b v-if="receptFlag">集計を全選択</b>
+              <b v-else>印刷を全選択</b>
             </wj-menu-item>
             <wj-menu-item>
-              <b>印刷を全解除</b>
+              <b v-if="receptFlag">集計を全解除</b>
+              <b v-else>印刷を全解除</b>
             </wj-menu-item>
             <wj-menu-item>
               <b>確定を全選択</b>
@@ -507,7 +509,9 @@ export default {
         this.sortFlag.bangoFlag = true;
       }
 
-      if (this.JijyougenkanriJimsyoFlag) {
+      if (this.receptFlag) {
+        this.$refs.receptChild.parentSort(type);
+      } else if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentSort(type);
       } else {
         this.$refs.tajougenChild.parentSort(type);
@@ -518,6 +522,7 @@ export default {
      */
     onselectedIndexChanged(s) {
       // 印刷用
+      // 集計用
       if (s.selectedIndex == 0 || s.selectedIndex == 1) {
         this.selectAll(s.selectedIndex);
       }
@@ -527,14 +532,18 @@ export default {
       }
     },
     selectAll(type) {
-      if (this.JijyougenkanriJimsyoFlag) {
+      if (this.receptFlag) {
+        this.$refs.receptChild.parentSelectAll(type);
+      } else if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentSelectAll(type);
       } else {
         this.$refs.tajougenChild.parentSelectAll(type);
       }
     },
     defineAll(type) {
-      if (this.JijyougenkanriJimsyoFlag) {
+      if (this.receptFlag) {
+        this.$refs.receptChild.parentDefineAll(type);
+      } else if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentDefineAll(type);
       } else {
         this.$refs.tajougenChild.parentDefineAll(type);
@@ -562,7 +571,9 @@ export default {
      * アルファベットの絞り込み
      */
     onAlphabet(key) {
-      if (this.JijyougenkanriJimsyoFlag) {
+      if (this.receptFlag) {
+        this.$refs.receptChild.parentAlphabet(key);
+      } else if (this.JijyougenkanriJimsyoFlag) {
         this.$refs.jijyougenChild.parentAlphabet(key);
       } else {
         this.$refs.tajougenChild.parentAlphabet(key);
