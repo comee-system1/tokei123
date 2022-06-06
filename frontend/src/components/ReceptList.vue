@@ -12,6 +12,7 @@
           :allowResizing="false"
           :deferResizing="false"
           :allowSorting="false"
+          :autoGenerateColumns="false"
           style="width: 100%"
         >
         </wj-flex-grid>
@@ -27,6 +28,7 @@
           :allowResizing="false"
           :deferResizing="false"
           :allowSorting="false"
+          :autoGenerateColumns="false"
           style="width: 100%"
         >
         </wj-flex-grid>
@@ -46,8 +48,9 @@ let basicPos = 7; // 基本情報の列数
 export default {
   data() {
     return {
+      allData: [],
       teikyoService: this.getTeikyoService(),
-      receptData: this.getData(),
+      receptData: [],
       gridHeadHeight: 80, //グリッドのヘッダ高さ
       mainFlexGrid: [],
       basicPos: basicPos,
@@ -61,6 +64,7 @@ export default {
   },
   created() {
     window.addEventListener('resize', this.handleResize);
+    this.receptData = this.getData();
   },
   methods: {
     /*********************
@@ -85,6 +89,7 @@ export default {
       this.createHeaderMerge(flexGrid, 'basic');
 
       // 値の登録
+      flexGrid.itemsSource = this.receptData;
       this.settingPoint(flexGrid);
 
       // セルフォーマット
@@ -95,11 +100,13 @@ export default {
      * 集計グリッド
      */
     onInitializedSyukei(syukeiGrid) {
+      this.mainSyukeiFlexGrid = syukeiGrid;
       // ヘッダ情報の作成
       this.createSyukeiHeader(syukeiGrid);
       this.createHeaderMerge(syukeiGrid, 'syukei');
 
       // 値の登録
+      syukeiGrid.itemsSource = this.receptData;
       this.settingSyukeiPoint(syukeiGrid);
 
       // セルフォーマット集計
@@ -109,10 +116,6 @@ export default {
      * 値の登録
      */
     settingPoint(flexGrid) {
-      while (flexGrid.rows.length < this.receptData.length) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-
       for (let i = 0; i < this.receptData.length; i++) {
         let j = 0;
         flexGrid.setCellData(i, j++, this.receptData[i].sityoson);
@@ -132,10 +135,6 @@ export default {
       }
     },
     settingSyukeiPoint(flexGrid) {
-      while (flexGrid.rows.length < this.receptData.length) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-
       for (let i = 0; i < this.receptData.length; i++) {
         let j = 0;
         flexGrid.setCellData(i, j++, this.receptData[i].resesyukei);
@@ -194,7 +193,8 @@ export default {
           service22: i % 2 == 1 ? 1 : 0,
           service24: i % 3 == 1 ? 1 : 0,
           service32: i % 4 == 1 ? 1 : 0,
-
+          nyukyo: i % 2, // 今月入居
+          taikyo: i % 4, // 今月退去
           resesyukei: '',
           syukeibi: '2022/08/05 14:25',
           tanto: '明治雅',
@@ -202,7 +202,7 @@ export default {
           resekaku: '',
         });
       }
-
+      this.allData = receptData;
       return receptData;
     },
 
@@ -315,6 +315,7 @@ export default {
         flexGrid.columns.push(new wjGrid.Column());
       }
 
+      flexGrid.columns[0].binding = 'sityoson';
       panel.setCellData(0, 0, '基本情報');
       panel.setCellData(1, 0, '市町村名');
       panel.setCellData(1, 1, '受給者番号');
@@ -408,7 +409,128 @@ export default {
     child_Riyosya(text, key) {
       // フィルタリングの実施
       this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
-      this.receptData = this.filtered();
+      //this.mainFlexGrid.rows.clear();
+      //this.mainSyukeiFlexGrid.rows.clear();
+      let receptData = this.filtered();
+
+      console.log(receptData);
+      this.mainFlexGrid.itemsSource = receptData;
+      this.mainSyukeiFlexGrid.itemsSource = this.receptData;
+
+      // this.settingPoint(this.mainFlexGrid);
+    },
+
+    /***************************
+     * 絞り込みの実施
+     */
+    filtered() {
+      // let array = [];
+      // for (let i = 0; i < this.allData.length; i++) {
+      //   if (
+      //     this.filterTextRiyosya.riyosyaKey == 0 ||
+      //     (this.filterTextRiyosya.riyosyaKey == 1 &&
+      //       this.allData[i]['nyukyo'] == 1) ||
+      //     (this.filterTextRiyosya.riyosyaKey == 2 &&
+      //       this.allData[i]['taikyo'] == 1)
+      //   ) {
+      //     array.push(this.allData[i]);
+      //   }
+      // }
+      // for (let i = 0; i < this.allData.length; i++) {
+      //   // 検索条件がないとき
+      //   if (
+      //     this.filterTextJyogen.jyougenkanrijiKey == 0 &&
+      //     this.filterTextRiyosya.riyosyaKey == 0 &&
+      //     this.filterSibori.type == 1
+      //   ) {
+      //     array.push(this.allData[i]);
+      //   } else {
+      //     if (
+      //       (this.allData[i]['jyougengaku'].indexOf(
+      //         this.filterTextJyogen.jyougenkanriji
+      //       ) != -1 ||
+      //         this.filterTextJyogen.jyougenkanrijiKey == 0) &&
+      //       // 絞り込みトグル
+      //       (this.filterSibori.type == 1 ||
+      //         (this.filterSibori.type == 2 &&
+      //           this.allData[i]['kanrikekka'].length > 0) ||
+      //         (this.filterSibori.type == 3 &&
+      //           this.allData[i]['kanrikekka'].length == 0)) &&
+      //       // 利用者コンボボックス
+      //       (this.filterTextRiyosya.riyosyaKey == 0 ||
+      //         (this.filterTextRiyosya.riyosyaKey == 1 &&
+      //           this.allData[i]['nyukyo'] == 1) ||
+      //         (this.filterTextRiyosya.riyosyaKey == 2 &&
+      //           this.allData[i]['taikyo'] == 1))
+      //     ) {
+      //       array.push(this.allData[i]);
+      //     }
+      //   }
+      // }
+      //let select = 0;
+      // let select = this.alphaSelect;
+      let get = [];
+      //get = this.allData;
+      get.push(this.allData[0]);
+      // array.forEach(function (value) {
+      //   switch (select) {
+      //     case 0:
+      //       get.push(value);
+      //       break;
+      //     case 1:
+      //       if (value.kana.match(/^[ア-オ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 2:
+      //       if (value.kana.match(/^[カ-コ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 3:
+      //       if (value.kana.match(/^[サ-ソ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 4:
+      //       if (value.kana.match(/^[タ-ト]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 5:
+      //       if (value.kana.match(/^[ナ-ノ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 6:
+      //       if (value.kana.match(/^[ハ-ホ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 7:
+      //       if (value.kana.match(/^[マ-モ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 8:
+      //       if (value.kana.match(/^[ヤ-ヨ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 9:
+      //       if (value.kana.match(/^[ラ-ロ]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //     case 10:
+      //       if (value.kana.match(/^[ワ-ン]/)) {
+      //         get.push(value);
+      //       }
+      //       break;
+      //   }
+      // });
+
+      return get;
     },
   },
 };
