@@ -783,7 +783,7 @@ div#jyukyuicrn {
   }
   div.border-bottom {
     border-bottom: 1px solid red;
-    width: 200px;
+    width: 250px;
     label {
       font-size: 0.85em;
     }
