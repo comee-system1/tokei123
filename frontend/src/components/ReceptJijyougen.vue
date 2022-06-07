@@ -3,6 +3,7 @@
     <wj-flex-grid
       id="grid_jijyougen"
       :initialized="onInitialized"
+      :itemsSourceChanged="onitemsSourceChanged"
       :allowMerging="6"
       :headersVisibility="'Column'"
       :alternatingRowStep="0"
@@ -156,7 +157,7 @@ import { getReceptJijyogenData } from '@/data/receptJiJyougenData.js';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 // import { isNumber, changeType, DataType } from '@grapecity/wijmo';
-// import sysConst from '@/utiles/const';
+import sysConst from '@/utiles/const';
 
 Vue.use(VueAxios, axios);
 
@@ -211,12 +212,14 @@ export default {
       //this.clickEventCell(flexGrid, _self);
       // セルの値を編集
       //this.edittingCell(flexGrid, _self);
+    },
 
-      // セルのフォーマット指定
-      this.createCellFormat(flexGrid);
-
-      // セルマージ
+    onitemsSourceChanged(flexGrid) {
+      this.mainFlexGrid = flexGrid;
+      // データセルのマージ
       this.createCellMerge(flexGrid);
+      //セルのフォーマット指定
+      this.createCellFormat(flexGrid);
     },
 
     /**************
@@ -261,6 +264,24 @@ export default {
           }
           if (e.col == 15 || e.col == 16 || e.col == 17) {
             classname = 'vertical';
+          }
+        }
+
+        if (e.panel != flexGrid.columnHeaders) {
+          if (
+            e.col == 0 ||
+            e.col == 2 ||
+            e.col == 4 ||
+            e.col == 9 ||
+            e.col == 10
+          ) {
+            classname = 'text-start';
+          }
+          if (e.col <= 5) {
+            e.cell.style.background = sysConst.COLOR.gridBackground;
+          }
+          if (e.col == 11 || e.col == 12) {
+            classname = 'text-end';
           }
         }
 
