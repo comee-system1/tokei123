@@ -56,8 +56,9 @@
         :header="'利用者負担\n上限月額'"
         :multiLine="true"
         format="n0"
-        :width="60"
+        :width="80"
         :isReadOnly="true"
+        align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'jyougengakukanrikeisan'"
@@ -100,7 +101,7 @@
         :binding="'souhiyougaku'"
         :header="'総費用額'"
         width="2*"
-        align="right"
+        align="center"
         :multiLine="true"
         :format="'n0'"
       ></wj-flex-grid-column>
@@ -108,7 +109,7 @@
         :binding="'riyosyafutangaku'"
         :header="'利用者\n負担額'"
         width="2*"
-        align="right"
+        align="center"
         :format="'n0'"
         :multiLine="true"
       ></wj-flex-grid-column>
@@ -303,28 +304,27 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
+
     /*******************
      * 確定登録・解除ボタン
      */
     parentDefineButton(type) {
-      this.completeJudgeButton = type;
-
+      // 上限管理済みが●2になっているものをcompleteに変更
       for (let i = 0; i < this.receptData.length; i++) {
-        if (type == 2) {
-          // 確定解除
-          this.mainFlexGrid.setCellData(i, 16, '');
-          this.receptData[i]['resekakutei'] = '';
-          this.receptData[i]['complateFlag'] = false;
+        if (type == 1) {
+          if (
+            this.receptData[i].jyougengakukanrikeisan == 2 &&
+            this.receptData[i].resekakutei == 1
+          ) {
+            this.receptData[i].resekakutei = 'complete';
+          }
         } else {
-          let mark = this.receptData[i]['resekakutei'];
-          //   let _self = this;
-          if (mark == '〇') {
-            this.mainFlexGrid.setCellData(i, 16, 'complete');
-            this.receptData[i]['resekakutei'] = 'complete';
-            this.receptData[i]['complateFlag'] = true;
+          if (this.receptData[i].resekakutei == 'complete') {
+            this.receptData[i].resekakutei = '';
           }
         }
       }
+      this.mainFlexGrid.refresh();
     },
 
     /*****************************
@@ -534,6 +534,7 @@ export default {
       for (let i = jBrow.first; i < jBrow.last; i++) {
         //this.mainFlexGrid.setCellData(i, 6, '〇');
         this.receptData[i]['jyougengakukanrikeisan'] = 1;
+        this.receptData[i].resekakutei = '';
       }
     },
     /*************
@@ -624,7 +625,7 @@ export default {
             // 総費用額と利用者負担額の欄に入力後、入力した利用者の「上限額管理計算」に〇が表示される
             // 変更場所の受給者番号取得
             this.setJyougenKanriCalc(e.row);
-            flexGrid.setCellData(e.row, 15, '');
+            //flexGrid.setCellData(e.row, 15, '');
           }
         }
       });
@@ -691,35 +692,21 @@ export default {
           }
           // レセプト確定カラムを押下
           if (hPage.col == 16) {
-            /*
-            if (ht.target.innerText == '〇') {
-              _self.editReseKaku(hPage.row, '');
-            }
-            */
-            if (ht.target.innerText == '') {
+            let jyougengakukanrikeisan =
+              _self.receptData[hPage.row].jyougengakukanrikeisan;
+            if (_self.receptData[hPage.row].resekakutei == 1) {
               // 上限管理計算の値が●であることの確認
-              let jyougengakukanrikeisan =
-                _self.receptData[hPage.row].jyougengakukanrikeisan;
+              // 空欄を記載
+              if (jyougengakukanrikeisan == 2) {
+                _self.editReseKaku(hPage.row, '');
+              }
+            } else if (ht.target.innerText == '') {
+              // 上限管理計算の値が●であることの確認
+              // 〇を記載
               if (jyougengakukanrikeisan == 2) {
                 _self.editReseKaku(hPage.row, 1);
               }
             }
-
-            if (ht.target.innerText == 'complete') {
-              flexGrid.setCellData(hPage.row, 16, '');
-              _self.editReseKaku(hPage.row, '');
-            }
-            /*
-            if (ht.target.innerText == 'delete') {
-              flexGrid.setCellData(hPage.row, 16, 'complete');
-              // 上限管理計算の値が●であることの確認
-              let jyougengakukanrikeisan =
-                _self.receptData[hPage.row].jyougengakukanrikeisan;
-              if (jyougengakukanrikeisan == '●') {
-                _self.editReseKaku(hPage.row, 'complete');
-              }
-            }
-            */
           }
 
           // 順番列を押下
@@ -753,6 +740,36 @@ export default {
       });
     },
 
+    /**********************
+     * 親コンポーネントの全選択/全解除
+     */
+    parentSelectAll(type) {
+      let mark = '';
+      if (type == 0) mark = '1';
+      for (let i = 0; i < this.receptData.length; i++) {
+        this.receptData[i]['print'] = mark;
+      }
+      this.mainFlexGrid.refresh();
+    },
+    /**********************
+     * 親コンポーネントのレセプト確定全選択/全解除
+     * 2:全選択
+     * 3:全解除
+     */
+    parentDefineAll(type) {
+      for (let i = 0; i < this.receptData.length; i++) {
+        // 上限管理計算が●の時のみ
+        // 確定を全選択
+        if (this.receptData[i].jyougengakukanrikeisan == 2 && type == 2) {
+          this.receptData[i].resekakutei = '1';
+        }
+        // 全解除
+        if (this.receptData[i].jyougengakukanrikeisan == 2 && type == 3) {
+          this.receptData[i].resekakutei = '';
+        }
+        this.mainFlexGrid.refresh();
+      }
+    },
     /**************
      * ヘッダ情報の作成
      */
@@ -782,19 +799,14 @@ export default {
         let text = e.cell.innerText;
         let html = e.cell.innerHTML;
         if (e.panel == flexGrid.columnHeaders) {
-          if (e.col == 5) {
-            classname = 'vertical';
-          }
-          if (e.col == 6) {
-            classname = 'vertical';
-          }
-          if (e.col == 7 && e.row == 1) {
-            classname = 'vertical';
-          }
-          if (e.col == 13) {
-            classname = 'vertical';
-          }
-          if (e.col == 15 || e.col == 16 || e.col == 17) {
+          if (
+            e.col == 6 ||
+            e.col == 13 ||
+            e.col == 15 ||
+            e.col == 16 ||
+            e.col == 17 ||
+            (e.col == 7 && e.row == 1)
+          ) {
             classname = 'vertical';
           }
         }
@@ -807,111 +819,47 @@ export default {
             e.col == 9 ||
             e.col == 10
           ) {
-            classname = 'text-start';
+            e.cell.style.textAlign = 'left';
+          } else if (e.col == 5 || e.col == 11 || e.col == 12) {
+            e.cell.style.textAlign = 'right';
+          } else {
+            e.cell.style.textAlign = 'center';
           }
-          if (e.col <= 5) {
+          if ((e.col <= 5 || _self.receptData[e.row].fixFlag) && e.col < 16) {
             e.cell.style.background = sysConst.COLOR.gridBackground;
-          }
-          if (e.col == 11 || e.col == 12) {
-            classname = 'text-end';
-          }
-        }
-
-        // 固定行データ
-        if (e.panel == flexGrid.cells) {
-          if (e.col <= 5)
-            e.cell.style.background = sysConst.COLOR.gridBackground;
-          if (e.col >= 7 && e.col < 14) {
-            if (_self.receptData[e.row]) {
-              if (_self.receptData[e.row].fixFlag) {
-                e.cell.style.background = sysConst.COLOR.gridBackground;
-                e.cell.style.color = sysConst.COLOR.fontColor;
-              } else {
-                e.cell.style.background = sysConst.COLOR.white;
-                if (e.col >= 8 && e.col < 13) {
-                  e.cell.style.color = sysConst.COLOR.blueTextColor;
-                }
-              }
+            e.cell.style.color = sysConst.COLOR.fontColor;
+          } else {
+            e.cell.style.background = sysConst.COLOR.white;
+            if (e.col >= 8 && e.col < 16) {
+              e.cell.style.color = sysConst.COLOR.blueTextColor;
+            } else {
+              e.cell.style.color = sysConst.COLOR.fontColor;
             }
           }
-          if (e.col == 14 || e.col == 15)
-            e.cell.style.background = sysConst.COLOR.gridBackground;
-        }
-        if (e.panel == flexGrid.columnHeaders) {
-          e.cell.innerHTML =
-            '<div class="text-center w-100 ' +
-            classname +
-            '">' +
-            html +
-            '</div>';
-        }
-
-        if (e.panel == flexGrid.cells) {
-          if (e.col == 5 || e.col == 14) {
-            e.cell.style.textAlign = 'right';
-            e.cell.style.justifyContent = 'right';
-            e.cell.style.alignItems = 'right';
-          }
-          if (e.col == 11 || e.col == 12) {
-            e.cell.style.textAlign = 'right';
-            e.cell.style.justifyContent = 'right';
-            e.cell.style.alignItems = 'right';
-          }
-          if (
-            e.col == 6 ||
-            e.col == 7 ||
-            e.col == 13 ||
-            e.col == 15 ||
-            e.col == 16
-          ) {
-            e.cell.style.textAlign = 'center';
-            e.cell.style.justifyContent = 'center';
-            e.cell.style.alignItems = 'center';
-          }
-          if (e.col == 1 || e.col == 3) {
-            e.cell.style.textAlign = 'center';
-            e.cell.style.justifyContent = 'center';
-          }
-          // if (e.col == 16) {
-          //   if (text == 'complete') {
-          //     e.cell.innerHTML = '<div class="complete">complete</div>';
-          //   } else if (text == 'delete') {
-          //     e.cell.innerHTML = '<div class="delete">delete</div>';
-          //   } else {
-          //     e.cell.innerHTML =
-          //       '<div class="receptKakutei">' + html + '</div>';
-          //   }
-          // }
-
-          if (e.col == 6) {
+          // ●〇の表示
+          if (e.col == 6 || e.col == 17) {
             if (text == 1) {
               html = '〇';
-            }
-            if (text == 2) {
+            } else if (text == 2) {
               html = '●';
             }
-            e.cell.innerHTML = '<div >' + html + '</div>';
+            classname = 'middle';
           }
           if (e.col == 16) {
             if (text == 1) {
               html = '〇';
+              classname = 'middle';
+            } else if (text == 'complete') {
+              html = 'complete';
+              classname = 'complete middle';
             }
-            e.cell.innerHTML = '<div >' + html + '</div>';
           }
         }
 
-        // if (e.panel == flexGrid.cells && e.col == 6) {
-        //   e.cell.innerHTML = '<div "' + classname + '">' + html + '</div>';
-        //   wjCore.setCss(e.cell, {
-        //     display: 'table',
-        //     tableLayout: 'absolute',
-        //     verticalAlign: 'middle',
-        //   });
-        //   wjCore.setCss(e.cell.children[0], {
-        //     display: 'table-cell',
-        //     verticalAlign: 'middle',
-        //   });
-        // }
+        if (classname) {
+          e.cell.innerHTML =
+            '<div class="' + classname + '">' + html + '</div>';
+        }
       });
     },
     /***********
@@ -1212,7 +1160,7 @@ div#recept-jijyougen {
     }
   }
   .wj-flexgrid .wj-cell {
-    display: flex;
+    // display: flex;
     font-size: 12px;
     font-weight: normal;
   }
@@ -1235,7 +1183,10 @@ div#recept-jijyougen {
   .wj-state-selected,
   .wj-state-last-selected {
     color: $font_color !important;
+    background-color: transparent;
+    color: $font_color;
   }
+
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;
@@ -1243,6 +1194,14 @@ div#recept-jijyougen {
     writing-mode: vertical-rl;
     letter-spacing: 0.2em;
     text-align: center;
+  }
+
+  .middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+    height: 100%;
   }
 
   .complete {
