@@ -249,8 +249,8 @@ export default {
             { name: '実績記録票', link: '/JissekiKiroku' },
             { name: '加算項目一覧', link: '/KasanKoumokuIcrn' },
             { name: '請求書', link: '/SeikyuSho' },
-            { name: '受領通知書', link: '/TemporaryPage' },
-            { name: '入退院報告書', link: '/TemporaryPage' },
+            { name: '受領通知書', link: '/JyuryouTsuchisyo' },
+            { name: '入退院報告書', link: '/NyutaiinHokoku' },
           ],
         },
         {

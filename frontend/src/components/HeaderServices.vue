@@ -18,9 +18,22 @@
           <div class="float-right">▼</div></v-btn
         >
       </div>
+
       <div class="month-selection-area">
-        <label>提供月</label>
+        <label v-if="nyutaiinHokokuFlag == true">年度</label>
+        <label v-else>提供月</label>
+        <datepickerYear
+          v-if="nyutaiinHokokuFlag"
+          :language="ja"
+          class="service"
+          :value="defaultYear"
+          v-model="defaultYear"
+          minimum-view="year"
+          format="yyyy年度"
+        />
+
         <v-btn
+          v-else
           @click="inputCalendarClick('teikyo')"
           tile
           outlined
@@ -56,6 +69,7 @@
         >
         <span style="margin-left: 30px" v-if="seikyuflag">
           <label>請求月</label>
+
           <v-btn
             class="pa-1 service"
             :width="160"
@@ -237,6 +251,8 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
+import datepickerYear from 'vuejs-datepicker';
+import { ja } from 'vuejs-datepicker/dist/locale';
 export default {
   props: {
     seikyuflag: { type: Boolean },
@@ -247,8 +263,11 @@ export default {
     confirmRegistButtonFlag: { type: Boolean },
     alertMessageFlag: { type: Boolean },
     seikyushoflag: { type: Boolean },
+    nyutaiinHokokuFlag: { type: Boolean }, // 入退院報告書用
   },
-
+  components: {
+    datepickerYear,
+  },
   data() {
     return {
       year: moment().year(),
@@ -258,11 +277,14 @@ export default {
       picker: '',
       header_dialog: true,
       datepicker_dialog: false,
+      datepickerYear_dialog: false,
       defaultSetting: this.defaultSettings(),
       returndata: '', // 検索ボタンを押下時に選択値を渡す変数
       screenFlag: false, // 検索ボタン押下前にデータエリアにスクリーンを行う
       storage: {},
       isActive: false,
+      ja: ja,
+      defaultYear: moment().year().toString(),
     };
   },
   created: function () {
@@ -511,6 +533,7 @@ export default {
       this.returndata['teikyo_year'] = this.year;
       this.returndata['teikyo_month'] = this.month;
       this.returndata['search_button'] = true;
+      this.returndata['defaultYear'] = moment(this.defaultYear).format('YYYY');
       this.$emit('parent-service-select', this.returndata);
     },
     /**************
@@ -535,7 +558,7 @@ export default {
     //カレンダーボタンの日付遷移
     // 提供月 1:前月 2:翌月
     // 請求月 3:前月 4:翌月
-    calendarClick: function (type) {
+    calendarClick(type) {
       let date = this.year + this.month + '01';
       let seikyu_date = this.seikyu_year + this.seikyu_month + '01';
       if (type == 3) {
@@ -560,9 +583,21 @@ export default {
       } else if (type == 1) {
         this.year = moment(date).subtract(1, 'months').format('YYYY');
         this.month = moment(date).subtract(1, 'months').format('MM');
+        // 入退院報告書の時
+        if (this.nyutaiinHokokuFlag) {
+          this.defaultYear = moment(this.defaultYear)
+            .add(-1, 'year')
+            .format('YYYY');
+        }
       } else if (type == 2) {
         this.year = moment(date).add(1, 'months').format('YYYY');
         this.month = moment(date).add(1, 'months').format('MM');
+        // 入退院報告書の時
+        if (this.nyutaiinHokokuFlag) {
+          this.defaultYear = moment(this.defaultYear)
+            .add(1, 'year')
+            .format('YYYY');
+        }
       }
       //請求月と提供月が同じになった場合
       if (this.year == this.seikyu_year && this.month == this.seikyu_month) {
@@ -598,8 +633,19 @@ export default {
       this.picker = picker;
       this.datepicker_dialog = true;
     },
+    inputCalendarYearClick: function () {
+      //提供月
+      this.datepickerYear_dialog = true;
+    },
     kanryoToggleSwitch: function () {
       this.isActive = !this.isActive;
+    },
+
+    /***************
+     * 年度の取得
+     */
+    getChildYear() {
+      return this.defaultYear;
     },
   },
 };
@@ -632,6 +678,26 @@ export default {
     background-color: $white;
   }
 }
+.service-selection-area,
+.month-selection-area {
+  label {
+    width: 80px !important;
+    display: inline-block;
+    margin-right: 0px !important;
+  }
+  .vdp-datepicker {
+    display: inline-block;
+    input {
+      border-radius: 0px;
+      padding-left: 20px;
+      width: 120px;
+      background: url('@/assets/calender_25px.png') no-repeat right;
+      background-size: 15px 15px;
+      background-position: right 5px center;
+    }
+  }
+}
+
 #screen_dialog {
   position: fixed;
   top: 0;
@@ -659,6 +725,8 @@ export default {
   }
 }
 .service {
+  background-color: $white;
+
   &.v-btn {
     border: 1px solid $light-gray;
     background-color: $white;

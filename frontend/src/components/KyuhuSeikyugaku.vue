@@ -45,44 +45,84 @@ export default {
      * セルデータの取得
      */
     getServiceData: function () {
-      let serviceSmpData = [];
+      // let serviceSmpData = [];
       let serviceData = [];
       if (this.$parent.$data.gridReloadFlag == true) {
         // ユーザー選択時serviceDataに値をセット
-        serviceSmpData.push(
+        serviceData.push(
           {
-            smpTeikyoService:  '施設入所支援', //提供サービス
-            smpServicecode: '32',// サービス種類コード
-            smpServiceriyounissu: '31',// 利用日数
-          },
-          {
-            smpTeikyoService:  '生活介護', //提供サービス
-            smpServicecode: '22',// サービス種類コード
-            smpServiceriyounissu: '31',// 利用日数
-          }
-        );
-        for (let i = 0; i < serviceSmpData.length; i++) {
-          serviceData.push({
-            uid: i,
-            teikyoService: serviceSmpData[i].smpTeikyoService, //提供サービス
-            servicecode: serviceSmpData[i].smpServicecode,// サービス種類コード
-            serviceriyounissu: serviceSmpData[i].smpServiceriyounissu,// 利用日数
-            kyuhutanisu: Math.floor(Math.random() * 100000),
+            teikyoService:  '施設入所支援', //提供サービス
+            servicecode: '32',// サービス種類コード
+            serviceriyounissu: '31',// 利用日数
+            kyuhutanisu: '11,360',
             tanisutanka: "11.32",
-            souhiyougaku: Math.floor(Math.random() * 1000000),
-            itiwarisoutougaku: Math.floor(Math.random() * 10000),
-            riyousyahutan2: Math.floor(Math.random() * 10000),
+            souhiyougaku: '128,595',
+            itiwarisoutougaku: '12,859',
+          riyousyahutan2: '12,859',
             jyougengetugaku:"9,300",
             jigyousyagenmengaku: "",
             genmenriyousyahutan: "",
             tyouseigohutan: "9,300",
             jyougenriyousyahutangaku: "",
             ketteiriyousyahutangaku: "9,300",
-            kyuhuhi: Math.floor(Math.random() * 100000),
+            kyuhuhi: '119,295',
             tokubetutaisakuhi: "",
             zititaizyoseibun: "",
-          });
-        }
+          },
+          {
+            teikyoService:  '生活介護', //提供サービス
+            servicecode: '22',// サービス種類コード
+            serviceriyounissu: '31',// 利用日数
+            kyuhutanisu: '33,432',
+            tanisutanka: "11.22",
+            souhiyougaku: '375,107',
+            itiwarisoutougaku: '37,510',
+            riyousyahutan2: '37,510',
+            jyougengetugaku:"9,300",
+            jigyousyagenmengaku: "",
+            genmenriyousyahutan: "",
+            tyouseigohutan: "0",
+            jyougenriyousyahutangaku: "",
+            ketteiriyousyahutangaku: "0",
+            kyuhuhi: '375,107',
+            tokubetutaisakuhi: "",
+            zititaizyoseibun: "",
+          }
+        );
+        // serviceSmpData.push(
+        //   {
+        //     smpTeikyoService:  '施設入所支援', //提供サービス
+        //     smpServicecode: '32',// サービス種類コード
+        //     smpServiceriyounissu: '31',// 利用日数
+        //   },
+        //   {
+        //     smpTeikyoService:  '生活介護', //提供サービス
+        //     smpServicecode: '22',// サービス種類コード
+        //     smpServiceriyounissu: '31',// 利用日数
+        //   }
+        // );
+        // for (let i = 0; i < serviceSmpData.length; i++) {
+        //   serviceData.push({
+        //     uid: i,
+        //     teikyoService: serviceSmpData[i].smpTeikyoService, //提供サービス
+        //     servicecode: serviceSmpData[i].smpServicecode,// サービス種類コード
+        //     serviceriyounissu: serviceSmpData[i].smpServiceriyounissu,// 利用日数
+        //     kyuhutanisu: Math.floor(Math.random() * 100000),
+        //     tanisutanka: "11.32",
+        //     souhiyougaku: Math.floor(Math.random() * 1000000),
+        //     itiwarisoutougaku: Math.floor(Math.random() * 10000),
+        //     riyousyahutan2: Math.floor(Math.random() * 10000),
+        //     jyougengetugaku:"9,300",
+        //     jigyousyagenmengaku: "",
+        //     genmenriyousyahutan: "",
+        //     tyouseigohutan: "9,300",
+        //     jyougenriyousyahutangaku: "",
+        //     ketteiriyousyahutangaku: "9,300",
+        //     kyuhuhi: Math.floor(Math.random() * 100000),
+        //     tokubetutaisakuhi: "",
+        //     zititaizyoseibun: "",
+        //   });
+        // }
       }
       return serviceData;
     },
@@ -188,20 +228,34 @@ export default {
         flexGrid.setCellData(15, ((i + 1)  * 3 - 1) , serviceGridData[i]['tokubetutaisakuhi']);
         flexGrid.setCellData(16, ((i + 1)  * 3 - 1) , serviceGridData[i]['zititaizyoseibun']);
         // 合計欄
-        flexGrid.setCellData(3,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(4,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(5,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(6,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(7,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(8,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(9,   cellcount - 1 ,  Math.random() * 10000,);
-        flexGrid.setCellData(10,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(11,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(12,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(13,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(14,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(15,  cellcount - 1 , Math.random() * 10000,);
-        flexGrid.setCellData(16,  cellcount - 1 , Math.random() * 10000,);
+        flexGrid.setCellData(3,   cellcount - 1 , '44,792');
+        flexGrid.setCellData(4,   cellcount - 1 , '');
+        flexGrid.setCellData(5,   cellcount - 1 , '503,702');
+        flexGrid.setCellData(6,   cellcount - 1 , '');
+        flexGrid.setCellData(7,   cellcount - 1 , '');
+        flexGrid.setCellData(8,   cellcount - 1 , '18,600');
+        flexGrid.setCellData(9,   cellcount - 1 , '');
+        flexGrid.setCellData(10,  cellcount - 1 , '');
+        flexGrid.setCellData(11,  cellcount - 1 , '9,300');
+        flexGrid.setCellData(12,  cellcount - 1 , '');
+        flexGrid.setCellData(13,  cellcount - 1 , '9,300');
+        flexGrid.setCellData(14,  cellcount - 1 , '494,402');
+        flexGrid.setCellData(15,  cellcount - 1 , '');
+        flexGrid.setCellData(16,  cellcount - 1 , '');
+        // flexGrid.setCellData(3,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(4,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(5,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(6,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(7,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(8,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(9,   cellcount - 1 ,  Math.random() * 10000,);
+        // flexGrid.setCellData(10,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(11,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(12,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(13,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(14,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(15,  cellcount - 1 , Math.random() * 10000,);
+        // flexGrid.setCellData(16,  cellcount - 1 , Math.random() * 10000,);
       }
       // セルの結合/////////////////////////////////////////////////////////////////
       let mm = new wjGrid.MergeManager(flexGrid);

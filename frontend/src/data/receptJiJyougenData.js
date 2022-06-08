@@ -118,7 +118,7 @@ export function getReceptJijyogenData() {
       kana: 'ケンジトウケイ',
       jyougenicon: '自',
       jyougengakuJigyosyo: 'ひまわり園',
-      riyosyafutanGetsugaku: 37200,
+      riyosyafutanGetsugaku: 9300,
       jyougengakukanrikeisan: '',
       koban: i + 1,
       jigyosyobango: array1[i],

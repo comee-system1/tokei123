@@ -32,16 +32,16 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 >
-                <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column3" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column4" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column5" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column6" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column7" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column8" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column9" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column0"  :width="250" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column1"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column2"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column3"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column4"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column5"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column6"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column7"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column8"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column9"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                 <wj-flex-grid-column binding="Column10" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
@@ -86,16 +86,16 @@
                 :allowResizing="false"
                 :allowSorting="false"
                 >
-                <wj-flex-grid-column binding="Column0" :width="250" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column1" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column2" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column3" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column4" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column5" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column6" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column7" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column8" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
-                <wj-flex-grid-column binding="Column9" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column0"  :width="250" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column1"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column2"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column3"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column4"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column5"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column6"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column7"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column8"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
+                <wj-flex-grid-column binding="Column9"  :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
                 <wj-flex-grid-column binding="Column10" :width="'1*'" :wordWrap="true"></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
@@ -103,11 +103,11 @@
               <v-row no-gutters justify="end">
                 <v-col cols="12">
                   <wj-flex-grid
-                    id="tiikikubunGrid"
-                    :itemsSource="tiikikubunGridData"
+                    id="chiikikubunGrid"
+                    :itemsSource="chiikikubunGridData"
                     :headersVisibility="'None'"
                     :autoGenerateColumns="false"
-                    :initialized="onInitializedTiikikubunGrid"
+                    :initialized="onInitializedChiikikubunGrid"
                     :allowAddNew="false"
                     :allowDelete="false"
                     :allowDragging="false"
@@ -173,7 +173,7 @@ export default {
       kyuhujukyuyaGridData:this.getKyuhujukyuyaGridData(),
       styousonGridData:this.getStyousonGridData(),
       jigyousyaGridData:this.getJigyousyaGridData(), 
-      tiikikubunGridData:this.getTiikikubunGridData(),
+      chiikikubunGridData:this.getChiikikubunGridData(),
       // タブの制御Flag
       ServiceMeisaiFlag: true, // ServiceMeisaiFlagの初期表示状態
       SeikyugakuSyukeiFlag: false, // seikyugakuSyukeiFlagの初期表示状態
@@ -291,7 +291,7 @@ export default {
     getStyousonGridData:function(){
       let styousonGridData = [];
       if (this.gridReloadFlag != true) {
-      // 初回空データ表示
+        // 初回空データ表示
         styousonGridData.push(
           {
             // 市町村番号
@@ -428,7 +428,7 @@ export default {
       }
       return jigyousyaGridData;
     },
-    onInitializedTiikikubunGrid:function(flexGrid){
+    onInitializedChiikikubunGrid:function(flexGrid){
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -489,10 +489,10 @@ export default {
         }
       }
     },
-    getTiikikubunGridData:function(){
-      let tiikikubunGridData = [];
+    getChiikikubunGridData:function(){
+      let chiikikubunGridData = [];
       if (this.gridReloadFlag != true) {
-        tiikikubunGridData.push(
+        chiikikubunGridData.push(
           {
             Column1: "地域区分",
             Column2: '',
@@ -503,11 +503,11 @@ export default {
           }
         )
       } else {
-        let tiikikubun = "１級地";
-        tiikikubunGridData.push(
+        let chiikikubun = "１級地";
+        chiikikubunGridData.push(
           {
             Column1: "地域区分",
-            Column2: tiikikubun,
+            Column2: chiikikubun,
           },
           {
             Column0: "就労継続支援Ａ型事業者負担減免措置実施",
@@ -515,7 +515,7 @@ export default {
           }
         )
       }
-      return tiikikubunGridData;
+      return chiikikubunGridData;
     },
     // 左メニューで作成されたユーザ一覧の取得
     getUserListData(data) {
@@ -559,7 +559,7 @@ export default {
       // 指定事業所番号グリッド
       this.jigyousyaGridData = this.getJigyousyaGridData();
       // 地域区分グリッド
-      this.tiikikubunGridData = this.getTiikikubunGridData();
+      this.chiikikubunGridData = this.getChiikikubunGridData();
     },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
@@ -636,7 +636,7 @@ export default {
     border: none;
   }
 }
-#tiikikubunGrid{
+#chiikikubunGrid{
   &.wj-content {
     border: none;
   }

@@ -527,9 +527,9 @@ export default {
             s.paddingRight = '4px';
           }
           // セルと大枠の罫線が重複してしまうのでセルの罫線を消す
-          if(r == griddataCount-1) {
-            s.borderBottom = 'none'
-          }
+          // if(r == griddataCount-1) {
+          //   s.borderBottom = 'none'
+          // }
           if(c == 10) {
             s.borderRight = 'none'
           }

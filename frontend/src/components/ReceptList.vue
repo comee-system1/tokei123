@@ -290,7 +290,7 @@ export default {
           }
 
           if (e.col == 2) {
-            classname = 'text-start';
+            classname = 'text-start pl-1';
           }
 
           // レセプト集計カラムの設定
@@ -360,11 +360,11 @@ export default {
           if (e.col == 0) {
             if (text == 1) {
               text = '!';
-              classname = 'red--text font-weight-black';
+              classname = 'red--text font-weight-black caution';
             }
           }
           if (e.col == 1 || e.col == 3 || e.col == 5) {
-            classname = 'text-start';
+            classname = 'text-start pl-1';
           }
           if (e.col == 6) {
             classname = 'text-end';
@@ -713,7 +713,7 @@ export default {
           }
         }
       }
-      console.log(array);
+
       let select = this.alphaSelect;
       let get = [];
       array.forEach(function (value) {
@@ -804,7 +804,7 @@ export default {
 @import '@/assets/scss/common.scss';
 
 div#recept-list {
-  width: 1266px;
+  min-width: 1266px;
   div#grid_recept {
     &.wj-content {
       border-radius: 4px 0px 0px 4px;
@@ -904,6 +904,13 @@ div#recept-list {
       text-indent: -9999px;
       background-position: center;
       background-repeat: no-repeat;
+    }
+    .caution {
+      background-image: url('@/assets/error_20px.png');
+      text-indent: -9999px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 15px 15px;
     }
   }
 }

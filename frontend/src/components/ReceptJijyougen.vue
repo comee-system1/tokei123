@@ -55,7 +55,6 @@
         :binding="'riyosyafutanGetsugaku'"
         :header="'利用者負担\n上限月額'"
         :multiLine="true"
-        align="right"
         format="n0"
         :width="60"
         :isReadOnly="true"
@@ -507,7 +506,7 @@ export default {
 
       // 確定解除した際の背景色を白に戻す配列
       for (let i = jBrow.first; i < jBrow.last; i++) {
-        this.mainFlexGrid.setCellData(i, 16, code);
+        // this.mainFlexGrid.setCellData(i, 16, code);
         this.receptData[i]['resekakutei'] = code;
         if (code == '') {
           this.receptData[i]['complateFlag'] = false;
@@ -519,6 +518,7 @@ export default {
           this.receptData[i]['complateFlag'] = true;
         }
       }
+      this.mainFlexGrid.refresh();
     },
     /*********************
      * データを変更した際に上限額管理計算に〇を表示
@@ -532,8 +532,8 @@ export default {
       //受給者番号が持つ行数の取得
       let jBrow = this.getJyukyusyaBangoRow(jB);
       for (let i = jBrow.first; i < jBrow.last; i++) {
-        this.mainFlexGrid.setCellData(i, 6, '〇');
-        this.receptData[i]['jyougengakukanrikeisan'] = '〇';
+        //this.mainFlexGrid.setCellData(i, 6, '〇');
+        this.receptData[i]['jyougengakukanrikeisan'] = 1;
       }
     },
     /*************
@@ -695,16 +695,16 @@ export default {
             if (ht.target.innerText == '〇') {
               _self.editReseKaku(hPage.row, '');
             }
-
+            */
             if (ht.target.innerText == '') {
               // 上限管理計算の値が●であることの確認
               let jyougengakukanrikeisan =
                 _self.receptData[hPage.row].jyougengakukanrikeisan;
-              if (jyougengakukanrikeisan == '●') {
-                _self.editReseKaku(hPage.row, '〇');
+              if (jyougengakukanrikeisan == 2) {
+                _self.editReseKaku(hPage.row, 1);
               }
             }
-            */
+
             if (ht.target.innerText == 'complete') {
               flexGrid.setCellData(hPage.row, 16, '');
               _self.editReseKaku(hPage.row, '');
@@ -783,7 +783,7 @@ export default {
         let html = e.cell.innerHTML;
         if (e.panel == flexGrid.columnHeaders) {
           if (e.col == 5) {
-            classname = 'vertical pr-2';
+            classname = 'vertical';
           }
           if (e.col == 6) {
             classname = 'vertical';
@@ -848,28 +848,55 @@ export default {
 
         if (e.panel == flexGrid.cells) {
           if (e.col == 5 || e.col == 14) {
-            e.cell.innerHTML =
-              '<div style="text-align:right;width:100%;">' + html + '</div>';
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
           }
           if (e.col == 11 || e.col == 12) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
           }
-          if (e.col == 6 || e.col == 7 || e.col == 13) {
+          if (
+            e.col == 6 ||
+            e.col == 7 ||
+            e.col == 13 ||
+            e.col == 15 ||
+            e.col == 16
+          ) {
             e.cell.style.textAlign = 'center';
             e.cell.style.justifyContent = 'center';
             e.cell.style.alignItems = 'center';
           }
-          if (e.col == 16) {
-            if (text == 'complete') {
-              e.cell.innerHTML = '<div class="complete">complete</div>';
-            } else if (text == 'delete') {
-              e.cell.innerHTML = '<div class="delete">delete</div>';
-            } else {
-              e.cell.innerHTML =
-                '<div class="receptKakutei">' + html + '</div>';
+          if (e.col == 1 || e.col == 3) {
+            e.cell.style.textAlign = 'center';
+            e.cell.style.justifyContent = 'center';
+          }
+          // if (e.col == 16) {
+          //   if (text == 'complete') {
+          //     e.cell.innerHTML = '<div class="complete">complete</div>';
+          //   } else if (text == 'delete') {
+          //     e.cell.innerHTML = '<div class="delete">delete</div>';
+          //   } else {
+          //     e.cell.innerHTML =
+          //       '<div class="receptKakutei">' + html + '</div>';
+          //   }
+          // }
+
+          if (e.col == 6) {
+            if (text == 1) {
+              html = '〇';
             }
+            if (text == 2) {
+              html = '●';
+            }
+            e.cell.innerHTML = '<div >' + html + '</div>';
+          }
+          if (e.col == 16) {
+            if (text == 1) {
+              html = '〇';
+            }
+            e.cell.innerHTML = '<div >' + html + '</div>';
           }
         }
 
@@ -887,7 +914,23 @@ export default {
         // }
       });
     },
+    /***********
+     * 親コンポーネントの上限管理計算ボタン
+     */
+    parentReceptCalc() {
+      // apiに接続して計算結果を得るので、
+      // 適当に出力する
+      for (let i = 0; i < this.receptData.length; i++) {
+        if (this.receptData[i]['jyougengakukanrikeisan'] == 1) {
+          // 1→2に変更
+          this.receptData[i]['jyougengakukanrikeisan'] = 2;
+          this.receptData[i]['kanrikekkafutangaku'] = 9300 + i;
+          this.receptData[i]['kanrikekka'] = 1;
+        }
+      }
 
+      this.mainFlexGrid.refresh();
+    },
     /********************
      * マージ作成用の配列を作成
      */
