@@ -83,7 +83,8 @@
               outlined
               v-for="(n, k) in alphabet"
               :key="n"
-              :width="30"
+              :width="25"
+              :height="25"
               p-0
               style="min-width: auto"
               @click="onAlphabet(k)"

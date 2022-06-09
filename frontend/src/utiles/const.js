@@ -23,6 +23,7 @@ const COLOR = {
     HissuMarkColor:'#ce3e47',
     basicGridColor:'#1f7872',
     blueTextColor:'#2196F3',
+    separateBorderColor:'2px solid #000',
 
 };
 

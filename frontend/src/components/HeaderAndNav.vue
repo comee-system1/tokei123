@@ -6,13 +6,13 @@
       app
       v-model="drawer"
       class="grey lighten-3"
-      width="280px"
+      width="300px"
       temporary
       style="z-index: 11"
     >
       <v-list-item>
         <p class="kenbunroku-logo">
-          <img src="../assets/HukushiKenbunrokuLogo.png" alt="" />
+          <img src="../assets/HukushiKenbunrokuLogo_black.png" alt="" />
         </p>
       </v-list-item>
       <v-list dense>
@@ -24,6 +24,10 @@
             :key="nav_list.name"
             class="nav-list-name"
           >
+            <v-list-item-icon>
+              <v-icon v-if="nav_list.mdi" v-text="nav_list.src"></v-icon>
+              <v-img v-else :src="nav_list.src" />
+            </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title class="text-subtitle-2 pl-2">
                 {{ nav_list.name }}
@@ -38,6 +42,10 @@
           >
             <template v-slot:activator>
               <!-- 下に階層を持つメニューの場合はクリックでメニューを展開 -->
+              <v-list-item-icon>
+                <v-icon v-if="nav_list.mdi" v-text="nav_list.src"></v-icon>
+                <v-img v-else :src="nav_list.src" />
+              </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title class="text-subtitle-2 pl-2">{{
                   nav_list.name
@@ -52,7 +60,10 @@
               class="p-0"
             >
               <v-list-item-content>
-                <v-list-item-title>{{ list.name }}</v-list-item-title>
+                <v-list-item-title v-if="list.link"
+                  >・ {{ list.name }}</v-list-item-title
+                >
+                <v-subheader v-else>{{ list.name }}</v-subheader>
 
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
@@ -61,7 +72,7 @@
                   class="sublists"
                 >
                   <v-list-item-content>
-                    <v-list-item-title>{{ sublist.name }}</v-list-item-title>
+                    <v-list-item-title>・ {{ sublist.name }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-content>
@@ -193,9 +204,16 @@ export default {
         { title: 'ログアウト' },
       ],
       nav_lists: [
-        { name: '共通掲示板', link: '/TemporaryPage' },
+        {
+          name: '共通掲示板',
+          mdi: true,
+          src: 'mdi-clipboard-edit-outline',
+          link: '/TemporaryPage',
+        },
         {
           name: '事業所情報',
+          mdi: true,
+          src: 'mdi-home-city-outline',
           lists: [
             { name: '基本事業者', link: '/TemporaryPage' },
             { name: 'サービス提供事業所', link: '/TemporaryPage' },
@@ -203,6 +221,8 @@ export default {
         },
         {
           name: '利用者情報',
+          mdi: true,
+          src: 'mdi-account-group-outline',
           lists: [
             { name: '基本台帳登録', link: '/TemporaryPage' },
             { name: '受給者証登録', link: '/JyukyuTouroku' },
@@ -210,6 +230,8 @@ export default {
         },
         {
           name: '入所レセプト請求',
+          mdi: false,
+          src: require('@/assets/nyusyo_seikyu.png'),
           lists: [
             { name: '施設体制確認', link: '/ShisetsuTaisei' },
             { name: '利用者受給者証一覧', link: '/JyukyuIcrn' },
@@ -255,6 +277,8 @@ export default {
         },
         {
           name: 'グループホームレセプト請求',
+          mdi: false,
+          src: require('@/assets/grouphome_seikyu.png'),
           lists: [
             { name: '施設体制確認', link: '/TemporaryPage' },
             { name: '受給者証情報確認', link: '/TemporaryPage' },
@@ -264,6 +288,8 @@ export default {
         },
         {
           name: '相談支援レセプト請求',
+          mdi: false,
+          src: require('@/assets/soudan_seikyu.png'),
           lists: [
             { name: '施設体制確認', link: '/TemporaryPage' },
             { name: '受給者証情報確認', link: '/TemporaryPage' },
@@ -308,7 +334,7 @@ export default {
 @import '@/assets/scss/common.scss';
 div#headerAndNav {
   .nav-list-name {
-    border-top: 1px solid #808080;
+    border: none;
   }
 
   .kenbunroku-logo {
@@ -318,6 +344,13 @@ div#headerAndNav {
 
   .v-toolbar__title {
     font-size: 15px;
+  }
+  .v-subheader {
+    color: $font_color;
+    font-size: 14px;
+    font-family: 'メイリオ';
+    font-weight: bold;
+    height: 20px;
   }
   // .v-list .v-list-item--active .v-list-item__title {
   //   color: white;
@@ -343,6 +376,14 @@ div#headerAndNav {
   }
   .v-list-item--active {
     color: #1976d2;
+    > .v-list-item__icon {
+      // グレーを青色に変更
+      filter: invert(8%) sepia(99%) saturate(7044%) hue-rotate(185deg)
+        brightness(100%) contrast(145%);
+    }
+  }
+  .v-list-item__icon {
+    margin: auto 4px;
   }
   .coditionbtn {
     margin-left: 10px;

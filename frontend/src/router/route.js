@@ -7,6 +7,7 @@ import KyuhuMeisaiIcrn from '../views/KyuhuMeisaiIcrn.vue'
 import SeikyuSho from '../views/SeikyuSho.vue'
 import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
+import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
@@ -60,6 +61,11 @@ const routes = [
         path:'/TemporaryPage',
         name:'仮のページ',
         component: TemporaryPage
+    },
+    {
+        path:'/ApiTemporaryPage',
+        name:'API仮のページ',
+        component: ApiTemporaryPage
     },
     {
         path:'/KobetsuRiyouTouroku',

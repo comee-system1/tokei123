@@ -60,21 +60,34 @@ export default {
       alphaSelect: 0, // アルファベット選択の初期
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterTextJyogen: { jyougenkanrijiKey: 0, jyougenkanriji: '全員' }, // 検索項目
+      serviceWidth: '', // 提供サービスのタイトル幅
     };
   },
   components: {},
-  mounted() {
-    this.handleResize();
-  },
   created() {
     window.addEventListener('resize', this.handleResize);
     this.receptData = this.getData();
+  },
+  beforeDestroy() {
+    window.addEventListener('resize', this.handleResize);
   },
   methods: {
     /*********************
      * 画面リサイズの際の表示調整
      */
+    teikyoServiceTitle() {
+      let grid_syukei =
+        document.getElementById('grid_syukei').getBoundingClientRect().left -
+        400;
+      return grid_syukei;
+    },
     handleResize() {
+      let grid_syukei =
+        document.getElementById('grid_syukei').getBoundingClientRect().left -
+        672;
+
+      this.serviceWidth = grid_syukei;
+
       let height = window.innerHeight;
       let ht = 54;
       if (height > 800) {
@@ -100,6 +113,7 @@ export default {
       this.createCellFormat(flexGrid);
 
       this.edittingCell(flexGrid);
+      this.serviceWidth = this.teikyoServiceTitle();
     },
 
     /********************
@@ -270,6 +284,14 @@ export default {
             classname = 'vertical';
           }
         }
+        if (e.col == 0) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+          e.cell.style.borderRight = sysConst.COLOR.separateBorderColor;
+        }
+        if (e.col == 3) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+        }
+
         if (e.panel != flexGrid.columnHeaders) {
           if (e.col > 0 && e.col < 4) {
             e.cell.style.background = sysConst.COLOR.gridBackground;
@@ -349,12 +371,26 @@ export default {
             basicPos++;
           }
           if (e.row == 0 && e.col == _self.basicPos - 1) {
-            text = '<div class="pl-3">' + text + '</div>';
+            text =
+              '<div id="servicePadding" style="width:' +
+              _self.serviceWidth +
+              'px;"><span>' +
+              text +
+              '</span></div>';
           }
           if (e.col == 0 && e.row == 1) {
             classname = 'vertical';
           }
         }
+
+        if (e.col == 1) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+        }
+
+        if (e.col == 7) {
+          e.cell.style.borderRight = sysConst.COLOR.separateBorderColor;
+        }
+
         if (e.panel != flexGrid.columnHeaders) {
           e.cell.style.background = sysConst.COLOR.gridBackground;
           if (e.col == 0) {

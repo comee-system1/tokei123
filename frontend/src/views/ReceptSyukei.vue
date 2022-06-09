@@ -25,7 +25,6 @@
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
               header="全員"
-              style="width: 270px"
             ></wj-menu>
 
             <label class="ml-1" v-if="TajyougenkanriJimsyoFlag"
@@ -43,7 +42,6 @@
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
               header="指定なし"
-              style="width: 270px"
             >
             </wj-menu>
 
@@ -56,10 +54,9 @@
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
               header="指定なし"
-              style="width: 270px"
             ></wj-menu>
 
-            <v-btn class="ml-2" small>検索</v-btn>
+            <v-btn class="ml-2" height="25" small>検索</v-btn>
           </v-row>
           <v-row class="mt-1" no-gutters>
             <label>ソート</label>
@@ -69,7 +66,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="sort(1)"
               >
                 カナ
@@ -79,7 +76,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="sort(2)"
               >
                 コード
@@ -89,7 +86,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="sort(3)"
               >
                 受給者番号
@@ -106,7 +103,6 @@
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
               header="全員"
-              style="width: 270px"
             ></wj-menu>
             <v-btn-toggle
               class="flex-wrap ml-1"
@@ -118,7 +114,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="filter(1)"
               >
                 全員
@@ -128,7 +124,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="filter(2)"
               >
                 上限管理済
@@ -138,7 +134,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px"
+                style="width: 90px; height: 25px"
                 @click="filter(3)"
               >
                 未処理
@@ -190,7 +186,8 @@
               outlined
               v-for="(n, k) in alphabet"
               :key="n"
-              :width="30"
+              :width="25"
+              :height="25"
               p-0
               style="min-width: auto"
               @click="onAlphabet(k)"
@@ -213,7 +210,7 @@
           <wj-menu
             :header="'全選択/全解除'"
             :itemClicked="onselectedIndexChanged"
-            style="width: auto"
+            class="customCombobox customComboboxAuto"
           >
             <wj-menu-item>
               <b v-if="receptFlag">集計を全選択</b>
@@ -282,9 +279,9 @@ export default {
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
 
-      receptFlag: false, // receptの初期表示状態
+      receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
@@ -613,6 +610,15 @@ div#tajyougen {
   }
 }
 div.customCombobox {
+  position: relative;
+  width: 270px !important;
+  height: 25px !important;
+  &.customCombobox {
+    width: 160px !important;
+    div {
+      text-align: left;
+    }
+  }
   .wj-btn.wj-btn-default {
     border-left: none !important;
   }
@@ -621,6 +627,22 @@ div.customCombobox {
   }
   &:focus {
     background-color: #fff;
+  }
+  div * {
+    height: 21px !important;
+    padding: 0;
+    span {
+      height: 21px !important;
+      margin-top: 8px;
+    }
+    &.wj-form-control {
+      position: absolute;
+      top: -3px;
+      width: 100%;
+    }
+  }
+  input {
+    height: 25px !important;
   }
 }
 </style>
