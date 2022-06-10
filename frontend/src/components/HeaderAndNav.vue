@@ -94,7 +94,7 @@
         elevation="0"
         height="100%"
       >
-        <label style="padding-top: 2px">日付</label>
+        <label style="padding-top: 2px; min-width: 35px">日付</label>
         <v-btn
           @click="inputCalendarClick()"
           tile
@@ -273,6 +273,7 @@ export default {
             { name: '請求書', link: '/SeikyuSho' },
             { name: '受領通知書', link: '/JyuryouTsuchisyo' },
             { name: '入退院報告書', link: '/NyutaiinHokoku' },
+            { name: '年間利用日数一覧', link: '/NenkanRiyouNissuIcrn' },
           ],
         },
         {

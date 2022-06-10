@@ -11,9 +11,10 @@ import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
-import NyutaiinHokoku from '../views/NyutaiinHokoku.vue'
-import JyukyuTouroku from '../../../../SIHMAIN/frontend/src/views/JyukyuTouroku.vue'
 import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
+import NyutaiinHokoku from '../views/NyutaiinHokoku.vue'
+import NenkanRiyouNissuIcrn from '../views/NenkanRiyouNissuIcrn.vue'
+import JyukyuTouroku from '../../../../SIHMAIN/frontend/src/views/JyukyuTouroku.vue'
 
 Vue.use(VueRouter)
 const routes = [
@@ -78,14 +79,19 @@ const routes = [
         component: KasanKoumokuIcrn
     },
     {
+        path:'/JyuryouTsuchisyo',
+        name:'受領通知書',
+        component: JyuryouTsuchisyo
+    },
+    {
         path:'/NyutaiinHokoku',
         name:'入退院報告書',
         component: NyutaiinHokoku
     },
     {
-        path:'/JyuryouTsuchisyo',
-        name:'受領通知書',
-        component: JyuryouTsuchisyo
+        path:'/NenkanRiyouNissuIcrn',
+        name:'年間利用日数一覧',
+        component: NenkanRiyouNissuIcrn
     },
 ]
 

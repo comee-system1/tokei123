@@ -20,10 +20,10 @@
       </div>
 
       <div class="month-selection-area">
-        <label v-if="nyutaiinHokokuFlag == true">年度</label>
+        <label v-if="nenkanRiyouNissuFlag == true">年度</label>
         <label v-else>提供月</label>
         <datepickerYear
-          v-if="nyutaiinHokokuFlag"
+          v-if="nenkanRiyouNissuFlag"
           :language="ja"
           class="service"
           :value="defaultYear"
@@ -144,18 +144,16 @@
         style="position: absolute; top: 25%; right: 10px; width: 200px"
         class="mt-n3"
       >
-        <v-col class="ml-5 text-end" cols="1*">
+        <v-col class="ml-5 text-end" cols="1*"
+          v-if="confirmRegistButtonFlag">
           <v-btn
-            v-if="confirmRegistButtonFlag"
-            color="cyan darken-3"
             class="white--text registButton"
             >確定登録</v-btn
           >
         </v-col>
-        <v-col class="ml-5 text-end" cols="1*">
+        <v-col class="ml-5 text-end" cols="1*"
+          v-if="registButtonFlag">
           <v-btn
-            v-if="registButtonFlag"
-            color="cyan darken-3"
             class="white--text registButton"
             >登録</v-btn
           >
@@ -263,7 +261,7 @@ export default {
     confirmRegistButtonFlag: { type: Boolean },
     alertMessageFlag: { type: Boolean },
     seikyushoflag: { type: Boolean },
-    nyutaiinHokokuFlag: { type: Boolean }, // 入退院報告書用
+    nenkanRiyouNissuFlag: { type: Boolean }, // 入退院報告書用
   },
   components: {
     datepickerYear,
@@ -584,7 +582,7 @@ export default {
         this.year = moment(date).subtract(1, 'months').format('YYYY');
         this.month = moment(date).subtract(1, 'months').format('MM');
         // 入退院報告書の時
-        if (this.nyutaiinHokokuFlag) {
+        if (this.nenkanRiyouNissuFlag) {
           this.defaultYear = moment(this.defaultYear)
             .add(-1, 'year')
             .format('YYYY');
@@ -593,7 +591,7 @@ export default {
         this.year = moment(date).add(1, 'months').format('YYYY');
         this.month = moment(date).add(1, 'months').format('MM');
         // 入退院報告書の時
-        if (this.nyutaiinHokokuFlag) {
+        if (this.nenkanRiyouNissuFlag) {
           this.defaultYear = moment(this.defaultYear)
             .add(1, 'year')
             .format('YYYY');
@@ -790,10 +788,11 @@ export default {
   width: auto;
 }
 .registButton {
-  background-image: url('../assets/pen_20px.png');
   background-size: 30px 30px;
   background-repeat: no-repeat;
   background-position: 50% 50%;
+  background-color: #027eb0 !important;
+  width: 94.25px;
 }
 
 .seikyusho-status {

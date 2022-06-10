@@ -856,6 +856,14 @@ export default {
           }
         }
 
+        if (e.col == 6 || e.col == 13) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+          e.cell.style.borderRight = sysConst.COLOR.separateBorderColor;
+        }
+        if (e.col == 16) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+        }
+
         if (classname) {
           e.cell.innerHTML =
             '<div class="' + classname + '">' + html + '</div>';

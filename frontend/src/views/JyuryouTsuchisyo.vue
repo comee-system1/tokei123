@@ -123,7 +123,7 @@
               tile
               outlined
               height="25"
-              >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubis_date }}日
+              >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
               <div class="float-right">
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
@@ -133,7 +133,7 @@
               color="white"
               class="pa-0 ml-1"
               x-small
-              @click="calendarClick(1)"
+              @click="calendarClick(3)"
               height="100%"
               style="min-width: auto; height: 30px"
               tile
@@ -146,7 +146,7 @@
               class="pa-0 ml-1"
               height="100%"
               style="min-width: auto; height: 30px"
-              @click="calendarClick(2)"
+              @click="calendarClick(4)"
               tile
               ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
             >
@@ -298,14 +298,14 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'juryoubui'"
+            :binding="'juryoubi'"
             :header="'受領日'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'insatsu'"
+            :binding="'insatsubi'"
             :header="'印刷日'"
             align="center"
             width="2*"
@@ -333,7 +333,6 @@ import sysConst from '@/utiles/const';
 
 const riyosyaCombo = [];
 const shityosonCombo = [];
-const taServiceCombo = [];
 const alphabet = [
   '全',
   'ア',
@@ -352,14 +351,13 @@ export default {
     return {
       insatsubi_year: moment().add('days', 2).startOf('days').format('YYYY'),
       insatsubi_month: moment().add('days', 2).startOf('days').format('MM'),
-      insatsubis_date: moment().add('days', 2).startOf('days').format('DD'),
+      insatsubi_date: moment().add('days', 2).startOf('days').format('DD'),
       picker: '',
       datepicker_dialog: false,
       header_dialog: true,
       alphabet: alphabet,
       riyosyaCombo: riyosyaCombo,
       shityosonCombo: shityosonCombo,
-      taServiceCombo: taServiceCombo,
       JyuryouTsuchisyoData: [],
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterTextShityoson: { shityosonKey: 0, shityoson:'指定なし'}, // 検索項目
@@ -423,7 +421,7 @@ export default {
       let picker = '';
       if (dialog_type == 'juryobi') picker = this.year + '-' + this.month + '-' + this.date;
       if (dialog_type == 'insatsubi')
-        picker = this.insatsubi_year + '-' + this.insatsubi_month +'-' + this.insatsubis_date;
+        picker = this.insatsubi_year + '-' + this.insatsubi_month +'-' + this.insatsubi_date;
 
       this.picker = picker;
       this.datepicker_dialog = true;
@@ -454,7 +452,7 @@ export default {
       if (this.dialog_type == 'insatsubi') {
         this.insatsubi_year = split[0];
         this.insatsubi_month = split[1];
-        this.insatsubis_date = split[2];
+        this.insatsubi_date = split[2];
       }
       // this.$emit('parent-calendar', split);
 
@@ -465,13 +463,24 @@ export default {
     // 請求月 3:前月 4:翌月
     calendarClick(type) {
       let changeDate = this.year + this.month + this.date;
-      
+      let changeInsatsubiDate = this.insatsubi_year + this.insatsubi_month + this.insatsubi_date;
       if (type == 1) {
+        // 受領日←選択時
         this.month = moment(changeDate).subtract(1, 'days').format('MM');
         this.date = moment(changeDate).subtract(1, 'days').format('DD');
       } else if (type == 2) {
+        // 受領日→選択時
         this.month = moment(changeDate).add(1, 'days').format('MM');
         this.date = moment(changeDate).add(1, 'days').format('DD');
+      } else if (type == 3) {
+        // 印刷日←選択時
+        this.insatsubi_month = moment(changeInsatsubiDate).subtract(1, 'days').format('MM');
+        this.insatsubi_date = moment(changeInsatsubiDate).subtract(1, 'days').format('DD');
+        console.log(changeInsatsubiDate)
+      } else if (type == 4) {
+        // 印刷日→選択時
+        this.insatsubi_month = moment(changeInsatsubiDate).add(1, 'days').format('MM');
+        this.insatsubi_date = moment(changeInsatsubiDate).add(1, 'days').format('DD');
       }
     },
     /*********************
@@ -517,8 +526,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          juryoubi: '2022年09月20',
+          insatsubi: '2022年09月20',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
@@ -537,8 +546,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          juryoubi: '2022年09月20',
+          insatsubi: '2022年09月20',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
@@ -557,8 +566,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          juryoubi: '2022年09月20',
+          insatsubi: '2022年09月20',
           print: '',
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
@@ -577,8 +586,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          juryoubi: '2022年09月20',
+          insatsubi: '2022年09月20',
           print: '',
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
@@ -601,8 +610,8 @@ export default {
       //       keigentou:        '',
       //       tokubetukyuhuhi:  '',
       //       dairijyuryougaku: '',
-      //       juryoubui:        '',
-      //       insatsu:          '',
+      //       juryoubi:        '',
+      //       insatsubi:          '',
       //       print:            '',
       //     });
       //   }
@@ -611,10 +620,6 @@ export default {
       this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
       return JyuryouTsuchisyoData;
     },
-    // onitemsSourceChanged(flexGrid) {
-    //   this.mainFlexGrid = flexGrid;
-    //   flexGrid.itemsSource = this.JyuryouTsuchisyoData;
-    // },
     onInitialized(flexGrid) {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;

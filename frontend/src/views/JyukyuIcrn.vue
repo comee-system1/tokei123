@@ -11,7 +11,7 @@
         <label>利用者</label>
         <wj-menu
           id="comboFilters"
-          class="combo"
+          class="customCombobox"
           :itemsSource="userSelList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -722,33 +722,6 @@ div#jyukyuicrn {
     min-width: 150px;
     display: block;
   }
-  #filterCombo {
-    margin-top: -2px;
-    width: 100%;
-  }
-  div#comboFilters {
-    margin-top: -3px;
-    width: 300px;
-    height: 25px;
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
-  }
-
-  .combo:hover {
-    background-color: #e1e1e1;
-  }
-
-  .combo:focus {
-    background-color: #fff;
-  }
-
-  #comboFilters_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
-  }
   .errorlabel {
     background: transparent;
     color: red;
@@ -847,6 +820,42 @@ div#jyukyuicrn {
   .v-btn-toggle > .v-btn {
     width: 100px;
     height: 25px;
+  }
+}
+div.customCombobox {
+  position: relative;
+  width: 270px !important;
+  height: 25px !important;
+  &.customCombobox {
+    width: 160px !important;
+    div {
+      text-align: left;
+    }
+  }
+  .wj-btn.wj-btn-default {
+    border-left: none !important;
+  }
+  &:hover {
+    background-color: #e1e1e1;
+  }
+  &:focus {
+    background-color: #fff;
+  }
+  div * {
+    height: 21px !important;
+    padding: 0;
+    span {
+      height: 21px !important;
+      margin-top: 8px;
+    }
+    &.wj-form-control {
+      position: absolute;
+      top: -3px;
+      width: 100%;
+    }
+  }
+  input {
+    height: 25px !important;
   }
 }
 </style>

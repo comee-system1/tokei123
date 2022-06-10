@@ -754,6 +754,17 @@ export default {
           }
         }
 
+        if (e.col == 6) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+          e.cell.style.borderRight = sysConst.COLOR.separateBorderColor;
+        }
+        if (e.col == 13) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+        }
+        if (e.col == 15) {
+          e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
+        }
+
         if (classname) {
           e.cell.innerHTML =
             '<div class="text-center w-100 ' +

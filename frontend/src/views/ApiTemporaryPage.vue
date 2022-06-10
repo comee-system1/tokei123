@@ -12,36 +12,44 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
-var url =
-  'http://192.168.30.32:80/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
-
-axios
-  .get(url, {
-    headers: {
-      'X-API-ACCOUNT': 'tokei',
-      'X-API-KEY': '999',
-      'X-CORPORATION-UNIQUE-ID': '1',
-    },
-    mode: 'no-cors',
-  })
-  .then(function (response) {
-    console.log(response);
-  });
-// .catch(function (error) {
-//   console.log('ERROR');
-//   console.log(error);
-//   console.log(typeof error);
-//   for (let key of Object.keys(error)) {
-//     console.log(key);
-//     console.log(error[key]);
-//   }
-// });
+var url = 'http://192.168.30.32:80/Sodan/v1/syukei/kensu';
 
 export default {
   data() {
     return {
       currentPageTitle: this.$route.name,
     };
+  },
+  created() {
+    this.axios
+      .get(url, {
+        params: {
+          pHostname: 'PC01',
+          pJigyoid: 43,
+          pTaisyo: 1,
+          pSymd: 20220301,
+          pEymd: 20220331,
+          pSiid: 0,
+          pChiku: 0,
+        },
+        headers: {
+          'X-API-ACCOUNT': 'tokei',
+          'X-API-KEY': '999',
+          'X-CORPORATION-UNIQUE-ID': '1',
+        },
+      })
+      .then(function (response) {
+        console.log(response);
+      });
+    // .catch(function (error) {
+    //   console.log('ERROR');
+    //   console.log(error);
+    //   console.log(typeof error);
+    //   for (let key of Object.keys(error)) {
+    //     console.log(key);
+    //     console.log(error[key]);
+    //   }
+    // });
   },
   // async mounted() {
   //   const data = await fetch(

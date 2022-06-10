@@ -25,7 +25,7 @@
         <label class="ml-1">市町村</label>
         <wj-menu
           id="comboFilters1"
-          class="combo"
+          class="customCombobox"
           :itemsSource="sichosonList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -38,7 +38,7 @@
         </wj-menu>
       </v-row>
 
-      <v-row class="rowStyle mt-2" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <label>表示</label>
         <!-- mandatoryは初期選択 -->
         <v-btn-toggle class="flex-wrap" v-model="dispTotalOnly" mandatory>
@@ -58,7 +58,7 @@
         <label class="ml-1">サービス</label>
         <wj-menu
           id="comboFilters2"
-          class="combo"
+          class="customCombobox"
           :itemsSource="svcList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -1476,45 +1476,6 @@ div#KyuhuMeisaiIcrn {
     display: block;
   }
 
-  div#comboFilters1,
-  div#comboFilters2 {
-    margin-top: -3px;
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
-  }
-  .combo:hover {
-    background-color: #e1e1e1;
-  }
-
-  .combo:focus {
-    background-color: #fff;
-  }
-
-  #comboFilters1_dropdown,
-  #comboFilters2_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
-  }
-
-  // .user-info {
-  //   width: auto;
-  //   padding: 4px;
-  //   label {
-  //     display: inline-block;
-  //     margin-top: 2px;
-  //     margin-right: 2px;
-  //     padding-top: 2px;
-  //     background: $view_Title_background;
-  //     border: none;
-  //     height: 27px;
-  //     width: 60px;
-  //     text-align: center;
-  //   }
-  // }
-
   .siborikomi-info,
   .sort-info {
     position: relative;
@@ -1605,6 +1566,43 @@ div#KyuhuMeisaiIcrn {
   .v-btn-toggle > .v-btn {
     width: 100px;
     height: 25px;
+  }
+}
+div.customCombobox {
+  position: relative;
+  width: 300px !important;
+  height: 25px !important;
+  &.customCombobox {
+    width: 160px !important;
+    div {
+      text-align: left;
+    }
+  }
+
+  .wj-btn.wj-btn-default {
+    border-left: none !important;
+  }
+  &:hover {
+    background-color: #e1e1e1;
+  }
+  &:focus {
+    background-color: #fff;
+  }
+  div * {
+    height: 21px !important;
+    padding: 0;
+    span {
+      height: 21px !important;
+      margin-top: 8px;
+    }
+    &.wj-form-control {
+      position: absolute;
+      top: -3px;
+      width: 100%;
+    }
+  }
+  input {
+    height: 25px !important;
   }
 }
 </style>

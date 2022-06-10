@@ -12,7 +12,7 @@
         <label>利用者</label>
         <wj-menu
           id="comboFilters1"
-          class="combo"
+          class="customCombobox"
           :itemsSource="userSelList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -25,7 +25,7 @@
         <label class="ml-1">加算</label>
         <wj-menu
           id="comboFilters2"
-          class="combo"
+          class="customCombobox"
           :itemsSource="kasanList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -741,36 +741,14 @@ div#KasanKoumokuIcrn {
   .rowStyle {
     height: 25px;
   }
+  .wj-control .wj-input {
+    width: 250px;
+  }
   span#selectUserExamNumber,
   span#selectUserText {
     min-width: 150px;
     display: block;
   }
-  div#comboFilters1,
-  div#comboFilters2 {
-    margin-top: -3px;
-    width: 300px;
-    height: 25px;
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
-  }
-  .combo:hover {
-    background-color: #e1e1e1;
-  }
-
-  .combo:focus {
-    background-color: #fff;
-  }
-
-  #comboFilters1_dropdown,
-  #comboFilters2_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
-  }
-
   #kasanKoumokuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
@@ -829,6 +807,44 @@ div#KasanKoumokuIcrn {
   .v-btn-toggle > .v-btn {
     width: 100px;
     height: 25px;
+  }
+}
+
+div.customCombobox {
+  position: relative;
+  width: 300px !important;
+  height: 25px !important;
+  &.customCombobox {
+    width: 160px !important;
+    div {
+      text-align: left;
+    }
+  }
+
+  .wj-btn.wj-btn-default {
+    border-left: none !important;
+  }
+  &:hover {
+    background-color: #e1e1e1;
+  }
+  &:focus {
+    background-color: #fff;
+  }
+  div * {
+    height: 21px !important;
+    padding: 0;
+    span {
+      height: 21px !important;
+      margin-top: 8px;
+    }
+    &.wj-form-control {
+      position: absolute;
+      top: -3px;
+      width: 100%;
+    }
+  }
+  input {
+    height: 25px !important;
   }
 }
 </style>
