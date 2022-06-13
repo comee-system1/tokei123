@@ -12,7 +12,13 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
-var url = 'http://192.168.30.32:80/Sodan/v1/syukei/kensu';
+var url =
+  'http://192.168.30.32:80/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+
+const params = new URLSearchParams();
+params.append('X-API-ACCOUNT', 'tokei');
+params.append('X-API-KEY', '999');
+params.append('X-CORPORATION-UNIQUE-ID', '1');
 
 export default {
   data() {
@@ -21,22 +27,9 @@ export default {
     };
   },
   created() {
-    this.axios
-      .get(url, {
-        params: {
-          pHostname: 'PC01',
-          pJigyoid: 43,
-          pTaisyo: 1,
-          pSymd: 20220301,
-          pEymd: 20220331,
-          pSiid: 0,
-          pChiku: 0,
-        },
-        headers: {
-          'X-API-ACCOUNT': 'tokei',
-          'X-API-KEY': '999',
-          'X-CORPORATION-UNIQUE-ID': '1',
-        },
+    axios
+      .get(url, params, {
+        headers: { 'content-type': 'application/json' },
       })
       .then(function (response) {
         console.log(response);

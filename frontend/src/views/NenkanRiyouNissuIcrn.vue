@@ -198,6 +198,8 @@
 
 <script>
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjCore from '@grapecity/wijmo';
+
 import HeaderServices from '../components/HeaderServices.vue';
 import { getNyuTaiinHoukoku } from '@/data/nyuTaiinData.js';
 import { getNyuTaiinHoukokuTotal } from '@/data/nyuTaiinTotalData.js';
@@ -308,7 +310,12 @@ export default {
           }
         }
 
-        e.cell.innerHTML = '<div class="' + classname + '">' + text + '</div>';
+        e.cell.innerHTML =
+          '<div class="' +
+          classname +
+          '">' +
+          wjCore.escapeHtml(text) +
+          '</div>';
       });
     },
 

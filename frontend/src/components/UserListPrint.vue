@@ -537,8 +537,8 @@ export default {
             align = 'left';
           }
           let str = e.cell.innerHTML;
-          str = '<div>' + str + '</div>';
-          e.cell.innerHTML = str.replace(',', '');
+          str = '' + str + '';
+          e.cell.innerHTML = wjCore.escapeHtml(str.replace(',', ''));
           wjCore.setCss(e.cell, {
             display: 'table',
             tableLayout: 'fixed',

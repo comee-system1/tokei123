@@ -147,26 +147,26 @@
             :binding="'shimei'"
             :header="'氏名'"
             align="center"
-            width="2*"
+            width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'engosya'"
-            :header="'援護者'"
+            :header="'入退院外泊の別'"
             align="center"
-            width="1*"
+            width="0.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'juryoubui'"
-            :header="'入退院・外泊開始年月日'"
+            :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'juryoubui'"
-            :header="'外泊終了年月日'"
+            :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
@@ -182,7 +182,7 @@
             :binding="'insatsu'"
             :header="'備考'"
             align="center"
-            width="2*"
+            width="2.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
@@ -202,7 +202,6 @@
 import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import CustomMergeManager from '@/utiles/customMerge.js';
 import sysConst from '@/utiles/const';
 
 const riyosyaCombo = [];
@@ -276,61 +275,40 @@ export default {
     },
     getData() {
       let JyuryouTsuchisyoData = [];
-      for (let i = 0; i < 2; i++) {
-        // 東経市 + 今月入居
+      for (let i = 0; i < 1; i++) {
         JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012340',
           code: '5',
           jigyosyobango: '4',
-          shimei: '1入居太郎code5受証４',
-          kana: 'ニュウキョタロウ',
-          engosya: '東経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          shimei: '東経太郎',
+          kana: 'トウケイタロウ',
+          engosya: '入院',
+          juryoubui: '2022年07月10',
+          insatsu: '',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
         });
-          // 西経市 + 今月入居
           JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012341',
+          jyukyusyaBango: '1100012340',
           code: '8',
           jigyosyobango: '3',
-          shimei: '2入居太郎code8受証３',
-          kana: 'ニュウキョタロウ',
-          engosya: '西経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          shimei: '東経太郎',
+          kana: 'トウケイタロウ',
+          engosya: '退院',
+          juryoubui: '2022年07月25',
+          insatsu: '',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
         });
-          // 北経市 + 今月退去
           JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012342',
           code: '6',
           jigyosyobango: '2',
-          shimei: '3退去太郎code6受証２',
-          kana: 'タイキョタロウ',
-          engosya: '北経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
+          shimei: '南経太郎',
+          kana: 'ナンケイタロウ',
+          engosya: '退院',
           juryoubui: '2022年09月20',
           insatsu: '2022年09月20',
           print: '',
@@ -339,48 +317,65 @@ export default {
         });
           // 南経市 + 今月退去
           JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012343',
+          jyukyusyaBango: '1100012342',
           code: '9',
           jigyosyobango: '1',
-          shimei: '4退去太郎code9受証１',
-          kana: 'タイキョタロウ',
-          engosya: '南経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
+          shimei: '南経太郎',
+          kana: 'ナンケイタロウ',
+          engosya: '外泊',
+          print: '',
+          nyukyo: 0, // 今月入居
+          taikyo: 1 // 今月退去
+        });
+          JyuryouTsuchisyoData.push({
+          jyukyusyaBango: '1100012342',
+          code: '10',
+          jigyosyobango: '2',
+          shimei: '南経太郎',
+          kana: 'ナンケイタロウ',
+          engosya: '退院',
           juryoubui: '2022年09月20',
           insatsu: '2022年09月20',
           print: '',
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
         });
-        
+          JyuryouTsuchisyoData.push({
+          jyukyusyaBango: '1100012342',
+          code: '11',
+          jigyosyobango: '1',
+          shimei: '南経太郎',
+          kana: 'ナンケイタロウ',
+          engosya: '外泊',
+          print: '',
+          nyukyo: 0, // 今月入居
+          taikyo: 1 // 今月退去
+        });
+          JyuryouTsuchisyoData.push({
+          jyukyusyaBango: '1100012343',
+          code: '10',
+          jigyosyobango: '2',
+          shimei: '西経太郎',
+          kana: 'セイケイタロウ',
+          engosya: '退院',
+          juryoubui: '2022年09月20',
+          insatsu: '2022年09月20',
+          print: '',
+          nyukyo: 0, // 今月入居
+          taikyo: 1 // 今月退去
+        });
+          JyuryouTsuchisyoData.push({
+          jyukyusyaBango: '1100012343',
+          code: '11',
+          jigyosyobango: '1',
+          shimei: '西経太郎',
+          kana: 'セイケイタロウ',
+          engosya: '外泊',
+          print: '',
+          nyukyo: 0, // 今月入居
+          taikyo: 1 // 今月退去
+        });
       }
-      
-      // 配列の要素の数を比較用に変数化
-      // let compareArr = JyuryouTsuchisyoData.length;
-      // if (JyuryouTsuchisyoData.length < 15) {
-      //   // 配列の要素の数が15個以下の場合、空セルを入れる
-      //   for (let i = 0; i < (15 - compareArr); i++) {
-      //     JyuryouTsuchisyoData.push({
-      //       jyukyusyaBango:   '',
-      //       shimei:      '',
-      //       engosya:          '',
-      //       zentaigaku:       '',
-      //       riyousyahutan:    '',
-      //       honninbun:        '',
-      //       keigentou:        '',
-      //       tokubetukyuhuhi:  '',
-      //       dairijyuryougaku: '',
-      //       juryoubui:        '',
-      //       insatsu:          '',
-      //       print:            '',
-      //     });
-      //   }
-      // }
       this.allData = JyuryouTsuchisyoData;
       this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
       return JyuryouTsuchisyoData;
@@ -391,8 +386,6 @@ export default {
       let _self = this;
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
-      // ヘッダセルのマージ
-      this.createHeaderMerge(flexGrid);
 
       // セルのクリックイベント
       this.clickEventCell(flexGrid, _self);
@@ -450,8 +443,8 @@ export default {
      * 全体セルのマージ
      */
     createCellMerge(flexGrid) {
-      console.log("start");
       let headerRanges = [
+        new wjGrid.CellRange(0, 3, 0, 4)
       ];
       // データセル用のマージ配列の作成
       let ranges = [];
@@ -470,8 +463,6 @@ export default {
           new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
         );
       }
-      
-      console.log("end");
       let mm = new wjGrid.MergeManager(flexGrid);
 
       mm.getMergedRange = function (panel, r, c) {
@@ -517,7 +508,6 @@ export default {
      */
     createHeader(flexGrid) {
       // ヘッダーに空行を追加
-      flexGrid.mergeManager = new CustomMergeManager(flexGrid);
       flexGrid.columnHeaders.rows[0].height = 80;
     },
     /**************
@@ -537,6 +527,7 @@ export default {
           }
         }
       };
+
       flexGrid.mergeManager = mm;
     },
     /*****************
@@ -559,7 +550,7 @@ export default {
           if ((r == 0) && (c == 3)) {
             cell.innerHTML = '入退院・外泊開始年月日<br/>(外泊終了年月日)';
           }
-          if ((r == 0) && (c == 4)) {
+          if ((r == 0) && (c == 5)) {
             cell.innerHTML = '入院先医療機関名/<br/>外泊先';
           }
         }

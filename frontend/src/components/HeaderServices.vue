@@ -547,7 +547,8 @@ export default {
       if (this.dialog_type == 'seikyu') {
         this.seikyu_year = split[0];
         this.seikyu_month = split[1];
-        this.calendarClick(3);
+        console.log(this.seikyu_month)
+        this.calendarClick(0);
       }
       // this.$emit('parent-calendar', split);
 

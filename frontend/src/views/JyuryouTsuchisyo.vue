@@ -636,9 +636,6 @@ export default {
       // グリッドのデザイン修正
       this.gridDesignModify(flexGrid);
 
-      // // セルの値を編集
-      // this.edittingCell(flexGrid, _self);
-
       flexGrid.itemsSource = griddata;
     },
     /****************
