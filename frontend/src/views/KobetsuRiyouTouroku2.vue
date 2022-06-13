@@ -95,6 +95,7 @@
             :headersVisibility="'Column'"
             :alternatingRowStep="0"
             :initialized="onInitialized"
+            :autoGenerateColumns="false"
             :isReadOnly="true"
             :allowAddNew="false"
             :allowDelete="false"
@@ -189,8 +190,8 @@ export default {
       // ヘッダ作成
       this.createHeader(flexGrid);
       this.createRowHeader(flexGrid);
-      //   this.createMerge(flexGrid);
-      //   this.methodCellFormatSetting(flexGrid);
+      this.createMerge(flexGrid);
+      this.methodCellFormatSetting(flexGrid);
 
       //flexGrid.itemsSource = [];
     },
@@ -243,7 +244,7 @@ export default {
     createMerge(flexGrid) {
       let headerRanges = [];
       let cellRanges = [];
-      // headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)];
+      headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)];
       cellRanges = [new wjGrid.CellRange(0, 0, 6, 0)];
 
       for (let i = 0; i < this.viewdata.length; i++) {
@@ -301,7 +302,7 @@ export default {
       }
       console.log(viewData);
       flexGrid.itemsSource = [];
-      //this.viewdata = viewData;
+      this.viewdata = viewData;
       this.hendoRow = hendoRow;
     },
 
