@@ -136,13 +136,15 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
 import { getHendoData2 } from '@/data/kobetsuRiyoHendo2.js';
-// import { getRiyobi } from '@/data/kobetsuRiyobi.js';
+import { getRiyobi } from '@/data/kobetsuRiyobi2.js';
 // import { getNyutaiin } from '@/data/kobetsuNyutaiin.js';
 // import { getGaihaku } from '@/data/kobetsuGaihaku.js';
 // import { getMeal } from '@/data/kobetsuMeal.js';
 // import { getKounetusuihi } from '@/data/kobetsuKounetusuihi.js';
 //const startPoint = 4;
 //const totalPoint = startPoint + 1;
+import sysConst from '@/utiles/const';
+
 export default {
   data() {
     return {
@@ -187,11 +189,14 @@ export default {
       // 初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.rowHendoData = getHendoData2();
+      this.riyoubiData = getRiyobi();
       // ヘッダ作成
       this.createHeader(flexGrid);
       this.createRowHeader(flexGrid);
       this.createMerge(flexGrid);
       this.methodCellFormatSetting(flexGrid);
+      // 値の登録
+      this.settingPoint();
 
       //flexGrid.itemsSource = [];
     },
@@ -201,21 +206,67 @@ export default {
       // マージ
       //this.createMerge(flexGrid);
     },
-
+    /**************************
+     * 値の登録
+     */
+    settingPoint() {
+      let riyoGoukei = 0;
+      for (let i = 0; i < this.viewdata.length; i++) {
+        // 利用日
+        for (let day = 1; day <= this.lastdate; day++) {
+          let d = 'day' + day;
+          if (this.viewdata[i].type == 'riyo') {
+            if (this.riyoubiData[d]) {
+              let days = this.riyoubiData[d];
+              this.viewdata[i][d] = days;
+              riyoGoukei++;
+            }
+          }
+        }
+        // 利用日合計
+        if (this.viewdata[i].type == 'riyo') {
+          this.viewdata[i]['gokei'] = riyoGoukei;
+          this.viewdata[i]['kingaku'] = this.riyoubiData['money'];
+        }
+      }
+    },
     /************************
      * セルのフォーマット
      */
     methodCellFormatSetting(flexGrid) {
+      let _self = this;
       flexGrid.formatItem.addHandler(function (s, e) {
         let html = e.cell.innerHTML;
         let text = e.cell.innerText;
         let classname = '';
-        console.log(html);
-        console.log(text);
-        // 変動情報を縦に変更
         if (e.panel != flexGrid.columnHeaders) {
+          // 変動情報を縦に変更
           if (e.row == 0 && e.col == 0) {
             classname = 'vertical';
+          }
+          // グリッドの値を変更
+          if (e.col >= 4 && e.col <= _self.lastdate + 3) {
+            positionCenter(e);
+            e.cell.style.color = sysConst.COLOR.fontColor;
+            if (text === '1') {
+              html = '〇';
+            }
+            if (text === '2') {
+              html = '●';
+            }
+            if (text === '3') {
+              e.cell.style.color = sysConst.COLOR.blueTextColor;
+              html = '〇';
+            }
+            if (text === '0') {
+              html = '×';
+            }
+          }
+          if (e.col == _self.lastdate + 5) {
+            if (text === 'none') {
+              html = '';
+              e.cell.style.backgroundColor = sysConst.COLOR.selectedColor;
+            }
           }
         }
 
@@ -223,19 +274,21 @@ export default {
           // 日付表示
           if (isDate.isDate(text)) {
             html = dateFormatString.dateFormatString(text);
-            e.cell.style.textAlign = 'center';
-            e.cell.style.justifyContent = 'center';
-            e.cell.style.alignItems = 'center';
+            positionCenter(e);
           }
 
-          if (e.row == 0 && e.col == 0) {
-            e.cell.style.textAlign = 'center';
-            e.cell.style.justifyContent = 'center';
-            e.cell.style.alignItems = 'center';
+          if (e.row == 0 && (e.col == 0 || e.col >= _self.lastdate + 4)) {
+            positionCenter(e);
           }
         }
 
         e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
+
+        function positionCenter(e) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+        }
       });
     },
     /*****************
@@ -245,8 +298,22 @@ export default {
       let headerRanges = [];
       let cellRanges = [];
       headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)];
-      cellRanges = [new wjGrid.CellRange(0, 0, 6, 0)];
+      // 日付マージ
+      for (let day = 4; day < this.lastdate + 4; day++) {
+        headerRanges.push(new wjGrid.CellRange(0, day, 1, day));
+      }
+      // 合計マージ
+      headerRanges.push(
+        new wjGrid.CellRange(0, this.lastdate + 4, 1, this.lastdate + 4)
+      );
+      // 金額
+      headerRanges.push(
+        new wjGrid.CellRange(0, this.lastdate + 5, 1, this.lastdate + 5)
+      );
 
+      cellRanges = [new wjGrid.CellRange(0, 0, 6, 0)];
+      // 食事用マージ
+      this.mealMearges(cellRanges);
       for (let i = 0; i < this.viewdata.length; i++) {
         cellRanges.push(new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge));
       }
@@ -270,39 +337,57 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
+    mealMearges(cellRanges) {
+      let stMeal = 0;
+      let edMeal = 0;
+      for (let i = 0; i < this.rowHendoData.hendo.length; i++) {
+        if (this.rowHendoData.hendo[i].type == 'meal') {
+          edMeal = stMeal;
+          for (let m = 0; m < this.rowHendoData.hendo[i].data.length; m++) {
+            edMeal++;
+          }
+          break;
+        }
+        stMeal++;
+      }
+      if (edMeal > 0) {
+        cellRanges.push(new wjGrid.CellRange(stMeal, 1, edMeal - 1, 2));
+      }
+    },
     /*******************
      * 列ヘッダ
      */
     createRowHeader(flexGrid) {
       let hendo = this.rowHendoData.hendo;
       let hendoRow = 0;
-      let viewData = [];
+      let views = [];
       for (let i = 0; i < hendo.length; i++) {
         // 光熱水費がある時
         // 食事がある時、食事の分カラムを追加
         // mergeにカラム数を入れる
         if (hendo[i].type == 'meal' || hendo[i].type == 'shine') {
           for (let m = 0; m < hendo[i].data.length; m++) {
-            viewData.push({
+            views.push({
               komoku0: this.rowHendoData.rowColumn.column1,
               komoku1: hendo[i].text,
               komoku3: hendo[i].data[m].text + '@' + hendo[i].data[m].money,
               merge: hendo[i].merge,
+              type: hendo[i].type,
             });
             hendoRow++;
           }
         } else {
-          viewData.push({
+          views.push({
             komoku0: this.rowHendoData.rowColumn.column1,
             komoku1: hendo[i].text,
             merge: hendo[i].merge,
+            type: hendo[i].type,
           });
           hendoRow++;
         }
       }
-      console.log(viewData);
       flexGrid.itemsSource = [];
-      this.viewdata = viewData;
+      this.viewdata = views;
       this.hendoRow = hendoRow;
     },
 
@@ -344,7 +429,12 @@ export default {
 
       flexGrid.columns[0].width = 20;
       flexGrid.columns[1].width = 20;
-      flexGrid.columnHeaders.rows[0].height = 34;
+      flexGrid.columnHeaders.rows[0].height = 23;
+
+      for (let i = 4; i <= this.lastdate + 3; i++) {
+        flexGrid.columns[i].width = '2.2*';
+      }
+      flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
     },
     /*********************
      * 画面リサイズの際の表示調整
