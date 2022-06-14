@@ -1,5 +1,5 @@
 <template>
-  <div id="JyuryouTsuchisyo">
+  <div id="nyuTaiin">
     <header-services
       @parent-calendar="parentCalendar($event, dateArgument)"
       @parent-search="parentSearch($event, searchArgument)"
@@ -9,54 +9,6 @@
     <v-container class="user-info" fluid>
       <v-row class="rowStyle mt-1 d-flex justify-space-between" no-gutters>
         <div>
-          <label>利用者</label>
-          <wj-menu
-            class="customCombobox"
-            :itemsSource="riyosyaCombo"
-            :itemClicked="onRiyosyaCombo"
-            :isRequired="true"
-            :displayMemberPath="'text'"
-            selectedValuePath="'key'"
-            header="全員"
-            style="width: 200px"
-          >
-          </wj-menu>
-        </div>
-        <div>
-        <v-btn
-          class="ml-2"
-          style="width: 60px; height: 30px; margin-top: -4px"
-          >
-          検索
-        </v-btn>
-        <label class="ml-2">印刷種類</label>
-          <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap ml-1" mandatory>
-            <v-btn
-              small
-              color="secondary"
-              dark
-              outlined
-              style="width: 90px"
-              @click="sort(1)"
-            >
-              受領通知書
-            </v-btn>
-            <v-btn
-              small
-              color="secondary"
-              dark
-              outlined
-              style="width: 90px"
-              @click="sort(2)"
-            >
-              一覧
-            </v-btn>
-          </v-btn-toggle>
-        </div>
-      </v-row>
-      <v-row class="rowStyle mt-1" no-gutters>
-        <v-col class="d-flex">
           <label>ソート</label>
           <!-- mandatoryは初期選択 -->
           <v-btn-toggle class="flex-wrap" mandatory>
@@ -91,7 +43,71 @@
               受給者番号
             </v-btn>
           </v-btn-toggle>
-        </v-col>
+        </div>
+        <div>
+        <v-btn
+          class="ml-2"
+          style="width: 60px; height: 30px; margin-top: -4px"
+          >
+          検索
+        </v-btn>
+        <label class="ml-2">印刷種類</label>
+          <!-- mandatoryは初期選択 -->
+          <v-btn-toggle class="flex-wrap ml-1" mandatory
+           >
+            <!-- 印刷種類「一覧」選択時「入退院・外泊」は選択不可 -->
+            <v-btn
+              small
+              color="secondary"
+              dark
+              outlined
+              style="width: 90px"
+              @click="disabledSwitch(1)"
+            >
+              報告書
+            </v-btn>
+            <v-checkbox
+              v-if="this.insatsuFlag.houkokusyoFlag"
+              v-model="selNyutaiin"
+              label="入退院"
+              class="nyutaiinCheckbox"
+              color="primary"
+            ></v-checkbox>
+            <v-checkbox
+              v-if="this.insatsuFlag.houkokusyoFlag"
+              v-model="selGaihaku"
+              label="外泊"
+              class="nyutaiinCheckbox"
+              color="primary"
+            ></v-checkbox>
+            <v-checkbox
+              v-if="this.insatsuFlag.disabledFlag"
+              v-model="selNyutaiinDisabled"
+              label="入退院"
+              class="nyutaiinCheckbox"
+              color="primary"
+              disabled
+            ></v-checkbox>
+            <v-checkbox
+              v-if="this.insatsuFlag.disabledFlag"
+              v-model="selGaihakuDisabled"
+              label="外泊"
+              class="nyutaiinCheckbox"
+              color="primary"
+              disabled
+            ></v-checkbox>
+            <v-btn
+              small
+              color="secondary"
+              dark
+              outlined
+              style="width: 90px"
+              @click="disabledSwitch(2)"
+            >
+              一覧
+            </v-btn>
+          </v-btn-toggle>
+        </div>
       </v-row>
       <v-row class="mt-1 justify-sm-space-between" no-gutters>
         <v-btn-toggle class="flex-wrap" mandatory>
@@ -124,7 +140,7 @@
       </v-row>
       <v-row class="mt-1" no-gutters>
         <wj-flex-grid
-          id="JyuryouTsuchisyoGrid"
+          id="nyuTaiinGrid"
           :headersVisibility="'Column'"
           :allowDelete="false"
           :allowDragging="false"
@@ -134,7 +150,7 @@
           :selectionMode="'Row'"
           :initialized="onInitialized"
           :itemsSourceChanged="onitemsSourceChanged"
-          :itemsSource="JyuryouTsuchisyoData"
+          :itemsSource="nyuTaiinData"
         >
           <wj-flex-grid-column
             :binding="'jyukyusyaBango'"
@@ -151,35 +167,35 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'engosya'"
+            :binding="'nyutaiinGaihakuKubun'"
             :header="'入退院外泊の別'"
             align="center"
             width="0.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'juryoubui'"
+            :binding="'kaishinegappi'"
             :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'juryoubui'"
+            :binding="'syuryonengappi'"
             :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'juryoubui'"
+            :binding="'iryokikanmei'"
             :header="'入院先医療機関名/外泊先'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'insatsu'"
+            :binding="'bikou'"
             :header="'備考'"
             align="center"
             width="2.5*"
@@ -189,7 +205,7 @@
             :binding="'print'"
             :header="'印刷'"
             align="center"
-            :width="30"
+            :width="24"
             :isReadOnly="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
@@ -204,7 +220,6 @@ import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 
-const riyosyaCombo = [];
 const alphabet = [
   '全',
   'ア',
@@ -221,169 +236,167 @@ const alphabet = [
 export default {
   data() {
     return {
-      insatsubi_year: moment().add('days', 2).startOf('days').format('YYYY'),
-      insatsubi_month: moment().add('days', 2).startOf('days').format('MM'),
-      insatsubi_date: moment().add('days', 2).startOf('days').format('DD'),
+      iryokikanmeibi_year: moment().add('days', 2).startOf('days').format('YYYY'),
+      iryokikanmeibi_month: moment().add('days', 2).startOf('days').format('MM'),
+      iryokikanmeibi_date: moment().add('days', 2).startOf('days').format('DD'),
       picker: '',
       datepicker_dialog: false,
       header_dialog: true,
       alphabet: alphabet,
-      riyosyaCombo: riyosyaCombo,
-      JyuryouTsuchisyoData: [],
-      filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
-      filterTextShityoson: { shityosonKey: 0, shityoson:'指定なし'}, // 検索項目
+      nyuTaiinData: [],
       year: moment().year(),
       month: moment().format('MM'),
       date: moment().format('DD'),
       alphaSelect: 0,
       sortFlag: { kanaFlag: true, codeFlag: false, bangoFlag: false },
+      insatsuFlag: { houkokusyoFlag: true, disabledFlag: false},
+      selGaihaku: false,
+      selNyutaiin: false,
+      selNyutaiinDisabledu: false,
+      selGaihakuDisabledu: false,
     }
   },
   components: {
     HeaderServices,
   },
-  created() {
-    // 利用者コンボボックス
-    this.riyosyaCombo.push(
-      {
-        key: 0,
-        text: '全員',
-      },
-      {
-        key: 1,
-        text: '入退院',
-      },
-      {
-        key: 2,
-        text: '外泊者',
-      }
-    );
-  },
   methods: {
-    /*********************
-     * 利用者変更
-     */
-    onRiyosyaCombo(e) {
-      if (e.selectedIndex != -1) {
-        e.header = e.text;
-        this.onRiyosya(e.text, e.selectedIndex);
-        e.text,
-        e.selectedIndex
-      }
-      let f = document.activeElement;
-      f.blur();
-    },
     getData() {
-      let JyuryouTsuchisyoData = [];
+      let nyuTaiinData = [];
       for (let i = 0; i < 1; i++) {
-        JyuryouTsuchisyoData.push({
+        nyuTaiinData.push({
           jyukyusyaBango: '1100012340',
-          code: '5',
-          jigyosyobango: '4',
+          code: '10000000',
           shimei: '東経太郎',
           kana: 'トウケイタロウ',
-          engosya: '入院',
-          juryoubui: '2022年07月10',
-          insatsu: '',
+          nyutaiinGaihakuKubun: '入院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '東経市民病院',
+          bikou: '',
           print: '',
-          nyukyo: 1, // 今月入居
-          taikyo: 0 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012340',
-          code: '8',
-          jigyosyobango: '3',
+          code: '10000000',
           shimei: '東経太郎',
           kana: 'トウケイタロウ',
-          engosya: '退院',
-          juryoubui: '2022年07月25',
-          insatsu: '',
+          nyutaiinGaihakuKubun: '退院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '',
+          bikou: '',
           print: '',
-          nyukyo: 1, // 今月入居
-          taikyo: 0 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012342',
-          code: '6',
-          jigyosyobango: '2',
+          code: '10000001',
           shimei: '南経太郎',
           kana: 'ナンケイタロウ',
-          engosya: '退院',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          nyutaiinGaihakuKubun: '外泊',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '自宅',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
           // 南経市 + 今月退去
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012342',
-          code: '9',
-          jigyosyobango: '1',
+          code: '10000001',
           shimei: '南経太郎',
           kana: 'ナンケイタロウ',
-          engosya: '外泊',
+          nyutaiinGaihakuKubun: '外泊',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '自宅',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012342',
-          code: '10',
-          jigyosyobango: '2',
+          code: '10000001',
           shimei: '南経太郎',
           kana: 'ナンケイタロウ',
-          engosya: '退院',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          nyutaiinGaihakuKubun: '入院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012342',
-          code: '11',
-          jigyosyobango: '1',
+          code: '10000001',
           shimei: '南経太郎',
           kana: 'ナンケイタロウ',
-          engosya: '外泊',
+          nyutaiinGaihakuKubun: '退院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+        
+          nyuTaiinData.push({
+          jyukyusyaBango: '1100012348',
+          code: '10000001',
+          shimei: '日経太郎',
+          kana: 'ニッケイケイタロウ',
+          nyutaiinGaihakuKubun: '入院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '',
+          bikou: '',
+          print: '',
+        });
+        nyuTaiinData.push({
+          jyukyusyaBango: '1100012348',
+          code: '10000001',
+          shimei: '日経太郎',
+          kana: 'ニッケイケイタロウ',
+          nyutaiinGaihakuKubun: '退院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '',
+          bikou: '',
+          print: '',
+        });
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012343',
-          code: '10',
-          jigyosyobango: '2',
+          code: '10000002',
           shimei: '西経太郎',
           kana: 'セイケイタロウ',
-          engosya: '退院',
-          juryoubui: '2022年09月20',
-          insatsu: '2022年09月20',
+          nyutaiinGaihakuKubun: '入院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '東経市民病院',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
-          JyuryouTsuchisyoData.push({
+          nyuTaiinData.push({
           jyukyusyaBango: '1100012343',
-          code: '11',
-          jigyosyobango: '1',
+          code: '10000002',
           shimei: '西経太郎',
           kana: 'セイケイタロウ',
-          engosya: '外泊',
+          nyutaiinGaihakuKubun: '退院',
+          kaishinegappi: '2022年07月10日',
+          syuryonengappi: '2022年07月10日',
+          iryokikanmei: '東経市民病院',
+          bikou: '',
           print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
         });
       }
-      this.allData = JyuryouTsuchisyoData;
-      this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
-      return JyuryouTsuchisyoData;
+      this.allData = nyuTaiinData;
+      this.nyuTaiinData = nyuTaiinData;
+      return nyuTaiinData;
     },
     onInitialized(flexGrid) {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
 
@@ -396,27 +409,23 @@ export default {
       // カナソートを実行
       this.sort(1); 
 
-      // // セルの値を編集
-      // this.edittingCell(flexGrid, _self);
-      console.log(444)
       flexGrid.itemsSource = griddata;
     },
     onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
-      this.merge = this.createMergeArray(this.JyuryouTsuchisyoData);
-      console.log(555)
+      this.merge = this.createMergeArray(this.nyuTaiinData);
       // データセルのマージ
       this.createCellMerge(flexGrid);
     },
     /********************
      * マージ作成用の配列を作成
      */
-    createMergeArray(JyuryouTsuchisyoData) {
+    createMergeArray(nyuTaiinData) {
       let array = [];
-      for (let i = 0; i < JyuryouTsuchisyoData.length; i++) {
+      for (let i = 0; i < nyuTaiinData.length; i++) {
         array.push({
           row: i,
-          jyukyusyaBango: JyuryouTsuchisyoData[i]['jyukyusyaBango'],
+          jyukyusyaBango: nyuTaiinData[i]['jyukyusyaBango'],
         });
       }
       const groupBy = function (xs, key) {
@@ -448,12 +457,9 @@ export default {
       ];
       // データセル用のマージ配列の作成
       let ranges = [];
-      let merge = this.createMergeArray(this.JyuryouTsuchisyoData);
+      let merge = this.createMergeArray(this.nyuTaiinData);
       for (let i = 0; i < merge.length; i++) {
         for (let j = 0; j <= 1; j++) {
-          console.log(merge[i].first);
-          console.log(merge[i].last - 1);
-          console.log("");
           ranges.push(
             new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
           );
@@ -482,7 +488,7 @@ export default {
         }
       };
 
-      flexGrid.mergeManager = mm;
+      flexGrid.mergeManager = mm; 
     },
     /****************
      *セルのクリックイベント
@@ -498,16 +504,60 @@ export default {
             let mark = '〇';
             if (flexGrid.getCellData(hPage.row, 7) == '〇') mark = '';
             flexGrid.setCellData(hPage.row, 7, mark);
-            _self.JyuryouTsuchisyoData[hPage.row]['print'] = mark;
+            _self.nyuTaiinData[hPage.row]['print'] = mark;
+
+            //クリックした際の受給者番号取得
+            let jB = _self.getClickJyukyusyaBango(hPage.row);
+            //受給者番号が持つ行数の取得
+            let jBrow = _self.getJyukyusyaBangoRow(jB);
+            flexGrid.setCellData(jBrow.first, 7, mark);
+            _self.nyuTaiinData[jBrow.first]['print'] = mark;
           }
         }
       });
     },
+    /*************
+     * クリックした際の受給者番号取得
+     */
+    getClickJyukyusyaBango(row) {
+      return this.nyuTaiinData[row].jyukyusyaBango;
+    },
+    /*************
+     * 受給者番号が持つ行数の取得
+     */
+    getJyukyusyaBangoRow(jb) {
+      let data = [];
+      let merge = this.createMergeArray(this.nyuTaiinData);
+      for (let i = 0; i < merge.length; i++) {
+        let key = merge[i].k;
+        if (key == jb) {
+          data.push(merge[i]);
+        }
+      }
+      return data[0];
+    },
+    /*************
+     * マージされたセルの行数を取得
+     */
+    getMergedCellRow() {
+      let Data = [];
+      // 受給者番号の配列を作成
+      for (let i = 0; i < this.nyuTaiinData.length; i++) {
+        Data.push (this.nyuTaiinData[i]['jyukyusyaBango']);
+      }
+      console.log(Data);
+      // 重複した値を削除
+      let set = new Set(Data);
+      let mergedData = [...set];
+
+      //  重複した値を削除した配列の数を返す
+      return mergedData.length;
+    },
+
     /**************
      * ヘッダ情報の作成
      */
     createHeader(flexGrid) {
-      // ヘッダーに空行を追加
       flexGrid.columnHeaders.rows[0].height = 80;
     },
     /**************
@@ -534,16 +584,28 @@ export default {
      * グリッドのデザイン修正
      */
     gridDesignModify(flexGrid) {
- 
-    flexGrid.itemFormatter = function(panel,r,c,cell){
+      // let mergedCellLength = this.getMergedCellRow()
+      let arrayLength = this.nyuTaiinData.length
+      console.log(arrayLength)
+      flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;
         s.color = sysConst.COLOR.fontColor;
         s.fontWeight = 'normal';
-        s.fontSize = '12px'
+        s.fontSize = '12px';
+
         // s.border = 'solid 1px';
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          // 上下中央寄せ
+          s.display = 'flex';
+          s.alignItems ='center'
+          s.justifyContent ='center'
+          // 印刷セル縦書き
+          if (c == 7) {
+            s.writingMode = 'vertical-rl';
+          }
+          // 2行以上で表示する行に文字列を挿入
           if ((r == 0) && (c == 2)) {
             cell.innerHTML = '入退院<br/>外泊<br/>の別';
           }
@@ -555,23 +617,35 @@ export default {
           }
         }
         if (panel.cellType == wjGrid.CellType.Cell) {
+          s.paddingTop = '4px';
           // セル背景の変更
           s.backgroundColor = sysConst.COLOR.gridBackground;
-          if (c == 11) {
+          if ((c == 6) || (c == 7)) {
             s.backgroundColor = sysConst.COLOR.white;
           }
           // 文字の位置変更
-          if ((c == 1) || (c == 2)) {
+          if ((c == 1) || (c == 5)) {
             s.textAlign = 'left';
             s.paddingLeft = '4px'
           }
-          for (let h = 3; h <= 8; h++) {
-            // 3列目～8列目を右寄せ
-            if (c == h) {
-              s.textAlign = 'right';
-              s.paddingRight = '4px'
-            }
+          // 文字の位置変更
+          if (c == 7) {
+            s.display = 'flex';
+            s.alignItems ='center'
+            s.justifyContent ='center'
           }
+          // セルと大枠の罫線が重複してしまうのでセルの罫線を消す
+          // if(r == arrayLength-1){
+          //   s.borderBottom = 'none'
+          // }
+          // if (((c == 0) && (r == mergedCellLength)) || 
+          //    ((c == 1) && (r == mergedCellLength)) || 
+          //    ((c == 6) && (r == mergedCellLength))) {
+          //   s.borderBottom = 'none'
+          // }
+          // if(c == 7){
+          //   s.borderRight = 'none'
+          // }
         }
       }
     },
@@ -595,10 +669,10 @@ export default {
       this.onSort(type)
     },
     /******************
-     * 親コンポーネントのソート
+     * ソート
      */
     onSort(type) {
-      let array = this.JyuryouTsuchisyoData;
+      let array = this.nyuTaiinData;
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
@@ -626,19 +700,35 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jigyosyobango < b.jigyosyobango) {
+          if (a.jyukyusyaBango < b.jyukyusyaBango) {
             return -1;
           }
-          if (a.jigyosyobango > b.jigyosyobango) {
+          if (a.jyukyusyaBango > b.jyukyusyaBango) {
             return 1;
           }
           return 0;
         });
       }
 
-      this.JyuryouTsuchisyoData = array;
+      this.nyuTaiinData = array;
       this.mainFlexGrid.itemsSource = [];
       // this.mainFlexGrid.refresh();
+    },
+    /**************
+     * 印刷種類入力無効化切り替え
+     */
+    disabledSwitch(type) {
+      this.insatsuFlag.houkokusyoFlag = false;
+      this.insatsuFlag.disabledFlag = false;
+      if (type == 1) {
+        this.insatsuFlag.houkokusyoFlag = true; 
+      }
+      if (type == 2) {
+        this.insatsuFlag.disabledFlag = true;
+        this.selNyutaiinDisabled = this.selNyutaiin;
+        this.selGaihakuDisabled = this.selGaihaku;
+
+      }
     },
     /*********************
      * 全選択
@@ -659,64 +749,24 @@ export default {
       }
       for (let i = 0; i < this.allData.length; i++) {
         this.mainFlexGrid.setCellData(i, 7, mark);
-        this.JyuryouTsuchisyoData[i]['print'] = mark;
+        this.nyuTaiinData[i]['print'] = mark;
       }
     },
     /************
      * アルファベットの絞り込み
      */
-    onAlphabet(key) {
-      this.alphaSelect = key;
-      this.mainFlexGrid.itemsSource = [];
-      this.mainFlexGrid.itemsSource = this.filtered();
-      // this.griddata = this.filtered();
-    },
-    /*************
-     * 利用者のフィルタリンク
-     */
-   onRiyosya(text, key) {
-      // フィルタリングの実施
-      this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
-      this.mainFlexGrid.itemsSource = [];
-      this.mainFlexGrid.itemsSource = this.filtered();
-      // this.griddata = this.filtered();
-    },
-    /*************
-     * 市町村のフィルタリンク
-     */
-    onsShityoson(text, key) {
-      // フィルタリングの実施
-      this.filterTextShityoson = { shityosonKey: key, shityoson: text };
-      this.mainFlexGrid.itemsSource = [];
-      this.mainFlexGrid.itemsSource = this.filtered();
-      // this.griddata = this.filtered();
+    onAlphabet(alphaSearch) {
+      this.alphaSelect = alphaSearch;
+      this.nyuTaiinData = this.filtered();
+      
     },
     filtered() {
       let array = [];
-      // let get = [];
-      for (let i = 0; i < this.allData.length; i++) {
-        // 検索条件がないとき
-        if (this.filterTextRiyosya.riyosyaKey == 0 &&
-            this.filterTextShityoson.shityosonKey == 0){
-          array.push(this.allData[i]);
-        } else {
-          if (
-            // 利用者コンボボックス
-            ((this.filterTextRiyosya.riyosyaKey == 0) ||
-            (this.filterTextRiyosya.riyosyaKey == 1 && this.allData[i]['nyukyo'] == 1) ||
-            (this.filterTextRiyosya.riyosyaKey == 2 && this.allData[i]['taikyo'] == 1)) &&
-            // 市町村コンボボックス
-            ((this.allData[i]['engosya'].indexOf(
-              this.filterTextShityoson.shityoson
-            ) != -1 ) ||
-            (this.filterTextShityoson.shityosonKey == 0))
-          ) {
-            array.push(this.allData[i]);
-          }
-        }
-      }
       let select = this.alphaSelect;
       let get = [];
+       for (let i = 0; i < this.allData.length; i++) {
+        array.push(this.allData[i]);
+      }
       array.forEach(function (value) {
         switch (select) {
           case 0:
@@ -782,7 +832,7 @@ export default {
 
 <style  lang="scss">
 @import '@/assets/scss/common.scss';
-div#JyuryouTsuchisyo {
+div#nyuTaiin {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
@@ -792,6 +842,40 @@ div#JyuryouTsuchisyo {
   width: auto;
   .no-flex-grow {
     flex-grow: 0;
+  }
+  .nyutaiinCheckbox {
+    padding: 0;
+    margin: 0;
+    .v-messages {
+      display: none;
+    }
+    .v-input__slot {
+      margin: 0 auto;
+      border-top: solid 1px rgba(0, 0, 0, 0.12);
+      border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+      border-right: solid 1px rgba(0, 0, 0, 0.12);
+      height: 25px;
+      padding-left: 12px;
+        .v-input--selection-controls__ripple {
+        z-index: 10;
+        height: 28px;
+        width: 28px;
+        left: -9px;
+        top: calc(50% - 22px);
+      }
+    }
+    .v-input--selection-controls__input {
+      margin-right: 0;
+    }
+    .v-icon {
+      font-size: 18px;
+    }
+    .v-label{
+      font-size: 12px;
+      color: #333;
+      background: $white;
+      width: 51px;
+    }
   }
   div#comboFilters1,
   div#comboFilters2 {
@@ -803,11 +887,9 @@ div#JyuryouTsuchisyo {
   .combo:hover {
     background-color: #e1e1e1;
   }
-
   .combo:focus {
     background-color: #fff;
   }
-
   #comboFilters1_dropdown,
   #comboFilters2_dropdown {
     .wj-listbox-item {
@@ -815,21 +897,34 @@ div#JyuryouTsuchisyo {
       padding: 30px;
     }
   }
-
   .wj-control {
     .wj-template,
     .wj-input {
       height: 25px;
-      }
-    .wj-input-group {
-      .wj-form-control {
-        vertical-align: middle;
-      }
-    } 
+    }
   }
-  #JyuryouTsuchisyoGrid {
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
+
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+  #nyuTaiinGrid {
     // max-height: 420px;
     max-height: calc(62vh + 1px);
+    border-right: none;
+    border-bottom: none;
+    width: calc(100% - 1px);
     .wj-cell {
       padding: 1px 0;
     }

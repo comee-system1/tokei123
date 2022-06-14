@@ -433,12 +433,6 @@ export default {
     kanryoToggleSwitch: function () {
       this.isActive = !this.isActive;
     },
-    // calenderChange: function (e) {
-    //   let split = e.target.value.split('-');
-    //   this.year = split[0];
-    //   this.month = split[1];
-    //   this.$emit('parent-calendar', split);
-    // },
     /**************
      * 月の選択 ダイアログの日付を押下
      */
@@ -476,7 +470,6 @@ export default {
         // 印刷日←選択時
         this.insatsubi_month = moment(changeInsatsubiDate).subtract(1, 'days').format('MM');
         this.insatsubi_date = moment(changeInsatsubiDate).subtract(1, 'days').format('DD');
-        console.log(changeInsatsubiDate)
       } else if (type == 4) {
         // 印刷日→選択時
         this.insatsubi_month = moment(changeInsatsubiDate).add(1, 'days').format('MM');
@@ -516,8 +509,7 @@ export default {
         JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012340',
           code: '5',
-          jigyosyobango: '4',
-          riyousyamei: '1入居太郎code5受証４',
+          riyousyamei: '1入居太郎code5',
           kana: 'ニュウキョタロウ',
           engosya: '東経市',
           zentaigaku: '125,840',
@@ -536,8 +528,7 @@ export default {
           JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012341',
           code: '8',
-          jigyosyobango: '3',
-          riyousyamei: '2入居太郎code8受証３',
+          riyousyamei: '2入居太郎code8',
           kana: 'ニュウキョタロウ',
           engosya: '西経市',
           zentaigaku: '125,840',
@@ -556,8 +547,7 @@ export default {
           JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012342',
           code: '6',
-          jigyosyobango: '2',
-          riyousyamei: '3退去太郎code6受証２',
+          riyousyamei: '3退去太郎code6',
           kana: 'タイキョタロウ',
           engosya: '北経市',
           zentaigaku: '125,840',
@@ -576,8 +566,7 @@ export default {
           JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012343',
           code: '9',
-          jigyosyobango: '1',
-          riyousyamei: '4退去太郎code9受証１',
+          riyousyamei: '4退去太郎code9',
           kana: 'タイキョタロウ',
           engosya: '南経市',
           zentaigaku: '125,840',
@@ -624,6 +613,9 @@ export default {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
+
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
@@ -739,19 +731,15 @@ export default {
           // 2行以上で表示する行に文字列を挿入
           if ((r == 1) && (c == 3)) {
             cell.innerHTML = 'サービスに要<br/>した費用の全<br/>の額<br/>(A)';
-            
           }
           if ((r == 2) && (c == 4)) {
             cell.innerHTML = '利用者負担<br/>(B)<br/>a+b';
-            
           }
           if ((r == 2) && (c == 5)) {
             cell.innerHTML = '(本人分)<br/>a';
-            
           }
           if ((r == 2) && (c == 6)) {
             cell.innerHTML = '(軽減等)<br/>b';
-            
           }
           if ((r == 1) && (c == 7)) {
             cell.innerHTML = '特定障害<br/>者特別給<br/>付費<br/>(C)';
@@ -832,10 +820,10 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jigyosyobango < b.jigyosyobango) {
+          if (a.jyukyusyaBango < b.jyukyusyaBango) {
             return -1;
           }
-          if (a.jigyosyobango > b.jigyosyobango) {
+          if (a.jyukyusyaBango > b.jyukyusyaBango) {
             return 1;
           }
           return 0;
@@ -899,7 +887,6 @@ export default {
     },
     filtered() {
       let array = [];
-      // let get = [];
       for (let i = 0; i < this.allData.length; i++) {
         // 検索条件がないとき
         if (this.filterTextRiyosya.riyosyaKey == 0 &&
@@ -1021,7 +1008,22 @@ div#JyuryouTsuchisyo {
       padding: 30px;
     }
   }
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
 
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
   .wj-control {
     .wj-template,
     .wj-input {
@@ -1034,8 +1036,10 @@ div#JyuryouTsuchisyo {
     } 
   }
   #JyuryouTsuchisyoGrid {
-    // max-height: 420px;
     max-height: calc(62vh + 1px);
+    border-right: none;
+    border-bottom: none;
+    width: calc(100% - 1px);
     .wj-cell {
       padding: 1px 0;
     }

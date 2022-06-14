@@ -11,7 +11,7 @@ export function getHendoData2() {
     },
     {
       text:'入院・退院日',
-      type:'tyutai',
+      type:'nyutai',
       merge:3,
     },
     {
