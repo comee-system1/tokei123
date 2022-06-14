@@ -73,5 +73,5 @@ export function getMeal() {
   });
 
 
-  return [breakfast,lunch,dinner];
+  return [breakfast, lunch, dinner];
 }

@@ -1,7 +1,6 @@
 <template>
   <div id="kobeturiyo">
     <header-services
-      @parent-search="parentSearch($event, searchArgument)"
       @parent-service-select="parentServiceSelect($event, serviceArgument)"
       @parent-service-change="parentServiceChange($event, serviceArgument)"
       :registButtonFlag="true"
@@ -199,10 +198,11 @@ export default {
 
       // ヘッダ作成
       this.createHeader(flexGrid);
+      // 縦ヘッダ+ 加算情報の値
       this.createRowHeader(flexGrid);
       this.createMerge(flexGrid);
       this.methodCellFormatSetting(flexGrid);
-      // 値の登録
+      // 値の登録 変動情報
       this.settingPoint();
 
       //  flexGrid.itemsSource = [];
@@ -212,18 +212,67 @@ export default {
         flexGrid.rows[1].height = 30;
         flexGrid.rows[2].height = 30;
       }
-      // 列ヘッダ
-      //this.createRowHeader(flexGrid);
-      // マージ
-      //this.createMerge(flexGrid);
     },
+    /*******************************
+     * ヘッダメニューのサービス初回選択 検索ボタン
+     */
+    parentServiceSelect(serviceArgument) {
+      this.teikyoCode = serviceArgument.teikyoCode;
+      this.year = serviceArgument['teikyo_year'];
+      this.month = serviceArgument['teikyo_month'];
+      let m = moment(this.year + '-' + this.month + '-01');
+      this.lastdate = m.daysInMonth();
+      if (serviceArgument['search_button']) {
+        this.userDataSelect[0]['riyosyo'] = '';
+        this.userDataSelect[0]['jyukyusyabango'] = '';
+        this.$refs.user_list_print.setChildTeikyocode(
+          this.teikyoCode,
+          serviceArgument['search_button']
+        );
+      }
+      // this.settingChangeHndoJyoho();
+    },
+    /**********************
+     * 左メニューで作成されたユーザ一覧の取得を行う
+     */
+    getSelectUserChildComponent(data) {
+      this.userListComponentDatas = data;
+    },
+    /*****
+     * 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
+     */
+    setUserSelectPoint(row) {
+      this.userDataSelect[0]['riyosyo'] =
+        this.userListComponentDatas[row].riyocode +
+        ' ' +
+        this.userListComponentDatas[row].names;
+
+      this.userDataSelect[0]['jyukyusyabango'] =
+        this.userListComponentDatas[row].jyukyuno;
+
+      // 値の設定
+      this.selectType = '';
+      this.editGridFlag = '';
+      // this.settingChangeHndoJyoho();
+    },
+
+    /***************
+     * ヘッダメニューのサービスを変更したとき
+     */
+    parentServiceChange(serviceArgument) {
+      this.teikyoCode = serviceArgument.teikyoCode;
+      this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
+      this.userDataSelect[0]['riyosyo'] = '';
+      this.userDataSelect[0]['jyukyusyabango'] = '';
+      //  this.settingChangeHndoJyoho();
+    },
+
     /**************************
      * 値の登録
      */
     settingPoint() {
       let riyoGoukei = 0;
       let m = 0; // 食事のキー
-      console.log(this.viewdata);
       for (let i = 0; i < this.viewdata.length; i++) {
         if (this.viewdata[i].type == 'riyo') {
           for (let day = 1; day <= this.lastdate; day++) {
@@ -377,9 +426,17 @@ export default {
         let classname = '';
         if (e.panel != flexGrid.columnHeaders) {
           // 変動情報を縦に変更
-          if (e.row == 0 && e.col == 0) {
+          // 体制＋個別を縦
+          if (
+            (e.row == 0 && e.col == 0) ||
+            (e.row == _self.hendoRow && e.col == 0) ||
+            (e.row == _self.hendoRow && e.col == 1) ||
+            (e.row == _self.hendoRow + _self.rowHendoData.taisei.data.length &&
+              e.col == 1)
+          ) {
             classname = 'vertical';
           }
+
           // グリッドの値を変更
           // 入退院 / 外泊
           if (
@@ -429,6 +486,7 @@ export default {
               html = '〇';
             }
             if (text === '0') {
+              e.cell.style.color = sysConst.COLOR.blueTextColor;
               html = '×';
             }
           }
@@ -488,7 +546,7 @@ export default {
     createMerge(flexGrid) {
       let headerRanges = [];
       let cellRanges = [];
-      headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)];
+      headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)]; // 項目
       // 日付マージ
       for (let day = 4; day < this.lastdate + 4; day++) {
         headerRanges.push(new wjGrid.CellRange(0, day, 1, day));
@@ -501,11 +559,69 @@ export default {
       headerRanges.push(
         new wjGrid.CellRange(0, this.lastdate + 5, 1, this.lastdate + 5)
       );
-      cellRanges = [new wjGrid.CellRange(0, 0, this.viewdata.length - 1, 0)];
+      // 変動情報
+      cellRanges = [new wjGrid.CellRange(0, 0, this.hendoRow - 1, 0)];
+
       // 食事用マージ
       this.mealMearges(cellRanges);
-      for (let i = 0; i < this.viewdata.length; i++) {
+      // 変動情報項目一覧マージ
+      for (let i = 0; i < this.hendoRow; i++) {
         cellRanges.push(new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge));
+      }
+
+      // 加算情報
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          0,
+          this.hendoRow +
+            this.rowHendoData.taisei.data.length +
+            this.rowHendoData.kobetu.data.length -
+            1,
+          0
+        )
+      );
+
+      // 体制+個別
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          1,
+          this.hendoRow + this.rowHendoData.taisei.data.length - 1,
+          1
+        )
+      );
+      // 個別
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow + this.rowHendoData.taisei.data.length,
+          1,
+          this.hendoRow +
+            this.rowHendoData.taisei.data.length +
+            this.rowHendoData.kobetu.data.length -
+            1,
+          1
+        )
+      );
+
+      // 加算情報項目一覧 体制＋個別マージ
+      for (
+        let i = this.hendoRow;
+        i < this.hendoRow + this.rowHendoData.taisei.data.length;
+        i++
+      ) {
+        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
+      }
+      // 加算情報項目一覧 個別マージ
+      for (
+        let i = this.hendoRow + this.rowHendoData.taisei.data.length;
+        i <
+        this.hendoRow +
+          this.rowHendoData.taisei.data.length +
+          this.rowHendoData.kobetu.data.length;
+        i++
+      ) {
+        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
       }
 
       let mm = new wjGrid.MergeManager(flexGrid);
@@ -579,6 +695,50 @@ export default {
           hendoRow++;
         }
       }
+      // 体制＋個別
+      let j = 0;
+      for (
+        let i = hendoRow;
+        i < hendoRow + this.rowHendoData.taisei.data.length;
+        i++
+      ) {
+        views[i] = [];
+        views[i]['komoku0'] = this.rowHendoData.rowColumn.column2;
+        views[i]['komoku1'] = this.rowHendoData.taisei.text;
+        views[i]['komoku2'] = this.rowHendoData.taisei.data[j].text;
+        for (let d = 1; d <= this.lastdate; d++) {
+          let day = 'day' + d;
+          views[i][day] = this.rowHendoData.taisei.data[j][day];
+        }
+        j++;
+      }
+      j = 0;
+      // 個別
+      for (
+        let i = hendoRow + this.rowHendoData.taisei.data.length;
+        i <
+        hendoRow +
+          this.rowHendoData.taisei.data.length +
+          this.rowHendoData.kobetu.data.length;
+        i++
+      ) {
+        views[i] = [];
+        views[i]['komoku0'] = this.rowHendoData.rowColumn.column2;
+        views[i]['komoku1'] = this.rowHendoData.kobetu.text;
+        views[i]['komoku2'] = this.rowHendoData.kobetu.data[j].text;
+        for (let d = 1; d <= this.lastdate; d++) {
+          let day = 'day' + d;
+          views[i][day] = this.rowHendoData.kobetu.data[j][day];
+        }
+        j++;
+
+        // views.push({
+        //   komoku0: this.rowHendoData.rowColumn.column2,
+        //   komoku1: this.rowHendoData.kobetu.text,
+        //   komoku2: this.rowHendoData.kobetu.data[i].text,
+        // });
+      }
+      console.log(views);
 
       this.viewdata = views;
       this.hendoRow = hendoRow;
@@ -641,6 +801,75 @@ export default {
         ht = 70;
       }
       this.gridHeight = 'height:' + ht + 'vh;';
+    },
+
+    /*************************
+     * ダイアログの表示
+     */
+    // 入退院ダイアログの登録ボタン押下
+    kikantuika_dialog_regist() {
+      this.selectType = this.$refs.dialog_kikantuika.registData.type;
+      let selectKey = this.$refs.dialog_kikantuika.registData.selectKey;
+      if (selectKey.length == 0) {
+        // 空欄のときは新規追加
+        this.editGridFlag = false;
+      } else {
+        this.editGridFlag = true;
+      }
+      this.deleteGridFlag = false;
+      this.mainGrid.itemsSource = [];
+    },
+
+    // 加算追加ダイアログの登録ボタン押下
+    kasantuika_dialog_regist() {
+      let selectKasanName = this.$refs.dialog_kasantuika.registData.selectName;
+      let addType = this.$refs.dialog_kasantuika.registData.addType;
+      this.kasanRow = this.kasanRow + 1;
+      if (addType == 1) {
+        this.gridItemName[0].taisei_kobetu.push({ name: selectKasanName });
+      } else {
+        this.gridItemName[0].kobetu.push({ name: selectKasanName });
+      }
+      this.alertMessageFlag = true;
+      this.deleteGridFlag = false;
+      this.mainGrid.itemsSource = [];
+    },
+
+    // 入退院ダイアログの削除ボタン押下
+    kikantuika_dialog_delete() {
+      this.selectType = this.$refs.dialog_kikantuika.registData.type;
+      this.deleteGridFlag = true;
+      this.mainGrid.itemsSource = [];
+    },
+    // 加算追加ダイアログの削除ボタン押下
+    kasantuika_dialog_delete() {
+      let kasanid = this.$refs.dialog_kasantuika.kasanid;
+      let type = this.$refs.dialog_kasantuika.type;
+      if (type == 'taisei_kobetu') {
+        this.gridItemName[0].taisei_kobetu.splice(kasanid, 1);
+      }
+      if (type == 'kobetu') {
+        this.gridItemName[0].kobetu.splice(kasanid, 1);
+      }
+      this.kasanRow = this.kasanRow - 1;
+      this.mainGrid.itemsSource = [];
+    },
+
+    // 変動情報ダイアログの表示
+    openDialog_Term(type) {
+      if (this.userDataSelect[0]['jyukyusyabango']) {
+        this.$refs.dialog_kikantuika.parentFromOpenDialog('', type);
+      } else {
+        alert('ユーザを選択してください。');
+      }
+    },
+    // 加算追加ダイアログの表示
+    openDialog_Add() {
+      if (this.userDataSelect[0]['jyukyusyabango']) {
+        this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
+      } else {
+        alert('ユーザを選択してください。');
+      }
     },
   },
 };
