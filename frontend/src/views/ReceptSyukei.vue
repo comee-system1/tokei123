@@ -279,8 +279,8 @@ export default {
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
 
-      receptFlag: false, // receptの初期表示状態
-      TajyougenkanriJimsyoFlag: true, // TajyougenkanriJimsyoFlagの初期表示状態
+      receptFlag: true, // receptの初期表示状態
+      TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
@@ -299,6 +299,10 @@ export default {
     TabMenuBlue,
   },
   created() {
+    this.receptCombo = [];
+    this.riyosyaCombo = [];
+    this.jyougenkanriCombo = [];
+    this.taServiceCombo = [];
     // レセプト集計絞込
     this.receptCombo.push(
       {

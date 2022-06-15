@@ -13,7 +13,7 @@
           :deferResizing="false"
           :allowSorting="false"
           :autoGenerateColumns="false"
-          style="width: 100%"
+          :style="gridHeight"
         >
         </wj-flex-grid>
       </v-col>
@@ -29,7 +29,7 @@
           :deferResizing="false"
           :allowSorting="false"
           :autoGenerateColumns="false"
-          style="width: 100%"
+          :style="gridHeight"
         >
         </wj-flex-grid>
       </v-col>
@@ -64,13 +64,14 @@ export default {
     };
   },
   components: {},
+  mounted() {
+    this.handleResize;
+  },
   created() {
     window.addEventListener('resize', this.handleResize);
     this.receptData = this.getData();
   },
-  beforeDestroy() {
-    window.addEventListener('resize', this.handleResize);
-  },
+
   methods: {
     /*********************
      * 画面リサイズの際の表示調整
@@ -85,7 +86,6 @@ export default {
       let grid_syukei =
         document.getElementById('grid_syukei').getBoundingClientRect().left -
         672;
-
       this.serviceWidth = grid_syukei;
 
       let height = window.innerHeight;
@@ -95,7 +95,7 @@ export default {
       } else if (height > 700) {
         ht = 58;
       }
-      this.gridHeight = 'height:' + ht + 'vh;';
+      this.gridHeight = 'height:' + ht + 'vh; width:100%;';
     },
 
     onInitialized(flexGrid) {
@@ -844,7 +844,7 @@ div#recept-list {
   div#grid_recept {
     &.wj-content {
       border-radius: 4px 0px 0px 4px;
-      border: none;
+      border-right: none !important;
       border-top: 1px solid rgba(0, 0, 0, 0.2);
       .wj-cell {
         border: none;
@@ -866,6 +866,8 @@ div#recept-list {
     }
   }
   div#grid_syukei {
+    border-left: none !important;
+
     &.wj-content {
       border-radius: 0px 4px 4px 0px;
       border: none;

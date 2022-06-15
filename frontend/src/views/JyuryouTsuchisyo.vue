@@ -7,7 +7,7 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="rowStyle mt-1" no-gutters>
+      <v-row class="rowStyle" no-gutters>
         <v-col class="no-flex-grow">
           <div class="d-flex">
             <label>利用者</label>
@@ -38,47 +38,49 @@
               </wj-menu>
           </div>
         </v-col>
-        <label class="ml-2 align-end">ソート</label>
-        <!-- mandatoryは初期選択 -->
-        <v-btn-toggle class="flex-wrap ml-1" mandatory>
+        <v-col class="">
+          <label class="ml-1 align-end">ソート</label>
+          <!-- mandatoryは初期選択 -->
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
+              small
+              color="secondary"
+              dark
+              outlined
+              style="width: "
+              @click="sort(1)"
+            >
+              カナ
+            </v-btn>
+            <v-btn
+              small
+              color="secondary"
+              dark
+              outlined
+              style="width: 90px"
+              @click="sort(2)"
+            >
+              コード
+            </v-btn>
+            <v-btn
+              small
+              color="secondary"
+              dark
+              outlined
+              style="width: 90px"
+              @click="sort(3)"
+            >
+              受給者番号
+            </v-btn>
+          </v-btn-toggle>
           <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-            style="width: "
-            @click="sort(1)"
+            class="ml-1"
+            style="width: 60px; height: 30px; margin-top: -4px"
           >
-            カナ
+            検索
           </v-btn>
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-            style="width: 90px"
-            @click="sort(2)"
-          >
-            コード
-          </v-btn>
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-            style="width: 90px"
-            @click="sort(3)"
-          >
-            受給者番号
-          </v-btn>
-        </v-btn-toggle>
-        <v-btn
-          class="ml-2"
-          style="width: 60px; height: 30px; margin-top: -4px"
-        >
-          検索
-        </v-btn>
-        <v-col class="no-flex-grow ml-2">
+        </v-col>
+        <v-col class="no-flex-grow ml-1">
           <div class="d-flex">
             <label>受領日</label>
             <v-btn
@@ -167,9 +169,9 @@
             </v-date-picker>
           </v-dialog>
         </v-col>
-        <label class="ml-2">印刷種類</label>
+        <label class="ml-1">印刷種類</label>
         <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap ml-1" mandatory>
+          <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
               small
               color="secondary"
@@ -192,7 +194,7 @@
             </v-btn>
           </v-btn-toggle>
       </v-row>
-      <v-row class="mt-1 justify-sm-space-between" no-gutters>
+      <v-row class="justify-sm-space-between align-end" no-gutters>
         <v-btn-toggle class="flex-wrap" mandatory>
           <v-btn
             small
@@ -524,8 +526,8 @@ export default {
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
         });
-          // 西経市 + 今月入居
-          JyuryouTsuchisyoData.push({
+        // 西経市 + 今月入居
+        JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012341',
           code: '8',
           riyousyamei: '2入居太郎code8',
@@ -543,8 +545,8 @@ export default {
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
         });
-          // 北経市 + 今月退去
-          JyuryouTsuchisyoData.push({
+        // 北経市 + 今月退去
+        JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012342',
           code: '6',
           riyousyamei: '3退去太郎code6',
@@ -562,8 +564,8 @@ export default {
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
         });
-          // 南経市 + 今月退去
-          JyuryouTsuchisyoData.push({
+        // 南経市 + 今月退去
+        JyuryouTsuchisyoData.push({
           jyukyusyaBango: '1100012343',
           code: '9',
           riyousyamei: '4退去太郎code9',
@@ -581,30 +583,33 @@ export default {
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
         });
-        
       }
       
       // 配列の要素の数を比較用に変数化
-      // let compareArr = JyuryouTsuchisyoData.length;
-      // if (JyuryouTsuchisyoData.length < 15) {
-      //   // 配列の要素の数が15個以下の場合、空セルを入れる
-      //   for (let i = 0; i < (15 - compareArr); i++) {
-      //     JyuryouTsuchisyoData.push({
-      //       jyukyusyaBango:   '',
-      //       riyousyamei:      '',
-      //       engosya:          '',
-      //       zentaigaku:       '',
-      //       riyousyahutan:    '',
-      //       honninbun:        '',
-      //       keigentou:        '',
-      //       tokubetukyuhuhi:  '',
-      //       dairijyuryougaku: '',
-      //       juryoubi:        '',
-      //       insatsubi:          '',
-      //       print:            '',
-      //     });
-      //   }
-      // }
+      let compareArr = JyuryouTsuchisyoData.length;
+      if (JyuryouTsuchisyoData.length < 15) {
+        // 配列の要素の数が15個以下の場合、空セルを入れる
+        for (let i = 0; i < (15 - compareArr); i++) {
+          JyuryouTsuchisyoData.push({
+          jyukyusyaBango: '',
+          code: '',
+          riyousyamei: '',
+          kana: '',
+          engosya: '',
+          zentaigaku: '',
+          riyousyahutan: '',
+          honninbun: '',
+          keigentou: '',
+          tokubetukyuhuhi: '',
+          dairijyuryougaku: '',
+          juryoubi: '',
+          insatsubi: '',
+          print: '',
+          nyukyo: '', // 今月入居
+          taikyo:  ''// 今月退去
+          });
+        }
+      }
       this.allData = JyuryouTsuchisyoData;
       this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
       return JyuryouTsuchisyoData;
@@ -730,7 +735,7 @@ export default {
           }
           // 2行以上で表示する行に文字列を挿入
           if ((r == 1) && (c == 3)) {
-            cell.innerHTML = 'サービスに要<br/>した費用の全<br/>の額<br/>(A)';
+            cell.innerHTML = 'サービスに要した<br/>費用の全体の額<br/>(A)';
           }
           if ((r == 2) && (c == 4)) {
             cell.innerHTML = '利用者負担<br/>(B)<br/>a+b';
@@ -742,7 +747,7 @@ export default {
             cell.innerHTML = '(軽減等)<br/>b';
           }
           if ((r == 1) && (c == 7)) {
-            cell.innerHTML = '特定障害<br/>者特別給<br/>付費<br/>(C)';
+            cell.innerHTML = '特定障害者<br/>特別給付費<br/>(C)';
           }
           if ((r == 1) && (c == 8)) {
             cell.innerHTML = '代理受領額<br/>(A)-(B)+(C)';
@@ -789,18 +794,20 @@ export default {
       this.onSort(type)
     },
     /******************
-     * 親コンポーネントのソート
+     * ソートの実行
      */
     onSort(type) {
       let array = this.JyuryouTsuchisyoData;
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.riyousyamei < b.riyousyamei) {
-            return -1;
-          }
-          if (a.riyousyamei > b.riyousyamei) {
-            return 1;
+          if (a.riyousyamei !== "" && b.riyousyamei !== "") {
+            if (a.riyousyamei < b.riyousyamei) {
+              return -1;
+            }
+            if (a.riyousyamei > b.riyousyamei) {
+              return 1;
+            }
           }
           return 0;
         });
@@ -808,11 +815,13 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code < b.code) {
-            return -1;
-          }
-          if (a.code > b.code) {
-            return 1;
+          if (a.code !== "" && b.code !== "") {
+            if (a.code < b.code) {
+              return -1;
+            }
+            if (a.code > b.code) {
+              return 1;
+            }
           }
           return 0;
         });
@@ -820,11 +829,13 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyusyaBango < b.jyukyusyaBango) {
-            return -1;
-          }
-          if (a.jyukyusyaBango > b.jyukyusyaBango) {
-            return 1;
+          if (a.jyukyusyaBango !== "" && b.jyukyusyaBango !== "") {
+            if (a.jyukyusyaBango < b.jyukyusyaBango) {
+              return -1;
+            }
+            if (a.jyukyusyaBango > b.jyukyusyaBango) {
+              return 1;
+            }
           }
           return 0;
         });
@@ -832,7 +843,7 @@ export default {
 
       this.JyuryouTsuchisyoData = array;
       this.mainFlexGrid.itemsSource = [];
-      // this.mainFlexGrid.refresh();
+      this.mainFlexGrid.refresh();
     },
     /*********************
      * 全選択
@@ -967,6 +978,30 @@ export default {
             break;
         }
       });
+      // データの数が15未満だった場合空行を追加
+      let ArrLength = get.length;
+      if (get.length < 15){
+        for (let i = 0; i < (15 - ArrLength); i++) {
+          get.push({
+          jyukyusyaBango: '',
+          code: '',
+          riyousyamei: '',
+          kana: '',
+          engosya: '',
+          zentaigaku: '',
+          riyousyahutan: '',
+          honninbun: '',
+          keigentou: '',
+          tokubetukyuhuhi: '',
+          dairijyuryougaku: '',
+          juryoubi: '',
+          insatsubi: '',
+          print: '',
+          nyukyo: '', // 今月入居
+          taikyo:  ''// 今月退去
+          });
+        }
+      }
       return get;
     }
   }
@@ -983,15 +1018,19 @@ div#JyuryouTsuchisyo {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
+  .customCombobox {
+    height: 25px !important;
+    .wj-input-group-btn {
+      height: 21px !important;
+    }
+  }
+  .user-info {
+    label {
+      margin-right: 4px!important;
+    }
+  }
   .no-flex-grow {
     flex-grow: 0;
-  }
-  div#comboFilters1,
-  div#comboFilters2 {
-    margin-top: -3px;
-    .wj-btn.wj-btn-default {
-      border-left: none;
-    }
   }
   .combo:hover {
     background-color: #e1e1e1;
@@ -999,14 +1038,6 @@ div#JyuryouTsuchisyo {
 
   .combo:focus {
     background-color: #fff;
-  }
-
-  #comboFilters1_dropdown,
-  #comboFilters2_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
-    }
   }
   .wj-cells
     .wj-row:hover
@@ -1026,9 +1057,6 @@ div#JyuryouTsuchisyo {
   }
   .wj-control {
     .wj-template,
-    .wj-input {
-      height: 25px;
-      }
     .wj-input-group {
       .wj-form-control {
         vertical-align: middle;

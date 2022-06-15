@@ -35,10 +35,7 @@
               </v-btn>
             </v-btn-toggle>
 
-            <v-btn class="ml-2" small>検索</v-btn>
-          </v-row>
-          <v-row class="mt-1" no-gutters>
-            <label>ソート</label>
+            <label class="ml-1">ソート</label>
             <v-btn-toggle class="flex-wrap ml-1" mandatory>
               <v-btn
                 small
@@ -71,6 +68,8 @@
                 受給者証番号
               </v-btn>
             </v-btn-toggle>
+
+            <v-btn class="ml-2" small>検索</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -109,7 +108,7 @@
         :deferResizing="false"
         :allowSorting="false"
         :autoGenerateColumns="false"
-        :itemsSource="nyutaiinData"
+        :itemsSource="nenkanRiyouNissuData"
         :style="gridHeight"
       >
         <wj-flex-grid-column
@@ -201,8 +200,8 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
 import HeaderServices from '../components/HeaderServices.vue';
-import { getNyuTaiinHoukoku } from '@/data/nyuTaiinData.js';
-import { getNyuTaiinHoukokuTotal } from '@/data/nyuTaiinTotalData.js';
+import { getNenkanRiyouNissu } from '@/data/nenkanRiyouNissuData.js';
+import { getNenkanRiyouNissuTotal } from '@/data/nenkanRiyouNissuTotalData.js';
 import sysConst from '@/utiles/const';
 
 const riyosyaCombo = [];
@@ -227,7 +226,7 @@ const alphabet = [
 export default {
   data() {
     return {
-      nyutaiinData: [],
+      nenkanRiyouNissuData: [],
       allData: [],
       alphabet: alphabet,
       alphabetSelect: 0,
@@ -256,11 +255,11 @@ export default {
      */
     handleResize() {
       let height = window.innerHeight;
-      let ht = 54;
+      let ht = 62;
       if (height > 800) {
-        ht = 65;
+        ht = 75;
       } else if (height > 700) {
-        ht = 58;
+        ht = 70;
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
@@ -323,11 +322,11 @@ export default {
      * データ取得
      */
     getData() {
-      this.nyutaiinData = getNyuTaiinHoukoku();
-      this.allData = this.nyutaiinData;
+      this.nenkanRiyouNissuData = getNenkanRiyouNissu();
+      this.allData = this.nenkanRiyouNissuData;
     },
     settingFooterData(flexGrid) {
-      let footerdata = getNyuTaiinHoukokuTotal();
+      let footerdata = getNenkanRiyouNissuTotal();
       var footerPanel = flexGrid.columnFooters;
 
       // 利用日数計
@@ -454,7 +453,7 @@ export default {
      */
     filter(type) {
       this.syukeiFlag = type;
-      this.nyutaiinData = this.filtered();
+      this.nenkanRiyouNissuData = this.filtered();
     },
     filtered() {
       let array = [];
@@ -535,7 +534,7 @@ export default {
      * 並び順変更
      */
     sort(type) {
-      let array = this.nyutaiinData;
+      let array = this.nenkanRiyouNissuData;
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
@@ -573,7 +572,7 @@ export default {
         });
       }
       this.mainFlexGrid.itemsSource = [];
-      this.nyutaiinData = array;
+      this.nenkanRiyouNissuData = array;
     },
 
     /************
@@ -581,7 +580,7 @@ export default {
      */
     onAlphabet(key) {
       this.alphabetSelect = key;
-      this.nyutaiinData = this.filtered();
+      this.nenkanRiyouNissuData = this.filtered();
     },
   },
 };

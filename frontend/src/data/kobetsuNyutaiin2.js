@@ -4,6 +4,7 @@ export function getNyutaiin() {
     jyukyusyabango: '8765432100',
     date: [
       {
+        key:1,
         byouinName: '東経国立病院',
         start_date: '2022-05-06',
         end_date: '2022-06-18',
@@ -17,6 +18,7 @@ export function getNyutaiin() {
         taiinbiDinner: true,
       },
       {
+        key:2,
         byouinName: '西経国立病院',
         start_date: '2022-06-26',
         end_date: '2022-07-28',

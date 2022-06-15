@@ -1,5 +1,5 @@
 <template>
-  <div id="kobeturiyo">
+  <div id="kobeturiyou">
     <header-services
       @parent-service-select="parentServiceSelect($event, serviceArgument)"
       @parent-service-change="parentServiceChange($event, serviceArgument)"
@@ -154,7 +154,9 @@ export default {
       nyutaiinData: [], // 入退院データ
       gaihakuData: [], // 外泊データ
       mealsData: [], // 食事データ
+      mealsDataMoney: [], // 食事データ金額
       shineData: [], // 光熱水費データ
+      shineDataMoney: [], // 光熱水費データ金額
       gridItemName: [], // 変動情報の表示内容
       year: moment().year(),
       month: moment().format('MM'),
@@ -195,26 +197,127 @@ export default {
       this.gaihakuData = getGaihaku();
       this.mealsData = getMeal();
       this.shineData = getKounetusuihi();
-
-      // ヘッダ作成
-      this.createHeader(flexGrid);
-      // 縦ヘッダ+ 加算情報の値
-      this.createRowHeader(flexGrid);
-      this.createMerge(flexGrid);
+      this.mainGrid = flexGrid;
       this.methodCellFormatSetting(flexGrid);
-      // 値の登録 変動情報
-      this.settingPoint();
-
-      //  flexGrid.itemsSource = [];
+      // セルのクリックイベント
+      this.methodCellClickEvent(flexGrid);
     },
     onChangeInitialized(flexGrid) {
+      flexGrid.frozenColumns = 4;
       if (flexGrid.rows.length > 0) {
         flexGrid.rows[1].height = 30;
         flexGrid.rows[2].height = 30;
       }
     },
+    /**************
+     * セルのクリックイベント
+     */
+    methodCellClickEvent(flexGrid) {
+      let _self = this;
+
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        if (_self.userDataSelect[0]['jyukyusyabango']) {
+          let ht = flexGrid.hitTest(e);
+          let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+          //  let html = ht.target.innerHTML;
+          let text = ht.target.innerText;
+          var parent = e.target.parentNode;
+          // クリックした箇所が日付期間のセルの際にはダイアログを表示する
+          if (text.match(/^[0-9]{1,2}\/[0-9]{1,2}/)) {
+            // 親要素のIDを取得
+            let ground = parent.querySelector('div').parentNode;
+            let parentKey = ground.id.split('-')[1];
+            let passData = [];
+            let passType = '';
+            if (hPage.row == 1) {
+              passData = _self.nyutaiinData.date[parentKey];
+              passType = 'nyutaiin_add';
+            }
+            if (hPage.row == 2) {
+              passData = _self.gaihakuData.date[parentKey];
+              passType = 'gaihaku_add';
+            }
+            let params = {
+              selectKey: parentKey,
+              byouinName: passData.byouinName,
+              nyuuinbi: passData.start_date,
+              taiinbi: passData.end_date,
+              nyuuinbiShiseturiyo: passData.nyuuinbiShiseturiyo,
+              nyuuinbiBreakfast: passData.nyuuinbiBreakfast,
+              nyuuinbiLunch: passData.nyuuinbiLunch,
+              nyuuinbiDinner: passData.nyuuinbiDinner,
+              taiinbiShiseturiyo: passData.taiinbiShiseturiyo,
+              taiinbiBreakfast: passData.taiinbiBreakfast,
+              taiinbiLunch: passData.taiinbiLunch,
+              taiinbiDinner: passData.taiinbiDinner,
+              taiinbiAida: passData.taiinbiAida,
+            };
+            _self.$refs.dialog_kikantuika.parentFromOpenDialog(
+              params,
+              passType
+            );
+          }
+          // 食事を押下
+          if (
+            _self.viewdata[hPage.row].type === 'meal' ||
+            _self.viewdata[hPage.row].type === 'shine'
+          ) {
+            _self.edittingPoint(
+              _self,
+              flexGrid,
+              hPage,
+              _self.viewdata[hPage.row].type
+            );
+          }
+        } else {
+          alert('利用者を選択してください。');
+        }
+
+        console.log(_self.viewdata);
+      });
+    },
+    /*************************
+     * 〇の変更
+     * 1:〇←利用しない
+     * 2:青〇
+     * 0:空欄
+     * 3:空欄
+     * '':空欄
+     */
+    edittingPoint(_self, flexGrid, hPage, type) {
+      let day = 'day' + parseInt(hPage.col - 3);
+      let point = _self.viewdata[hPage.row][day];
+      let pt = '';
+      if (point == 0) {
+        pt = '3';
+        _self.viewdata[hPage.row][day] = '3';
+      } else if (point == 2) {
+        pt = '0';
+        _self.viewdata[hPage.row][day] = '0';
+      } else if ((!point && point != 0) || point == 3) {
+        pt = '2';
+        _self.viewdata[hPage.row][day] = '2';
+      }
+      flexGrid.setCellData(hPage.row, hPage.col, pt);
+      // 合計の計算
+      let gokei = 0;
+      for (let i = 1; i < _self.lastdate; i++) {
+        let d = 'day' + i;
+        if (_self.viewdata[hPage.row][d] == 2) {
+          gokei++;
+        }
+      }
+      _self.viewdata[hPage.row]['gokei'] = gokei;
+      if (type == 'meal') {
+        _self.viewdata[hPage.row]['kingaku'] =
+          gokei * _self.mealsDataMoney[hPage.row - _self.mealPos];
+      } else {
+        _self.viewdata[hPage.row]['kingaku'] =
+          gokei * _self.shineDataMoney[hPage.row - _self.shinePos];
+      }
+    },
     /*******************************
-     * ヘッダメニューのサービス初回選択 検索ボタン
+     * ヘッダメニューのサービス初回選択 更新ボタン
      */
     parentServiceSelect(serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
@@ -229,8 +332,11 @@ export default {
           this.teikyoCode,
           serviceArgument['search_button']
         );
+        this.mainGrid.columns.clear();
+        this.viewdata = [];
+        this.createHeader(this.mainGrid);
+        this.createMerge(this.mainGrid);
       }
-      // this.settingChangeHndoJyoho();
     },
     /**********************
      * 左メニューで作成されたユーザ一覧の取得を行う
@@ -250,10 +356,16 @@ export default {
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
 
+      this.mainGrid.columns.clear();
+      this.viewdata = [];
+      this.createHeader(this.mainGrid);
+      this.createRowHeader(this.mainGrid);
+      this.createMerge(this.mainGrid);
+      this.settingPoint();
+
       // 値の設定
       this.selectType = '';
       this.editGridFlag = '';
-      // this.settingChangeHndoJyoho();
     },
 
     /***************
@@ -264,7 +376,6 @@ export default {
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.userDataSelect[0]['riyosyo'] = '';
       this.userDataSelect[0]['jyukyusyabango'] = '';
-      //  this.settingChangeHndoJyoho();
     },
 
     /**************************
@@ -309,6 +420,7 @@ export default {
         // 食事
         if (this.viewdata[i].type == 'meal') {
           let moneys = this.viewdata[i].data[m].money;
+          this.mealsDataMoney.push(moneys);
           let cnt = 0;
           for (let day = 1; day <= this.lastdate; day++) {
             let d = 'day' + day;
@@ -328,6 +440,7 @@ export default {
         // 光熱水費
         if (this.viewdata[i].type == 'shine') {
           let moneys = this.viewdata[i].data[0].money;
+          this.shineDataMoney.push(moneys);
           let cnt = 0;
           for (let day = 1; day <= this.lastdate; day++) {
             let d = 'day' + day;
@@ -349,6 +462,7 @@ export default {
      * 矢印を登録する
      */
     settingArrowView(data, i) {
+      this.viewdata[i]['key'] = [];
       this.viewdata[i]['st'] = [];
       this.viewdata[i]['ed'] = [];
       this.viewdata[i]['diff'] = [];
@@ -382,6 +496,7 @@ export default {
 
         let diff = end.diff(start, 'days');
         gokei += diff;
+        this.viewdata[i]['key'].push(n);
         this.viewdata[i]['st'].push(beforeStart.format('M/D'));
         if (beforeEnd) {
           this.viewdata[i]['ed'].push(beforeEnd.format('M/D'));
@@ -420,7 +535,6 @@ export default {
       let num = 0;
       flexGrid.formatItem.addHandler(function (s, e) {
         let tmpitem = e.panel.rows[e.row].dataItem;
-        // console.log(tmpitem);
         let html = e.cell.innerHTML;
         let text = e.cell.innerText;
         let classname = '';
@@ -456,7 +570,9 @@ export default {
                 html = "<div class='arrow-box " + color + "'></div>";
               }
               html +=
-                "<div class='datearea'><div>" +
+                "<div class='datearea' id='key-" +
+                tmpitem.key[num] +
+                "'><div>" +
                 tmpitem.st[num] +
                 '～' +
                 tmpitem.ed[num] +
@@ -489,12 +605,27 @@ export default {
               e.cell.style.color = sysConst.COLOR.blueTextColor;
               html = '×';
             }
+            if (text === '3' || text == '') {
+              html = '';
+            }
+          }
+
+          if (e.col == _self.lastdate + 4) {
+            classname = 'pr-1';
+            e.cell.style.backgroundColor = sysConst.COLOR.white;
           }
           if (e.col == _self.lastdate + 5) {
+            classname = 'pr-1';
             if (text === 'none') {
               html = '';
               e.cell.style.backgroundColor = sysConst.COLOR.selectedColor;
             }
+            if (e.row >= _self.hendoRow) {
+              e.cell.style.backgroundColor = sysConst.COLOR.selectedColor;
+            }
+            positionRight(e);
+          }
+          if (e.col == 3) {
             positionRight(e);
           }
         }
@@ -526,6 +657,12 @@ export default {
               display: 'table-cell',
               verticalAlign: 'middle',
             });
+          }
+          if (e.row === 0 && e.col > 3 && e.col <= _self.lastdate + 4) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          }
+          if (e.col === _self.lastdate + 4) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
         }
         function positionCenter(e) {
@@ -563,7 +700,7 @@ export default {
       cellRanges = [new wjGrid.CellRange(0, 0, this.hendoRow - 1, 0)];
 
       // 食事用マージ
-      this.mealMearges(cellRanges);
+      this.mealMarges(cellRanges);
       // 変動情報項目一覧マージ
       for (let i = 0; i < this.hendoRow; i++) {
         cellRanges.push(new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge));
@@ -643,7 +780,7 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-    mealMearges(cellRanges) {
+    mealMarges(cellRanges) {
       let stMeal = 0;
       let edMeal = 0;
       for (let i = 0; i < this.rowHendoData.hendo.length; i++) {
@@ -672,6 +809,14 @@ export default {
         // 食事がある時、食事の分カラムを追加
         // mergeにカラム数を入れる
         if (hendo[i].type == 'meal' || hendo[i].type == 'shine') {
+          if (hendo[i].type == 'meal') {
+            // 食事のrow位置を取得
+            this.mealPos = hendoRow;
+          }
+          if (hendo[i].type == 'shine') {
+            // 光熱水費のrow位置を取得
+            this.shinePos = hendoRow;
+          }
           for (let m = 0; m < hendo[i].data.length; m++) {
             views.push({
               komoku0: this.rowHendoData.rowColumn.column1,
@@ -706,10 +851,16 @@ export default {
         views[i]['komoku0'] = this.rowHendoData.rowColumn.column2;
         views[i]['komoku1'] = this.rowHendoData.taisei.text;
         views[i]['komoku2'] = this.rowHendoData.taisei.data[j].text;
+        // 値の登録
+        let gokei = '';
         for (let d = 1; d <= this.lastdate; d++) {
           let day = 'day' + d;
+          if (this.rowHendoData.taisei.data[j][day] == 2) {
+            gokei++;
+          }
           views[i][day] = this.rowHendoData.taisei.data[j][day];
         }
+        views[i]['gokei'] = gokei;
         j++;
       }
       j = 0;
@@ -726,20 +877,17 @@ export default {
         views[i]['komoku0'] = this.rowHendoData.rowColumn.column2;
         views[i]['komoku1'] = this.rowHendoData.kobetu.text;
         views[i]['komoku2'] = this.rowHendoData.kobetu.data[j].text;
+        let gokei = '';
         for (let d = 1; d <= this.lastdate; d++) {
           let day = 'day' + d;
+          if (this.rowHendoData.kobetu.data[j][day] == 2) {
+            gokei++;
+          }
           views[i][day] = this.rowHendoData.kobetu.data[j][day];
         }
+        views[i]['gokei'] = gokei;
         j++;
-
-        // views.push({
-        //   komoku0: this.rowHendoData.rowColumn.column2,
-        //   komoku1: this.rowHendoData.kobetu.text,
-        //   komoku2: this.rowHendoData.kobetu.data[i].text,
-        // });
       }
-      console.log(views);
-
       this.viewdata = views;
       this.hendoRow = hendoRow;
     },
@@ -748,7 +896,11 @@ export default {
      * ヘッダ作成
      */
     createHeader(flexGrid) {
-      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      if (flexGrid.columnHeaders.rows.length != 1) {
+        flexGrid.columnHeaders.rows.removeAt(0, new wjGrid.Row());
+      }
+      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+
       flexGrid.columns.insert(0, new wjGrid.Column());
       flexGrid.columns.insert(1, new wjGrid.Column());
       flexGrid.columns.insert(2, new wjGrid.Column());
@@ -769,7 +921,6 @@ export default {
       flexGrid.columns[c].binding = 'gokei';
       flexGrid.columns[c + 1].binding = 'kingaku';
       flexGrid.columnHeaders.setCellData(0, 0, '項目');
-
       for (let day = 1; day <= this.lastdate; day++) {
         let date = this.year + '/' + this.month + '/' + day;
         flexGrid.columnHeaders.setCellData(0, day + 3, date);
@@ -860,7 +1011,7 @@ export default {
       if (this.userDataSelect[0]['jyukyusyabango']) {
         this.$refs.dialog_kikantuika.parentFromOpenDialog('', type);
       } else {
-        alert('ユーザを選択してください。');
+        alert('利用者を選択してください。');
       }
     },
     // 加算追加ダイアログの表示
@@ -868,7 +1019,7 @@ export default {
       if (this.userDataSelect[0]['jyukyusyabango']) {
         this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
       } else {
-        alert('ユーザを選択してください。');
+        alert('利用者を選択してください。');
       }
     },
   },
@@ -876,14 +1027,164 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#kobeturiyo {
+div#kobeturiyou {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px;
 
-  .vertical {
+  .wj-cell {
+    padding: 0 !important;
+    &.wj-frozen-row {
+      text-align: center;
+      z-index: 2 !important;
+    }
+  }
+  .wj-frozen {
+    background-color: $selected_color;
+    z-index: 2 !important;
+  }
+
+  .container {
+    padding: 4px;
+  }
+  .wj-cells {
+    font-size: $cell_fontsize;
+  }
+  .wj-cell {
+    padding: 1px !important;
+  }
+  .wj-cells .wj-cell.wj-state-selected {
+    background-color: $light-white !important;
+    color: $font_color !important;
+  }
+  label.greyLabel {
+    background-color: $selected_color;
+    display: inline-block;
+    width: 140px;
     height: 100%;
+  }
+  // 受給者証状況用のエリアボックス
+  .jyukyusyaBox {
+    height: 60px;
+    overflow-y: auto;
+  }
+  .leftArea {
+    min-width: 275px;
+    max-width: 275px;
+    width: 275px;
+  }
+
+  .rightArea {
+    min-width: 50%;
+    max-width: none;
+    width: 1020px;
+  }
+
+  .gridBackground {
+    background-color: $grid_background;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    &.backGray {
+      background-color: $selected_color;
+    }
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      font-size: 16px;
+    }
+    p {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+    }
+  }
+  .bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    font-size: 16px;
+  }
+
+  // 期間追加・加算追加ボタン
+  a {
+    &.addButton {
+      height: 20px;
+      width: 100px;
+      background-color: $white;
+      border: 1px solid $font_color;
+      display: block;
+      float: left;
+      color: $font_color !important;
+      text-align: right;
+      border-radius: 3px;
+      padding: 0px 10px 0px 0px;
+      cursor: pointer;
+      background-image: url('../assets/plus_15px.png');
+      background-position: top 1px left 1px;
+      &:hover {
+        background-color: $selected_color;
+      }
+    }
+  }
+  #flexGrid {
+    width: 100%;
+    max-width: none;
+    min-width: 1300px-275;
+    .wj-cell {
+      padding: 0 !important;
+      &.wj-frozen-row {
+        text-align: center;
+        z-index: 2 !important;
+      }
+    }
+    .wj-frozen {
+      background-color: $selected_color;
+    }
+  }
+
+  // 手修正済み
+  div.editMark {
+    width: 30px;
+    height: 14px;
+    margin-top: 3px;
+    background-color: $pink;
+  }
+
+  .clearfix::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  // ヘッド
+  .head {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+  }
+  // 縦書き
+  .vertical {
+    text-orientation: upright;
+    -webkit-writing-mode: vertical-rl;
+    -ms-writing-mode: tb-rl;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.2em;
+    text-align: center;
   }
 
   div.arrow-box {
