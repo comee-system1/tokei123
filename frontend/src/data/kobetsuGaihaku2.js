@@ -5,8 +5,8 @@ export function getGaihaku() {
     date: [
       {
         byouinName: '北経国立病院',
-        start_date: '2022-6-15',
-        end_date: '2022-6-20',
+        nyuuinbi: '2022-6-15',
+        taiinbi: '2022-6-21',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: false,
         nyuuinbiLunch: false,
@@ -18,8 +18,8 @@ export function getGaihaku() {
       },
       {
         byouinName: 'みなみ経国立病院',
-        start_date: '2022-6-22',
-        end_date: '',
+        nyuuinbi: '2022-6-21',
+        taiinbi: '',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,

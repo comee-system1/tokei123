@@ -173,6 +173,7 @@ export default {
       rowCounts: {}, // 各行数
       viewdata: [],
       hendoRow: 0, // 変動情報の行数
+      num: 0,
     };
   },
   components: {
@@ -240,8 +241,8 @@ export default {
             let params = {
               selectKey: parentKey,
               byouinName: passData.byouinName,
-              nyuuinbi: passData.start_date,
-              taiinbi: passData.end_date,
+              nyuuinbi: passData.nyuuinbi,
+              taiinbi: passData.taiinbi,
               nyuuinbiShiseturiyo: passData.nyuuinbiShiseturiyo,
               nyuuinbiBreakfast: passData.nyuuinbiBreakfast,
               nyuuinbiLunch: passData.nyuuinbiLunch,
@@ -272,8 +273,6 @@ export default {
         } else {
           alert('利用者を選択してください。');
         }
-
-        console.log(_self.viewdata);
       });
     },
     /*************************
@@ -389,7 +388,6 @@ export default {
           for (let day = 1; day <= this.lastdate; day++) {
             let d = 'day' + day;
             // 利用日
-
             if (this.riyoubiData[d]) {
               let days = this.riyoubiData[d];
               this.viewdata[i][d] = days;
@@ -471,14 +469,15 @@ export default {
       let date = this.year + '-' + this.month + '-01';
       let matu = moment(date).endOf('month');
       let si = moment(date).startOf('month');
+      let useDay = [];
       for (let n = 0; n < data.date.length; n++) {
         let end = '';
-        if (data.date[n].end_date) {
-          end = moment(data.date[n].end_date);
+        if (data.date[n].taiinbi) {
+          end = moment(data.date[n].taiinbi);
         }
         let nextMonthFlag = false;
         // 前月以前の場合は月初を指定する
-        let start = moment(data.date[n].start_date);
+        let start = moment(data.date[n].nyuuinbi);
         let beforeMonthFlag = false;
         // 変更前のデータ(表示用)
         let beforeStart = start;
@@ -504,17 +503,24 @@ export default {
           this.viewdata[i]['ed'].push('未設定');
         }
         this.viewdata[i]['diff'].push(diff);
+
         for (let day = 0; day <= diff; day++) {
           let dayAdd = moment(start).add(day, 'd').format('D');
           let d = 'day' + dayAdd;
-          if (day == 0) {
-            if (!beforeMonthFlag) {
+
+          if (day === 0) {
+            // 既存データのtaiinbiの日付が重複しているとき
+            if (useDay.indexOf(d) != -1) {
+              this.viewdata[i][d] = 'center';
+            } else if (!beforeMonthFlag) {
               this.viewdata[i][d] = 'start';
             } else {
               this.viewdata[i][d] = 'start-m';
             }
           } else if (day == diff) {
             if (!nextMonthFlag) {
+              // 使った日付を保持
+              useDay.push(d);
               this.viewdata[i][d] = 'end';
             } else {
               this.viewdata[i][d] = 'middle';
@@ -523,6 +529,7 @@ export default {
             this.viewdata[i][d] = 'middle';
           }
         }
+
         this.viewdata[i]['gokei'] = gokei + data.date.length;
         this.viewdata[i]['kingaku'] = 'none';
       }
@@ -532,7 +539,7 @@ export default {
      */
     methodCellFormatSetting(flexGrid) {
       let _self = this;
-      let num = 0;
+
       flexGrid.formatItem.addHandler(function (s, e) {
         let tmpitem = e.panel.rows[e.row].dataItem;
         let html = e.cell.innerHTML;
@@ -562,26 +569,34 @@ export default {
             if (tmpitem.type == 'gaihaku') {
               color = 'color_green';
             }
-            if (text === 'start' || text === 'start-m') {
+            if (text === 'start' || text === 'start-m' || text === 'center') {
               if (text === 'start') {
                 html = "<div class='arrow-box " + color + "'></div>";
                 html += "<div class='arrow-start " + color + "'></div>";
+              } else if (text === 'center') {
+                html = "<div class='arrow-box " + color + "'></div>";
+                html +=
+                  "<div class='arrow-center '><div class='" +
+                  color +
+                  "'></div><div class='" +
+                  color +
+                  "'></div></div>";
               } else {
                 html = "<div class='arrow-box " + color + "'></div>";
               }
               html +=
                 "<div class='datearea' id='key-" +
-                tmpitem.key[num] +
+                tmpitem.key[_self.num] +
                 "'><div>" +
-                tmpitem.st[num] +
+                tmpitem.st[_self.num] +
                 '～' +
-                tmpitem.ed[num] +
+                tmpitem.ed[_self.num] +
                 '[' +
-                parseInt(tmpitem.diff[num] + 1) +
+                parseInt(tmpitem.diff[_self.num] + 1) +
                 ']</div></div>';
-              num++;
-              if (num >= tmpitem.st.length) {
-                num = 0;
+              _self.num++;
+              if (_self.num >= tmpitem.st.length) {
+                _self.num = 0;
               }
             }
             if (text === 'middle') {
@@ -961,14 +976,67 @@ export default {
     kikantuika_dialog_regist() {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       let selectKey = this.$refs.dialog_kikantuika.registData.selectKey;
+      let selectData = this.$refs.dialog_kikantuika.registData;
+
       if (selectKey.length == 0) {
         // 空欄のときは新規追加
         this.editGridFlag = false;
+        if (this.selectType === 'gaihaku_add') {
+          this.gaihakuData['date'].push(selectData);
+
+          this.gaihakuData['date'].sort(function (a, b) {
+            if (
+              moment(a.nyuuinbi).format('YYYYMMDD') <
+              moment(b.nyuuinbi).format('YYYYMMDD')
+            )
+              return -1;
+            if (
+              moment(a.nyuuinbi).format('YYYYMMDD') >
+              moment(b.nyuuinbi).format('YYYYMMDD')
+            )
+              return 1;
+            return 0;
+          });
+        } else {
+          this.nyutaiinData['date'].push(selectData);
+          this.nyutaiinData['date'].sort(function (a, b) {
+            if (
+              moment(a.nyuuinbi).format('YYYYMMDD') <
+              moment(b.nyuuinbi).format('YYYYMMDD')
+            )
+              return -1;
+            if (
+              moment(a.nyuuinbi).format('YYYYMMDD') >
+              moment(b.nyuuinbi).format('YYYYMMDD')
+            )
+              return 1;
+            return 0;
+          });
+        }
       } else {
         this.editGridFlag = true;
+        if (this.selectType === 'gaihaku_add') {
+          this.gaihakuData['date'][selectKey] = selectData;
+        } else {
+          this.nyutaiinData['date'][selectKey] = selectData;
+        }
       }
+      console.log(this.gaihakuData);
+
+      for (let i = 1; i <= this.lastdate; i++) {
+        let d = 'day' + i;
+        if (this.selectType === 'gaihaku_add') {
+          this.viewdata[2][d] = '';
+        } else {
+          this.viewdata[1][d] = '';
+        }
+      }
+      this.settingPoint();
+      console.log(this.viewdata);
+      this.num = 0;
       this.deleteGridFlag = false;
       this.mainGrid.itemsSource = [];
+      this.mainGrid.itemsSource = this.viewdata;
     },
 
     // 加算追加ダイアログの登録ボタン押下
@@ -989,8 +1057,40 @@ export default {
     // 入退院ダイアログの削除ボタン押下
     kikantuika_dialog_delete() {
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
+      // 削除する配列のキー
+      let selectKey = this.$refs.dialog_kikantuika.registData.selectKey;
       this.deleteGridFlag = true;
+      let deletes = [];
+      if (this.selectType === 'gaihaku_add') {
+        for (let i = 0; i < this.gaihakuData['date'].length; i++) {
+          if (selectKey != i) {
+            deletes.push(this.gaihakuData.date[i]);
+          }
+        }
+        this.gaihakuData.date = [];
+        this.gaihakuData.date = deletes;
+      } else {
+        for (let i = 0; i < this.nyutaiinData['date'].length; i++) {
+          if (selectKey != i) {
+            deletes.push(this.nyutaiinData.date[i]);
+          }
+        }
+        this.nyutaiinData.date = [];
+        this.nyutaiinData.date = deletes;
+      }
+
+      for (let i = 1; i <= this.lastdate; i++) {
+        let d = 'day' + i;
+        if (this.selectType === 'gaihaku_add') {
+          this.viewdata[2][d] = '';
+        } else {
+          this.viewdata[1][d] = '';
+        }
+      }
+      this.settingPoint();
+
       this.mainGrid.itemsSource = [];
+      this.mainGrid.itemsSource = this.viewdata;
     },
     // 加算追加ダイアログの削除ボタン押下
     kasantuika_dialog_delete() {
@@ -1213,6 +1313,34 @@ div#kobeturiyou {
     }
     &.color_green {
       border-right: 3px solid $green;
+    }
+  }
+  .arrow-center {
+    div {
+      width: 5px;
+      height: 5px;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      position: absolute;
+      left: 10px;
+      top: 1px;
+      text-indent: -9999px;
+      &:first-child {
+        &.color_red {
+          border-right: 3px solid $red;
+        }
+        &.color_green {
+          border-right: 3px solid $green;
+        }
+      }
+      &:last-child {
+        &.color_red {
+          border-left: 3px solid $red;
+        }
+        &.color_green {
+          border-left: 3px solid $green;
+        }
+      }
     }
   }
   .arrow-end {
