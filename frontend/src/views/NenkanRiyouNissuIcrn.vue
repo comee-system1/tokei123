@@ -202,7 +202,10 @@ import * as wjCore from '@grapecity/wijmo';
 import HeaderServices from '../components/HeaderServices.vue';
 import { getNenkanRiyouNissu } from '@/data/nenkanRiyouNissuData.js';
 import { getNenkanRiyouNissuTotal } from '@/data/nenkanRiyouNissuTotalData.js';
-import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+// 本番用
+//import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+// テスト用
+import { nenkanRiyouNissuIcrn } from '../../../backend/api/NenkanRiyouNissuIcrn';
 
 import sysConst from '@/utiles/const';
 
@@ -266,7 +269,10 @@ export default {
       this.gridHeight = 'height:' + ht + 'vh;';
     },
     onInitialized(flexGrid) {
-      console.log(nenkanRiyouNissuIcrn());
+      nenkanRiyouNissuIcrn().then((result) => {
+        console.log('TEST_RESULT');
+        console.log(result);
+      });
       this.mainFlexGrid = flexGrid;
       flexGrid.select(-1, -1);
       this.nendo = this.getChildYear();

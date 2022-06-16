@@ -4,11 +4,13 @@ const ApiResponse = require('./ApiResponse')
 const apiResponse = new ApiResponse();
 module.exports = class Service {
     constructor() {
-        
+
     }
-    getData(){
-        repo.connectApi();
-        // let api = apiResponse.setResponse(repoData);
-        //return api;
+    async getData() {
+
+        return await repo.connectApi().then(result => {
+            let api = apiResponse.setResponse(result);
+            return api;
+        });
     }
 }
