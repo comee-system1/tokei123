@@ -144,19 +144,11 @@
         style="position: absolute; top: 25%; right: 10px; width: 200px"
         class="mt-n3"
       >
-        <v-col class="ml-5 text-end" cols="1*"
-          v-if="confirmRegistButtonFlag">
-          <v-btn
-            class="white--text registButton"
-            >確定登録</v-btn
-          >
+        <v-col class="ml-5 text-end" cols="1*" v-if="confirmRegistButtonFlag">
+          <v-btn class="white--text registButton">確定登録</v-btn>
         </v-col>
-        <v-col class="ml-5 text-end" cols="1*"
-          v-if="registButtonFlag">
-          <v-btn
-            class="white--text registButton"
-            >登録</v-btn
-          >
+        <v-col class="ml-5 text-end" cols="1*" v-if="registButtonFlag">
+          <v-btn class="white--text registButton">登録</v-btn>
         </v-col>
       </v-row>
       <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
@@ -547,7 +539,7 @@ export default {
       if (this.dialog_type == 'seikyu') {
         this.seikyu_year = split[0];
         this.seikyu_month = split[1];
-        console.log(this.seikyu_month)
+        console.log(this.seikyu_month);
         this.calendarClick(0);
       }
       // this.$emit('parent-calendar', split);
@@ -558,6 +550,7 @@ export default {
     // 提供月 1:前月 2:翌月
     // 請求月 3:前月 4:翌月
     calendarClick(type) {
+      this.screenFlag = true;
       let date = this.year + this.month + '01';
       let seikyu_date = this.seikyu_year + this.seikyu_month + '01';
       if (type == 3) {

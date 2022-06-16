@@ -9,7 +9,6 @@ import ShisetsuTaisei from '../views/ShisetsuTaisei.vue'
 import TemporaryPage from '../views/TemporaryPage.vue'
 import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
-import KobetsuRiyouTouroku2 from '../views/KobetsuRiyouTouroku2.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
@@ -73,11 +72,6 @@ const routes = [
         path:'/KobetsuRiyouTouroku',
         name:'個別利用状況登録',
         component: KobetsuRiyouTouroku
-    },
-    {
-        path:'/KobetsuRiyouTouroku2',
-        name:'個別利用状況登録2',
-        component: KobetsuRiyouTouroku2
     },
     {
         path:'/KasanKoumokuIcrn',

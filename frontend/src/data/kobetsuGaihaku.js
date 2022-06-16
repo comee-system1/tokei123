@@ -1,25 +1,25 @@
 export function getGaihaku() {
-  let gaihaku = [];
-  gaihaku.push({
+  let gaihaku = {};
+  gaihaku = {
     jyukyusyabango: '8765432100',
     date: [
       {
-        byouinName: '東経国立病院',
-        start_date: '2022-5-15',
-        end_date: '2022-5-20',
+        byouinName: '北経国立病院',
+        nyuuinbi: '2022-6-15',
+        taiinbi: '2022-6-21',
         nyuuinbiShiseturiyo: 1,
-        nyuuinbiBreakfast: true,
+        nyuuinbiBreakfast: false,
         nyuuinbiLunch: false,
-        nyuuinbiDinner: true,
+        nyuuinbiDinner: false,
         taiinbiShiseturiyo: 1,
-        taiinbiBreakfast: true,
-        taiinbiLunch: true,
-        taiinbiDinner: true,
+        taiinbiBreakfast: false,
+        taiinbiLunch: false,
+        taiinbiDinner: false,
       },
       {
-        byouinName: '東経国立病院',
-        start_date: '2022-5-22',
-        end_date: '2022-5-27',
+        byouinName: 'みなみ経国立病院',
+        nyuuinbi: '2022-6-21',
+        taiinbi: '',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
         nyuuinbiLunch: false,
@@ -31,7 +31,7 @@ export function getGaihaku() {
       },
 
     ],
-  });
+  };
 
   return gaihaku;
 }

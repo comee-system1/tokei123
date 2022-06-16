@@ -86,10 +86,11 @@
       </v-btn-toggle>
     </div>
     <wj-flex-grid
+      id="userGrid"
       class="mt-1"
       :autoSearch="true"
       :headersVisibility="'Column'"
-      :selectionMode="0"
+      :selectionMode="3"
       :style="gridHeight"
       :initialized="onInitializedUser"
       :itemsSourceChanged="onItemsSourceChanged"
@@ -161,7 +162,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
-import sysConst from '@/utiles/const';
+// import '@backend/api/UserListPrint';
 
 Vue.use(VueAxios, axios);
 // let userUrl = 'http:// local-tokei/';
@@ -459,6 +460,10 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
+    userCheckInvalide() {
+      // 初期選択を解除
+      // this.userGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
     onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
@@ -570,16 +575,6 @@ export default {
           flexGrid.setCellData(ht.row, 2, mark);
         } else if (e.target.innerText.length > 0) {
           let row = hPage._row;
-
-          if (e.panel != flexGrid.columnHeaders) {
-            flexGrid.itemFormatter = function (panel, r, c, cell) {
-              if (r == hPage.row && panel != flexGrid.columnHeaders) {
-                cell.style.color = sysConst.COLOR.white;
-                cell.style.backgroundColor =
-                  sysConst.COLOR.gridSelectedBackground;
-              }
-            };
-          }
 
           _self.$emit('child-select', row);
         }

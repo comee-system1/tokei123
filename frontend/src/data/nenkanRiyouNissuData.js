@@ -144,6 +144,6 @@ export function getNenkanRiyouNissu() {
     },
     
   );
-}
+  }
   return nenkanRiyouNissuData;
 }

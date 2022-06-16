@@ -202,6 +202,8 @@ import * as wjCore from '@grapecity/wijmo';
 import HeaderServices from '../components/HeaderServices.vue';
 import { getNenkanRiyouNissu } from '@/data/nenkanRiyouNissuData.js';
 import { getNenkanRiyouNissuTotal } from '@/data/nenkanRiyouNissuTotalData.js';
+import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+
 import sysConst from '@/utiles/const';
 
 const riyosyaCombo = [];
@@ -264,6 +266,7 @@ export default {
       this.gridHeight = 'height:' + ht + 'vh;';
     },
     onInitialized(flexGrid) {
+      console.log(nenkanRiyouNissuIcrn());
       this.mainFlexGrid = flexGrid;
       flexGrid.select(-1, -1);
       this.nendo = this.getChildYear();
@@ -292,7 +295,7 @@ export default {
             text = '';
             e.cell.style.background = sysConst.COLOR.lightGray;
           } else {
-            e.cell.style.background = sysConst.COLOR.white;
+            e.cell.style.background = sysConst.COLOR.lightYellow;
           }
           if (e.col == 2) {
             e.cell.style.textAlign = 'left';

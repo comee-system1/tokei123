@@ -1,6 +1,6 @@
 export function getRiyobi() {
-  let riyoubi = [];
-  riyoubi.push({
+  let riyoubi = {};
+  riyoubi = {
     jyukyusyabango: '8765432100',
     day1: 1,
     day2: 1,
@@ -19,9 +19,8 @@ export function getRiyobi() {
     day27: 1,
     day28: 1,
     day30: 1,
-    day31: 1,
-    total: 18,
-  });
+    money: 'none',
+  };
 
   return riyoubi;
 }

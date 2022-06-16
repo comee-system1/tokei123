@@ -1,11 +1,11 @@
 export function getKounetusuihi() {
-  let kounetusuihi = [];
-  kounetusuihi.push({
+  let kounetusuihi = {};
+  kounetusuihi = {
     jyukyusyabango: '8765432100',
-    day1: 3,
-    day2: 3,
-    day3: 3,
-    day4: 3,
+    day1: 0,
+    day2: 0,
+    day3: 0,
+    day4: 0,
     day5: 2,
     day6: 2,
     day18: 2,
@@ -22,7 +22,7 @@ export function getKounetusuihi() {
     day31: 2,
     total: 14,
     money: 1400,
-  });
+  };
 
   return kounetusuihi;
 }
