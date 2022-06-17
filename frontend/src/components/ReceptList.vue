@@ -43,6 +43,7 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
+import { ReceptList } from '@backend/api/ReceptList';
 
 Vue.use(VueAxios, axios);
 let basicPos = 8; // 基本情報の列数
@@ -66,10 +67,22 @@ export default {
   components: {},
   mounted() {
     this.handleResize;
+
+    ReceptList().then((result) => {
+      console.log(result);
+      this.receptData = this.getData();
+      console.log(this.receptData);
+      // 値の登録
+      this.mainFlexGrid.itemsSource = this.receptData;
+      this.settingPoint(this.mainFlexGrid);
+
+      // 値の登録
+      this.mainSyukeiFlexGrid.itemsSource = this.receptData;
+      this.settingSyukeiPoint(this.mainSyukeiFlexGrid);
+    });
   },
   created() {
     window.addEventListener('resize', this.handleResize);
-    this.receptData = this.getData();
   },
 
   methods: {
@@ -101,13 +114,10 @@ export default {
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       flexGrid.frozenColumns = this.basicPos;
+
       flexGrid.select(-1, -1);
       this.createHeader(flexGrid);
       this.createHeaderMerge(flexGrid, 'basic');
-
-      // 値の登録
-      flexGrid.itemsSource = this.receptData;
-      this.settingPoint(flexGrid);
 
       // セルフォーマット
       this.createCellFormat(flexGrid);
@@ -124,10 +134,6 @@ export default {
       // ヘッダ情報の作成
       this.createSyukeiHeader(syukeiGrid);
       this.createHeaderMerge(syukeiGrid, 'syukei');
-
-      // 値の登録
-      syukeiGrid.itemsSource = this.receptData;
-      this.settingSyukeiPoint(syukeiGrid);
 
       // セルフォーマット集計
       this.createSyukeiCellFormat(syukeiGrid);
