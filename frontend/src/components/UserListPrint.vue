@@ -162,6 +162,8 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
+import sysConst from '@/utiles/const';
+
 // import '@backend/api/UserListPrint';
 
 Vue.use(VueAxios, axios);
@@ -467,42 +469,6 @@ export default {
     onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
-      // axiosのテスト
-      // axiosを利用する時下記有効
-      // const axiosApi = axios.create({
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-      // axiosApi
-      //   .get(userUrl)
-      //   .then(function (response) {
-      //     _self.usersData = _self.createUser(response);
-
-      //     let i = 0;
-      //     while (flexGrid.columns.length < 3) {
-      //       let clm = new wjGrid.Column();
-      //       if (i == 0) clm.width = '2*';
-      //       if (i == 1) clm.width = '2*';
-      //       if (i == 2) clm.width = '1*';
-      //       flexGrid.columns.push(clm);
-      //       i++;
-      //     }
-
-      //     while (flexGrid.rows.length < userCount) {
-      //       flexGrid.rows.push(new wjGrid.Row());
-      //     }
-      //     flexGrid.formatItem.addHandler(userCell);
-      //     // configure the grid
-      //     flexGrid.alternatingRowStep = 0;
-
-      //     // 初回のユーザ選択値
-      //     _self.$emit('child-select', 0);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     alert('error');
-      //   });
 
       // axiosを利用しない時下記1行有効
       if (_self.usersData.length == 0) {
@@ -522,8 +488,8 @@ export default {
       while (flexGrid.rows.length < userCount) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      flexGrid.columnHeaders.rows.defaultSize = 24;
-      flexGrid.rows.defaultSize = 22;
+      // flexGrid.columnHeaders.rows.defaultSize = 20;
+      // flexGrid.rows.defaultSize = 20;
 
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.cell.children.length == 0) {
@@ -544,6 +510,10 @@ export default {
           let str = e.cell.innerHTML;
           str = '' + str + '';
           e.cell.innerHTML = wjCore.escapeHtml(str.replace(',', ''));
+
+          if (e.col == 2) {
+            e.cell.style.textAlign = 'center';
+          }
           wjCore.setCss(e.cell, {
             display: 'table',
             tableLayout: 'fixed',
@@ -573,8 +543,20 @@ export default {
           if (p == '') mark = '〇';
           _self.usersData[ht.row]['print'] = mark;
           flexGrid.setCellData(ht.row, 2, mark);
+
+          flexGrid.select(-1, -1);
         } else if (e.target.innerText.length > 0) {
           let row = hPage._row;
+          //flexGrid.select(hPage.row, hPage.col);
+          if (e.panel != flexGrid.columnHeaders) {
+            flexGrid.itemFormatter = function (panel, r, c, cell) {
+              if (r == hPage.row && panel != flexGrid.columnHeaders) {
+                cell.style.color = sysConst.COLOR.white;
+                cell.style.backgroundColor =
+                  sysConst.COLOR.gridSelectedBackground;
+              }
+            };
+          }
 
           _self.$emit('child-select', row);
         }
@@ -614,8 +596,8 @@ div#user-list-print_scrollbar {
   }
 
   .wj-cell {
-    padding: 1px !important;
     font-size: $cell_fontsize;
+    padding: 0px !important;
   }
   .wj-cells
     .wj-row:hover

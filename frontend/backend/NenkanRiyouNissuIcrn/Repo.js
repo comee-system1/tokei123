@@ -1,4 +1,4 @@
-const config = require('../api/config');
+const apiRun = require('../api/ApiRun');
 const ApiResponse = require('./ApiResponse')
 const apiResponse = new ApiResponse();
 module.exports = class Repo {
@@ -7,7 +7,7 @@ module.exports = class Repo {
 
   async connectApi() {
     // api接続
-    return await config.api().then(result => {
+    return await apiRun.api().then(result => {
       return result;
     });
   }

@@ -583,7 +583,7 @@ export default {
   font-family: 'メイリオ';
   min-width: 1266px !important;
   font-size: 14px;
-    .wj-cell  {
+  .wj-cell  {
       color: #333;
     }
   .container {

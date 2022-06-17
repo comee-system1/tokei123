@@ -498,7 +498,8 @@ export default {
         s.fontWeight = "normal";
         s.textAlign = 'center';
         s.color= sysConst.COLOR.fontColor;
-        s.backgroundColor = sysConst.COLOR.selectedColor
+        s.backgroundColor = sysConst.COLOR.selectedColor;
+        s.lineHeight= '19px';
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
         // ヘッダー行のスタイルをカスタマイズ
           if (r === 0) {

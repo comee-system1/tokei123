@@ -279,9 +279,9 @@ export default {
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
 
-      receptFlag: true, // receptの初期表示状態
+      receptFlag: false, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },
@@ -585,7 +585,7 @@ export default {
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
 div#tajyougen {
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   min-width: 1266px;
   .jijyougen-container {

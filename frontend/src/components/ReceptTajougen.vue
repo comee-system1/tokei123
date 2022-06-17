@@ -678,6 +678,9 @@ export default {
           text == _self.verticalHeader[4]
         ) {
           classname = 'vertical';
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
         }
         if (
           text == _self.centerHeader[0] ||
@@ -791,7 +794,7 @@ export default {
       panel.setCellData(0, 13, '上限管理後');
       panel.setCellData(0, 15, _self.verticalHeader[2]);
       panel.setCellData(0, 16, _self.verticalHeader[3]);
-      flexGrid.columnHeaders.rows[1].height = 90;
+      flexGrid.columnHeaders.rows[1].height = 70;
       flexGrid.rows.defaultSize = 20;
     },
     /**************
@@ -831,12 +834,10 @@ div#recept-tajyougen {
     align-items: center;
     font-size: 12px;
     font-weight: normal;
-    padding: 0px;
   }
   .wj-header.wj-cell {
-    font-size: 14px;
+    font-size: 12px;
     text-align: center !important;
-    padding: 4px 6px 3px 6px;
   }
   .wj-cell.wj-state-selected {
     color: $font_color;

@@ -24,21 +24,21 @@
             </wj-menu>
           </div>
           <div class="d-flex mt-1">
-              <label>市町村</label>
-              <wj-menu
-                class="customCombobox"
-                :itemsSource="shityosonCombo"
-                :itemClicked="onShityosonCombo"
-                :isRequired="true"
-                :displayMemberPath="'text'"
-                style="width: 200px"
-                selectedValuePath="'key'"
-                header="全員"
-              >
-              </wj-menu>
+            <label>市町村</label>
+            <wj-menu
+              class="customCombobox"
+              :itemsSource="shityosonCombo"
+              :itemClicked="onShityosonCombo"
+              :isRequired="true"
+              :displayMemberPath="'text'"
+              style="width: 200px"
+              selectedValuePath="'key'"
+              header="指定なし"
+            >
+            </wj-menu>
           </div>
         </v-col>
-        <v-col class="">
+        <v-col>
           <label class="ml-1 align-end">ソート</label>
           <!-- mandatoryは初期選択 -->
           <v-btn-toggle class="flex-wrap" mandatory>
@@ -75,7 +75,8 @@
           </v-btn-toggle>
           <v-btn
             class="ml-1"
-            style="width: 60px; height: 30px; margin-top: -4px"
+            small
+            style="width: 60px; height: 25px; padding-top: 1px;"
           >
             検索
           </v-btn>
@@ -101,7 +102,7 @@
               x-small
               @click="calendarClick(1)"
               height="100%"
-              style="min-width: auto; height: 30px"
+              style="min-width: auto; height: 25px"
               tile
               ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
             >
@@ -111,7 +112,7 @@
               color="white"
               class="pa-0 ml-1"
               height="100%"
-              style="min-width: auto; height: 30px"
+              style="min-width: auto; height: 25px"
               @click="calendarClick(2)"
               tile
               ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
@@ -137,7 +138,7 @@
               x-small
               @click="calendarClick(3)"
               height="100%"
-              style="min-width: auto; height: 30px"
+              style="min-width: auto; height: 25px"
               tile
               ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
             >
@@ -147,7 +148,7 @@
               color="white"
               class="pa-0 ml-1"
               height="100%"
-              style="min-width: auto; height: 30px"
+              style="min-width: auto; height: 25px"
               @click="calendarClick(4)"
               tile
               ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
@@ -178,7 +179,6 @@
               dark
               outlined
               style="width: 90px"
-              @click="sort(1)"
             >
               受領通知書
             </v-btn>
@@ -188,13 +188,12 @@
               dark
               outlined
               style="width: 90px"
-              @click="sort(2)"
             >
               一覧
             </v-btn>
           </v-btn-toggle>
       </v-row>
-      <v-row class="justify-sm-space-between align-end" no-gutters>
+      <v-row class="justify-sm-space-between align-end mt-1" no-gutters>
         <v-btn-toggle class="flex-wrap" mandatory>
           <v-btn
             small
@@ -213,7 +212,7 @@
           <wj-menu
             :header="'全選択/全解除'"
             :itemClicked="onselectedIndexChanged"
-            style="width: auto"
+            class="customCombobox customComboboxAuto"
           >
             <wj-menu-item>
               <b>印刷を全選択</b>
@@ -235,6 +234,7 @@
           :selectionMode="'Row'"
           :initialized="onInitialized"
           :itemsSource="JyuryouTsuchisyoData"
+          :style="gridHeight"
         >
           <wj-flex-grid-column
             :binding="'jyukyusyaBango'"
@@ -317,7 +317,7 @@
             :binding="'print'"
             :header="'印刷'"
             align="center"
-            :width="30"
+            :width="20"
             :isReadOnly="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
@@ -358,6 +358,7 @@ export default {
       datepicker_dialog: false,
       header_dialog: true,
       alphabet: alphabet,
+      gridHeight: '', // グリッドの高さ
       riyosyaCombo: riyosyaCombo,
       shityosonCombo: shityosonCombo,
       JyuryouTsuchisyoData: [],
@@ -373,7 +374,12 @@ export default {
   components: {
     HeaderServices,
   },
+  mounted() {
+    this.handleResize();
+  },
   created() {
+    // グリッドリサイズ
+    window.addEventListener('resize', this.handleResize);
     // 利用者コンボボックス
     this.riyosyaCombo.push(
       {
@@ -504,6 +510,17 @@ export default {
       let f = document.activeElement;
       f.blur();
     },
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    handleResize() {
+      let height = window.innerHeight;
+      let ht = 62;
+      if (height > 800) {
+        ht = 65;
+      }
+      this.gridHeight = 'height:' + ht + 'vh;';
+    },
     getData() {
       let JyuryouTsuchisyoData = [];
       for (let i = 0; i < 2; i++) {
@@ -520,8 +537,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20',
-          insatsubi: '2022年09月20',
+          juryoubi: '2022年09月20日',
+          insatsubi: '2022年09月20日',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
@@ -539,8 +556,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20',
-          insatsubi: '2022年09月20',
+          juryoubi: '2022年09月20日',
+          insatsubi: '2022年09月20日',
           print: '',
           nyukyo: 1, // 今月入居
           taikyo: 0 // 今月退去
@@ -558,8 +575,8 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20',
-          insatsubi: '2022年09月20',
+          juryoubi: '2022年09月20日',
+          insatsubi: '2022年09月20日',
           print: '',
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
@@ -577,38 +594,12 @@ export default {
           keigentou: '5,000',
           tokubetukyuhuhi: '0',
           dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20',
-          insatsubi: '2022年09月20',
+          juryoubi: '2022年09月20日',
+          insatsubi: '2022年09月20日',
           print: '',
           nyukyo: 0, // 今月入居
           taikyo: 1 // 今月退去
         });
-      }
-      
-      // 配列の要素の数を比較用に変数化
-      let compareArr = JyuryouTsuchisyoData.length;
-      if (JyuryouTsuchisyoData.length < 15) {
-        // 配列の要素の数が15個以下の場合、空セルを入れる
-        for (let i = 0; i < (15 - compareArr); i++) {
-          JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '',
-          code: '',
-          riyousyamei: '',
-          kana: '',
-          engosya: '',
-          zentaigaku: '',
-          riyousyahutan: '',
-          honninbun: '',
-          keigentou: '',
-          tokubetukyuhuhi: '',
-          dairijyuryougaku: '',
-          juryoubi: '',
-          insatsubi: '',
-          print: '',
-          nyukyo: '', // 今月入居
-          taikyo:  ''// 今月退去
-          });
-        }
       }
       this.allData = JyuryouTsuchisyoData;
       this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
@@ -732,6 +723,7 @@ export default {
           // 印刷セル縦書き
           if((r == 0) && (c == 11)){
             s.writingMode = 'vertical-rl';
+            s.borderRight= 'none';
           }
           // 2行以上で表示する行に文字列を挿入
           if ((r == 1) && (c == 3)) {
@@ -758,6 +750,7 @@ export default {
           s.backgroundColor = sysConst.COLOR.gridBackground;
           if (c == 11) {
             s.backgroundColor = sysConst.COLOR.white;
+            s.borderRight= 'none';
           }
           // 文字の位置変更
           if ((c == 1) || (c == 2)) {
@@ -877,7 +870,7 @@ export default {
       // this.griddata = this.filtered();
     },
     /*************
-     * 利用者のフィルタリンク
+     * 利用者のフィルタリング
      */
    onRiyosya(text, key) {
       // フィルタリングの実施
@@ -887,7 +880,7 @@ export default {
       // this.griddata = this.filtered();
     },
     /*************
-     * 市町村のフィルタリンク
+     * 市町村のフィルタリング
      */
     onsShityoson(text, key) {
       // フィルタリングの実施
@@ -978,30 +971,6 @@ export default {
             break;
         }
       });
-      // データの数が15未満だった場合空行を追加
-      let ArrLength = get.length;
-      if (get.length < 15){
-        for (let i = 0; i < (15 - ArrLength); i++) {
-          get.push({
-          jyukyusyaBango: '',
-          code: '',
-          riyousyamei: '',
-          kana: '',
-          engosya: '',
-          zentaigaku: '',
-          riyousyahutan: '',
-          honninbun: '',
-          keigentou: '',
-          tokubetukyuhuhi: '',
-          dairijyuryougaku: '',
-          juryoubi: '',
-          insatsubi: '',
-          print: '',
-          nyukyo: '', // 今月入居
-          taikyo:  ''// 今月退去
-          });
-        }
-      }
       return get;
     }
   }
@@ -1018,12 +987,6 @@ div#JyuryouTsuchisyo {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-  .customCombobox {
-    height: 25px !important;
-    .wj-input-group-btn {
-      height: 21px !important;
-    }
-  }
   .user-info {
     label {
       margin-right: 4px!important;
@@ -1055,19 +1018,7 @@ div#JyuryouTsuchisyo {
     background: $grid_selected_background;
     color: $grid_selected_color;
   }
-  .wj-control {
-    .wj-template,
-    .wj-input-group {
-      .wj-form-control {
-        vertical-align: middle;
-      }
-    } 
-  }
   #JyuryouTsuchisyoGrid {
-    max-height: calc(62vh + 1px);
-    border-right: none;
-    border-bottom: none;
-    width: calc(100% - 1px);
     .wj-cell {
       padding: 1px 0;
     }
@@ -1083,7 +1034,6 @@ div#JyuryouTsuchisyo {
       border-radius: 0px;
     }
   }
-
   .v-btn-toggle > .v-btn {
     width: 100px;
     height: 25px;

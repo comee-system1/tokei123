@@ -1154,9 +1154,6 @@ div#kobeturiyou {
   .wj-cells {
     font-size: $cell_fontsize;
   }
-  .wj-cell {
-    padding: 1px !important;
-  }
   .wj-cells .wj-cell.wj-state-selected {
     background-color: $light-white !important;
     color: $font_color !important;

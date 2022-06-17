@@ -112,28 +112,28 @@
         :style="gridHeight"
       >
         <wj-flex-grid-column
-          :binding="'code'"
+          :binding="'riyocode'"
           align="center"
           valign="middle"
           :width="80"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'jyukyusyasyoBango'"
+          :binding="'jyukyuno'"
           align="center"
           valign="middle"
           :width="80"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'riyosyamei'"
+          :binding="'names'"
           align="center"
           valign="middle"
           width="2*"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'syogaisienkubun'"
+          :binding="'syogaikbn'"
           align="center"
           valign="middle"
           :multiLine="true"
@@ -141,7 +141,7 @@
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'kaisibi'"
+          :binding="'symd_view'"
           align="center"
           valign="middle"
           width="1*"
@@ -149,7 +149,7 @@
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'syuryobi'"
+          :binding="'eymd_view'"
           align="center"
           valign="middle"
           width="1*"
@@ -159,7 +159,7 @@
         <wj-flex-grid-column
           v-for="(n, k) in 9"
           :key="k + 3"
-          :binding="'month_' + parseInt(n + 3)"
+          :binding="'nissu' + parseInt(n + 3)"
           :header="n + 3 + '月'"
           align="center"
           valign="middle"
@@ -169,7 +169,7 @@
         <wj-flex-grid-column
           v-for="(n, k) in 3"
           :key="k"
-          :binding="'month_' + n"
+          :binding="'nissu' + n"
           :header="n + '月'"
           align="center"
           valign="middle"
@@ -184,7 +184,7 @@
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'heikin'"
+          :binding="'avg'"
           align="center"
           valign="middle"
           width="1*"
@@ -200,12 +200,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
 import HeaderServices from '../components/HeaderServices.vue';
-import { getNenkanRiyouNissu } from '@/data/nenkanRiyouNissuData.js';
-import { getNenkanRiyouNissuTotal } from '@/data/nenkanRiyouNissuTotalData.js';
-// 本番用
-//import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
-// テスト用
-import { nenkanRiyouNissuIcrn } from '../../../backend/api/NenkanRiyouNissuIcrn';
+import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
 
 import sysConst from '@/utiles/const';
 
@@ -253,6 +248,7 @@ export default {
   },
   created() {
     window.addEventListener('resize', this.handleResize);
+    this.nenkanRiyouNissuData = [];
   },
   methods: {
     /*********************
@@ -269,20 +265,18 @@ export default {
       this.gridHeight = 'height:' + ht + 'vh;';
     },
     onInitialized(flexGrid) {
-      nenkanRiyouNissuIcrn().then((result) => {
-        console.log('TEST_RESULT');
-        console.log(result);
-      });
       this.mainFlexGrid = flexGrid;
       flexGrid.select(-1, -1);
       this.nendo = this.getChildYear();
       this.createHeader(flexGrid);
       this.createHeaderMerge(flexGrid);
 
-      // データ取得
-      this.getData();
-      // フッタデータ登録
-      this.settingFooterData(flexGrid);
+      nenkanRiyouNissuIcrn().then((result) => {
+        // データ取得
+        this.getData(result);
+        // フッタデータ登録
+        this.settingFooterData(flexGrid, result);
+      });
       // フォーマット
       this.createSyukeiCellFormat(flexGrid);
     },
@@ -330,49 +324,48 @@ export default {
     /***************
      * データ取得
      */
-    getData() {
-      this.nenkanRiyouNissuData = getNenkanRiyouNissu();
+    getData(result) {
+      this.nenkanRiyouNissuData = result.riyo_inf;
       this.allData = this.nenkanRiyouNissuData;
     },
-    settingFooterData(flexGrid) {
-      let footerdata = getNenkanRiyouNissuTotal();
+    settingFooterData(flexGrid, result) {
       var footerPanel = flexGrid.columnFooters;
 
       // 利用日数計
-      let riyonissu = footerdata[0];
+      let riyonissu = result.gokei_inf.gokei_inf;
       let c = 6;
       for (let i = 4; i <= 12; i++) {
-        let m = 'month_' + i;
+        let m = 'nissu' + i;
         let value = riyonissu[m];
         footerPanel.setCellData(0, c, value);
         c++;
       }
       for (let i = 1; i <= 3; i++) {
-        let m = 'month_' + i;
+        let m = 'nissu' + i;
         let value = riyonissu[m];
         footerPanel.setCellData(0, c, value);
         c++;
       }
       footerPanel.setCellData(0, c++, riyonissu.gokei);
-      footerPanel.setCellData(0, c++, riyonissu.heikin);
+      footerPanel.setCellData(0, c++, riyonissu.avg);
 
       // 開所日数
-      let kaisyonissu = footerdata[1];
+      let kaisyonissu = result.kaisyo_inf.kaisyo_inf;
       c = 6;
       for (let i = 4; i <= 12; i++) {
-        let m = 'month_' + i;
+        let m = 'nissu' + i;
         let value = kaisyonissu[m];
         footerPanel.setCellData(1, c, value);
         c++;
       }
       for (let i = 1; i <= 3; i++) {
-        let m = 'month_' + i;
+        let m = 'nissu' + i;
         let value = kaisyonissu[m];
         footerPanel.setCellData(1, c, value);
         c++;
       }
       footerPanel.setCellData(1, c++, kaisyonissu.gokei);
-      footerPanel.setCellData(1, c++, kaisyonissu.heikin);
+      footerPanel.setCellData(1, c++, kaisyonissu.avg);
     },
     /************
      * ヘッダフッタ作成
@@ -470,8 +463,8 @@ export default {
         if (
           this.syukeiFlag == 1 ||
           (this.syukeiFlag == 0 &&
-            !this.allData[i].kaisibi &&
-            !this.allData[i].syuryobi)
+            !this.allData[i].symd &&
+            !this.allData[i].eymd)
         ) {
           array.push(this.allData[i]);
         }
@@ -559,10 +552,10 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code < b.code) {
+          if (a.riyocode < b.riyocode) {
             return -1;
           }
-          if (a.code > b.code) {
+          if (a.riyocode > b.riyocode) {
             return 1;
           }
           return 0;
@@ -571,10 +564,10 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyusyasyoBango < b.jyukyusyasyoBango) {
+          if (a.jyukyuno < b.jyukyuno) {
             return -1;
           }
-          if (a.jyukyusyasyoBango > b.jyukyusyasyoBango) {
+          if (a.jyukyuno > b.jyukyuno) {
             return 1;
           }
           return 0;

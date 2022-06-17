@@ -331,6 +331,9 @@ export default {
      * 事業所追加用ダイアログ追加ボタン
      */
     add() {
+      // 項番の表示確認
+      this.setKoban();
+
       // 入力した利用者の「上限額管理計算」に〇が表示される
       this.setJyougenKanriCalc();
 
@@ -352,7 +355,45 @@ export default {
       this.jigyosyoAdd.flag = false;
       document.getElementById('menubar').style.display = 'none';
     },
-
+    /****************************
+     * 項番の表示確認
+     */
+    setKoban() {
+      let row = this.hensyuTargetRow;
+      let jB = this.getClickJyukyusyaBango(row);
+      let jBrow = this.getJyukyusyaBangoRow(jB);
+      // 並び順の制御
+      let sortData = [];
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        sortData.push(this.receptData[i]);
+      }
+      let sort = [];
+      let reSortCheckFlag = false;
+      for (let i = 0; i < sortData.length; i++) {
+        if (!sortData[i].koban) {
+          reSortCheckFlag = true;
+          break;
+        }
+        sort.push({
+          jigyosyobango: sortData[i].jigyosyobango,
+          koban: sortData[i].koban,
+        });
+      }
+      // sortに空欄が有れば採番を行う
+      if (reSortCheckFlag) {
+        sort = [];
+        for (let i = 0; i < sortData.length; i++) {
+          sort.push({
+            koban: i + 1,
+          });
+        }
+      }
+      let num = 0;
+      for (let i = jBrow.first; i < jBrow.last; i++) {
+        this.receptData[i].koban = sort[num].koban;
+        num++;
+      }
+    },
     /*****************************
      * 事業所追加用
      */
@@ -714,6 +755,7 @@ export default {
           if (hPage.col == 7) {
             //クリックした際の受給者番号取得
             let jB = _self.getClickJyukyusyaBango(hPage.row);
+
             //受給者番号が持つ行数の取得
             let jBrow = _self.getJyukyusyaBangoRow(jB);
 
@@ -721,19 +763,22 @@ export default {
               // 順番の最大値を取得
               let numbers = [];
               for (let i = jBrow.first; i < jBrow.last; i++) {
-                numbers.push(_self.receptData[i].kobanSorts);
+                numbers.push(_self.receptData[i].koban);
               }
               var max = numbers.reduce(function (a, b) {
                 return Math.max(a, b);
               });
               let num = max + 1;
               flexGrid.setCellData(hPage.row, 7, num);
-              _self.receptData[hPage.row].kobanSorts = num;
+              _self.receptData[hPage.row].koban = num;
             } else {
               for (let i = jBrow.first; i < jBrow.last; i++) {
                 flexGrid.setCellData(i, 7, '');
-                _self.receptData[i].kobanSorts = '';
+                _self.receptData[i].koban = '';
               }
+              //flexGrid.itemsSource = [];
+              flexGrid.itemsSource = _self.receptData;
+              flexGrid.refresh();
             }
           }
         }
@@ -786,7 +831,7 @@ export default {
       panel.setCellData(0, 16, 'レセプト確定');
       panel.setCellData(0, 17, '印刷');
 
-      flexGrid.columnHeaders.rows[1].height = 100;
+      flexGrid.columnHeaders.rows[1].height = 84;
       flexGrid.rows.defaultSize = 20;
     },
     /********************
@@ -820,7 +865,13 @@ export default {
             e.col == 10
           ) {
             e.cell.style.textAlign = 'left';
-          } else if (e.col == 5 || e.col == 11 || e.col == 12) {
+          } else if (
+            e.col == 5 ||
+            e.col == 11 ||
+            e.col == 12 ||
+            e.col == 14 ||
+            e.col == 15
+          ) {
             e.cell.style.textAlign = 'right';
           } else {
             e.cell.style.textAlign = 'center';
@@ -1140,6 +1191,7 @@ div.receptParts {
   border: none;
   .wj-cell {
     font-size: 12px;
+    font-weight: 400;
   }
   .fixgrey {
     background-color: $light-gray;
@@ -1176,7 +1228,6 @@ div#recept-jijyougen {
   .wj-header.wj-cell {
     display: flex;
     align-items: center;
-    font-size: 14px;
     font-weight: normal;
   }
 

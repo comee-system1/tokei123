@@ -52,7 +52,7 @@ export default {
       allData: [],
       teikyoService: this.getTeikyoService(),
       receptData: [],
-      gridHeadHeight: 80, //グリッドのヘッダ高さ
+      gridHeadHeight: 65, //グリッドのヘッダ高さ
       mainFlexGrid: [],
       basicPos: basicPos,
       receptSyukeiPos: basicPos + this.getTeikyoService().length, //レセプト集計の位置
@@ -896,9 +896,7 @@ div#recept-list {
     }
 
     .wj-header.wj-cell {
-      font-size: 14px;
       text-align: center !important;
-      padding: 4px 6px 3px 6px;
       font-weight: normal;
       overflow: visible;
       vertical-align: middle;
@@ -908,7 +906,7 @@ div#recept-list {
     }
 
     .wj-cell {
-      padding: 0px !important;
+      padding: 2px;
       overflow: visible;
       font-size: 12px;
     }
