@@ -200,7 +200,10 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
 import HeaderServices from '../components/HeaderServices.vue';
-import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+// 本番用
+// import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+// テスト用
+import { nenkanRiyouNissuIcrn } from '../../../backend/api/NenkanRiyouNissuIcrn';
 
 import sysConst from '@/utiles/const';
 

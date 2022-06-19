@@ -5,15 +5,25 @@ const moment = require('moment')
 
 export async function ReceptList() {
     // 接続確認用URL
-    var url = config.getDomain()+'/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    //    var url = config.getDomain()+'/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    var url = "https://randomuser.me/api/";
     var uniqid = 1;
     config.setURL(url);
     config.setUniqID(uniqid);
 
     return await service.getData().then(result => {
         // 利用者情報一覧
-        let returns = [];
-        
+        let seikyu_inf = [];
+        seikyu_inf = [{
+            error: 1
+        }];
+
+        let returns = {
+            seikyu_inf: seikyu_inf,
+        };
+
+        return returns;
+
         // let riyo_inf = [];
         // let riyo = result.riyo_inf;
         // for(let i = 0 ; i < riyo.length; i++){
@@ -57,6 +67,6 @@ export async function ReceptList() {
         //     kaisyo_inf:kaisyo_inf
         //   };
 
-        return returns;
+        // return returns;
     });
 }

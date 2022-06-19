@@ -43,7 +43,10 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
-import { ReceptList } from '@backend/api/ReceptList';
+// 本番用
+//import { ReceptList } from '@backend/api/ReceptList';
+// テスト用
+import { ReceptList } from '../../../backend/api/ReceptList';
 
 Vue.use(VueAxios, axios);
 let basicPos = 8; // 基本情報の列数
@@ -70,7 +73,8 @@ export default {
 
     ReceptList().then((result) => {
       console.log(result);
-      this.receptData = this.getData();
+      //this.receptData = this.getData();
+      this.receptData = result.seikyu_inf;
       console.log(this.receptData);
       // 値の登録
       this.mainFlexGrid.itemsSource = this.receptData;
@@ -181,36 +185,38 @@ export default {
      * 値の登録
      */
     settingPoint(flexGrid) {
-      for (let i = 0; i < this.receptData.length; i++) {
-        let j = 0;
-        flexGrid.setCellData(i, j++, this.receptData[i].error);
-        flexGrid.setCellData(i, j++, this.receptData[i].sityoson);
-        flexGrid.setCellData(i, j++, this.receptData[i].jyukyusyaBango);
-        flexGrid.setCellData(i, j++, this.receptData[i].riyousyamei);
-        flexGrid.setCellData(i, j++, this.receptData[i].jyougenicon);
-        flexGrid.setCellData(i, j++, this.receptData[i].jyougen);
-        flexGrid.setCellData(i, j++, this.receptData[i].riyosyafutan);
-        flexGrid.setCellData(i, j++, ''); //空を挿入 提供サービスの前に空列を追加しているため
-        for (let s = 0; s < this.teikyoService.length; s++) {
-          if (this.teikyoService[s].servicekey != 'undefined') {
-            let skey = 'service' + this.teikyoService[s].servicekey;
-            flexGrid.setCellData(i, j++, this.receptData[i][skey]);
-          }
-        }
-        j++;
-      }
+      console.log(flexGrid);
+      // for (let i = 0; i < this.receptData.length; i++) {
+      //   let j = 0;
+      //   flexGrid.setCellData(i, j++, this.receptData[i].error);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].sityoson);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].jyukyusyaBango);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].riyousyamei);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].jyougenicon);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].jyougen);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].riyosyafutan);
+      //   flexGrid.setCellData(i, j++, ''); //空を挿入 提供サービスの前に空列を追加しているため
+      //   for (let s = 0; s < this.teikyoService.length; s++) {
+      //     if (this.teikyoService[s].servicekey != 'undefined') {
+      //       let skey = 'service' + this.teikyoService[s].servicekey;
+      //       flexGrid.setCellData(i, j++, this.receptData[i][skey]);
+      //     }
+      //   }
+      //   j++;
+      // }
     },
     settingSyukeiPoint(flexGrid) {
-      for (let i = 0; i < this.receptData.length; i++) {
-        let j = 0;
-        flexGrid.setCellData(i, j++, this.receptData[i].resesyukei);
-        flexGrid.setCellData(i, j++, this.receptData[i].syukeibi);
-        flexGrid.setCellData(i, j++, this.receptData[i].tanto);
-        flexGrid.setCellData(i, j++, this.receptData[i].jyogenkanrizumi);
-        flexGrid.setCellData(i, j++, this.receptData[i].resekaku);
+      console.log(flexGrid);
 
-        j++;
-      }
+      // for (let i = 0; i < this.receptData.length; i++) {
+      //   let j = 0;
+      //   flexGrid.setCellData(i, j++, this.receptData[i].resesyukei);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].syukeibi);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].tanto);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].jyogenkanrizumi);
+      //   flexGrid.setCellData(i, j++, this.receptData[i].resekaku);
+      //   j++;
+      // }
     },
     /******************:
      * 値の登録
@@ -334,7 +340,7 @@ export default {
             }
 
             // エラーの時はレセプト集計の背景を無効用の背景に変更
-            if (_self.receptData[e.row].error == 1) {
+            if (_self.receptData[e.row] && _self.receptData[e.row].error == 1) {
               e.cell.style.background = sysConst.COLOR.gridBackground;
             }
           }
