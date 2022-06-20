@@ -43,10 +43,7 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
-// 本番用
-//import { ReceptList } from '@backend/api/ReceptList';
-// テスト用
-import { ReceptList } from '../../../backend/api/ReceptList';
+import { ReceptList } from '@backend/api/ReceptList';
 
 Vue.use(VueAxios, axios);
 let basicPos = 8; // 基本情報の列数
@@ -74,15 +71,15 @@ export default {
     ReceptList().then((result) => {
       console.log(result);
       //this.receptData = this.getData();
-      this.receptData = result.seikyu_inf;
+      this.receptData = result;
       console.log(this.receptData);
       // 値の登録
       this.mainFlexGrid.itemsSource = this.receptData;
-      this.settingPoint(this.mainFlexGrid);
 
       // 値の登録
       this.mainSyukeiFlexGrid.itemsSource = this.receptData;
-      this.settingSyukeiPoint(this.mainSyukeiFlexGrid);
+
+      this.allData = this.receptData;
     });
   },
   created() {
@@ -181,43 +178,7 @@ export default {
         }
       });
     },
-    /**********************
-     * 値の登録
-     */
-    settingPoint(flexGrid) {
-      console.log(flexGrid);
-      // for (let i = 0; i < this.receptData.length; i++) {
-      //   let j = 0;
-      //   flexGrid.setCellData(i, j++, this.receptData[i].error);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].sityoson);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].jyukyusyaBango);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].riyousyamei);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].jyougenicon);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].jyougen);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].riyosyafutan);
-      //   flexGrid.setCellData(i, j++, ''); //空を挿入 提供サービスの前に空列を追加しているため
-      //   for (let s = 0; s < this.teikyoService.length; s++) {
-      //     if (this.teikyoService[s].servicekey != 'undefined') {
-      //       let skey = 'service' + this.teikyoService[s].servicekey;
-      //       flexGrid.setCellData(i, j++, this.receptData[i][skey]);
-      //     }
-      //   }
-      //   j++;
-      // }
-    },
-    settingSyukeiPoint(flexGrid) {
-      console.log(flexGrid);
 
-      // for (let i = 0; i < this.receptData.length; i++) {
-      //   let j = 0;
-      //   flexGrid.setCellData(i, j++, this.receptData[i].resesyukei);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].syukeibi);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].tanto);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].jyogenkanrizumi);
-      //   flexGrid.setCellData(i, j++, this.receptData[i].resekaku);
-      //   j++;
-      // }
-    },
     /******************:
      * 値の登録
      */
@@ -251,34 +212,6 @@ export default {
         }
       }
       return teikyoService;
-    },
-    getData() {
-      let receptData = [];
-      for (let i = 0; i < 10; i++) {
-        receptData.push({
-          error: '',
-          sityoson: '東経市',
-          code: '000' + (i % 5),
-          jyukyusyaBango: '110001239' + (i % 4),
-          riyousyamei: '東経 晴美' + (i % 3),
-          kana: 'トウケイハルミ',
-          jyougenicon: i % 4 != 3 ? '他' : 'disabled',
-          jyougen: i % 4 != 3 ? '南山事業所' : 'disabled',
-          riyosyafutan: i % 4 != 3 ? 9900 : 0,
-          service22: i % 2 == 0 ? 1 : 0,
-          service24: i % 3 == 1 ? 1 : 0,
-          service32: i % 4 == 1 ? 1 : 0,
-          nyukyo: i % 2, // 今月入居
-          taikyo: i % 4, // 今月退去
-          resesyukei: '',
-          syukeibi: '',
-          tanto: '',
-          jyogenkanrizumi: '',
-          resekaku: '',
-        });
-      }
-      this.allData = receptData;
-      return receptData;
     },
 
     /*******************

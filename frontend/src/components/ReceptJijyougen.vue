@@ -15,14 +15,14 @@
       :style="gridHeight"
     >
       <wj-flex-grid-column
-        :binding="'sityoson'"
+        :binding="'sityonm'"
         :header="'市町村名'"
         align="center"
         width="2*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jyukyusyaBango'"
+        :binding="'jyukyuno'"
         :header="'受給者番号'"
         align="center"
         width="2*"
@@ -30,14 +30,14 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'riyousyamei'"
+        :binding="'names'"
         :header="'利用者名'"
         align="center"
         width="3*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jyougenicon'"
+        :binding="'jigyo_jigyokbn'"
         :header="'上限額\n管理事業所'"
         :multiLine="true"
         align="center"
@@ -45,14 +45,14 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jyougengakuJigyosyo'"
+        :binding="'jigyo_jigyonm'"
         :multiLine="true"
         align="center"
         width="2*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'riyosyafutanGetsugaku'"
+        :binding="'fjyogen'"
         :header="'利用者負担\n上限月額'"
         :multiLine="true"
         format="n0"
@@ -67,7 +67,7 @@
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'koban'"
+        :binding="'cnt'"
         :header="'項番'"
         :width="24"
         align="center"
@@ -75,7 +75,7 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jigyosyobango'"
+        :binding="'jigyono'"
         :header="'事業所番号'"
         width="2*"
         align="center"
@@ -83,14 +83,14 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jigyosyomei'"
+        :binding="'jigyonm'"
         :header="'事業所名'"
         width="3*"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'teikyoservice'"
+        :binding="'svcnm'"
         :header="'提供\nサービス'"
         width="3*"
         align="center"
@@ -98,7 +98,7 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'souhiyougaku'"
+        :binding="'sogaku'"
         :header="'総費用額'"
         width="2*"
         align="center"
@@ -106,7 +106,7 @@
         :format="'n0'"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'riyosyafutangaku'"
+        :binding="'riyogaku'"
         :header="'利用者\n負担額'"
         width="2*"
         align="center"
@@ -121,14 +121,14 @@
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'kanrikekkafutangaku'"
+        :binding="'jknr_riyogaku'"
         :header="'管理結果\n後利用者\n負担額'"
         width="2*"
         align="center"
         :multiLine="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'kanrikekka'"
+        :binding="'jknr_rslt'"
         :header="'管理結果'"
         align="center"
         :width="24"
@@ -195,20 +195,20 @@
           class="receptParts"
         >
           <wj-flex-grid-column
-            :binding="'jigyosyobango'"
+            :binding="'jigyono'"
             :header="'登録済 他サービス事業所一覧'"
             align="center"
             width="*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'jigyosyomei'"
+            :binding="'jigyonm'"
             align="center"
             width="*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'teikyoservice'"
+            :binding="'svcnm'"
             align="center"
             width="2*"
             :isReadOnly="true"
@@ -257,7 +257,8 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import '@/assets/scss/common.scss';
-import { getReceptJijyogenData } from '@/data/receptJiJyougenData.js';
+//import { getReceptJijyogenData } from '@/data/receptJiJyougenData.js';
+import { ReceptJijyougen } from '@backend/api/ReceptJijyougen';
 import * as wjGrid from '@grapecity/wijmo.grid';
 //import * as wjCore from '@grapecity/wijmo';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
@@ -370,13 +371,13 @@ export default {
       let sort = [];
       let reSortCheckFlag = false;
       for (let i = 0; i < sortData.length; i++) {
-        if (!sortData[i].koban) {
+        if (!sortData[i].cnt) {
           reSortCheckFlag = true;
           break;
         }
         sort.push({
-          jigyosyobango: sortData[i].jigyosyobango,
-          koban: sortData[i].koban,
+          jigyono: sortData[i].jigyono,
+          cnt: sortData[i].cnt,
         });
       }
       // sortに空欄が有れば採番を行う
@@ -384,13 +385,13 @@ export default {
         sort = [];
         for (let i = 0; i < sortData.length; i++) {
           sort.push({
-            koban: i + 1,
+            cnt: i + 1,
           });
         }
       }
       let num = 0;
       for (let i = jBrow.first; i < jBrow.last; i++) {
-        this.receptData[i].koban = sort[num].koban;
+        this.receptData[i].cnt = sort[num].cnt;
         num++;
       }
     },
@@ -456,22 +457,22 @@ export default {
       let jud = [];
       for (let i = 0; i < this.receptData.length; i++) {
         jud.push({
-          jigyosyobango: this.receptData[i].jigyosyobango,
-          jyukyusyaBango: this.receptData[i].jyukyusyaBango,
+          jigyono: this.receptData[i].jigyono,
+          jyukyuno: this.receptData[i].jyukyuno,
         });
       }
       // 表示データの選択に〇を表示する
-      let jyukyusyaBango = this.hensyuTarget.jyukyusyaBango;
+      let jyukyuno = this.hensyuTarget.jyukyuno;
       let array = [];
       for (let i = 0; i < this.allData.length; i++) {
-        if (jyukyusyaBango == this.allData[i].jyukyusyaBango) {
+        if (jyukyuno == this.allData[i].jyukyuno) {
           let viewflag = 0;
           for (let j = 0; j < jud.length; j++) {
             if (this.allData[i]['viewflag'] == 2) {
               viewflag = 2;
             } else if (
-              jud[j]['jigyosyobango'] == this.allData[i]['jigyosyobango'] &&
-              jud[j]['jyukyusyaBango'] == this.allData[i]['jyukyusyaBango']
+              jud[j]['jigyono'] == this.allData[i]['jigyono'] &&
+              jud[j]['jyukyuno'] == this.allData[i]['jyukyuno']
             ) {
               viewflag = 1;
             }
@@ -479,10 +480,10 @@ export default {
           this.allData[i]['viewflag'] = viewflag;
           array.push({
             key: i,
-            jigyosyobango: this.allData[i].jigyosyobango,
-            jyukyusyaBango: this.allData[i].jyukyusyaBango,
-            jigyosyomei: this.allData[i].jigyosyomei,
-            teikyoservice: this.allData[i].teikyoservice,
+            jigyono: this.allData[i].jigyono,
+            jyukyuno: this.allData[i].jyukyuno,
+            jigyonm: this.allData[i].jigyonm,
+            svcnm: this.allData[i].svcnm,
             regist_select: viewflag,
           });
         }
@@ -494,8 +495,8 @@ export default {
      */
     jigyosyoMisiyo() {
       // 編集列の選択値を取得
-      let jM = this.hensyuTarget.jigyosyomei;
-      let tS = this.hensyuTarget.teikyoservice;
+      let jM = this.hensyuTarget.jigyonm;
+      let tS = this.hensyuTarget.svcnm;
       let message = jM + ' ' + tS + 'を未使用に設定します。よろしいですか？';
       this.jigyosyoMisiyoConfirm.flag = true;
       this.jigyosyoMisiyoConfirm.message = message;
@@ -539,7 +540,7 @@ export default {
     /*********************
      * レセプト確定の値を指定する
      */
-    editReseKaku(row, code) {
+    editReseKaku(row, riyocode) {
       // 変更場所の受給者番号取得
       let jB = this.getClickJyukyusyaBango(row);
       //受給者番号が持つ行数の取得
@@ -547,15 +548,15 @@ export default {
 
       // 確定解除した際の背景色を白に戻す配列
       for (let i = jBrow.first; i < jBrow.last; i++) {
-        // this.mainFlexGrid.setCellData(i, 16, code);
-        this.receptData[i]['resekakutei'] = code;
-        if (code == '') {
+        // this.mainFlexGrid.setCellData(i, 16, riyocode);
+        this.receptData[i]['resekakutei'] = riyocode;
+        if (riyocode == '') {
           this.receptData[i]['complateFlag'] = false;
           if (this.receptData[i]['fixFlag'] == 0) {
             this.editBackColorCell.push(i);
           }
         }
-        if (code == 'complete') {
+        if (riyocode == 'complete') {
           this.receptData[i]['complateFlag'] = true;
         }
       }
@@ -582,7 +583,7 @@ export default {
      * クリックした際の受給者番号取得
      */
     getClickJyukyusyaBango(row) {
-      return this.receptData[row].jyukyusyaBango;
+      return this.receptData[row].jyukyuno;
     },
     /*************
      * 受給者番号が持つ行数の取得
@@ -601,11 +602,19 @@ export default {
 
     onInitialized(flexGrid) {
       // flexGrid.select(-1, -1);
-      this.receptData = getReceptJijyogenData();
-      this.allData = this.receptData;
-      this.mainFlexGrid = flexGrid;
-      // ヘッダ情報の作成
-      this.createHeader(flexGrid);
+      ReceptJijyougen().then((result) => {
+        this.receptData = result;
+        this.allData = this.receptData;
+        this.mainFlexGrid = flexGrid;
+        // ヘッダ情報の作成
+        this.createHeader(flexGrid);
+
+        // データセルのマージ
+        if (this.receptData.length > 0) {
+          this.createCellMerge(flexGrid);
+        }
+      });
+
       //セルのクリックイベント
       this.clickEventCell(flexGrid);
       // セルの値を編集
@@ -615,10 +624,14 @@ export default {
     onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.merge = this.createMergeArray(this.receptData);
-      // データセルのマージ
-      this.createCellMerge(flexGrid);
+
       //セルのフォーマット指定
       this.createCellFormat(flexGrid);
+
+      // データセルのマージ
+      if (this.receptData.length > 0) {
+        this.createCellMerge(flexGrid);
+      }
     },
 
     /********
@@ -763,18 +776,18 @@ export default {
               // 順番の最大値を取得
               let numbers = [];
               for (let i = jBrow.first; i < jBrow.last; i++) {
-                numbers.push(_self.receptData[i].koban);
+                numbers.push(_self.receptData[i].cnt);
               }
               var max = numbers.reduce(function (a, b) {
                 return Math.max(a, b);
               });
               let num = max + 1;
               flexGrid.setCellData(hPage.row, 7, num);
-              _self.receptData[hPage.row].koban = num;
+              _self.receptData[hPage.row].cnt = num;
             } else {
               for (let i = jBrow.first; i < jBrow.last; i++) {
                 flexGrid.setCellData(i, 7, '');
-                _self.receptData[i].koban = '';
+                _self.receptData[i].cnt = '';
               }
               //flexGrid.itemsSource = [];
               flexGrid.itemsSource = _self.receptData;
@@ -931,8 +944,8 @@ export default {
         if (this.receptData[i]['jyougengakukanrikeisan'] == 1) {
           // 1→2に変更
           this.receptData[i]['jyougengakukanrikeisan'] = 2;
-          this.receptData[i]['kanrikekkafutangaku'] = 9300 + i;
-          this.receptData[i]['kanrikekka'] = 1;
+          this.receptData[i]['jknr_riyogaku'] = 9300 + i;
+          this.receptData[i]['jknr_rslt'] = 1;
         }
       }
 
@@ -942,11 +955,18 @@ export default {
      * マージ作成用の配列を作成
      */
     createMergeArray(receptData) {
+      // 受給者番号でソート
+      receptData.sort((a, b) => {
+        if (a.jyukyuno > b.jyukyuno) return 1;
+        if (a.jyukyuno < b.jyukyuno) return -1;
+        return 0;
+      });
+
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
         array.push({
           row: i,
-          jyukyusyaBango: receptData[i]['jyukyusyaBango'],
+          jyukyuno: receptData[i]['jyukyuno'],
         });
       }
       const groupBy = function (xs, key) {
@@ -956,7 +976,7 @@ export default {
         }, {});
       };
 
-      const mergeGroup = groupBy(array, 'jyukyusyaBango');
+      const mergeGroup = groupBy(array, 'jyukyuno');
       let merge = [];
       Object.keys(mergeGroup).map((key) => {
         let firsts = mergeGroup[key][0].row;
@@ -975,40 +995,43 @@ export default {
     createCellMerge(flexGrid) {
       let headerRanges = [
         new wjGrid.CellRange(0, 0, 0, 5),
-        new wjGrid.CellRange(0, 6, 1, 6),
         new wjGrid.CellRange(0, 7, 0, 12),
-        new wjGrid.CellRange(0, 13, 1, 13),
         new wjGrid.CellRange(0, 14, 0, 15),
+        new wjGrid.CellRange(1, 3, 1, 4),
+        new wjGrid.CellRange(0, 6, 1, 6),
+        new wjGrid.CellRange(0, 13, 1, 13),
         new wjGrid.CellRange(0, 16, 1, 16),
         new wjGrid.CellRange(0, 17, 1, 17),
-        new wjGrid.CellRange(1, 3, 1, 4),
       ];
-      // データセル用のマージ配列の作成
+      // データセル用のマージ配列の作成;
       let ranges = [];
-      let merge = this.createMergeArray(this.receptData);
-      for (let i = 0; i < merge.length; i++) {
-        for (let j = 0; j <= 6; j++) {
+      if (this.receptData.length > 0) {
+        let merge = this.createMergeArray(this.receptData);
+        for (let i = 0; i < merge.length; i++) {
+          for (let j = 0; j <= 6; j++) {
+            ranges.push(
+              new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
+            );
+          }
+          let j = 16;
           ranges.push(
             new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
           );
         }
-        let j = 16;
-        ranges.push(
-          new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
-        );
       }
-
       let mm = new wjGrid.MergeManager(flexGrid);
-
       mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+        if (
+          panel.cellType == wjGrid.CellType.ColumnHeader &&
+          headerRanges.length > 0
+        ) {
           for (let h = 0; h < headerRanges.length; h++) {
             if (headerRanges[h].contains(r, c)) {
               return headerRanges[h];
             }
           }
         }
-        if (panel.cellType == wjGrid.CellType.Cell) {
+        if (panel.cellType == wjGrid.CellType.Cell && ranges.length > 0) {
           for (let h = 0; h < ranges.length; h++) {
             if (ranges[h].contains(r, c)) {
               return ranges[h];
@@ -1018,6 +1041,7 @@ export default {
       };
 
       flexGrid.mergeManager = mm;
+      return false;
     },
 
     /******************
@@ -1028,24 +1052,24 @@ export default {
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.riyousyamei < b.riyousyamei) return -1;
-          if (a.riyousyamei > b.riyousyamei) return 1;
+          if (a.names < b.names) return -1;
+          if (a.names > b.names) return 1;
           return 0;
         });
       }
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code < b.code) return -1;
-          if (a.code > b.code) return 1;
+          if (a.riyocode < b.riyocode) return -1;
+          if (a.riyocode > b.riyocode) return 1;
           return 0;
         });
       }
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyusyaBango < b.jyukyusyaBango) return 1;
-          if (a.jyukyusyaBango > b.jyukyusyaBango) return -1;
+          if (a.jyukyuno < b.jyukyuno) return 1;
+          if (a.jyukyuno > b.jyukyuno) return -1;
           return 0;
         });
       }
@@ -1096,16 +1120,16 @@ export default {
           array.push(this.allData[i]);
         } else {
           if (
-            (this.allData[i]['jigyosyomei'].indexOf(
+            (this.allData[i]['jigyonm'].indexOf(
               this.filterTextJyogen.jyougenkanriji
             ) != -1 ||
               this.filterTextJyogen.jyougenkanrijiKey == 0) &&
             // 絞り込みトグル
             (this.filterSibori.type == 1 ||
               (this.filterSibori.type == 2 &&
-                this.allData[i]['kanrikekka'] == 1) ||
+                this.allData[i]['jknr_rslt'] == 1) ||
               (this.filterSibori.type == 3 &&
-                this.allData[i]['kanrikekka'] == '')) &&
+                this.allData[i]['jknr_rslt'] == '')) &&
             // 利用者コンボボックス
             (this.filterTextRiyosya.riyosyaKey == 0 ||
               (this.filterTextRiyosya.riyosyaKey == 1 &&

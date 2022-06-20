@@ -1521,6 +1521,7 @@ div#KyuhuMeisaiIcrn {
       justify-content: center;
       align-items: center;
       text-align: center;
+      font-weight: normal;
     }
 
     .wj-cell-maker {

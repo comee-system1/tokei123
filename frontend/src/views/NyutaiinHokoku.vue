@@ -237,6 +237,7 @@ import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
+// import { NyutaiinHokoku } from '@backend/api/NyutaiinHokoku';
 
 const riyosyaCombo = [];
 const alphabet = [
@@ -283,7 +284,8 @@ export default {
     // グリッドリサイズ
     window.addEventListener('resize', this.handleResize);
 
-    // 利用者コンボボックス
+    // 利用者コンボボック
+    this.riyosyaCombo = [];
     this.riyosyaCombo.push(
       {
         key: 0,
@@ -479,6 +481,10 @@ export default {
       let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
+      // NyutaiinHokoku().then((result) => {
+      //   console.log('TEST_RESULT');
+      //   console.log(result);
+      // });
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 

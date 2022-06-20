@@ -764,6 +764,7 @@ div#KasanKoumokuIcrn {
       justify-content: center;
       align-items: center;
       text-align: center;
+      font-weight: normal;
     }
     .wj-cell-maker {
       width: 15px;
