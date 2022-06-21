@@ -171,53 +171,52 @@
           :style="gridHeight"
         >
           <wj-flex-grid-column
-            :binding="'jyukyusyaBango'"
+            :binding="'jyukyuno'"
             :header="'受給者番号'"
             align="center"
             :width="100"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'shimei'"
+            :binding="'names'"
             :header="'氏名'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'nyutaiinGaihakuKubun'"
+            :binding="'nyuutaigai'"
             :header="'入退院外泊の別'"
             align="center"
             :width="65"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'kaishinegappi'"
+            :binding="'symddsp'"
             :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             :width="150"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'syuryonengappi'"
+            :binding="'eymddsp'"
             :header="'入退院・外泊開始年月日(外泊終了年月日)'"
             align="center"
             :width="150"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'iryokikanmei'"
+            :binding="'ngname'"
             :header="'入院先医療機関名/外泊先'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'bikou'"
+            :binding="'bikoudsp'"
             :header="'備考'"
-            align="center"
             width="3*"
-            :isReadOnly="true"
+            :isReadOnly="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'print'"
@@ -237,7 +236,7 @@ import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
-// import { NyutaiinHokoku } from '@backend/api/NyutaiinHokoku';
+import { nyutaiinHokoku } from '@backend/api/NyutaiinHokoku';
 
 const riyosyaCombo = [];
 const alphabet = [
@@ -284,7 +283,7 @@ export default {
     // グリッドリサイズ
     window.addEventListener('resize', this.handleResize);
 
-    // 利用者コンボボック
+    // 利用者コンボボックス
     this.riyosyaCombo = [];
     this.riyosyaCombo.push(
       {
@@ -347,146 +346,20 @@ export default {
       this.nyuTaiinData = this.filtered();
       // this.griddata = this.filtered();
     },
-    getData() {
-      let nyuTaiinData = [];
-      for (let i = 0; i < 1; i++) {
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012340',
-          code: '10000000',
-          shimei: '東経太郎',
-          kana: 'トウケイタロウ',
-          nyutaiinGaihakuKubun: '入院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '東経市民病院',
-          bikou: '',
-          print: '',
-        });
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012340',
-          code: '10000000',
-          shimei: '東経太郎',
-          kana: 'トウケイタロウ',
-          nyutaiinGaihakuKubun: '退院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '',
-          bikou: '',
-          print: '',
-        });
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012342',
-          code: '10000001',
-          shimei: '南経太郎',
-          kana: 'ナンケイタロウ',
-          nyutaiinGaihakuKubun: '外泊',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '自宅',
-          bikou: '',
-          print: '',
-        });
-        // 南経市 + 今月退去
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012342',
-          code: '10000001',
-          shimei: '南経太郎',
-          kana: 'ナンケイタロウ',
-          nyutaiinGaihakuKubun: '外泊',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '自宅',
-          bikou: '',
-          print: '',
-        });
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012342',
-          code: '10000001',
-          shimei: '南経太郎',
-          kana: 'ナンケイタロウ',
-          nyutaiinGaihakuKubun: '入院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '',
-          bikou: '',
-          print: '',
-        });
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012342',
-          code: '10000001',
-          shimei: '南経太郎',
-          kana: 'ナンケイタロウ',
-          nyutaiinGaihakuKubun: '退院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '',
-          bikou: '',
-          print: '',
-        });
-        
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012348',
-          code: '10000001',
-          shimei: '日経太郎',
-          kana: 'ニッケイケイタロウ',
-          nyutaiinGaihakuKubun: '入院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '',
-          bikou: '',
-          print: '',
-        });
-        nyuTaiinData.push({
-          jyukyusyaBango: '1100012348',
-          code: '10000001',
-          shimei: '日経太郎',
-          kana: 'ニッケイケイタロウ',
-          nyutaiinGaihakuKubun: '退院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '',
-          bikou: '',
-          print: '',
-        });
-          nyuTaiinData.push({
-          jyukyusyaBango: '1100012343',
-          code: '10000002',
-          shimei: '西経太郎',
-          kana: 'セイケイタロウ',
-          nyutaiinGaihakuKubun: '入院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '東経市民病院',
-          bikou: '',
-          print: '',
-        });
-          nyuTaiinData.push({
-          jyukyusyaBango: '1100012343',
-          code: '10000002',
-          shimei: '西経太郎',
-          kana: 'セイケイタロウ',
-          nyutaiinGaihakuKubun: '退院',
-          kaishinegappi: '2022年07月10日',
-          syuryonengappi: '2022年07月10日',
-          iryokikanmei: '東経市民病院',
-          bikou: '',
-          print: '',
-        });
-      }
-      this.allData = nyuTaiinData;
-      this.nyuTaiinData = nyuTaiinData;
-      return nyuTaiinData;
+    getData(result) {
+      this.nyuTaiinData = result.riyo_inf;
+      this.allData = this.nyuTaiinData;
     },
     onInitialized(flexGrid) {
-      let griddata = this.getData();
+      // let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
-      // NyutaiinHokoku().then((result) => {
-      //   console.log('TEST_RESULT');
-      //   console.log(result);
-      // });
+      nyutaiinHokoku().then((result) => {
+        // データ取得
+        this.getData(result);
+      });
       // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      // flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
@@ -494,13 +367,16 @@ export default {
       // セルのクリックイベント
       this.clickEventCell(flexGrid, _self);
 
+      // セルの値を編集
+      this.edittingCell(flexGrid);
+
       // グリッドのデザイン修正
       this.gridDesignModify(flexGrid);
 
       // カナソートを実行
       this.sort(1); 
 
-      flexGrid.itemsSource = griddata;
+      flexGrid.itemsSource = this.nyuTaiinData;
     },
     onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
@@ -516,7 +392,7 @@ export default {
       for (let i = 0; i < nyuTaiinData.length; i++) {
         array.push({
           row: i,
-          jyukyusyaBango: nyuTaiinData[i]['jyukyusyaBango'],
+          jyukyuno: nyuTaiinData[i]['jyukyuno'],
         });
       }
       const groupBy = function (xs, key) {
@@ -526,7 +402,7 @@ export default {
         }, {});
       };
 
-      const mergeGroup = groupBy(array, 'jyukyusyaBango');
+      const mergeGroup = groupBy(array, 'jyukyuno');
       let merge = [];
       Object.keys(mergeGroup).map((key) => {
         let firsts = mergeGroup[key][0].row;
@@ -578,7 +454,6 @@ export default {
           }
         }
       };
-
       flexGrid.mergeManager = mm; 
     },
     /****************
@@ -595,32 +470,41 @@ export default {
             let mark = '〇';
 
             //クリックした際の受給者番号取得
-            let jB = _self.getClickJyukyusyaBango(hPage.row);
+            let jB = _self.getClickjyukyuno(hPage.row);
 
             //受給者番号が持つ行数の取得
-            let jBrow = _self.getJyukyusyaBangoRow(jB);
-            
-            // 〇が入っていた場合、〇を消す
+            let jBrow = _self.getJyukyunoRow(jB);
+
             for (let h = jBrow.first; h < jBrow.last; h++) {
               // 〇が入っていた場合、〇を消す
-              if (flexGrid.getCellData(h, 7) === '〇') mark = '';
+              if (flexGrid.getCellData(h, 7) === '〇') mark = ' ';
               flexGrid.setCellData(h, 7, mark);
-              _self.nyuTaiinData[h]['print'] = mark;
             }
           }
         }
       });
     },
+    /********
+     * セルを編集
+     */
+    edittingCell(flexGrid) {
+      flexGrid.cellEditEnding.addHandler((s, e) => {
+        // 編集されたセルを取得
+        let changedBikou = flexGrid.getCellData(e.row, 6);
+        // 入力された値を保持 
+        this.nyuTaiinData[e.row]['bikoudsp'] = changedBikou;
+      });
+    },
     /*************
      * クリックした際の受給者番号取得
      */
-    getClickJyukyusyaBango(row) {
-      return this.nyuTaiinData[row].jyukyusyaBango;
+    getClickjyukyuno(row) {
+      return this.nyuTaiinData[row].jyukyuno;
     },
     /*************
      * 受給者番号が持つ行数の取得
      */
-    getJyukyusyaBangoRow(jb) {
+    getJyukyunoRow(jb) {
       let data = [];
       let merge = this.createMergeArray(this.nyuTaiinData);
       for (let i = 0; i < merge.length; i++) {
@@ -638,7 +522,7 @@ export default {
       let Data = [];
       // 受給者番号の配列を作成
       for (let i = 0; i < this.nyuTaiinData.length; i++) {
-        Data.push (this.nyuTaiinData[i]['jyukyusyaBango']);
+        Data.push (this.nyuTaiinData[i]['jyukyuno']);
       }
       // 重複した値を削除
       let set = new Set(Data);
@@ -671,7 +555,6 @@ export default {
           }
         }
       };
-
       flexGrid.mergeManager = mm;
     },
     /*****************
@@ -723,6 +606,11 @@ export default {
             s.paddingLeft = '4px'
           }
           // 文字の位置変更
+          if (c == 6) {
+            s.textAlign ='left'
+            s.paddingLeft = '4px'
+          }
+          // 文字の位置変更
           if (c == 7) {
             s.display = 'flex';
             s.alignItems ='center'
@@ -748,7 +636,6 @@ export default {
       if (type == 3) {
         this.sortFlag.bangoFlag = true;
       }
-
       this.onSort(type)
     },
     /******************
@@ -773,11 +660,11 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code !== "" && b.code !== "") {
-            if (a.code < b.code) {
+          if (a.riyocode !== "" && b.riyocode !== "") {
+            if (a.riyocode < b.riyocode) {
               return -1;
             }
-            if (a.code > b.code) {
+            if (a.riyocode > b.riyocode) {
               return 1;
             }
           }
@@ -787,11 +674,11 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyusyaBango !== "" && b.jyukyusyaBango !== "") {
-            if (a.jyukyusyaBango < b.jyukyusyaBango) {
+          if (a.jyukyuno !== "" && b.jyukyuno !== "") {
+            if (a.jyukyuno < b.jyukyuno) {
               return -1;
             }
-            if (a.jyukyusyaBango > b.jyukyusyaBango) {
+            if (a.jyukyuno > b.jyukyuno) {
               return 1;
             }
           }
@@ -801,7 +688,6 @@ export default {
 
       this.nyuTaiinData = array;
       this.mainFlexGrid.itemsSource = [];
-      // this.mainFlexGrid.refresh();
     },
     /**************
      * 印刷種類入力無効化切り替え
@@ -816,7 +702,6 @@ export default {
         this.insatsuFlag.disabledFlag = true;
         this.selNyutaiinDisabled = this.selNyutaiin;
         this.selGaihakuDisabled = this.selGaihaku;
-
       }
     },
     /*********************
@@ -847,7 +732,6 @@ export default {
     onAlphabet(alphaSearch) {
       this.alphaSelect = alphaSearch;
       this.nyuTaiinData = this.filtered();
-      
     },
     filtered() {
       let array = [];
@@ -859,19 +743,19 @@ export default {
         } else {
           if (
             // 入退院者を選択
-            (this.filterTextRiyosya.riyosyaKey == 1 &&
-              (this.allData[i]['nyutaiinGaihakuKubun'] === '入院' ||
-              this.allData[i]['nyutaiinGaihakuKubun'] === '退院')) ||
+            (this.filterTextRiyosya.riyosyaKey === 1 &&
+              this.allData[i]['kbn'] === 1) ||
             // 入院者を選択
-            (this.filterTextRiyosya.riyosyaKey == 2 &&
-              this.allData[i]['nyutaiinGaihakuKubun'] === '入院') ||
+            (this.filterTextRiyosya.riyosyaKey === 2 &&
+              this.allData[i]['nyutaikbn'] === 1) ||
             // 外泊者を選択
-            (this.filterTextRiyosya.riyosyaKey == 4 &&
-              this.allData[i]['nyutaiinGaihakuKubun'] === '外泊') ||
-            // 退院者を選択 
-            (this.filterTextRiyosya.riyosyaKey == 5 &&
-              this.allData[i]['nyutaiinGaihakuKubun'] === '退院')
-          ) {
+            (this.filterTextRiyosya.riyosyaKey === 4 &&
+              this.allData[i]['kbn'] === 2) ||
+            // 退院者を選択
+            (this.filterTextRiyosya.riyosyaKey === 5 &&
+              this.allData[i]['nyutaikbn'] === 2)
+            )
+          {
             array.push(this.allData[i]);
           }
         }
@@ -964,7 +848,9 @@ div#nyuTaiin {
   .no-flex-grow {
     flex-grow: 0;
   }
-  
+  .customCombobox .wj-form-control {
+    padding: 5px 6px;
+  }
   .nyutaiinCheckbox {
     padding: 0;
     margin: 0;
@@ -1019,16 +905,6 @@ div#nyuTaiin {
     transition: all 0s;
     background: $grid_hover_background;
   }
-
-  .wj-cells .wj-cell.wj-state-multi-selected {
-    background: $grid_selected_background;
-    color: $grid_selected_color;
-  }
-
-  .wj-cells .wj-cell.wj-state-selected {
-    background: $grid_selected_background;
-    color: $grid_selected_color;
-  }
   #nyuTaiinGrid {
     .wj-cell {
       padding: 1px 0;
@@ -1050,11 +926,5 @@ div#nyuTaiin {
     width: 100px;
     height: 25px;
   }
-}
-#jyuryoDatepicker {
-  position: absolute;
-  top: 200px;
-  left: 55%;
-  width: auto;
 }
 </style>

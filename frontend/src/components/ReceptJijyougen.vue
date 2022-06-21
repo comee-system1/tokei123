@@ -61,7 +61,7 @@
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
-        :binding="'jyougengakukanrikeisan'"
+        :binding="'jknrcalc'"
         :width="24"
         :isReadOnly="true"
         align="center"
@@ -257,8 +257,8 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import '@/assets/scss/common.scss';
-//import { getReceptJijyogenData } from '@/data/receptJiJyougenData.js';
 import { ReceptJijyougen } from '@backend/api/ReceptJijyougen';
+import { ReceptJijyougenCalc } from '@backend/api/ReceptJijyougenCalc';
 import * as wjGrid from '@grapecity/wijmo.grid';
 //import * as wjCore from '@grapecity/wijmo';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
@@ -576,6 +576,7 @@ export default {
       for (let i = jBrow.first; i < jBrow.last; i++) {
         //this.mainFlexGrid.setCellData(i, 6, '〇');
         this.receptData[i]['jyougengakukanrikeisan'] = 1;
+        this.receptData[i]['jknrcalc'] = 1;
         this.receptData[i].resekakutei = '';
       }
     },
@@ -938,30 +939,34 @@ export default {
      * 親コンポーネントの上限管理計算ボタン
      */
     parentReceptCalc() {
-      // apiに接続して計算結果を得るので、
-      // 適当に出力する
-      for (let i = 0; i < this.receptData.length; i++) {
-        if (this.receptData[i]['jyougengakukanrikeisan'] == 1) {
-          // 1→2に変更
-          this.receptData[i]['jyougengakukanrikeisan'] = 2;
-          this.receptData[i]['jknr_riyogaku'] = 9300 + i;
-          this.receptData[i]['jknr_rslt'] = 1;
+      ReceptJijyougenCalc().then((result) => {
+        console.log(result);
+        for (let i = 0; i < this.receptData.length; i++) {
+          if (this.receptData[i]['jyougengakukanrikeisan'] == 1) {
+            // 表示データの検索
+            let data = this.dataFilter(result, this.receptData[i]);
+            // 1→2に変更
+            this.receptData[i]['jyougengakukanrikeisan'] = 2;
+            this.receptData[i]['jknrcalc'] = data.jknrcalc;
+            this.receptData[i]['jknr_riyogaku'] = data.jknr_riyogaku;
+            this.receptData[i]['jknr_rslt'] = data.jknr_rslt;
+          }
         }
-      }
-
-      this.mainFlexGrid.refresh();
+        this.mainFlexGrid.refresh();
+      });
+    },
+    dataFilter(array, search) {
+      let aryCheck = array.filter((value) => {
+        if (value.riid == search.riid) {
+          return true;
+        }
+      });
+      return aryCheck[0];
     },
     /********************
      * マージ作成用の配列を作成
      */
     createMergeArray(receptData) {
-      // 受給者番号でソート
-      receptData.sort((a, b) => {
-        if (a.jyukyuno > b.jyukyuno) return 1;
-        if (a.jyukyuno < b.jyukyuno) return -1;
-        return 0;
-      });
-
       let array = [];
       for (let i = 0; i < receptData.length; i++) {
         array.push({

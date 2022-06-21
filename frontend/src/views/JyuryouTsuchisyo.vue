@@ -76,7 +76,7 @@
           <v-btn
             class="ml-1"
             small
-            style="width: 60px; height: 25px; padding-top: 1px;"
+            style="width: 60px; height: 25px;"
           >
             検索
           </v-btn>
@@ -994,6 +994,9 @@ div#JyuryouTsuchisyo {
   }
   .no-flex-grow {
     flex-grow: 0;
+  }
+  .customCombobox .wj-form-control {
+    padding: 5px 6px;
   }
   .combo:hover {
     background-color: #e1e1e1;

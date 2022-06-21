@@ -1,4 +1,4 @@
-const config = require('../api/config');
+const config = require('../api/ApiRun');
 const ApiResponse = require('./ApiResponse')
 const apiResponse = new ApiResponse();
 module.exports = class Repo {

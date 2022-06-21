@@ -279,9 +279,9 @@ export default {
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
 
-      receptFlag: false, // receptの初期表示状態
+      receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
-      JijyougenkanriJimsyoFlag: true, // JijyougenkanriJimsyoFlagの初期表示状態
+      JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
       tabMenus: [
         { href: '#recept', text: 'レセプト集計' },
         { href: '#TajyougenkanriJimsyo', text: '他上限管理事業所入力' },

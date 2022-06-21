@@ -1,7 +1,7 @@
 <template>
   <div id="recept-list" class="mt-n5">
     <v-row no-gutters>
-      <v-col style="width: 70%">
+      <v-col style="width: 80%">
         <wj-flex-grid
           id="grid_recept"
           :initialized="onInitialized"
@@ -17,7 +17,7 @@
         >
         </wj-flex-grid>
       </v-col>
-      <v-col style="width: 30%">
+      <v-col style="width: 20%">
         <wj-flex-grid
           id="grid_syukei"
           :initialized="onInitializedSyukei"
@@ -69,10 +69,10 @@ export default {
     this.handleResize;
 
     ReceptList().then((result) => {
-      console.log(result);
       //this.receptData = this.getData();
-      this.receptData = result;
-      console.log(this.receptData);
+
+      this.receptData = result.seikyu_inf;
+
       // 値の登録
       this.mainFlexGrid.itemsSource = this.receptData;
 
@@ -93,13 +93,13 @@ export default {
     teikyoServiceTitle() {
       let grid_syukei =
         document.getElementById('grid_syukei').getBoundingClientRect().left -
-        400;
+        620;
       return grid_syukei;
     },
     handleResize() {
       let grid_syukei =
         document.getElementById('grid_syukei').getBoundingClientRect().left -
-        672;
+        840;
       this.serviceWidth = grid_syukei;
 
       let height = window.innerHeight;
@@ -202,9 +202,9 @@ export default {
         }
       );
 
-      // 提供サービスが20以下の時は不足分追加を行う
-      if (teikyoService.length < 20) {
-        for (let i = 0; i < 17; i++) {
+      // 提供サービスが5以下の時は不足分追加を行う
+      if (teikyoService.length < 5) {
+        for (let i = 0; i < 2; i++) {
           teikyoService.push({
             servicekey: '',
             value: '',
@@ -403,8 +403,8 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 21;
       flexGrid.columnHeaders.rows[1].height = this.gridHeadHeight;
       flexGrid.columnHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.columns[1].width = 180;
-      flexGrid.columnHeaders.columns[2].width = '1*';
+      flexGrid.columnHeaders.columns[1].width = '2*';
+      flexGrid.columnHeaders.columns[2].width = '2*';
       flexGrid.columnHeaders.columns[3].width = 30;
       flexGrid.columnHeaders.columns[4].width = 30;
     },
@@ -463,8 +463,8 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 21;
       flexGrid.columnHeaders.rows[1].height = this.gridHeadHeight;
       flexGrid.columnHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.columns[1].width = 130;
-      flexGrid.columnHeaders.columns[2].width = 100;
+      flexGrid.columnHeaders.columns[1].width = 230;
+      flexGrid.columnHeaders.columns[2].width = 160;
       flexGrid.columnHeaders.columns[3].width = 160;
       flexGrid.columnHeaders.columns[4].width = 20;
       flexGrid.columnHeaders.columns[5].width = 160;
@@ -475,7 +475,7 @@ export default {
       for (let i = this.basicPos; i < this.receptSyukeiPos; i++) {
         flexGrid.columnHeaders.columns[i].multiLine = true;
         flexGrid.columnHeaders.columns[i].minWidth = 50;
-        flexGrid.columnHeaders.columns[i].width = '1*';
+        flexGrid.columnHeaders.columns[i].width = 30;
       }
       flexGrid.rows.defaultSize = 20;
     },

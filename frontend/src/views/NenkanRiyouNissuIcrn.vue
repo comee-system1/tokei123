@@ -311,6 +311,17 @@ export default {
           }
         }
 
+        if (e.col == 3) {
+          e.cell.style.borderRight = '1px solid ';
+          e.cell.style.borderLeft = '1px solid ';
+        }
+        if (e.col == 5) {
+          e.cell.style.borderRight = '1px solid ';
+        }
+        if (e.col == 18) {
+          e.cell.style.borderLeft = '1px solid ';
+        }
+
         e.cell.innerHTML =
           '<div class="' +
           classname +

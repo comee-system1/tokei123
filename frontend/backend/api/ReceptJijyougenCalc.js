@@ -3,7 +3,7 @@ const service = new Service();
 const config = require('./ApiRun');
 const moment = require('moment')
 
-export async function ReceptJijyougen() {
+export async function ReceptJijyougenCalc() {
   // 接続確認用URL
   var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
   var uniqid = 1;
@@ -12,7 +12,6 @@ export async function ReceptJijyougen() {
 
   return await service.getData().then(result => {
     let returns = [];
-
     for (let i = 0; i < result.length; i++) {
       returns.push({
         sityoid: result[i].seikyu_inf.sityoid,
@@ -29,7 +28,7 @@ export async function ReceptJijyougen() {
         jigyo_jigyonm: result[i].seikyu_inf.jigyo_inf.jigyonm,
         fjyogen: result[i].seikyu_inf.jyukyu_inf.fjyogen,
         jyougengakukanrikeisan: '',
-        jknrcalc: '',
+        jknrcalc: '●',
         cnt: result[i].seikyu_inf.cnt,
         jigyokbn: result[i].seikyu_inf.jyukyu_inf.jkjigyo_inf.jigyokbn,
         jigyono: result[i].seikyu_inf.jyukyu_inf.jkjigyo_inf.jigyono,
@@ -37,8 +36,8 @@ export async function ReceptJijyougen() {
         svcnm: result[i].seikyu_inf.svcnm,
         sogaku: result[i].seikyu_inf.sogaku,
         riyogaku: result[i].seikyu_inf.riyogaku,
-        // jknr_riyogaku: result[i].seikyu_inf.jkanri_inf.jknr_riyogaku,
-        // jknr_rslt: result[i].seikyu_inf.jkanri_inf.jknr_rslt,
+        jknr_riyogaku: result[i].seikyu_inf.jkanri_inf.jknr_riyogaku,
+        jknr_rslt: result[i].seikyu_inf.jkanri_inf.jknr_rslt,
         print: '',
         complateFlag: false,
         nyukyo: 1,
@@ -49,14 +48,6 @@ export async function ReceptJijyougen() {
       });
     }
 
-
-    // 受給者番号でソート
-    returns.sort((a, b) => {
-      if (a.jyukyuno > b.jyukyuno) return 1;
-      if (a.jyukyuno < b.jyukyuno) return -1;
-      return 0;
-    });
     return returns;
-
   });
 }

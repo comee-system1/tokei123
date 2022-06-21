@@ -567,15 +567,13 @@ export default {
      */
     handleResize: function () {
       let height = window.innerHeight;
+      let targetElement = document.getElementById('user-list-print_scrollbar');
+      var clientRect = targetElement.getBoundingClientRect();
+      var y = clientRect.top;
+      //alert(y);
       let ht = '';
-      if (height > 800) {
-        ht = 68;
-      } else if (height > 700) {
-        ht = 60;
-      } else {
-        ht = 50;
-      }
-      this.gridHeight = 'height:' + ht + 'vh;';
+      ht = height - y - 190;
+      this.gridHeight = 'height:' + ht + 'px;';
     },
   },
 };

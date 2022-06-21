@@ -10,7 +10,7 @@ module.exports = class ApiResponse {
       fixFlag: true,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000001,
         sogaku: 98500,
         riyogaku: 9300,
         hannei: '',
@@ -40,8 +40,8 @@ module.exports = class ApiResponse {
         },
         cnt: 1,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 9300,
+          jknr_rslt: 1
         }
       },
     });
@@ -50,7 +50,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000002,
         sogaku: '',
         riyogaku: '',
         hannei: '',
@@ -80,8 +80,8 @@ module.exports = class ApiResponse {
         },
         cnt: 2,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 0,
+          jknr_rslt: 1
         }
       },
     });
@@ -90,7 +90,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000003,
         sogaku: '',
         riyogaku: '',
         hannei: '',
@@ -133,7 +133,7 @@ module.exports = class ApiResponse {
       fixFlag: true,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000004,
         sogaku: 327364,
         riyogaku: 32736,
         hannei: '',
@@ -163,8 +163,8 @@ module.exports = class ApiResponse {
         },
         cnt: 1,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 32736,
+          jknr_rslt: 3
         }
       },
     });
@@ -174,7 +174,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000005,
         sogaku: '',
         riyogaku: '',
         hannei: '',
@@ -204,8 +204,8 @@ module.exports = class ApiResponse {
         },
         cnt: 2,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 4464,
+          jknr_rslt: 3
         }
       },
     });
@@ -214,7 +214,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000006,
         sogaku: '',
         riyogaku: '',
         hannei: '',
@@ -239,13 +239,13 @@ module.exports = class ApiResponse {
           jkjigyo_inf: {
             jigyokbn: '自',
             jigyono: 1125000233,
-            jigyonm: 'さくら訪問介護',
+            jigyonm: 'さくら訪問介護1',
           }
         },
         cnt: 3,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 1111,
+          jknr_rslt: 3
         }
       },
     });
@@ -256,7 +256,7 @@ module.exports = class ApiResponse {
       fixFlag: true,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000007,
         sogaku: 148392,
         riyogaku: 14839,
         hannei: '',
@@ -286,8 +286,8 @@ module.exports = class ApiResponse {
         },
         cnt: 1,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 14839,
+          jknr_rslt: 3
         }
       },
     });
@@ -297,7 +297,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000008,
         sogaku: '',
         riyogaku: '',
         hannei: '',
@@ -327,8 +327,8 @@ module.exports = class ApiResponse {
         },
         cnt: 2,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 11856,
+          jknr_rslt: 3
         }
       },
     });
@@ -339,7 +339,7 @@ module.exports = class ApiResponse {
       fixFlag: true,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000009,
         sogaku: 326810,
         riyogaku: 9300,
         hannei: '',
@@ -369,8 +369,8 @@ module.exports = class ApiResponse {
         },
         cnt: 1,
         jkanri_inf: {
-          jknr_riyogaku: '',
-          jknr_rslt: ''
+          jknr_riyogaku: 9300,
+          jknr_rslt: 0
         }
       },
     });
@@ -380,7 +380,7 @@ module.exports = class ApiResponse {
       fixFlag: true,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000010,
         sogaku: 123400,
         riyogaku: 0,
         hannei: '',
@@ -421,7 +421,7 @@ module.exports = class ApiResponse {
       fixFlag: false,
       seikyu_inf: {
         sityoid: 1000000000,
-        riid: 1000000000,
+        riid: 1000000011,
         sogaku: '',
         riyogaku: '',
         hannei: '',
