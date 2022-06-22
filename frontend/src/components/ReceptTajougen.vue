@@ -114,20 +114,21 @@
         :multiLine="true"
         :isReadOnly="true"
       ></wj-flex-grid-column>
+
+      <wj-flex-grid-column
+        :binding="'jknr_rslt'"
+        :header="verticalHeader[1]"
+        align="center"
+        :width="40"
+        :multiLine="true"
+        :dataMap="customerMap"
+      ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'jknr_riyogaku'"
         :header="centerHeader[1]"
         :width="65"
         align="center"
         :multiLine="true"
-      ></wj-flex-grid-column>
-      <wj-flex-grid-column
-        :binding="'jknr_rslt'"
-        :header="verticalHeader[1]"
-        align="center"
-        :width="30"
-        :multiLine="true"
-        :dataMap="customerMap"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'resekakutei'"
@@ -173,6 +174,7 @@ export default {
         '総費用額',
       ],
       receptData: [],
+      allData: [],
       mainFlexGrid: [],
       editGridFlag: false,
       filterTextJyogen: { jyougenkanrijiKey: 0, jyougenkanriji: '指定なし' }, // 検索項目
@@ -565,19 +567,21 @@ export default {
         );
 
         // let pt6 = flexGrid.getCellData(e.row, 6);
-        let pt13 = flexGrid.getCellData(e.row, 13);
-        let pt14 = flexGrid.getCellData(e.row, 14);
+        // let pt13 = flexGrid.getCellData(e.row, 13);
+        // let pt14 = flexGrid.getCellData(e.row, 14);
+
         // if (e.col == 13) {
         if (!isNumber(value) && value.length > 0) {
           e.cancel = true;
           e.stayInEditMode = true;
           alert('数値のみの入力になります。');
-        } else if ((pt13 > 0 && value) || (pt14 > 0 && value)) {
+        } else if (e.col == 13 || e.col == 14) {
           // 管理結果利用負担額と管理結果に数値が入力された場合レセプト反映に1を立てる
           flexGrid.setCellData(e.row, 6, 1);
           flexGrid.setCellData(e.row, 15, '');
           _self.receptData[e.row].hanneikey = 1;
           _self.receptData[e.row].resekakutei = '';
+
           // 数値入力後、レセプト反映が●の場合、負担額の背景をピンクにする
           // 編集をしたデータの配列を保持
           // if (pt6 == '●') {
@@ -585,6 +589,17 @@ export default {
           //     _self.editedCells.push(e.range);
           //   }
           // }
+          // 管理結果が1のときは、管理結果後利用者負担額を0とする
+          if (e.col == 13 && value == 1) {
+            _self.receptData[e.row].jknr_riyogaku = 0;
+            flexGrid.setCellData(e.row, 14, '0');
+          }
+          if (e.col == 13) {
+            _self.receptData[e.row].jknr_rslt = value;
+          }
+          if (e.col == 14) {
+            _self.receptData[e.row].jknr_riyogaku = value;
+          }
         }
         //}
       });
