@@ -26,11 +26,11 @@ export default {
       const uri = 'https://api.zipaddress.net/?zipcode=987-2202';
       this.axios
         .get(uri, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: this.$store.state.userToken,
-          },
-          data: {},
+          // headers: {
+          //   'Content-Type': 'application/json',
+          //   Authorization: this.$store.state.userToken,
+          // },
+          //   data: {},
         })
         .then((response) => {
           console.log(response);

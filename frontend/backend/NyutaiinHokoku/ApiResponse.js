@@ -10,7 +10,9 @@ module.exports = class ApiResponse {
     for (let i = 0; i < 1; i++) {
       riyo_inf.push(
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000000',
             riyocode: '1000000000',
             names: '東経太郎',
@@ -50,7 +52,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000000',
             riyocode: '1000000000',
             names: '東経太郎',
@@ -79,7 +83,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000001',
             riyocode: '1000000001',
             names: '東経次郎',
@@ -108,7 +114,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000002',
             riyocode: '1000000002',
             names: '東経三郎',
@@ -137,7 +145,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000003',
             riyocode: '1000000003',
             names: '東経さおり',
@@ -166,7 +176,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000004',
             riyocode: '1000000004',
             names: '東経 愛子',
@@ -195,7 +207,9 @@ module.exports = class ApiResponse {
           }
         },
         {
+          status: 'idle',
           'riyo_inf': {
+            status: 'idle',
             riid: '1000000004',
             riyocode: '1000000004',
             names: '東経 愛子',

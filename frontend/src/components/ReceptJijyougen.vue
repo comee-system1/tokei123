@@ -434,7 +434,7 @@ export default {
       let headerRanges = [
         new wjGrid.CellRange(0, 0, 0, 2), //基本情報
       ];
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
@@ -615,7 +615,6 @@ export default {
           this.createCellMerge(flexGrid);
         }
       });
-
       //セルのクリックイベント
       this.clickEventCell(flexGrid);
       // セルの値を編集
@@ -625,7 +624,6 @@ export default {
     onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.merge = this.createMergeArray(this.receptData);
-
       //セルのフォーマット指定
       this.createCellFormat(flexGrid);
 
@@ -1024,7 +1022,7 @@ export default {
           );
         }
       }
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (
           panel.cellType == wjGrid.CellType.ColumnHeader &&

@@ -435,7 +435,7 @@ export default {
         new wjGrid.CellRange(0, 0, 0, 3),
         new wjGrid.CellRange(1, 0, 1, 3),
       ];
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {

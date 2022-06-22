@@ -1,13 +1,11 @@
 <template>
   <div id="seikyu-sho">
-    <ServiceSelection
-      :seikyuflag="true"
-      :seikyushoflag="true">
+    <ServiceSelection :seikyuflag="true" :seikyushoflag="true">
     </ServiceSelection>
     <v-container class="seikyusho" fluid>
       <v-row no-gutters>
         <div class="service-selecter">
-        <label>市町村</label>
+          <label>市町村</label>
           <wj-menu
             id="comboFilters"
             class="combo"
@@ -20,13 +18,20 @@
             style="width: 200px"
           >
           </wj-menu>
-          <v-btn class="pa-1 ml-3" :width="60" style="margin-top:2px; margin-right:30px;" small  @click="searchClicked">検索</v-btn>
+          <v-btn
+            class="pa-1 ml-3"
+            :width="60"
+            style="margin-top: 2px; margin-right: 30px"
+            small
+            @click="searchClicked"
+            >検索</v-btn
+          >
         </div>
         <div class="print-selecter">
           <label>印刷種類</label>
           <v-btn-toggle mandatory class="print-toggle">
             <v-btn small color="secondary" dark outlined>請求書</v-btn>
-            <v-btn small color="secondary" dark outlined>一  覧</v-btn>
+            <v-btn small color="secondary" dark outlined>一 覧</v-btn>
           </v-btn-toggle>
         </div>
         <wj-menu
@@ -51,19 +56,96 @@
           :allowPinning="false"
           :allowSorting="false"
         >
-          <wj-flex-grid-column header="市町村名" binding="sname" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="区分" binding="svcname" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="件数"  binding="kensuA" :width="'4*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="単位数"  binding="tanisu" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="費用合計" binding="hiyoA" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="A 給付費請求額" binding="kyufuA" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="利用者負担額" binding="riyo" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="自治体助成額" binding="jichitai" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="件数" binding="kensuB" :width="'4*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="費用合計" binding="hiyoB" :width="'8*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="B 給付費請求額" binding="kyufuB" :width="'10*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="A+B 請求金額" binding="seikyu" :width="'12*'" :wordWrap=true aggregate="Sum"></wj-flex-grid-column>
-          <wj-flex-grid-column header="印刷" binding="print" :width="'2*'" :wordWrap=true></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="市町村名"
+            binding="sname"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="区分"
+            binding="svcname"
+            :width="'10*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="件数"
+            binding="kensuA"
+            :width="'4*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="単位数"
+            binding="tanisu"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="費用合計"
+            binding="hiyoA"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="A 給付費請求額"
+            binding="kyufuA"
+            :width="'10*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="利用者負担額"
+            binding="riyo"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="自治体助成額"
+            binding="jichitai"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="件数"
+            binding="kensuB"
+            :width="'4*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="費用合計"
+            binding="hiyoB"
+            :width="'8*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="B 給付費請求額"
+            binding="kyufuB"
+            :width="'10*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="A+B 請求金額"
+            binding="seikyu"
+            :width="'12*'"
+            :wordWrap="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="印刷"
+            binding="print"
+            :width="'2*'"
+            :wordWrap="true"
+          ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
     </v-container>
@@ -72,7 +154,7 @@
 
 <script>
 import ServiceSelection from '../components/HeaderServices.vue';
-import { getOriginalDetailData } from '../data/SeikyuShoData.js'
+import { getOriginalDetailData } from '../data/SeikyuShoData.js';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
@@ -84,7 +166,7 @@ const boldLine = '2px solid #333';
 
 export default {
   components: {
-    ServiceSelection
+    ServiceSelection,
   },
   data() {
     return {
@@ -97,11 +179,11 @@ export default {
       ],
       detailGridData: apiResult['dummy'],
       isDroppedDown: false,
-      selectedSichoson:"指定なし",
-    }
+      selectedSichoson: '指定なし',
+    };
   },
   methods: {
-  initComboFilters(combo) {
+    initComboFilters(combo) {
       let _self = this;
       combo.header = this.sichosonList[0].text;
       combo.selectedIndexChanged.addHandler(function (sender) {
@@ -118,7 +200,7 @@ export default {
       let newData = [];
       let sort = this.selectedSichoson;
 
-      if (sort =="指定なし") {
+      if (sort == '指定なし') {
         newData = apiResult['dummy'];
       } else {
         data.forEach(function (value) {
@@ -133,7 +215,7 @@ export default {
       // 全選択・全解除の選択値を取得して書き換え
       let data = this.detailGridData;
       let newData = [];
-      data.forEach(function(value) {
+      data.forEach(function (value) {
         // 印刷チェックの制御
         if (s.selectedIndex == '0') {
           value.print = '〇';
@@ -157,30 +239,28 @@ export default {
       let footerPanel = flexGrid.columnFooters;
 
       // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       // 結合するセルの範囲を指定
       let headerRanges = [
-        new wjGrid.CellRange(0,0,1,0),
-        new wjGrid.CellRange(0,1,1,1),
-				new wjGrid.CellRange(0,2,0,7),
-				new wjGrid.CellRange(0,8,0,10),
-        new wjGrid.CellRange(0,11,1,11),
-				new wjGrid.CellRange(0,12,1,12)
+        new wjGrid.CellRange(0, 0, 1, 0),
+        new wjGrid.CellRange(0, 1, 1, 1),
+        new wjGrid.CellRange(0, 2, 0, 7),
+        new wjGrid.CellRange(0, 8, 0, 10),
+        new wjGrid.CellRange(0, 11, 1, 11),
+        new wjGrid.CellRange(0, 12, 1, 12),
       ];
       let cellRanges = this.getCellRanges(this.detailGridData);
       let borderRowCol1 = [];
       let borderRow = [];
-      cellRanges.forEach(range => {
+      cellRanges.forEach((range) => {
         if (range._col == 0) {
           borderRowCol1.push(range._row);
           borderRow.push(range._row2);
         }
       });
-      let footerRanges = [
-        new wjGrid.CellRange(0,0,0,1)
-      ];
+      let footerRanges = [new wjGrid.CellRange(0, 0, 0, 1)];
       // getMergedRangeメソッドをオーバーライドする
-      mm.getMergedRange = function(panel, r, c) {
+      mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
             if (headerRanges[h].contains(r, c)) {
@@ -205,19 +285,19 @@ export default {
 
       // 改行指定不要のヘッダー・フッターの内容を設定する
       // ヘッダー0行目
-      headerpanel.setCellData(0, 0, "市町村名");
-      headerpanel.setCellData(0, 1, "区分");
-      headerpanel.setCellData(0, 2, "介護給付費・訓練等給付費");
-			headerpanel.setCellData(0, 8, "特定障害者特別給付費");
-      headerpanel.setCellData(0, 12, "印刷");
+      headerpanel.setCellData(0, 0, '市町村名');
+      headerpanel.setCellData(0, 1, '区分');
+      headerpanel.setCellData(0, 2, '介護給付費・訓練等給付費');
+      headerpanel.setCellData(0, 8, '特定障害者特別給付費');
+      headerpanel.setCellData(0, 12, '印刷');
 
       // フッター0行目
-      footerPanel.setCellData(0, 0, "合計");
+      footerPanel.setCellData(0, 0, '合計');
 
       // ヘッダーとフッターの高さを調整
       flexGrid.columnHeaders.rows[1].height = 25;
       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell) {
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.textAlign = 'center';
@@ -229,7 +309,7 @@ export default {
 
           if (r == 0 && (c == 0 || c == 1 || c == 2 || c == 8 || c == 11)) {
             s.borderRight = darkLine;
-          } else if (r == 1 && (c == 7)) {
+          } else if (r == 1 && c == 7) {
             s.borderRight = darkLine;
           } else if (r == 1 && (c == 5 || c == 10)) {
             s.borderLeft = boldLine;
@@ -254,36 +334,36 @@ export default {
 
           if (c == 0 || c == 1) {
             s.borderRight = darkLine;
-          } else if(c == 5 || c == 10) {
+          } else if (c == 5 || c == 10) {
             s.borderLeft = boldLine;
             s.borderRight = boldLine;
           } else if (c == 7 || c == 11) {
             s.borderRight = darkLine;
           } else if (c == 12) {
             s.backgroundColor = sysConst.COLOR.white;
-            cell.innerHTML = '<div class="printCell">'+cell.innerHTML+'</div>';
+            cell.innerHTML =
+              '<div class="printCell">' + cell.innerHTML + '</div>';
           } else {
-            s.borderLeft = "none";
-            s.borderRight = "1px solid rgba(0,0,0,.2)";
+            s.borderLeft = 'none';
+            s.borderRight = '1px solid rgba(0,0,0,.2)';
           }
 
           if (c == 0 || c == 11 || c == 12) {
-            borderRowCol1.forEach(row => {
+            borderRowCol1.forEach((row) => {
               if (r == row) {
                 s.borderBottom = darkLine;
               }
             });
           } else {
-            borderRow.forEach(row => {
+            borderRow.forEach((row) => {
               if (r == row) {
                 s.borderBottom = darkLine;
               }
             });
             if (borderRow.indexOf(r) == -1) {
-              s.borderBottom = "1px solid rgba(0,0,0,.2)";
+              s.borderBottom = '1px solid rgba(0,0,0,.2)';
             }
           }
-
         } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           // フッターのスタイル
           // フッターの上部に線を表示する
@@ -301,16 +381,16 @@ export default {
             s.borderBottom = boldLine;
           }
 
-          if (c >= 2 && c <= 11 ) {
+          if (c >= 2 && c <= 11) {
             // セルを薄黄色にする
             s.backgroundColor = sysConst.COLOR.gridBackground;
             s.textAlign = 'right';
           } else if (c == 12) {
             // 空欄セルをグレーにする
-            s.backgroundColor = "#cccccc";
+            s.backgroundColor = '#cccccc';
           }
         }
-      }
+      };
 
       //印刷箇所を押下
       let _self = this;
@@ -318,8 +398,8 @@ export default {
         let ht = flexGrid.hitTest(e);
         // 結合セルの先頭行
         let firstrow;
-        if (e.srcElement["wj-cell-index"]) {
-          firstrow = e.srcElement["wj-cell-index"].row;
+        if (e.srcElement['wj-cell-index']) {
+          firstrow = e.srcElement['wj-cell-index'].row;
         } else {
           firstrow = ht.row;
         }
@@ -337,15 +417,15 @@ export default {
         }
       });
 
-      flexGrid.formatItem.addHandler((s,e)=>{
-        if(e.panel.cellType == wjGrid.CellType.Cell && e.col == 12){
-          wijmo.addClass(e.cell,"verticalCenterCustom")
+      flexGrid.formatItem.addHandler((s, e) => {
+        if (e.panel.cellType == wjGrid.CellType.Cell && e.col == 12) {
+          wijmo.addClass(e.cell, 'verticalCenterCustom');
         }
-        if(e.panel.cellType == wjGrid.CellType.Cell && e.col == 11){
-          wijmo.addClass(e.cell,"verticalBottomCustom")
+        if (e.panel.cellType == wjGrid.CellType.Cell && e.col == 11) {
+          wijmo.addClass(e.cell, 'verticalBottomCustom');
         }
-        if(e.panel.cellType == wjGrid.CellType.ColumnFooter && e.col >= 2){
-          wijmo.addClass(e.cell,"verticalRightCustom")
+        if (e.panel.cellType == wjGrid.CellType.ColumnFooter && e.col >= 2) {
+          wijmo.addClass(e.cell, 'verticalRightCustom');
         }
       });
     },
@@ -354,39 +434,39 @@ export default {
       let firstrow = 0;
       let lastrow = 0;
       for (let i = 0; i < gridData.length; i++) {
-        if (i > 0 && i < gridData.length-1) {
-          if (gridData[i-1]['sname'] == gridData[i]['sname']) {
+        if (i > 0 && i < gridData.length - 1) {
+          if (gridData[i - 1]['sname'] == gridData[i]['sname']) {
             lastrow = i;
-          } else if (gridData[i-1]['sname'] != gridData[i]['sname']) {
-            renges.push(new wjGrid.CellRange(firstrow,0,lastrow,0));
-            renges.push(new wjGrid.CellRange(firstrow,11,lastrow,11));
-            renges.push(new wjGrid.CellRange(firstrow,12,lastrow,12));
+          } else if (gridData[i - 1]['sname'] != gridData[i]['sname']) {
+            renges.push(new wjGrid.CellRange(firstrow, 0, lastrow, 0));
+            renges.push(new wjGrid.CellRange(firstrow, 11, lastrow, 11));
+            renges.push(new wjGrid.CellRange(firstrow, 12, lastrow, 12));
             firstrow = i;
             lastrow = i;
           }
-        } else if (i == gridData.length-1) {
+        } else if (i == gridData.length - 1) {
           lastrow = i;
-          renges.push(new wjGrid.CellRange(firstrow,0,lastrow,0));
-          renges.push(new wjGrid.CellRange(firstrow,11,lastrow,11));
-          renges.push(new wjGrid.CellRange(firstrow,12,lastrow,12));
+          renges.push(new wjGrid.CellRange(firstrow, 0, lastrow, 0));
+          renges.push(new wjGrid.CellRange(firstrow, 11, lastrow, 11));
+          renges.push(new wjGrid.CellRange(firstrow, 12, lastrow, 12));
         }
       }
       return renges;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-*{
-  padding:0;
-  margin:0;
+* {
+  padding: 0;
+  margin: 0;
 }
 
 // 仮の対応
 div#seikyu-sho .transparent {
-  visibility:hidden;
+  visibility: hidden;
 }
 
 @media screen and (max-width: 1366px) {
@@ -401,7 +481,7 @@ div#seikyu-sho .transparent {
   }
 }
 
-div#seikyu-sho .service-selecter{
+div#seikyu-sho .service-selecter {
   label {
     display: inline-block;
     margin-top: 2px;
@@ -433,18 +513,18 @@ div#seikyu-sho .print-selecter {
   }
 
   .print-toggle {
-    margin-right:10px;
+    margin-right: 10px;
   }
 
   .v-btn-toggle > .v-btn {
-  width: 90px;
+    width: 90px;
   }
 }
 
 div#seikyu-sho {
   #printCombo {
-    width:150px;
-    color:$font_color !important;
+    width: 150px;
+    color: $font_color !important;
   }
   .combo:hover {
     background-color: #e1e1e1;
@@ -465,7 +545,7 @@ div#seikyu-sho {
     display: flex;
     justify-content: center;
     align-items: center;
-    color:$font_color !important;
+    color: $font_color !important;
   }
 
   .wj-flexgrid .wj-cell.verticalCenterCustom {
@@ -474,13 +554,13 @@ div#seikyu-sho {
     align-items: center;
   }
 
-  .wj-flexgrid .wj-cell.verticalBottomCustom{
+  .wj-flexgrid .wj-cell.verticalBottomCustom {
     display: flex;
     justify-content: right;
     align-items: flex-end;
   }
 
-  .wj-flexgrid .wj-cell.verticalRightCustom{
+  .wj-flexgrid .wj-cell.verticalRightCustom {
     display: flex;
     justify-content: right;
   }

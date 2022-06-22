@@ -237,35 +237,35 @@
           :style="gridHeight"
         >
           <wj-flex-grid-column
-            :binding="'jyukyusyaBango'"
+            :binding="'jyukyuno'"
             :header="'受給者番号'"
             align="center"
             :width="100"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'riyousyamei'"
+            :binding="'rnames'"
             :header="'利用者名'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'engosya'"
+            :binding="'sityoryaku'"
             :header="'援護者'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'zentaigaku'"
+            :binding="'gsogaku'"
             :header="'サービスに要した費用の全体の額(A)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'riyousyahutan'"
+            :binding="'gfutan'"
             :header="'利用者負担(B)'"
             align="center"
             width="1.5*"
@@ -286,28 +286,28 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'tokubetukyuhuhi'"
+            :binding="'gtokubetu'"
             :header="'特定障害者特別給付費(C)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'dairijyuryougaku'"
+            :binding="'dairi'"
             :header="'代理受領額(A)-(B)+(C)'"
             align="center"
             width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'juryoubi'"
+            :binding="'jyuymd'"
             :header="'受領日'"
             align="center"
             width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'insatsubi'"
+            :binding="'prtymd'"
             :header="'印刷日'"
             align="center"
             width="2*"
@@ -332,6 +332,8 @@ import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
+import { jyuryouTsuchisyo } from '@backend/api/JyuryouTsuchisyo';
+
 
 const riyosyaCombo = [];
 const shityosonCombo = [];
@@ -521,95 +523,19 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
-    getData() {
-      let JyuryouTsuchisyoData = [];
-      for (let i = 0; i < 2; i++) {
-        // 東経市 + 今月入居
-        JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012340',
-          code: '5',
-          riyousyamei: '1入居太郎code5',
-          kana: 'ニュウキョタロウ',
-          engosya: '東経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20日',
-          insatsubi: '2022年09月20日',
-          print: '',
-          nyukyo: 1, // 今月入居
-          taikyo: 0 // 今月退去
-        });
-        // 西経市 + 今月入居
-        JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012341',
-          code: '8',
-          riyousyamei: '2入居太郎code8',
-          kana: 'ニュウキョタロウ',
-          engosya: '西経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20日',
-          insatsubi: '2022年09月20日',
-          print: '',
-          nyukyo: 1, // 今月入居
-          taikyo: 0 // 今月退去
-        });
-        // 北経市 + 今月退去
-        JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012342',
-          code: '6',
-          riyousyamei: '3退去太郎code6',
-          kana: 'タイキョタロウ',
-          engosya: '北経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20日',
-          insatsubi: '2022年09月20日',
-          print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
-        });
-        // 南経市 + 今月退去
-        JyuryouTsuchisyoData.push({
-          jyukyusyaBango: '1100012343',
-          code: '9',
-          riyousyamei: '4退去太郎code9',
-          kana: 'タイキョタロウ',
-          engosya: '南経市',
-          zentaigaku: '125,840',
-          riyousyahutan: '12,584',
-          honninbun: '12,584',
-          keigentou: '5,000',
-          tokubetukyuhuhi: '0',
-          dairijyuryougaku: '113,256',
-          juryoubi: '2022年09月20日',
-          insatsubi: '2022年09月20日',
-          print: '',
-          nyukyo: 0, // 今月入居
-          taikyo: 1 // 今月退去
-        });
-      }
-      this.allData = JyuryouTsuchisyoData;
-      this.JyuryouTsuchisyoData = JyuryouTsuchisyoData;
-      return JyuryouTsuchisyoData;
+    getData(result) {
+      this.JyuryouTsuchisyoData = result.icrn_inf;
+      this.allData = this.JyuryouTsuchisyoData;
     },
     onInitialized(flexGrid) {
-      let griddata = this.getData();
+      // let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
-
+      jyuryouTsuchisyo().then((result) => {
+        // データ取得
+        console.log(result)
+        this.getData(result);
+      });
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -624,7 +550,7 @@ export default {
       // グリッドのデザイン修正
       this.gridDesignModify(flexGrid);
 
-      flexGrid.itemsSource = griddata;
+      flexGrid.itemsSource = this.JyuryouTsuchisyoData;
     },
     /****************
      *セルのクリックイベント
@@ -794,11 +720,11 @@ export default {
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.riyousyamei !== "" && b.riyousyamei !== "") {
-            if (a.riyousyamei < b.riyousyamei) {
+          if (a.rnames !== "" && b.rnames !== "") {
+            if (a.rnames < b.rnames) {
               return -1;
             }
-            if (a.riyousyamei > b.riyousyamei) {
+            if (a.rnames > b.rnames) {
               return 1;
             }
           }
@@ -808,11 +734,11 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.code !== "" && b.code !== "") {
-            if (a.code < b.code) {
+          if (a.riyocode !== "" && b.riyocode !== "") {
+            if (a.riyocode < b.riyocode) {
               return -1;
             }
-            if (a.code > b.code) {
+            if (a.riyocode > b.riyocode) {
               return 1;
             }
           }
@@ -822,11 +748,11 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyusyaBango !== "" && b.jyukyusyaBango !== "") {
-            if (a.jyukyusyaBango < b.jyukyusyaBango) {
+          if (a.jyukyuno !== "" && b.jyukyuno !== "") {
+            if (a.jyukyuno < b.jyukyuno) {
               return -1;
             }
-            if (a.jyukyusyaBango > b.jyukyusyaBango) {
+            if (a.jyukyuno > b.jyukyuno) {
               return 1;
             }
           }
@@ -903,7 +829,7 @@ export default {
             (this.filterTextRiyosya.riyosyaKey == 1 && this.allData[i]['nyukyo'] == 1) ||
             (this.filterTextRiyosya.riyosyaKey == 2 && this.allData[i]['taikyo'] == 1)) &&
             // 市町村コンボボックス
-            ((this.allData[i]['engosya'].indexOf(
+            ((this.allData[i]['sityoryaku'].indexOf(
               this.filterTextShityoson.shityoson
             ) != -1 ) ||
             (this.filterTextShityoson.shityosonKey == 0))
@@ -920,52 +846,52 @@ export default {
             get.push(value);
             break;
           case 1:
-            if (value.kana.match(/^[ア-オ]/)) {
+            if (value.rkana.match(/^[ア-オ]/)) {
               get.push(value);
             }
             break;
           case 2:
-            if (value.kana.match(/^[カ-コ]/)) {
+            if (value.rkana.match(/^[カ-コ]/)) {
               get.push(value);
             }
             break;
           case 3:
-            if (value.kana.match(/^[サ-ソ]/)) {
+            if (value.rkana.match(/^[サ-ソ]/)) {
               get.push(value);
             }
             break;
           case 4:
-            if (value.kana.match(/^[タ-ト]/)) {
+            if (value.rkana.match(/^[タ-ト]/)) {
               get.push(value);
             }
             break;
           case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) {
+            if (value.rkana.match(/^[ナ-ノ]/)) {
               get.push(value);
             }
             break;
           case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) {
+            if (value.rkana.match(/^[ハ-ホ]/)) {
               get.push(value);
             }
             break;
           case 7:
-            if (value.kana.match(/^[マ-モ]/)) {
+            if (value.rkana.match(/^[マ-モ]/)) {
               get.push(value);
             }
             break;
           case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) {
+            if (value.rkana.match(/^[ヤ-ヨ]/)) {
               get.push(value);
             }
             break;
           case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) {
+            if (value.rkana.match(/^[ラ-ロ]/)) {
               get.push(value);
             }
             break;
           case 10:
-            if (value.kana.match(/^[ワ-ン]/)) {
+            if (value.rkana.match(/^[ワ-ン]/)) {
               get.push(value);
             }
             break;

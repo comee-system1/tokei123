@@ -370,7 +370,7 @@ export default {
       }
       let kasancnt = this.kasanList.filter((x) => x.kbn == 1).length - 1;
       // セル結合
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       // 結合するセルの範囲を指定
       let headerRanges = [
         new wjGrid.CellRange(0, 0, 1, 0),

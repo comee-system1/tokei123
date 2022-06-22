@@ -233,7 +233,10 @@
     <v-container fluid class="container">
       <div v-if="receptFlag"><recept-list ref="receptChild"></recept-list></div>
       <div v-if="TajyougenkanriJimsyoFlag">
-        <recept-tajougen ref="tajougenChild"></recept-tajougen>
+        <recept-tajougen
+          ref="tajougenChild"
+          @settingJyogenCombobox="settingJyogenCombobox"
+        ></recept-tajougen>
       </div>
       <div v-if="JijyougenkanriJimsyoFlag">
         <recept-jijyougen ref="jijougenChild"></recept-jijyougen>
@@ -250,10 +253,10 @@ import ReceptTajougen from '../components/ReceptTajougen.vue';
 import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
 
-const riyosyaCombo = [];
-const receptCombo = [];
-const jyougenkanriCombo = [];
-const taServiceCombo = [];
+// const riyosyaCombo = [];
+// const receptCombo = [];
+// const jyougenkanriCombo = [];
+// const taServiceCombo = [];
 
 const alphabet = [
   '全',
@@ -274,11 +277,10 @@ export default {
     return {
       alphabet: alphabet,
       year: moment().year(),
-      riyosyaCombo: riyosyaCombo,
-      jyougenkanriCombo: jyougenkanriCombo,
-      taServiceCombo: taServiceCombo,
-      receptCombo: receptCombo,
-
+      riyosyaCombo: [],
+      jyougenkanriCombo: [],
+      taServiceCombo: [],
+      receptCombo: [],
       receptFlag: true, // receptの初期表示状態
       TajyougenkanriJimsyoFlag: false, // TajyougenkanriJimsyoFlagの初期表示状態
       JijyougenkanriJimsyoFlag: false, // JijyougenkanriJimsyoFlagの初期表示状態
@@ -345,29 +347,7 @@ export default {
         text: '今月退去者',
       }
     );
-    // 上限管理事用コンボボックス
-    this.jyougenkanriCombo.push(
-      {
-        key: 0,
-        text: '指定なし',
-      },
-      {
-        key: 1,
-        text: '南山事務所0',
-      },
-      {
-        key: 2,
-        text: '南山事務所1',
-      },
-      {
-        key: 3,
-        text: '南山事務所2',
-      },
-      {
-        key: 4,
-        text: '南山事務所3',
-      }
-    );
+
     this.taServiceCombo.push(
       {
         key: 0,
@@ -388,6 +368,28 @@ export default {
     );
   },
   methods: {
+    /********************
+     * 上限管理事用コンボボックス
+     */
+    settingJyogenCombobox(combolist) {
+      // 重複を取り除く処理
+      const result = combolist.filter(
+        (element, index, self) =>
+          self.findIndex((e) => e.jigyonm === element.jigyonm) === index
+      );
+
+      this.jyougenkanriCombo = [];
+      this.jyougenkanriCombo.push({
+        key: -1,
+        text: '指定なし',
+      });
+      for (let i = 0; i < result.length; i++) {
+        this.jyougenkanriCombo.push({
+          key: i,
+          text: result[i].jigyonm,
+        });
+      }
+    },
     /*********************
      * レセプト絞り込み変更
      */
@@ -411,7 +413,8 @@ export default {
             e.text,
             e.selectedIndex
           );
-        } else {
+        }
+        if (this.TajyougenkanriJimsyoFlag) {
           // 他上限管理事業所の関数を実行
           this.$refs.tajougenChild.child_Jyougenkanriji(
             e.text,

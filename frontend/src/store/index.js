@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 // stateにuserIdとuserTokenを持たせています。状態の保存先
@@ -15,14 +16,25 @@ const store = new Vuex.Store({
         updateUser(state, user) {
             state.userId = user.userId;
             state.userToken = user.userToken;
+        },
+        updateService(state, user) {
+            state.serviceJigyo = user.serviceJigyo;
         }
     },
     actions: {
         auth(context, user) {
             context.commit('updateUser', user);
+        },
+        service(context, user) {
+            context.commit('updateService', user);
         }
     },
     modules: {},
+    plugins: [createPersistedState({
+        key: 'tokeiKey',
+        storage: window.sessionStorage, // 設定しなければlocalStorage
+    })],
+
 })
 
 export default store
