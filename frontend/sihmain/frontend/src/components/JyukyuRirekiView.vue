@@ -15,6 +15,8 @@
       :allowSorting="false"
       :initialized="onInitialized"
       :headersVisibility="'Column'"
+      class="no-scrollbars"
+      :style="{ maxHeight: maxH }"
     >
     </wj-flex-grid>
   </div>
@@ -22,6 +24,7 @@
 <script>
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
 
 export default {
   data() {
@@ -29,9 +32,11 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
+      maxH: '16vh', // グリッドの高さ
+      allData: [], // データ配列
       headers: {
         jyukyu: {
-          title: '障害福祉-受給者証情報',
+          title: '受給者証情報',
           array: [
             '回',
             '交付年月日',
@@ -42,19 +47,19 @@ export default {
           ],
         },
         syogai: {
-          title: '障害福祉-①障害支援区分',
+          title: '障害支援区分',
           array: ['回', '開始日', '終了日', '支給区分'],
         },
         kettei: {
-          title: '障害福祉-②決定支給量',
+          title: '決定支給量',
           array: ['回', '開始日', '終了日', 'サービス種別', '支給量'],
         },
         keikaku: {
-          title: '障害福祉-③計画相談支援',
+          title: '計画相談支援',
           array: ['回', '開始日', '終了日', '区', '事業所名'],
         },
         riyousya: {
-          title: '障害福祉-④利用者負担',
+          title: '利用者負担',
           array: ['回', '開始日', '終了日', '上限月額', '管理対象'],
         },
       },
@@ -67,29 +72,169 @@ export default {
     'ketteiFlag',
     'keikakuFlag',
     'riyousyaFlag',
+    'titleTab',
+    'syogaiNum',
+    'ketteiNum',
+    'keikakuNum',
+    'riyousyaNum',
   ],
   components: {},
   methods: {
     onInitialized(flexGrid) {
       flexGrid.columns.clear();
-      //ヘッダ情報の作成
+      // ヘッダ情報の作成
       this.createHeader(flexGrid);
-      //セルのマージ
+      // データの作成
+      this.settingData(flexGrid);
+      // セルのマージ
       this.cellMerge(flexGrid);
-      //セルをクリック
+      // セルをクリック
       this.cellSelected(flexGrid);
-      //セルのフォーマット
+      // セルのフォーマット
       this.cellFormat(flexGrid);
       // 未選択状態
       flexGrid.select(-1, -1);
     },
 
+    /************************
+     * データの取得・表記
+     */
+    settingData(flexGrid) {
+      let data = [];
+
+      // 受給者情報
+      if (this.jyukyuFlag) {
+        data = [
+          {
+            kai: 1,
+            date: '2021.08.15',
+            sikutyo: '東経市',
+            bango: '000001307',
+            icon: '児',
+            name: '東経 文雄',
+          },
+          {
+            kai: 2,
+            date: '2021.08.15',
+            sikutyo: '北経市',
+            bango: '000001308',
+            icon: '児',
+            name: '東経 太郎',
+          },
+        ];
+
+        for (let i = 0; i < data.length; i++) {
+          let col = 0;
+          flexGrid.setCellData(i, col++, data[i].kai);
+          flexGrid.setCellData(i, col++, data[i].date);
+          flexGrid.setCellData(i, col++, data[i].sikutyo);
+          flexGrid.setCellData(i, col++, data[i].bango);
+          flexGrid.setCellData(i, col++, data[i].icon);
+          flexGrid.setCellData(i, col++, data[i].name);
+        }
+      }
+      // 受給者情報
+      else if (this.syogaiFlag) {
+        data = [
+          {
+            kai: 1,
+            start: '2021.08.15',
+            end: '2021.09.15',
+            kubun: '区分4',
+          },
+        ];
+        for (let i = 0; i < data.length; i++) {
+          let col = 0;
+          flexGrid.setCellData(i, col++, data[i].kai);
+          flexGrid.setCellData(i, col++, data[i].start);
+          flexGrid.setCellData(i, col++, data[i].end);
+          flexGrid.setCellData(i, col++, data[i].kubun);
+        }
+      }
+      // 決定支給量
+      else if (this.ketteiFlag) {
+        data = [
+          {
+            kai: 1,
+            start: '2021.08.15',
+            end: '2021.09.15',
+            service: '生活介護',
+            sikyu: '-8日/月',
+          },
+        ];
+        for (let i = 0; i < data.length; i++) {
+          let col = 0;
+          flexGrid.setCellData(i, col++, data[i].kai);
+          flexGrid.setCellData(i, col++, data[i].start);
+          flexGrid.setCellData(i, col++, data[i].end);
+          flexGrid.setCellData(i, col++, data[i].service);
+          flexGrid.setCellData(i, col++, data[i].sikyu);
+        }
+      }
+      // 計画相談支援
+      else if (this.keikakuFlag) {
+        data = [
+          {
+            kai: 1,
+            start: '2021.08.15',
+            end: '2021.09.15',
+            ku: '他',
+            jijyosyo: 'ひまわり相談支援事務所',
+          },
+        ];
+        for (let i = 0; i < data.length; i++) {
+          let col = 0;
+          flexGrid.setCellData(i, col++, data[i].kai);
+          flexGrid.setCellData(i, col++, data[i].start);
+          flexGrid.setCellData(i, col++, data[i].end);
+          flexGrid.setCellData(i, col++, data[i].ku);
+          flexGrid.setCellData(i, col++, data[i].jijyosyo);
+        }
+      }
+      // 利用者負担
+      else if (this.riyousyaFlag) {
+        data = [
+          {
+            kai: 1,
+            start: '2021.08.15',
+            end: '2021.09.15',
+            jyogen: 37200,
+            kanri: '非該当',
+          },
+        ];
+        for (let i = 0; i < data.length; i++) {
+          let col = 0;
+          flexGrid.setCellData(i, col++, data[i].kai);
+          flexGrid.setCellData(i, col++, data[i].start);
+          flexGrid.setCellData(i, col++, data[i].end);
+          flexGrid.setCellData(i, col++, data[i].jyogen);
+          flexGrid.setCellData(i, col++, data[i].kanri);
+        }
+      }
+      this.allData = data;
+    },
     /***********************
      * セルをクリック
      */
     cellSelected(flexGrid) {
+      let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
-        flexGrid.select(-1, -1);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        let code = '';
+        if (_self.jyukyuFlag) {
+          code = 'jyukyu';
+        } else if (_self.syogaiFlag) {
+          code = 'syogai';
+        } else if (_self.ketteiFlag) {
+          code = 'kettei';
+        } else if (_self.keikakuFlag) {
+          code = 'keikaku';
+        } else if (_self.riyousyaFlag) {
+          code = 'riyousya';
+        }
+
+        _self.$emit('child_rireki_data', _self.allData[hPage.row], code);
+        _self.$_setSubGridSelected(true);
       });
     },
     /**********************
@@ -100,8 +245,8 @@ export default {
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == flexGrid.columnHeaders) {
           if (_self.basicFlag) {
-            e.cell.style.background = '#1f7872';
-            e.cell.style.color = '#fff';
+            e.cell.style.background = sysConst.COLOR.basicGridColor;
+            e.cell.style.color = sysConst.COLOR.white;
             e.cell.style.fontWeight = 'normal';
           }
         }
@@ -115,27 +260,31 @@ export default {
       let headerArray = [];
       // 受給者情報
       if (this.jyukyuFlag) {
-        headerTitle = this.headers.jyukyu.title;
+        headerTitle = this.titleTab + '-' + this.headers.jyukyu.title;
         headerArray = this.headers.jyukyu.array;
       }
-      // 受給者情報
-      if (this.syogaiFlag) {
-        headerTitle = this.headers.syogai.title;
+      // 障害区分
+      else if (this.syogaiFlag) {
+        headerTitle =
+          this.titleTab + '-' + this.syogaiNum + this.headers.syogai.title;
         headerArray = this.headers.syogai.array;
       }
       // 決定支給量
-      if (this.ketteiFlag) {
-        headerTitle = this.headers.kettei.title;
+      else if (this.ketteiFlag) {
+        headerTitle =
+          this.titleTab + '-' + this.ketteiNum + this.headers.kettei.title;
         headerArray = this.headers.kettei.array;
       }
       // 計画相談支援
-      if (this.keikakuFlag) {
-        headerTitle = this.headers.keikaku.title;
+      else if (this.keikakuFlag) {
+        headerTitle =
+          this.titleTab + '-' + this.keikakuNum + this.headers.keikaku.title;
         headerArray = this.headers.keikaku.array;
       }
       // 利用者負担
-      if (this.riyousyaFlag) {
-        headerTitle = this.headers.riyousya.title;
+      else if (this.riyousyaFlag) {
+        headerTitle =
+          this.titleTab + '-' + this.riyousyaNum + this.headers.riyousya.title;
         headerArray = this.headers.riyousya.array;
       }
 
@@ -157,7 +306,7 @@ export default {
       }
 
       // 仮の行数
-      let totalRow = 3;
+      let totalRow = 10;
       while (flexGrid.rows.length < totalRow) {
         flexGrid.rows.push(new wjGrid.Row());
       }
@@ -169,38 +318,38 @@ export default {
      */
     settingCellSizeCustom(flexGrid) {
       // 受給者情報
-      flexGrid.columns[0].width = 28;
+      flexGrid.columns[0].width = 22;
       if (this.jyukyuFlag) {
-        flexGrid.columns[1].width = '4*';
-        flexGrid.columns[2].width = '4*';
+        flexGrid.columns[1].width = 81;
+        flexGrid.columns[2].width = '3*';
         flexGrid.columns[3].width = '4*';
-        flexGrid.columns[4].width = 28;
+        flexGrid.columns[4].width = 22;
         flexGrid.columns[5].width = '3*';
       }
-      // 受給者情報
-      if (this.syogaiFlag) {
-        flexGrid.columns[1].width = '4*';
-        flexGrid.columns[2].width = '4*';
+      // 障害者支援区分
+      else if (this.syogaiFlag) {
+        flexGrid.columns[1].width = '3*';
+        flexGrid.columns[2].width = '3*';
         flexGrid.columns[3].width = '4*';
       }
       // 決定支援
-      if (this.ketteiFlag) {
-        flexGrid.columns[1].width = '4*';
-        flexGrid.columns[2].width = '4*';
+      else if (this.ketteiFlag) {
+        flexGrid.columns[1].width = '3*';
+        flexGrid.columns[2].width = '3*';
         flexGrid.columns[3].width = '4*';
-        flexGrid.columns[4].width = '4*';
+        flexGrid.columns[4].width = '2*';
       }
       // 相談支援
-      if (this.keikakuFlag) {
-        flexGrid.columns[1].width = '4*';
-        flexGrid.columns[2].width = '4*';
-        flexGrid.columns[3].width = 28;
+      else if (this.keikakuFlag) {
+        flexGrid.columns[1].width = 81;
+        flexGrid.columns[2].width = 81;
+        flexGrid.columns[3].width = 23;
         flexGrid.columns[4].width = '4*';
       }
       // 利用者負担
-      if (this.riyousyaFlag) {
-        flexGrid.columns[1].width = '4*';
-        flexGrid.columns[2].width = '4*';
+      else if (this.riyousyaFlag) {
+        flexGrid.columns[1].width = 81;
+        flexGrid.columns[2].width = 81;
         flexGrid.columns[3].width = '4*';
         flexGrid.columns[4].width = '4*';
       }
@@ -213,24 +362,20 @@ export default {
      * セルのマージ
      */
     cellMerge(flexGrid) {
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       let ranges = [];
       if (this.jyukyuFlag) {
         ranges = [
           new wjGrid.CellRange(0, 0, 0, 5),
           new wjGrid.CellRange(1, 4, 1, 5),
         ];
-      }
-      if (this.syogaiFlag) {
+      } else if (this.syogaiFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 3)];
-      }
-      if (this.ketteiFlag) {
+      } else if (this.ketteiFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
-      }
-      if (this.keikakuFlag) {
+      } else if (this.keikakuFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
-      }
-      if (this.riyousyaFlag) {
+      } else if (this.riyousyaFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
       }
       // getMergedRangeメソッドをオーバーライドする
@@ -254,6 +399,19 @@ export default {
   .wj-cell.wj-header {
     font-size: $cell_fontsize;
     padding: 1px;
+  }
+  .wj-cell.wj-header:first-child {
+    text-align: left;
+  }
+  .wj-cell {
+    font-size: $cell_fontsize;
+    overflow: visible;
+    text-align: center;
+    padding: 1px;
+  }
+
+  .no-scrollbars.wj-flexgrid [wj-part='root'] {
+    overflow: hidden !important;
   }
 }
 </style>

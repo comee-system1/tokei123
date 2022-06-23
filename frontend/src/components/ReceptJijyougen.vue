@@ -270,6 +270,7 @@ export default {
   data() {
     return {
       receptData: [],
+      allData: [],
       mainFlexGrid: [],
       filterTextJyogen: { jyougenkanrijiKey: 0, jyougenkanriji: '指定なし' }, // 検索項目
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目

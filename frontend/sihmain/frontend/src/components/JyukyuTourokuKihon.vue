@@ -1,16 +1,36 @@
 <template>
-  <div id="JyukyuTourokuKihon">
+  <div id="JyukyuTourokuKihon" :style="mainHeight">
     <v-container fluid class="kihon-container">
       <v-row no-gutters class="kihon-header-row">
         <v-card elevation="0" class="kihon-header d-flex flex-row" flat tile>
           <label class="kihon-header-title">受給者証基本情報</label>
+          <v-card
+            v-if="$_subGridSelected()"
+            elevation="0"
+            class="kihon-header d-flex flex-row-reverse"
+            flat
+            tile
+          >
+            <v-btn
+              class="modify-button"
+              style="height: 21px"
+              @click="setTrunModify"
+            >
+              修正</v-btn
+            >
+          </v-card>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-koufuymd-row">
-        <v-card elevation="0" class="kihon-title-length5 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
           交付年月日
         </v-card>
-        <p class="required">*</p>	
+        <p class="required">*</p>
         <v-card elevation="0" class="kihon-koufuymd-picker d-flex flex-row">
           <datepicker
             :language="ja"
@@ -22,18 +42,29 @@
           ></datepicker>
         </v-card>
         <v-card elevation="0" class="pl-1 d-flex flex-row">
-          <a
+          <v-btn
             class="kihon-copy-button"
             @click="openDialog_Term('copy_last')"
-            >前回コピー
-          </a>
+          >
+            前回コピー</v-btn
+          >
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-kubun-row">
-        <v-card elevation="0" class="kihon-title-length2 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length2 d-flex flex-row"
+          flat
+          tile
+        >
           区分
         </v-card>
-        <v-card elevation="0" class="kihon-kubun-selection d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-kubun-selection d-flex flex-row"
+          flat
+          tile
+        >
           <v-radio-group row v-model="kihonkubun" class="kihon-kubun-group">
             <v-radio label="通常" :key="1" :value="1"></v-radio>
             <v-radio label="暫定" :key="0" :value="0"></v-radio>
@@ -41,11 +72,19 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-jyukyusyabangou-row">
-        <v-card elevation="0" class="kihon-title-length5 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
           受給者番号
         </v-card>
-        <p class="required">*</p>	
-        <v-card elevation="0" class="kihon-jyukyusyabangou-input d-flex flex-row">
+        <p class="required">*</p>
+        <v-card
+          elevation="0"
+          class="kihon-jyukyusyabangou-input d-flex flex-row"
+        >
           <wj-combo-box
             class="kihon-jyukyusyabangou-input2"
             :textChanged="onTextChanged"
@@ -54,11 +93,19 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-sityosonbangou-row">
-        <v-card elevation="0" class="kihon-title-length5 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
           市町村番号
         </v-card>
-        <p class="required">*</p>	
-        <v-card elevation="0" class="kihon-sityosonbangou-input d-flex flex-row">
+        <p class="required">*</p>
+        <v-card
+          elevation="0"
+          class="kihon-sityosonbangou-input d-flex flex-row"
+        >
           <wj-combo-box
             class="kihon-sityosonbangou-input2"
             :textChanged="onTextChanged"
@@ -70,33 +117,52 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-syogaisyubetu-row d-flex flex-row">
-        <v-card elevation="0" class="kihon-title-length4 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length4 d-flex flex-row"
+          flat
+          tile
+        >
           障害種別
         </v-card>
-        <v-card elevation="0" class="kihon-syogaisyubetu-selection d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-syogaisyubetu-selection d-flex flex-row"
+          flat
+          tile
+        >
           <v-checkbox
-            v-for="(item) of syogaisyubetu"
+            v-for="item of syogaisyubetu"
             class="item-button"
             :key="item.id"
             :label="item.id + '.' + item.name"
-            >
+          >
           </v-checkbox>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-jyukyusyakubun-row">
-        <v-card elevation="0" class="kihon-title-length5 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
           受給者区分
         </v-card>
-        <v-card elevation="0" class="kihon-jyukyusyakubun-selection d-flex flex-row">
-          <v-checkbox
-            class="item-button"
-            label="障害児"
-            >
-          </v-checkbox>
+        <v-card
+          elevation="0"
+          class="kihon-jyukyusyakubun-selection d-flex flex-row"
+        >
+          <v-checkbox class="item-button" label="障害児"> </v-checkbox>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-sikyuketteisya-row">
-        <v-card elevation="0" class="kihon-title-length5 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
           支給決定者
         </v-card>
         <v-card elevation="0" class="kihon-sikyuketteisya-disp1" outlined>
@@ -106,7 +172,20 @@
           {{ sikyuketteisya2 }}
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-button-row">
+      <v-row v-if="$_msg() === 'modKihon'" no-gutters class="kihon-button-row">
+        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
+          キャンセル</v-btn
+        >
+        <v-card
+          elevation="0"
+          class="kihon-bottom-regist d-flex flex-row-reverse"
+          flat
+          tile
+        >
+          <v-btn class="regist-button" @click="openDialog_Term('regist')">
+            登 録</v-btn
+          >
+        </v-card>
       </v-row>
     </v-container>
   </div>
@@ -115,10 +194,12 @@
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
+
 export default {
   data() {
     return {
       ja: ja,
+      mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       koufuymd: '',
       year: moment().year(),
@@ -126,10 +207,10 @@ export default {
       lastdate: moment().daysInMonth(),
       sityosonname: '',
       syogaisyubetu: [
-        { id: 1, name: "身体障害者" },
-        { id: 2, name: "知的障害者" },
-        { id: 3, name: "精神障害者" },
-        { id: 4, name: "難病等対象者" },
+        { id: 1, name: '身体障害者' },
+        { id: 2, name: '知的障害者' },
+        { id: 3, name: '精神障害者' },
+        { id: 4, name: '難病等対象者' },
       ],
       sikyuketteisya1: '',
       sikyuketteisya2: '',
@@ -138,10 +219,25 @@ export default {
   components: {
     Datepicker,
   },
+  mounted() {
+    this.Resize();
+  },
   methods: {
+    Resize() {
+      let height = '';
+      if (this.$_msg() === 'new') {
+        height = 'calc((29px * 8))';
+      } else {
+        height = 'calc((29px * 9) + 4px)';
+      }
+      this.mainHeight = 'height:' + height + ';';
+    },
+    setTrunModify() {
+      this.$_setMsg('modKihon');
+      this.Resize();
+    },
   },
 };
-
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
@@ -149,7 +245,6 @@ div#JyukyuTourokuKihon {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;
-  height: calc(29px * 9);
   .kihon-container {
     padding: 0px !important;
   }
@@ -159,10 +254,11 @@ div#JyukyuTourokuKihon {
     padding-right: 4px;
     .kihon-header {
       width: 100%;
-      height: 100%;
-      background-color:#1f7872;
+      height: 25px;
+      background-color: #1f7872;
     }
     .kihon-header-title {
+      width: 200px;
       height: 25px;
       padding: 2px 0px 0px 8px;
       color: white;
@@ -196,9 +292,17 @@ div#JyukyuTourokuKihon {
   .kihon-koufuymd-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    position: relative;/*相対配置*/
+    position: relative; /*相対配置*/
     .kihon-koufuymd-picker {
       padding: 0px 0px 0px 4px;
+    }
+    .kihon-copy-button {
+      height: 25px;
+      width: 100px;
+      padding: 2px 0px 0px 15px;
+      border: 1px solid $light-gray;
+      background-image: url('../assets/copy_gray_15px.png');
+      background-position: top 4px left 1px;
     }
   }
   .kihon-kubun-row {
@@ -219,35 +323,39 @@ div#JyukyuTourokuKihon {
   .kihon-jyukyusyabangou-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    position: relative;/*相対配置*/
+    position: relative; /*相対配置*/
     .kihon-jyukyusyabangou-input {
       height: 100%;
     }
     .kihon-jyukyusyabangou-input2 {
-      width: 200px;
       margin-top: -1px;
       margin-left: 4px;
       font-size: 12px;
+    }
+    .kihon-jyukyusyabangou-input2.wj-control .wj-input {
+      width: 200px;
     }
   }
   .kihon-sityosonbangou-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    position: relative;/*相対配置*/
+    position: relative; /*相対配置*/
     .kihon-sityosonbangou-input {
       height: 100%;
     }
     .kihon-sityosonbangou-input2 {
-      width: 100px;
       margin-top: -1px;
       margin-left: 4px;
       font-size: 12px;
+    }
+    .kihon-sityosonbangou-input2.wj-control .wj-input {
+      width: 100px;
     }
     .kihon-sityosonbangou-disp {
       width: 200px;
       margin-left: 4px;
       font-size: 12px;
-      background-color:lightyellow;
+      background-color: lightyellow;
       border-radius: 2px;
       text-align: left;
       padding: 2px 0px 0px 4px;
@@ -307,28 +415,29 @@ div#JyukyuTourokuKihon {
   .kihon-button-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-  }
-}
-
-// 前回コピーボタン
-a {
-  &.kihon-copy-button {
-    height: 25px;
-    width: 100px;
-    background-color: $white;
-    border: 1px solid $font_color;
-    display: block;
-    float: left;
-    color: $font_color !important;
-    text-align: left;
-    border-radius: 3px;
-    padding: 2px 0px 0px 18px;
-    margin-top: 0px;
-    cursor: pointer;
-    background-image: url('../assets/copy_gray_15px.png');
-    background-position: top 4px left 1px;
-    &:hover {
-      background-color: $selected_color;
+    .cancel-button {
+      height: 25px;
+      width: 100px;
+      text-align: center;
+      margin-top: 2px;
+      border-radius: 3px;
+      border: 1px solid $light-gray;
+    }
+    .kihon-bottom-regist {
+      width: calc(100% - 100px);
+      float: right;
+      .regist-button {
+        height: 25px;
+        width: 100px;
+        color: $white;
+        background-color: #027eb0;
+        text-align: center;
+        margin-top: 2px;
+        border-radius: 3px;
+        &:hover {
+          background-color: #005f85;
+        }
+      }
     }
   }
 }

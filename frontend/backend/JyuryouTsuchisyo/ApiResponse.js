@@ -24,8 +24,6 @@ module.exports = class ApiResponse {
             gfutan:       12584000,
             gtokubetu:    12584000,
             dairi:        12584000,
-            jyuymd:       '20220910',
-            prtymd:       '20220915',
             uchiwake_inf:{
               hokbn:      '1',
               svcsyucode: '',
@@ -52,8 +50,6 @@ module.exports = class ApiResponse {
             gfutan:       12584000,
             gtokubetu:    12584000,
             dairi:        12584000,
-            jyuymd:       '20220910',
-            prtymd:       '20220915',
             uchiwake_inf:{
               hokbn:      '1',
               svcsyucode: '',
@@ -80,8 +76,6 @@ module.exports = class ApiResponse {
             gfutan:       12584000,
             gtokubetu:    12584000,
             dairi:        12584000,
-            jyuymd:       '20220910',
-            prtymd:       '20220915',
             uchiwake_inf:{
               hokbn:      '1',
               svcsyucode: '',
@@ -108,8 +102,6 @@ module.exports = class ApiResponse {
             gfutan:       12584000,
             gtokubetu:    12584000,
             dairi:        12584000,
-            jyuymd:       '20220910',
-            prtymd:       '20220915',
             uchiwake_inf:{
               hokbn:      '1',
               svcsyucode: '',
@@ -136,8 +128,6 @@ module.exports = class ApiResponse {
             gfutan:       12584000,
             gtokubetu:    12584000,
             dairi:        12584000,
-            jyuymd:       '20220910',
-            prtymd:       '20220915',
             uchiwake_inf:{
               hokbn:      '1',
               svcsyucode: '',

@@ -87,7 +87,7 @@ export default {
      * セルのマージ
      */
     cellMerge(flexGrid) {
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       let ranges = [];
       ranges = [new wjGrid.CellRange(0, 0, 0, 1)];
       // getMergedRangeメソッドをオーバーライドする

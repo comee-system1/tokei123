@@ -25,8 +25,8 @@ export async function jyuryouTsuchisyo() {
       icrn_inf[i]['gfutan'    ] = icrn[i].icrn_inf.gfutan.toLocaleString();
       icrn_inf[i]['gtokubetu' ] = icrn[i].icrn_inf.gtokubetu;
       icrn_inf[i]['dairi'     ] = icrn[i].icrn_inf.dairi;
-      icrn_inf[i]['jyuymd'    ] = (icrn[i].icrn_inf.jyuymd) ? moment(icrn[i].icrn_inf.jyuymd).format('YYYY/MM/DD') : '';
-      icrn_inf[i]['prtymd'    ] = (icrn[i].icrn_inf.prtymd) ? moment(icrn[i].icrn_inf.prtymd).format('YYYY/MM/DD') : '';
+      icrn_inf[i]['jyuymd'    ] = icrn[i].icrn_inf.jyuymd;
+      icrn_inf[i]['prtymd'    ] = icrn[i].icrn_inf.prtymd;
       icrn_inf[i]['hokbn'     ] = icrn[i].icrn_inf.uchiwake_inf.hokbn;
       icrn_inf[i]['svcsyucode'] = icrn[i].icrn_inf.uchiwake_inf.svcsyucode;
       icrn_inf[i]['svcryaku'  ] = icrn[i].icrn_inf.uchiwake_inf.svcryaku

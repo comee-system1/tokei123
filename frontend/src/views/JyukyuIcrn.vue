@@ -822,41 +822,42 @@ div#jyukyuicrn {
     width: 100px;
     height: 25px;
   }
-}
-div.customCombobox {
-  position: relative;
-  width: 270px !important;
-  height: 25px !important;
-  &.customCombobox {
-    width: 160px !important;
-    div {
-      text-align: left;
-    }
-  }
-  .wj-btn.wj-btn-default {
-    border-left: none !important;
-  }
-  &:hover {
-    background-color: #e1e1e1;
-  }
-  &:focus {
-    background-color: #fff;
-  }
-  div * {
-    height: 21px !important;
-    padding: 0;
-    span {
-      height: 21px !important;
-      margin-top: 8px;
-    }
-    &.wj-form-control {
-      position: absolute;
-      top: -3px;
-      width: 100%;
-    }
-  }
-  input {
+  div.customCombobox {
+    position: relative;
+    width: 270px !important;
     height: 25px !important;
+    &.customCombobox {
+      width: 160px !important;
+      div {
+        text-align: left;
+      }
+    }
+    .wj-btn.wj-btn-default {
+      border-left: none !important;
+    }
+    &:hover {
+      background-color: #e1e1e1;
+    }
+    &:focus {
+      background-color: #fff;
+    }
+    div * {
+      height: 21px !important;
+      padding: 0;
+      span {
+        height: 21px !important;
+        margin-top: 8px;
+      }
+      &.wj-form-control {
+        position: absolute;
+        top: -3px;
+        width: 100%;
+        padding-top: 4px;
+      }
+    }
+    input {
+      height: 25px !important;
+    }
   }
 }
 </style>

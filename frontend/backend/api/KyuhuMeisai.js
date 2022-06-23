@@ -48,7 +48,7 @@ export async function kyuhuMeisai() {
             kyufuhi[i]['kjgyoryaku1'       ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.kjgyoryaku1;
             kyufuhi[i]['kjgyoryaku2'       ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.kjgyoryaku2;
             kyufuhi[i]['jigyokbn'          ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.jigyokbn;
-            kyufuhi[i]['agm_jigyoumu'     ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.agm_jigyoumu;
+            kyufuhi[i]['agm_jigyoumu'      ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.agm_jigyoumu;
             kyufuhi[i]['rslt'              ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.rslt;
             kyufuhi[i]['rsltnai'           ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.rsltnai;
             kyufuhi[i]['gaku'              ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.jknr.gaku;
@@ -126,7 +126,6 @@ export async function kyuhuMeisai() {
             kyufuhi[i]['ms3_rnk_nissu'     ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.kyufuhi_ms3.ms3_rnk_nissu;
             kyufuhi[i]['ms3_rnk_sowa'      ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.kyufuhi_ms3.ms3_rnk_sowa;
             kyufuhi[i]['ms3_kf_riyogaku2'  ] = kyufuhiApiData[i].kyufuhi.kyufuhi_khn.kyufuhi_ms3.ms3_kf_riyogaku2;
-
         }
         let returns = {
             kyufuhi: kyufuhi,

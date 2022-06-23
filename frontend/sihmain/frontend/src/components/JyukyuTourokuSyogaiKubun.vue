@@ -1,17 +1,54 @@
 <template>
-  <div id="JyukyuTourokuSyogaiKubun">
+  <div id="JyukyuTourokuSyogaiKubun" :style="mainHeight">
     <v-container fluid class="syogaikubun-container">
       <v-row no-gutters class="syogaikubun-header-row">
-        <v-card elevation="0" class="syogaikubun-header d-flex flex-row" flat tile>
-          <label class="syogaikubun-header-title">①障害支援区分</label>
+        <v-card
+          elevation="0"
+          class="syogaikubun-header d-flex flex-row"
+          flat
+          tile
+        >
+          <label class="syogaikubun-header-title"
+            >{{ this.titleNum }}障害支援区分</label
+          >
+          <v-card
+            v-if="$_subGridSelected()"
+            elevation="0"
+            class="syogaikubun-header d-flex flex-row-reverse"
+            flat
+            tile
+          >
+            <v-btn
+              class="modify-button"
+              style="height: 21px"
+              @click="setTrunModify"
+            >
+              修正</v-btn
+            >
+            <v-btn
+              class="modify-button"
+              style="height: 21px"
+              @click="setTrunModify"
+            >
+              追加</v-btn
+            >
+          </v-card>
         </v-card>
       </v-row>
       <v-row no-gutters class="syogaikubun-sienkubun-row">
-        <v-card elevation="0" class="syogaikubun-title-length6 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="syogaikubun-title-length6 d-flex flex-row"
+          flat
+          tile
+        >
           障害支援区分
         </v-card>
-        <p class="required">*</p>	
-        <v-card elevation="0" class="syogaikubun-sienkubun-combobox d-flex flex-row">
+        <p class="required">*</p>
+        <v-card
+          elevation="0"
+          class="syogaikubun-sienkubun-combobox d-flex flex-row"
+        >
           <wj-menu
             id="comboSienkubun"
             class="syogaikubun-sienkubun-items"
@@ -25,11 +62,19 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="syogaikubun-yukokikan-row">
-        <v-card elevation="0" class="syogaikubun-title-length4 d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          class="syogaikubun-title-length4 d-flex flex-row"
+          flat
+          tile
+        >
           有効期間
         </v-card>
-        <p class="required">*</p>	
-        <v-card elevation="0" class="syogaikubun-yukokikan-picker d-flex flex-row">
+        <p class="required">*</p>
+        <v-card
+          elevation="0"
+          class="syogaikubun-yukokikan-picker d-flex flex-row"
+        >
           <datepicker
             :language="ja"
             class="input_picker"
@@ -49,7 +94,24 @@
           ></datepicker>
         </v-card>
       </v-row>
-      <v-row no-gutters class="syogaikubun-button-row">
+      <v-row
+        v-if="$_msg() === 'modSyogaikubun'"
+        no-gutters
+        class="syogaikubun-button-row"
+      >
+        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
+          キャンセル</v-btn
+        >
+        <v-card
+          elevation="0"
+          class="syogaikubun-bottom-regist d-flex flex-row-reverse"
+          flat
+          tile
+        >
+          <v-btn class="regist-button" @click="openDialog_Term('regist')">
+            登 録</v-btn
+          >
+        </v-card>
       </v-row>
     </v-container>
   </div>
@@ -58,12 +120,13 @@
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
-import "@grapecity/wijmo.styles/wijmo.css";
-import "@grapecity/wijmo.vue2.input";
+import '@grapecity/wijmo.styles/wijmo.css';
+import '@grapecity/wijmo.vue2.input';
 export default {
   data() {
     return {
       ja: ja,
+      mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       koufuymd: '',
       year: moment().year(),
@@ -72,25 +135,41 @@ export default {
       sienkubunCombo: this.getSienkubunCombo(),
     };
   },
+  props: ['titleNum'],
   components: {
     Datepicker,
   },
+  mounted() {
+    this.Resize();
+  },
   methods: {
+    Resize() {
+      let height = '';
+      if (this.$_msg() === 'new') {
+        height = 'calc((29px * 3))';
+      } else {
+        height = 'calc((29px * 4) + 4px)';
+      }
+      this.mainHeight = 'height:' + height + ';';
+    },
+    setTrunModify() {
+      this.$_setMsg('modSyogaikubun');
+      this.Resize();
+    },
     /*************************
      * 絞り込みコンボボックス
      */
     initComboSienkubun(combo) {
       let _self = this;
       combo.header = this.sienkubunCombo[0].text;
-      var obj = document.getElementById("comboSienkubun");
+      var obj = document.getElementById('comboSienkubun');
       obj.style.color = 'gray';
       combo.selectedIndexChanged.addHandler(function (sender) {
         if (combo.selectedIndex == 0) {
           obj.style.color = 'gray';
-        }
-        else{
+        } else {
           obj.style.color = 'black';
-        };
+        }
         if (sender.selectedIndex != -1) {
           combo.header = _self.sienkubunCombo[sender.selectedIndex].text;
         }
@@ -126,13 +205,12 @@ export default {
         {
           key: 6,
           text: '区分６',
-        },
+        }
       );
       return sienkubunCombo;
     },
   },
 };
-
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
@@ -158,9 +236,10 @@ div#JyukyuTourokuSyogaiKubun {
     .syogaikubun-header {
       width: 100%;
       height: 100%;
-      background-color:#c6c6c6;
+      background-color: #c6c6c6;
     }
     .syogaikubun-header-title {
+      width: 200px;
       height: 25px;
       padding: 2px 0px 0px 8px;
       color: black;
@@ -186,19 +265,14 @@ div#JyukyuTourokuSyogaiKubun {
   .syogaikubun-sienkubun-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    position: relative;/*相対配置*/
+    position: relative; /*相対配置*/
     .syogaikubun-sienkubun-combobox {
-      width: 141px;
-      height: 100%;
-      margin-top: -3px;
-      margin-left: 0px;
+      height: 25px;
+      margin-top: -2px;
+      margin-left: 4px;
       padding-left: -2px;
       .syogaikubun-sienkubun-items {
-        width: 100%;
-        margin-top: 0px;
-        margin-left: -6px;
-        padding-top: 0px;
-        transform: scale(0.85);
+        font-size: 12px;
       }
     }
   }
@@ -206,9 +280,38 @@ div#JyukyuTourokuSyogaiKubun {
   .syogaikubun-yukokikan-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    position: relative;/*相対配置*/
+    position: relative; /*相対配置*/
     .syogaikubun-yukokikan-picker {
       padding: 0px 0px 0px 4px;
+    }
+  }
+
+  .syogaikubun-button-row {
+    height: 25px;
+    margin: 4px 4px 0px 4px;
+    .cancel-button {
+      height: 25px;
+      width: 100px;
+      text-align: center;
+      margin-top: 2px;
+      border-radius: 3px;
+      border: 1px solid $light-gray;
+    }
+    .syogaikubun-bottom-regist {
+      width: calc(100% - 100px);
+      float: right;
+      .regist-button {
+        height: 25px;
+        width: 100px;
+        color: $white;
+        background-color: #027eb0;
+        text-align: center;
+        margin-top: 2px;
+        border-radius: 3px;
+        &:hover {
+          background-color: #005f85;
+        }
+      }
     }
   }
 }

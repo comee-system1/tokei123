@@ -81,78 +81,105 @@
             検索
           </v-btn>
         </v-col>
-        <v-col class="no-flex-grow ml-1">
+        <!-- no-flex-grow  -->
+        <v-col class="d-block">
           <div class="d-flex">
-            <label>受領日</label>
-            <v-btn
-              @click="inputCalendarClick('juryobi')"
-              tile
-              outlined
-              class="service"
-              height="25"
-              >{{ year }}年{{ month }}月{{ date }}日
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
-            <v-btn
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              x-small
-              @click="calendarClick(1)"
-              height="100%"
-              style="min-width: auto; height: 25px"
-              tile
-              ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-            >
-            <v-btn
-              x-small
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              height="100%"
-              style="min-width: auto; height: 25px"
-              @click="calendarClick(2)"
-              tile
-              ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-            >
+            <label>印刷種類</label>
+            <!-- mandatoryは初期選択 -->
+            <v-btn-toggle class="flex-wrap" mandatory>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 90px"
+              >
+                受領通知書
+              </v-btn>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 90px"
+              >
+                一覧
+              </v-btn>
+            </v-btn-toggle>
           </div>
-          <div class="mt-1 d-flex">
-            <label>印刷日</label>
-            <v-btn
-               class="service"
-              @click="inputCalendarClick('insatsubi')"
-              tile
-              outlined
-              height="25"
-              >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
-            <v-btn
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              x-small
-              @click="calendarClick(3)"
-              height="100%"
-              style="min-width: auto; height: 25px"
-              tile
-              ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-            >
-            <v-btn
-              x-small
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              height="100%"
-              style="min-width: auto; height: 25px"
-              @click="calendarClick(4)"
-              tile
-              ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-            >
+          <div class="d-flex mt-1">
+            <div class="d-flex">
+              <label>受領日</label>
+              <v-btn
+                @click="inputCalendarClick('juryobi')"
+                tile
+                outlined
+                class="service"
+                height="25"
+                >{{ year }}年{{ month }}月{{ date }}日
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+              <v-btn
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                x-small
+                @click="calendarClick(1)"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                tile
+                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+              >
+              <v-btn
+                x-small
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                @click="calendarClick(2)"
+                tile
+                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+              >
+            </div>
+            <div class="mt-1 d-flex">
+              <label>印刷日</label>
+              <v-btn
+                 class="service"
+                @click="inputCalendarClick('insatsubi')"
+                tile
+                outlined
+                height="25"
+                >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+              <v-btn
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                x-small
+                @click="calendarClick(3)"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                tile
+                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+              >
+              <v-btn
+                x-small
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                @click="calendarClick(4)"
+                tile
+                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+              >
+            </div>
           </div>
           <v-dialog
             v-model="datepicker_dialog"
@@ -170,28 +197,6 @@
             </v-date-picker>
           </v-dialog>
         </v-col>
-        <label class="ml-1">印刷種類</label>
-        <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap" mandatory>
-            <v-btn
-              small
-              color="secondary"
-              dark
-              outlined
-              style="width: 90px"
-            >
-              受領通知書
-            </v-btn>
-            <v-btn
-              small
-              color="secondary"
-              dark
-              outlined
-              style="width: 90px"
-            >
-              一覧
-            </v-btn>
-          </v-btn-toggle>
       </v-row>
       <v-row class="justify-sm-space-between align-end mt-1" no-gutters>
         <v-btn-toggle class="flex-wrap" mandatory>
@@ -300,27 +305,30 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'jyuymd'"
             :header="'受領日'"
             align="center"
-            width="2*"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'prtymd'"
-            :header="'印刷日'"
-            align="center"
-            width="2*"
+            :width="160"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'print'"
-            :header="'印刷'"
+            :header="'選択/印刷'"
             align="center"
             :width="20"
             :isReadOnly="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
+      </v-row>
+      <v-row class="mt-2">
+        <v-col class="pt-0 pb-0 mr-8 d-flex justify-end">
+          <v-btn
+            small
+            style="width: 160px; height: 25px;"
+            @click="registerJyuryoubi()"
+          >
+            受領日登録
+          </v-btn>
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -353,9 +361,9 @@ const alphabet = [
 export default {
   data() {
     return {
-      insatsubi_year: moment().add('days', 2).startOf('days').format('YYYY'),
-      insatsubi_month: moment().add('days', 2).startOf('days').format('MM'),
-      insatsubi_date: moment().add('days', 2).startOf('days').format('DD'),
+      insatsubi_year: moment().format('YYYY'),
+      insatsubi_month: moment().format('MM'),
+      insatsubi_date: moment().format('DD'),
       picker: '',
       datepicker_dialog: false,
       header_dialog: true,
@@ -366,7 +374,7 @@ export default {
       JyuryouTsuchisyoData: [],
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterTextShityoson: { shityosonKey: 0, shityoson:'指定なし'}, // 検索項目
-      year: moment().year(),
+      year: moment().format('YYYY'),
       month: moment().format('MM'),
       date: moment().format('DD'),
       alphaSelect: 0,
@@ -521,19 +529,17 @@ export default {
       if (height > 800) {
         ht = 65;
       }
-      this.gridHeight = 'height:' + ht + 'vh;';
+      this.gridHeight = 'height:' + 'calc(' + ht + 'vh - 12px);';
     },
     getData(result) {
       this.JyuryouTsuchisyoData = result.icrn_inf;
       this.allData = this.JyuryouTsuchisyoData;
     },
     onInitialized(flexGrid) {
-      // let griddata = this.getData();
       this.mainFlexGrid = flexGrid;
       let _self = this;
       jyuryouTsuchisyo().then((result) => {
         // データ取得
-        console.log(result)
         this.getData(result);
       });
       // グリッドの選択を無効にする
@@ -541,6 +547,7 @@ export default {
 
       // ヘッダ情報の作成
       this.createHeader(flexGrid, _self);
+
       // ヘッダセルのマージ
       this.createHeaderMerge(flexGrid);
 
@@ -555,21 +562,58 @@ export default {
     /****************
      *セルのクリックイベント
      */
-    clickEventCell(flexGrid, _self) {
+    clickEventCell(flexGrid) {
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        // let jyuryoubiYmd = _self.year + '年' + _self.month + '月' + _self.date + '日'
         // セル押下時のみ
         if (ht.cellType == wjGrid.CellType.Cell) {
           // 印刷カラムを押下
-          if (hPage.col == 11) {
+          if (hPage.col == 10) {
             let mark = '〇';
-            if (flexGrid.getCellData(hPage.row, 11) == '〇') mark = '';
-            flexGrid.setCellData(hPage.row, 11, mark);
-            _self.JyuryouTsuchisyoData[hPage.row]['print'] = mark;
+            if (flexGrid.getCellData(hPage.row, 10) === '〇') {
+              // 既に〇がついていた場合値をクリア
+              mark = ' ';
+              flexGrid.setCellData(hPage.row, 9, ' ');
+            }
+            flexGrid.setCellData(hPage.row, 10, mark);
           }
         }
       });
+    },
+    /************
+     * 受領日の書き込み
+     */
+    registerJyuryoubi() {
+      let jyuryoubiYmd = this.year + '年' + this.month + '月' + this.date + '日'
+      for (let i = 0; i < this.JyuryouTsuchisyoData.length; i++) {
+        if ((this.mainFlexGrid.getCellData(i, 10) === '〇') &&
+        ((this.mainFlexGrid.getCellData(i, 9) === null) ||
+        ((this.mainFlexGrid.getCellData(i, 9) === ' ')))) {
+          // 受領日を表示
+          this.mainFlexGrid.setCellData(i, 9 ,jyuryoubiYmd);
+        }
+        // 選択されている受領日を取得
+        let yuryoubiView = "";
+        let formatYear  = ""
+        let formatMonth = ""
+        let formatDate  = ""
+
+        if (this.mainFlexGrid.getCellData(i, 9) !== null) {
+
+          yuryoubiView = this.mainFlexGrid.getCellData(i, 9);
+          // 登録する値をフォーマット
+          formatYear = yuryoubiView.substr(0, 4);
+          formatMonth = yuryoubiView.substr(5, 2);
+          formatDate = yuryoubiView.substr(8, 2);
+        } else {
+            yuryoubiView = "";
+        }
+
+        // 選択されている受領日を登録
+        this.JyuryouTsuchisyoData[i]['jyuymd'] = formatYear + formatMonth + formatDate;
+      }
     },
     /**************
      * ヘッダ情報の作成
@@ -592,8 +636,7 @@ export default {
       // panel.setCellData(1, 7, '特定障害者特別給付費(C)');
       // panel.setCellData(1, 8, '代理受領額(A)-(B)+(C)');
       panel.setCellData(0, 9, '受領日');
-      panel.setCellData(0, 10, '印刷日');
-      panel.setCellData(0, 11, '印刷');
+      panel.setCellData(0, 10, '選択／印刷');
       panel.setCellData(0, 2, '市町村代理受領額');
       panel.setCellData(1, 4, '利用者負担額');
     },
@@ -609,12 +652,11 @@ export default {
         new wjGrid.CellRange(1, 7, 2, 7), // 特定障害者特別給付費
         new wjGrid.CellRange(1, 8, 2, 8), // 代理受領額
         new wjGrid.CellRange(0, 9, 2, 9), // 受領日
-        new wjGrid.CellRange(0, 10, 2, 10), // 印刷日
-        new wjGrid.CellRange(0, 11, 2, 11), // 印刷
+        new wjGrid.CellRange(0, 10, 2, 10), // 印刷
         new wjGrid.CellRange(0, 2, 0, 8), // 市町村代理受領額
         new wjGrid.CellRange(1, 4, 1, 6), // 利用者負担額
       ];
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
@@ -647,7 +689,7 @@ export default {
             s.justifyContent ='center'
           }
           // 印刷セル縦書き
-          if((r == 0) && (c == 11)){
+          if((r == 0) && (c == 10)){
             s.writingMode = 'vertical-rl';
             s.borderRight= 'none';
           }
@@ -674,7 +716,10 @@ export default {
         if (panel.cellType == wjGrid.CellType.Cell) {
           // セル背景の変更
           s.backgroundColor = sysConst.COLOR.gridBackground;
-          if (c == 11) {
+          if (c == 9) {
+            s.backgroundColor = sysConst.COLOR.white;
+          }
+          if (c == 10) {
             s.backgroundColor = sysConst.COLOR.white;
             s.borderRight= 'none';
           }
@@ -777,13 +822,13 @@ export default {
      * 全選択/全解除
      */
     selectAll(type) {
-      let mark = '';
+      let mark = ' ';
       if (type == 0) {
         mark = '〇';
       }
       for (let i = 0; i < this.allData.length; i++) {
-        this.mainFlexGrid.setCellData(i, 11, mark);
-        this.JyuryouTsuchisyoData[i]['print'] = mark;
+        this.mainFlexGrid.setCellData(i, 10, mark);
+        this.mainFlexGrid.setCellData(i, 9, ' ');
       }
     },
     /************

@@ -1,5 +1,5 @@
 <template>
-  <div id="JyukyuTouroku">
+  <div id="JyukyuTouroku" :style="mainHeight">
     <v-container fluid class="container">
       <v-row no-gutters class="main-row">
         <v-col class="left-area">
@@ -9,7 +9,7 @@
           >
           </UserListPrint>
         </v-col>
-        <v-col class="center-area ml-1">
+        <v-col class="center-area ml-1" cols="1*">
           <v-row no-gutters>
             <v-card
               elevation="0"
@@ -46,11 +46,8 @@
               flat
               tile
             >
-              <a
-                class="add-button"
-                style="width: 150px"
-                @click="openDialog_Term('add_new')"
-                >受給者証新規登録</a
+              <v-btn class="add-button mt-1" @click="setTrunNew">
+                受給者証新規登録</v-btn
               >
               <v-card
                 elevation="0"
@@ -83,33 +80,75 @@
             <v-card elevation="0" class="center-area-input-menu" flat tile>
               <v-btn
                 class="menu-button"
-                v-for="(item, index) of menuitems"
+                v-for="item of menuitems"
                 :key="item.id"
-                :color="
-                  selectedTemplate && index === selectedIndex ? 'warning' : null
-                "
-                @click="
-                  selectedTemplate = item;
-                  selectedIndex = index;
-                "
+                :id="item.target + String(item.id)"
+                @click="move_to(item, item.target + String(item.id))"
               >
                 {{ item.name }}
               </v-btn>
             </v-card>
-            <v-card elevation="0" class="center-area-input-main" flat tile>
-              <JyukyuTourokuKihon> </JyukyuTourokuKihon>
-              <JyukyuTourokuSyogaiKubun> </JyukyuTourokuSyogaiKubun>
-              <JyukyuTourokuSikyuryo> </JyukyuTourokuSikyuryo>
+            <v-card
+              elevation="0"
+              class="center-area-input-main"
+              @scroll="onScroll()"
+              flat
+              tile
+            >
+              <div v-if="JyukyuSyogaiFukusiFlag">
+                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuSyogaiKubun :titleNum="this.titleNum[0]">
+                </JyukyuTourokuSyogaiKubun>
+                <JyukyuTourokuSikyuryo :titleNum="this.titleNum[1]">
+                </JyukyuTourokuSikyuryo>
+                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[2]">
+                </JyukyuTourokuKeikakuSoudan>
+                <JyukyuTourokuRiyosyaFutan :titleNum="this.titleNum[3]">
+                </JyukyuTourokuRiyosyaFutan>
+              </div>
+              <div v-else-if="JyukyuSyogaiJiFlag">
+                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuSikyuryo :titleNum="this.titleNum[0]">
+                </JyukyuTourokuSikyuryo>
+                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[1]">
+                </JyukyuTourokuKeikakuSoudan>
+                <JyukyuTourokuRiyosyaFutan :titleNum="this.titleNum[2]">
+                </JyukyuTourokuRiyosyaFutan>
+              </div>
+              <div v-else-if="JyukyuChiikiSoudanFlag">
+                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[0]">
+                </JyukyuTourokuKeikakuSoudan>
+              </div>
             </v-card>
           </v-row>
-          <v-row no-gutters class="center-area-bottom d-flex flex-row-reverse">
-            <a class="regist-button" @click="openDialog_Term('regist')"
-              >登 録</a
+          <v-row
+            v-if="$_msg() === 'new' && !$_subGridSelected()"
+            no-gutters
+            class="center-area-bottom d-flex flex-row"
+          >
+            <v-btn class="cancel-button" @click="openDialog_Term('regist')">
+              キャンセル</v-btn
             >
+            <v-card
+              elevation="0"
+              class="center-area-bottom-regist d-flex flex-row-reverse"
+              flat
+              tile
+            >
+              <v-btn class="regist-button" @click="openDialog_Term('regist')">
+                登 録</v-btn
+              >
+            </v-card>
           </v-row>
         </v-col>
         <v-col class="right-area ml-1">
-          <JyukyuTourokuRightArea></JyukyuTourokuRightArea>
+          <JyukyuTourokuRightArea
+            v-if="resetFlag"
+            :selectedTab="this.selectedTab"
+            :titleTab="this.titleTab"
+            :titleNum="this.titleNum"
+          ></JyukyuTourokuRightArea>
         </v-col>
       </v-row>
     </v-container>
@@ -117,21 +156,49 @@
 </template>
 <script>
 import moment from 'moment';
-// 本番用
-// import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
-// import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
-
-// テスト用
-import UserListPrint from '../../../../100Sogo_WebApl/frontend/src/components/UserListPrint.vue';
-import CommonTabMenu from '../../../../100Sogo_WebApl/frontend/src/components/CommonTabMenu.vue';
-
+import Vue from 'vue';
+import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
+import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon.vue';
 import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun.vue';
 import JyukyuTourokuSikyuryo from '../components/JyukyuTourokuSikyuryo.vue';
+import JyukyuTourokuKeikakuSoudan from '../components/JyukyuTourokuKeikakuSoudan.vue';
+import JyukyuTourokuRiyosyaFutan from '../components/JyukyuTourokuRiyosyaFutan.vue';
 import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
+
+let GlobalData = new Vue({
+  data: {
+    $msg: 'new', // グローバル変数
+    $subGridSelected: false, // グローバル変数
+  },
+});
+
+Vue.mixin({
+  methods: {
+    $_msg() {
+      return GlobalData.$data.$msg;
+    },
+    $_setMsg(newMsg) {
+      GlobalData.$data.$msg = newMsg;
+    },
+  },
+  computed: {
+    $msg: {
+      get: function () {
+        return GlobalData.$data.$msg;
+      },
+      set: function (newMsg) {
+        GlobalData.$data.$msg = newMsg;
+      },
+    },
+  },
+});
+
 export default {
   data() {
     return {
+      mainHeight: '',
+      menuBtnClick: false,
       mainGrid: [], //表示grid
       year: moment().year(),
       month: moment().format('MM'),
@@ -141,9 +208,10 @@ export default {
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
       // タブの制御Flag
-      JyukyuSyogaiFukusiFlag: true, // JyukyuSyogaiFukusiFlagの初期表示状態
+      JyukyuSyogaiFukusiFlag: false, // JyukyuSyogaiFukusiFlagの初期表示状態
       JyukyuSyogaiJiFlag: false, // JyukyuSyogaiJiFlagの初期表示状態
       JyukyuChiikiSoudanFlag: false, // JyukyuChiikiSoudanFlagの初期表示状態
+      selectedTab: 'JyukyuSyogaiFukusi',
       tabmenus: [
         { href: '#JyukyuSyogaiFukusi', text: '障害福祉' },
         { href: '#JyukyuSyogaiJi', text: '障害児' },
@@ -155,6 +223,9 @@ export default {
         {
           id: 1,
           name: '基本情報▸',
+          target: 'JyukyuTourokuKihon',
+          clickoff: '#cee2e1',
+          clickon: '#1f7872',
           syogai: true,
           syogaiJi: true,
           soudan: true,
@@ -162,14 +233,29 @@ export default {
         {
           id: 2,
           name: '障害区分▸',
+          target: 'JyukyuTourokuSyogaiKubun',
+          clickoff: '#f5f5f5',
+          clickon: '#333',
           syogai: true,
           syogaiJi: false,
           soudan: false,
         },
-        { id: 3, name: '支給量▸', syogai: true, syogaiJi: true, soudan: false },
+        {
+          id: 3,
+          name: '　支給量▸',
+          target: 'JyukyuTourokuSikyuryo',
+          clickoff: '#f5f5f5',
+          clickon: '#333',
+          syogai: true,
+          syogaiJi: true,
+          soudan: false,
+        },
         {
           id: 4,
           name: '計画相談▸',
+          target: 'JyukyuTourokuKeikakuSoudan',
+          clickoff: '#f5f5f5',
+          clickon: '#333',
           syogai: true,
           syogaiJi: true,
           soudan: true,
@@ -177,12 +263,19 @@ export default {
         {
           id: 5,
           name: '利用負担▸',
+          target: 'JyukyuTourokuRiyosyaFutan',
+          clickoff: '#f5f5f5',
+          clickon: '#333',
           syogai: true,
           syogaiJi: true,
           soudan: false,
         },
       ],
       selectedMenuItem: null,
+      titleTab: '',
+      titleNum: ['①', '②', '③', '④'],
+      resetFlag: false,
+      tabChanged: true,
     };
   },
   components: {
@@ -191,28 +284,113 @@ export default {
     JyukyuTourokuKihon,
     JyukyuTourokuSyogaiKubun,
     JyukyuTourokuSikyuryo,
+    JyukyuTourokuKeikakuSoudan,
+    JyukyuTourokuRiyosyaFutan,
     JyukyuTourokuRightArea,
   },
+  mounted() {
+    this.handleResize;
+    this.menu_clear();
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+  },
+  computed: {},
   methods: {
+    setTrunNew() {
+      this.$_setMsg('new');
+      this.$_setSubGridSelected(false);
+      if (this.JyukyuSyogaiFukusiFlag) {
+        this.JyukyuSyogaiFukusiFlag = false;
+        this.$nextTick(() => {
+          this.JyukyuSyogaiFukusiFlag = true;
+        });
+      } else if (this.JyukyuSyogaiJiFlag) {
+        this.JyukyuSyogaiJiFlag = false;
+        this.$nextTick(() => {
+          this.JyukyuSyogaiJiFlag = true;
+        });
+      } else if (this.JyukyuChiikiSoudanFlag) {
+        this.JyukyuChiikiSoudanFlag = false;
+        this.$nextTick(() => {
+          this.JyukyuChiikiSoudanFlag = true;
+        });
+      }
+      this.move_to(this.menuitems[0], this.menuitems[0].id);
+    },
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    handleResize() {
+      let height = window.innerHeight;
+      let targetElement = document.getElementById('JyukyuTouroku');
+      var clientRect = targetElement.getBoundingClientRect();
+      var y = clientRect.top;
+      //alert(y);
+      let ht = '';
+      ht = height - y - 20;
+      this.mainHeight = 'height:' + ht + 'px;';
+    },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
      */
-    parent_common_tab_menu: function (args) {
+    parent_common_tab_menu(args) {
       this.JyukyuSyogaiFukusiFlag = false;
       this.JyukyuSyogaiJiFlag = false;
       this.JyukyuChiikiSoudanFlag = false;
       // タブを切り替えた際の表示切替制御
-      if (args.selectTab == 'JyukyuSyogaiFukusi')
-        this.JyukyuSyogaiFukusiFlag = true;
-      if (args.selectTab == 'JyukyuSyogaiJi') this.JyukyuSyogaiJiFlag = true;
-      if (args.selectTab == 'JyukyuChiikiSoudan')
-        this.JyukyuChiikiSoudanFlag = true;
-    }, // 左メニューで作成されたユーザ一覧の取得を行う
-    getSelectUserChildComponent: function (data) {
+      this.JyukyuSyogaiFukusiFlag = args.selectTab == 'JyukyuSyogaiFukusi';
+      this.JyukyuSyogaiJiFlag = args.selectTab == 'JyukyuSyogaiJi';
+      this.JyukyuChiikiSoudanFlag = args.selectTab == 'JyukyuChiikiSoudan';
+      this.selectedTab = args.selectTab;
+
+      for (let i = 0; i < this.menuitems.length; i++) {
+        var btn = document.getElementById(
+          this.menuitems[i].target + String(this.menuitems[i].id)
+        );
+        if (this.JyukyuSyogaiFukusiFlag) {
+          if (this.menuitems[i].syogai) {
+            btn.style.display = 'block';
+          } else {
+            btn.style.display = 'none';
+          }
+          this.titleTab = this.tabmenus[0].text;
+        } else if (this.JyukyuSyogaiJiFlag) {
+          if (this.menuitems[i].syogaiJi) {
+            btn.style.display = 'block';
+          } else {
+            btn.style.display = 'none';
+          }
+          this.titleTab = this.tabmenus[1].text;
+          this.tabChanged = false;
+        } else if (this.JyukyuChiikiSoudanFlag) {
+          if (this.menuitems[i].soudan) {
+            btn.style.display = 'block';
+          } else {
+            btn.style.display = 'none';
+          }
+          this.titleTab = this.tabmenus[2].text;
+          this.tabChanged = false;
+        }
+        this.menu_clear();
+        if (!this.tabChanged) {
+          this.goto_top();
+        }
+        this.RightAreaReset();
+      }
+    },
+    RightAreaReset() {
+      this.resetFlag = false;
+      this.$nextTick(() => {
+        this.resetFlag = true;
+      });
+    },
+    // 左メニューで作成されたユーザ一覧の取得を行う
+    getSelectUserChildComponent(data) {
       this.userListComponentDatas = data;
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
-    setUserSelectPoint: function (row) {
+    setUserSelectPoint(row) {
       this.userDataSelect[0]['riyosyo'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -223,6 +401,40 @@ export default {
       // 値の設定
       this.changeHndoJyoho();
     },
+    menu_clear() {
+      for (let i = 0; i < this.menuitems.length; i++) {
+        var btn = document.getElementById(
+          this.menuitems[i].target + String(this.menuitems[i].id)
+        );
+        btn.style.color = '#333';
+        btn.style.backgroundColor = this.menuitems[i].clickoff;
+      }
+    },
+    goto_top() {
+      var target = document.getElementById('JyukyuTourokuKihon');
+      target.scrollIntoView({
+        block: 'start',
+      });
+    },
+    move_to(item, id) {
+      this.menuBtnClick = true;
+      this.menu_clear();
+      this.goto_top();
+      if (item == null) return;
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = '#fff';
+      targetbtn.style.backgroundColor = item.clickon;
+      var target = document.getElementById(item.target);
+      target.scrollIntoView({
+        block: 'start',
+      });
+    },
+    onScroll(e) {
+      if (!this.menuBtnClick) {
+        this.menu_clear();
+      }
+      this.menuBtnClick = false;
+    },
   },
 };
 </script>
@@ -232,7 +444,6 @@ div#JyukyuTouroku {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1266px;
-  height: 740px;
   .container {
     padding: 4px;
     height: 100%;
@@ -245,13 +456,10 @@ div#JyukyuTouroku {
     min-width: 275px;
     max-width: 275px;
     width: 275px;
-    height: 100%;
   }
 
   .center-area {
-    min-width: 50%;
     max-width: none;
-    width: 100%;
     height: 100%;
     .center-area-riyoname {
       background-color: #52646c;
@@ -259,7 +467,7 @@ div#JyukyuTouroku {
       height: 30px;
       .center-area-riyoname-title {
         text-align: center;
-        color: white;
+        color: $white;
         width: 110px;
         padding-top: 4px;
       }
@@ -289,6 +497,14 @@ div#JyukyuTouroku {
     .center-area-button-new {
       width: 100%;
       height: 38px;
+      .add-button {
+        height: 30px;
+        width: 150px;
+        padding: 0px 0px 0px 10px;
+        background-image: url('../assets/plus_gray_15px.png');
+        background-position: top 6px left 1px;
+        border: 1px solid $light-gray;
+      }
     }
     .center-area-input {
       width: 100%;
@@ -318,9 +534,33 @@ div#JyukyuTouroku {
       }
     }
     .center-area-bottom {
-      width: 100%;
-      height: 38px;
-      float: right;
+      height: 40px;
+      .cancel-button {
+        height: 30px;
+        width: 100px;
+        text-align: center;
+        margin-top: 4px;
+        margin-left: 69px;
+        border-radius: 3px;
+        border: 1px solid $light-gray;
+      }
+      .center-area-bottom-regist {
+        width: calc(100% - 169px);
+        float: right;
+        .regist-button {
+          height: 30px;
+          width: 100px;
+          color: $white;
+          background-color: #027eb0;
+          text-align: center;
+          margin-top: 4px;
+          margin-right: 20px;
+          border-radius: 3px;
+          &:hover {
+            background-color: #005f85;
+          }
+        }
+      }
     }
   }
 
@@ -329,31 +569,11 @@ div#JyukyuTouroku {
     max-width: 350px;
     width: 350px;
     height: 100%;
-    border: thin solid #0f4aee;
   }
 }
 
 // 追加ボタン
 a {
-  &.add-button {
-    height: 30px;
-    width: 150px;
-    background-color: $white;
-    border: 1px solid $font_color;
-    display: block;
-    float: left;
-    color: $font_color !important;
-    text-align: left;
-    border-radius: 3px;
-    padding: 4px 0px 0px 20px;
-    margin-top: 4px;
-    cursor: pointer;
-    background-image: url('../assets/plus_gray_15px.png');
-    background-position: top 6px left 1px;
-    &:hover {
-      background-color: $selected_color;
-    }
-  }
   &.copy-button {
     height: 30px;
     width: 150px;
@@ -373,23 +593,6 @@ a {
       background-color: $selected_color;
     }
   }
-  &.regist-button {
-    height: 30px;
-    width: 100px;
-    background-color: $white;
-    border: 1px solid $font_color;
-    display: block;
-    float: right;
-    color: $font_color !important;
-    text-align: center;
-    border-radius: 3px;
-    padding: 4px 0px 0px 0px;
-    margin-top: 4px;
-    cursor: pointer;
-    &:hover {
-      background-color: $selected_color;
-    }
-  }
 }
 
 .required {
@@ -401,5 +604,35 @@ a {
   left: 0;
   margin-top: -3px;
   padding: 0px;
+}
+
+.modify-button {
+  width: 50px;
+  margin-top: 2px;
+  margin-right: 2px;
+  border-radius: 3px;
+}
+
+.input_picker {
+  .vdp-datepicker__clear-button {
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: -55px;
+    width: 50px;
+    border: 1px solid #ccc;
+    padding: 1px 0px;
+    text-align: center;
+    span {
+      display: none;
+    }
+    &:hover {
+      background-color: #ddd;
+    }
+    &:after {
+      content: 'クリア';
+      font-size: 12px;
+    }
+  }
 }
 </style>

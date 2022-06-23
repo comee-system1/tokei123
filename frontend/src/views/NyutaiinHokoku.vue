@@ -436,7 +436,7 @@ export default {
           new wjGrid.CellRange(merge[i].first, j, merge[i].last - 1, j)
         );
       }
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
 
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -545,7 +545,7 @@ export default {
       let headerRanges = [
         new wjGrid.CellRange(0, 3, 0, 4)
       ];
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
@@ -561,7 +561,6 @@ export default {
      * グリッドのデザイン修正
      */
     gridDesignModify(flexGrid) {
-      // let mergedCellLength = this.getMergedCellRow()
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッド内共通スタイル
         let s = cell.style;

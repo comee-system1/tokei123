@@ -128,6 +128,7 @@
         :header="centerHeader[1]"
         :width="65"
         align="center"
+        :format="'n0'"
         :multiLine="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -455,8 +456,8 @@ export default {
           this.receptData[i]['hanneikey'] = mark;
           this.mainFlexGrid.setCellData(i, 6, mark);
 
-          this.receptData[i]['jknr_riyogaku'] = pt13;
-          this.receptData[i]['jknr_rslt'] = pt14;
+          this.receptData[i]['jknr_rslt'] = pt13;
+          this.receptData[i]['jknr_riyogaku'] = pt14;
         }
       }
     },
@@ -556,7 +557,25 @@ export default {
         if (args.col == 16) {
           args.cancel = true;
         }
+
+        if (
+          _self.receptData[args.row].jknr_rslt == 1 ||
+          _self.receptData[args.row].jknr_rslt == 2
+        ) {
+          if (args.col == 14) {
+            args.cancel = true;
+          }
+        }
       });
+
+      // flexGrid.prepareCellForEdit.addHandler(function (s, e) {
+
+      //   console.log(s);
+      //   console.log(e);
+      //   var editor = flexGrid.activeEditor;
+      //   editor.value = editor.value.replace(/,/g, '');
+      //   editor.select();
+      // });
 
       flexGrid.cellEditEnding.addHandler((s, e) => {
         let col = s.columns[e.col];
@@ -594,14 +613,31 @@ export default {
             _self.receptData[e.row].jknr_riyogaku = 0;
             flexGrid.setCellData(e.row, 14, '0');
           }
+          // 管理結果が2の時は、利用者負担額の金額を入力
+          if (e.col == 13 && value == 2) {
+            let pt12 = flexGrid.getCellData(e.row, 12);
+            _self.receptData[e.row].jknr_riyogaku = pt12;
+            flexGrid.setCellData(e.row, 14, pt12);
+          }
+          // 管理結果が3の時のみ利用者負担額を入力可能
+          if (e.col == 13 && value == 3) {
+            _self.receptData[e.row].jknr_riyogaku = '';
+            flexGrid.setCellData(e.row, 14, '');
+          }
           if (e.col == 13) {
             _self.receptData[e.row].jknr_rslt = value;
           }
           if (e.col == 14) {
             _self.receptData[e.row].jknr_riyogaku = value;
+            flexGrid.setCellData(e.row, 14, this.number_format(value));
           }
         }
         //}
+      });
+    },
+    number_format(num) {
+      return num.toString().replace(/(\d+?)(?=(?:\d{3})+$)/g, function (x) {
+        return x + ',';
       });
     },
     // 後ほど消す
