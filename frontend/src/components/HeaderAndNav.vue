@@ -220,11 +220,11 @@ export default {
           ],
         },
         {
-          name: '利用者情報',
+          name: '利用者台帳',
           mdi: true,
           src: 'mdi-account-group-outline',
           lists: [
-            { name: '基本台帳登録', link: '/TemporaryPage' },
+            { name: '基本情報', link: '/KihonJyoho' },
             { name: '受給者証登録', link: '/JyukyuTouroku' },
           ],
         },

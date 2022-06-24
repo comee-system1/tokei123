@@ -82,120 +82,123 @@
           </v-btn>
         </v-col>
         <!-- no-flex-grow  -->
-        <v-col class="d-block">
-          <div class="d-flex">
-            <label>印刷種類</label>
-            <!-- mandatoryは初期選択 -->
-            <v-btn-toggle class="flex-wrap" mandatory>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                style="width: 90px"
-              >
-                受領通知書
-              </v-btn>
-              <v-btn
-                small
-                color="secondary"
-                dark
-                outlined
-                style="width: 90px"
-              >
-                一覧
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-          <div class="d-flex mt-1">
+        <v-col class="d-flex justify-end">
+          <div class="d-block">
+
             <div class="d-flex">
-              <label>受領日</label>
-              <v-btn
-                @click="inputCalendarClick('juryobi')"
-                tile
-                outlined
-                class="service"
-                height="25"
-                >{{ year }}年{{ month }}月{{ date }}日
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-              <v-btn
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                x-small
-                @click="calendarClick(1)"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                tile
-                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-              >
-              <v-btn
-                x-small
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                @click="calendarClick(2)"
-                tile
-                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-              >
+              <label>印刷種類</label>
+              <!-- mandatoryは初期選択 -->
+              <v-btn-toggle class="flex-wrap" mandatory>
+                <v-btn
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  style="width: 90px"
+                >
+                  受領通知書
+                </v-btn>
+                <v-btn
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  style="width: 90px"
+                >
+                  一覧
+                </v-btn>
+              </v-btn-toggle>
             </div>
-            <div class="mt-1 d-flex">
-              <label>印刷日</label>
-              <v-btn
-                 class="service"
-                @click="inputCalendarClick('insatsubi')"
-                tile
-                outlined
-                height="25"
-                >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-              <v-btn
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                x-small
-                @click="calendarClick(3)"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                tile
-                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-              >
-              <v-btn
-                x-small
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                @click="calendarClick(4)"
-                tile
-                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-              >
+            <div class="d-flex mt-1">
+              <div class="d-flex">
+                <label>受領日</label>
+                <v-btn
+                  @click="inputCalendarClick('juryobi')"
+                  tile
+                  outlined
+                  class="service"
+                  height="25"
+                  >{{ year }}年{{ month }}月{{ date }}日
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-btn>
+                <v-btn
+                  elevation="0"
+                  color="white"
+                  class="pa-0 ml-1"
+                  x-small
+                  @click="calendarClick(1)"
+                  height="100%"
+                  style="min-width: auto; height: 25px"
+                  tile
+                  ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+                >
+                <v-btn
+                  x-small
+                  elevation="0"
+                  color="white"
+                  class="pa-0 ml-1"
+                  height="100%"
+                  style="min-width: auto; height: 25px"
+                  @click="calendarClick(2)"
+                  tile
+                  ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+                >
+              </div>
+              <div class="mt-1 d-flex">
+                <label>印刷日</label>
+                <v-btn
+                   class="service"
+                  @click="inputCalendarClick('insatsubi')"
+                  tile
+                  outlined
+                  height="25"
+                  >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-btn>
+                <v-btn
+                  elevation="0"
+                  color="white"
+                  class="pa-0 ml-1"
+                  x-small
+                  @click="calendarClick(3)"
+                  height="100%"
+                  style="min-width: auto; height: 25px"
+                  tile
+                  ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+                >
+                <v-btn
+                  x-small
+                  elevation="0"
+                  color="white"
+                  class="pa-0 ml-1"
+                  height="100%"
+                  style="min-width: auto; height: 25px"
+                  @click="calendarClick(4)"
+                  tile
+                  ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+                >
+              </div>
             </div>
+            <v-dialog
+              v-model="datepicker_dialog"
+              width="290"
+              class="datepicker_dialogs"
+              >
+              <v-date-picker
+                id="jyuryoDatepicker"
+                type="date"
+                v-model="picker"
+                locale="jp-ja"
+                :day-format="(date) => new Date(date).getDate()"
+                @change="dateSelect"
+              >
+              </v-date-picker>
+            </v-dialog>
           </div>
-          <v-dialog
-            v-model="datepicker_dialog"
-            width="290"
-            class="datepicker_dialogs"
-            >
-            <v-date-picker
-              id="jyuryoDatepicker"
-              type="date"
-              v-model="picker"
-              locale="jp-ja"
-              :day-format="(date) => new Date(date).getDate()"
-              @change="dateSelect"
-            >
-            </v-date-picker>
-          </v-dialog>
         </v-col>
       </v-row>
       <v-row class="justify-sm-space-between align-end mt-1" no-gutters>

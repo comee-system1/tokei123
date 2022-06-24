@@ -17,7 +17,7 @@
       :headersVisibility="'Column'"
     >
     </wj-flex-grid>
-    <v-card class="pa-2 backGrey" outlined shaped tile>家族情報入力</v-card>
+    <v-card class="pa-1 backGrey" outlined shaped tile>家族情報入力</v-card>
     <v-row no-gutters class="kihon-jyukyusyabangou-row">
       <v-card
         elevation="0"
@@ -138,7 +138,7 @@ div#JyukyuRirekiDetail {
 
   .kihon-title-length5 {
     width: 100px;
-    padding: 5px 0px 0px 14px;
+    padding: 2px 0px 0px 14px;
     background-color: #ccc;
     color: black;
     text-align: center;
@@ -162,7 +162,7 @@ div#JyukyuRirekiDetail {
       height: 100%;
     }
     .kihon-jyukyusyabangou-input2 {
-      width: 200px;
+      width: 180px;
       margin-top: -1px;
       margin-left: 4px;
       font-size: 12px;

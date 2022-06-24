@@ -50,7 +50,6 @@ export default {
       console.log(now);
       console.log(until);
       if (now > until) {
-        alert('期限切れ');
         console.log('JWT is expired. route to login...');
         // ストレージに保存
         self.$store.dispatch('auth', {

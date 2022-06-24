@@ -1,17 +1,13 @@
 <template>
   <div id="JyukyuTourokuRightArea">
-    <v-container fluid class="container">
-      <common-tab-menu
-        class="center-area-jyukyusyuri-tab"
-        @parent_common_tab_menu="parent_common_tab_menu"
-        :tabmenu="tabmenus"
-        :tabmargin="tabmargin"
-        tabParentWidth="50%"
-      ></common-tab-menu>
+    <v-container fluid class="pt-0 mt-0">
+      <div v-if="!dispReki">
+        <label class="title">入力補助</label>
+      </div>
     </v-container>
 
     <v-container fluid class="pt-0 mt-0">
-      <div v-if="!JyukyuNyuryokuFlag">
+      <div v-if="dispReki">
         <div v-if="this.selectedTab == 'JyukyuSyogaiFukusi'">
           <JyukyuRirekiViewJyukyu
             :basicFlag="true"
@@ -93,7 +89,7 @@
           ></JyukyuRirekiViewKeikaku>
         </div>
       </div>
-      <div v-if="JyukyuNyuryokuFlag">
+      <div v-else>
         <JyukyuRirekiDetail></JyukyuRirekiDetail>
       </div>
     </v-container>
@@ -143,16 +139,12 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      JyukyuRirekiFlag: false, // 履歴表示
-      JyukyuNyuryokuFlag: false, // 入力補助
-      tabmenus: [
-        { href: '#JyukyuRireki', text: '履歴表示' },
-        { href: '#JyukyuNyuryoku', text: '入力補助' },
-      ],
-      tabmargin: '1px',
+      tabmenusReki: [{ href: '#JyukyuRireki', text: '履歴表示' }],
+      tabmenusHojo: [{ href: '#JyukyuNyuryoku', text: '入力補助' }],
+      tabmargin: '0px',
     };
   },
-  props: ['selectedTab', 'titleTab', 'titleNum'],
+  props: ['selectedTab', 'titleTab', 'titleNum', 'dispReki'],
   components: {
     CommonTabMenu,
     JyukyuRirekiViewJyukyu,
@@ -161,6 +153,10 @@ export default {
     JyukyuRirekiViewKeikaku,
     JyukyuRirekiViewRiyousya,
     JyukyuRirekiDetail,
+  },
+  mounted() {
+    this.JyukyuRirekiFlag = this.dispReki;
+    this.JyukyuNyuryokuFlag = !this.dispReki;
   },
   methods: {
     /****************
@@ -171,19 +167,6 @@ export default {
     child_rireki_data(args, code) {
       console.log(args);
       console.log(code);
-    },
-    /**************
-     * 子コンポーネントCommonTabMenuで選択した値を取得
-     */
-    parent_common_tab_menu: function (args) {
-      this.JyukyuRirekiFlag = false;
-      this.JyukyuNyuryokuFlag = false;
-      if (args.selectTab == 'JyukyuRireki') {
-        this.JyukyuRirekiFlag = true;
-      }
-      if (args.selectTab == 'JyukyuNyuryoku') {
-        this.JyukyuNyuryokuFlag = true;
-      }
     },
   },
 };

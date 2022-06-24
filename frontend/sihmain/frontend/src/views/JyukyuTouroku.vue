@@ -1,6 +1,43 @@
 <template>
   <div id="JyukyuTouroku" :style="mainHeight">
     <v-container fluid class="container">
+      <!-- 登録履歴スライドイン -->
+      <div
+        class="alert"
+        :class="{ active: slideInRight.isOpen, to: !slideInRight.isOpen }"
+        @click.self="slideInRight.isOpen = false"
+      >
+        <transition :name="slideInRight.id">
+          <div class="surface" v-if="slideInRight.isOpen">
+            <v-row no-gutters>
+              <label class="title ml-2">登録履歴</label>
+              <v-row
+                no-gutters
+                class="d-flex flex-row-reverse"
+                style="height: 25px"
+              >
+                <div class="button-container">
+                  <v-btn
+                    style="height: 25px"
+                    @click="slideInRight.isOpen = false"
+                  >
+                    閉じる
+                  </v-btn>
+                </div>
+              </v-row>
+            </v-row>
+            <div class="alert-body">
+              <JyukyuTourokuRightArea
+                v-if="resetFlag"
+                :selectedTab="this.selectedTab"
+                :titleTab="this.titleTab"
+                :titleNum="this.titleNum"
+                :dispReki="true"
+              ></JyukyuTourokuRightArea>
+            </div>
+          </div>
+        </transition>
+      </div>
       <v-row no-gutters class="main-row">
         <v-col class="left-area">
           <UserListPrint
@@ -21,6 +58,18 @@
               <v-card class="center-area-riyoname-name" outlined tile>
                 {{ userDataSelect[0].riyosyo }}
               </v-card>
+              <v-row
+                no-gutters
+                class="d-flex flex-row-reverse"
+                style="height: 25px"
+              >
+                <v-btn
+                  style="height: 25px; margin-top: 2px; margin-right: 2px"
+                  @click="slideInRight.isOpen = true"
+                >
+                  {{ slideInRight.title }}
+                </v-btn>
+              </v-row>
             </v-card>
           </v-row>
           <v-row no-gutters>
@@ -122,6 +171,13 @@
               </div>
             </v-card>
           </v-row>
+          <hr
+            v-if="$_msg() === 'new' && !$_subGridSelected()"
+            size="2"
+            color="#027eb0"
+            style="margin-top: 4px; margin-left: 69px"
+            noshade
+          />
           <v-row
             v-if="$_msg() === 'new' && !$_subGridSelected()"
             no-gutters
@@ -148,6 +204,7 @@
             :selectedTab="this.selectedTab"
             :titleTab="this.titleTab"
             :titleNum="this.titleNum"
+            :dispReki="false"
           ></JyukyuTourokuRightArea>
         </v-col>
       </v-row>
@@ -276,6 +333,12 @@ export default {
       titleNum: ['①', '②', '③', '④'],
       resetFlag: false,
       tabChanged: true,
+
+      slideInRight: {
+        id: 'right',
+        title: '履歴参照',
+        isOpen: false,
+      },
     };
   },
   components: {
@@ -565,9 +628,9 @@ div#JyukyuTouroku {
   }
 
   .right-area {
-    min-width: 350px;
-    max-width: 350px;
-    width: 350px;
+    min-width: 300px;
+    max-width: 300px;
+    width: 300px;
     height: 100%;
   }
 }
@@ -634,5 +697,73 @@ a {
       font-size: 12px;
     }
   }
+}
+
+//登録履歴スライドイン用
+.alert {
+  position: fixed;
+  left: 0;
+  top: -30px;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: calc(100vh + 50px);
+  z-index: 100;
+
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+.surface {
+  background-color: #424242;
+  color: white;
+  max-height: calc(100% - 96px);
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  margin: 48px;
+  position: relative;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.surface .alert-body {
+  padding: 2px 2px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.surface .button-container {
+  height: 25px;
+  width: 80%;
+  margin: 4px 4px;
+
+  display: flex;
+  align-items: right;
+  justify-content: flex-end;
+}
+.active {
+  visibility: visible;
+  transition: visibility 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.to {
+  visibility: hidden;
+  transition: visibility 195ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.right-enter-active,
+.right-leave-active {
+  transform: translate(0px, 0px);
+  transition: transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+}
+
+.right-enter,
+.right-leave-to {
+  transform: translateX(100vw) translateX(0px);
 }
 </style>

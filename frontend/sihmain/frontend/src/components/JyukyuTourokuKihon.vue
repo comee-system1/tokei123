@@ -65,7 +65,7 @@
           flat
           tile
         >
-          <v-radio-group row v-model="kihonkubun" class="kihon-kubun-group">
+          <v-radio-group row v-model="jyukyukubun" class="kihon-kubun-group">
             <v-radio label="通常" :key="1" :value="1"></v-radio>
             <v-radio label="暫定" :key="0" :value="0"></v-radio>
           </v-radio-group>
@@ -214,6 +214,7 @@ export default {
       ],
       sikyuketteisya1: '',
       sikyuketteisya2: '',
+      jyukyukubun: -1,
     };
   },
   components: {
@@ -236,6 +237,7 @@ export default {
       this.$_setMsg('modKihon');
       this.Resize();
     },
+    onTextChanged() {},
   },
 };
 </script>
