@@ -1,12 +1,12 @@
 <template>
-  <div id="serviceHistory">
-    <v-container fluid class="container">
+  <div id="serviceHistory" class="mt-n1">
+    <v-container fluid class="container mt-0 user-info">
       <riyousyadaityo-sort-menu
-        @parent-calendar="parentCalendar($event, dateArgument)"
-        @parent-search="parentSearch($event, searchArgument)"
-        :shinkiTourokuFlag="true"
-        :shuseiTourokuFlag="false"
-        :rirekiTourokuFlag="false"
+        @displaySort="displaySort($event)"
+        @sorted="sorted($event)"
+        :kihonJyohoFlag="false"
+        :serviceHistoryFlag="true"
+        ref="childRiyousyadaityo"
       ></riyousyadaityo-sort-menu>
       <wj-flex-grid
         id="serviceHistoryGrid"
@@ -127,26 +127,12 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
 
-const alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
-
 export default {
   data() {
     return {
-      alphabet: alphabet,
       year: moment().year(),
-      historyData: this.getData(),
+      allData: [],
+      historyData: [],
     };
   },
   components: {
@@ -154,8 +140,106 @@ export default {
   },
 
   methods: {
+    /************************
+     * 子コンポーネントのソート項目
+     */
+    sorted(type) {
+      // 表示配列の合計列を省く
+      let array = [];
+      for (let i = 0; i < this.historyData.length; i++) {
+        if (this.historyData[i].code) {
+          array.push(this.historyData[i]);
+        }
+      }
+      if (type.sortedType === 'kana') {
+        array.sort((a, b) => {
+          if (a.kana < b.kana) {
+            return -1;
+          }
+          if (a.kana > b.kana) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      if (type.sortedType === 'code') {
+        array.sort((a, b) => {
+          if (a.code > b.code) {
+            return -1;
+          }
+          if (a.code < b.code) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      let returns = this.changeSortting(array);
+      this.historyData = [];
+      this.historyData = returns;
+    },
+    /****************************
+     * 子コンポーネントの表示項目
+     */
+    displaySort(type) {
+      // 有効
+      // 開始日が本日以前のデータ
+      if (type.displaySortType === 'enable') {
+        let array = [];
+        let now = moment();
+        for (let i = 0; i < this.allData.length; i++) {
+          let st = '';
+          if (this.allData[i].startDate) {
+            st = moment(this.allData[i].startDate);
+          } else {
+            st = '';
+          }
+          if (st && st.isBefore(now)) {
+            array.push(this.allData[i]);
+          }
+        }
+        this.historyData = [];
+        this.historyData = array;
+      }
+      // 終了
+      // 終章日が本日以前のデータ
+      if (type.displaySortType === 'finish') {
+        let array = [];
+        let now = moment();
+        for (let i = 0; i < this.allData.length; i++) {
+          let ed = '';
+          if (this.allData[i].endDate) {
+            ed = moment(this.allData[i].endDate);
+          } else {
+            ed = '';
+          }
+          if (ed && ed.isBefore(now)) {
+            array.push(this.allData[i]);
+          }
+        }
+        this.historyData = [];
+        this.historyData = array;
+      }
+      // 全員
+      if (type.displaySortType === 'all') {
+        this.historyData = [];
+        this.historyData = this.allData;
+      }
+
+      // 表示配列の合計列を省く
+      let array = [];
+      for (let i = 0; i < this.historyData.length; i++) {
+        if (this.historyData[i].code) {
+          array.push(this.historyData[i]);
+        }
+      }
+      this.historyData = this.changeSortting(array);
+
+      this.methodCellFormatSetting(this.mainFlexGrid);
+      this.createHeaderMerge(this.mainFlexGrid);
+    },
     onInitialized(flexGrid) {
       flexGrid.select(-1, -1);
+      this.historyData = this.getData();
       this.mainFlexGrid = flexGrid;
       // ヘッダ情報の作成
       this.createHeader(flexGrid);
@@ -180,7 +264,7 @@ export default {
           birth: moment('19300615').format('YYYY/MM/DD'),
           age: 30,
           spice: '',
-          startDate: moment('20210401').format('YYYY/MM/DD'),
+          startDate: moment('20230401').format('YYYY/MM/DD'),
           endDate: '',
           useYear: '4ヶ月',
         },
@@ -234,11 +318,158 @@ export default {
           startDate: moment('20210401').format('YYYY/MM/DD'),
           endDate: '',
           useYear: '4ヶ月',
+        },
+        {
+          serviceTeikyoJigyosyoCode: 100101,
+          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
+          serviceCode: 32,
+          serviceMeisyo: '施設入所支援',
+          code: 10000002,
+          riyosyamei: '東経 花子',
+          kana: 'ハナコトウケイ',
+          gender: '女',
+          genderKey: '2',
+          birth: moment('19300209').format('YYYY/MM/DD'),
+          age: 30,
+          spice: '',
+          startDate: moment('20200901').format('YYYY/MM/DD'),
+          endDate: '',
+          useYear: '1年11ヶ月',
+        },
+        {
+          serviceTeikyoJigyosyoCode: 100101,
+          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
+          serviceCode: 32,
+          serviceMeisyo: '施設入所支援',
+          code: 10000003,
+          riyosyamei: '東経 ジロウ',
+          kana: 'ジロウトウケイ',
+          gender: '',
+          genderKey: '',
+          birth: '',
+          age: '',
+          spice: '',
+          startDate: moment('20181105').format('YYYY/MM/DD'),
+          endDate: '',
+          useYear: '3年8ヶ月',
+        },
+        {
+          serviceTeikyoJigyosyoCode: 100102,
+          serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
+          serviceCode: 41,
+          serviceMeisyo: '自立訓練(機能訓練)',
+          code: 10000004,
+          riyosyamei: '東経 三郎',
+          kana: 'サブロウトウケイ',
+          gender: '男',
+          genderKey: '1',
+          birth: moment('19790602').format('YYYY/MM/DD'),
+          age: '36',
+          spice: '',
+          startDate: moment('20190210').format('YYYY/MM/DD'),
+          endDate: '',
+          useYear: '2年5ヶ月',
+        },
+        {
+          serviceTeikyoJigyosyoCode: 100102,
+          serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
+          serviceCode: 41,
+          serviceMeisyo: '自立訓練(機能訓練)',
+          code: 10000005,
+          riyosyamei: '東経 明日香',
+          kana: 'アスカトウケイ',
+          gender: '女',
+          genderKey: '2',
+          birth: moment('20080301').format('YYYY/MM/DD'),
+          age: '23',
+          spice: '',
+          startDate: moment('20191220').format('YYYY/MM/DD'),
+          endDate: '',
+          useYear: '1年7ヶ月',
+        },
+        {
+          serviceTeikyoJigyosyoCode: '',
+          serviceTeikyoJigyosyo: '',
+          serviceCode: null,
+          serviceMeisyo: '',
+          code: 10000006,
+          riyosyamei: '東経 うみか',
+          kana: 'ウミカトウケイ',
+          gender: '女',
+          genderKey: '2',
+          birth: moment('19911215').format('YYYY/MM/DD'),
+          age: '32',
+          spice: '',
+          startDate: '',
+          endDate: '',
+          useYear: '',
+        },
+        {
+          serviceTeikyoJigyosyoCode: '',
+          serviceTeikyoJigyosyo: '',
+          serviceCode: null,
+          serviceMeisyo: '',
+          code: 10000009,
+          riyosyamei: '西経 五郎',
+          kana: 'ゴロウニシケイ',
+          gender: '男',
+          genderKey: '1',
+          birth: moment('19870501').format('YYYY/MM/DD'),
+          age: '30',
+          spice: '',
+          startDate: '',
+          endDate: '',
+          useYear: '',
+        },
+        {
+          serviceTeikyoJigyosyoCode: '',
+          serviceTeikyoJigyosyo: '',
+          serviceCode: null,
+          serviceMeisyo: '',
+          code: 10000011,
+          riyosyamei: '西経 みどり',
+          kana: 'ミドリニシケイ',
+          gender: '女',
+          genderKey: '2',
+          birth: moment('19800818').format('YYYY/MM/DD'),
+          age: '41',
+          spice: '',
+          startDate: '',
+          endDate: '',
+          useYear: '',
+        },
+        {
+          serviceTeikyoJigyosyoCode: '',
+          serviceTeikyoJigyosyo: '',
+          serviceCode: null,
+          serviceMeisyo: '',
+          code: 10000015,
+          riyosyamei: '西経 桃子',
+          kana: 'モモコニシケイ',
+          gender: '女',
+          genderKey: '2',
+          birth: moment('19900901').format('YYYY/MM/DD'),
+          age: '29',
+          spice: '',
+          startDate: '',
+          endDate: '',
+          useYear: '',
         }
       );
-
+      // サービス順に並び替え
+      let returns = this.changeSortting(historyData);
+      this.allData = returns;
+      return returns;
+    },
+    /*********************
+     * サービス順に並び替え
+     */
+    changeSortting(historyData) {
       // サービス順に並び替え
       historyData.sort((a, b) => {
+        if (a.serviceCode === null || b.serviceCode === null) {
+          return 2;
+        }
         if (a.serviceCode < b.serviceCode) {
           return -1;
         }
@@ -247,12 +478,11 @@ export default {
         }
         return 0;
       });
-
       // サービス毎の合計数を取得
       let dict = this.getServiceCount(historyData);
-
       let returns = [];
       let n = 1;
+      let noServiceCount = 0;
       for (let i = 0; i < historyData.length; i++) {
         returns.push(historyData[i]);
         if (dict[historyData[i].serviceCode] == n) {
@@ -264,9 +494,26 @@ export default {
         } else {
           n++;
         }
+        // サービスコードが無いカウント
+        if (!historyData[i].serviceCode) {
+          noServiceCount++;
+        }
       }
+      // サービス情報が無い合計の列
+      if (noServiceCount > 0) {
+        returns.push({
+          serviceTeikyoJigyosyoCode: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
+          riyosyamei: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
+        });
+      }
+      this.noServiceCount = noServiceCount;
+
+      // 子供関数実行
+      // 件数のカウント
+      this.$refs.childRiyousyadaityo.setTotalcount(historyData);
       return returns;
     },
+
     getServiceCount(data) {
       let serviceCode = [];
       for (let i = 0; i < data.length; i++) {
@@ -281,10 +528,13 @@ export default {
         }).length;
       }
 
+      if (this.noServiceCount) {
+        dict['noservice'] = this.noServiceCount;
+      }
+
       return dict;
     },
     methodCellFormatSetting(flexGrid) {
-      let _self = this;
       // サービス毎の合計数を取得
       let dict = this.getServiceCount(this.historyData);
       let yellowLine = [];
@@ -294,7 +544,6 @@ export default {
         yellowLine.push(rows.toString());
         rows++;
       });
-      console.log(yellowLine);
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == flexGrid.columnHeaders) {
           if (e.col == 6 || e.col == 8 || e.col == 9) {
@@ -305,14 +554,17 @@ export default {
           }
         }
         if (e.panel != flexGrid.columnHeaders) {
-          console.log(yellowLine.indexOf(e.row.toString()));
           if (yellowLine.indexOf(e.row.toString()) != -1) {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-            if (e.col == 5) {
-              e.cell.style.textAlign = 'center';
-              e.cell.style.justifyContent = 'center';
-              e.cell.style.alignItems = 'center';
-            }
+            e.cell.style.textAlign = 'center';
+            // if (e.col == 5) {
+            //   e.cell.style.textAlign = 'center';
+            //   e.cell.style.justifyContent = 'center';
+            //   e.cell.style.alignItems = 'center';
+            // }
+          } else {
+            e.cell.style.backgroundColor = sysConst.COLOR.white;
+            e.cell.style.textAlign = 'left';
           }
         }
       });
@@ -379,18 +631,6 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
-    },
-    /************
-     * アルファベットの絞り込み
-     */
-    onAlphabet(key) {
-      if (this.receptFlag) {
-        this.$refs.receptChild.parentAlphabet(key);
-      } else if (this.JijyougenkanriJimsyoFlag) {
-        this.$refs.jijougenChild.parentAlphabet(key);
-      } else {
-        this.$refs.tajougenChild.parentAlphabet(key);
-      }
     },
   },
 };

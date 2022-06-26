@@ -214,8 +214,8 @@
 <script>
 import moment from 'moment';
 import Vue from 'vue';
-import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
-import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
+import UserListPrint from '@sihs/frontend/src/components/UserListPrint.vue';
+import CommonTabMenu from '@sihs/frontend/src/components/CommonTabMenu.vue';
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon.vue';
 import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun.vue';
 import JyukyuTourokuSikyuryo from '../components/JyukyuTourokuSikyuryo.vue';
