@@ -21,7 +21,7 @@
           </v-card>
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-koufuymd-row">
+      <v-row no-gutters class="kihon-kofuymd-row">
         <v-card
           elevation="0"
           class="kihon-title-length5 d-flex flex-row"
@@ -31,13 +31,13 @@
           交付年月日
         </v-card>
         <p class="required">*</p>
-        <v-card elevation="0" class="kihon-koufuymd-picker d-flex flex-row">
+        <v-card elevation="0" class="kihon-kofuymd-picker d-flex flex-row">
           <datepicker
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="koufuymd"
-            v-model="koufuymd"
+            :value="kofuymd"
+            v-model="kofuymd"
             placeholder="日付を選択"
           ></datepicker>
         </v-card>
@@ -66,8 +66,8 @@
           tile
         >
           <v-radio-group row v-model="jyukyukubun" class="kihon-kubun-group">
-            <v-radio label="通常" :key="1" :value="1"></v-radio>
-            <v-radio label="暫定" :key="0" :value="0"></v-radio>
+            <v-radio label="通常" :key="0" :value="0"></v-radio>
+            <v-radio label="暫定" :key="1" :value="1"></v-radio>
           </v-radio-group>
         </v-card>
       </v-row>
@@ -89,10 +89,11 @@
             class="kihon-jyukyusyabangou-input2"
             :textChanged="onTextChanged"
             placeholder="番号を入力"
+            :text="jyukyuno"
           ></wj-combo-box>
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-sityosonbangou-row">
+      <v-row no-gutters class="kihon-shichosonbangou-row">
         <v-card
           elevation="0"
           class="kihon-title-length5 d-flex flex-row"
@@ -104,16 +105,17 @@
         <p class="required">*</p>
         <v-card
           elevation="0"
-          class="kihon-sityosonbangou-input d-flex flex-row"
+          class="kihon-shichosonbangou-input d-flex flex-row"
         >
           <wj-combo-box
-            class="kihon-sityosonbangou-input2"
+            class="kihon-shichosonbangou-input2"
             :textChanged="onTextChanged"
             placeholder="番号を入力"
+            :text="shichosonno"
           ></wj-combo-box>
         </v-card>
-        <v-card class="kihon-sityosonbangou-disp" outlined>
-          {{ sityosonname }}
+        <v-card class="kihon-shichosonbangou-disp" outlined>
+          {{ shichosonname }}
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-syogaisyubetu-row d-flex flex-row">
@@ -136,6 +138,7 @@
             class="item-button"
             :key="item.id"
             :label="item.id + '.' + item.name"
+            v-model="syogaisyubetuValues[item.id - 1]"
           >
           </v-checkbox>
         </v-card>
@@ -153,7 +156,8 @@
           elevation="0"
           class="kihon-jyukyusyakubun-selection d-flex flex-row"
         >
-          <v-checkbox class="item-button" label="障害児"> </v-checkbox>
+          <v-checkbox class="item-button" label="障害児" v-model="syogaiji">
+          </v-checkbox>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-sikyuketteisya-row">
@@ -172,7 +176,7 @@
           {{ sikyuketteisya2 }}
         </v-card>
       </v-row>
-      <v-row v-if="$_msg() === 'modKihon'" no-gutters class="kihon-button-row">
+      <v-row v-if="$_mode() === 'modKihon'" no-gutters class="kihon-button-row">
         <v-btn class="cancel-button" @click="openDialog_Term('regist')">
           キャンセル</v-btn
         >
@@ -196,26 +200,52 @@ import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 
 export default {
+  props: {
+    riyosya: String,
+  },
   data() {
     return {
       ja: ja,
       mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
-      koufuymd: '',
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      sityosonname: '',
+
       syogaisyubetu: [
         { id: 1, name: '身体障害者' },
         { id: 2, name: '知的障害者' },
         { id: 3, name: '精神障害者' },
         { id: 4, name: '難病等対象者' },
       ],
+
+      kofuymd: '',
+      jyukyukubun: -1,
+      jyukyuno: '',
+      shichosonno: '',
+      shichosonname: '',
+      syogaisyubetuValues: [],
+      syogaiji: 0,
       sikyuketteisya1: '',
       sikyuketteisya2: '',
-      jyukyukubun: -1,
     };
+  },
+  watch: {
+    riyosya() {
+      let data = this.$_kihonData();
+      this.kofuymd = moment(data[0].kofuymd).format('YYYY-M-D');
+      this.jyukyukubun = data[0].zantei;
+      this.jyukyuno = data[0].jyukyuno;
+      this.shichosonno = data[0].shichosonno;
+      this.shichosonname = data[0].shichosonname;
+      this.syogaisyubetuValues[0] = data[0].ssyu1;
+      this.syogaisyubetuValues[1] = data[0].ssyu2;
+      this.syogaisyubetuValues[2] = data[0].ssyu3;
+      this.syogaisyubetuValues[3] = data[0].ssyu4;
+      this.syogaiji = data[0].jidoid > 0 ? 1 : 0;
+      this.sikyuketteisya1 = data[0].dcodDisp;
+      this.sikyuketteisya2 = data[0].jyukyuname;
+    },
   },
   components: {
     Datepicker,
@@ -226,7 +256,7 @@ export default {
   methods: {
     Resize() {
       let height = '';
-      if (this.$_msg() === 'new') {
+      if (this.$_mode() === 'new') {
         height = 'calc((29px * 8))';
       } else {
         height = 'calc((29px * 9) + 4px)';
@@ -234,7 +264,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMsg('modKihon');
+      this.$_setMode('modKihon');
       this.Resize();
     },
     onTextChanged() {},
@@ -291,11 +321,11 @@ div#JyukyuTourokuKihon {
     text-align: center;
   }
 
-  .kihon-koufuymd-row {
+  .kihon-kofuymd-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
     position: relative; /*相対配置*/
-    .kihon-koufuymd-picker {
+    .kihon-kofuymd-picker {
       padding: 0px 0px 0px 4px;
     }
     .kihon-copy-button {
@@ -338,22 +368,22 @@ div#JyukyuTourokuKihon {
       width: 200px;
     }
   }
-  .kihon-sityosonbangou-row {
+  .kihon-shichosonbangou-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
     position: relative; /*相対配置*/
-    .kihon-sityosonbangou-input {
+    .kihon-shichosonbangou-input {
       height: 100%;
     }
-    .kihon-sityosonbangou-input2 {
+    .kihon-shichosonbangou-input2 {
       margin-top: -1px;
       margin-left: 4px;
       font-size: 12px;
     }
-    .kihon-sityosonbangou-input2.wj-control .wj-input {
+    .kihon-shichosonbangou-input2.wj-control .wj-input {
       width: 100px;
     }
-    .kihon-sityosonbangou-disp {
+    .kihon-shichosonbangou-disp {
       width: 200px;
       margin-left: 4px;
       font-size: 12px;

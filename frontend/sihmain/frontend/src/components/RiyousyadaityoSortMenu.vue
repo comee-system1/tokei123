@@ -9,7 +9,7 @@
             dark
             outlined
             style="width: 90px; height: 25px"
-            @click="sort(1)"
+            @click="shinkiTourokuDialogOpen()"
           >
             新規登録
           </v-btn>
@@ -47,9 +47,9 @@
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1 justify-space-between">
-      <v-col class="d-flex">
-        <v-row no-gutters class="d-block mw380">
-          <v-col>
+    <v-col class="d-flex">
+        <v-row no-gutters class="d-block no-flex-grow mr-1  mw380">
+        <v-col>
             <label>表示</label>
             <v-btn-toggle
               class="flex-wrap"
@@ -125,8 +125,8 @@
             </v-btn-toggle>
           </v-col>
         </v-row>
-        <v-row no-gutters class="d-block mw540">
-          <v-col class="d-flex">
+        <v-row no-gutters class="d-block no-flex-grow mr-1 mw540">
+        <v-col class="d-flex">
             <div>
               <label>サービス事業</label>
               <wj-menu
@@ -156,7 +156,7 @@
             ></wj-combo-box>
           </v-col>
         </v-row>
-        <v-row no-gutters class="mt-1">
+        <v-row no-gutters>
           <v-col>
             <v-btn height="25" small>検索</v-btn>
           </v-col>
@@ -246,6 +246,12 @@ export default {
   },
   methods: {
     /******************
+     * 新規登録ダイアログを呼び出し
+     */
+    shinkiTourokuDialogOpen() {
+      this.$emit('pearentShinkiDialogOpen');
+    },
+    /******************
      * 合計値の表示
      */
     setTotalcount(data) {
@@ -309,10 +315,13 @@ div#riyousyadaityoSortMenu {
   min-width: 1266px;
   font-size: 12px;
   .v-card__text {
-    width: 130px;
+    max-width: 100px;
+    span {
+    text-decoration: underline;
+    }
   }
-  span {
-    text-decoration: none;
+  .user-info label {
+    line-height: 25px;
   }
   .no-flex-grow {
     flex-grow: 0;

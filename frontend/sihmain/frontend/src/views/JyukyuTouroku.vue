@@ -56,7 +56,7 @@
             >
               <label class="center-area-riyoname-title">利用者名</label>
               <v-card class="center-area-riyoname-name" outlined tile>
-                {{ userDataSelect[0].riyosyo }}
+                {{ riyosya }}
               </v-card>
               <v-row
                 no-gutters
@@ -145,7 +145,7 @@
               tile
             >
               <div v-if="JyukyuSyogaiFukusiFlag">
-                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
                 <JyukyuTourokuSyogaiKubun :titleNum="this.titleNum[0]">
                 </JyukyuTourokuSyogaiKubun>
                 <JyukyuTourokuSikyuryo :titleNum="this.titleNum[1]">
@@ -156,7 +156,7 @@
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuSyogaiJiFlag">
-                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
                 <JyukyuTourokuSikyuryo :titleNum="this.titleNum[0]">
                 </JyukyuTourokuSikyuryo>
                 <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[1]">
@@ -165,21 +165,21 @@
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuChiikiSoudanFlag">
-                <JyukyuTourokuKihon> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
                 <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[0]">
                 </JyukyuTourokuKeikakuSoudan>
               </div>
             </v-card>
           </v-row>
           <hr
-            v-if="$_msg() === 'new' && !$_subGridSelected()"
+            v-if="$_mode() === 'new' && !$_subGridSelected()"
             size="2"
             color="#027eb0"
             style="margin-top: 4px; margin-left: 69px"
             noshade
           />
           <v-row
-            v-if="$_msg() === 'new' && !$_subGridSelected()"
+            v-if="$_mode() === 'new' && !$_subGridSelected()"
             no-gutters
             class="center-area-bottom d-flex flex-row"
           >
@@ -214,38 +214,53 @@
 <script>
 import moment from 'moment';
 import Vue from 'vue';
-import UserListPrint from '@sihs/frontend/src/components/UserListPrint.vue';
-import CommonTabMenu from '@sihs/frontend/src/components/CommonTabMenu.vue';
+import UserListPrint from '../../../../SIHS/frontend/src/components/UserListPrint.vue';
+import CommonTabMenu from '../../../../SIHS/frontend/src/components/CommonTabMenu.vue';
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon.vue';
 import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun.vue';
 import JyukyuTourokuSikyuryo from '../components/JyukyuTourokuSikyuryo.vue';
 import JyukyuTourokuKeikakuSoudan from '../components/JyukyuTourokuKeikakuSoudan.vue';
 import JyukyuTourokuRiyosyaFutan from '../components/JyukyuTourokuRiyosyaFutan.vue';
 import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
+import { getJyukyuTourokuKihonData } from '../data/JyukyuTourokuKihonData.js';
 
 let GlobalData = new Vue({
   data: {
-    $msg: 'new', // グローバル変数
-    $subGridSelected: false, // グローバル変数
+    $mode: 'new', //編集モード
+    $kihonData: [], //基本データ
   },
 });
 
 Vue.mixin({
   methods: {
-    $_msg() {
-      return GlobalData.$data.$msg;
+    $_mode() {
+      return GlobalData.$data.$mode;
     },
-    $_setMsg(newMsg) {
-      GlobalData.$data.$msg = newMsg;
+    $_setMode(newMode) {
+      GlobalData.$data.$mode = newMode;
+    },
+    $_kihonData() {
+      return GlobalData.$data.$kihonData;
+    },
+    $_setKihonData(newKihonData) {
+      GlobalData.$data.$kihonData = newKihonData;
     },
   },
   computed: {
-    $msg: {
+    $mode: {
       get: function () {
-        return GlobalData.$data.$msg;
+        return GlobalData.$data.$mode;
       },
-      set: function (newMsg) {
-        GlobalData.$data.$msg = newMsg;
+      set: function (newMode) {
+        GlobalData.$data.$mode = newMode;
+      },
+    },
+    $kihonData: {
+      get: function () {
+        return GlobalData.$data.$kihonData;
+      },
+      set: function (newKihonData) {
+        GlobalData.$data.$kihonData = newKihonData;
       },
     },
   },
@@ -263,7 +278,8 @@ export default {
       dateArgument: '', // ヘッダメニューのカレンダー選択
       serviceArgument: '', // ヘッダメニューのサービス選択
       userListComponentDatas: [], // ユーザー一覧データ
-      userDataSelect: [{ riyosyo: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
+      userDataSelect: [{ riyosya: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
+      riyosyaid: '',
       // タブの制御Flag
       JyukyuSyogaiFukusiFlag: false, // JyukyuSyogaiFukusiFlagの初期表示状態
       JyukyuSyogaiJiFlag: false, // JyukyuSyogaiJiFlagの初期表示状態
@@ -361,7 +377,7 @@ export default {
   computed: {},
   methods: {
     setTrunNew() {
-      this.$_setMsg('new');
+      this.$_setMode('new');
       this.$_setSubGridSelected(false);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.JyukyuSyogaiFukusiFlag = false;
@@ -454,15 +470,15 @@ export default {
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
     setUserSelectPoint(row) {
-      this.userDataSelect[0]['riyosyo'] =
+      this.riyosyaid = this.userListComponentDatas[row].riid;
+      this.userDataSelect[0]['riyosya'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
         this.userListComponentDatas[row].names;
-
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
       // 値の設定
-      this.changeHndoJyoho();
+      this.$_setKihonData(getJyukyuTourokuKihonData(this.riyosyaid));
     },
     menu_clear() {
       for (let i = 0; i < this.menuitems.length; i++) {

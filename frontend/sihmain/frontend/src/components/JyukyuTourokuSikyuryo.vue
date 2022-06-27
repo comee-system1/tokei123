@@ -236,7 +236,7 @@
         >
       </v-row>
       <v-row
-        v-if="$_msg() === 'modSikyuryo'"
+        v-if="$_mode() === 'modSikyuryo'"
         no-gutters
         class="sikyuryo-button-row"
       >
@@ -291,7 +291,7 @@ export default {
   methods: {
     Resize() {
       let height = '';
-      if (this.$_msg() === 'new') {
+      if (this.$_mode() === 'new') {
         height = 'calc((29px * 14.1))';
       } else {
         height = 'calc((29px * 15.1) + 4px)';
@@ -299,7 +299,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMsg('modSikyuryo');
+      this.$_setMode('modSikyuryo');
       this.Resize();
     },
     getServiceSyubetu() {

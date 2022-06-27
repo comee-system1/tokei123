@@ -193,14 +193,14 @@
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'symddsp'"
-            :header="'入退院・外泊開始年月日(外泊終了年月日)'"
+            :header="'入退院・外泊開始年月日'"
             align="center"
             :width="150"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'eymddsp'"
-            :header="'入退院・外泊開始年月日(外泊終了年月日)'"
+            :header="'外泊終了年月日'"
             align="center"
             :width="150"
             :isReadOnly="true"
@@ -420,7 +420,6 @@ export default {
      */
     createCellMerge(flexGrid) {
       let headerRanges = [
-        new wjGrid.CellRange(0, 3, 0, 4)
       ];
       // データセル用のマージ配列の作成
       let ranges = [];
@@ -538,25 +537,6 @@ export default {
     createHeader(flexGrid) {
       flexGrid.columnHeaders.rows[0].height = 60;
     },
-    /**************
-     * ヘッダセルのマージ
-     */
-    createHeaderMerge(flexGrid) {
-      let headerRanges = [
-        new wjGrid.CellRange(0, 3, 0, 4)
-      ];
-      let mm = new wjGrid.MergeManager();
-      mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-    },
     /*****************
      * グリッドのデザイン修正
      */
@@ -583,9 +563,6 @@ export default {
           // 2行以上で表示する行に文字列を挿入
           if ((r == 0) && (c == 2)) {
             cell.innerHTML = '入退院<br/>外泊の別';
-          }
-          if ((r == 0) && (c == 3)) {
-            cell.innerHTML = '入退院・外泊開始年月日<br/>(外泊終了年月日)';
           }
           if ((r == 0) && (c == 5)) {
             cell.innerHTML = '入院先医療機関名/<br/>外泊先';

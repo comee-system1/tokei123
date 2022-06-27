@@ -918,6 +918,13 @@ export default {
               classname = 'complete middle';
             }
           }
+
+          if (e.col == 7 || e.col == 13) {
+            e.cell.style.backgroundColor = sysConst.COLOR.white;
+          }
+          if (e.col == 14 || e.col == 15) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          }
         }
 
         if (e.col == 6 || e.col == 13) {

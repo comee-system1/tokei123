@@ -223,10 +223,10 @@
             class="customCombobox customComboboxAuto"
           >
             <wj-menu-item>
-              <b>印刷を全選択</b>
+              <b>選択/印刷を全選択</b>
             </wj-menu-item>
             <wj-menu-item>
-              <b>印刷を全解除</b>
+              <b>選択/印刷を全解除</b>
             </wj-menu-item>
           </wj-menu>
       </v-row>
@@ -817,6 +817,7 @@ export default {
      */
     onselectedIndexChanged(s) {
       // 印刷用
+      console.log(s.selectedIndex)
       if (s.selectedIndex == 0 || s.selectedIndex == 1) {
         this.selectAll(s.selectedIndex);
       }
@@ -828,10 +829,15 @@ export default {
       let mark = ' ';
       if (type == 0) {
         mark = '〇';
+        for (let i = 0; i < this.allData.length; i++) {
+          this.mainFlexGrid.setCellData(i, 10, mark);
+        }
       }
-      for (let i = 0; i < this.allData.length; i++) {
-        this.mainFlexGrid.setCellData(i, 10, mark);
-        this.mainFlexGrid.setCellData(i, 9, ' ');
+      else {
+        for (let i = 0; i < this.allData.length; i++) {
+          this.mainFlexGrid.setCellData(i, 10, ' ');
+          this.mainFlexGrid.setCellData(i, 9, ' ');
+        }
       }
     },
     /************

@@ -95,7 +95,7 @@
         </v-card>
       </v-row>
       <v-row
-        v-if="$_msg() === 'modSyogaikubun'"
+        v-if="$_mode() === 'modSyogaikubun'"
         no-gutters
         class="syogaikubun-button-row"
       >
@@ -145,7 +145,7 @@ export default {
   methods: {
     Resize() {
       let height = '';
-      if (this.$_msg() === 'new') {
+      if (this.$_mode() === 'new') {
         height = 'calc((29px * 3))';
       } else {
         height = 'calc((29px * 4) + 4px)';
@@ -153,7 +153,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMsg('modSyogaikubun');
+      this.$_setMode('modSyogaikubun');
       this.Resize();
     },
     /*************************

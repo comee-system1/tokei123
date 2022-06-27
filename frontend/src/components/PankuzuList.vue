@@ -2,7 +2,7 @@
   <v-layout>
     <v-flex md12 class="pankuzu-list">
       <P>
-        入所レセプト請求＞<b>{{ pageTitle }}</b>
+        {{ pageMainTitle }}＞<b>{{ pageTitle }}</b>
       </P>
     </v-flex>
   </v-layout>
@@ -13,11 +13,13 @@ export default {
   data() {
     return {
       pageTitle: this.$route.name,
+      pageMainTitle: this.$route.meta.title,
     };
   },
   watch: {
     $route() {
       this.pageTitle = this.$route.name;
+      this.pageMainTitle = this.$route.meta.title;
     },
   },
 };

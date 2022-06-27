@@ -103,7 +103,7 @@
           height="85%"
           width="150px"
           light
-          disabled
+          :disabled="calender != true"
           >{{ year }}年{{ month }}月{{ date }}日
           <div class="float-right">
             <v-icon small>mdi-calendar-month</v-icon>
@@ -111,27 +111,25 @@
         </v-btn>
         <v-btn
           elevation="0"
-          color="white"
           class="pa-0 ml-1"
           x-small
           height="85%"
           style="min-width: auto; border-radius: 3px"
           tile
-          disabled
           @click="calendarClick(1)"
+          :disabled="calender != true"
         >
           <v-icon>mdi-arrow-left-bold</v-icon>
         </v-btn>
         <v-btn
           elevation="0"
-          color="white"
           class="pa-0 ml-1"
           x-small
           height="85%"
           style="min-width: auto; border-radius: 3px"
           tile
-          disabled
           @click="calendarClick(2)"
+          :disabled="calender != true"
         >
           <v-icon>mdi-arrow-right-bold</v-icon>
         </v-btn>
@@ -183,6 +181,17 @@
       <v-icon v-if="isMaximize" @click="maximize">mdi-arrow-collapse</v-icon>
       <v-icon v-if="!isMaximize" @click="maximize">mdi-arrow-expand</v-icon>
     </v-app-bar>
+    <v-dialog v-model="datepicker_dialog" width="290">
+      <v-date-picker
+        type="date"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        id="headerAndNavDatepicker"
+        @change="dateSelect"
+        v-model="picker"
+      >
+      </v-date-picker>
+    </v-dialog>
   </div>
 </template>
 
@@ -193,11 +202,13 @@ export default {
     return {
       drawer: true,
       isMaximize: false,
+      calender: '',
+      picker: '',
+      datepicker_dialog: false,
       year: moment().year(),
       month: moment().format('MM'),
       date: moment().date(),
       pageTitle: this.$route.name,
-      pageParentTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
         { title: 'パスワード変更' },
@@ -239,21 +250,6 @@ export default {
             { name: '利用状況一覧', link: '/TemporaryPage' },
             { name: '個別加算一覧', link: '/TemporaryPage' },
             { name: 'レセプト集計', link: '/ReceptSyukei' },
-            // レセプト集計に集約化
-            // {
-            //   name: '上限管理',
-            //   link: '/TemporaryPage',
-            //   sublists: [
-            //     {
-            //       name: '他上限管理事業所用',
-            //       link: 'TajyougenkanriJimsyo',
-            //     },
-            //     {
-            //       name: '自上限管理事業所用',
-            //       link: 'JijyougenkanriJimsyo',
-            //     },
-            //   ],
-            // },
             {
               name: '給付明細書',
               // link: '/TemporaryPage',
@@ -311,14 +307,53 @@ export default {
         this.isMaximize = false;
       }
     });
+    this.calender = this.$route.meta.calender;
   },
   watch: {
     $route() {
+      this.calender = this.$route.meta.calender;
       this.pageTitle = this.$route.name;
-      this.pageParentTitle = this.$route.name;
     },
   },
   methods: {
+    /**********
+     * カレンダーdialogの表示
+     */
+    inputCalendarClick: function () {
+      this.datepicker_dialog = true;
+    },
+
+    /**************
+     * 月の選択 ダイアログの日付を押下
+     */
+    dateSelect: function () {
+      let split = this.picker.split('-');
+      console.log(split);
+      this.year = split[0];
+      this.month = split[1];
+      this.date = split[2];
+
+      // this.$emit('parent-calendar', split);
+
+      this.datepicker_dialog = false;
+    },
+
+    //カレンダーボタンの日付遷移
+    // 提供月 1:前月 2:翌月
+    // 請求月 3:前月 4:翌月
+    calendarClick(type) {
+      let changeDate = this.year + this.month + this.date;
+      if (type == 1) {
+        // 受領日←選択時
+        this.month = moment(changeDate).subtract(1, 'days').format('MM');
+        this.date = moment(changeDate).subtract(1, 'days').format('DD');
+      } else if (type == 2) {
+        // 受領日→選択時
+        this.month = moment(changeDate).add(1, 'days').format('MM');
+        this.date = moment(changeDate).add(1, 'days').format('DD');
+      }
+    },
+
     maximize() {
       this.isMaximize = !this.isMaximize;
       if (this.isMaximize) {

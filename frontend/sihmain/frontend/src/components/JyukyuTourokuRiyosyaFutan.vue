@@ -292,7 +292,7 @@
         </v-card>
       </v-row>
       <v-row
-        v-if="$_msg() === 'modRiyosyafutan'"
+        v-if="$_mode() === 'modRiyosyafutan'"
         no-gutters
         class="riyosyafutan-button-row"
       >
@@ -346,7 +346,7 @@ export default {
   methods: {
     Resize() {
       let height = '';
-      if (this.$_msg() === 'new') {
+      if (this.$_mode() === 'new') {
         height = 'calc((29px * 11))';
       } else {
         height = 'calc((29px * 12) + 4px)';
@@ -354,7 +354,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMsg('modRiyosyafutan');
+      this.$_setMode('modRiyosyafutan');
       this.Resize();
     },
     getTajigyosyoRiyoService() {

@@ -68,6 +68,17 @@
                 受給者証番号
               </v-btn>
             </v-btn-toggle>
+            <label class="ml-1">障害支援区分</label>
+            <wj-menu
+              :itemsSource="syogaisyaCombo"
+              class="ml-1 w-100 customCombobox"
+              :itemClicked="onSyogaisyaCombo"
+              :displayMemberPath="'text'"
+              selectedValuePath="'key'"
+              :isRequired="true"
+              v-model="selUser"
+              header="指定なし"
+            ></wj-menu>
 
             <v-btn class="ml-2" small>検索</v-btn>
           </v-row>
@@ -196,6 +207,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
@@ -233,10 +246,37 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
+      selUser: -1,
       syukeiFlag: 1,
       sortFlag: 1,
       gridHeight: '', // グリッドの高さ
       searchArgument: '',
+      syogaisyaCombo: [
+        {
+          key: 0,
+          text: '指定なし',
+        },
+        {
+          key: 1,
+          text: '1',
+        },
+        {
+          key: 2,
+          text: '2',
+        },
+        {
+          key: 3,
+          text: '3',
+        },
+        {
+          key: 4,
+          text: '4',
+        },
+        {
+          key: 5,
+          text: '5',
+        },
+      ],
     };
   },
   components: {
@@ -284,6 +324,7 @@ export default {
      */
     createSyukeiCellFormat(flexGrid) {
       flexGrid.formatItem.addHandler(function (s, e) {
+        let tmpitem = e.panel.rows[e.row].dataItem;
         let classname = '';
         let text = e.cell.innerText;
         if (
@@ -300,6 +341,26 @@ export default {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
+          }
+
+          if (
+            tmpitem &&
+            tmpitem['nissu_invisible_st'] &&
+            tmpitem['nissu_invisible_st'] == e.col
+          ) {
+            e.cell.style.color = sysConst.COLOR.lightYellow;
+          } else {
+            e.cell.style.color = sysConst.COLOR.fontColor;
+
+            if (
+              tmpitem &&
+              tmpitem['nissu_invisible_ed'] &&
+              tmpitem['nissu_invisible_ed'] == e.col
+            ) {
+              e.cell.style.color = sysConst.COLOR.lightYellow;
+            } else {
+              e.cell.style.color = sysConst.COLOR.fontColor;
+            }
           }
         }
 
@@ -465,16 +526,40 @@ export default {
      */
     filter(type) {
       this.syukeiFlag = type;
-      this.nenkanRiyouNissuData = this.filtered();
+      for (let i = 0; i < this.nenkanRiyouNissuData.length; i++) {
+        let st_m = '';
+        if (this.nenkanRiyouNissuData[i].symd) {
+          st_m = moment(this.nenkanRiyouNissuData[i].symd).format('M');
+          st_m =
+            st_m >= 4 && st_m <= 12 ? parseInt(st_m) + 2 : parseInt(st_m) + 14;
+        }
+        if (type == 0) {
+          // 非表示にする列数を取得
+          this.nenkanRiyouNissuData[i]['nissu_invisible_st'] = st_m;
+        } else {
+          this.nenkanRiyouNissuData[i]['nissu_invisible_st'] = '';
+        }
+        let st_e = '';
+        if (this.nenkanRiyouNissuData[i].eymd) {
+          st_e = moment(this.nenkanRiyouNissuData[i].eymd).format('M');
+          st_e =
+            st_e >= 4 && st_e <= 12 ? parseInt(st_e) + 2 : parseInt(st_e) + 14;
+        }
+        if (type == 0) {
+          this.nenkanRiyouNissuData[i]['nissu_invisible_ed'] = st_e;
+        } else {
+          this.nenkanRiyouNissuData[i]['nissu_invisible_ed'] = '';
+        }
+      }
+
+      this.mainFlexGrid.refresh();
     },
     filtered() {
       let array = [];
       for (let i = 0; i < this.allData.length; i++) {
         if (
-          this.syukeiFlag == 1 ||
-          (this.syukeiFlag == 0 &&
-            !this.allData[i].symd &&
-            !this.allData[i].eymd)
+          this.allData[i].syogaikbn == this.selectedSyogaiShien ||
+          this.selectedSyogaiShien == 0
         ) {
           array.push(this.allData[i]);
         }
@@ -541,6 +626,16 @@ export default {
       });
 
       return get;
+    },
+    /******************
+     * 障害支援区分
+     */
+    onSyogaisyaCombo(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        this.selectedSyogaiShien = e.selectedIndex;
+        this.nenkanRiyouNissuData = this.filtered();
+      }
     },
     /**************
      * 並び順変更
