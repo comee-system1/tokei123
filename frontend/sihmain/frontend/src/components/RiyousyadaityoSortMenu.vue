@@ -47,9 +47,9 @@
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1 justify-space-between">
-    <v-col class="d-flex">
-        <v-row no-gutters class="d-block no-flex-grow mr-1  mw380">
-        <v-col>
+      <v-col class="d-flex">
+        <v-row no-gutters class="d-block no-flex-grow mr-1">
+          <v-col>
             <label>表示</label>
             <v-btn-toggle
               class="flex-wrap"
@@ -61,7 +61,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="displaySort('enable')"
               >
                 有効
@@ -71,7 +71,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="displaySort('new')"
                 v-if="serviceHistoryFlag != true"
               >
@@ -82,7 +82,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="displaySort('finish')"
               >
                 終了
@@ -92,7 +92,7 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="displaySort('all')"
               >
                 全員
@@ -101,13 +101,13 @@
           </v-col>
           <v-col class="mt-1">
             <label>ソート</label>
-            <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn-toggle class="flex-wrap" v-model="toggle_sort" mandatory>
               <v-btn
                 small
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="sorted('kana')"
               >
                 カナ
@@ -117,24 +117,36 @@
                 color="secondary"
                 dark
                 outlined
-                style="width: 90px; height: 25px"
+                style="width: 110px; height: 25px"
                 @click="sorted('code')"
               >
                 コード
               </v-btn>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 110px; height: 25px"
+                @click="sorted('jigyo')"
+              >
+                事業所＋サービス
+              </v-btn>
             </v-btn-toggle>
           </v-col>
         </v-row>
-        <v-row no-gutters class="d-block no-flex-grow mr-1 mw540">
-        <v-col class="d-flex">
+        <v-row no-gutters class="d-block no-flex-grow mr-1 mw640">
+          <v-col class="d-flex">
             <div>
               <label>サービス事業</label>
               <wj-menu
                 class="w-100 customCombobox"
                 :isRequired="true"
-                :displayMemberPath="'text'"
-                selectedValuePath="'key'"
+                :displayMemberPath="'serviceTeikyoJigyosyo'"
+                selectedValuePath="'serviceTeikyoJigyosyoCode'"
                 header="指定なし"
+                :itemsSource="serviceJigyoCombo"
+                :itemClicked="onselectedServiceChanged"
               ></wj-menu>
             </div>
             <div class="ml-1">
@@ -142,9 +154,11 @@
               <wj-menu
                 class="w-100 customCombobox"
                 :isRequired="true"
-                :displayMemberPath="'text'"
-                selectedValuePath="'key'"
+                :displayMemberPath="'serviceMeisyo'"
+                selectedValuePath="'serviceCode'"
                 header="指定なし"
+                :itemsSource="serviceNaiyoCombo"
+                :itemClicked="onselectedNaiyoChanged"
               ></wj-menu>
             </div>
           </v-col>
@@ -152,7 +166,9 @@
             <label>カナ検索</label>
             <wj-combo-box
               class="kihon-jyukyusyabangou-input2"
-              style="width: 160px"
+              style="width: 200px"
+              :textChanged="onInputSearch"
+              :isEditable="true"
             ></wj-combo-box>
           </v-col>
         </v-row>
@@ -228,10 +244,13 @@ export default {
     return {
       alphabet: alphabet,
       toggle_displaySort: this.toggle_displayDefault(),
+      toggle_sort: this.toggle_sortDefault(),
       totalcount: 0,
       malecount: 0,
       femalecount: 0,
       nomalecount: 0,
+      serviceJigyoCombo: [],
+      serviceNaiyoCombo: [],
     };
   },
   props: {
@@ -245,6 +264,82 @@ export default {
     },
   },
   methods: {
+    /****************
+     * かな検索
+     */
+    onInputSearch(e) {
+      this.$emit('kanaSearch', {
+        input: e.text,
+      });
+    },
+    /****************
+     * サービス事業選択
+     */
+    onselectedServiceChanged(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        this.$emit('selectedServiceJigyo', {
+          serviceTeikyoJigyosyo: e.text,
+          serviceTeikyoJigyosyoCode: e.selectedItem.serviceTeikyoJigyosyoCode,
+        });
+      }
+    },
+    onselectedNaiyoChanged(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        this.$emit('selectedServiceNaiyo', {
+          serviceMeisyo: e.text,
+          serviceCode: e.selectedItem.serviceCode,
+        });
+      }
+    },
+    /*********************
+     * サービス事業設定/サービス内容設定
+     */
+    setServiceJigyoCombo(array) {
+      var group = array.reduce(function (result, current) {
+        var element = result.find(function (p) {
+          return (
+            p.serviceTeikyoJigyosyoCode === current.serviceTeikyoJigyosyoCode
+          );
+        });
+        if (!element) {
+          if (current.serviceTeikyoJigyosyo) {
+            result.push({
+              serviceTeikyoJigyosyoCode: current.serviceTeikyoJigyosyoCode,
+              serviceTeikyoJigyosyo: current.serviceTeikyoJigyosyo,
+            });
+          }
+        }
+        return result;
+      }, []);
+      group.splice(0, 0, {
+        serviceTeikyoJigyosyo: '指定なし',
+        serviceTeikyoJigyosyoCode: 0,
+      });
+      this.serviceJigyoCombo = group;
+    },
+    setServiceNaiyoCombo(array) {
+      var group = array.reduce(function (result, current) {
+        var element = result.find(function (p) {
+          return p.serviceCode === current.serviceCode;
+        });
+        if (!element) {
+          if (current.serviceTeikyoJigyosyo) {
+            result.push({
+              serviceCode: current.serviceCode,
+              serviceMeisyo: current.serviceMeisyo,
+            });
+          }
+        }
+        return result;
+      }, []);
+      group.splice(0, 0, {
+        serviceMeisyo: '指定なし',
+        serviceCode: 0,
+      });
+      this.serviceNaiyoCombo = group;
+    },
     /******************
      * 新規登録ダイアログを呼び出し
      */
@@ -287,6 +382,11 @@ export default {
         return 2;
       }
     },
+    toggle_sortDefault() {
+      if (this.serviceHistoryFlag === true) {
+        return 2;
+      }
+    },
     /************************:
      * 表示項目を押下
      */
@@ -297,14 +397,7 @@ export default {
      * アルファベットの絞り込み
      */
     onAlphabet(key) {
-      alert(key);
-      // if (this.receptFlag) {
-      //   this.$refs.receptChild.parentAlphabet(key);
-      // } else if (this.JijyougenkanriJimsyoFlag) {
-      //   this.$refs.jijougenChild.parentAlphabet(key);
-      // } else {
-      //   this.$refs.tajougenChild.parentAlphabet(key);
-      // }
+      this.$emit('alphabeted', { alphabetKey: key });
     },
   },
 };
@@ -317,11 +410,14 @@ div#riyousyadaityoSortMenu {
   .v-card__text {
     max-width: 100px;
     span {
-    text-decoration: underline;
+      text-decoration: underline;
     }
   }
   .user-info label {
     line-height: 25px;
+  }
+  div.customCombobox.customCombobox {
+    width: 200px !important;
   }
   .no-flex-grow {
     flex-grow: 0;
@@ -338,27 +434,19 @@ div#riyousyadaityoSortMenu {
       height: 23px;
     }
   }
+  input.wj-form-control {
+    padding: 1px;
+    line-height: 1.7em;
+  }
   .d-block {
     &.mw380 {
       max-width: 380px;
     }
-    &.mw400 {
-      max-width: 400px;
-    }
-    &.mw450 {
-      max-width: 450px;
-    }
-    &.mw480 {
-      max-width: 480px;
-    }
-    &.mw500 {
-      max-width: 500px;
-    }
     &.mw540 {
       max-width: 540px;
     }
-    &.mw600 {
-      max-width: 600px;
+    &.mw640 {
+      max-width: 640px;
     }
   }
 }

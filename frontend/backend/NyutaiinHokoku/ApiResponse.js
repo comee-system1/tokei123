@@ -40,7 +40,7 @@ module.exports = class ApiResponse {
               // 区分が2の場合は「外泊」
               nyuutaigai: '入院',
               symddsp: '20210710',
-              eymddsp: '20210725',
+              eymddsp: '',
               // 区分が1の場合は病院名
               // 区分が2の場合は外泊先
               ngname: '東経市市民病院',
@@ -76,7 +76,7 @@ module.exports = class ApiResponse {
             dsp_inf: {
               nyuutaigai: '退院',
               symddsp: '20210710',
-              eymddsp: '20210725',
+              eymddsp: '',
               ngname: '東経市市民病院',
               bikoudsp: '備考',
             }
@@ -107,7 +107,7 @@ module.exports = class ApiResponse {
             dsp_inf: {
               nyuutaigai: '入院',
               symddsp: '20210710',
-              eymddsp: '20210725',
+              eymddsp: '',
               ngname: '西経市市民病院',
               bikoudsp: '',
             }
@@ -169,7 +169,7 @@ module.exports = class ApiResponse {
             dsp_inf: {
               nyuutaigai: '入院',
               symddsp: '20210710',
-              eymddsp: '20210725',
+              eymddsp: '',
               ngname: '北経市市民病院',
               bikoudsp: '',
             }
@@ -231,7 +231,7 @@ module.exports = class ApiResponse {
             dsp_inf: {
               nyuutaigai: '入院',
               symddsp: '20210710',
-              eymddsp: '20210725',
+              eymddsp: '',
               ngname: '西経市市民病院',
               bikoudsp: '備考',
             }

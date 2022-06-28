@@ -1,68 +1,103 @@
 <template>
   <div id="JyukyuRirekiDetail">
-    <wj-flex-grid
-      :itemsSource="data"
-      :allowMerging="'ColumnHeaders'"
-      :alternatingRowStep="0"
-      :selectionMode="3"
-      :autoGenerateColumns="false"
-      :isReadOnly="true"
-      :allowAddNew="false"
-      :allowDelete="false"
-      :allowDragging="false"
-      :allowPinning="false"
-      :allowResizing="false"
-      :allowSorting="false"
-      :initialized="onInitialized"
-      :headersVisibility="'Column'"
-    >
-    </wj-flex-grid>
-    <v-card class="pa-1 backGrey" outlined shaped tile>家族情報入力</v-card>
-    <v-row no-gutters class="kihon-jyukyusyabangou-row">
-      <v-card
-        elevation="0"
-        class="kihon-title-length5 d-flex flex-row"
-        flat
-        tile
+    <div v-if="hojomode === 'shichoson'" v-on="changeMode()">
+      <v-card class="pa-1 backGrey" outlined shaped tile>市町村選択</v-card>
+      <wj-flex-grid
+        id="grdShichoson"
+        :itemsSource="shichosonList"
+        :allowMerging="'ColumnHeaders'"
+        :alternatingRowStep="0"
+        :selectionMode="3"
+        :autoGenerateColumns="false"
+        :isReadOnly="true"
+        :allowAddNew="false"
+        :allowDelete="false"
+        :allowDragging="false"
+        :allowPinning="false"
+        :allowResizing="false"
+        :allowSorting="false"
+        :initialized="onInitializedShichoson"
+        :headersVisibility="'Column'"
       >
-        受給者番号
-      </v-card>
-      <p class="required">*</p>
-      <v-card elevation="0" class="kihon-jyukyusyabangou-input d-flex flex-row">
-        <wj-combo-box
-          class="kihon-jyukyusyabangou-input2"
-          :textChanged="onTextChanged"
-        ></wj-combo-box>
-      </v-card>
-    </v-row>
-    <v-row no-gutters class="kihon-jyukyusyabangou-row">
-      <v-card
-        elevation="0"
-        class="kihon-title-length5 d-flex flex-row"
-        flat
-        tile
+      </wj-flex-grid>
+    </div>
+    <div v-else-if="hojomode === 'kazoku'" v-on="changeMode()">
+      <wj-flex-grid
+        id="grdKazoku"
+        :itemsSource="kazokuList"
+        :allowMerging="'ColumnHeaders'"
+        :alternatingRowStep="0"
+        :selectionMode="3"
+        :autoGenerateColumns="false"
+        :isReadOnly="true"
+        :allowAddNew="false"
+        :allowDelete="false"
+        :allowDragging="false"
+        :allowPinning="false"
+        :allowResizing="false"
+        :allowSorting="false"
+        :initialized="onInitializedKazoku"
+        :headersVisibility="'Column'"
       >
-        フリガナ
-      </v-card>
-      <v-card elevation="0" class="kihon-jyukyusyabangou-input d-flex flex-row">
-        <wj-combo-box
-          class="kihon-jyukyusyabangou-input2"
-          :textChanged="onTextChanged"
-        ></wj-combo-box>
-      </v-card>
-    </v-row>
-    <v-row class="mt-0 pa-2">
-      <v-col>
-        <v-btn small>クリア</v-btn>
-      </v-col>
-      <v-col class="text-right">
-        <v-btn small>登録</v-btn>
-      </v-col>
-    </v-row>
+      </wj-flex-grid>
+      <v-card class="pa-1 backGrey" outlined shaped tile>家族情報入力</v-card>
+      <v-row no-gutters class="kihon-jyukyusyabangou-row">
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
+          受給者番号
+        </v-card>
+        <p class="required">*</p>
+        <v-card
+          elevation="0"
+          class="kihon-jyukyusyabangou-input d-flex flex-row"
+        >
+          <wj-combo-box
+            class="kihon-jyukyusyabangou-input2"
+            :textChanged="onTextChanged"
+          ></wj-combo-box>
+        </v-card>
+      </v-row>
+      <v-row no-gutters class="kihon-jyukyusyabangou-row">
+        <v-card
+          elevation="0"
+          class="kihon-title-length5 d-flex flex-row"
+          flat
+          tile
+        >
+          フリガナ
+        </v-card>
+        <v-card
+          elevation="0"
+          class="kihon-jyukyusyabangou-input d-flex flex-row"
+        >
+          <wj-combo-box
+            class="kihon-jyukyusyabangou-input2"
+            :textChanged="onTextChanged"
+          ></wj-combo-box>
+        </v-card>
+      </v-row>
+      <v-row class="mt-0 pa-2">
+        <v-col>
+          <v-btn small>クリア</v-btn>
+        </v-col>
+        <v-col class="text-right">
+          <v-btn small>登録</v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 <script>
 import moment from 'moment';
+import '@grapecity/wijmo.styles/wijmo.css';
+import '@grapecity/wijmo.vue2.grid';
+import '@grapecity/wijmo.vue2.grid.grouppanel';
+import '@grapecity/wijmo.vue2.grid.filter';
+import '@grapecity/wijmo.vue2.grid.search';
 import * as wjGrid from '@grapecity/wijmo.grid';
 
 export default {
@@ -73,12 +108,31 @@ export default {
       lastdate: moment().daysInMonth(),
     };
   },
-  props: [],
+  props: {
+    hojomode: String,
+    shichosonList: Array,
+    kazokuList: Array,
+  },
+  computed: {},
   components: {},
+  mounted() {},
   methods: {
-    onInitialized(flexGrid) {
+    changeMode() {
+      // if (this.hojomode === 'shichoson') {
+      //   var grd = new wjGrid.flexGrid('#grdShichoson');
+      //   this.onInitializedShichoson(grd);
+      // } else if (this.hojomode === 'kazoku') {
+      //   var grd = new wjGrid.FlexGrid('#grdKazoku');
+      //   this.onInitializedKazoku(grd);
+      // }
+    },
+    onInitializedShichoson(flexGrid) {
       //ヘッダ情報の作成
-      this.createHeader(flexGrid);
+      this.createHeaderShichoson(flexGrid);
+    },
+    onInitializedKazoku(flexGrid) {
+      //ヘッダ情報の作成
+      this.createHeaderKazoku(flexGrid);
       //セルのマージ
       this.cellMerge(flexGrid);
     },
@@ -106,7 +160,36 @@ export default {
     /*******************
      * ヘッダ情報の作成
      */
-    createHeader(flexGrid) {
+    createHeaderShichoson(flexGrid) {
+      flexGrid.columns.clear();
+      while (flexGrid.columns.length < 2) {
+        flexGrid.columns.push(new wjGrid.Column());
+      }
+      // ヘッダ記載
+      flexGrid.columnHeaders.setCellData(0, 0, 'コード');
+      flexGrid.columnHeaders.setCellData(0, 1, '市町村名');
+
+      flexGrid.columns[0].width = 80;
+      flexGrid.columns[1].width = '1*';
+      flexGrid.columnHeaders.rows[0].align = 'center';
+      flexGrid.columns[0].binding = 'code';
+      flexGrid.columns[1].binding = 'name';
+
+      this.shichosonList = [];
+      this.shichosonList.push(
+        { id: 1, code: '000001', name: '東経市' },
+        { id: 2, code: '000002', name: '西経市' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' }
+      );
+    },
+    createHeaderKazoku(flexGrid) {
       while (flexGrid.columns.length < 2) {
         flexGrid.columns.push(new wjGrid.Column());
       }
@@ -114,15 +197,21 @@ export default {
       for (let i = 0; i < 2; i++) {
         flexGrid.columnHeaders.setCellData(0, i, '家族情報参照');
       }
-      // 仮の行数
-      let totalRow = 3;
-      while (flexGrid.rows.length < totalRow) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
 
-      flexGrid.columns[0].width = 28;
+      flexGrid.columns[0].width = 40;
       flexGrid.columns[1].width = '1*';
       flexGrid.columnHeaders.rows[0].align = 'center';
+      flexGrid.columns[0].binding = 'code';
+      flexGrid.columns[1].binding = 'name';
+
+      this.kazokuList = [];
+      this.kazokuList.push(
+        { id: 1, code: '01', name: '東経　父' },
+        { id: 2, code: '02', name: '東経　母' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' },
+        { id: 0, code: '', name: '' }
+      );
     },
   },
 };

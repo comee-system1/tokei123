@@ -4,6 +4,10 @@
       <riyousyadaityo-sort-menu
         @displaySort="displaySort($event)"
         @sorted="sorted($event)"
+        @alphabeted="alphabeted($event)"
+        @selectedServiceJigyo="selectedServiceJigyo($event)"
+        @selectedServiceNaiyo="selectedServiceNaiyo($event)"
+        @kanaSearch="kanaSearch($event)"
         :kihonJyohoFlag="false"
         :serviceHistoryFlag="true"
         ref="childRiyousyadaityo"
@@ -133,6 +137,18 @@ export default {
       year: moment().year(),
       allData: [],
       historyData: [],
+      displaySortTypeKey: 'all', // 表示項目の初期
+      alphabetKey: 0, // 50音検索の初期
+      sortedType: 'jigyo', // ソートの初期
+      serviceJigyo: {
+        serviceTeikyoJigyosyo: '',
+        serviceTeikyoJigyosyoCode: '',
+      }, // サービス事業の初期
+      serviceNaiyo: {
+        serviceMeisyo: '',
+        serviceCode: '',
+      }, // サービス事業の初期
+      kanaText: '',
     };
   },
   components: {
@@ -140,12 +156,57 @@ export default {
   },
 
   methods: {
+    /***************:
+     * かな検索
+     */
+    kanaSearch(value) {
+      this.kanaText = value.input;
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    /*************************
+     * サービス事業を選択
+     */
+    selectedServiceJigyo(service) {
+      this.serviceJigyo = {
+        serviceTeikyoJigyosyo: service.serviceTeikyoJigyosyo,
+        serviceTeikyoJigyosyoCode: service.serviceTeikyoJigyosyoCode,
+      };
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    selectedServiceNaiyo(service) {
+      this.serviceNaiyo = {
+        serviceMeisyo: service.serviceMeisyo,
+        serviceCode: service.serviceCode,
+      };
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    /**********************
+     * 名前の絞り込み
+     */
+    alphabeted(data) {
+      this.alphabetKey = data.alphabetKey;
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+
     /************************
      * 子コンポーネントのソート項目
      */
     sorted(type) {
       // 表示配列の合計列を省く
       let array = [];
+      this.sortedType = type.sortedType;
       for (let i = 0; i < this.historyData.length; i++) {
         if (this.historyData[i].code) {
           array.push(this.historyData[i]);
@@ -164,23 +225,30 @@ export default {
       }
       if (type.sortedType === 'code') {
         array.sort((a, b) => {
-          if (a.code > b.code) {
-            return -1;
-          }
-          if (a.code < b.code) {
+          // コードの昇順
+          if (parseInt(a.code) > parseInt(b.code)) {
             return 1;
+          }
+          if (parseInt(a.code) < parseInt(b.code)) {
+            return -1;
           }
           return 0;
         });
       }
-      let returns = this.changeSortting(array);
+      if (type.sortedType === 'jigyo') {
+        array = this.changeSortting(array);
+      }
+
       this.historyData = [];
-      this.historyData = returns;
+      this.historyData = array;
+      this.createHeaderMerge(this.mainFlexGrid);
     },
     /****************************
      * 子コンポーネントの表示項目
      */
     displaySort(type) {
+      this.displaySortTypeKey = type.displaySortType;
+
       // 有効
       // 開始日が本日以前のデータ
       if (type.displaySortType === 'enable') {
@@ -229,13 +297,36 @@ export default {
       let array = [];
       for (let i = 0; i < this.historyData.length; i++) {
         if (this.historyData[i].code) {
-          array.push(this.historyData[i]);
+          let kana = this.historyData[i].kana;
+          if (
+            (this.kanaText.length == 0 ||
+              this.historyData[i].riyosyamei.indexOf(this.kanaText) != -1 ||
+              this.historyData[i].code.toString().indexOf(this.kanaText) !=
+                -1) &&
+            (this.serviceNaiyo.serviceCode == 0 ||
+              this.serviceNaiyo.serviceCode ==
+                this.historyData[i].serviceCode) &&
+            (this.serviceJigyo.serviceTeikyoJigyosyoCode == 0 ||
+              this.serviceJigyo.serviceTeikyoJigyosyoCode ==
+                this.historyData[i].serviceTeikyoJigyosyoCode) &&
+            (this.alphabetKey == 0 ||
+              (this.alphabetKey == 1 && kana.match(/^[ア-オ]/)) ||
+              (this.alphabetKey == 2 && kana.match(/^[カ-コ]/)) ||
+              (this.alphabetKey == 3 && kana.match(/^[サ-ソ]/)) ||
+              (this.alphabetKey == 4 && kana.match(/^[タ-ト]/)) ||
+              (this.alphabetKey == 5 && kana.match(/^[ナ-ノ]/)) ||
+              (this.alphabetKey == 6 && kana.match(/^[ハ-ホ]/)) ||
+              (this.alphabetKey == 7 && kana.match(/^[マ-モ]/)) ||
+              (this.alphabetKey == 8 && kana.match(/^[ヤ-ヨ]/)) ||
+              (this.alphabetKey == 9 && kana.match(/^[ラ-ロ]/)) ||
+              (this.alphabetKey == 10 && kana.match(/^[ワ-ン]/)))
+          ) {
+            array.push(this.historyData[i]);
+          }
         }
       }
       this.historyData = this.changeSortting(array);
-
       this.methodCellFormatSetting(this.mainFlexGrid);
-      this.createHeaderMerge(this.mainFlexGrid);
     },
     onInitialized(flexGrid) {
       flexGrid.select(-1, -1);
@@ -247,6 +338,10 @@ export default {
       this.createHeaderMerge(flexGrid);
 
       this.methodCellFormatSetting(flexGrid);
+
+      // 子コンポーネントにサービス事業を設定
+      this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
+      this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
     },
     getData() {
       let historyData = [];
@@ -461,6 +556,7 @@ export default {
       this.allData = returns;
       return returns;
     },
+
     /*********************
      * サービス順に並び替え
      */
@@ -515,6 +611,10 @@ export default {
     },
 
     getServiceCount(data) {
+      // ソートが事業所+サービスの時のみ有効
+      if (this.sortedType != 'jigyo') {
+        return [];
+      }
       let serviceCode = [];
       for (let i = 0; i < data.length; i++) {
         if (data[i].serviceCode) {
@@ -535,16 +635,18 @@ export default {
       return dict;
     },
     methodCellFormatSetting(flexGrid) {
-      // サービス毎の合計数を取得
-      let dict = this.getServiceCount(this.historyData);
-      let yellowLine = [];
-      let rows = '';
-      Object.keys(dict).forEach(function (key) {
-        rows += dict[key];
-        yellowLine.push(rows.toString());
-        rows++;
-      });
+      let self = this;
       flexGrid.formatItem.addHandler(function (s, e) {
+        // サービス毎の合計数を取得
+        let dict = self.getServiceCount(self.historyData);
+        let yellowLine = [];
+        let rows = '';
+        Object.keys(dict).forEach(function (key) {
+          rows += dict[key];
+          yellowLine.push(rows.toString());
+          rows++;
+        });
+
         if (e.panel == flexGrid.columnHeaders) {
           if (e.col == 6 || e.col == 8 || e.col == 9) {
             let text = e.cell.innerText;
@@ -557,11 +659,6 @@ export default {
           if (yellowLine.indexOf(e.row.toString()) != -1) {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
             e.cell.style.textAlign = 'center';
-            // if (e.col == 5) {
-            //   e.cell.style.textAlign = 'center';
-            //   e.cell.style.justifyContent = 'center';
-            //   e.cell.style.alignItems = 'center';
-            // }
           } else {
             e.cell.style.backgroundColor = sysConst.COLOR.white;
             e.cell.style.textAlign = 'left';
@@ -582,10 +679,6 @@ export default {
       panel.setCellData(0, 9, '種類');
       panel.setCellData(0, 10, '利用期間');
       panel.setCellData(0, 12, '利用年数');
-
-      // flexGrid.columnHeaders.columns[6].cssClassAll = 'vertical';
-      // flexGrid.columnHeaders.columns[8].cssClassAll = 'vertical';
-      // flexGrid.columnHeaders.columns[9].cssClassAll = 'vertical';
     },
     /**************
      * ヘッダセルのマージ
@@ -652,6 +745,14 @@ div#serviceHistory {
     font-weight: 400;
   }
 
+  .wj-cell {
+    &.wj-state-selected {
+      color: $font_color;
+    }
+    &.wj-state-multi-selected {
+      color: $font_color;
+    }
+  }
   .vertical {
     text-orientation: upright;
     -webkit-writing-mode: vertical-rl;

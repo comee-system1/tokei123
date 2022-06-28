@@ -90,7 +90,7 @@
         </div>
       </div>
       <div v-else>
-        <JyukyuRirekiDetail></JyukyuRirekiDetail>
+        <JyukyuRirekiDetail :hojomode="this.$_hojomode()"></JyukyuRirekiDetail>
       </div>
     </v-container>
   </div>

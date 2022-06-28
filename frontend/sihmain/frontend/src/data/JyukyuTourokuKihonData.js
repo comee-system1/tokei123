@@ -100,32 +100,30 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 		});
 	}
 	//３行以下はダミーデータ作成
-	if(result.length < 3){
-		while(result.length < 3){
-			result.push({
-				jyukyuid: 0,
-				rysid: 0,
-				jkbn: 0,
-				shichoson: 0,
-				shichosonno: '',
-				shichosonname: '',
-				kofuymd: '',
-				kofuymdDisp: '',
-				jyukyuno: '',
-				jidoid: 0,
-				jido: '',
-				jidopno1: '',
-				jidopno2: '',
-				jidoadd: '',
-				ssyu1: 0,
-				ssyu2: 0,
-				ssyu3: 0,
-				ssyu4: 0,
-				zantei: 0,
-				dcod: 0,
-				jyukyuname: '',
-			});
-		}
+	while(result.length < 3){
+		result.push({
+			jyukyuid: 0,
+			rysid: 0,
+			jkbn: 0,
+			shichoson: 0,
+			shichosonno: '',
+			shichosonname: '',
+			kofuymd: '',
+			kofuymdDisp: '',
+			jyukyuno: '',
+			jidoid: 0,
+			jido: '',
+			jidopno1: '',
+			jidopno2: '',
+			jidoadd: '',
+			ssyu1: 0,
+			ssyu2: 0,
+			ssyu3: 0,
+			ssyu4: 0,
+			zantei: 0,
+			dcod: 0,
+			jyukyuname: '',
+		});
 	}
 	
 	return result;

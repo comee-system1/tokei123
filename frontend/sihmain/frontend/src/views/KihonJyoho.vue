@@ -112,10 +112,7 @@
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
-      <dialog-shinki-tsuika ref="dialog_shinki_tuika"></dialog-shinki-tsuika>
-      <!-- <v-dialog v-model="dialog_shinki_flag" width="500">
-        testtest
-        </v-dialog> -->
+      <dialog-shinki-touroku ref="dialog_shinki_tuika"></dialog-shinki-touroku>
     </v-container>
   </div>
 </template>
@@ -123,7 +120,7 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
-import DialogShinkiTsuika from '../components/DialogShinkiTsuika.vue';
+import DialogShinkiTouroku from '../components/DialogShinkiTouroku.vue';
 export default {
   data() {
     return {
@@ -134,7 +131,7 @@ export default {
   },
   components: {
     RiyousyadaityoSortMenu,
-    DialogShinkiTsuika,
+    DialogShinkiTouroku,
   },
   mounted() {
     this.handleResize();
@@ -260,7 +257,6 @@ export default {
         }
       }
       this.kihonjyohoData = this.changeSortting(array);
-
       this.methodCellFormatSetting(this.mainFlexGrid);
       this.createHeaderMerge(this.mainFlexGrid);
     },

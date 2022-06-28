@@ -110,6 +110,7 @@
           <wj-combo-box
             class="kihon-shichosonbangou-input2"
             :textChanged="onTextChanged"
+            :gotFocus="onGotFocus"
             placeholder="番号を入力"
             :text="shichosonno"
           ></wj-combo-box>
@@ -156,7 +157,12 @@
           elevation="0"
           class="kihon-jyukyusyakubun-selection d-flex flex-row"
         >
-          <v-checkbox class="item-button" label="障害児" v-model="syogaiji">
+          <v-checkbox
+            class="item-button"
+            label="障害児"
+            v-model="syogaiji"
+            @change="ckbChanged"
+          >
           </v-checkbox>
         </v-card>
       </v-row>
@@ -198,6 +204,7 @@
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
+import '@grapecity/wijmo.vue2.core';
 
 export default {
   props: {
@@ -268,6 +275,17 @@ export default {
       this.Resize();
     },
     onTextChanged() {},
+    onGotFocus(txb) {
+      this.$_setHojoMode('shichoson');
+    },
+    ckbChanged(chb) {
+      this.$_setHojoMode('kazoku');
+      // if (chb) {
+      //   this.$_setHojoMode('kazoku');
+      // } else {
+      //   this.$_setHojoMode('none');
+      // }
+    },
   },
 };
 </script>

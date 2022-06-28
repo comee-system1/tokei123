@@ -227,6 +227,7 @@ import { getJyukyuTourokuKihonData } from '../data/JyukyuTourokuKihonData.js';
 let GlobalData = new Vue({
   data: {
     $mode: 'new', //編集モード
+    $hojomode: 'none', //入力補助機能モード
     $kihonData: [], //基本データ
   },
 });
@@ -238,6 +239,12 @@ Vue.mixin({
     },
     $_setMode(newMode) {
       GlobalData.$data.$mode = newMode;
+    },
+    $_hojomode() {
+      return GlobalData.$data.$hojomode;
+    },
+    $_setHojoMode(hojoMode) {
+      GlobalData.$data.$hojomode = hojoMode;
     },
     $_kihonData() {
       return GlobalData.$data.$kihonData;
@@ -253,6 +260,14 @@ Vue.mixin({
       },
       set: function (newMode) {
         GlobalData.$data.$mode = newMode;
+      },
+    },
+    $hojomode: {
+      get: function () {
+        return GlobalData.$data.$hojomode;
+      },
+      set: function (hojoMode) {
+        GlobalData.$data.$hojomode = hojoMode;
       },
     },
     $kihonData: {
