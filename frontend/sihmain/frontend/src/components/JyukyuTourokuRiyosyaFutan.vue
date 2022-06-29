@@ -292,7 +292,7 @@
         </v-card>
       </v-row>
       <v-row
-        v-if="$_mode() === 'modRiyosyafutan'"
+        v-if="this.changeMode()"
         no-gutters
         class="riyosyafutan-button-row"
       >
@@ -344,13 +344,21 @@ export default {
     this.Resize();
   },
   methods: {
+    changeMode() {
+      this.Resize();
+      return this.$_mode() === 'modRiyosyafutan';
+    },
     Resize() {
       let height = '';
-      if (this.$_mode() === 'new') {
-        height = 'calc((29px * 11))';
+      let num = 0;
+      let add = 0;
+      if (this.$_mode() !== 'modRiyosyafutan') {
+        num = 11;
       } else {
-        height = 'calc((29px * 12) + 4px)';
+        num = 12;
+        add = 40;
       }
+      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {

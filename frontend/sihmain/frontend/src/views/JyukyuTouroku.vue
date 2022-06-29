@@ -33,6 +33,7 @@
                 :titleTab="this.titleTab"
                 :titleNum="this.titleNum"
                 :dispReki="true"
+                @child_data="child_data"
               ></JyukyuTourokuRightArea>
             </div>
           </div>
@@ -56,7 +57,7 @@
             >
               <label class="center-area-riyoname-title">利用者名</label>
               <v-card class="center-area-riyoname-name" outlined tile>
-                {{ riyosya }}
+                {{ riyosyaname }}
               </v-card>
               <v-row
                 no-gutters
@@ -145,7 +146,14 @@
               tile
             >
               <div v-if="JyukyuSyogaiFukusiFlag">
-                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon
+                  :riyosya="riyosyaid"
+                  :shichosonno="this.getShichosonno()"
+                  :shichosonname="this.getShichosonname()"
+                  :sikyuketteisyano="this.getSikyuketteisyano()"
+                  :sikyuketteisya="this.getSikyuketteisya()"
+                >
+                </JyukyuTourokuKihon>
                 <JyukyuTourokuSyogaiKubun :titleNum="this.titleNum[0]">
                 </JyukyuTourokuSyogaiKubun>
                 <JyukyuTourokuSikyuryo :titleNum="this.titleNum[1]">
@@ -205,6 +213,7 @@
             :titleTab="this.titleTab"
             :titleNum="this.titleNum"
             :dispReki="false"
+            @child_data="child_data"
           ></JyukyuTourokuRightArea>
         </v-col>
       </v-row>
@@ -228,7 +237,7 @@ let GlobalData = new Vue({
   data: {
     $mode: 'new', //編集モード
     $hojomode: 'none', //入力補助機能モード
-    $kihonData: [], //基本データ
+    $kihonDataOrg: [], //基本データ
   },
 });
 
@@ -246,11 +255,11 @@ Vue.mixin({
     $_setHojoMode(hojoMode) {
       GlobalData.$data.$hojomode = hojoMode;
     },
-    $_kihonData() {
-      return GlobalData.$data.$kihonData;
+    $_kihonDataOrg() {
+      return GlobalData.$data.$kihonDataOrg;
     },
-    $_setKihonData(newKihonData) {
-      GlobalData.$data.$kihonData = newKihonData;
+    $_setKihonDataOrg(newKihonData) {
+      GlobalData.$data.$kihonDataOrg = newKihonData;
     },
   },
   computed: {
@@ -270,12 +279,12 @@ Vue.mixin({
         GlobalData.$data.$hojomode = hojoMode;
       },
     },
-    $kihonData: {
+    $kihonDataOrg: {
       get: function () {
-        return GlobalData.$data.$kihonData;
+        return GlobalData.$data.$kihonDataOrg;
       },
       set: function (newKihonData) {
-        GlobalData.$data.$kihonData = newKihonData;
+        GlobalData.$data.$kihonDataOrg = newKihonData;
       },
     },
   },
@@ -293,8 +302,9 @@ export default {
       dateArgument: '', // ヘッダメニューのカレンダー選択
       serviceArgument: '', // ヘッダメニューのサービス選択
       userListComponentDatas: [], // ユーザー一覧データ
-      userDataSelect: [{ riyosya: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
+      userDataSelect: [{ riyosyaname: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
       riyosyaid: '',
+      riyosyaname: '',
       // タブの制御Flag
       JyukyuSyogaiFukusiFlag: false, // JyukyuSyogaiFukusiFlagの初期表示状態
       JyukyuSyogaiJiFlag: false, // JyukyuSyogaiJiFlagの初期表示状態
@@ -391,7 +401,24 @@ export default {
   },
   computed: {},
   methods: {
+    getShichosonno() {
+      let r = this.$_selectedShichoson();
+      return r.code;
+    },
+    getShichosonname() {
+      let r = this.$_selectedShichoson();
+      return r.name;
+    },
+    getSikyuketteisyano() {
+      let r = this.$_selectedKazoku();
+      return r.code;
+    },
+    getSikyuketteisya() {
+      let r = this.$_selectedKazoku();
+      return r.name;
+    },
     setTrunNew() {
+      this.riyosyaid = '';
       this.$_setMode('new');
       this.$_setSubGridSelected(false);
       if (this.JyukyuSyogaiFukusiFlag) {
@@ -486,14 +513,16 @@ export default {
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
     setUserSelectPoint(row) {
       this.riyosyaid = this.userListComponentDatas[row].riid;
-      this.userDataSelect[0]['riyosya'] =
+      this.userDataSelect[0]['riyosyaname'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
         this.userListComponentDatas[row].names;
+      this.riyosyaname = this.userDataSelect[0]['riyosyaname'];
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
       // 値の設定
-      this.$_setKihonData(getJyukyuTourokuKihonData(this.riyosyaid));
+      this.$_setKihonDataOrg(getJyukyuTourokuKihonData(this.riyosyaid));
+      this.$_setSubGridSelected('new');
     },
     menu_clear() {
       for (let i = 0; i < this.menuitems.length; i++) {
@@ -528,6 +557,32 @@ export default {
         this.menu_clear();
       }
       this.menuBtnClick = false;
+    },
+    /****************
+     * 子コンポーネントで履歴表示からのデータ取得
+     * args: 選択している行の値
+     * code: 選択しているグリッドの種類
+     */
+    child_data(args, code) {
+      // console.log(args);
+      // console.log(code);
+      switch (code) {
+        case 'jyukyu':
+          this.$_setSelectedKihonData(args);
+          break;
+        case 'syogai':
+          break;
+        case 'kettei':
+          break;
+        case 'keikaku':
+          break;
+        case 'futan':
+          break;
+        case 'shichoson':
+          break;
+        case 'kazoku':
+          break;
+      }
     },
   },
 };

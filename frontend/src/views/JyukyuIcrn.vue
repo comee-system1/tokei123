@@ -63,21 +63,8 @@
         </v-btn-toggle>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-          <v-btn
-            small
-            outlined
-            v-for="(n, k) in alphabet"
-            :key="n"
-            :width="25"
-            :height="25"
-            :min-width="25"
-            :max-width="25"
-            @click="onAlphabet(k)"
-          >
-            {{ n }}
-          </v-btn>
-        </v-btn-toggle>
+        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+        </alphabet-button>
         <v-spacer></v-spacer>
         <div class="border-bottom ma-0" style="text-align: center">
           <label class="errorlabel mr-2">
@@ -122,45 +109,27 @@ import '@grapecity/wijmo.vue2.core';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keySort = ls.KEY.Sort;
-const keyAlp = ls.KEY.Alphabet;
-const strMaru = '○';
-const bgClrInput = sysConst.COLOR.white;
-const bgClrError = sysConst.COLOR.gridErrBackground;
-const fmtYen = sysConst.FORMAT.Num;
-const fmtYmd = sysConst.FORMAT.Ymd;
-const daiTitle = '受給者証情報';
-const chuTitle = '利用者負担';
-const styleDefault = '';
-const boderSolid = '1px solid';
-let siborikomiSearch2 = 0;
-let alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
+const STR_MARU = '○';
+const TITLE_DAI = '受給者証情報';
+const TITLE_CHU = '利用者負担';
+const STYLE_DEFAULT = '';
+const STYLE_BORDER_SOLID = '1px solid';
+const CMB_ID = 'comboFilters';
+let SIBORIKOMI_SEARCH2 = 0;
 
 export default {
   components: {
     HeaderServices,
+    AlphabetButton,
   },
   data() {
     return {
-      alphabet: alphabet,
       errorcnt: '',
       sortSearch: 0,
-      alphaSearch: 0,
       headerList: [
         { dataname: 'err', title: 'エ\nラ\n|', width: 30, align: 'center' },
         {
@@ -263,8 +232,7 @@ export default {
   mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
-      this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
+      this.sortSearch = Number(ls.getlocalStorageEncript(ls.KEY.Sort));
     });
   },
   computed: {
@@ -287,7 +255,7 @@ export default {
   },
   methods: {
     initComboFilters(combo) {
-      if (combo.hostElement.id == 'comboFilters') {
+      if (combo.hostElement.id == CMB_ID) {
         combo.header = this.userSelList[0].name;
       }
     },
@@ -307,10 +275,10 @@ export default {
           ht.panel == flexGrid.cells &&
           ht.col == flexGrid.columns.length - 1
         ) {
-          if (ht.panel.getCellData(ht.row, ht.col) == strMaru) {
+          if (ht.panel.getCellData(ht.row, ht.col) == STR_MARU) {
             ht.panel.setCellData(ht.row, ht.col, '');
           } else {
-            ht.panel.setCellData(ht.row, ht.col, strMaru);
+            ht.panel.setCellData(ht.row, ht.col, STR_MARU);
           }
         }
       });
@@ -339,24 +307,24 @@ export default {
         col.multiLine = true;
 
         if (colIndex == 0) {
-          col.cssClass = styleDefault;
+          col.cssClass = STYLE_DEFAULT;
           col.cellTemplate = CellMaker.makeImage();
         }
 
         if (colIndex == 10 || colIndex == 14) {
-          col.format = fmtYen;
+          col.format = sysConst.FORMAT.Num;
         } else if (colIndex == 3) {
-          col.format = fmtYmd;
+          col.format = sysConst.FORMAT.Ymd;
         } else {
-          col.format = styleDefault;
+          col.format = STYLE_DEFAULT;
         }
 
         for (let rowindex = 0; rowindex < 3; rowindex++) {
           let title = '';
           if (1 <= colIndex && colIndex <= 14 && rowindex == 0) {
-            title = daiTitle;
+            title = TITLE_DAI;
           } else if (10 <= colIndex && colIndex <= 14 && rowindex == 1) {
-            title = chuTitle;
+            title = TITLE_CHU;
           } else {
             title = this.headerList[colIndex].title;
           }
@@ -378,7 +346,7 @@ export default {
         e.col == 9 ||
         e.col == 14
       ) {
-        e.cell.style.borderRight = boderSolid;
+        e.cell.style.borderRight = STYLE_BORDER_SOLID;
       }
 
       if (e.panel == flexGrid.columnHeaders) {
@@ -394,11 +362,11 @@ export default {
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = styleDefault;
-          e.cell.style.borderBottom = styleDefault;
+          e.cell.style.backgroundColor = STYLE_DEFAULT;
+          e.cell.style.borderBottom = STYLE_DEFAULT;
 
           if (e.col == flexGrid.columns.length - 1) {
-            e.cell.style.backgroundColor = bgClrInput;
+            e.cell.style.backgroundColor = sysConst.COLOR.white;
           } else if (e.col == 6 || e.col == 7) {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           } else if (
@@ -417,7 +385,7 @@ export default {
             (e.col == 13 && tmpitem.jyougenumuval && !tmpitem.syokujiteikyo) ||
             (e.col == 14 && tmpitem.jyougenumuval && !tmpitem.tokubetukyufu)
           ) {
-            e.cell.style.backgroundColor = bgClrError;
+            e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
           }
 
           // 仮想マージ
@@ -524,7 +492,7 @@ export default {
             tmpviewdata[i].jyougenkanri = '';
             tmpviewdata[i].syokujiteikyo = '';
             tmpviewdata[i].tokubetukyufu = '';
-            tmpviewdata[i].syusei = strMaru;
+            tmpviewdata[i].syusei = STR_MARU;
           } else {
             if (i == 10) {
               // 年月が一致しているデータのフラグを立てる
@@ -545,80 +513,21 @@ export default {
       return tmpviewdata;
     },
     siborikomiUser2(siborikomiType) {
-      siborikomiSearch2 = siborikomiType;
+      SIBORIKOMI_SEARCH2 = siborikomiType;
       this.userFilter();
     },
     sortUser(sortType) {
-      ls.setlocalStorageEncript(keySort, sortType);
+      ls.setlocalStorageEncript(ls.KEY.Sort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet(key) {
-      ls.setlocalStorageEncript(keyAlp, Number(key));
-      this.alphaSearch = Number(key);
+    onAlphabetical() {
       this.userFilter();
     },
     userFilter() {
-      let tmpviewdata = [];
-      let alpval = this.alphaSearch;
-      if (alpval > 0) {
-        this.viewdataAll.forEach(function (value) {
-          switch (alpval) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-          }
-        });
-      } else {
-        tmpviewdata = this.viewdataAll.concat();
-      }
+      let tmpviewdata = this.viewdataAll.concat();
+      tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
+
       // 絞込１
       if (this.selUser == 1) {
         // 今月入所
@@ -628,7 +537,7 @@ export default {
         tmpviewdata = tmpviewdata.filter((x) => x.istaisyo);
       }
       // 絞込２
-      if (siborikomiSearch2 == 1) {
+      if (SIBORIKOMI_SEARCH2 == 1) {
         // !x.koufuymdで空orNullを判定する
         tmpviewdata = tmpviewdata.filter(
           (x) =>
@@ -644,7 +553,7 @@ export default {
             !x.syokujiteikyo ||
             !x.tokubetukyufu
         );
-      } else if (siborikomiSearch2 == 2) {
+      } else if (SIBORIKOMI_SEARCH2 == 2) {
         tmpviewdata = tmpviewdata.concat();
       }
 

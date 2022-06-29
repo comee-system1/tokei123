@@ -60,21 +60,8 @@
         </v-btn-toggle>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-          <v-btn
-            small
-            outlined
-            v-for="(n, k) in alphabet"
-            :key="n"
-            :width="25"
-            :height="25"
-            :min-width="25"
-            :max-width="25"
-            @click="onAlphabet(k)"
-          >
-            {{ n }}
-          </v-btn>
-        </v-btn-toggle>
+        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+        </alphabet-button>
         <v-spacer></v-spacer>
         <label class="labelhosoku pt-2"> 上段：回数 下段：単位数 </label>
         <v-spacer></v-spacer>
@@ -117,52 +104,39 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keySort = ls.KEY.Sort;
-const keyAlp = ls.KEY.Alphabet;
-const keyKasan = ls.KEY.Kasan;
-const styleDefault = '';
-const styleNormal = 'normal';
-const bgClrSelKasan = sysConst.COLOR.gridHeaderRemarkBackground;
-const bgClrSelKasanData = sysConst.COLOR.gridRemarkBackground;
-const bgClrTotal = sysConst.COLOR.gridTotalBackground;
-const boderSolid = '1px solid';
-const alignRight = 'right';
-const writingModeTategeki = 'vertical-rl';
-const fmtYen = sysConst.FORMAT.Num;
-const fmtYmd = sysConst.FORMAT.Ymd;
-const nisuTitle = '日数';
-const taiseiTitle = '施設体制加算';
-const kobetuTitle = '個別加算';
-const totalTitle = '合計';
-const totalNinzuTitle = '人数';
-const totalTaniTitle = '単位数';
-let alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
+const STR_DEFAULT = '';
+const STYLE_DEFAULT = '';
+const STYLE_NORMAL = 'normal';
+const STYLE_BORDER_SOLID = '1px solid';
+const STYLE_ALIGN_RIGHT = 'right';
+const STYLE_WRITING_MODE_TATEGEKI = 'vertical-rl';
+const CSS_IMAGE = 'cell-img';
+const GRD_TITLE = {
+  nisu: '日数',
+  taisei: '施設体制加算',
+  kobetu: '個別加算',
+  total: '合計',
+  totalNinzu: '人数',
+  totalTani: '単位数',
+};
+const CMB_ID = {
+  cmb1: 'comboFilters1',
+  cmb2: 'comboFilters2',
+};
 
 export default {
   components: {
     HeaderServices,
+    AlphabetButton,
   },
   data() {
     return {
-      alphabet: alphabet,
       errorcnt: '',
       sortSearch: 0,
-      alphaSearch: 0,
       selKasan: 0,
       headerList: [
         {
@@ -226,16 +200,16 @@ export default {
   mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
-      this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
+      this.sortSearch = Number(ls.getlocalStorageEncript(ls.KEY.Sort));
+      this.alphaSearch = Number(ls.getlocalStorageEncript(ls.KEY.Alphabet));
     });
   },
   methods: {
     initComboFilters(combo) {
-      if (combo.hostElement.id == 'comboFilters1') {
+      if (combo.hostElement.id == CMB_ID.cmb1) {
         combo.header = this.userSelList[0].name;
-      } else if (combo.hostElement.id == 'comboFilters2') {
-        this.selKasan = Number(ls.getlocalStorageEncript(keyKasan));
+      } else if (combo.hostElement.id == CMB_ID.cmb2) {
+        this.selKasan = Number(ls.getlocalStorageEncript(ls.KEY.Kasan));
         let index = this.kasanList.findIndex(
           (element) => element.val == this.selKasan
         );
@@ -254,7 +228,7 @@ export default {
       f.blur();
     },
     onKasanClicked(s) {
-      ls.setlocalStorageEncript(keyKasan, s.selectedValue);
+      ls.setlocalStorageEncript(ls.KEY.Kasan, s.selectedValue);
       s.header = this.kasanList[s.selectedIndex].name;
       this.selKasan = s.selectedValue;
       this.userFilter();
@@ -303,8 +277,8 @@ export default {
     onItemsSourceChanging(flexGrid) {
       if (this.viewdata == null || this.viewdata.length == 0) {
         for (let colIndex = 5; colIndex < flexGrid.columns.length; colIndex++) {
-          flexGrid.columnFooters.setCellData(0, colIndex, '');
-          flexGrid.columnFooters.setCellData(1, colIndex, '');
+          flexGrid.columnFooters.setCellData(0, colIndex, STR_DEFAULT);
+          flexGrid.columnFooters.setCellData(1, colIndex, STR_DEFAULT);
         }
         return;
       }
@@ -319,7 +293,7 @@ export default {
           dataname: String(this.kasanList[i].val),
           title: this.kasanList[i].name,
           width: 60,
-          align: alignRight,
+          align: STYLE_ALIGN_RIGHT,
           kasankbn: this.kasanList[i].kbn,
           kasanval: this.kasanList[i].val,
         });
@@ -338,29 +312,29 @@ export default {
         col.multiLine = true;
 
         if (colIndex == 0) {
-          col.cssClass = 'cell-img';
+          col.cssClass = CSS_IMAGE;
           col.cellTemplate = CellMaker.makeImage();
         } else {
-          col.cssClass = '';
-          col.cellTemplate = '';
+          col.cssClass = STYLE_DEFAULT;
+          col.cellTemplate = STYLE_DEFAULT;
         }
 
         if (colIndex == 10 || colIndex == 14) {
-          col.format = fmtYen;
+          col.format = sysConst.FORMAT.Num;
         } else if (colIndex == 3) {
-          col.format = fmtYmd;
+          col.format = sysConst.FORMAT.Ymd;
         } else {
-          col.format = '';
+          col.format = STYLE_DEFAULT;
         }
         for (let rowindex = 0; rowindex < 2; rowindex++) {
-          let title = '';
+          let title = STR_DEFAULT;
           if (rowindex == 0 && 2 <= colIndex && colIndex <= 4) {
-            title = nisuTitle;
+            title = GRD_TITLE.nisu;
           } else if (rowindex == 0 && 5 <= colIndex) {
             if (newheadList[colIndex].kasankbn == 1) {
-              title = taiseiTitle;
+              title = GRD_TITLE.taisei;
             } else if (newheadList[colIndex].kasankbn == 2) {
-              title = kobetuTitle;
+              title = GRD_TITLE.kobetu;
             }
           } else {
             title = newheadList[colIndex].title;
@@ -406,12 +380,10 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
-      flexGrid.columnFooters.setCellData(0, 0, totalTitle);
-      flexGrid.columnFooters.setCellData(0, 2, totalNinzuTitle);
-      flexGrid.columnFooters.setCellData(1, 2, totalTaniTitle);
-      this.viewdata.forEach(function (val) {
-        console.log(val[flexGrid.columns[5].binding]);
-      });
+      flexGrid.columnFooters.setCellData(0, 0, GRD_TITLE.total);
+      flexGrid.columnFooters.setCellData(0, 2, GRD_TITLE.totalNinzu);
+      flexGrid.columnFooters.setCellData(1, 2, GRD_TITLE.totalTani);
+
       if (this.viewdata.length > 0) {
         // 合計設定
         for (let colIndex = 5; colIndex < flexGrid.columns.length; colIndex++) {
@@ -441,15 +413,15 @@ export default {
     },
     onFormatItem(flexGrid, e) {
       flexGrid.beginUpdate();
-      e.cell.style.writingMode = styleDefault;
-      e.cell.style.textAlign = styleDefault;
-      e.cell.style.fontWeight = styleDefault;
-      e.cell.style.justifyContent = styleDefault;
-      e.cell.style.alignItems = styleDefault;
-      e.cell.style.borderRight = styleDefault;
-      e.cell.style.borderBottom = styleDefault;
-      e.cell.style.borderTop = styleDefault;
-      e.cell.style.backgroundColor = styleDefault;
+      e.cell.style.writingMode = STYLE_DEFAULT;
+      e.cell.style.textAlign = STYLE_DEFAULT;
+      e.cell.style.fontWeight = STYLE_DEFAULT;
+      e.cell.style.justifyContent = STYLE_DEFAULT;
+      e.cell.style.alignItems = STYLE_DEFAULT;
+      e.cell.style.borderRight = STYLE_DEFAULT;
+      e.cell.style.borderBottom = STYLE_DEFAULT;
+      e.cell.style.borderTop = STYLE_DEFAULT;
+      e.cell.style.backgroundColor = STYLE_DEFAULT;
 
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
@@ -461,12 +433,12 @@ export default {
           flexGrid.columnHeaders.getCellData(0, e.col, false) !=
             flexGrid.columnHeaders.getCellData(0, e.col + 1, false))
       ) {
-        e.cell.style.borderRight = boderSolid;
+        e.cell.style.borderRight = STYLE_BORDER_SOLID;
       }
       if (e.panel == flexGrid.columnHeaders) {
         if (e.col == 0 || (e.row == 1 && 2 <= e.col)) {
           // 縦書きで右から左へ
-          e.cell.style.writingMode = writingModeTategeki;
+          e.cell.style.writingMode = STYLE_WRITING_MODE_TATEGEKI;
         }
       } else if (e.panel == flexGrid.cells) {
         if (e.row == flexGrid.rows.length - 1) {
@@ -478,20 +450,20 @@ export default {
               e.cell.style.borderBottom = 0;
             }
           } else {
-            e.cell.style.borderBottom = boderSolid;
+            e.cell.style.borderBottom = STYLE_BORDER_SOLID;
           }
         }
       } else if (e.panel == flexGrid.columnFooters) {
         if (e.row == 0) {
-          e.cell.style.borderTop = boderSolid;
+          e.cell.style.borderTop = STYLE_BORDER_SOLID;
         }
         if (5 <= e.col) {
-          e.cell.style.fontWeight = styleNormal;
-          e.cell.style.textAlign = alignRight;
-          e.cell.style.justifyContent = alignRight;
-          e.cell.style.alignItems = alignRight;
+          e.cell.style.fontWeight = STYLE_NORMAL;
+          e.cell.style.textAlign = STYLE_ALIGN_RIGHT;
+          e.cell.style.justifyContent = STYLE_ALIGN_RIGHT;
+          e.cell.style.alignItems = STYLE_ALIGN_RIGHT;
         }
-        e.cell.style.backgroundColor = bgClrTotal;
+        e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
       }
       // 加算絞込の場合は背景色を変える
       if (
@@ -505,9 +477,11 @@ export default {
               e.panel == flexGrid.columnHeaders ||
               e.panel == flexGrid.columnFooters
             ) {
-              e.cell.style.backgroundColor = bgClrSelKasan;
+              e.cell.style.backgroundColor =
+                sysConst.COLOR.gridHeaderRemarkBackground;
             } else {
-              e.cell.style.backgroundColor = bgClrSelKasanData;
+              e.cell.style.backgroundColor =
+                sysConst.COLOR.gridRemarkBackground;
             }
           }
         }
@@ -591,78 +565,17 @@ export default {
       }
       return tmpviewdata;
     },
-
     sortUser(sortType) {
-      ls.setlocalStorageEncript(keySort, sortType);
+      ls.setlocalStorageEncript(ls.KEY.Sort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet(key) {
-      ls.setlocalStorageEncript(keyAlp, Number(key));
-      this.alphaSearch = Number(key);
+    onAlphabetical() {
       this.userFilter();
     },
     userFilter() {
-      let tmpviewdata = [];
-      let alpval = this.alphaSearch;
-      if (alpval > 0) {
-        this.viewdataAll.forEach(function (value) {
-          switch (alpval) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-          }
-        });
-      } else {
-        tmpviewdata = this.viewdataAll.concat();
-      }
+      let tmpviewdata = this.viewdataAll.concat();
+      tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
 
       // 絞込１
       if (this.selUser == 1) {

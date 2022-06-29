@@ -80,7 +80,7 @@
           :binding="'birth'"
           align="center"
           valign="middle"
-          width="2*"
+          :width="100"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -326,7 +326,7 @@ export default {
         }
       }
       this.historyData = this.changeSortting(array);
-      this.methodCellFormatSetting(this.mainFlexGrid);
+      this.createHeaderMerge(this.mainFlexGrid);
     },
     onInitialized(flexGrid) {
       flexGrid.select(-1, -1);
@@ -596,7 +596,7 @@ export default {
         }
       }
       // サービス情報が無い合計の列
-      if (noServiceCount > 0) {
+      if (noServiceCount > 0 && this.sortedType == 'jigyo') {
         returns.push({
           serviceTeikyoJigyosyoCode: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
           riyosyamei: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
@@ -657,11 +657,21 @@ export default {
         }
         if (e.panel != flexGrid.columnHeaders) {
           if (yellowLine.indexOf(e.row.toString()) != -1) {
-            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
             e.cell.style.textAlign = 'center';
           } else {
-            e.cell.style.backgroundColor = sysConst.COLOR.white;
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
             e.cell.style.textAlign = 'left';
+          }
+          if (e.col == 6) {
+            e.cell.style.textAlign = 'center';
+            e.cell.style.justifyContent = 'center';
+            e.cell.style.alignItems = 'center';
+          }
+          if (e.col == 12) {
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
           }
         }
       });

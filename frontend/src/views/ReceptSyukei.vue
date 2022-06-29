@@ -180,21 +180,10 @@
 
       <v-row no-gutters class="mt-1">
         <v-col cols="4">
-          <v-btn-toggle class="flex-wrap" mandatory>
-            <v-btn
-              small
-              outlined
-              v-for="(n, k) in alphabet"
-              :key="n"
-              :width="25"
-              :height="25"
-              p-0
-              style="min-width: auto"
-              @click="onAlphabet(k)"
-            >
-              {{ n }}
-            </v-btn>
-          </v-btn-toggle>
+          <alphabet-button
+            ref="alphabetButton"
+            @onAlphabetical="onAlphabetical"
+          ></alphabet-button>
         </v-col>
         <v-col cols="6">
           <span v-if="TajyougenkanriJimsyoFlag"
@@ -252,30 +241,11 @@ import ReceptList from '../components/ReceptList.vue';
 import ReceptTajougen from '../components/ReceptTajougen.vue';
 import ReceptJijyougen from '../components/ReceptJijyougen.vue';
 import TabMenuBlue from '../components/TabMenuBlue.vue';
-
-// const riyosyaCombo = [];
-// const receptCombo = [];
-// const jyougenkanriCombo = [];
-// const taServiceCombo = [];
-
-const alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
+import AlphabetButton from '@/components/AlphabetButton.vue';
 
 export default {
   data() {
     return {
-      alphabet: alphabet,
       year: moment().year(),
       riyosyaCombo: [],
       jyougenkanriCombo: [],
@@ -299,6 +269,7 @@ export default {
     ReceptTajougen,
     ReceptJijyougen,
     TabMenuBlue,
+    AlphabetButton,
   },
   created() {
     this.receptCombo = [];
@@ -573,7 +544,7 @@ export default {
     /************
      * アルファベットの絞り込み
      */
-    onAlphabet(key) {
+    onAlphabetical(key) {
       if (this.receptFlag) {
         this.$refs.receptChild.parentAlphabet(key);
       } else if (this.JijyougenkanriJimsyoFlag) {

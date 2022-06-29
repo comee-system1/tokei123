@@ -82,7 +82,7 @@ export default {
             { dataname: 'jijyosyo', title: '事業所名' },
           ],
         },
-        riyousya: {
+        futan: {
           title: '利用者負担',
           array: [
             { dataname: '', title: '回' },
@@ -101,18 +101,18 @@ export default {
     'syogaiFlag',
     'ketteiFlag',
     'keikakuFlag',
-    'riyousyaFlag',
+    'futanFlag',
     'basicData',
     'jyukyuData',
     'syogaiData',
     'ketteiData',
     'keikakuData',
-    'riyousyaData',
+    'futanData',
     'titleTab',
     'syogaiNum',
     'ketteiNum',
     'keikakuNum',
-    'riyousyaNum',
+    'futanNum',
     'grdData',
   ],
   components: {},
@@ -125,8 +125,8 @@ export default {
       this.settingData(flexGrid);
       // セルのマージ
       this.cellMerge(flexGrid);
-      // セルをクリック
-      this.cellSelected(flexGrid);
+      // イベント設定
+      this.setEvents(flexGrid);
       // 未選択状態
       flexGrid.select(-1, -1);
     },
@@ -139,7 +139,7 @@ export default {
 
       // 受給者情報
       if (this.jyukyuFlag) {
-        data = this.$_kihonData();
+        data = this.$_kihonDataOrg();
       }
       // 受給者情報
       else if (this.syogaiFlag) {
@@ -217,7 +217,7 @@ export default {
         ];
       }
       // 利用者負担
-      else if (this.riyousyaFlag) {
+      else if (this.futanFlag) {
         data = [
           {
             kai: 1,
@@ -245,10 +245,11 @@ export default {
       this.allData = data;
     },
     /***********************
-     * セルをクリック
+     * イベント設定
      */
-    cellSelected(flexGrid) {
+    setEvents(flexGrid) {
       let _self = this;
+      //セルをクリック
       flexGrid.hostElement.addEventListener('click', function (e) {
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         let code = '';
@@ -260,11 +261,11 @@ export default {
           code = 'kettei';
         } else if (_self.keikakuFlag) {
           code = 'keikaku';
-        } else if (_self.riyousyaFlag) {
-          code = 'riyousya';
+        } else if (_self.futanFlag) {
+          code = 'futan';
         }
 
-        _self.$emit('child_rireki_data', _self.allData[hPage.row], code);
+        _self.$emit('child_data', _self.allData[hPage.row], code);
         _self.$_setSubGridSelected(true);
       });
     },
@@ -298,10 +299,10 @@ export default {
         headerArray = this.headers.keikaku.array;
       }
       // 利用者負担
-      else if (this.riyousyaFlag) {
+      else if (this.futanFlag) {
         headerTitle =
-          this.titleTab + '-' + this.riyousyaNum + this.headers.riyousya.title;
-        headerArray = this.headers.riyousya.array;
+          this.titleTab + '-' + this.futanNum + this.headers.futan.title;
+        headerArray = this.headers.futan.array;
       }
 
       while (flexGrid.columns.length < headerArray.length) {
@@ -359,7 +360,7 @@ export default {
         flexGrid.columns[4].width = '4*';
       }
       // 利用者負担
-      else if (this.riyousyaFlag) {
+      else if (this.futanFlag) {
         flexGrid.columns[1].width = 81;
         flexGrid.columns[2].width = 81;
         flexGrid.columns[3].width = '4*';
@@ -383,7 +384,7 @@ export default {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
       } else if (this.keikakuFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
-      } else if (this.riyousyaFlag) {
+      } else if (this.futanFlag) {
         ranges = [new wjGrid.CellRange(0, 0, 0, 4)];
       }
       // getMergedRangeメソッドをオーバーライドする

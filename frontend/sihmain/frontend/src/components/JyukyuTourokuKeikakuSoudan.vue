@@ -197,7 +197,7 @@
         </v-card>
       </v-row>
       <v-row
-        v-if="$_mode() === 'modKeikakuSoudan'"
+        v-if="this.changeMode()"
         no-gutters
         class="keikakuSoudan-button-row"
       >
@@ -256,13 +256,21 @@ export default {
     this.Resize();
   },
   methods: {
+    changeMode() {
+      this.Resize();
+      return this.$_mode() === 'modKeikakuSoudan';
+    },
     Resize() {
       let height = '';
-      if (this.$_mode() === 'new') {
-        height = 'calc((29px * 8.5))';
+      let num = 0;
+      let add = 0;
+      if (this.$_mode() !== 'modKeikakuSoudan') {
+        num = 8.5;
       } else {
-        height = 'calc((29px * 9.5) + 4px)';
+        num = 9.5;
+        add = 4;
       }
+      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {

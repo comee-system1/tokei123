@@ -260,9 +260,9 @@ import '@/assets/scss/common.scss';
 import { ReceptJijyougen } from '@backend/api/ReceptJijyougen';
 import { ReceptJijyougenCalc } from '@backend/api/ReceptJijyougenCalc';
 import * as wjGrid from '@grapecity/wijmo.grid';
-//import * as wjCore from '@grapecity/wijmo';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import alphabetFilter from '@/utiles/alphabetFilter';
 
 Vue.use(VueAxios, axios);
 
@@ -607,6 +607,7 @@ export default {
       ReceptJijyougen().then((result) => {
         this.receptData = result;
         this.allData = this.receptData;
+        this.receptData = this.filtered();
         this.mainFlexGrid = flexGrid;
         // ヘッダ情報の作成
         this.createHeader(flexGrid);
@@ -1156,67 +1157,7 @@ export default {
           }
         }
       }
-      let select = this.alphaSelect;
-      let get = [];
-      array.forEach(function (value) {
-        switch (select) {
-          case 0:
-            get.push(value);
-            break;
-          case 1:
-            if (value.kana.match(/^[ア-オ]/)) {
-              get.push(value);
-            }
-            break;
-          case 2:
-            if (value.kana.match(/^[カ-コ]/)) {
-              get.push(value);
-            }
-            break;
-          case 3:
-            if (value.kana.match(/^[サ-ソ]/)) {
-              get.push(value);
-            }
-            break;
-          case 4:
-            if (value.kana.match(/^[タ-ト]/)) {
-              get.push(value);
-            }
-            break;
-          case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) {
-              get.push(value);
-            }
-            break;
-          case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) {
-              get.push(value);
-            }
-            break;
-          case 7:
-            if (value.kana.match(/^[マ-モ]/)) {
-              get.push(value);
-            }
-            break;
-          case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) {
-              get.push(value);
-            }
-            break;
-          case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) {
-              get.push(value);
-            }
-            break;
-          case 10:
-            if (value.kana.match(/^[ワ-ン]/)) {
-              get.push(value);
-            }
-            break;
-        }
-      });
-
-      return get;
+      return alphabetFilter.alphabetFilter(array, this.alphaSelect, 'kana');
     },
   },
 };

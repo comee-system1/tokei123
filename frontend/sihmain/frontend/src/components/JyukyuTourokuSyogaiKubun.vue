@@ -94,23 +94,15 @@
           ></datepicker>
         </v-card>
       </v-row>
-      <v-row
-        v-if="$_mode() === 'modSyogaikubun'"
-        no-gutters
-        class="syogaikubun-button-row"
-      >
-        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
-          キャンセル</v-btn
-        >
+      <v-row v-if="this.changeMode()" no-gutters class="syogaikubun-button-row">
+        <v-btn class="cancel-button"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="syogaikubun-bottom-regist d-flex flex-row-reverse"
           flat
           tile
         >
-          <v-btn class="regist-button" @click="openDialog_Term('regist')">
-            登 録</v-btn
-          >
+          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -143,13 +135,21 @@ export default {
     this.Resize();
   },
   methods: {
+    changeMode() {
+      this.Resize();
+      return this.$_mode() === 'modSyogaikubun';
+    },
     Resize() {
       let height = '';
-      if (this.$_mode() === 'new') {
-        height = 'calc((29px * 3))';
+      let num = 0;
+      let add = 0;
+      if (this.$_mode() !== 'modSyogaikubun') {
+        num = 3;
       } else {
-        height = 'calc((29px * 4) + 4px)';
+        num = 4;
+        add = 4;
       }
+      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {

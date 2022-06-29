@@ -227,31 +227,19 @@
         ></v-divider>
       </v-card>
       <v-row no-gutters class="sikyuryo-addbutton-row">
-        <v-btn
-          class="sikyuryo-add-button"
-          style="height: 30px"
-          @click="openDialog_Term('add_new')"
-        >
+        <v-btn class="sikyuryo-add-button" style="height: 30px">
           サービス種別を追加</v-btn
         >
       </v-row>
-      <v-row
-        v-if="$_mode() === 'modSikyuryo'"
-        no-gutters
-        class="sikyuryo-button-row"
-      >
-        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
-          キャンセル</v-btn
-        >
+      <v-row v-if="this.changeMode()" no-gutters class="sikyuryo-button-row">
+        <v-btn class="cancel-button"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="sikyuryo-bottom-regist d-flex flex-row-reverse"
           flat
           tile
         >
-          <v-btn class="regist-button" @click="openDialog_Term('regist')">
-            登 録</v-btn
-          >
+          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -289,13 +277,21 @@ export default {
     this.Resize();
   },
   methods: {
+    changeMode() {
+      this.Resize();
+      return this.$_mode() === 'modSikyuryo';
+    },
     Resize() {
       let height = '';
-      if (this.$_mode() === 'new') {
-        height = 'calc((29px * 14.1))';
+      let num = 0;
+      let add = 0;
+      if (this.$_mode() !== 'modSikyuryo') {
+        num = 14.1;
       } else {
-        height = 'calc((29px * 15.1) + 4px)';
+        num = 15.1;
+        add = 4;
       }
+      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {

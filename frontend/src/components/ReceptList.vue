@@ -44,6 +44,7 @@ import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import { ReceptList } from '@backend/api/ReceptList';
+import alphabetFilter from '@/utiles/alphabetFilter';
 
 Vue.use(VueAxios, axios);
 let basicPos = 8; // 基本情報の列数
@@ -72,14 +73,13 @@ export default {
       //this.receptData = this.getData();
 
       this.receptData = result.seikyu_inf;
-
-      // 値の登録
-      this.mainFlexGrid.itemsSource = this.receptData;
-
-      // 値の登録
-      this.mainSyukeiFlexGrid.itemsSource = this.receptData;
-
       this.allData = this.receptData;
+
+      // 値の登録
+      this.mainFlexGrid.itemsSource = this.filtered();
+
+      // 値の登録
+      this.mainSyukeiFlexGrid.itemsSource = this.filtered();
     });
   },
   created() {
@@ -694,67 +694,7 @@ export default {
           }
         }
       }
-
-      let select = this.alphaSelect;
-      let get = [];
-      array.forEach(function (value) {
-        switch (select) {
-          case 0:
-            get.push(value);
-            break;
-          case 1:
-            if (value.kana.match(/^[ア-オ]/)) {
-              get.push(value);
-            }
-            break;
-          case 2:
-            if (value.kana.match(/^[カ-コ]/)) {
-              get.push(value);
-            }
-            break;
-          case 3:
-            if (value.kana.match(/^[サ-ソ]/)) {
-              get.push(value);
-            }
-            break;
-          case 4:
-            if (value.kana.match(/^[タ-ト]/)) {
-              get.push(value);
-            }
-            break;
-          case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) {
-              get.push(value);
-            }
-            break;
-          case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) {
-              get.push(value);
-            }
-            break;
-          case 7:
-            if (value.kana.match(/^[マ-モ]/)) {
-              get.push(value);
-            }
-            break;
-          case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) {
-              get.push(value);
-            }
-            break;
-          case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) {
-              get.push(value);
-            }
-            break;
-          case 10:
-            if (value.kana.match(/^[ワ-ン]/)) {
-              get.push(value);
-            }
-            break;
-        }
-      });
-      return get;
+      return alphabetFilter.alphabetFilter(array, this.alphaSelect, 'kana');
     },
 
     /*******************

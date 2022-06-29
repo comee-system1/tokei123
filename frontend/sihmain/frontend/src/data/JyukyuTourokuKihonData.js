@@ -7,6 +7,7 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 	if(riyosyaid === '55000'){
 		jdata['jyukyu_inf'].push(
 			{
+				kai:2,
 				jyukyuid: 1,
 				rysid: 55000,
 				jkbn: 1,
@@ -22,10 +23,11 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 				ssyu3: 1,
 				ssyu4: 0,
 				zantei: 0,
-				dcod: 1234,
-				jyukyuname: '東経　決定',
+				dcod: '01',
+				jyukyuname: '東経　父',
 			},
 			{
+				kai:1,
 				jyukyuid: 1,
 				rysid: 55000,
 				jkbn: 1,
@@ -41,14 +43,15 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 				ssyu3: 1,
 				ssyu4: 0,
 				zantei: 0,
-				dcod: 1234,
-				jyukyuname: '東経　決定',
+				dcod: '01',
+				jyukyuname: '東経　父',
 			},
 		)
 	}
 	else if(riyosyaid === '55001'){
 		jdata['jyukyu_inf'].push(
 			{
+				kai:1,
 				jyukyuid: 1,
 				rysid: 55001,
 				jkbn: 1,
@@ -74,6 +77,7 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 	
 	for(let i = 0; i < jdata['jyukyu_inf'].length; i++){
 		result.push({
+			kai: jdata['jyukyu_inf'][i]['kai'],
 			jyukyuid: jdata['jyukyu_inf'][i]['jyukyuid'],
 			rysid: jdata['jyukyu_inf'][i]['rysid'],
 			jkbn: jdata['jyukyu_inf'][i]['jkbn'],
@@ -102,6 +106,7 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 	//３行以下はダミーデータ作成
 	while(result.length < 3){
 		result.push({
+			kai:'',
 			jyukyuid: 0,
 			rysid: 0,
 			jkbn: 0,

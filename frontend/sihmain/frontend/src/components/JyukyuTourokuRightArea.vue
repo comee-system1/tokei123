@@ -13,35 +13,35 @@
             :basicFlag="true"
             :jyukyuFlag="true"
             :titleTab="this.titleTab"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewJyukyu>
           <JyukyuRirekiViewSyogai
             :basicFlag="false"
             :syogaiFlag="true"
             :titleTab="this.titleTab"
             :syogaiNum="this.titleNum[0]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewSyogai>
           <JyukyuRirekiViewKettei
             :basicFlag="false"
             :ketteiFlag="true"
             :titleTab="this.titleTab"
             :ketteiNum="this.titleNum[1]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[2]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
             :riyousyaFlag="true"
             :titleTab="this.titleTab"
             :riyousyaNum="this.titleNum[3]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
         <div v-else-if="this.selectedTab == 'JyukyuSyogaiJi'">
@@ -49,28 +49,28 @@
             :basicFlag="true"
             :jyukyuFlag="true"
             :titleTab="this.titleTab"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewJyukyu>
           <JyukyuRirekiViewKettei
             :basicFlag="false"
             :ketteiFlag="true"
             :titleTab="this.titleTab"
             :ketteiNum="this.titleNum[0]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[1]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
             :riyousyaFlag="true"
             :titleTab="this.titleTab"
             :riyousyaNum="this.titleNum[2]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
         <div v-else-if="this.selectedTab == 'JyukyuChiikiSoudan'">
@@ -78,19 +78,28 @@
             :basicFlag="true"
             :jyukyuFlag="true"
             :titleTab="this.titleTab"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewJyukyu>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[0]"
-            @child_rireki_data="child_rireki_data"
+            @child_data="child_data"
           ></JyukyuRirekiViewKeikaku>
         </div>
       </div>
       <div v-else>
-        <JyukyuRirekiDetail :hojomode="this.$_hojomode()"></JyukyuRirekiDetail>
+        <div v-if="this.$_hojomode() === 'shichoson'">
+          <JyukyuRirekiDetailShichoson
+            @child_data="child_data"
+          ></JyukyuRirekiDetailShichoson>
+        </div>
+        <div v-else-if="this.$_hojomode() === 'kazoku'">
+          <JyukyuRirekiDetailKazoku
+            @child_data="child_data"
+          ></JyukyuRirekiDetailKazoku>
+        </div>
       </div>
     </v-container>
   </div>
@@ -104,11 +113,16 @@ import JyukyuRirekiViewSyogai from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewKettei from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewKeikaku from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewRiyousya from '../components/JyukyuRirekiView.vue';
-import JyukyuRirekiDetail from '../components/JyukyuRirekiDetail.vue';
+import JyukyuRirekiDetailShichoson from './JyukyuRirekiDetailShichoson.vue';
+import JyukyuRirekiDetailKazoku from './JyukyuRirekiDetailKazoku.vue';
 
 let SubGlobalData = new Vue({
   data: {
     $subGridSelected: false,
+    $selectedShichoson: [],
+    $selectedKazoku: [],
+
+    $selectedKihonData: [],
   },
 });
 
@@ -120,6 +134,25 @@ Vue.mixin({
     $_setSubGridSelected(selected) {
       SubGlobalData.$data.$subGridSelected = selected;
     },
+    $_selectedShichoson() {
+      return SubGlobalData.$data.$selectedShichoson;
+    },
+    $_setSelectedShichoson(selected) {
+      SubGlobalData.$data.$selectedShichoson = selected;
+    },
+    $_selectedKazoku() {
+      return SubGlobalData.$data.$selectedKazoku;
+    },
+    $_setSelectedKazoku(selected) {
+      SubGlobalData.$data.$selectedKazoku = selected;
+    },
+
+    $_selectedKihonData() {
+      return SubGlobalData.$data.$selectedKihonData;
+    },
+    $_setSelectedKihonData(selected) {
+      SubGlobalData.$data.$selectedKihonData = selected;
+    },
   },
   computed: {
     $subGridSelected: {
@@ -128,6 +161,31 @@ Vue.mixin({
       },
       set: function (selected) {
         SubGlobalData.$data.$subGridSelected = selected;
+      },
+    },
+    $selectedShichoson: {
+      get: function () {
+        return SubGlobalData.$data.$selectedShichoson;
+      },
+      set: function (selected) {
+        SubGlobalData.$data.$selectedShichoson = selected;
+      },
+    },
+    $selectedKazoku: {
+      get: function () {
+        return SubGlobalData.$data.$selectedKazoku;
+      },
+      set: function (selected) {
+        SubGlobalData.$data.$selectedKazoku = selected;
+      },
+    },
+
+    $selectedKihonData: {
+      get: function () {
+        return SubGlobalData.$data.$selectedKihonData;
+      },
+      set: function (selected) {
+        SubGlobalData.$data.$selectedKihonData = selected;
       },
     },
   },
@@ -152,7 +210,8 @@ export default {
     JyukyuRirekiViewKettei,
     JyukyuRirekiViewKeikaku,
     JyukyuRirekiViewRiyousya,
-    JyukyuRirekiDetail,
+    JyukyuRirekiDetailShichoson,
+    JyukyuRirekiDetailKazoku,
   },
   mounted() {
     this.JyukyuRirekiFlag = this.dispReki;
@@ -164,9 +223,28 @@ export default {
      * args: 選択している行の値
      * code: 選択しているグリッドの種類
      */
-    child_rireki_data(args, code) {
-      console.log(args);
-      console.log(code);
+    child_data(args, code) {
+      // console.log(args);
+      // console.log(code);
+      switch (code) {
+        case 'jyukyu':
+          this.$emit('child_data', args, code);
+          break;
+        case 'syogai':
+          break;
+        case 'kettei':
+          break;
+        case 'keikaku':
+          break;
+        case 'futan':
+          break;
+        case 'shichoson':
+          this.$_setSelectedShichoson(args);
+          break;
+        case 'kazoku':
+          this.$_setSelectedKazoku(args);
+          break;
+      }
     },
   },
 };

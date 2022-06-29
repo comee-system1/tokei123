@@ -87,21 +87,10 @@
 
       <v-row no-gutters class="mt-1">
         <v-col cols="4">
-          <v-btn-toggle class="flex-wrap" mandatory>
-            <v-btn
-              small
-              outlined
-              v-for="(n, k) in alphabet"
-              :key="n"
-              :width="25"
-              :height="25"
-              p-0
-              style="min-width: auto"
-              @click="onAlphabet(k)"
-            >
-              {{ n }}
-            </v-btn>
-          </v-btn-toggle>
+          <alphabet-button
+            ref="alphabetButton"
+            @onAlphabetical="onAlphabetical"
+          ></alphabet-button>
         </v-col>
       </v-row>
     </v-container>
@@ -215,32 +204,18 @@ import * as wjCore from '@grapecity/wijmo';
 import HeaderServices from '../components/HeaderServices.vue';
 import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
 import sysConst from '@/utiles/const';
+import AlphabetButton from '@/components/AlphabetButton.vue';
 
 const riyosyaCombo = [];
 const receptCombo = [];
 const jyougenkanriCombo = [];
 const taServiceCombo = [];
 
-const alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
-
 export default {
   data() {
     return {
       nenkanRiyouNissuData: [],
       allData: [],
-      alphabet: alphabet,
       alphabetSelect: 0,
       riyosyaCombo: riyosyaCombo,
       jyougenkanriCombo: jyougenkanriCombo,
@@ -251,6 +226,7 @@ export default {
       sortFlag: 1,
       gridHeight: '', // グリッドの高さ
       searchArgument: '',
+      selectedSyogaiShien: 0,
       syogaisyaCombo: [
         {
           key: 0,
@@ -281,6 +257,7 @@ export default {
   },
   components: {
     HeaderServices,
+    AlphabetButton,
   },
   mounted() {
     this.handleResize();
@@ -398,6 +375,7 @@ export default {
     getData(result) {
       this.nenkanRiyouNissuData = result.riyo_inf;
       this.allData = this.nenkanRiyouNissuData;
+      this.nenkanRiyouNissuData = this.filtered();
     },
     settingFooterData(flexGrid, result) {
       var footerPanel = flexGrid.columnFooters;
@@ -564,68 +542,7 @@ export default {
           array.push(this.allData[i]);
         }
       }
-
-      let get = [];
-      let select = this.alphabetSelect;
-      array.forEach(function (value) {
-        switch (select) {
-          case 0:
-            get.push(value);
-            break;
-          case 1:
-            if (value.kana.match(/^[ア-オ]/)) {
-              get.push(value);
-            }
-            break;
-          case 2:
-            if (value.kana.match(/^[カ-コ]/)) {
-              get.push(value);
-            }
-            break;
-          case 3:
-            if (value.kana.match(/^[サ-ソ]/)) {
-              get.push(value);
-            }
-            break;
-          case 4:
-            if (value.kana.match(/^[タ-ト]/)) {
-              get.push(value);
-            }
-            break;
-          case 5:
-            if (value.kana.match(/^[ナ-ノ]/)) {
-              get.push(value);
-            }
-            break;
-          case 6:
-            if (value.kana.match(/^[ハ-ホ]/)) {
-              get.push(value);
-            }
-            break;
-          case 7:
-            if (value.kana.match(/^[マ-モ]/)) {
-              get.push(value);
-            }
-            break;
-          case 8:
-            if (value.kana.match(/^[ヤ-ヨ]/)) {
-              get.push(value);
-            }
-            break;
-          case 9:
-            if (value.kana.match(/^[ラ-ロ]/)) {
-              get.push(value);
-            }
-            break;
-          case 10:
-            if (value.kana.match(/^[ワ-ン]/)) {
-              get.push(value);
-            }
-            break;
-        }
-      });
-
-      return get;
+      return this.$refs.alphabetButton.alphabetFilter(array, 'kana');
     },
     /******************
      * 障害支援区分
@@ -685,7 +602,7 @@ export default {
     /************
      * アルファベットの絞り込み
      */
-    onAlphabet(key) {
+    onAlphabetical(key) {
       this.alphabetSelect = key;
       this.nenkanRiyouNissuData = this.filtered();
     },

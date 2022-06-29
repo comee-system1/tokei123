@@ -94,21 +94,8 @@
         </v-btn>
       </v-row>
       <v-row class="mt-1" no-gutters>
-        <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
-          <v-btn
-            small
-            outlined
-            v-for="(n, k) in alphabet"
-            :key="n"
-            :width="25"
-            :height="25"
-            :min-width="25"
-            :max-width="25"
-            @click="onAlphabet(k)"
-          >
-            {{ n }}
-          </v-btn>
-        </v-btn-toggle>
+        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+        </alphabet-button>
       </v-row>
       <v-row class="mt-1" no-gutters>
         <wj-flex-grid
@@ -166,58 +153,46 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import HeaderServices from '../components/HeaderServices.vue';
+import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 
-const keyPage = ls.KEY.KyufuMeisaiPage;
-const keyTotal = ls.KEY.TotalOnlyDisp;
-const keySort = ls.KEY.Sort;
-const keySvc = ls.KEY.Service;
-const keySichoson = ls.KEY.Sichoson;
-const keyAlp = ls.KEY.Alphabet;
-const colCntSeikyu = 22;
-const colCntKyufu = 13;
-const fmtYen = sysConst.FORMAT.Num;
-const fmtYmd = sysConst.FORMAT.Ymd;
-const titleNisu = '日数';
-const titleSeikyugakuSyukei = '請求額集計欄';
-const titleTokubetukyufu = '特別給付費';
-const titleSvc = 'サービス';
-const titleAGata = 'A型減免';
-const titleSeikyugaku = '請求額';
-const titleSvcKind = 'サービス種別';
-const titleKyufuhiMeisai = '給付費明細欄';
-const titleTotal = '合計';
-const styleDefault = '';
-const styleNormal = 'normal';
-const styleBold = 'bold';
-const boderSolid = '1px solid';
-const alignRight = 'right';
-const bgClrTotal = sysConst.COLOR.gridTotalBackground;
-const bgClrMiniTotal = sysConst.COLOR.gridMiniTotalBackground;
-const styleBlock = 'block';
-const styleNone = 'none';
-const grdNameSeikyu = 'seikyuGrid';
-const grdNameKyufu = 'kyufuGrid';
-const cellimag = 'cell-img';
+const COL_CNT_SEIKYU = 22;
+const COL_CNT_KYUFU = 13;
+const GRD_TITLE = {
+  Nisu: '日数',
+  SeikyugakuSyukei: '請求額集計欄',
+  Tokubetukyufu: '特別給付費',
+  Svc: 'サービス',
+  AGata: 'A型減免',
+  Seikyugaku: '請求額',
+  SvcKind: 'サービス種別',
+  KyufuhiMeisai: '給付費明細欄',
+  Total: '合計',
+};
+const STYLE_DEFAULT = '';
+const STYLE_NORMAL = 'normal';
+const STYLE_BOLD = 'bold';
+const STYLE_BORDER_SOLID = '1px solid';
+const STYLE_ALIGN_RIGHT = 'right';
+const STYLE_BLOCK = 'block';
+const STYLE_NONE = 'none';
+const CSS_IMAGE = 'cell-img';
+const GRD_ID = {
+  Seikyu: 'seikyuGrid',
+  Kyufu: 'kyufuGrid',
+};
+const CMB_ID = {
+  cmb1: 'comboFilters1',
+  cmb2: 'comboFilters2',
+};
+const PATH_IMG_KAKUTEI = require('@/assets/kaku_15px.png');
 let drawListTmpCnt = 0;
-let alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
 
 export default {
   components: {
     HeaderServices,
+    AlphabetButton,
   },
   data() {
     return {
@@ -226,8 +201,6 @@ export default {
       sortSearch: 0,
       selSvc: 0,
       selSichoson: 0,
-      alphaSearch: 0,
-      alphabet: alphabet,
       isBtnDisabled: false,
       sichosonList: [
         { val: 0, name: '指定なし' },
@@ -525,18 +498,21 @@ export default {
   mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
-      this.dispPageType = Number(ls.getlocalStorageEncript(keyPage));
-      this.dispTotalOnly = Number(ls.getlocalStorageEncript(keyTotal));
-      this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
-      this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
+      this.dispPageType = Number(
+        ls.getlocalStorageEncript(ls.KEY.KyufuMeisaiPage)
+      );
+      this.dispTotalOnly = Number(
+        ls.getlocalStorageEncript(ls.KEY.TotalOnlyDisp)
+      );
+      this.sortSearch = Number(ls.getlocalStorageEncript(ls.KEY.Sort));
       this.pageChange(this.dispPageType);
     });
   },
   computed: {},
   methods: {
     initComboFilters(combo) {
-      if (combo.hostElement.id == 'comboFilters1') {
-        this.selSichoson = Number(ls.getlocalStorageEncript(keySichoson));
+      if (combo.hostElement.id == CMB_ID.cmb1) {
+        this.selSichoson = Number(ls.getlocalStorageEncript(ls.KEY.Sichoson));
         let index = this.sichosonList.findIndex(
           (element) => element.val == this.selSichoson
         );
@@ -545,8 +521,8 @@ export default {
         } else {
           combo.header = this.sichosonList[0].name;
         }
-      } else if (combo.hostElement.id == 'comboFilters2') {
-        this.selSvc = Number(ls.getlocalStorageEncript(keySvc));
+      } else if (combo.hostElement.id == CMB_ID.cmb2) {
+        this.selSvc = Number(ls.getlocalStorageEncript(ls.KEY.Service));
         let index = this.svcList.findIndex(
           (element) => element.val == this.selSvc
         );
@@ -559,7 +535,7 @@ export default {
     },
     onSvcClicked(s) {
       s.header = this.svcList[s.selectedIndex].name;
-      ls.setlocalStorageEncript(keySvc, s.selectedValue);
+      ls.setlocalStorageEncript(ls.KEY.Service, s.selectedValue);
       this.selSvc = s.selectedValue;
       this.userFilter();
       let f = document.activeElement;
@@ -567,7 +543,7 @@ export default {
     },
     onSichosonClicked(s) {
       s.header = this.sichosonList[s.selectedIndex].name;
-      ls.setlocalStorageEncript(keySichoson, s.selectedValue);
+      ls.setlocalStorageEncript(ls.KEY.Sichoson, s.selectedValue);
       this.selSichoson = s.selectedValue;
       this.userFilter();
       let f = document.activeElement;
@@ -591,7 +567,7 @@ export default {
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < colCntSeikyu; colIndex++) {
+      for (let colIndex = 0; colIndex < COL_CNT_SEIKYU; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
 
@@ -605,36 +581,36 @@ export default {
         col.wordWrap = true;
 
         if (colIndex == 0) {
-          col.cssClass = cellimag;
+          col.cssClass = CSS_IMAGE;
           col.cellTemplate = CellMaker.makeImage();
         } else {
-          col.cssClass = styleDefault;
-          col.cellTemplate = styleDefault;
+          col.cssClass = STYLE_DEFAULT;
+          col.cellTemplate = STYLE_DEFAULT;
         }
 
         if (colIndex == 2 || colIndex >= 8) {
-          col.format = fmtYen;
+          col.format = sysConst.FORMAT.Num;
         } else {
-          col.format = styleDefault;
+          col.format = STYLE_DEFAULT;
         }
 
         for (let rowindex = 0; rowindex < 3; rowindex++) {
           let title = this.headerList[colIndex].title;
           if (rowindex == 0) {
             if (3 <= colIndex && colIndex <= 4) {
-              title = titleNisu;
+              title = GRD_TITLE.Nisu;
             } else if (5 <= colIndex && colIndex <= 6) {
-              title = titleSvc;
+              title = GRD_TITLE.Svc;
             } else if (7 <= colIndex && colIndex <= 19) {
-              title = titleSeikyugakuSyukei;
+              title = GRD_TITLE.SeikyugakuSyukei;
             } else if (20 <= colIndex && colIndex <= 21) {
-              title = titleTokubetukyufu;
+              title = GRD_TITLE.Tokubetukyufu;
             }
           } else if (rowindex == 1) {
             if (13 <= colIndex && colIndex <= 14) {
-              title = titleAGata;
+              title = GRD_TITLE.AGata;
             } else if (18 == colIndex) {
-              title = titleSeikyugaku;
+              title = GRD_TITLE.Seikyugaku;
             }
           }
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
@@ -656,7 +632,7 @@ export default {
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < colCntKyufu; colIndex++) {
+      for (let colIndex = 0; colIndex < COL_CNT_KYUFU; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
@@ -667,30 +643,30 @@ export default {
         col.multiLine = true;
 
         if (colIndex == 0) {
-          col.cssClass = cellimag;
+          col.cssClass = CSS_IMAGE;
           col.cellTemplate = CellMaker.makeImage();
         } else {
-          col.cssClass = styleDefault;
-          col.cellTemplate = styleDefault;
+          col.cssClass = STYLE_DEFAULT;
+          col.cellTemplate = STYLE_DEFAULT;
         }
 
         if (colIndex == 2 || colIndex >= 8) {
-          col.format = fmtYen;
+          col.format = sysConst.FORMAT.Num;
         } else if (colIndex == 3 || colIndex == 4) {
-          col.format = fmtYmd;
+          col.format = sysConst.FORMAT.Ymd;
         } else {
-          col.format = styleDefault;
+          col.format = STYLE_DEFAULT;
         }
 
         for (let rowindex = 0; rowindex < 2; rowindex++) {
           let title = this.kyufuHeaderList[colIndex].title;
           if (rowindex == 0) {
             if (2 <= colIndex && colIndex <= 4) {
-              title = titleSvcKind;
+              title = GRD_TITLE.SvcKind;
             } else if (5 <= colIndex && colIndex <= 6) {
-              title = titleNisu;
+              title = GRD_TITLE.Nisu;
             } else if (7 <= colIndex && colIndex <= 12) {
-              title = titleKyufuhiMeisai;
+              title = GRD_TITLE.KyufuhiMeisai;
             }
           }
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
@@ -701,7 +677,7 @@ export default {
     },
     setImage(e, isIns) {
       if (isIns) {
-        e.panel.setCellData(e.row, e.col, require('@/assets/kaku_15px.png'));
+        e.panel.setCellData(e.row, e.col, PATH_IMG_KAKUTEI);
       } else {
         e.panel.setCellData(e.row, e.col, '');
       }
@@ -722,7 +698,7 @@ export default {
       }
     },
     onFormatItemSeikyu(flexGrid, e) {
-      e.cell.style.borderRight = styleDefault;
+      e.cell.style.borderRight = STYLE_DEFAULT;
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col >= 3) ||
         (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 13) ||
@@ -735,46 +711,47 @@ export default {
         e.col == 18 ||
         e.col == 19
       ) {
-        e.cell.style.borderRight = boderSolid;
+        e.cell.style.borderRight = STYLE_BORDER_SOLID;
       }
       if (e.panel == flexGrid.columnFooters) {
-        e.cell.style.textAlign = styleDefault;
-        e.cell.style.fontWeight = styleNormal;
-        e.cell.style.backgroundColor = bgClrTotal;
-        e.cell.style.borderTop = boderSolid;
+        e.cell.style.textAlign = STYLE_DEFAULT;
+        e.cell.style.fontWeight = STYLE_NORMAL;
+        e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        e.cell.style.borderTop = STYLE_BORDER_SOLID;
         if (e.col < 6) {
           e.cell.style.borderRight = 0;
         } else if (e.col == 6) {
-          e.cell.style.fontWeight = styleBold;
+          e.cell.style.fontWeight = STYLE_BOLD;
         }
-        e.cell.style.textAlign = alignRight;
-        e.cell.style.justifyContent = alignRight;
-        e.cell.style.alignItems = alignRight;
+        e.cell.style.textAlign = STYLE_ALIGN_RIGHT;
+        e.cell.style.justifyContent = STYLE_ALIGN_RIGHT;
+        e.cell.style.alignItems = STYLE_ALIGN_RIGHT;
       } else {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = styleDefault;
-          e.cell.style.borderBottom = styleDefault;
+          e.cell.style.backgroundColor = STYLE_DEFAULT;
+          e.cell.style.borderBottom = STYLE_DEFAULT;
 
-          e.cell.style.textAlign = styleDefault;
-          e.cell.style.fontWeight = styleDefault;
+          e.cell.style.textAlign = STYLE_DEFAULT;
+          e.cell.style.fontWeight = STYLE_DEFAULT;
 
           // 下の行と同じ利用者の場合は下線を非表示化
           if (this.selSvc == 0) {
             if (e.col <= 4 && !tmpitem.istotalrow) {
               e.cell.style.borderBottom = 0;
             } else if (tmpitem.istotalrow) {
-              e.cell.style.borderBottom = boderSolid;
+              e.cell.style.borderBottom = STYLE_BORDER_SOLID;
               if (e.col == 5) {
                 e.cell.style.borderRight = 0;
               } else if (e.col == 6) {
-                e.cell.style.textAlign = alignRight;
-                e.cell.style.fontWeight = styleBold;
+                e.cell.style.textAlign = STYLE_ALIGN_RIGHT;
+                e.cell.style.fontWeight = STYLE_BOLD;
               }
               if (e.col >= 5) {
-                e.cell.style.backgroundColor = bgClrMiniTotal;
+                e.cell.style.backgroundColor =
+                  sysConst.COLOR.gridMiniTotalBackground;
               }
             }
           }
@@ -784,7 +761,7 @@ export default {
               pretmpitem = e.panel.rows[e.row - 1].dataItem;
             }
             if (e.col == 0) {
-              e.panel.setCellData(e.row, e.col, styleDefault);
+              e.panel.setCellData(e.row, e.col, STYLE_DEFAULT);
               if (tmpitem.kakuteiflg) {
                 if (this.dispTotalOnly == 0) {
                   if (
@@ -813,7 +790,7 @@ export default {
                     if (drawListTmpCnt == 2) {
                       this.setName(e, '', tmpitem.no, tmpitem.code);
                     } else {
-                      e.panel.setCellData(e.row, e.col, styleDefault);
+                      e.panel.setCellData(e.row, e.col, STYLE_DEFAULT);
                     }
                   }
                 } else {
@@ -832,7 +809,7 @@ export default {
       }
     },
     onFormatItemKyufu(flexGrid, e) {
-      e.cell.style.borderRight = styleDefault;
+      e.cell.style.borderRight = STYLE_DEFAULT;
 
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 2) ||
@@ -841,7 +818,7 @@ export default {
         e.col == 4 ||
         e.col == 6
       ) {
-        e.cell.style.borderRight = boderSolid;
+        e.cell.style.borderRight = STYLE_BORDER_SOLID;
       }
 
       if (e.panel == flexGrid.cells) {
@@ -849,9 +826,9 @@ export default {
         if (tmpitem != null) {
           flexGrid.beginUpdate();
           // いったんクリアしないと色が残る
-          e.cell.style.backgroundColor = styleDefault;
-          e.cell.style.borderBottom = styleDefault;
-          e.cell.style.textAlign = styleDefault;
+          e.cell.style.backgroundColor = STYLE_DEFAULT;
+          e.cell.style.borderBottom = STYLE_DEFAULT;
+          e.cell.style.textAlign = STYLE_DEFAULT;
 
           let tmpPreitem = null;
           if (e.col <= 6) {
@@ -880,7 +857,7 @@ export default {
             tmpNextitem = e.panel.rows[e.row + 1].dataItem;
             if (tmpNextitem != null && tmpitem.no == tmpNextitem.no) {
               if (tmpitem.svc != tmpNextitem.svc) {
-                e.cell.style.borderBottom = boderSolid;
+                e.cell.style.borderBottom = STYLE_BORDER_SOLID;
               }
               if (e.col <= 6) {
                 if (e.col > 1) {
@@ -892,7 +869,7 @@ export default {
                 }
               }
             } else if (tmpNextitem != null && tmpitem.no != tmpNextitem.no) {
-              e.cell.style.borderBottom = boderSolid;
+              e.cell.style.borderBottom = STYLE_BORDER_SOLID;
             }
           }
           if (e.col == 1) {
@@ -930,11 +907,11 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       let total = 0;
-      if (flexGrid.hostElement.id == grdNameSeikyu) {
+      if (flexGrid.hostElement.id == GRD_ID.Seikyu) {
         let propkey = '';
-        for (let colIndex = 6; colIndex < colCntSeikyu; colIndex++) {
+        for (let colIndex = 6; colIndex < COL_CNT_SEIKYU; colIndex++) {
           if (colIndex == 6) {
-            flexGrid.columnFooters.setCellData(0, colIndex, titleTotal);
+            flexGrid.columnFooters.setCellData(0, colIndex, GRD_TITLE.Total);
             continue;
           } else if (colIndex == 7) {
             continue;
@@ -1166,38 +1143,35 @@ export default {
       return tmpviewdata;
     },
     pageChange(pageType) {
-      ls.setlocalStorageEncript(keyPage, pageType);
+      ls.setlocalStorageEncript(ls.KEY.KyufuMeisaiPage, pageType);
       this.dispPageType = pageType;
       if (this.dispPageType == 0) {
-        document.getElementById(grdNameSeikyu).style.display = styleBlock;
-        document.getElementById(grdNameKyufu).style.display = styleNone;
+        document.getElementById(GRD_ID.Seikyu).style.display = STYLE_BLOCK;
+        document.getElementById(GRD_ID.Kyufu).style.display = STYLE_NONE;
         this.isBtnDisabled = false;
       } else {
-        document.getElementById(grdNameKyufu).style.display = styleBlock;
-        document.getElementById(grdNameSeikyu).style.display = styleNone;
+        document.getElementById(GRD_ID.Seikyu).style.display = STYLE_NONE;
+        document.getElementById(GRD_ID.Kyufu).style.display = STYLE_BLOCK;
         this.isBtnDisabled = true;
       }
     },
     dispTotal(dispType) {
-      ls.setlocalStorageEncript(keyTotal, dispType);
+      ls.setlocalStorageEncript(ls.KEY.TotalOnlyDisp, dispType);
       this.dispTotalOnly = dispType;
       if (this.dispTotalOnly == 1) {
         this.selSvc = 0;
-        ls.setlocalStorageEncript(keySvc, this.selSvc);
+        ls.setlocalStorageEncript(ls.KEY.Service, this.selSvc);
       }
       this.userFilter();
     },
     sortUser(sortType) {
-      ls.setlocalStorageEncript(keySort, sortType);
+      ls.setlocalStorageEncript(ls.KEY.Sort, sortType);
       this.sortSearch = sortType;
       this.userFilter();
     },
-    onAlphabet(key) {
-      ls.setlocalStorageEncript(keyAlp, Number(key));
-      this.alphaSearch = Number(key);
+    onAlphabetical() {
       this.userFilter();
     },
-
     userFilter() {
       if (this.dispPageType == 0) {
         this.userFilterSeikyu();
@@ -1206,66 +1180,9 @@ export default {
       }
     },
     userFilterSeikyu() {
-      let tmpviewdata = [];
-      let alpval = this.alphaSearch;
-      if (alpval > 0) {
-        this.viewdataAll.forEach(function (value) {
-          switch (alpval) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-          }
-        });
-      } else {
-        tmpviewdata = this.viewdataAll.concat();
-      }
+      let tmpviewdata = this.viewdataAll.concat();
+      tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
+
       // 市町村
       if (this.selSichoson != '0') {
         //
@@ -1329,67 +1246,9 @@ export default {
       this.viewdata = tmpviewdata;
     },
     userFilterKyufu() {
-      let tmpviewdata = [];
-      let alpval = this.alphaSearch;
-      if (alpval > 0) {
-        this.viewkyufudataAll.forEach(function (value) {
-          // ここでのthisはforeach内のthisに置き換わる
-          switch (alpval) {
-            case 1:
-              if (value.kana.match(/^[ア-オ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 2:
-              if (value.kana.match(/^[カ-コ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 3:
-              if (value.kana.match(/^[サ-ソ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 4:
-              if (value.kana.match(/^[タ-ト]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 7:
-              if (value.kana.match(/^[マ-モ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-            case 10:
-              if (value.kana.match(/^[ワ-ン]/)) {
-                tmpviewdata.push(value);
-              }
-              break;
-          }
-        });
-      } else {
-        tmpviewdata = this.viewkyufudataAll.concat();
-      }
+      let tmpviewdata = this.viewkyufudataAll.concat();
+      tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
+
       // 市町村
       if (this.selSichoson != '0') {
         //

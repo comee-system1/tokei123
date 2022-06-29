@@ -179,23 +179,12 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row no-gutters class="mt-1">
+    <v-row no-gutters class="mt-1 mb-1">
       <v-col cols="4">
-        <v-btn-toggle class="flex-wrap" mandatory>
-          <v-btn
-            small
-            outlined
-            v-for="(n, k) in alphabet"
-            :key="n"
-            :width="25"
-            :height="25"
-            p-0
-            style="min-width: auto"
-            @click="onAlphabet(k)"
-          >
-            {{ n }}
-          </v-btn>
-        </v-btn-toggle>
+        <alphabet-button
+          ref="alphabetButton"
+          @onAlphabetical="onAlphabetical"
+        ></alphabet-button>
       </v-col>
       <v-col class="d-flex justify-end">
         <v-card-text class="pa-0">
@@ -210,39 +199,16 @@
         <v-card-text class="pa-0">
           適用不能：<span>{{ nomalecount }}人</span>
         </v-card-text>
-
-        <!-- <dl class="d-flex">
-          <dt>全体：</dt>
-          <dd class="mr-3">999人</dd>
-          <dt>男性：</dt>
-          <dd class="mr-3" >999人</dd>
-          <dt>女性：</dt>
-          <dd class="mr-3">999人</dd>
-          <dt>摘要不能：</dt>
-          <dd class="mr-3"></dd>
-          </dl> -->
       </v-col>
     </v-row>
   </div>
 </template>
 <script>
-const alphabet = [
-  '全',
-  'ア',
-  'カ',
-  'サ',
-  'タ',
-  'ナ',
-  'ハ',
-  'マ',
-  'ヤ',
-  'ラ',
-  'ワ',
-];
+import AlphabetButton from '@/components/AlphabetButton.vue';
+
 export default {
   data() {
     return {
-      alphabet: alphabet,
       toggle_displaySort: this.toggle_displayDefault(),
       toggle_sort: this.toggle_sortDefault(),
       totalcount: 0,
@@ -262,6 +228,9 @@ export default {
       type: Boolean,
       default: true,
     },
+  },
+  components: {
+    AlphabetButton,
   },
   methods: {
     /****************
@@ -396,7 +365,7 @@ export default {
     /************
      * アルファベットの絞り込み
      */
-    onAlphabet(key) {
+    onAlphabetical(key) {
       this.$emit('alphabeted', { alphabetKey: key });
     },
   },
@@ -404,13 +373,14 @@ export default {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
+
 div#riyousyadaityoSortMenu {
   min-width: 1266px;
   font-size: 12px;
   .v-card__text {
     max-width: 100px;
     span {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
   .user-info label {

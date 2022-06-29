@@ -5,7 +5,7 @@
         <v-card elevation="0" class="kihon-header d-flex flex-row" flat tile>
           <label class="kihon-header-title">受給者証基本情報</label>
           <v-card
-            v-if="$_subGridSelected()"
+            v-if="this.dispRegistBtn()"
             elevation="0"
             class="kihon-header d-flex flex-row-reverse"
             flat
@@ -42,12 +42,7 @@
           ></datepicker>
         </v-card>
         <v-card elevation="0" class="pl-1 d-flex flex-row">
-          <v-btn
-            class="kihon-copy-button"
-            @click="openDialog_Term('copy_last')"
-          >
-            前回コピー</v-btn
-          >
+          <v-btn class="kihon-copy-button"> 前回コピー</v-btn>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-kubun-row">
@@ -110,7 +105,7 @@
           <wj-combo-box
             class="kihon-shichosonbangou-input2"
             :textChanged="onTextChanged"
-            :gotFocus="onGotFocus"
+            :gotFocus="onGotFocusShichoson"
             placeholder="番号を入力"
             :text="shichosonno"
           ></wj-combo-box>
@@ -166,7 +161,7 @@
           </v-checkbox>
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-sikyuketteisya-row">
+      <v-row v-if="syogaiji" no-gutters class="kihon-sikyuketteisya-row">
         <v-card
           elevation="0"
           class="kihon-title-length5 d-flex flex-row"
@@ -175,26 +170,31 @@
         >
           支給決定者
         </v-card>
-        <v-card elevation="0" class="kihon-sikyuketteisya-disp1" outlined>
-          {{ sikyuketteisya1 }}
+        <v-card
+          elevation="0"
+          class="kihon-sikyuketteisya-input d-flex flex-row"
+        >
+          <wj-combo-box
+            class="kihon-sikyuketteisya-input2"
+            :textChanged="onTextChanged"
+            :gotFocus="onGotFocusSikyuketteisya"
+            placeholder="番号を入力"
+            :text="sikyuketteisyano"
+          ></wj-combo-box>
         </v-card>
-        <v-card elevation="0" class="kihon-sikyuketteisya-disp2" outlined>
-          {{ sikyuketteisya2 }}
+        <v-card class="kihon-sikyuketteisya-disp" outlined>
+          {{ sikyuketteisya }}
         </v-card>
       </v-row>
-      <v-row v-if="$_mode() === 'modKihon'" no-gutters class="kihon-button-row">
-        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
-          キャンセル</v-btn
-        >
+      <v-row v-if="this.changeMode()" no-gutters class="kihon-button-row">
+        <v-btn class="cancel-button"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="kihon-bottom-regist d-flex flex-row-reverse"
           flat
           tile
         >
-          <v-btn class="regist-button" @click="openDialog_Term('regist')">
-            登 録</v-btn
-          >
+          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -209,6 +209,10 @@ import '@grapecity/wijmo.vue2.core';
 export default {
   props: {
     riyosya: String,
+    shichosonno: String,
+    shichosonname: String,
+    sikyuketteisyano: String,
+    sikyuketteisya: String,
   },
   data() {
     return {
@@ -226,20 +230,28 @@ export default {
         { id: 4, name: '難病等対象者' },
       ],
 
+      kihonDataOrg: [],
       kofuymd: '',
       jyukyukubun: -1,
       jyukyuno: '',
-      shichosonno: '',
-      shichosonname: '',
       syogaisyubetuValues: [],
-      syogaiji: 0,
-      sikyuketteisya1: '',
-      sikyuketteisya2: '',
+      syogaiji: false,
     };
   },
   watch: {
     riyosya() {
-      let data = this.$_kihonData();
+      let data = this.$_kihonDataOrg();
+      console.log('■■■■■■');
+      let seldata = this.$_selectedKihonData();
+      if (seldata.length > 0) {
+        data = seldata;
+      } else {
+        if (data[0].kofuymd.length > 0) {
+          this.kihonDataOrg = data;
+        } else {
+          this.kihonDataOrg = [];
+        }
+      }
       this.kofuymd = moment(data[0].kofuymd).format('YYYY-M-D');
       this.jyukyukubun = data[0].zantei;
       this.jyukyuno = data[0].jyukyuno;
@@ -249,9 +261,11 @@ export default {
       this.syogaisyubetuValues[1] = data[0].ssyu2;
       this.syogaisyubetuValues[2] = data[0].ssyu3;
       this.syogaisyubetuValues[3] = data[0].ssyu4;
-      this.syogaiji = data[0].jidoid > 0 ? 1 : 0;
-      this.sikyuketteisya1 = data[0].dcodDisp;
-      this.sikyuketteisya2 = data[0].jyukyuname;
+      this.syogaiji = data[0].jidoid > 0;
+      this.sikyuketteisyano = data[0].dcodDisp;
+      this.sikyuketteisya = data[0].jyukyuname;
+      this.$_setMode('new');
+      this.Resize();
     },
   },
   components: {
@@ -261,13 +275,34 @@ export default {
     this.Resize();
   },
   methods: {
+    dispRegistBtn() {
+      let r = false;
+      if (this.kihonDataOrg.length > 0) {
+        r = this.kihonDataOrg[0].kofuymd.length > 0;
+      }
+      this.Resize();
+      return r;
+    },
+    changeMode() {
+      this.Resize();
+      return this.$_mode() === 'modKihon';
+    },
     Resize() {
       let height = '';
-      if (this.$_mode() === 'new') {
-        height = 'calc((29px * 8))';
+      let num = 0;
+      let plus = 0;
+      let add = 0;
+      if (this.$_mode() !== 'modKihon') {
+        num = 7;
       } else {
-        height = 'calc((29px * 9) + 4px)';
+        num = 8;
+        add = 4;
       }
+      if (this.syogaiji) {
+        plus = 1;
+      }
+      num += plus;
+      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
@@ -275,16 +310,19 @@ export default {
       this.Resize();
     },
     onTextChanged() {},
-    onGotFocus(txb) {
+    onGotFocusShichoson(txb) {
       this.$_setHojoMode('shichoson');
     },
-    ckbChanged(chb) {
+    onGotFocusSikyuketteisya(txb) {
       this.$_setHojoMode('kazoku');
-      // if (chb) {
-      //   this.$_setHojoMode('kazoku');
-      // } else {
-      //   this.$_setHojoMode('none');
-      // }
+    },
+    ckbChanged(chb) {
+      if (chb) {
+        this.$_setHojoMode('kazoku');
+      } else {
+        this.$_setHojoMode('none');
+      }
+      this.Resize();
     },
   },
 };
@@ -443,20 +481,23 @@ div#JyukyuTourokuKihon {
   .kihon-sikyuketteisya-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    .kihon-sikyuketteisya-disp1 {
-      width: 100px;
+    position: relative; /*相対配置*/
+    .kihon-sikyuketteisya-input {
+      height: 100%;
+    }
+    .kihon-sikyuketteisya-input2 {
+      margin-top: -1px;
       margin-left: 4px;
       font-size: 12px;
-      background-color: #e6e6e6;
-      border-radius: 2px;
-      text-align: left;
-      padding: 2px 0px 0px 4px;
     }
-    .kihon-sikyuketteisya-disp2 {
+    .kihon-sikyuketteisya-input2.wj-control .wj-input {
+      width: 100px;
+    }
+    .kihon-sikyuketteisya-disp {
       width: 200px;
       margin-left: 4px;
       font-size: 12px;
-      background-color: #e6e6e6;
+      background-color: lightyellow;
       border-radius: 2px;
       text-align: left;
       padding: 2px 0px 0px 4px;
