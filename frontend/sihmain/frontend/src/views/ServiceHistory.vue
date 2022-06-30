@@ -122,7 +122,10 @@
         ></wj-flex-grid-column>
       </wj-flex-grid>
     </v-container>
-    <dialog-service-history></dialog-service-history>
+    <dialog-service-history
+      ref="dialog_service"
+      :historyData="historyData"
+    ></dialog-service-history>
   </div>
 </template>
 
@@ -153,6 +156,7 @@ export default {
       kanaText: '',
       isVisible1: false, // 初期選択状態
       isVisible2: true, // 初期選択状態
+      selectKey: '', // ダイアログに渡すキー
     };
   },
   components: {
@@ -365,6 +369,19 @@ export default {
       this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
       this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
       flexGrid.select(-1, -1);
+
+      // セルを押下
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        var ht = flexGrid.hitTest(e);
+
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          if (_self.historyData[ht.row].code) {
+            _self.selectKey = ht.row;
+            _self.$refs.dialog_service.openDialog(_self.selectKey);
+          }
+        }
+      });
     },
     getData() {
       let historyData = [];

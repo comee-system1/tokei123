@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <v-dialog v-model="dialog" width="1000">
+    <v-dialog v-model="dialog" width="1080">
       <v-card elevation="2" class="pa-5">
         <v-toolbar-title class="text-subtitle-1"
           >サービス履歴　追加登録</v-toolbar-title
@@ -8,8 +8,16 @@
         <v-row dense id="serviceArea" class="mt-5">
           <v-col cols="2">利用者名</v-col>
           <v-col class="ml-3">
-            <wj-combo-box class="input w100" readonly></wj-combo-box>
-            <wj-combo-box class="input w200" readonly></wj-combo-box>
+            <wj-combo-box
+              class="input w100"
+              readonly
+              :text="selectData.code"
+            ></wj-combo-box>
+            <wj-combo-box
+              class="input w200"
+              readonly
+              :text="selectData.riyosyamei"
+            ></wj-combo-box>
 
             <v-btn
               elevation="0"
@@ -47,22 +55,42 @@
                   <v-row dense>
                     <v-col cols="2">サービス事業所</v-col>
                     <v-col>
-                      <wj-combo-box class="input w100"></wj-combo-box>
-                      <wj-combo-box class="input w300"></wj-combo-box>
+                      <wj-combo-box
+                        class="input w100"
+                        :text="selectData.serviceTeikyoJigyosyoCode"
+                        readonly
+                      ></wj-combo-box>
+                      <wj-combo-box
+                        class="input w300"
+                        :text="selectData.serviceTeikyoJigyosyo"
+                        readonly
+                      ></wj-combo-box>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="2">サービス名称</v-col>
                     <v-col>
-                      <wj-combo-box class="input w40"></wj-combo-box>
-                      <wj-combo-box class="input w300"></wj-combo-box>
+                      <wj-combo-box
+                        class="input w40"
+                        :text="selectData.serviceCode"
+                        readonly
+                      ></wj-combo-box>
+                      <wj-combo-box
+                        class="input w300"
+                        :text="selectData.serviceMeisyo"
+                        readonly
+                      ></wj-combo-box>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="2">開始日</v-col>
                     <v-col>
-                      <wj-combo-box class="input w100"></wj-combo-box>
-                      <v-icon small @click="datepicker_dialog = true"
+                      <wj-combo-box
+                        class="input w100"
+                        :text="selectData.startDate"
+                        readonly
+                      ></wj-combo-box>
+                      <v-icon small @click="start_datepicker_dialog = true"
                         >mdi-calendar-month</v-icon
                       >
                     </v-col>
@@ -70,8 +98,12 @@
                   <v-row dense>
                     <v-col cols="2">終了日</v-col>
                     <v-col>
-                      <wj-combo-box class="input w100"></wj-combo-box>
-                      <v-icon small @click="datepicker_dialog = true"
+                      <wj-combo-box
+                        class="input w100"
+                        :text="selectData.endDate"
+                        readonly
+                      ></wj-combo-box>
+                      <v-icon small @click="end_datepicker_dialog = true"
                         >mdi-calendar-month</v-icon
                       >
                     </v-col>
@@ -113,7 +145,7 @@
               </v-col>
             </v-row>
             <wj-flex-grid
-              :selectionMode="'None'"
+              :selectionMode="3"
               id="svListInitialize"
               :initialized="svListInitialize"
               :allowMerging="6"
@@ -138,7 +170,7 @@
               <wj-flex-grid-column
                 :header="'サービス事業所名'"
                 :binding="'listJigyosyo'"
-                align="center"
+                align="left"
                 valign="middle"
                 width="2*"
                 :isReadOnly="true"
@@ -153,7 +185,7 @@
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :binding="'listMeisyo'"
-                align="center"
+                align="left"
                 valign="middle"
                 width="2*"
                 :isReadOnly="true"
@@ -164,7 +196,7 @@
         <v-row dense>
           <v-col cols="12">
             <label class="text-caption mr-3">表示</label>
-            <v-btn-toggle v-model="display_service">
+            <v-btn-toggle v-model="display_history">
               <v-btn small> 最新履歴 </v-btn>
               <v-btn small> 全履歴 </v-btn>
             </v-btn-toggle>
@@ -238,13 +270,23 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="datepicker_dialog" width="290">
+    <v-dialog v-model="start_datepicker_dialog" width="290">
       <v-date-picker
         type="date"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
-        @change="dateSelect"
-        v-model="picker"
+        @change="dateSelect('start')"
+        v-model="start_picker"
+      >
+      </v-date-picker>
+    </v-dialog>
+    <v-dialog v-model="end_datepicker_dialog" width="290">
+      <v-date-picker
+        type="date"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="dateSelect('end')"
+        v-model="end_picker"
       >
       </v-date-picker>
     </v-dialog>
@@ -252,46 +294,190 @@
 </template>
 
 <script>
-// import Datepicker from 'vuejs-datepicker';
-// import { ja } from 'vuejs-datepicker/dist/locale';
-// import moment from 'moment';
+import moment from 'moment';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
+import alphabetFilter from '@/utiles/alphabetFilter';
 
 export default {
-  props: {},
+  props: ['historyData'],
   data() {
     return {
-      dialog: true,
-      datepicker_dialog: false,
+      dialog: false,
+      start_datepicker_dialog: false,
+      end_datepicker_dialog: false,
       serviceList: [], // サービス事業所一覧データ
+      serviceListAll: [], // サービス事業所一覧データ
+      serviceHistoryEdit: [], // 編集用履歴データ
+      start_picker: '',
+      end_picker: '',
+      toggle_tabs: '', // 追加修正切り替え
+      display_service: 0, // サービス事業所
+      display_history: 0, // 編集時のみ履歴表示
+      selectData: {}, // 選択したデータ
+      selectKey: '', // 親からの選択キー
     };
   },
   components: {
     AlphabetButton,
   },
-
+  created() {},
   methods: {
+    openDialog(selectKey) {
+      this.dialog = true;
+      this.selectKey = selectKey;
+      this.settingData();
+    },
+    /****************************
+     * 選択したユーザー情報を各テキストエリアに記載
+     */
+    settingData() {
+      let selectkey = this.selectKey; // 選択したデータ後程propsから取得する
+      this.selectData = this.historyData[selectkey];
+
+      this.start_picker = moment(this.selectData.startDate).format(
+        'YYYY-MM-DD'
+      );
+      this.end_picker = moment(this.selectData.endDate).format('YYYY-MM-DD');
+    },
+    /****************************
+     *  カレンダーから日付を選択
+     */
+    dateSelect() {
+      console.log(this.picker);
+    },
+    /***************************
+     * 50オン選択
+     */
+    onAlphabetical(key) {
+      let data = alphabetFilter.alphabetFilter(
+        this.serviceListAll,
+        key,
+        'kana'
+      );
+      this.serviceList = [];
+      console.log(data);
+      this.serviceList = data;
+    },
     /********************
      * サービス事業所一覧
      */
     svListInitialize(listFlexGrid) {
-      this.listFlexGrid = listFlexGrid;
       listFlexGrid.select(-1, -1);
+
+      this.listFlexGrid = listFlexGrid;
+
       this.createListHeaderMerge(listFlexGrid);
-      this.serviceList = this.getListData();
+      this.serviceList = this.getServiceData();
+      this.serviceListAll = this.serviceList;
+
+      listFlexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel != listFlexGrid.columnHeaders) {
+          e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          e.cell.style.color = sysConst.COLOR.fontColor;
+        }
+      });
+    },
+    /*******************
+     * 編集用履歴
+     */
+    svEditInitialize(editFlexGrid) {
+      console.log(editFlexGrid);
     },
     /***************
      * サービス事業所一覧用データ
      */
-    getListData() {
+    getServiceData() {
       let array = [];
-      array.push({
-        listCode: 100101,
-        listJigyosyo: '支援施設ひまわり園',
-        listKey: '22',
-        listMeisyo: '生活介護',
-      });
+      array.push(
+        {
+          listCode: '100101',
+          listJigyosyo: '支援施設ひまわり園',
+          kana: 'シセツシエンヒマワリエン',
+          listKey: '22',
+          listMeisyo: '生活介護',
+        },
+        {
+          listCode: '100102',
+          listJigyosyo: '短期入所ひまわり園',
+          kana: 'タンキニュウショヒマワリエン',
+          listKey: '24',
+          listMeisyo: '短期入所',
+        },
+        {
+          listCode: '100103',
+          listJigyosyo: '施設支援ひまわり園',
+          kana: 'シセツシエンヒマワリエン',
+          listKey: '32',
+          listMeisyo: '施設入所支援',
+        },
+        {
+          listCode: '100202',
+          listJigyosyo: '施設支援たんぽぽ園',
+          kana: 'シセツシエンタンポポエン',
+          listKey: '22',
+          listMeisyo: '生活介護',
+        },
+        {
+          listCode: '100202',
+          listJigyosyo: '施設支援たんぽぽ園',
+          kana: 'シセツシエンタンポポエン',
+          listKey: '32',
+          listMeisyo: '施設入所支援',
+        },
+        {
+          listCode: '100203',
+          listJigyosyo: '自立訓練たんぽぽ園',
+          kana: 'ジリツクンレンタンポポエン',
+          listKey: '41',
+          listMeisyo: '自立訓練(機能訓練)',
+        },
+        {
+          listCode: '100204',
+          listJigyosyo: '就労支援たんぽぽ園',
+          kana: 'シュウロウシエンタンポポエン',
+          listKey: '43',
+          listMeisyo: '就労移行支援',
+        },
+        {
+          listCode: '100205',
+          listJigyosyo: '就労支援たんぽぽ園',
+          kana: 'シュウロウシエンタンポポエン',
+          listKey: '46',
+          listMeisyo: '就労継続支援B型',
+        },
+        {
+          listCode: '100301',
+          listJigyosyo: 'グループひまわり1号館',
+          kana: 'グループヒマワリ',
+          listKey: '33',
+          listMeisyo: '共同生活援助',
+        },
+        {
+          listCode: '100302',
+          listJigyosyo: 'グループひまわり2号館',
+          kana: 'グループヒマワリ',
+          listKey: '33',
+          listMeisyo: '共同生活援助',
+        },
+        {
+          listCode: '100303',
+          listJigyosyo: 'グループひまわり3号館',
+          kana: 'グループヒマワリ',
+          listKey: '33',
+          listMeisyo: '共同生活援助',
+        },
+        {
+          listCode: '100601',
+          listJigyosyo: '相談支援ひなぎく',
+          kana: 'ソウダンシエンヒナギク',
+          listKey: '52',
+          listMeisyo: '計画相談支援',
+        }
+      );
+
+      return array;
     },
     createListHeaderMerge(flexGrid) {
       let headerRanges = [new wjGrid.CellRange(0, 2, 0, 3)];
@@ -342,6 +528,7 @@ div#serviceDialog {
     }
   }
 }
+
 div#svListInitialize,
 div#svEditInitialize {
   font-size: 12px;
