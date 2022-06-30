@@ -107,7 +107,7 @@
             :textChanged="onTextChanged"
             :gotFocus="onGotFocusShichoson"
             placeholder="番号を入力"
-            :text="shichosonno"
+            :text="this.shichosonno"
           ></wj-combo-box>
         </v-card>
         <v-card class="kihon-shichosonbangou-disp" outlined>
@@ -187,7 +187,7 @@
         </v-card>
       </v-row>
       <v-row v-if="this.changeMode()" no-gutters class="kihon-button-row">
-        <v-btn class="cancel-button"> キャンセル</v-btn>
+        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="kihon-bottom-regist d-flex flex-row-reverse"
@@ -207,13 +207,6 @@ import { ja } from 'vuejs-datepicker/dist/locale';
 import '@grapecity/wijmo.vue2.core';
 
 export default {
-  props: {
-    riyosya: String,
-    shichosonno: String,
-    shichosonname: String,
-    sikyuketteisyano: String,
-    sikyuketteisya: String,
-  },
   data() {
     return {
       ja: ja,
@@ -230,43 +223,17 @@ export default {
         { id: 4, name: '難病等対象者' },
       ],
 
-      kihonDataOrg: [],
+      isModify: false,
       kofuymd: '',
       jyukyukubun: -1,
       jyukyuno: '',
+      shichosonno: '',
+      shichosonname: '',
       syogaisyubetuValues: [],
       syogaiji: false,
+      sikyuketteisyano: '',
+      sikyuketteisya: '',
     };
-  },
-  watch: {
-    riyosya() {
-      let data = this.$_kihonDataOrg();
-      console.log('■■■■■■');
-      let seldata = this.$_selectedKihonData();
-      if (seldata.length > 0) {
-        data = seldata;
-      } else {
-        if (data[0].kofuymd.length > 0) {
-          this.kihonDataOrg = data;
-        } else {
-          this.kihonDataOrg = [];
-        }
-      }
-      this.kofuymd = moment(data[0].kofuymd).format('YYYY-M-D');
-      this.jyukyukubun = data[0].zantei;
-      this.jyukyuno = data[0].jyukyuno;
-      this.shichosonno = data[0].shichosonno;
-      this.shichosonname = data[0].shichosonname;
-      this.syogaisyubetuValues[0] = data[0].ssyu1;
-      this.syogaisyubetuValues[1] = data[0].ssyu2;
-      this.syogaisyubetuValues[2] = data[0].ssyu3;
-      this.syogaisyubetuValues[3] = data[0].ssyu4;
-      this.syogaiji = data[0].jidoid > 0;
-      this.sikyuketteisyano = data[0].dcodDisp;
-      this.sikyuketteisya = data[0].jyukyuname;
-      this.$_setMode('new');
-      this.Resize();
-    },
   },
   components: {
     Datepicker,
@@ -276,11 +243,9 @@ export default {
   },
   methods: {
     dispRegistBtn() {
-      let r = false;
-      if (this.kihonDataOrg.length > 0) {
-        r = this.kihonDataOrg[0].kofuymd.length > 0;
-      }
+      let r = this.isModify;
       this.Resize();
+      this.$_setSubGridSelected(r);
       return r;
     },
     changeMode() {
@@ -323,6 +288,52 @@ export default {
         this.$_setHojoMode('none');
       }
       this.Resize();
+    },
+    cancel() {
+      this.$_setMode('new');
+      this.changeMode();
+    },
+    setData(list, selectedData) {
+      let data = [];
+      this.isModify = false;
+      if (selectedData != null) {
+        this.kofuymd = moment(selectedData.kofuymd).format('YYYY-M-D');
+        this.jyukyukubun = selectedData.zantei;
+        this.jyukyuno = selectedData.jyukyuno;
+        this.setShichoson(selectedData.shichosonno, selectedData.shichosonname);
+        this.syogaisyubetuValues[0] = selectedData.ssyu1;
+        this.syogaisyubetuValues[1] = selectedData.ssyu2;
+        this.syogaisyubetuValues[2] = selectedData.ssyu3;
+        this.syogaisyubetuValues[3] = selectedData.ssyu4;
+        this.syogaiji = selectedData.jidoid > 0;
+        this.setSikyuketteisya(selectedData.dcodDisp, selectedData.jyukyuname);
+        this.isModify = true;
+      } else {
+        data = list;
+        if (data[0].kofuymd.length > 0) {
+          this.kofuymd = moment(data[0].kofuymd).format('YYYY-M-D');
+          this.jyukyukubun = data[0].zantei;
+          this.jyukyuno = data[0].jyukyuno;
+          this.setShichoson(data[0].shichosonno, data[0].shichosonname);
+          this.syogaisyubetuValues[0] = data[0].ssyu1;
+          this.syogaisyubetuValues[1] = data[0].ssyu2;
+          this.syogaisyubetuValues[2] = data[0].ssyu3;
+          this.syogaisyubetuValues[3] = data[0].ssyu4;
+          this.syogaiji = data[0].jidoid > 0;
+          this.setSikyuketteisya(data[0].dcodDisp, data[0].jyukyuname);
+          this.isModify = true;
+        }
+      }
+      this.$_setMode('new');
+      this.Resize();
+    },
+    setShichoson(code, name) {
+      this.shichosonno = code;
+      this.shichosonname = name;
+    },
+    setSikyuketteisya(code, name) {
+      this.sikyuketteisyano = code;
+      this.sikyuketteisya = name;
     },
   },
 };

@@ -516,7 +516,7 @@ export default {
     onShityosonCombo(e) {
       if (e.selectedIndex != -1) {
         e.header = e.text;
-        this.onsShityoson(e.text, e.selectedIndex);
+        this.onShityoson(e.text, e.selectedIndex);
         e.text,
         e.selectedIndex
       }
@@ -862,7 +862,7 @@ export default {
     /*************
      * 市町村のフィルタリング
      */
-    onsShityoson(text, key) {
+    onShityoson(text, key) {
       // フィルタリングの実施
       this.filterTextShityoson = { shityosonKey: key, shityoson: text };
       this.mainFlexGrid.itemsSource = [];

@@ -340,6 +340,7 @@ export default {
 
       grd.endUpdate();
     },
+    onTextChanged(txb) {},
   },
 };
 </script>

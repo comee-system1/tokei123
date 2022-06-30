@@ -1,20 +1,19 @@
 <template>
   <div id="JyukyuTourokuRightArea">
     <v-container fluid class="pt-0 mt-0">
-      <div v-if="!dispReki">
-        <label class="title">入力補助</label>
-      </div>
+      <div v-if="!dispReki" class="title">入力補助</div>
     </v-container>
 
     <v-container fluid class="pt-0 mt-0">
-      <div v-if="dispReki">
-        <div v-if="this.selectedTab == 'JyukyuSyogaiFukusi'">
-          <JyukyuRirekiViewJyukyu
+      <div v-show="dispReki">
+        <div v-show="this.selectedTab == 'JyukyuSyogaiFukusi'">
+          <JyukyuRirekiViewKihon
+            ref="kihon"
             :basicFlag="true"
-            :jyukyuFlag="true"
+            :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
-          ></JyukyuRirekiViewJyukyu>
+          ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewSyogai
             :basicFlag="false"
             :syogaiFlag="true"
@@ -38,19 +37,20 @@
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
-            :riyousyaFlag="true"
+            :futanFlag="true"
             :titleTab="this.titleTab"
-            :riyousyaNum="this.titleNum[3]"
+            :futanNum="this.titleNum[3]"
             @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
-        <div v-else-if="this.selectedTab == 'JyukyuSyogaiJi'">
-          <JyukyuRirekiViewJyukyu
+        <div v-show="this.selectedTab == 'JyukyuSyogaiJi'">
+          <JyukyuRirekiViewKihon
+            ref="kihon"
             :basicFlag="true"
-            :jyukyuFlag="true"
+            :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
-          ></JyukyuRirekiViewJyukyu>
+          ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewKettei
             :basicFlag="false"
             :ketteiFlag="true"
@@ -67,19 +67,20 @@
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
-            :riyousyaFlag="true"
+            :futanFlag="true"
             :titleTab="this.titleTab"
-            :riyousyaNum="this.titleNum[2]"
+            :futanNum="this.titleNum[2]"
             @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
-        <div v-else-if="this.selectedTab == 'JyukyuChiikiSoudan'">
-          <JyukyuRirekiViewJyukyu
+        <div v-show="this.selectedTab == 'JyukyuChiikiSoudan'">
+          <JyukyuRirekiViewKihon
+            ref="kihon"
             :basicFlag="true"
-            :jyukyuFlag="true"
+            :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
-          ></JyukyuRirekiViewJyukyu>
+          ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
             :keikakuFlag="true"
@@ -89,7 +90,7 @@
           ></JyukyuRirekiViewKeikaku>
         </div>
       </div>
-      <div v-else>
+      <div v-show="!dispReki">
         <div v-if="this.$_hojomode() === 'shichoson'">
           <JyukyuRirekiDetailShichoson
             @child_data="child_data"
@@ -108,7 +109,7 @@
 import moment from 'moment';
 import Vue from 'vue';
 import CommonTabMenu from '@/components/CommonTabMenu.vue';
-import JyukyuRirekiViewJyukyu from '../components/JyukyuRirekiView.vue';
+import JyukyuRirekiViewKihon from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewSyogai from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewKettei from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiViewKeikaku from '../components/JyukyuRirekiView.vue';
@@ -119,10 +120,6 @@ import JyukyuRirekiDetailKazoku from './JyukyuRirekiDetailKazoku.vue';
 let SubGlobalData = new Vue({
   data: {
     $subGridSelected: false,
-    $selectedShichoson: [],
-    $selectedKazoku: [],
-
-    $selectedKihonData: [],
   },
 });
 
@@ -134,25 +131,6 @@ Vue.mixin({
     $_setSubGridSelected(selected) {
       SubGlobalData.$data.$subGridSelected = selected;
     },
-    $_selectedShichoson() {
-      return SubGlobalData.$data.$selectedShichoson;
-    },
-    $_setSelectedShichoson(selected) {
-      SubGlobalData.$data.$selectedShichoson = selected;
-    },
-    $_selectedKazoku() {
-      return SubGlobalData.$data.$selectedKazoku;
-    },
-    $_setSelectedKazoku(selected) {
-      SubGlobalData.$data.$selectedKazoku = selected;
-    },
-
-    $_selectedKihonData() {
-      return SubGlobalData.$data.$selectedKihonData;
-    },
-    $_setSelectedKihonData(selected) {
-      SubGlobalData.$data.$selectedKihonData = selected;
-    },
   },
   computed: {
     $subGridSelected: {
@@ -161,31 +139,6 @@ Vue.mixin({
       },
       set: function (selected) {
         SubGlobalData.$data.$subGridSelected = selected;
-      },
-    },
-    $selectedShichoson: {
-      get: function () {
-        return SubGlobalData.$data.$selectedShichoson;
-      },
-      set: function (selected) {
-        SubGlobalData.$data.$selectedShichoson = selected;
-      },
-    },
-    $selectedKazoku: {
-      get: function () {
-        return SubGlobalData.$data.$selectedKazoku;
-      },
-      set: function (selected) {
-        SubGlobalData.$data.$selectedKazoku = selected;
-      },
-    },
-
-    $selectedKihonData: {
-      get: function () {
-        return SubGlobalData.$data.$selectedKihonData;
-      },
-      set: function (selected) {
-        SubGlobalData.$data.$selectedKihonData = selected;
       },
     },
   },
@@ -205,7 +158,7 @@ export default {
   props: ['selectedTab', 'titleTab', 'titleNum', 'dispReki'],
   components: {
     CommonTabMenu,
-    JyukyuRirekiViewJyukyu,
+    JyukyuRirekiViewKihon,
     JyukyuRirekiViewSyogai,
     JyukyuRirekiViewKettei,
     JyukyuRirekiViewKeikaku,
@@ -226,29 +179,23 @@ export default {
     child_data(args, code) {
       // console.log(args);
       // console.log(code);
-      switch (code) {
-        case 'jyukyu':
-          this.$emit('child_data', args, code);
-          break;
-        case 'syogai':
-          break;
-        case 'kettei':
-          break;
-        case 'keikaku':
-          break;
-        case 'futan':
-          break;
-        case 'shichoson':
-          this.$_setSelectedShichoson(args);
-          break;
-        case 'kazoku':
-          this.$_setSelectedKazoku(args);
-          break;
-      }
+      this.$emit('child_data', args, code);
+    },
+    setKihonData(list) {
+      this.$refs.kihon.settingData(list);
     },
   },
 };
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
+#JyukyuTourokuRightArea {
+  .title {
+    text-align: center;
+    height: 30px;
+    font-size: 18px !important;
+    background-color: #eee;
+    border-radius: 5px;
+  }
+}
 </style>

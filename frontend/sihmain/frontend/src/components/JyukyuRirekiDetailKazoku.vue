@@ -76,10 +76,8 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
+      kazokuList: [],
     };
-  },
-  props: {
-    kazokuList: Array,
   },
   computed: {},
   components: {},
@@ -139,7 +137,7 @@ export default {
       }
       // ヘッダ記載
       for (let i = 0; i < 2; i++) {
-        flexGrid.columnHeaders.setCellData(0, i, '家族情報参照');
+        flexGrid.columnHeaders.setCellData(0, i, '家族情報選択');
       }
 
       flexGrid.columns[0].width = 40;
@@ -158,6 +156,7 @@ export default {
         { id: 0, code: '', name: '' }
       );
     },
+    onTextChanged(txb) {},
   },
 };
 </script>

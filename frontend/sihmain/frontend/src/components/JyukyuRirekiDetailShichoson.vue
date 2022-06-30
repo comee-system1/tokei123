@@ -1,6 +1,5 @@
 <template>
   <div id="JyukyuRirekiDetailShichoson">
-    <v-card class="pa-1 backGrey" outlined shaped tile>市町村選択</v-card>
     <wj-flex-grid
       :itemsSource="shichosonList"
       :allowMerging="'ColumnHeaders'"
@@ -35,10 +34,8 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
+      shichosonList: [],
     };
-  },
-  props: {
-    shichosonList: Array,
   },
   computed: {},
   components: {},
@@ -49,6 +46,8 @@ export default {
       this.createHeader(flexGrid);
       // イベント設定
       this.setEvents(flexGrid);
+      //セルのマージ
+      this.cellMerge(flexGrid);
       //データ設定
       this.setData();
       // 未選択状態
@@ -68,6 +67,27 @@ export default {
         _self.$emit('child_data', _self.shichosonList[hPage.row], code);
       });
     },
+
+    /********************
+     * セルのマージ
+     */
+    cellMerge(flexGrid) {
+      let mm = new wjGrid.MergeManager();
+      let ranges = [];
+      ranges = [new wjGrid.CellRange(0, 0, 0, 1)];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < ranges.length; h++) {
+            if (ranges[h].contains(r, c)) {
+              return ranges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
+
     /*******************
      * ヘッダ情報の作成
      */
@@ -77,8 +97,9 @@ export default {
         flexGrid.columns.push(new wjGrid.Column());
       }
       // ヘッダ記載
-      flexGrid.columnHeaders.setCellData(0, 0, 'コード');
-      flexGrid.columnHeaders.setCellData(0, 1, '市町村名');
+      for (let i = 0; i < 2; i++) {
+        flexGrid.columnHeaders.setCellData(0, i, '市区町村選択');
+      }
 
       flexGrid.columns[0].width = 80;
       flexGrid.columns[1].width = '1*';

@@ -156,6 +156,7 @@ import HeaderServices from '../components/HeaderServices.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import { kyuhuMeisaiIcrn } from '@backend/api/KyuhuMeisaiIcrn';
 
 const COL_CNT_SEIKYU = 22;
 const COL_CNT_KYUFU = 13;
@@ -962,12 +963,15 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     searchClicked() {
-      if (this.dispPageType == 0) {
-        this.viewdataAll = this.loadData(true);
-      } else {
-        this.viewkyufudataAll = this.loadData(false);
-      }
-      this.userFilter();
+      kyuhuMeisaiIcrn(this.dispPageType == 0).then((result) => {
+        // データ取得
+        if (this.dispPageType == 0) {
+          this.viewdataAll = result;
+        } else {
+          this.viewkyufudataAll = result;
+        }
+        this.userFilter();
+      });
     },
     loadData(isSeikyu) {
       let tmpviewdata = [];
@@ -1459,6 +1463,7 @@ div#KyuhuMeisaiIcrn {
         top: -3px;
         width: 100%;
         padding-top: 4px;
+        padding-left: 2px;
       }
     }
     input {

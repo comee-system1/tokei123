@@ -107,6 +107,7 @@ import HeaderServices from '../components/HeaderServices.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import { kasanKoumokuIcrn } from '@backend/api/KasanKoumokuIcrn';
 
 const STR_DEFAULT = '';
 const STYLE_DEFAULT = '';
@@ -489,9 +490,11 @@ export default {
       flexGrid.endUpdate();
     },
     searchClicked() {
-      // 初期データ読込
-      this.viewdataAll = this.loadData();
-      this.userFilter();
+      kasanKoumokuIcrn().then((result) => {
+        // データ取得
+        this.viewdataAll = result;
+        this.userFilter();
+      });
     },
     loadData() {
       let tmpviewdata = [];
@@ -754,6 +757,7 @@ div#KasanKoumokuIcrn {
         top: -3px;
         width: 100%;
         padding-top: 4px;
+        padding-left: 2px;
       }
     }
     input {

@@ -10,6 +10,7 @@
         <wj-flex-grid
           id="kihonJyohoGrid"
           :headersVisibility="'Column'"
+          :autoRowHeights="true"
           :allowDelete="false"
           :allowDragging="false"
           :allowResizing="false"
@@ -21,8 +22,8 @@
           :style="gridHeight"
         >
           <wj-flex-grid-column
-            :binding="'jyukyuno'"
-            :header="'受給者番号'"
+            :binding="'codes'"
+            :header="'コード'"
             align="center"
             :width="100"
             :isReadOnly="true"
@@ -45,35 +46,30 @@
             :binding="'birthymd'"
             :header="'生年月日'"
             align="center"
-            :width="100"
+            :width="80"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'old'"
+            :binding="'age'"
             :header="'年齢'"
             align="center"
-            :width="50"
+            :width="40"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'sex'"
             :header="'性別'"
             align="center"
-            :width="50"
+            :width="70"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'address'"
             :header="'住所'"
+            :multiLine="true"
             align="center"
-            width="4*"
+            width="5*"
             :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'sityosonryaku'"
-            :header="'市区町村'"
-            width="2*"
-            :isReadOnly="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'tell1'"
@@ -90,29 +86,31 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
+            :binding="'sityosonryaku'"
+            :header="'市区町村'"
+            width="1.5*"
+            :isReadOnly="false"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
             :binding="'symd'"
             :header="'開始日'"
             align="center"
-            width="2*"
+            width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'eymd'"
             :header="'終了日'"
             align="center"
-            width="2*"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'reason'"
-            :header="'理由'"
-            align="center"
-            :width="50"
+            width="1.5*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
-      <dialog-shinki-touroku ref="dialog_shinki_tuika"></dialog-shinki-touroku>
+      <dialog-shinki-touroku 
+        ref="dialog_shinki_tuika"
+        @addFormData = "addFormData"
+        ></dialog-shinki-touroku>
     </v-container>
   </div>
 </template>
@@ -121,11 +119,15 @@ import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
 import DialogShinkiTouroku from '../components/DialogShinkiTouroku.vue';
+import sysConst from '@/utiles/const';
+
 export default {
   data() {
     return {
       dialog_shinki_flag: false, // 新規登録モーダルの表示フラグ
       kihonjyohoData: [],
+      allData: [],
+      mainFlexGrid: [],
       gridHeight: '', // グリッドの高さ
     };
   },
@@ -155,10 +157,13 @@ export default {
     // 新規利用者登録ボタン押下
     pearentShinkiDialogOpen() {
       let array = [];
-      array.push({
-        key: 1,
-        name: 'trao',
-      });
+      array = this.kihonjyohoData;
+      // array.push({
+      //   Codes: 1,
+      //   name: 'trao',
+      // });
+
+      // モーダルに新データ追加用の配列を渡す
       this.$refs.dialog_shinki_tuika.open(array);
     },
 
@@ -205,11 +210,9 @@ export default {
     displaySort(type) {
       // 有効
       // 開始日が本日以前のデータ
-      console.log(111);
       if (type.displaySortType === 'enable') {
         let array = [];
         let now = moment();
-        console.log(this.allData);
         for (let i = 0; i < this.allData.length; i++) {
           let st = '';
           if (this.allData[i].startDate) {
@@ -266,88 +269,88 @@ export default {
       let kihonjyohoData = [];
       kihonjyohoData.push(
         {
+          codes: '1000000001',
           jyukyuno: '1000000001', //提供サービス
           names: '東経 太郎', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数
           birthymd: '19920422',
-          old: '30',
+          age: '30',
           sex: '男',
           sexFlag: 1,
           address: '〒001-2345 〇〇市××町11-1',
-          sityosonryaku: '東経市',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
+          sityosonryaku: '東経市',
           startDate: moment('20230401').format('YYYY/MM/DD'),
           // symd: "20220520",
           // eymd: "20220622",
-          reason: '',
         },
         {
+          codes: '1000000002',
           jyukyuno: '1000000002', //提供サービス
           names: '東経 花子', // サービス種類コード
           kana: 'ハナコ トウケイ', // 利用日数
           birthymd: '19920422',
-          old: '30',
+          age: '30',
           sex: '女',
           sexFlag: 2,
           address: '〒001-2345 〇〇市××町11-1',
-          sityosonryaku: '東経市',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
+          sityosonryaku: '東経市',
           startDate: moment('20200901').format('YYYY/MM/DD'),
           symd: '20220520',
           eymd: '20220622',
-          reason: '',
         },
         {
+          codes: '1000000003',
           jyukyuno: '1000000003', //提供サービス
           names: '東経 太郎', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数
           birthymd: '19920422',
-          old: '30',
+          age: '30',
           sex: '男',
           sexFlag: 1,
           address: '〒001-2345 〇〇市××町11-1',
-          sityosonryaku: '東経市',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
+          sityosonryaku: '東経市',
           startDate: moment('20181115').format('YYYY/MM/DD'),
           endDate: moment('20181115').format('YYYY/MM/DD'),
           // symd: "20220520",
           // eymd: "20220622",
-          reason: '',
         },
         {
+          codes: '1000000004',
           jyukyuno: '1000000004', //提供サービス
           names: '東経 明日香', // サービス種類コード
           kana: 'アスカ トウケイ', // 利用日数
           birthymd: '19920422',
-          old: '30',
+          age: '30',
           sex: '女',
           sexFlag: 2,
           address: '〒001-2345 〇〇市××町11-1',
-          sityosonryaku: '東経市',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
+          sityosonryaku: '東経市',
           symd: '20220520',
           eymd: '20220622',
-          reason: '',
         },
         {
+          codes: '1000000005',
           jyukyuno: '1000000005', //提供サービス
           names: '東経 次郎', // サービス種類コード
           kana: 'ジロウ トウケイ', // 利用日数
           birthymd: '19920422',
-          old: '30',
+          age: '30',
           sex: '男',
           sexFlag: 1,
           address: '〒001-2345 〇〇市××町11-1',
-          sityosonryaku: '東経市',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
+          sityosonryaku: '東経市',
           symd: '20220520',
           eymd: '20220622',
-          reason: '',
         }
       );
       this.kihonjyohoData = kihonjyohoData;
@@ -356,11 +359,36 @@ export default {
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.getData();
+
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
       flexGrid.itemsSource = this.kihonjyohoData;
+
+      // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        // グリッド内共通スタイル
+        let s = cell.style;
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          // セル背景の変更
+          s.backgroundColor = sysConst.COLOR.gridBackground;
+          if ((c == 1) || (c == 2) || (c == 2) || (c == 6) || (c == 9)) {
+            // テキスト左寄せ
+            s.textAlign = 'left';
+          }
+          if ((c == 4)) {
+            // テキスト右寄せ
+            s.textAlign = 'right';
+          }
+        }
+      };
     },
+    addFormData(addData,) {
+      // 新規入力データを配列に追加
+      this.kihonjyohoData = addData;
+      this.allData = this.kihonjyohoData;
+      this.mainFlexGrid.itemsSource = [];
+      this.mainFlexGrid.itemsSource = this.kihonjyohoData;
+    }
   },
 };
 </script>

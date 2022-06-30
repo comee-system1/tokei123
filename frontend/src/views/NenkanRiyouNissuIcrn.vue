@@ -9,7 +9,7 @@
 
     <v-container fluid class="jijyougen-container mt-0 user-info">
       <v-row no-gutters>
-        <v-col cols="9">
+        <v-col cols="12">
           <v-row class="mt-1" no-gutters>
             <label>集計(開始終了月)</label>
             <v-btn-toggle class="flex-wrap ml-1" mandatory>
@@ -612,7 +612,7 @@ export default {
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
 div#nyutaiin {
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   min-width: 1266px;
   .jijyougen-container {

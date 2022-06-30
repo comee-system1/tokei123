@@ -112,6 +112,7 @@ import HeaderServices from '../components/HeaderServices.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import { jyukyuIcrn } from '@backend/api/JyukyuIcrn';
 
 const STR_MARU = '○';
 const TITLE_DAI = '受給者証情報';
@@ -420,97 +421,11 @@ export default {
     },
     searchClicked() {
       // 初期データ読込
-      this.viewdataAll = this.loadData();
-      this.userFilter();
-    },
-    loadData() {
-      let tmpviewdata = [];
-      let userCount = 100;
-      // ★Date型はmonthが0-11で表現されることに注意
-      for (let i = 0; i < userCount; i++) {
-        tmpviewdata.push({
-          id: i,
-          err: '',
-          no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-            10,
-            '0'
-          ),
-          nobk: 0,
-          name: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          koufuymd: new Date('2015', Number('04') - 1, '26'),
-          engo: '第一東経市',
-          jitibangou: '',
-          jyukyukbn: '',
-          jyukyuname: '',
-          // jyukyuname: '受給者名太郎 ' + Math.floor(Math.random() * 10) + 1,
-          syougaisyu: '2',
-          syougaisienkbn: '3',
-          futanjyougen: Number(Math.floor(Math.random() * 100) + '000') + 100,
-          jyougenumu: '有',
-          jyougenumuval: true,
-          jyougenkanri:
-            '上限管理事業所　 ' + Math.floor(Math.random() * 10) + 1,
-          syokujiteikyo: '4',
-          tokubetukyufu: Number(Math.floor(Math.random() * 10) + '000') + 100,
-          syusei: '',
-          nyushoymd: '',
-          taisyoymd: '',
-          isnyusho: false,
-          istaisyo: false,
-        });
-        tmpviewdata[i].nobk = tmpviewdata[i].no;
-        if (i % 2 == 1) {
-          tmpviewdata[i].err = '';
-          tmpviewdata[i].syusei = '';
-        } else {
-          if (i == 4) {
-            tmpviewdata[i].id = tmpviewdata[i - 1].id;
-            tmpviewdata[i].no = tmpviewdata[i - 1].no;
-            tmpviewdata[i].nobk = tmpviewdata[i - 1].no;
-            tmpviewdata[i].name = tmpviewdata[i - 1].name;
-            tmpviewdata[i].kana = tmpviewdata[i - 1].kana;
-            tmpviewdata[i].koufuymd = new Date('2020', Number('04') - 1, '27');
-            tmpviewdata[i].jitibangou = String(
-              '9000' + Math.floor(Math.random() * 10) + 1
-            );
-          }
-          if (i % 3 == 0) {
-            tmpviewdata[i].err = require('@/assets/error_20px.png');
-            tmpviewdata[i].koufuymd = '';
-            tmpviewdata[i].engo = '';
-            tmpviewdata[i].jitibangou = '';
-            tmpviewdata[i].jyukyukbn = '';
-            tmpviewdata[i].jyukyuname = '';
-            tmpviewdata[i].syougaisyu = '';
-            tmpviewdata[i].syougaisienkbn = '';
-            tmpviewdata[i].futanjyougen = '';
-            if (i == 12) {
-              tmpviewdata[i].jyougenumu = '';
-              tmpviewdata[i].jyougenumuval = false;
-            }
-            tmpviewdata[i].jyougenkanri = '';
-            tmpviewdata[i].syokujiteikyo = '';
-            tmpviewdata[i].tokubetukyufu = '';
-            tmpviewdata[i].syusei = STR_MARU;
-          } else {
-            if (i == 10) {
-              // 年月が一致しているデータのフラグを立てる
-              // tmpviewdata = tmpviewdata.filter((x) =>
-              //   x.nyushoymd.startsWith(
-              //     currentDate.getFullYear() +
-              //       ('00' + (currentDate.getMonth() + 1)).slice(-2)
-              //   )
-              // );
-              tmpviewdata[i].isnyusho = true;
-            }
-            if (i == 14) {
-              tmpviewdata[i].istaisyo = true;
-            }
-          }
-        }
-      }
-      return tmpviewdata;
+      jyukyuIcrn().then((result) => {
+        // データ取得
+        this.viewdataAll = result;
+        this.userFilter();
+      });
     },
     siborikomiUser2(siborikomiType) {
       SIBORIKOMI_SEARCH2 = siborikomiType;
@@ -762,6 +677,7 @@ div#jyukyuicrn {
         top: -3px;
         width: 100%;
         padding-top: 4px;
+        padding-left: 2px;
       }
     }
     input {

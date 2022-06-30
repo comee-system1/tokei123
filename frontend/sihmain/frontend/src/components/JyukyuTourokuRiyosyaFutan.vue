@@ -334,6 +334,8 @@ export default {
       riyosyafutanTajigyosyoRiyoServiceData: this.getTajigyosyoRiyoService(),
       syokujiteikyotaisei: -1,
       tokutetokubetukyufuhi: -1,
+      sienkubunymdStart: '',
+      sienkubunymdEnd: '',
     };
   },
   props: ['titleNum'],
@@ -392,6 +394,7 @@ export default {
 
       grd.endUpdate();
     },
+    onTextChanged(txb) {},
   },
 };
 </script>

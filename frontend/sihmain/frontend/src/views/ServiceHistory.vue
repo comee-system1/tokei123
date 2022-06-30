@@ -15,15 +15,33 @@
       <wj-flex-grid
         id="serviceHistoryGrid"
         :initialized="onInitialized"
+        :selectionMode="3"
         :allowMerging="6"
         :headersVisibility="'Column'"
-        :alternatingRowStep="0"
         :allowDragging="false"
         :allowResizing="false"
         :deferResizing="false"
         :allowSorting="false"
         :itemsSource="historyData"
       >
+        <wj-flex-grid-column
+          :binding="'code'"
+          align="center"
+          valign="middle"
+          :width="100"
+          format="g"
+          :isReadOnly="true"
+          :visible="isVisible1"
+        ></wj-flex-grid-column>
+        <wj-flex-grid-column
+          :binding="'riyosyamei'"
+          align="left"
+          valign="middle"
+          width="2*"
+          :isReadOnly="true"
+          :visible="isVisible1"
+        ></wj-flex-grid-column>
+
         <wj-flex-grid-column
           :binding="'serviceTeikyoJigyosyoCode'"
           align="center"
@@ -61,6 +79,7 @@
           :width="100"
           format="g"
           :isReadOnly="true"
+          :visible="isVisible2"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'riyosyamei'"
@@ -68,28 +87,9 @@
           valign="middle"
           width="2*"
           :isReadOnly="true"
+          :visible="isVisible2"
         ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'gender'"
-          align="center"
-          valign="middle"
-          :width="30"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'birth'"
-          align="center"
-          valign="middle"
-          :width="100"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'age'"
-          align="center"
-          valign="right"
-          :width="30"
-          :isReadOnly="true"
-        ></wj-flex-grid-column>
+
         <wj-flex-grid-column
           :binding="'spice'"
           align="center"
@@ -122,6 +122,7 @@
         ></wj-flex-grid-column>
       </wj-flex-grid>
     </v-container>
+    <dialog-service-history></dialog-service-history>
   </div>
 </template>
 
@@ -130,6 +131,7 @@ import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
+import DialogServiceHistory from '../components/DialogServiceHistory.vue';
 
 export default {
   data() {
@@ -149,10 +151,13 @@ export default {
         serviceCode: '',
       }, // サービス事業の初期
       kanaText: '',
+      isVisible1: false, // 初期選択状態
+      isVisible2: true, // 初期選択状態
     };
   },
   components: {
     RiyousyadaityoSortMenu,
+    DialogServiceHistory,
   },
 
   methods: {
@@ -222,6 +227,9 @@ export default {
           }
           return 0;
         });
+
+        this.isVisible1 = true;
+        this.isVisible2 = false;
       }
       if (type.sortedType === 'code') {
         array.sort((a, b) => {
@@ -234,9 +242,24 @@ export default {
           }
           return 0;
         });
+        this.isVisible1 = true;
+        this.isVisible2 = false;
       }
       if (type.sortedType === 'jigyo') {
+        array.sort((a, b) => {
+          // コードの昇順
+          if (parseInt(a.code) > parseInt(b.code)) {
+            return 1;
+          }
+          if (parseInt(a.code) < parseInt(b.code)) {
+            return -1;
+          }
+          return 0;
+        });
         array = this.changeSortting(array);
+
+        this.isVisible1 = false;
+        this.isVisible2 = true;
       }
 
       this.historyData = [];
@@ -329,7 +352,6 @@ export default {
       this.createHeaderMerge(this.mainFlexGrid);
     },
     onInitialized(flexGrid) {
-      flexGrid.select(-1, -1);
       this.historyData = this.getData();
       this.mainFlexGrid = flexGrid;
       // ヘッダ情報の作成
@@ -342,6 +364,7 @@ export default {
       // 子コンポーネントにサービス事業を設定
       this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
       this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
+      flexGrid.select(-1, -1);
     },
     getData() {
       let historyData = [];
@@ -494,7 +517,7 @@ export default {
           genderKey: '2',
           birth: moment('19911215').format('YYYY/MM/DD'),
           age: '32',
-          spice: '',
+          spice: '通',
           startDate: '',
           endDate: '',
           useYear: '',
@@ -648,7 +671,7 @@ export default {
         });
 
         if (e.panel == flexGrid.columnHeaders) {
-          if (e.col == 6 || e.col == 8 || e.col == 9) {
+          if (e.col == 8) {
             let text = e.cell.innerText;
             let classname = 'vertical';
             e.cell.innerHTML =
@@ -663,12 +686,12 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
             e.cell.style.textAlign = 'left';
           }
-          if (e.col == 6) {
+          if (e.col == 0 || e.col == 2 || e.col == 6) {
             e.cell.style.textAlign = 'center';
             e.cell.style.justifyContent = 'center';
             e.cell.style.alignItems = 'center';
           }
-          if (e.col == 12) {
+          if (e.col == 11) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
@@ -679,32 +702,30 @@ export default {
     createHeader(flexGrid) {
       var panel = flexGrid.columnHeaders;
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
-      panel.setCellData(0, 0, 'サービス提供事業所');
-      panel.setCellData(0, 2, 'サービス名称');
-      panel.setCellData(0, 4, 'コード');
-      panel.setCellData(0, 5, '利用者名');
-      panel.setCellData(0, 6, '性別');
-      panel.setCellData(0, 7, '生年月日');
-      panel.setCellData(0, 8, '年齢');
-      panel.setCellData(0, 9, '種類');
-      panel.setCellData(0, 10, '利用期間');
-      panel.setCellData(0, 12, '利用年数');
+      panel.setCellData(0, 0, 'コード');
+      panel.setCellData(0, 1, '利用者名');
+      panel.setCellData(0, 2, 'サービス提供事業所');
+      panel.setCellData(0, 4, 'サービス名称');
+      panel.setCellData(0, 6, 'コード');
+      panel.setCellData(0, 7, '利用者名');
+      panel.setCellData(0, 8, '種類');
+      panel.setCellData(0, 9, '利用期間');
+      panel.setCellData(0, 11, '利用年数');
     },
     /**************
      * ヘッダセルのマージ
      */
     createHeaderMerge(flexGrid) {
       let headerRanges = [
-        new wjGrid.CellRange(0, 0, 1, 1),
+        new wjGrid.CellRange(0, 0, 1, 0),
+        new wjGrid.CellRange(0, 1, 1, 1),
         new wjGrid.CellRange(0, 2, 1, 3),
-        new wjGrid.CellRange(0, 4, 1, 4),
-        new wjGrid.CellRange(0, 5, 1, 5),
+        new wjGrid.CellRange(0, 4, 1, 5),
         new wjGrid.CellRange(0, 6, 1, 6),
         new wjGrid.CellRange(0, 7, 1, 7),
         new wjGrid.CellRange(0, 8, 1, 8),
-        new wjGrid.CellRange(0, 9, 1, 9),
-        new wjGrid.CellRange(0, 10, 0, 11),
-        new wjGrid.CellRange(0, 12, 1, 12),
+        new wjGrid.CellRange(0, 9, 0, 10),
+        new wjGrid.CellRange(0, 11, 1, 11),
       ];
 
       // サービス毎の合計数を取得
@@ -740,6 +761,7 @@ export default {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
+
 div#serviceHistory {
   font-size: 12px;
   font-family: 'メイリオ';
@@ -758,9 +780,11 @@ div#serviceHistory {
   .wj-cell {
     &.wj-state-selected {
       color: $font_color;
+      background-color: $grid_hover_background;
     }
     &.wj-state-multi-selected {
       color: $font_color;
+      background-color: $grid_hover_background;
     }
   }
   .vertical {

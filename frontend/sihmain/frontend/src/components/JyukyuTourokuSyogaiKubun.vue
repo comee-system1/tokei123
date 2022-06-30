@@ -125,6 +125,9 @@ export default {
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
       sienkubunCombo: this.getSienkubunCombo(),
+
+      sienkubunymdStart: '',
+      sienkubunymdEnd: '',
     };
   },
   props: ['titleNum'],

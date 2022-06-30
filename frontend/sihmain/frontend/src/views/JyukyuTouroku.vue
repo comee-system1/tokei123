@@ -8,7 +8,7 @@
         @click.self="slideInRight.isOpen = false"
       >
         <transition :name="slideInRight.id">
-          <div class="surface" v-if="slideInRight.isOpen">
+          <div class="surface" v-show="slideInRight.isOpen">
             <v-row no-gutters>
               <label class="title ml-2">登録履歴</label>
               <v-row
@@ -27,14 +27,15 @@
               </v-row>
             </v-row>
             <div class="alert-body">
-              <JyukyuTourokuRightArea
+              <JyukyuTourokuRirekiArea
+                ref="rirekiArea"
                 v-if="resetFlag"
                 :selectedTab="this.selectedTab"
                 :titleTab="this.titleTab"
                 :titleNum="this.titleNum"
                 :dispReki="true"
                 @child_data="child_data"
-              ></JyukyuTourokuRightArea>
+              ></JyukyuTourokuRirekiArea>
             </div>
           </div>
         </transition>
@@ -66,9 +67,9 @@
               >
                 <v-btn
                   style="height: 25px; margin-top: 2px; margin-right: 2px"
-                  @click="slideInRight.isOpen = true"
+                  @click="openRireki()"
                 >
-                  {{ slideInRight.title }}
+                  履歴参照
                 </v-btn>
               </v-row>
             </v-card>
@@ -146,14 +147,7 @@
               tile
             >
               <div v-if="JyukyuSyogaiFukusiFlag">
-                <JyukyuTourokuKihon
-                  :riyosya="riyosyaid"
-                  :shichosonno="this.getShichosonno()"
-                  :shichosonname="this.getShichosonname()"
-                  :sikyuketteisyano="this.getSikyuketteisyano()"
-                  :sikyuketteisya="this.getSikyuketteisya()"
-                >
-                </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
                 <JyukyuTourokuSyogaiKubun :titleNum="this.titleNum[0]">
                 </JyukyuTourokuSyogaiKubun>
                 <JyukyuTourokuSikyuryo :titleNum="this.titleNum[1]">
@@ -164,7 +158,7 @@
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuSyogaiJiFlag">
-                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
                 <JyukyuTourokuSikyuryo :titleNum="this.titleNum[0]">
                 </JyukyuTourokuSikyuryo>
                 <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[1]">
@@ -173,7 +167,7 @@
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuChiikiSoudanFlag">
-                <JyukyuTourokuKihon :riyosya="riyosyaid"> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
                 <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[0]">
                 </JyukyuTourokuKeikakuSoudan>
               </div>
@@ -208,7 +202,6 @@
         </v-col>
         <v-col class="right-area ml-1">
           <JyukyuTourokuRightArea
-            v-if="resetFlag"
             :selectedTab="this.selectedTab"
             :titleTab="this.titleTab"
             :titleNum="this.titleNum"
@@ -230,6 +223,7 @@ import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun.vue
 import JyukyuTourokuSikyuryo from '../components/JyukyuTourokuSikyuryo.vue';
 import JyukyuTourokuKeikakuSoudan from '../components/JyukyuTourokuKeikakuSoudan.vue';
 import JyukyuTourokuRiyosyaFutan from '../components/JyukyuTourokuRiyosyaFutan.vue';
+import JyukyuTourokuRirekiArea from '../components/JyukyuTourokuRightArea.vue';
 import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
 import { getJyukyuTourokuKihonData } from '../data/JyukyuTourokuKihonData.js';
 
@@ -237,7 +231,6 @@ let GlobalData = new Vue({
   data: {
     $mode: 'new', //編集モード
     $hojomode: 'none', //入力補助機能モード
-    $kihonDataOrg: [], //基本データ
   },
 });
 
@@ -254,12 +247,6 @@ Vue.mixin({
     },
     $_setHojoMode(hojoMode) {
       GlobalData.$data.$hojomode = hojoMode;
-    },
-    $_kihonDataOrg() {
-      return GlobalData.$data.$kihonDataOrg;
-    },
-    $_setKihonDataOrg(newKihonData) {
-      GlobalData.$data.$kihonDataOrg = newKihonData;
     },
   },
   computed: {
@@ -279,14 +266,6 @@ Vue.mixin({
         GlobalData.$data.$hojomode = hojoMode;
       },
     },
-    $kihonDataOrg: {
-      get: function () {
-        return GlobalData.$data.$kihonDataOrg;
-      },
-      set: function (newKihonData) {
-        GlobalData.$data.$kihonDataOrg = newKihonData;
-      },
-    },
   },
 });
 
@@ -303,7 +282,6 @@ export default {
       serviceArgument: '', // ヘッダメニューのサービス選択
       userListComponentDatas: [], // ユーザー一覧データ
       userDataSelect: [{ riyosyaname: '', jyukyusyabango: '' }], // ユーザ一覧から選択した値
-      riyosyaid: '',
       riyosyaname: '',
       // タブの制御Flag
       JyukyuSyogaiFukusiFlag: false, // JyukyuSyogaiFukusiFlagの初期表示状態
@@ -377,9 +355,13 @@ export default {
 
       slideInRight: {
         id: 'right',
-        title: '履歴参照',
         isOpen: false,
       },
+
+      //dataobject
+      kihonDataOrg: [], //基本データ初期リスト
+
+      selectedKihonData: [], //履歴選択 基本データ
     };
   },
   components: {
@@ -390,6 +372,7 @@ export default {
     JyukyuTourokuSikyuryo,
     JyukyuTourokuKeikakuSoudan,
     JyukyuTourokuRiyosyaFutan,
+    JyukyuTourokuRirekiArea,
     JyukyuTourokuRightArea,
   },
   mounted() {
@@ -401,24 +384,7 @@ export default {
   },
   computed: {},
   methods: {
-    getShichosonno() {
-      let r = this.$_selectedShichoson();
-      return r.code;
-    },
-    getShichosonname() {
-      let r = this.$_selectedShichoson();
-      return r.name;
-    },
-    getSikyuketteisyano() {
-      let r = this.$_selectedKazoku();
-      return r.code;
-    },
-    getSikyuketteisya() {
-      let r = this.$_selectedKazoku();
-      return r.name;
-    },
     setTrunNew() {
-      this.riyosyaid = '';
       this.$_setMode('new');
       this.$_setSubGridSelected(false);
       if (this.JyukyuSyogaiFukusiFlag) {
@@ -437,7 +403,7 @@ export default {
           this.JyukyuChiikiSoudanFlag = true;
         });
       }
-      this.move_to(this.menuitems[0], this.menuitems[0].id);
+      this.goto_top();
     },
     /*********************
      * 画面リサイズの際の表示調整
@@ -512,7 +478,6 @@ export default {
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
     setUserSelectPoint(row) {
-      this.riyosyaid = this.userListComponentDatas[row].riid;
       this.userDataSelect[0]['riyosyaname'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -521,8 +486,17 @@ export default {
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
       // 値の設定
-      this.$_setKihonDataOrg(getJyukyuTourokuKihonData(this.riyosyaid));
-      this.$_setSubGridSelected('new');
+      let rid = this.userListComponentDatas[row].riid;
+      this.kihonDataOrg = getJyukyuTourokuKihonData(rid);
+      this.setKihonData(this.kihonDataOrg, null);
+      this.$_setSubGridSelected(true);
+    },
+    openRireki() {
+      this.slideInRight.isOpen = true;
+      this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
+    },
+    setKihonData(list, seleced) {
+      this.$refs.kihon.setData(list, seleced);
     },
     menu_clear() {
       for (let i = 0; i < this.menuitems.length; i++) {
@@ -534,7 +508,7 @@ export default {
       }
     },
     goto_top() {
-      var target = document.getElementById('JyukyuTourokuKihon');
+      var target = document.getElementById(this.menuitems[0].target);
       target.scrollIntoView({
         block: 'start',
       });
@@ -567,8 +541,9 @@ export default {
       // console.log(args);
       // console.log(code);
       switch (code) {
-        case 'jyukyu':
-          this.$_setSelectedKihonData(args);
+        case 'kihon':
+          this.selectedKihonData = args;
+          this.setKihonData(this.kihonDataOrg, this.selectedKihonData);
           break;
         case 'syogai':
           break;
@@ -579,8 +554,14 @@ export default {
         case 'futan':
           break;
         case 'shichoson':
+          {
+            this.$refs.kihon.setShichoson(args.code, args.name);
+          }
           break;
         case 'kazoku':
+          {
+            this.$refs.kihon.setSikyuketteisya(args.code, args.name);
+          }
           break;
       }
     },

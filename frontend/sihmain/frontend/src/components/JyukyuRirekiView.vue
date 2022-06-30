@@ -1,6 +1,7 @@
 <template>
   <div id="JyukyuRirekiView">
     <wj-flex-grid
+      id="grdRireki"
       :itemsSource="allData"
       :allowMerging="'ColumnHeaders'"
       :selectionMode="3"
@@ -42,7 +43,7 @@ export default {
       maxH: '16vh', // グリッドの高さ
       allData: [], // データ配列
       headers: {
-        jyukyu: {
+        kihon: {
           title: '受給者証情報',
           array: [
             { dataname: '', title: '回' },
@@ -93,17 +94,18 @@ export default {
           ],
         },
       },
+      grid: null,
     };
   },
   props: [
     'basicFlag',
-    'jyukyuFlag',
+    'kihonFlag',
     'syogaiFlag',
     'ketteiFlag',
     'keikakuFlag',
     'futanFlag',
     'basicData',
-    'jyukyuData',
+    'kihonData',
     'syogaiData',
     'ketteiData',
     'keikakuData',
@@ -118,28 +120,35 @@ export default {
   components: {},
   methods: {
     onInitialized(flexGrid) {
+      this.grid = flexGrid;
       flexGrid.columns.clear();
       // ヘッダ情報の作成
       this.createHeader(flexGrid);
-      // データの作成
-      this.settingData(flexGrid);
       // セルのマージ
       this.cellMerge(flexGrid);
       // イベント設定
       this.setEvents(flexGrid);
       // 未選択状態
       flexGrid.select(-1, -1);
+
+      //dummy
+      this.settingDatadummy(null);
     },
 
     /************************
      * データの取得・表記
      */
-    settingData(flexGrid) {
+    settingData(list) {
+      this.allData = list;
+      let g = wijmo.Control.getControl('#grdRireki');
+      g.itemsSource = this.allData;
+    },
+    settingDatadummy(list) {
       let data = [];
 
       // 受給者情報
-      if (this.jyukyuFlag) {
-        data = this.$_kihonDataOrg();
+      if (this.kihonFlag) {
+        data = list;
       }
       // 受給者情報
       else if (this.syogaiFlag) {
@@ -253,8 +262,8 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         let code = '';
-        if (_self.jyukyuFlag) {
-          code = 'jyukyu';
+        if (_self.kihonFlag) {
+          code = 'kihon';
         } else if (_self.syogaiFlag) {
           code = 'syogai';
         } else if (_self.ketteiFlag) {
@@ -265,7 +274,8 @@ export default {
           code = 'futan';
         }
 
-        _self.$emit('child_data', _self.allData[hPage.row], code);
+        let g = wijmo.Control.getControl('#grdRireki');
+        _self.$emit('child_data', g.itemsSource[hPage.row], code);
         _self.$_setSubGridSelected(true);
       });
     },
@@ -276,9 +286,9 @@ export default {
       let headerTitle = '';
       let headerArray = [];
       // 受給者情報
-      if (this.jyukyuFlag) {
-        headerTitle = this.titleTab + '-' + this.headers.jyukyu.title;
-        headerArray = this.headers.jyukyu.array;
+      if (this.kihonFlag) {
+        headerTitle = this.titleTab + '-' + this.headers.kihon.title;
+        headerArray = this.headers.kihon.array;
       }
       // 障害区分
       else if (this.syogaiFlag) {
@@ -332,7 +342,7 @@ export default {
     settingCellSizeCustom(flexGrid) {
       // 受給者情報
       flexGrid.columns[0].visible = false;
-      if (this.jyukyuFlag) {
+      if (this.kihonFlag) {
         flexGrid.columns[1].width = 81;
         flexGrid.columns[2].width = '3*';
         flexGrid.columns[3].width = '4*';
@@ -373,7 +383,7 @@ export default {
     cellMerge(flexGrid) {
       let mm = new wjGrid.MergeManager();
       let ranges = [];
-      if (this.jyukyuFlag) {
+      if (this.kihonFlag) {
         ranges = [
           new wjGrid.CellRange(0, 0, 0, 5),
           new wjGrid.CellRange(1, 4, 1, 5),
