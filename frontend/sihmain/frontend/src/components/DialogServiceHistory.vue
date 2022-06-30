@@ -145,6 +145,13 @@
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'サービス名称'"
+                :binding="'listKey'"
+                align="center"
+                valign="middle"
+                :width="30"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
                 :binding="'listMeisyo'"
                 align="center"
                 valign="middle"
@@ -249,6 +256,7 @@
 // import { ja } from 'vuejs-datepicker/dist/locale';
 // import moment from 'moment';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import * as wjGrid from '@grapecity/wijmo.grid';
 
 export default {
   props: {},
@@ -256,13 +264,50 @@ export default {
     return {
       dialog: true,
       datepicker_dialog: false,
+      serviceList: [], // サービス事業所一覧データ
     };
   },
   components: {
     AlphabetButton,
   },
 
-  methods: {},
+  methods: {
+    /********************
+     * サービス事業所一覧
+     */
+    svListInitialize(listFlexGrid) {
+      this.listFlexGrid = listFlexGrid;
+      listFlexGrid.select(-1, -1);
+      this.createListHeaderMerge(listFlexGrid);
+      this.serviceList = this.getListData();
+    },
+    /***************
+     * サービス事業所一覧用データ
+     */
+    getListData() {
+      let array = [];
+      array.push({
+        listCode: 100101,
+        listJigyosyo: '支援施設ひまわり園',
+        listKey: '22',
+        listMeisyo: '生活介護',
+      });
+    },
+    createListHeaderMerge(flexGrid) {
+      let headerRanges = [new wjGrid.CellRange(0, 2, 0, 3)];
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
+  },
 };
 </script>
 
