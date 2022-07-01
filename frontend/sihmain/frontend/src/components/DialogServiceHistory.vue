@@ -724,11 +724,11 @@ export default {
             (this.display_service == 2 &&
               this.serviceHistoryEdit.findIndex(
                 (hist) => hist.serviceCode == this.serviceList[i].listKey
-              ) === -1) ||
-            this.serviceHistoryEdit.findIndex(
-              (hist) =>
-                hist.serviceTeikyoJigyosyoCode == this.serviceList[i].listCode
-            ) === -1
+              ) == -1 &&
+              this.serviceHistoryEdit.findIndex(
+                (hist) =>
+                  hist.serviceTeikyoJigyosyoCode == this.serviceList[i].listCode
+              ) == -1)
           ) {
             data.push(this.serviceList[i]);
           }
