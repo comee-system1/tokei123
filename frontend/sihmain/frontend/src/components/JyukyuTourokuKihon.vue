@@ -295,7 +295,7 @@ export default {
     },
     setData(list, selectedData) {
       let data = [];
-      this.isModify = false;
+      this.clearData();
       if (selectedData != null) {
         this.kofuymd = moment(selectedData.kofuymd).format('YYYY-M-D');
         this.jyukyukubun = selectedData.zantei;
@@ -334,6 +334,19 @@ export default {
     setSikyuketteisya(code, name) {
       this.sikyuketteisyano = code;
       this.sikyuketteisya = name;
+    },
+    clearData() {
+      this.kofuymd = '';
+      this.jyukyukubun = -1;
+      this.jyukyuno = '';
+      this.setShichoson('', '');
+      this.syogaisyubetuValues[0] = 0;
+      this.syogaisyubetuValues[1] = 0;
+      this.syogaisyubetuValues[2] = 0;
+      this.syogaisyubetuValues[3] = 0;
+      this.syogaiji = false;
+      this.setSikyuketteisya('', '');
+      this.isModify = false;
     },
   },
 };

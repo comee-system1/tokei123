@@ -6,7 +6,7 @@
 
     <v-container fluid class="pt-0 mt-0">
       <div v-show="dispReki">
-        <div v-show="this.selectedTab == 'JyukyuSyogaiFukusi'">
+        <div v-if="this.selectedTab == 'JyukyuSyogaiFukusi'">
           <JyukyuRirekiViewKihon
             ref="kihon"
             :basicFlag="true"
@@ -15,6 +15,7 @@
             @child_data="child_data"
           ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewSyogai
+            ref="syogaiKubun"
             :basicFlag="false"
             :syogaiFlag="true"
             :titleTab="this.titleTab"
@@ -43,7 +44,7 @@
             @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
-        <div v-show="this.selectedTab == 'JyukyuSyogaiJi'">
+        <div v-else-if="this.selectedTab == 'JyukyuSyogaiJi'">
           <JyukyuRirekiViewKihon
             ref="kihon"
             :basicFlag="true"
@@ -73,7 +74,7 @@
             @child_data="child_data"
           ></JyukyuRirekiViewRiyousya>
         </div>
-        <div v-show="this.selectedTab == 'JyukyuChiikiSoudan'">
+        <div v-else-if="this.selectedTab == 'JyukyuChiikiSoudan'">
           <JyukyuRirekiViewKihon
             ref="kihon"
             :basicFlag="true"
@@ -184,6 +185,9 @@ export default {
     setKihonData(list) {
       this.$refs.kihon.settingData(list);
     },
+    setSyogaiKubunData(list) {
+      this.$refs.syogaiKubun.settingData(list);
+    },
   },
 };
 </script>
@@ -194,7 +198,8 @@ export default {
     text-align: center;
     height: 30px;
     font-size: 18px !important;
-    background-color: #eee;
+    color: #fff;
+    background-color: #444;
     border-radius: 5px;
   }
 }

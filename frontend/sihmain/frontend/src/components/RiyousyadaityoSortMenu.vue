@@ -19,7 +19,7 @@
             dark
             outlined
             style="width: 90px; height: 25px"
-            @click="sort(2)"
+            @click="allowSyuseiTouroku()"
           >
             修正登録
           </v-btn>
@@ -29,7 +29,6 @@
             dark
             outlined
             style="width: 90px; height: 25px"
-            @click="sort(3)"
           >
             履歴登録
           </v-btn>
@@ -39,7 +38,6 @@
             dark
             outlined
             style="width: 90px; height: 25px"
-            @click="sort(4)"
           >
             終了登録
           </v-btn>
@@ -314,6 +312,13 @@ export default {
      */
     shinkiTourokuDialogOpen() {
       this.$emit('pearentShinkiDialogOpen');
+    },
+    /******************
+     * 修正登録ダイアログの呼び出しを許可
+     */
+    allowSyuseiTouroku() {
+      console.log(1)
+      this.$emit('pearentAllowSyuseiTouroku');
     },
     /******************
      * 合計値の表示

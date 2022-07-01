@@ -51,12 +51,13 @@
         >
           <wj-menu
             id="comboSienkubun"
-            class="syogaikubun-sienkubun-items"
+            class="customCombobox"
             :initialized="initComboSienkubun"
             :isRequired="true"
             :itemsSource="sienkubunCombo"
             :displayMemberPath="'text'"
             selectedValuePath="'key'"
+            :itemClicked="onSelectedSienkubun"
           >
           </wj-menu>
         </v-card>
@@ -79,8 +80,8 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdStart"
-            v-model="sienkubunymdStart"
+            :value="syugaikubunymdStart"
+            v-model="syugaikubunymdStart"
             placeholder="開始日を選択"
           ></datepicker>
           &nbsp;～&nbsp;
@@ -88,14 +89,14 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdEnd"
-            v-model="sienkubunymdEnd"
+            :value="syugaikubunymdEnd"
+            v-model="syugaikubunymdEnd"
             placeholder="終了日を選択"
           ></datepicker>
         </v-card>
       </v-row>
       <v-row v-if="this.changeMode()" no-gutters class="syogaikubun-button-row">
-        <v-btn class="cancel-button"> キャンセル</v-btn>
+        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="syogaikubun-bottom-regist d-flex flex-row-reverse"
@@ -114,6 +115,7 @@ import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 import '@grapecity/wijmo.styles/wijmo.css';
 import '@grapecity/wijmo.vue2.input';
+import '@grapecity/wijmo.vue2.core';
 export default {
   data() {
     return {
@@ -126,8 +128,10 @@ export default {
       lastdate: moment().daysInMonth(),
       sienkubunCombo: this.getSienkubunCombo(),
 
-      sienkubunymdStart: '',
-      sienkubunymdEnd: '',
+      isModify: false,
+      syogaiKubun: 0,
+      syugaikubunymdStart: '',
+      syugaikubunymdEnd: '',
     };
   },
   props: ['titleNum'],
@@ -138,6 +142,12 @@ export default {
     this.Resize();
   },
   methods: {
+    dispRegistBtn() {
+      let r = this.isModify;
+      this.Resize();
+      this.$_setSubGridSelected(r);
+      return r;
+    },
     changeMode() {
       this.Resize();
       return this.$_mode() === 'modSyogaikubun';
@@ -159,28 +169,82 @@ export default {
       this.$_setMode('modSyogaikubun');
       this.Resize();
     },
+    cancel() {
+      this.$_setMode('new');
+      this.changeMode();
+    },
+    setData(list, selectedData) {
+      let data = [];
+      this.clearData();
+      if (selectedData != null) {
+        this.syogaiKubun = selectedData.syogaikbn;
+        this.syugaikubunymdStart = moment(selectedData.ntsymd).format(
+          'YYYY-M-D'
+        );
+        if (selectedData.nteymd != '99991231') {
+          this.syugaikubunymdEnd = moment(selectedData.nteymd).format(
+            'YYYY-M-D'
+          );
+        }
+        this.isModify = true;
+      } else {
+        data = list;
+        if (data[0].syogaikbn > 0) {
+          this.syogaiKubun = data[0].syogaikbn;
+          this.syugaikubunymdStart = moment(data[0].ntsymd).format('YYYY-M-D');
+          if (data[0].nteymd != '99991231') {
+            this.syugaikubunymdEnd = moment(data[0].nteymd).format('YYYY-M-D');
+          }
+          this.isModify = true;
+        }
+      }
+      if (this.syogaiKubun > 0) {
+        this.setSienkubun(this.syogaiKubun);
+      }
+      this.$_setMode('new');
+      this.Resize();
+    },
+    clearData() {
+      this.syogaiKubun = 0;
+      this.syugaikubunymdStart = '';
+      this.syugaikubunymdEnd = '';
+      this.isModify = false;
+      this.setSienkubun(this.syogaiKubun);
+    },
     /*************************
      * 絞り込みコンボボックス
      */
     initComboSienkubun(combo) {
-      let _self = this;
       combo.header = this.sienkubunCombo[0].text;
       var obj = document.getElementById('comboSienkubun');
       obj.style.color = 'gray';
-      combo.selectedIndexChanged.addHandler(function (sender) {
-        if (combo.selectedIndex == 0) {
+    },
+    onSelectedSienkubun(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        var obj = document.getElementById('comboSienkubun');
+        if (e.selectedIndex == 0) {
           obj.style.color = 'gray';
         } else {
           obj.style.color = 'black';
         }
-        if (sender.selectedIndex != -1) {
-          combo.header = _self.sienkubunCombo[sender.selectedIndex].text;
-        }
-      });
+      }
+    },
+    setSienkubun(kbn) {
+      let index = this.sienkubunCombo.findIndex((e) => e.key == kbn);
+      var obj = wijmo.Control.getControl('#comboSienkubun');
+      if (index >= 0) {
+        obj.selectedIndex = index;
+        obj.header = this.sienkubunCombo[index].text;
+      } else {
+        obj.selectedIndex = 0;
+        obj.header = this.sienkubunCombo[0].text;
+      }
+      this.onSelectedSienkubun(obj);
     },
     getSienkubunCombo() {
-      let sienkubunCombo = [];
-      sienkubunCombo.push(
+      let list = [];
+      list.push(
         {
           key: 0,
           text: '区分を選択',
@@ -210,7 +274,7 @@ export default {
           text: '区分６',
         }
       );
-      return sienkubunCombo;
+      return list;
     },
   },
 };
@@ -278,6 +342,10 @@ div#JyukyuTourokuSyogaiKubun {
         font-size: 12px;
       }
     }
+  }
+  div.customCombobox.customCombobox {
+    width: 100px !important;
+    font-size: 12px !important;
   }
 
   .syogaikubun-yukokikan-row {

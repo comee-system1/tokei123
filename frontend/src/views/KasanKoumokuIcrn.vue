@@ -29,7 +29,7 @@
           :itemsSource="kasanList"
           :initialized="initComboFilters"
           :isRequired="true"
-          selectedValuePath="val"
+          selectedValuePath="kcode"
           displayMemberPath="name"
           v-model="selKasan"
           :itemClicked="onKasanClicked"
@@ -108,6 +108,7 @@ import AlphabetButton from '@/components/AlphabetButton.vue';
 import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import { kasanKoumokuIcrn } from '@backend/api/KasanKoumokuIcrn';
+import { mstKsnKmk } from '@backend/api/MstKsnKmk';
 
 const STR_DEFAULT = '';
 const STYLE_DEFAULT = '';
@@ -187,7 +188,7 @@ export default {
         { val: 1, name: '今月入所者' },
         { val: 2, name: '今月退所者' },
       ],
-      kasanList: this.loadKasan(),
+      kasanList: [],
       sortSelList: [
         { val: 0, name: 'コード' },
         { val: 1, name: 'カナ' },
@@ -210,15 +211,17 @@ export default {
       if (combo.hostElement.id == CMB_ID.cmb1) {
         combo.header = this.userSelList[0].name;
       } else if (combo.hostElement.id == CMB_ID.cmb2) {
-        this.selKasan = Number(ls.getlocalStorageEncript(ls.KEY.Kasan));
-        let index = this.kasanList.findIndex(
-          (element) => element.val == this.selKasan
-        );
-        if (index >= 0) {
-          combo.header = this.kasanList[index].name;
-        } else {
-          combo.header = this.kasanList[0].name;
-        }
+        mstKsnKmk(true).then((result) => {
+          this.kasanList = result;
+          let index = this.kasanList.findIndex(
+            (element) => element.kcode == this.selKasan
+          );
+          if (index >= 0) {
+            combo.header = this.kasanList[index].name;
+          } else {
+            combo.header = this.kasanList[0].name;
+          }
+        });
       }
     },
     onUserClicked(s) {
@@ -235,26 +238,6 @@ export default {
       this.userFilter();
       let f = document.activeElement;
       f.blur();
-    },
-    loadKasan() {
-      return [
-        { val: 0, kbn: 0, name: '指定なし' },
-        { val: 1, kbn: 1, name: '夜間職員配置体制加算' },
-        { val: 2, kbn: 1, name: '重度障害者支援加算Ⅰ' },
-        { val: 3, kbn: 1, name: '夜間看護体制加算' },
-        { val: 4, kbn: 1, name: '視覚・聴覚等支援体制加算' },
-        { val: 5, kbn: 1, name: '地域生活移行個別支援加算' },
-        { val: 6, kbn: 1, name: '口腔衛生管理体制加算' },
-        { val: 7, kbn: 1, name: '処遇改善加算Ⅰ' },
-        { val: 8, kbn: 1, name: '処遇改善特別加算' },
-        { val: 9, kbn: 1, name: '特定処遇改善加算' },
-        { val: 10, kbn: 2, name: '入所時特別支援加算' },
-        { val: 11, kbn: 2, name: '入院・外泊時加算Ⅰ' },
-        { val: 12, kbn: 2, name: '入院・外泊時加算Ⅱ' },
-        { val: 13, kbn: 2, name: '経口維持加算Ⅰ' },
-        { val: 14, kbn: 2, name: '口腔衛生管理加算' },
-        { val: 15, kbn: 2, name: '栄養マネジメント加算' },
-      ];
     },
     onInitializekasanKoumokuIcrnGrid(flexGrid) {
       flexGrid.beginUpdate();
@@ -287,16 +270,16 @@ export default {
       let newheadList = this.headerList.concat();
 
       for (let i = 0; i < this.kasanList.length; i++) {
-        if (this.kasanList[i].val == 0) {
+        if (this.kasanList[i].bunkbn == 0) {
           continue;
         }
         newheadList.push({
-          dataname: String(this.kasanList[i].val),
+          dataname: String(this.kasanList[i].kcode),
           title: this.kasanList[i].name,
           width: 60,
           align: STYLE_ALIGN_RIGHT,
-          kasankbn: this.kasanList[i].kbn,
-          kasanval: this.kasanList[i].val,
+          kasankbn: this.kasanList[i].bunkbn,
+          kasanval: this.kasanList[i].kcode,
         });
       }
       flexGrid.columns.clear();
@@ -343,7 +326,7 @@ export default {
           flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
         }
       }
-      let kasancnt = this.kasanList.filter((x) => x.kbn == 1).length - 1;
+      let kasancnt = this.kasanList.filter((x) => x.bunkbn == 1).length - 1;
       // セル結合
       let mm = new wjGrid.MergeManager();
       // 結合するセルの範囲を指定
@@ -411,6 +394,7 @@ export default {
     onItemsSourceChanged(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      this.selKasan = Number(ls.getlocalStorageEncript(ls.KEY.Kasan));
     },
     onFormatItem(flexGrid, e) {
       flexGrid.beginUpdate();
@@ -490,83 +474,11 @@ export default {
       flexGrid.endUpdate();
     },
     searchClicked() {
-      kasanKoumokuIcrn().then((result) => {
+      kasanKoumokuIcrn(this.kasanList).then((result) => {
         // データ取得
         this.viewdataAll = result;
         this.userFilter();
       });
-    },
-    loadData() {
-      let tmpviewdata = [];
-      let userCount = 100;
-      // ★Date型はmonthが0-11で表現されることに注意
-      let kankaku = true;
-      for (let i = 0; i < userCount; i++) {
-        if (i % 2 == 0) {
-          tmpviewdata.push({
-            id: i,
-            no: String(Math.floor(Math.random() * 10000000000) + 1).padStart(
-              10,
-              '0'
-            ),
-            err: require('@/assets/kaku_15px.png'),
-            name: '東経太郎' + i,
-            kana: 'トウケイタロウ' + i,
-            useymd: String(99),
-            nyuinymd: String(99),
-            gaihakuymd: String(99),
-            kbn: 1,
-            isNyusyo: false,
-            isTaisyo: false,
-          });
-          if (kankaku) {
-            tmpviewdata[i].err = require('@/assets/kaku_15px.png');
-            kankaku = false;
-          } else {
-            tmpviewdata[i].err = '';
-            kankaku = true;
-          }
-          if (i < 10) {
-            tmpviewdata[i].isNyusyo = true;
-          } else if (i < 20) {
-            tmpviewdata[i].isTaisyo = true;
-          }
-        } else {
-          tmpviewdata.push({
-            id: i - 1,
-            no: tmpviewdata[i - 1].no,
-            name: '(' + tmpviewdata[i - 1].no + ')',
-            kana: tmpviewdata[i - 1].kana,
-            useymd: '',
-            nyuinymd: '',
-            gaihakuymd: '',
-            kbn: 2,
-            isNyusyo: tmpviewdata[i - 1].isNyusyo,
-            isTaisyo: tmpviewdata[i - 1].isTaisyo,
-          });
-        }
-
-        // 動的に加算のプロパティを作成
-        for (let kasan = 0; kasan < this.kasanList.length; kasan++) {
-          if (this.kasanList[kasan].val == 0) {
-            continue;
-          }
-          if (i % 2 == 0) {
-            this.$set(
-              tmpviewdata[i],
-              String(this.kasanList[kasan].val),
-              Number(Math.floor(Math.random() * 100))
-            );
-          } else {
-            this.$set(
-              tmpviewdata[i],
-              String(this.kasanList[kasan].val),
-              Number(Math.floor(Math.random() * 10000))
-            );
-          }
-        }
-      }
-      return tmpviewdata;
     },
     sortUser(sortType) {
       ls.setlocalStorageEncript(ls.KEY.Sort, sortType);

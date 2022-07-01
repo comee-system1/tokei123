@@ -3,6 +3,7 @@
     <v-container fluid class="mt-0 user-info">
       <riyousyadaityo-sort-menu
         @pearentShinkiDialogOpen="pearentShinkiDialogOpen()"
+        @pearentAllowSyuseiTouroku="pearentAllowSyuseiTouroku()"
         @displaySort="displaySort($event)"
         @sorted="sorted($event)"
       ></riyousyadaityo-sort-menu>
@@ -111,6 +112,9 @@
         ref="dialog_shinki_tuika"
         @addFormData = "addFormData"
         ></dialog-shinki-touroku>
+      <dialog-syusei-touroku 
+        ref="dialog_syusei_touroku"
+        ></dialog-syusei-touroku>
     </v-container>
   </div>
 </template>
@@ -119,12 +123,14 @@ import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
 import DialogShinkiTouroku from '../components/DialogShinkiTouroku.vue';
+import DialogSyuseiTouroku from '../components/DialogSyuseiTouroku.vue';
 import sysConst from '@/utiles/const';
 
 export default {
   data() {
     return {
       dialog_shinki_flag: false, // 新規登録モーダルの表示フラグ
+      syuseiTourokuFlag: false,
       kihonjyohoData: [],
       allData: [],
       mainFlexGrid: [],
@@ -134,6 +140,7 @@ export default {
   components: {
     RiyousyadaityoSortMenu,
     DialogShinkiTouroku,
+    DialogSyuseiTouroku,
   },
   mounted() {
     this.handleResize();
@@ -154,8 +161,12 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
-    // 新規利用者登録ボタン押下
+    
+    /************************
+     * 新規登録タブ押下
+     */
     pearentShinkiDialogOpen() {
+      this.syuseiTourokuFlag = false;
       let array = [];
       array = this.kihonjyohoData;
       // array.push({
@@ -166,7 +177,40 @@ export default {
       // モーダルに新データ追加用の配列を渡す
       this.$refs.dialog_shinki_tuika.open(array);
     },
+    
+    /************************
+     * 修正登録タブ押下
+     */
+    pearentAllowSyuseiTouroku() {
+      this.syuseiTourokuFlag = true;
+    },
 
+    /****************
+     *セルのクリックイベント
+     */
+    clickEventCell(flexGrid) {
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        if (_self.syuseiTourokuFlag === true) {
+          let ht = flexGrid.hitTest(e);
+          let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+          // セル押下時のみ
+          if (ht.cellType == wjGrid.CellType.Cell) {
+            //クリックした行の利用者データを取得
+            let RiyousyaKihonData = _self.getJyukyunoRow(hPage.row);
+            _self.$refs.dialog_syusei_touroku.open(RiyousyaKihonData);
+          }
+        }
+      });
+    },
+    /*************
+     * 受給者番号が持つ行数の取得
+     */
+    getJyukyunoRow(row) {
+      let data = [];
+      data = this.kihonjyohoData[row];
+      return data;
+    },
     /************************
      * 子コンポーネントのソート項目
      */
@@ -359,6 +403,9 @@ export default {
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.getData();
+      
+      // セルのクリックイベント(修正登録タブアクティブ時)
+      this.clickEventCell(flexGrid);
 
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;

@@ -11,7 +11,6 @@ function alphabetFilter(array, select, search = "") {
     select = parseInt(ls.getlocalStorageEncript(ls.KEY.Alphabet));
   }
   let get = [];
-
   array.forEach(function (value) {
     switch (select) {
       case 0:

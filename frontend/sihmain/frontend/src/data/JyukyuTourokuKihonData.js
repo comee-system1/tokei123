@@ -52,7 +52,7 @@ export function getJyukyuTourokuKihonData(riyosyaid) {
 		jdata['jyukyu_inf'].push(
 			{
 				kai:1,
-				jyukyuid: 1,
+				jyukyuid: 2,
 				rysid: 55001,
 				jkbn: 1,
 				shichoson: 1,

@@ -16,9 +16,9 @@ import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
 import NyutaiinHokoku from '../views/NyutaiinHokoku.vue'
 import NenkanRiyouNissuIcrn from '../views/NenkanRiyouNissuIcrn.vue'
-import JyukyuTouroku from '../../../../SIHMAIN/frontend/src/views/JyukyuTouroku.vue'
+import JyukyuTouroku from '@sihmain/frontend/src/views/JyukyuTouroku.vue'
 import ServiceHistory from '@sihmain/frontend/src/views/ServiceHistory.vue'
-import KihonJyoho from '../../../../SIHMAIN/frontend/src/views/KihonJyoho.vue'
+import KihonJyoho from '@sihmain/frontend/src/views/KihonJyoho.vue'
 
 // store
 import Store from '@/store/index.js'

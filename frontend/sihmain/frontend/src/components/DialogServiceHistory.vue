@@ -5,6 +5,18 @@
         <v-toolbar-title class="text-subtitle-1"
           >サービス履歴　追加登録</v-toolbar-title
         >
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close()"
+          class="closeButton"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
         <v-row dense id="serviceArea" class="mt-5">
           <v-col cols="2">利用者名</v-col>
           <v-col class="ml-3">
@@ -26,7 +38,7 @@
               height="85%"
               style="min-width: auto; border-radius: 3px"
               tile
-              @click="riyosyaClick(1)"
+              @click="riyosyaClick('back')"
             >
               <v-icon>mdi-arrow-left-bold</v-icon>
             </v-btn>
@@ -37,7 +49,7 @@
               height="85%"
               style="min-width: auto; border-radius: 3px"
               tile
-              @click="riyosyaClick(2)"
+              @click="riyosyaClick('next')"
             >
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
@@ -108,17 +120,56 @@
                       >
                     </v-col>
                   </v-row>
+                  <v-row dense v-if="toggle_tabs == 1">
+                    <v-col cols="2">利用種類</v-col>
+                    <v-col>
+                      <v-btn-toggle v-model="toggle_spice">
+                        <v-btn small elevation="0">通常</v-btn>
+                        <v-btn small elevation="0">体験</v-btn>
+                      </v-btn-toggle>
+                    </v-col>
+                  </v-row>
                   <v-row dense class="mt-5 mb-5">
                     <v-col cols="3">
-                      <v-btn tile small elevation="0" outlined
+                      <v-btn
+                        v-if="toggle_tabs == 0"
+                        tile
+                        small
+                        elevation="0"
+                        outlined
                         >画面クリア</v-btn
+                      >
+                      <v-btn
+                        v-if="toggle_tabs == 1"
+                        tile
+                        small
+                        elevation="0"
+                        outlined
+                        >削除</v-btn
                       >
                     </v-col>
                     <v-col align="center">
                       最終登録者：2020/08/04 10:38 明治　正雄
                     </v-col>
                     <v-col cols="3" align="right">
-                      <v-btn tile small elevation="0" outlined>追加登録</v-btn>
+                      <v-btn
+                        v-if="toggle_tabs == 0"
+                        tile
+                        small
+                        elevation="0"
+                        outlined
+                        @click="addRegist"
+                        >追加登録</v-btn
+                      >
+                      <v-btn
+                        v-if="toggle_tabs == 1"
+                        tile
+                        small
+                        elevation="0"
+                        outlined
+                        @click="addRegist"
+                        >修正登録</v-btn
+                      >
                     </v-col>
                   </v-row>
                 </v-card>
@@ -129,7 +180,10 @@
             <v-row dense class="mt-n12">
               <p class="text-caption">サービス事業所一覧 選択</p>
               <v-col cols="12" class="mt-n3">
-                <v-btn-toggle v-model="display_service">
+                <v-btn-toggle
+                  v-model="display_service"
+                  @change="onDisplay_service"
+                >
                   <v-btn small> 全部 </v-btn>
                   <v-btn small> 選択済 </v-btn>
                   <v-btn small> 未選択 </v-btn>
@@ -157,7 +211,8 @@
               :allowSorting="false"
               :autoGenerateColumns="false"
               :itemsSource="serviceList"
-              class="mt-1"
+              :itemsSourceChanged="onItemsSourceServiceList"
+              class="mt-1 ht200"
             >
               <wj-flex-grid-column
                 :header="'コード'"
@@ -196,14 +251,14 @@
         <v-row dense>
           <v-col cols="12">
             <label class="text-caption mr-3">表示</label>
-            <v-btn-toggle v-model="display_history">
+            <v-btn-toggle v-model="display_history" @change="onDisplay_history">
               <v-btn small> 最新履歴 </v-btn>
               <v-btn small> 全履歴 </v-btn>
             </v-btn-toggle>
           </v-col>
           <v-col cols="12">
             <wj-flex-grid
-              :selectionMode="'None'"
+              :selectionMode="3"
               id="svEditInitialize"
               :initialized="svEditInitialize"
               :allowMerging="6"
@@ -215,50 +270,59 @@
               :allowSorting="false"
               :autoGenerateColumns="false"
               :itemsSource="serviceHistoryEdit"
+              :itemsSourceChanged="onItemsSourceServiceEdit"
             >
               <wj-flex-grid-column
                 :header="'コード'"
-                :binding="'editCode'"
+                :binding="'serviceTeikyoJigyosyoCode'"
                 align="center"
                 valign="middle"
                 :width="80"
+                format="f0"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'サービス事業所名'"
-                :binding="'editJigyosyomei'"
-                align="center"
+                :binding="'serviceTeikyoJigyosyo'"
+                align="left"
                 valign="middle"
                 width="2*"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'サービス種別'"
-                :binding="'editType'"
+                :binding="'serviceCode'"
                 align="center"
+                valign="middle"
+                :width="30"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                :binding="'serviceMeisyo'"
+                align="left"
                 valign="middle"
                 width="2*"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'開始日'"
-                :binding="'editStart'"
+                :binding="'startDate'"
                 align="center"
                 valign="middle"
-                :width="80"
+                :width="120"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'終了日'"
-                :binding="'editEnd'"
+                :binding="'endDate'"
                 align="center"
                 valign="middle"
-                :width="80"
+                :width="120"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :header="'種類'"
-                :binding="'editKind'"
+                :binding="'spice'"
                 align="center"
                 valign="middle"
                 :width="40"
@@ -312,11 +376,12 @@ export default {
       serviceHistoryEdit: [], // 編集用履歴データ
       start_picker: '',
       end_picker: '',
-      toggle_tabs: '', // 追加修正切り替え
+      toggle_tabs: 0, // 追加修正切り替え
       display_service: 0, // サービス事業所
       display_history: 0, // 編集時のみ履歴表示
       selectData: {}, // 選択したデータ
       selectKey: '', // 親からの選択キー
+      toggle_spice: '',
     };
   },
   components: {
@@ -324,10 +389,60 @@ export default {
   },
   created() {},
   methods: {
+    header_dialog_close: function () {
+      this.dialog = false;
+    },
+    /************************
+     *  利用者名矢印選択
+     */
+    riyosyaClick(type) {
+      let selectKey = this.selectKey;
+      let defaultKey = this.selectKey;
+      if (type == 'next') {
+        this.selectKey = parseInt(selectKey) + 1;
+      }
+      if (type == 'back') {
+        this.selectKey = parseInt(selectKey) - 1;
+      }
+      // コードがない場合はnext:+1 back:-1
+      if (
+        this.historyData[this.selectKey] &&
+        !this.historyData[this.selectKey].code
+      ) {
+        if (type == 'next') {
+          this.selectKey = parseInt(this.selectKey) + 1;
+        }
+        if (type == 'back') {
+          this.selectKey = parseInt(this.selectKey) - 1;
+        }
+      }
+
+      if (
+        this.historyData[this.selectKey] &&
+        this.historyData[this.selectKey].code
+      ) {
+        let selectData = this.historyData[this.selectKey];
+        if (this.historyData[this.selectKey]) {
+          this.historyData[this.selectKey] = selectData;
+          this.settingData();
+        }
+      } else {
+        this.selectKey = defaultKey;
+      }
+      this.settingHistoryData();
+    },
+    /************************
+     * 追加登録ボタン
+     */
+    addRegist() {
+      console.log(this.historyData[this.selectKey]);
+      this.dialog = false;
+    },
     openDialog(selectKey) {
       this.dialog = true;
       this.selectKey = selectKey;
       this.settingData();
+      this.settingHistoryData();
     },
     /****************************
      * 選択したユーザー情報を各テキストエリアに記載
@@ -335,31 +450,31 @@ export default {
     settingData() {
       let selectkey = this.selectKey; // 選択したデータ後程propsから取得する
       this.selectData = this.historyData[selectkey];
-
-      this.start_picker = moment(this.selectData.startDate).format(
-        'YYYY-MM-DD'
-      );
-      this.end_picker = moment(this.selectData.endDate).format('YYYY-MM-DD');
+      if (this.selectData.startDate) {
+        this.start_picker = moment(this.selectData.startDate).format(
+          'YYYY-MM-DD'
+        );
+      }
+      if (this.selectData.endDate) {
+        this.end_picker = moment(this.selectData.endDate).format('YYYY-MM-DD');
+      }
     },
     /****************************
      *  カレンダーから日付を選択
      */
-    dateSelect() {
-      console.log(this.picker);
+    dateSelect(type) {
+      if (type == 'start') {
+        this.start_datepicker_dialog = false;
+        this.selectData.startDate = moment(this.start_picker).format(
+          'YYYY/MM/DD'
+        );
+      }
+      if (type == 'end') {
+        this.end_datepicker_dialog = false;
+        this.selectData.endDate = moment(this.end_picker).format('YYYY/MM/DD');
+      }
     },
-    /***************************
-     * 50オン選択
-     */
-    onAlphabetical(key) {
-      let data = alphabetFilter.alphabetFilter(
-        this.serviceListAll,
-        key,
-        'kana'
-      );
-      this.serviceList = [];
-      console.log(data);
-      this.serviceList = data;
-    },
+
     /********************
      * サービス事業所一覧
      */
@@ -372,19 +487,79 @@ export default {
       this.serviceList = this.getServiceData();
       this.serviceListAll = this.serviceList;
 
+      // アイテムフォーマット
       listFlexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel != listFlexGrid.columnHeaders) {
-          e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          e.cell.style.color = sysConst.COLOR.fontColor;
+        if (e.panel == listFlexGrid.columnHeaders) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
         }
       });
+
+      // クリックイベント
+      let _self = this;
+      listFlexGrid.hostElement.addEventListener('click', function (e) {
+        //  var ht = listFlexGrid.hitTest(e);
+        let hPage = listFlexGrid.hitTest(e.pageX, e.pageY);
+        let selectRow = _self.serviceList[hPage.row];
+        _self.selectData.serviceTeikyoJigyosyoCode = selectRow.listCode;
+        _self.selectData.serviceTeikyoJigyosyo = selectRow.listJigyosyo;
+        _self.selectData.listKey = selectRow.listKey;
+        _self.selectData.serviceCode = selectRow.listKey;
+        _self.selectData.serviceMeisyo = selectRow.listMeisyo;
+      });
+
+      this.onAlphabetical('');
+    },
+    onItemsSourceServiceList(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     /*******************
      * 編集用履歴
      */
     svEditInitialize(editFlexGrid) {
-      console.log(editFlexGrid);
+      this.editFlexGrid = editFlexGrid;
+      this.createHistoryHeaderMerge(editFlexGrid);
+
+      // アイテムフォーマット
+      editFlexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel == editFlexGrid.columnHeaders) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+        }
+      });
     },
+    settingHistoryData() {
+      // 表示用履歴の取得
+      // 選択したデータと同じコードのデータを取得
+      // 表示が最新履歴の時は終了日が空欄のデータのみ対象
+      let serviceHistoryEdit = [];
+      for (let i = 0; i < this.historyData.length; i++) {
+        if (this.historyData[i].code == this.historyData[this.selectKey].code) {
+          if (
+            (this.display_history === 0 &&
+              this.historyData[i].endDate.length == 0) ||
+            this.display_history === 1
+          ) {
+            serviceHistoryEdit.push(this.historyData[i]);
+          }
+        }
+      }
+      this.serviceHistoryEdit = serviceHistoryEdit;
+    },
+    onItemsSourceServiceEdit(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
+    /*******************
+     *  履歴表示切替
+     */
+    onDisplay_history() {
+      this.settingHistoryData();
+    },
+
     /***************
      * サービス事業所一覧用データ
      */
@@ -479,6 +654,26 @@ export default {
 
       return array;
     },
+    /************************
+     * サービス履歴マージ
+     */
+    createHistoryHeaderMerge(flexGrid) {
+      let headerRanges = [new wjGrid.CellRange(0, 2, 0, 3)];
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
+    /************************
+     * サービス事業所一覧 選択マージ
+     */
     createListHeaderMerge(flexGrid) {
       let headerRanges = [new wjGrid.CellRange(0, 2, 0, 3)];
       let mm = new wjGrid.MergeManager();
@@ -492,6 +687,55 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
+    },
+    /*********************
+     * サービス事業所一覧絞り込み
+     */
+    onDisplay_service() {
+      this.onAlphabetical('');
+    },
+    /***************************
+     * 50オン選択
+     */
+    onAlphabetical(key) {
+      let data = alphabetFilter.alphabetFilter(
+        this.serviceListAll,
+        key,
+        'kana'
+      );
+      this.serviceList = [];
+      this.serviceList = data;
+
+      // サービス事業所一覧の絞り込み
+      console.log(this.serviceList);
+      console.log(this.serviceHistoryEdit);
+      if (this.display_service > 0) {
+        data = [];
+        for (let i = 0; i < this.serviceList.length; i++) {
+          if (
+            (this.display_service == 1 &&
+              this.serviceHistoryEdit.findIndex(
+                (hist) => hist.serviceCode == this.serviceList[i].listKey
+              ) != -1 &&
+              this.serviceHistoryEdit.findIndex(
+                (hist) =>
+                  hist.serviceTeikyoJigyosyoCode == this.serviceList[i].listCode
+              ) != -1) ||
+            (this.display_service == 2 &&
+              this.serviceHistoryEdit.findIndex(
+                (hist) => hist.serviceCode == this.serviceList[i].listKey
+              ) === -1) ||
+            this.serviceHistoryEdit.findIndex(
+              (hist) =>
+                hist.serviceTeikyoJigyosyoCode == this.serviceList[i].listCode
+            ) === -1
+          ) {
+            data.push(this.serviceList[i]);
+          }
+        }
+        this.serviceList = [];
+        this.serviceList = data;
+      }
     },
   },
 };
@@ -533,5 +777,25 @@ div#svListInitialize,
 div#svEditInitialize {
   font-size: 12px;
   font-family: 'メイリオ';
+  &.ht200 {
+    height: 200px;
+  }
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
+
+  .wj-cell {
+    &.wj-state-active.wj-state-selected {
+      background: $grid_hover_background;
+      color: $font_color;
+    }
+    &.wj-state-multi-selected {
+      background: $grid_hover_background;
+      color: $font_color;
+    }
+  }
 }
 </style>

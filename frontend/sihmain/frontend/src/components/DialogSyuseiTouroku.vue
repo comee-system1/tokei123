@@ -3,8 +3,8 @@
     v-model="parentFlag"
     width="500"
     persistent>
-    <v-card class="pa-2" id="dialogShinkiTouroku">
-      <v-card-title> 利用者台帳 新規利用者登録 </v-card-title>
+    <v-card class="pa-2" id="DialogSyuseiTouroku">
+      <v-card-title> 利用者台帳 修正登録 </v-card-title>
       <v-btn
         elevation="2"
         icon
@@ -291,7 +291,7 @@
             </v-btn>
           </v-card>
           <v-card elevation="0" class="ml-auto">
-            <v-btn @click="modifyRiyousyadata()" tile outlined>
+            <v-btn @click="addRiyousyadata()" tile outlined>
               登録
             </v-btn>
           </v-card>
@@ -357,13 +357,14 @@ export default {
 
   methods: {
     open(riyousyadata) {
+      console.log("open")
+      console.log(riyousyadata)
       this.parentFlag = true;
-      this.addData = riyousyadata;
     },  
     /***********
      * 登録ボタンを押下
      */
-    modifyRiyousyadata() {
+    addRiyousyadata() {
       this.inputPostcode = this.inputPostcode;
 
       // 入力データをフォーマット
@@ -414,7 +415,7 @@ export default {
       });
       this.parentFlag = false;
       // 入力情報を追加した配列を親に返す
-      this.$emit('addFormData', this.addData);
+      // this.$emit('addFormData', this.addData);
 
       // 入力情報をリセット
       this.inputCodes= '';
@@ -565,7 +566,7 @@ export default {
 
 <style lang="scss" scope>
   @import '@/assets/scss/common.scss';
-  #dialogShinkiTouroku {
+  #DialogSyuseiTouroku {
     input.wj-form-control {
       min-height: initial;
       height: 30px;
