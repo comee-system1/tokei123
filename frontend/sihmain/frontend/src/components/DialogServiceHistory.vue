@@ -70,6 +70,7 @@
                       <wj-combo-box
                         class="input w100"
                         :text="selectData.serviceTeikyoJigyosyoCode"
+                        v-model="selectData.serviceTeikyoJigyosyoCode"
                         readonly
                       ></wj-combo-box>
                       <wj-combo-box
@@ -137,6 +138,7 @@
                         small
                         elevation="0"
                         outlined
+                        @click="gamenClear"
                         >画面クリア</v-btn
                       >
                       <v-btn
@@ -251,7 +253,11 @@
         <v-row dense>
           <v-col cols="12">
             <label class="text-caption mr-3">表示</label>
-            <v-btn-toggle v-model="display_history" @change="onDisplay_history">
+            <v-btn-toggle
+              v-model="display_history"
+              @change="onDisplay_history"
+              mandatory
+            >
               <v-btn small> 最新履歴 </v-btn>
               <v-btn small> 全履歴 </v-btn>
             </v-btn-toggle>
@@ -431,12 +437,24 @@ export default {
       }
       this.settingHistoryData();
     },
+    /***************************
+     * 画面クリア
+     */
+    gamenClear() {
+      alert('clear');
+      this.selectData.serviceTeikyoJigyosyoCode = '';
+      this.selectData.serviceTeikyoJigyosyo = '';
+    },
     /************************
      * 追加登録ボタン
      */
     addRegist() {
+      // APIにデータを渡す
       console.log(this.historyData[this.selectKey]);
-      this.dialog = false;
+
+      // 最新履歴の更新を行うgrid
+      this.editFlexGrid.refresh();
+      //this.dialog = false;
     },
     openDialog(selectKey) {
       this.dialog = true;
@@ -547,6 +565,7 @@ export default {
           }
         }
       }
+      console.log(serviceHistoryEdit);
       this.serviceHistoryEdit = serviceHistoryEdit;
     },
     onItemsSourceServiceEdit(flexGrid) {

@@ -751,9 +751,10 @@ export default {
       let rows = 0;
       Object.keys(dict).forEach(function (key) {
         rows += dict[key];
-        ranges.push(new wjGrid.CellRange(rows, 0, rows, 4));
+        // ranges.push(new wjGrid.CellRange(rows, 0, rows, 4));
         rows++;
       });
+
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
