@@ -136,6 +136,8 @@ import sysConst from '@/utiles/const';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
 import DialogServiceHistory from '../components/DialogServiceHistory.vue';
 
+import { ServiceHistory } from '@backend/api/ServiceHistory';
+
 export default {
   data() {
     return {
@@ -356,8 +358,16 @@ export default {
       this.createHeaderMerge(this.mainFlexGrid);
     },
     onInitialized(flexGrid) {
-      this.historyData = this.getData();
       this.mainFlexGrid = flexGrid;
+      // this.historyData = this.getData();
+      this.getData().then((result) => {
+        this.historyData = result;
+
+        // 子コンポーネントにサービス事業を設定
+        this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
+        this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
+      });
+
       // ヘッダ情報の作成
       this.createHeader(flexGrid);
       // ヘッダセルのマージ
@@ -365,9 +375,6 @@ export default {
 
       this.methodCellFormatSetting(flexGrid);
 
-      // 子コンポーネントにサービス事業を設定
-      this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
-      this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
       flexGrid.select(-1, -1);
 
       // セルを押下
@@ -383,218 +390,16 @@ export default {
         }
       });
     },
-    getData() {
+    async getData() {
       let historyData = [];
-      historyData.push(
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 22,
-          serviceMeisyo: '生活介護',
-          code: 10000001,
-          riyosyamei: '東経 太郎',
-          kana: 'タロウトウケイ',
-          gender: '男',
-          genderKey: '1',
-          birth: moment('19300615').format('YYYY/MM/DD'),
-          age: 30,
-          spice: '',
-          startDate: moment('20230401').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '4ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 22,
-          serviceMeisyo: '生活介護',
-          code: 10000002,
-          riyosyamei: '東経 花子',
-          kana: 'ハナコトウケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('19820505').format('YYYY/MM/DD'),
-          age: 30,
-          spice: '',
-          startDate: moment('20200901').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '1年11ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 22,
-          serviceMeisyo: '生活介護',
-          code: 10000003,
-          riyosyamei: '東経 二郎',
-          kana: 'ジロウトウケイ',
-          gender: '男',
-          genderKey: '1',
-          birth: moment('19820505').format('YYYY/MM/DD'),
-          age: 30,
-          spice: '',
-          startDate: moment('20181115').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '3年8ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 32,
-          serviceMeisyo: '施設入所支援',
-          code: 10000001,
-          riyosyamei: '東経 太郎',
-          kana: 'タロウトウケイ',
-          gender: '男',
-          genderKey: '1',
-          birth: moment('19300615').format('YYYY/MM/DD'),
-          age: 30,
-          spice: '',
-          startDate: moment('20210401').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '4ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 32,
-          serviceMeisyo: '施設入所支援',
-          code: 10000002,
-          riyosyamei: '東経 花子',
-          kana: 'ハナコトウケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('19300209').format('YYYY/MM/DD'),
-          age: 30,
-          spice: '',
-          startDate: moment('20200901').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '1年11ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100101,
-          serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
-          serviceCode: 32,
-          serviceMeisyo: '施設入所支援',
-          code: 10000003,
-          riyosyamei: '東経 ジロウ',
-          kana: 'ジロウトウケイ',
-          gender: '',
-          genderKey: '',
-          birth: '',
-          age: '',
-          spice: '',
-          startDate: moment('20181105').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '3年8ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100102,
-          serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
-          serviceCode: 41,
-          serviceMeisyo: '自立訓練(機能訓練)',
-          code: 10000004,
-          riyosyamei: '東経 三郎',
-          kana: 'サブロウトウケイ',
-          gender: '男',
-          genderKey: '1',
-          birth: moment('19790602').format('YYYY/MM/DD'),
-          age: '36',
-          spice: '',
-          startDate: moment('20190210').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '2年5ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: 100102,
-          serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
-          serviceCode: 41,
-          serviceMeisyo: '自立訓練(機能訓練)',
-          code: 10000005,
-          riyosyamei: '東経 明日香',
-          kana: 'アスカトウケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('20080301').format('YYYY/MM/DD'),
-          age: '23',
-          spice: '',
-          startDate: moment('20191220').format('YYYY/MM/DD'),
-          endDate: '',
-          useYear: '1年7ヶ月',
-        },
-        {
-          serviceTeikyoJigyosyoCode: '',
-          serviceTeikyoJigyosyo: '',
-          serviceCode: null,
-          serviceMeisyo: '',
-          code: 10000006,
-          riyosyamei: '東経 うみか',
-          kana: 'ウミカトウケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('19911215').format('YYYY/MM/DD'),
-          age: '32',
-          spice: '通',
-          startDate: '',
-          endDate: '',
-          useYear: '',
-        },
-        {
-          serviceTeikyoJigyosyoCode: '',
-          serviceTeikyoJigyosyo: '',
-          serviceCode: null,
-          serviceMeisyo: '',
-          code: 10000009,
-          riyosyamei: '西経 五郎',
-          kana: 'ゴロウニシケイ',
-          gender: '男',
-          genderKey: '1',
-          birth: moment('19870501').format('YYYY/MM/DD'),
-          age: '30',
-          spice: '',
-          startDate: '',
-          endDate: '',
-          useYear: '',
-        },
-        {
-          serviceTeikyoJigyosyoCode: '',
-          serviceTeikyoJigyosyo: '',
-          serviceCode: null,
-          serviceMeisyo: '',
-          code: 10000011,
-          riyosyamei: '西経 みどり',
-          kana: 'ミドリニシケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('19800818').format('YYYY/MM/DD'),
-          age: '41',
-          spice: '',
-          startDate: '',
-          endDate: '',
-          useYear: '',
-        },
-        {
-          serviceTeikyoJigyosyoCode: '',
-          serviceTeikyoJigyosyo: '',
-          serviceCode: null,
-          serviceMeisyo: '',
-          code: 10000015,
-          riyosyamei: '西経 桃子',
-          kana: 'モモコニシケイ',
-          gender: '女',
-          genderKey: '2',
-          birth: moment('19900901').format('YYYY/MM/DD'),
-          age: '29',
-          spice: '',
-          startDate: '',
-          endDate: '',
-          useYear: '',
-        }
-      );
-      // サービス順に並び替え
-      let returns = this.changeSortting(historyData);
-      this.allData = returns;
-      return returns;
+
+      return ServiceHistory().then((result) => {
+        historyData = result.seikyu_inf;
+        // サービス順に並び替え
+        let returns = this.changeSortting(historyData);
+        this.allData = returns;
+        return returns;
+      });
     },
 
     /*********************
