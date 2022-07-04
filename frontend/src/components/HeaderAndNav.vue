@@ -205,9 +205,9 @@ export default {
       calender: '',
       picker: '',
       datepicker_dialog: false,
-      year: moment().year(),
+      year: moment().format('YYYY'),
       month: moment().format('MM'),
-      date: moment().date(),
+      date: moment().format('DD'),
       pageTitle: this.$route.name,
       items: [
         { title: '職員マスタ' },
@@ -329,7 +329,6 @@ export default {
      */
     dateSelect: function () {
       let split = this.picker.split('-');
-      console.log(split);
       this.year = split[0];
       this.month = split[1];
       this.date = split[2];

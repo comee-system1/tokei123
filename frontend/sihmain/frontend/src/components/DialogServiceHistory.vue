@@ -169,7 +169,7 @@
                         small
                         elevation="0"
                         outlined
-                        @click="addRegist"
+                        @click="editRegist"
                         >修正登録</v-btn
                       >
                     </v-col>
@@ -277,6 +277,7 @@
               :autoGenerateColumns="false"
               :itemsSource="serviceHistoryEdit"
               :itemsSourceChanged="onItemsSourceServiceEdit"
+              :selectionChanged="onSelectionChangedEdit"
             >
               <wj-flex-grid-column
                 :header="'コード'"
@@ -388,6 +389,8 @@ export default {
       selectData: {}, // 選択したデータ
       selectKey: '', // 親からの選択キー
       toggle_spice: '',
+      editFlexGrid: null,
+      selectEditRow: '', // 選択済みサービス一覧
     };
   },
   components: {
@@ -441,14 +444,35 @@ export default {
      * 画面クリア
      */
     gamenClear() {
-      alert('clear');
       this.selectData.serviceTeikyoJigyosyoCode = '';
       this.selectData.serviceTeikyoJigyosyo = '';
+      this.selectData.serviceCode = '';
+      this.selectData.serviceMeisyo = '';
+      this.selectData.startDate = '';
+      this.selectData.endDate = '';
     },
     /************************
      * 追加登録ボタン
      */
     addRegist() {
+      // APIにデータを渡す
+      console.log(this.historyData[this.selectKey]);
+
+      // 最新履歴の更新を行うgrid
+      //this.editFlexGrid.refresh();
+      //this.dialog = false;
+    },
+    /************************
+     * 修正登録ボタン
+     */
+    editRegist() {
+      // 選択している登録済み一覧を確認
+      if (this.selectEditRow == -1) {
+        alert('登録済み一覧より修正内容を選択してください。');
+        return false;
+      }
+      // 選択済み登録一覧
+      console.log(this.serviceHistoryEdit[this.selectEditRow]);
       // APIにデータを渡す
       console.log(this.historyData[this.selectKey]);
 
@@ -538,6 +562,7 @@ export default {
      */
     svEditInitialize(editFlexGrid) {
       this.editFlexGrid = editFlexGrid;
+      //this.editFlexGrid.onSelectionChanged(null);
       this.createHistoryHeaderMerge(editFlexGrid);
 
       // アイテムフォーマット
@@ -565,12 +590,14 @@ export default {
           }
         }
       }
-      console.log(serviceHistoryEdit);
       this.serviceHistoryEdit = serviceHistoryEdit;
     },
     onItemsSourceServiceEdit(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
+    onSelectionChangedEdit(s, e) {
+      this.selectEditRow = e.row;
     },
     /*******************
      *  履歴表示切替
@@ -726,8 +753,6 @@ export default {
       this.serviceList = data;
 
       // サービス事業所一覧の絞り込み
-      console.log(this.serviceList);
-      console.log(this.serviceHistoryEdit);
       if (this.display_service > 0) {
         data = [];
         for (let i = 0; i < this.serviceList.length; i++) {
