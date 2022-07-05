@@ -3,7 +3,7 @@
     <v-dialog v-model="dialog" width="620">
       <v-card elevation="2" class="pa-5">
         <v-toolbar-title class="text-subtitle-1"
-          >サービス提供事業所　追加登録</v-toolbar-title
+          >サービス提供事業所　{{ serviceTitle }}</v-toolbar-title
         >
 
         <v-btn
@@ -72,15 +72,25 @@
             <v-row dense>
               <v-col cols="2">事業所番号</v-col>
               <v-col>
-                <wj-combo-box class="input w160"></wj-combo-box>
+                <wj-combo-box
+                  class="input w160"
+                  :text="inputData.jigyosyoBango"
+                ></wj-combo-box>
               </v-col>
             </v-row>
             <v-row dense>
               <v-col cols="2">住所</v-col>
               <v-col cols="10">
                 <v-flex>
-                  <wj-combo-box class="input w40"></wj-combo-box>-
-                  <wj-combo-box class="input w60"></wj-combo-box>
+                  <wj-combo-box
+                    class="input w40"
+                    :text="inputData.post1"
+                  ></wj-combo-box
+                  >-
+                  <wj-combo-box
+                    class="input w60"
+                    :text="inputData.post2"
+                  ></wj-combo-box>
                   <v-btn x-small elevation="0" outlined class="ml-2"
                     >住所検索</v-btn
                   >
@@ -96,6 +106,7 @@
                     tile
                     flat
                     dense
+                    :value="inputData.jyusyo"
                   ></v-textarea>
                 </v-flex>
               </v-col>
@@ -103,29 +114,61 @@
             <v-row dense>
               <v-col cols="2">電話番号</v-col>
               <v-col>
-                <wj-combo-box class="input w40" maxLength="3"></wj-combo-box> -
-                <wj-combo-box class="input w60" maxLength="4"></wj-combo-box> -
-                <wj-combo-box class="input w60" maxLength="4"></wj-combo-box>
+                <wj-combo-box
+                  class="input w40"
+                  maxLength="3"
+                  :text="inputData.tel1"
+                ></wj-combo-box>
+                -
+                <wj-combo-box
+                  class="input w60"
+                  maxLength="4"
+                  :text="inputData.tel2"
+                ></wj-combo-box>
+                -
+                <wj-combo-box
+                  class="input w60"
+                  maxLength="4"
+                  :text="inputData.tel3"
+                ></wj-combo-box>
               </v-col>
             </v-row>
             <v-row dense>
               <v-col cols="2">FAX番号</v-col>
               <v-col>
-                <wj-combo-box class="input w40" maxLength="3"></wj-combo-box> -
-                <wj-combo-box class="input w60" maxLength="4"></wj-combo-box> -
-                <wj-combo-box class="input w60" maxLength="4"></wj-combo-box>
+                <wj-combo-box
+                  class="input w40"
+                  maxLength="3"
+                  :text="inputData.fax1"
+                ></wj-combo-box>
+                -
+                <wj-combo-box
+                  class="input w60"
+                  maxLength="4"
+                  :text="inputData.fax2"
+                ></wj-combo-box>
+                -
+                <wj-combo-box
+                  class="input w60"
+                  maxLength="4"
+                  :text="inputData.fax3"
+                ></wj-combo-box>
               </v-col>
             </v-row>
             <v-row dense>
               <v-col cols="2">メールアドレス</v-col>
               <v-col>
-                <wj-combo-box class="input w300"></wj-combo-box>
+                <wj-combo-box
+                  class="input w300"
+                  :text="inputData.mail"
+                ></wj-combo-box>
               </v-col>
             </v-row>
             <v-row dense>
               <v-col cols="2" class="mt-5">レセプト集計</v-col>
               <v-col>
                 <v-checkbox
+                  v-model="reseCheck"
                   class="text-caption pa-0"
                   label="請求代表事業所"
                 ></v-checkbox>
@@ -157,6 +200,8 @@ export default {
       serviceCombo: [],
       comboSelectedIndex: '',
       selectedIndex: '',
+      serviceTitle: '', // タイトル
+      reseCheck: '',
     };
   },
   components: {},
@@ -219,6 +264,19 @@ export default {
         this.inputData.serviceMeisyoCode = data.serviceMeisyoCode;
         this.inputData.serviceMeisyo = data.serviceMeisyo;
         this.selectedIndex = data.serviceMeisyoCode;
+        this.inputData.jigyosyoBango = data.jigyosyoBango;
+        this.inputData.post1 = data.post1;
+        this.inputData.post2 = data.post2;
+        this.inputData.jyusyo = data.jyusyo;
+        this.inputData.tel1 = data.tel1;
+        this.inputData.tel2 = data.tel2;
+        this.inputData.tel3 = data.tel3;
+        this.inputData.fax1 = data.fax1;
+        this.inputData.fax2 = data.fax2;
+        this.inputData.fax3 = data.fax3;
+        this.inputData.mail = data.mail;
+        this.reseCheck = data.rese;
+        this.serviceTitle = '修正登録';
       }
       if (type === 'add') {
         this.inputData.code = '';
@@ -227,6 +285,19 @@ export default {
         this.inputData.serviceMeisyoCode = '';
         this.inputData.serviceMeisyo = '';
         this.selectedIndex = '';
+        this.inputData.serviceMeisyo = '';
+        this.inputData.post1 = '';
+        this.inputData.post2 = '';
+        this.inputData.jyusyo = '';
+        this.inputData.tel1 = '';
+        this.inputData.tel2 = '';
+        this.inputData.tel3 = '';
+        this.inputData.fax1 = '';
+        this.inputData.fax2 = '';
+        this.inputData.fax3 = '';
+        this.inputData.mail = '';
+        this.reseCheck = '';
+        this.serviceTitle = '新規登録';
       }
     },
     header_dialog_close: function () {
@@ -245,6 +316,9 @@ div#dialogServiceTeikyo {
 }
 div#teikyoDialog {
   font-size: 12px;
+  label {
+    font-size: 12px;
+  }
   .input {
     width: 200px;
     height: 20px;

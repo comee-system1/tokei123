@@ -132,7 +132,7 @@
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'jyusyo'"
+          :binding="'jyusyoText'"
           align="center"
           valign="middle"
           width="2*"
@@ -162,7 +162,7 @@
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'rese'"
+          :binding="'reseDisp'"
           align="center"
           valign="middle"
           :width="30"
@@ -192,6 +192,7 @@ export default {
       flexGrid: '',
       selected: '',
       select_mandatory: false,
+      reseType: ['', '〇'],
     };
   },
   components: {
@@ -307,6 +308,7 @@ export default {
      */
     methodCellFormatSetting(flexGrid) {
       let self = this;
+
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel != flexGrid.columnHeaders) {
           if (e.col == 1 || e.col == 2 || e.col == 4 || e.col == 6) {
@@ -367,11 +369,19 @@ export default {
           serviceMeisyoCode: '22',
           serviceMeisyo: '生活介護',
           jigyosyoBango: '1121000011',
-          jyusyo: '〒001-001 ●●市××町1-1-1',
-          tel: '03-1111-2222',
+          post1: '001',
+          post2: '0012',
+          jyusyo: '●●市××町1-1-1',
+          tel: '',
+          tel1: '03',
+          tel2: '1111',
+          tel3: '2222',
           fax: '',
+          fax1: '03',
+          fax2: '1111',
+          fax3: '2222',
           mail: '',
-          rese: '',
+          rese: 1,
           enabled: true,
         },
         {
@@ -381,11 +391,19 @@ export default {
           serviceMeisyoCode: '24',
           serviceMeisyo: '短期入所',
           jigyosyoBango: '1121000011',
-          jyusyo: '〒001-001<br />●●市××町1-1-1',
+          post1: '001',
+          post2: '0012',
+          jyusyo: '●●市××町1-1-1',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -395,11 +413,19 @@ export default {
           serviceMeisyoCode: '32',
           serviceMeisyo: '施設入所支援',
           jigyosyoBango: '1121000011',
-          jyusyo: '〒001-001\n●●市××町1-1-1',
+          post1: '001',
+          post2: '0012',
+          jyusyo: '●●市××町1-1-1',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -409,11 +435,19 @@ export default {
           serviceMeisyoCode: '22',
           serviceMeisyo: '生活介護',
           jigyosyoBango: '1121000012',
+          post1: '',
+          post2: '',
           jyusyo: '',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -423,11 +457,19 @@ export default {
           serviceMeisyoCode: '32',
           serviceMeisyo: '施設入所支援',
           jigyosyoBango: '1121000012',
+          post1: '',
+          post2: '',
           jyusyo: '',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -437,11 +479,19 @@ export default {
           serviceMeisyoCode: '41',
           serviceMeisyo: '自立訓練(機能訓練)',
           jigyosyoBango: '1121000019',
+          post1: '',
+          post2: '',
           jyusyo: '',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -451,11 +501,19 @@ export default {
           serviceMeisyoCode: '43',
           serviceMeisyo: '就労移行支援',
           jigyosyoBango: '1121000022',
+          post1: '',
+          post2: '',
           jyusyo: '',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: true,
         },
         {
@@ -465,14 +523,60 @@ export default {
           serviceMeisyoCode: '46',
           serviceMeisyo: '就労継続支援B型',
           jigyosyoBango: '1121000023',
+          post1: '',
+          post2: '',
           jyusyo: '',
           tel: '',
+          tel1: '',
+          tel2: '',
+          tel3: '',
           fax: '',
+          fax1: '',
+          fax2: '',
+          fax3: '',
           mail: '',
-          rese: '',
+          rese: 0,
           enabled: false,
         }
       );
+      // 住所を接続する
+      for (let i = 0; i < serviceData.length; i++) {
+        if (serviceData[i].jyusyo) {
+          serviceData[i]['jyusyoText'] =
+            '〒' +
+            serviceData[i].post1 +
+            '-' +
+            serviceData[i].post2 +
+            '\n' +
+            serviceData[i].jyusyo;
+        } else {
+          serviceData[i]['jyusyojyusyoText'] = '';
+        }
+
+        if (serviceData[i].tel1 && serviceData[i].tel2 && serviceData[i].tel3) {
+          serviceData[i]['tel'] =
+            serviceData[i].tel1 +
+            '-' +
+            serviceData[i].tel2 +
+            '-' +
+            serviceData[i].tel3;
+        } else {
+          serviceData[i]['tel'] = '';
+        }
+
+        if (serviceData[i].fax1 && serviceData[i].fax2 && serviceData[i].fax3) {
+          serviceData[i]['fax'] =
+            serviceData[i].fax1 +
+            '-' +
+            serviceData[i].fax2 +
+            '-' +
+            serviceData[i].fax3;
+        } else {
+          serviceData[i]['fax'] = '';
+        }
+
+        serviceData[i]['reseDisp'] = this.reseType[serviceData[i].rese];
+      }
 
       this.serviceData = serviceData;
       this.allData = serviceData;
