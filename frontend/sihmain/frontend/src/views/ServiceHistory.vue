@@ -359,7 +359,6 @@ export default {
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
-      // this.historyData = this.getData();
       this.getData().then((result) => {
         this.historyData = result;
 

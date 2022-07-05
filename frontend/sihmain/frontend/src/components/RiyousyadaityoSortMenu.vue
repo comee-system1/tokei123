@@ -177,27 +177,27 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row no-gutters class="mt-1 mb-1">
-      <v-col cols="4">
-        <alphabet-button
-          ref="alphabetButton"
-          @onAlphabetical="onAlphabetical"
-        ></alphabet-button>
-      </v-col>
-      <v-col class="d-flex justify-end">
-        <v-card-text class="pa-0">
+    <v-row no-gutters class="mt-1 mb-1 d-flex justify-space-between">
+      <alphabet-button
+        ref="alphabetButton"
+        @onAlphabetical="onAlphabetical"
+      ></alphabet-button>
+      <v-card
+        elevation="0"
+        class = "d-flex">
+        <v-card-text class="pa-0 mr-3">
           全体：<span>{{ totalcount }}人</span>
         </v-card-text>
-        <v-card-text class="pa-0">
+        <v-card-text class="pa-0 mr-3">
           男性：<span>{{ malecount }}人</span>
         </v-card-text>
-        <v-card-text class="pa-0">
+        <v-card-text class="pa-0 mr-3">
           女性：<span>{{ femalecount }}人</span>
         </v-card-text>
         <v-card-text class="pa-0">
           適用不能：<span>{{ nomalecount }}人</span>
         </v-card-text>
-      </v-col>
+      </v-card>
     </v-row>
   </div>
 </template>
@@ -383,7 +383,9 @@ div#riyousyadaityoSortMenu {
   min-width: 1266px;
   font-size: 12px;
   .v-card__text {
-    max-width: 100px;
+    width: initial;
+    color: #333;
+    line-height: 25px;
     span {
       text-decoration: none;
     }

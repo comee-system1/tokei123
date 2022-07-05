@@ -19,12 +19,14 @@ import NenkanRiyouNissuIcrn from '../views/NenkanRiyouNissuIcrn.vue'
 import JyukyuTouroku from '@sihmain/frontend/src/views/JyukyuTouroku.vue'
 import ServiceHistory from '@sihmain/frontend/src/views/ServiceHistory.vue'
 import KihonJyoho from '@sihmain/frontend/src/views/KihonJyoho.vue'
+import ServiceTeikyo from '@sihmain/frontend/src/views/ServiceTeikyo.vue'
 
 // store
 import Store from '@/store/index.js'
 
 const receptTitle = "レセプト請求";
 const usedTitle = "利用者台帳";
+const jigyosyoTitle = "事業所情報";
 
 Vue.use(VueRouter)
 const routes = [{
@@ -158,6 +160,14 @@ const routes = [{
         component: NenkanRiyouNissuIcrn,
         meta: {
             title: receptTitle,
+        },
+    },
+    {
+        path: '/ServiceTeikyo',
+        name: 'サービス提供事業所',
+        component: ServiceTeikyo,
+        meta: {
+            title: jigyosyoTitle,
         },
     },
     {

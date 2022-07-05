@@ -227,7 +227,7 @@ export default {
           src: 'mdi-home-city-outline',
           lists: [
             { name: '基本事業者', link: '/TemporaryPage' },
-            { name: 'サービス提供事業所', link: '/TemporaryPage' },
+            { name: 'サービス提供事業所', link: '/ServiceTeikyo' },
           ],
         },
         {

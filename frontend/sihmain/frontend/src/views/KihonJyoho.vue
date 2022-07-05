@@ -44,7 +44,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'birthymd'"
+            :binding="'dispBirthymd'"
             :header="'生年月日'"
             align="center"
             :width="80"
@@ -65,7 +65,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'address'"
+            :binding="'dispAddress'"
             :header="'住所'"
             :multiLine="true"
             align="center"
@@ -87,23 +87,23 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'sityosonryaku'"
+            :binding="'shikutyosonryaku'"
             :header="'市区町村'"
             width="1.5*"
             :isReadOnly="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'symd'"
+            :binding="'dispSymd'"
             :header="'開始日'"
             align="center"
-            width="1.5*"
+            :width="80"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'eymd'"
+            :binding="'dispEymd'"
             :header="'終了日'"
             align="center"
-            width="1.5*"
+            :width="80"
             :isReadOnly="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
@@ -318,83 +318,125 @@ export default {
           names: '東経 太郎', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数
           birthymd: '19920422',
-          age: '30',
+          dispBirthymd: moment('20200901').format('YYYY/MM/DD'),
+          age: '20',
           sex: '男',
           sexFlag: 1,
-          address: '〒001-2345 〇〇市××町11-1',
+          postcode1: '001',
+          postcode2: '2345',
+          address: '〇〇市××町11-1',
+          dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          sityosonryaku: '東経市',
-          startDate: moment('20230401').format('YYYY/MM/DD'),
-          // symd: "20220520",
-          // eymd: "20220622",
+          shikutyosonryaku: '東経市',
+          symd: "20220401",
+          dispSymd: moment('20220401').format('YYYY/MM/DD'),
+          startY: '2022',
+          startM: '05',
+          startD: '20',
+          eymd: "",
         },
         {
           codes: '1000000002',
           jyukyuno: '1000000002', //提供サービス
           names: '東経 花子', // サービス種類コード
           kana: 'ハナコ トウケイ', // 利用日数
-          birthymd: '19920422',
+          birthymd: '19920122',
+          dispBirthymd: moment('19920123').format('YYYY/MM/DD'),
           age: '30',
           sex: '女',
           sexFlag: 2,
-          address: '〒001-2345 〇〇市××町11-1',
+          postcode1: '001',
+          postcode2: '2345',
+          address: '〇〇市××町11-1',
+          dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          sityosonryaku: '東経市',
-          startDate: moment('20200901').format('YYYY/MM/DD'),
+          shikutyosonryaku: '東経市',
+          symd: "20220401",
+          dispSymd: moment('20220401').format('YYYY/MM/DD'),
           symd: '20220520',
+          startY: '2022',
+          startM: '05',
+          startD: '20',
           eymd: '20220622',
+          dispEymd: moment('20220622').format('YYYY/MM/DD'),
         },
         {
           codes: '1000000003',
           jyukyuno: '1000000003', //提供サービス
           names: '東経 太郎', // サービス種類コード
-          kana: 'タロウ トウケイ', // 利用日数
-          birthymd: '19920422',
-          age: '30',
+          kana: 'タロウ トウケイ', // 利用日数199200111
+          birthymd: '19820222',
+          dispBirthymd: moment('19820222').format('YYYY/MM/DD'),
+          age: '40',
           sex: '男',
           sexFlag: 1,
-          address: '〒001-2345 〇〇市××町11-1',
+          postcode1: '001',
+          postcode2: '2345',
+          address: '〇〇市××町11-1',
+          dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          sityosonryaku: '東経市',
-          startDate: moment('20181115').format('YYYY/MM/DD'),
+          shikutyosonryaku: '東経市',
+          symd: "20220401",
+          dispSymd: moment('20220401').format('YYYY/MM/DD'),
           endDate: moment('20181115').format('YYYY/MM/DD'),
-          // symd: "20220520",
-          // eymd: "20220622",
+          symd: "",
+          startY: '',
+          startM: '',
+          startD: '',
+          eymd: "",
         },
         {
           codes: '1000000004',
           jyukyuno: '1000000004', //提供サービス
           names: '東経 明日香', // サービス種類コード
           kana: 'アスカ トウケイ', // 利用日数
-          birthymd: '19920422',
-          age: '30',
+          birthymd: '19880222',
+          dispBirthymd: moment('19880222').format('YYYY/MM/DD'),
+          age: '34',
           sex: '女',
           sexFlag: 2,
-          address: '〒001-2345 〇〇市××町11-1',
+          postcode1: '001',
+          postcode2: '2345',
+          address: '〇〇市××町11-1',
+          dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          sityosonryaku: '東経市',
-          symd: '20220520',
+          shikutyosonryaku: '東経市',
+          symd: "20220401",
+          dispSymd: moment('20220401').format('YYYY/MM/DD'),
+          startY: '2022',
+          startM: '05',
+          startD: '20',
           eymd: '20220622',
+          dispEymd: moment('20220622').format('YYYY/MM/DD'),
         },
         {
           codes: '1000000005',
           jyukyuno: '1000000005', //提供サービス
           names: '東経 次郎', // サービス種類コード
           kana: 'ジロウ トウケイ', // 利用日数
-          birthymd: '19920422',
-          age: '30',
+          birthymd: '20000222',
+          dispBirthymd: moment('20000222').format('YYYY/MM/DD'),
+          age: '20',
           sex: '男',
           sexFlag: 1,
-          address: '〒001-2345 〇〇市××町11-1',
+          postcode1: '001',
+          postcode2: '2345',
+          address: '〇〇市××町11-1',
+          dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          sityosonryaku: '東経市',
-          symd: '20220520',
+          shikutyosonryaku: '東経市',
+          symd: "20220401",
+          dispSymd: moment('20220401').format('YYYY/MM/DD'),
+          startY: '2022',
+          startM: '05',
+          startD: '20',
           eymd: '20220622',
+          dispEymd: moment('20220622').format('YYYY/MM/DD'),
         }
       );
       this.kihonjyohoData = kihonjyohoData;
@@ -403,12 +445,13 @@ export default {
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.getData();
-      
+
       // セルのクリックイベント(修正登録タブアクティブ時)
       this.clickEventCell(flexGrid);
 
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
+
       flexGrid.itemsSource = this.kihonjyohoData;
 
       // グリッドのスタイルをカスタマイズ
@@ -429,7 +472,7 @@ export default {
         }
       };
     },
-    addFormData(addData,) {
+    addFormData(addData) {
       // 新規入力データを配列に追加
       this.kihonjyohoData = addData;
       this.allData = this.kihonjyohoData;
@@ -442,6 +485,7 @@ export default {
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
 div#kihonJyoho {
+  width: 1360px;
   font-size: 12px;
   .user-info {
     label {

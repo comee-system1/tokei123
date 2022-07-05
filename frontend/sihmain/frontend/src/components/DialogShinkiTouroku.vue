@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="500"
+    width="400"
     persistent>
     <v-card class="pa-2" id="dialogShinkiTouroku">
       <v-card-title> 利用者台帳 新規利用者登録 </v-card-title>
@@ -18,121 +18,105 @@
       </v-btn>
       <v-container>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1 dialogHeader-30">
-            <v-card 
-            class="pl-1"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              コード
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              :value="inputCodes"
-              v-model="inputCodes"
-              single-line
-              solo
-              style="max-width: 100px;"
-            ></v-text-field>
-          </v-col>
+            コード
+          </v-card>
+          <v-text-field
+            :value="inputCodes"
+            v-model="inputCodes"
+            single-line
+            solo
+            style="max-width: 100px;"
+          ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
-            >
-              氏名
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              class="ma-0"
-              :value="inputNames"
-              v-model="inputNames"
-              single-line
-              solo
-              style="max-width: 250px;"
-            ></v-text-field>
-          </v-col>
+          <v-card 
+          class="pl-1 mr-1 dialogHeader dialogHeader-25"
+          height = "25"
+          elevation ="0"
+          color = "#EEE"
+          >
+            氏名
+          </v-card>
+          <v-text-field
+            class="ma-0"
+            :value="inputNames"
+            v-model="inputNames"
+            single-line
+            solo
+            style="max-width: 210px;"
+          ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              フリガナ
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              class="ma-0"
-              :value="inputKana"
-              v-model="inputKana"
-              single-line
-              solo
-              style="max-width: 250px;"
-            ></v-text-field>
-          </v-col>
+            フリガナ
+          </v-card>
+          <v-text-field
+            class="ma-0"
+            :value="inputKana"
+            v-model="inputKana"
+            single-line
+            solo
+            style="max-width: 210px;"
+          ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
-            >
-              生年月日
-            </v-card>
-          </v-col>
-          <v-col cols="8" class="d-flex">
-            <v-text-field
-              class="ma-0"
-              :value="inputBirthymd"
-              v-model="inputBirthymd"
-              single-line
-              solo
-              style="max-width: 120px;"
-              @blur="calcRiyousyaAge()"
-            ></v-text-field>
-            <v-card elevation="0" class="dialogAge-emphasis ml-3 mr-3">{{this.inputAge}}</v-card>
-            <v-card elevation="0" class="dialogAge">歳</v-card>
-          </v-col>
+          <v-card 
+          class="pl-1 mr-1 dialogHeader dialogHeader-25"
+          height = "25"
+          elevation ="0"
+          color = "#EEE"
+          >
+            生年月日
+          </v-card>
+          <v-text-field
+            class="ma-0"
+            :value="inputBirthymd"
+            v-model="inputBirthymd"
+            single-line
+            solo
+            style="max-width: 80px;"
+            @blur="calcRiyousyaAge()"
+          ></v-text-field>
+          <v-card elevation ="0" class="dialogAge_emphasis ml-7 mr-3">{{this.inputAge}}</v-card>
+          <v-card elevation ="0" class="dialogAge">歳</v-card>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
             <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
-            >
+              class="pl-1 mr-1 dialogHeader dialogHeader-25"
+              height = "25"
+              elevation ="0"
+              color = "#EEE"
+              >
               性別
             </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-radio-group class="mt-0 pt-0 dialogSex" v-model="inputSex">
+            <v-radio-group class="mt-0 pt-0 dialogSex" v-model="inputSexFlag">
               <v-radio label="男" :key="1" :value="1" class="mb-0"></v-radio>
               <v-radio label="女" :key="2" :value="2" class="mb-0"></v-radio>
               <v-radio label="適用不能" :key="0" :value="0" class="mb-0"></v-radio>
             </v-radio-group>
-          </v-col>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-94"
-            height = "94"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-75"
+            height = "75"
             elevation="0"
+            color = "#EEE"
             >
-              住所
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-card elevation="0" class="mb-1 d-flex">
+            住所
+          </v-card>
+          <v-card class="d-block" elevation="0">
+            <v-card elevation="0" class="mb-1 d-flex dialogAdress">
               〒
               <v-text-field
                 class="ml-1 mr-1"
@@ -149,12 +133,12 @@
                 v-model="inputPostcode2"
                 single-line
                 solo
-                style="max-width: 60px;"
+                style="max-width: 47px;"
               ></v-text-field>
               <v-btn
                 class = "ml-5"
                 elevation="1"
-                height = "30"
+                height = "25"
                 small
                 @click="replaceAddress()"
                 >
@@ -162,136 +146,124 @@
               </v-btn>
             </v-card>
             <v-textarea
-              height = "60"
+              height = "47"
               :value="inputAddress"
               v-model="inputAddress"
               single-line
               solo
               dense
               no-resize
-              row-height="30"
+              row-height="25"
               class="dialogAdrress"
               style="max-width: 300px;"
             ></v-textarea>
-          </v-col>
+          </v-card>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              市町村
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-select
-              :items="sityosonryakuList"
-              solo
-              :value="inputSityosonryaku"
-              v-model="inputSityosonryaku"
-              height = "30"
-              style="max-width: 150px;"
-            ></v-select>
-          </v-col>
+            市区町村
+          </v-card>
+          <v-select
+            :items="shikutyosonryakuList"
+            solo
+            :value="inputShikutyosonryaku"
+            v-model="inputShikutyosonryaku"
+            height = "25"
+            style="max-width: 150px;"
+          ></v-select>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              連絡先①
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              :value="inputTell1"
-              v-model="inputTell1"
-              single-line
-              solo
-              style="max-width: 150px;"
-            ></v-text-field>
-          </v-col>
+            連絡先①
+          </v-card>
+          <v-text-field
+            :value="inputTell1"
+            v-model="inputTell1"
+            single-line
+            solo
+            style="max-width: 150px;"
+          ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              連絡先②
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              :value="inputTell2"
-              v-model="inputTell2"
-              single-line
-              solo
-              style="max-width: 150px;"
-            ></v-text-field>
-          </v-col>
+            連絡先②
+          </v-card>
+          <v-text-field
+            :value="inputTell2"
+            v-model="inputTell2"
+            single-line
+            solo
+            style="max-width: 150px;"
+          ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-3">
-          <v-col cols="3" class="mr-1">
-            <v-card 
-            class="pl-1 dialogHeader-30"
-            height = "30"
-            elevation="0"
+          <v-card 
+            class="pl-1 mr-1 dialogHeader dialogHeader-25"
+            height = "25"
+            elevation ="0"
+            color = "#EEE"
             >
-              有効開始
-            </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-btn
-              @click="inputCalendarClick()"
-              tile
-              outlined
-              class="service dialogSymd"
-              height="30"
-              style="max-width: 150px;"
-              >{{ year }}年{{ month }}月{{ date }}日
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
-            <v-btn
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              x-small
-              @click="calendarClick(1)"
-              height="100%"
-              style="min-width: auto; height: 30px"
-              tile
-              ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-            >
-            <v-btn
-              x-small
-              elevation="0"
-              color="white"
-              class="pa-0 ml-1"
-              height="100%"
-              style="min-width: auto; height: 30px"
-              @click="calendarClick(2)"
-              tile
-              ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-            >
-          </v-col>
+            有効開始
+          </v-card>
+          <v-btn
+            @click="inputCalendarClick()"
+            tile
+            outlined
+            class="service dialogSymd"
+            height="25"
+            style="max-width: 150px;"
+            >{{ year }}年{{ month }}月{{ date }}日
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+          <v-btn
+            elevation ="0"
+            color="white"
+            class="pa-0 ml-1"
+            x-small
+            @click="calendarClick(1)"
+            height="100%"
+            style="min-width: auto; height: 25px"
+            tile
+            ><v-icon>mdi-arrow-left-bold</v-icon>
+          </v-btn>
+          <v-btn
+            x-small
+            elevation ="0"
+            color="white"
+            class="pa-0 ml-1"
+            height="100%"
+            style="min-width: auto; height: 25px"
+            @click="calendarClick(2)"
+            tile
+            ><v-icon>mdi-arrow-right-bold</v-icon>
+          </v-btn>
         </v-row>
-      <hr size="1" />
-        <v-card class="d-flex mt-3" elevation="0">
-          <v-card elevation="0" class="ml-1">
+        <hr size="1" />
+        <v-card class="d-flex mt-3" elevation ="0">
+          <v-card elevation ="0" class="ml-1">
             <v-btn @click="shinkiTouroku_dialog_clear()" tile outlined>
               クリア
             </v-btn>
           </v-card>
-          <v-card elevation="0" class="ml-auto">
-            <v-btn @click="modifyRiyousyadata()" tile outlined>
+          <v-card elevation ="0" class="ml-auto">
+            <v-btn @click="addRiyousyadata()" tile outlined>
               登録
             </v-btn>
           </v-card>
@@ -326,7 +298,7 @@ export default {
     return {
       addData:[],
       parentFlag: false,
-      sityosonryakuList: ['東経市', '西経市', '南経市', '北経市'],
+      shikutyosonryakuList: ['東経市', '西経市', '南経市', '北経市'],
       ja: ja,
       year: moment().format('YYYY'),
       month: moment().format('MM'),
@@ -339,16 +311,22 @@ export default {
       inputNames: '',
       inputKana: '',
       inputBirthymd: '',
+      dispBirthymd: '',
       inputAge: '',
       inputSex: '',
+      inputSexFlag: '',
       inputPostcode: '',
       inputPostcode1: '',
       inputPostcode2: '',
       inputAddress: '',
       inputTell1: '',
       inputTell2: '',
-      inputSityosonryaku: '',
+      inputShikutyosonryaku: '',
       inputSymd: '',
+      dispSymd: '',
+      inputSartY: '',
+      inputSartM: '',
+      inputSartD: '',
     };
   },
   components: {
@@ -363,27 +341,28 @@ export default {
     /***********
      * 登録ボタンを押下
      */
-    modifyRiyousyadata() {
+    addRiyousyadata() {
       this.inputPostcode = this.inputPostcode;
 
       // 入力データをフォーマット
+  
       // 生年月日
-      let formatBirthymd = moment(this.inputBirthymd).format('YYYY/MM/DD');
+      this.dispBirthymd = moment(this.inputBirthymd).format('YYYY/MM/DD');
 
       // 開始日
-      let formatSymd = "";
       if (this.inputSymd === "") {
-        // 開始日が空だった場合は今日の日付が入る
-        formatSymd = this.year + this.month + this.date;
+        // 開始日が空だった場合(カレンダー未操作)は今日の日付が入る
+        this.inputSymd = this.year + this.month + this.date;
+
+        this.dispSymd = moment(this.inputSymd).format('YYYY/MM/DD');
       }
-      formatSymd = moment(formatSymd).format('YYYY/MM/DD');
       // 性別
       let displaySex = "";    // 表示用性別
-      if (this.inputSex === 1) {
+      if (this.inputSexFlag === 1) {
         displaySex = "男";
-      } else if (this.inputSex === 2) {
+      } else if (this.inputSexFlag === 2) {
         displaySex = "女";
-      } else if (this.inputSex === 0) {
+      } else if (this.inputSexFlag === 0) {
         displaySex = "適用不能";
       } else {
         displaySex = "未選択";
@@ -399,38 +378,53 @@ export default {
 
       // 親から受け取ったデータに入力情報を追加
       this.addData.push({
-        codes:         this.inputCodes,
-        names:         this.inputNames,
-        kana:          this.inputKana,
-        birthymd:      formatBirthymd,
-        age:           this.inputAge,
-        sex:           displaySex,
-        postcode:      this.inputPostcode,
-        address:       displayAddress,
-        tell1:         this.inputTell1,
-        tell2:         this.inputTell2,
-        sityosonryaku: this.inputSityosonryaku,
-        symd:          formatSymd,
+        codes:            this.inputCodes,
+        names:            this.inputNames,
+        kana:             this.inputKana,
+        birthymd:         this.inputBirthymd,
+        dispBirthymd:     this.dispBirthymd,
+        age:              this.inputAge,
+        sex:              displaySex,
+        sexFlag:          this.inputSexFlag,
+        postcode:         this.inputPostcode,
+        postcode1:        this.inputPostcode1,
+        postcode2:        this.inputPostcode2,
+        address:          displayAddress,
+        dispAddress:      this.inputAddress,
+        tell1:            this.inputTell1,
+        tell2:            this.inputTell2,
+        shikutyosonryaku: this.inputShikutyosonryaku,
+        symd:             this.inputSymd,
+        dispSymd:         this.dispSymd,
+        startY:           this.year,
+        startM:           this.month,
+        startD:           this.date
       });
       this.parentFlag = false;
+      console.log(this.addData)
       // 入力情報を追加した配列を親に返す
       this.$emit('addFormData', this.addData);
 
       // 入力情報をリセット
-      this.inputCodes= '';
-      this.inputNames= '';
-      this.inputKana= '';
-      this.inputBirthymd= '';
-      this.inputAge= '';
-      this.inputSex= '';
-      this.inputPostcode= '';
-      this.inputPostcode1= '';
-      this.inputPostcode2= '';
-      this.inputAddress= '';
-      this.inputTell1= '';
-      this.inputTell2= '';
-      this.inputSityosonryaku= '';
-      this.inputSymd= '';
+        this.inputCodes = '';
+        this.inputNames = '';
+        this.inputKana = '';
+        this.inputBirthymd = '';
+        this.dispBirthymd = '';
+        this.inputAge = '';
+        this.inputSexFlag = '';
+        this.inputPostcode = '';
+        this.inputPostcode1 = '';
+        this.inputPostcode2 = '';
+        this.inputAddress = '';
+        this.inputTell1 = '';
+        this.inputTell2 = '';
+        this.inputShikutyosonryaku = '';
+        this.inputSymd = '';
+        this.dispSymd = '';
+        this.year  = moment().format('YYYY');
+        this.month  = moment().format('MM');
+        this.date  = moment().format('DD');
     },
     /***********
      * 生年月日からフォーカスが外れた場合に動作
@@ -447,7 +441,7 @@ export default {
       // 現在の月日を成形
       let todayMd = this.month + '' + this.date;
 
-      if(todayMd < inputBirthMd){
+      if(todayMd < inputBirthMd) {
         //今年まだ誕生日が来ていない
         this.inputAge = this.year - inputBirthY -1;
       } else {
@@ -462,7 +456,6 @@ export default {
     replaceAddress () {
       // 仮住所データを作成
       if ((this.inputPostcode1 === '111')) {
-            console.log(123)
         switch (this.inputPostcode2) {
           case '1234':
             this.inputAddress = '東経市〇〇町××00-0';
@@ -500,7 +493,6 @@ export default {
             this.inputAddress = 'テスト市〇〇町××55-5';
         }
       }
-      console.log(this.inputPostcode1)
     },
     /**********
      * カレンダーdialogの表示
@@ -543,20 +535,25 @@ export default {
      */
     shinkiTouroku_dialog_clear: function () {
       if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
-        this.inputCodes= '';
-        this.inputNames= '';
-        this.inputKana= '';
-        this.inputBirthymd= '';
-        this.inputAge= '';
-        this.inputSex= '';
-        this.inputPostcode= '';
-        this.inputPostcode1= '';
-        this.inputPostcode2= '';
-        this.inputAddress= '';
-        this.inputTell1= '';
-        this.inputTell2= '';
-        this.inputSityosonryaku= '';
-        this.inputSymd= '';
+        this.inputCodes = '';
+        this.inputNames = '';
+        this.inputKana = '';
+        this.inputBirthymd = '';
+        this.dispBirthymd = '';
+        this.inputAge = '';
+        this.inputSexFlag = '';
+        this.inputPostcode = '';
+        this.inputPostcode1 = '';
+        this.inputPostcode2 = '';
+        this.inputAddress = '';
+        this.inputTell1 = '';
+        this.inputTell2 = '';
+        this.inputShikutyosonryaku = '';
+        this.inputSymd = '';
+        this.dispSymd = '';
+        this.year = moment().format('YYYY');
+        this.month = moment().format('MM');
+        this.date = moment().format('DD');
       }
     },
   },
@@ -566,71 +563,86 @@ export default {
 <style lang="scss" scope>
   @import '@/assets/scss/common.scss';
   #dialogShinkiTouroku {
+       font-size: 12px;
+    .wj-cell {
+      padding: 2px 4px;
+    }
     input.wj-form-control {
       min-height: initial;
-      height: 30px;
+      height: 25px;
     }
-    .dialogHeader-30 {
-      line-height: 30px;
+    .dialogHeader {
+      border-radius: initial;
+      width: 100px;
     }
-    .dialogHeader-94 {
-      line-height: 94px;
+    .dialogHeader-25 {
+      line-height: 25px;
     }
+    .dialogHeader-75 {
+      line-height: 75px;
+    }
+    // inputのデザイン修正
     .v-text-field {
       .v-input__control {
         min-height: initial;
       }
       .v-input__slot {
-        font-size: 14px;
+        font-size: 12px;
         min-height: initial;
-        padding: 0 4px;
+        height: 25px;
         margin: 0;
+        padding: 0 4px;
         box-shadow: none;
         border: solid 1px #ccc;
         display: block;
+        // inputの高さ文字位置調整
         .v-text-field__slot {
-          height: 28px;
           input {
-            height: 30px;
+            height: 25px;
+            max-height: 25px;
           }
         }
-        textarea{
+        // 住所幅文字調整
+        textarea {
           margin-top: 0px;
           padding: 4px 4px 0 0;
           max-width: 290px;
           line-height: 1.2;
-          height: 60px;
+          height: 45px;
         }
       }
       .v-text-field__details{
         display: none;
       }
     }
+    // 年齢デザイン調整
     .dialogAge {
       display: inline-block;
-      font-size: 14px;
-      height: 30px;
-      line-height: 30px;
+      height: 25px;
+      line-height: 25px;
       padding: 0;
     }
-    .dialogAge-emphasis {
+    .dialogAge_emphasis {
       display: inline-block;
       background: lightYellow;
-      font-size: 14px;
-      height: 30px;
-      line-height: 30px;
+      height: 25px;
+      line-height: 25px;
       width: 50px;
       text-align: right;
       padding-right: 8px;
     }
-    .dialogSex {
-      font-size: 14px;
+    // ラジオボタン（性別）デザイン修正
+    .v-input--selection-controls {
       .v-input__slot {
-        margin: 0;
+        margin-bottom: 0;
       }
-      .v-input--radio-group__input {
-        align-items: center;
+      .v-label {
+        font-size: 12px;
       }
+      .v-icon {
+        font-size: 20px;
+      }
+      // 選択時の青背景の位置調整
       .v-input--selection-controls__ripple {
         height: 27px;
         width: 27px;
@@ -640,21 +652,29 @@ export default {
       .v-messages {
         display: none;
       }
-    }
-    .v-input--selection-controls {
       .v-radio {
         margin-right: 8px;
       }
+      .v-input--radio-group__input {
+        flex-direction: initial;
+        align-items: flex-start;
+      }
     }
-    .v-input--selection-controls__input {
-      margin-right: 4px;
+    // 郵便番号縦中央寄せ
+    .dialogAdress {
+      line-height: 25px;
     }
-    .v-input--radio-group__input {
-      flex-direction: initial;
-      align-items: flex-start;
-    }
-    .dialogSymd {
-      border-radius: 4px;
+    // セレクトボックスの文字位置調整
+    .v-select {
+      .v-select__slot {
+        height: 25px;
+      }
+      .v-select__selection--comma {
+        margin: 0;
+      }
+      .dialogSymd {
+        border-radius: 4px;
+      }
     }
   }
 </style>
