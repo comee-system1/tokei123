@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="700"
+    width="500"
     persistent>
     <v-card class="pa-2" id="DialogSyuseiTouroku">
       <v-card-title> 利用者台帳 修正登録 </v-card-title>
@@ -203,7 +203,7 @@
                 dark
                 outlined
                 style="width: 100px; height: 25px"
-                @click="displaySort('enable')"
+                @click="editShikutyoson()"
               >
                 修正
               </v-btn>
@@ -213,120 +213,119 @@
                 dark
                 outlined
                 style="width: 100px; height: 25px"
+                @click="addShikutyoson()"
               >
                 追加
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col class="mt-3 d-flex">
-            <div class="shikutyoson_edit_left">
-              <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-                <v-card 
-                  class="pl-1 mr-1 dialogHeader dialogHeader-25"
-                  height = "25"
-                  elevation="0"
-                  color = "#EEE"
-                  >
-                  市区町村
-                </v-card>
-                <v-select
-                  :items="shikutyosonryakuList"
-                  solo
-                  :value="riyousyaShikutyosonryaku"
-                  v-model="riyousyaShikutyosonryaku"
-                  height = "25"
-                  style="max-width: 150px;"
-                ></v-select>
-              </v-row>
-              <v-row no-gutters style="flex-wrap: nowrap" class="mb-3">
-                <v-card 
-                  class="pl-1 mr-1 dialogHeader dialogHeader-25"
-                  height = "25"
-                  elevation="0"
-                  color = "#EEE"
-                  >
-                  有効開始
-                </v-card>
-                <v-btn
-                  @click="inputCalendarClick()"
-                  tile
-                  outlined
-                  class="service dialogSymd"
-                  height="25"
-                  style="max-width: 150px;"
-                  >{{ year }}年{{ month }}月{{ date }}日
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-btn>
-                <v-btn
-                  elevation="0"
-                  color="white"
-                  class="pa-0 ml-1"
-                  x-small
-                  @click="calendarClick(1)"
-                  height="100%"
-                  style="min-width: auto; height: 25px"
-                  tile
-                  ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+          <v-col class="mt-3">
+            <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
+              <v-card 
+                class="pl-1 mr-1 dialogHeader dialogHeader-25"
+                height = "25"
+                elevation="0"
+                color = "#EEE"
                 >
-                <v-btn
-                  x-small
-                  elevation="0"
-                  color="white"
-                  class="pa-0 ml-1"
-                  height="100%"
-                  style="min-width: auto; height: 25px"
-                  @click="calendarClick(2)"
-                  tile
-                  ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+                市区町村
+              </v-card>
+              <v-select
+                :items="shikutyosonList"
+                solo
+                :value="riyousyaShikutyoson"
+                v-model="riyousyaShikutyoson"
+                height = "25"
+                style="max-width: 150px;"
+              ></v-select>
+            </v-row>
+            <v-row no-gutters style="flex-wrap: nowrap" class="mb-3">
+              <v-card 
+                class="pl-1 mr-1 dialogHeader dialogHeader-25"
+                height = "25"
+                elevation="0"
+                color = "#EEE"
                 >
-              </v-row>
-            </div>
-            <div class="shikutyoson_edit_right mr-2">
-              <wj-flex-grid
-                id="kihonJyohoGrid"
-                :headersVisibility="'Column'"
-                :autoRowHeights="true"
-                :allowDelete="false"
-                :allowDragging="false"
-                :allowResizing="false"
-                :deferResizing="false"
-                :allowSorting="false"
-                :selectionMode="'Row'"
-                :initialized="onInitialized"
-                :itemsSource="shikutyosonData"
+                有効開始
+              </v-card>
+              <v-btn
+                @click="inputCalendarClick()"
+                tile
+                outlined
+                class="service dialogSymd"
+                height="25"
+                style="max-width: 150px;"
+                >{{ year }}年{{ month }}月{{ date }}日
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+              <v-btn
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                x-small
+                @click="calendarClick(1)"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                tile
+                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
               >
-                <wj-flex-grid-column
-                  :binding="'key'"
-                  :header="''"
-                  align="center"
-                  :width="30"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :binding="'shikutyoson'"
-                  align="center"
-                  :width="130"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :binding="'symd'"
-                  align="center"
-                  :width="130"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </div>
+              <v-btn
+                x-small
+                elevation="0"
+                color="white"
+                class="pa-0 ml-1"
+                height="100%"
+                style="min-width: auto; height: 25px"
+                @click="calendarClick(2)"
+                tile
+                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+              >
+            </v-row>
+            <wj-flex-grid
+              id="shikutyosonGrid"
+              :headersVisibility="'Column'"
+              :autoRowHeights="true"
+              :allowDelete="false"
+              :allowDragging="false"
+              :allowResizing="false"
+              :deferResizing="false"
+              :allowSorting="false"
+              :selectionMode="'Row'"
+              :initialized="onInitialized"
+              :itemsSource="shikutyosonData"
+            >
+              <wj-flex-grid-column
+                :binding="'key'"
+                :header="''"
+                :width="30"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column  
+                :binding="'shikutyoson'"
+                width="1*"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                :binding="'symd'"
+                width="1*"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+            </wj-flex-grid>
           </v-col>
         </v-row>
-        <v-card class="d-flex mt-3" elevation="0">
-          <v-card elevation="0" class="ml-1">
+        <v-card class="d-flex justify-space-between mt-3" elevation="0">
+          <v-card elevation="0">
             <v-btn @click="shinkiTouroku_dialog_clear()" tile outlined>
               クリア
             </v-btn>
           </v-card>
-          <v-card elevation="0" class="ml-auto">
+          <v-card elevation="0" class="last_registrant">
+            <v-card-text >
+              最終登録者：2020/08/04 10:38 明治　正雄
+            </v-card-text>
+          </v-card>
+          <v-card elevation="0">
             <v-btn @click="addRiyousyadata()" tile outlined>
               登録
             </v-btn>
@@ -364,7 +363,8 @@ export default {
     return {
       addData:[],
       parentFlag: false,
-      shikutyosonryakuList: ['東経市', '西経市', '南経市', '北経市'],
+      // 市区町村マスタの情報
+      shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市'],
       ja: ja,
       year: '',
       month: '',
@@ -385,7 +385,7 @@ export default {
       riyousyaAddress: '',
       riyousyaTell1: '',
       riyousyaTell2: '',
-      riyousyaShikutyosonryaku: '',
+      riyousyaShikutyoson: '',
       inputSymd: '',
       shikutyosonData: [],
       allData: [],
@@ -399,23 +399,42 @@ export default {
   methods: {
     open(riyousyadata) {
       this.parentFlag = true;
+      // 利用開始日データをフォーマットして年月日を登録
+      this.year = moment(riyousyadata['symd'][0]).format('YYYY');
+      this.month = moment(riyousyadata['symd'][0]).format('MM');
+      this.date = moment(riyousyadata['symd'][0]).format('DD');
+
       // 取得したデータをモーダルのvalueに設置
-      this.riyousyaCodes =         riyousyadata['codes'];
-      this.riyousyaNames =         riyousyadata['names'];
-      this.riyousyaKana =          riyousyadata['kana'];
-      this.riyousyabirthymd =      riyousyadata['birthymd'];
-      this.riyousyaAge =           riyousyadata['age'];
-      this.riyousyaSexFlag =       riyousyadata['sexFlag'];
-      this.riyousyaPostcode1 =     riyousyadata['postcode1'];
-      this.riyousyaPostcode2 =     riyousyadata['postcode2'];
-      this.riyousyaAddress =       riyousyadata['address'];
-      this.riyousyaTell1 =         riyousyadata['tell1'];
-      this.riyousyaTell2 =         riyousyadata['tell2'];
-      this.riyousyaShikutyosonryaku = riyousyadata['shikutyosonryaku'];
-      this.riyousyaSymd =          riyousyadata['symd'];
-      this.year =                  riyousyadata['startY'];
-      this.month =                 riyousyadata['startM'];
-      this.date =                  riyousyadata['startD'];
+      this.riyousyaCodes =            riyousyadata['codes'];
+      this.riyousyaNames =            riyousyadata['names'];
+      this.riyousyaKana =             riyousyadata['kana'];
+      this.riyousyabirthymd =         riyousyadata['birthymd'];
+      this.riyousyaAge =              riyousyadata['age'];
+      this.riyousyaSexFlag =          riyousyadata['sexFlag'];
+      this.riyousyaPostcode1 =        riyousyadata['postcode1'];
+      this.riyousyaPostcode2 =        riyousyadata['postcode2'];
+      this.riyousyaAddress =          riyousyadata['address'];
+      this.riyousyaTell1 =            riyousyadata['tell1'];
+      this.riyousyaTell2 =            riyousyadata['tell2'];
+      this.riyousyaShikutyoson =      riyousyadata['shikutyoson'][0];
+      this.riyousyaSymd =             riyousyadata['symd'][0];
+    // 市区町村のデータ変更履歴の配列を作成
+    let shikutyosonData = [];
+    for (let i = 0; i < riyousyadata['shikutyoson'].length; i++) {
+      let keyValue = riyousyadata['shikutyoson'].length - i;
+      console.log(riyousyadata['symd'][i])
+      shikutyosonData.push(
+        {
+          key: keyValue,
+          shikutyoson: riyousyadata['shikutyoson'][i],
+          symd: riyousyadata['symd'][i]
+        }
+      );
+    }
+     this.shikutyosonData = [];
+     this.shikutyosonData = shikutyosonData;
+      console.log(this.shikutyosonData);
+      this.allData = this.shikutyosonData;
     },
     /***********
      * 登録ボタンを押下
@@ -454,7 +473,7 @@ export default {
       let displayAddress = ""    // 画面表示用住所
       displayAddress = displayPostcode + "\n" + this.riyousyaAddress;
 
-      // 親から受け取ったデータに入力情報を追加
+      // 親から受け取ったデータ修正データとして登録
       this.addData.push({
         codes:         this.riyousyaCodes,
         names:         this.riyousyaNames,
@@ -467,7 +486,7 @@ export default {
         dispAddress:   this.inputAddress,
         tell1:         this.riyousyaTell1,
         tell2:         this.riyousyaTell2,
-        shikutyosonryaku: this.riyousyaShikutyosonryaku,
+        shikutyoson: this.riyousyaShikutyoson,
         symd:          formatSymd,
       });
       this.parentFlag = false;
@@ -487,7 +506,7 @@ export default {
       this.riyousyaAddress = '';
       this.riyousyaTell1 = '';
       this.riyousyaTell2 = '';
-      this.riyousyaShikutyosonryaku = '';
+      this.riyousyaShikutyoson = '';
       this.riyousyaSymd = '';
     },
     /***********
@@ -595,6 +614,26 @@ export default {
       this.inputSymd = this.year + this.month + this.date;
     },
     /***********
+     * 市区町村修正
+     */
+    editShikutyoson() {
+      // 利用者市区町村データを再表示
+      // this.riyousyaShikutyoson =  riyousyadata['shikutyoson'][0];
+      // this.year = moment(riyousyadata['symd'][0]).format('YYYY');
+      // this.month = moment(riyousyadata['symd'][0]).format('MM');
+      // this.date = moment(riyousyadata['symd'][0]).format('DD');
+    },
+    /***********
+     * 市区町村新規追加
+     */
+    addShikutyoson() {
+      // 利用者市区町村データを一旦初期化
+      // this.riyousyaShikutyoson = "";
+      // this.year = "";
+      // this.month = "";
+      // this.date = "";
+    },
+    /***********
      * クリアボタンを押下
      */
     shinkiTouroku_dialog_clear: function () {
@@ -611,14 +650,13 @@ export default {
         this.riyousyaAddress = '';
         this.riyousyaTell1 = '';
         this.riyousyaTell2 = '';
-        this.riyousyaShikutyosonryaku = '';
+        this.riyousyaShikutyoson = '';
         this.riyousyatSymd = '';
       }
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
-      this.getData();
-
+      // this.getData();
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
@@ -645,6 +683,12 @@ export default {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontSize = '12px';
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          if (r == 0) {
+           s.textAlign = "center"
+            cell.innerHTML = '市区町村変更履歴';
+          }
+        }
         if (panel.cellType == wjGrid.CellType.Cell) {
           // セル背景の変更
           s.backgroundColor = sysConst.COLOR.gridBackground;
@@ -652,26 +696,44 @@ export default {
             // テキスト右寄せ
             s.textAlign = 'right';
           }
-          if ((c == 1) || (c == 2)) {
+          if (c == 1) {
             // テキスト左寄せ
             s.textAlign = 'left';
+          }
+          if (c == 2) {
+            // テキスト左寄せ
+            s.textAlign = 'center';
           }
         }
       };
     },
-    getData() {
-      let shikutyosonData = [];
-      shikutyosonData.push(
-        {
-          key: '1',
-          shikutyoson: '東経市',
-          symd: '20220622~',
-        },
-      );
-
-      this.shikutyosonData = shikutyosonData;
-      this.allData = this.shikutyosonData;
-    }
+    // getData() {
+    //   // let shikutyosonData = [];
+    //   // shikutyosonData.push(
+    //   //   {
+    //   //     key: '1',
+    //   //     shikutyoson: '東経市',
+    //   //     symd: '20220622~',
+    //   //   },
+    //   //   {
+    //   //     key: '2',
+    //   //     shikutyoson: '西経市',
+    //   //     symd: '20220622~',
+    //   //   },
+    //   //   {
+    //   //     key: '3',
+    //   //     shikutyoson: '北経市',
+    //   //     symd: '20220622~',
+    //   //   },
+    //   //   {
+    //   //     key: '4',
+    //   //     shikutyoson: '南経市',
+    //   //     symd: '20220622~',
+    //   //   },
+    //   // );
+    //   console.log(this.shikutyosonData);
+    //   this.allData = this.shikutyosonData;
+    // }
   }
 };
 </script>
@@ -689,7 +751,7 @@ export default {
     }
     .dialogHeader {
       border-radius: initial;
-      width: 100px;
+      width: 150px;
     }
     .dialogHeader-25 {
       line-height: 25px;
@@ -791,6 +853,26 @@ export default {
       .dialogSymd {
         border-radius: 4px;
       }
+    }
+    // 最終登録者デザイン修正
+    .last_registrant {
+      display: flex;
+      align-items: flex-end;
+      .v-card__text {
+        color: #fff;
+        padding: 0 4px;
+        background-color: #ce3e47;
+        animation-name: fadeInAnime;
+        animation-fill-mode: forwards;
+        opacity: 0;
+        border-radius: initial;
+      }
+    }
+    #shikutyosonGrid {
+      width: 305px;
+      max-height: 92px;
+      border-bottom: none;
+      border-right: none;
     }
   }
 </style>

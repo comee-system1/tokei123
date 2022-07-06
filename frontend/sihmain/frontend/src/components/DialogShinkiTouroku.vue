@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="400"
+    width="500"
     persistent>
     <v-card class="pa-2" id="dialogShinkiTouroku">
       <v-card-title> 利用者台帳 新規利用者登録 </v-card-title>
@@ -169,10 +169,10 @@
             市区町村
           </v-card>
           <v-select
-            :items="shikutyosonryakuList"
+            :items="shikutyosonList"
             solo
-            :value="inputShikutyosonryaku"
-            v-model="inputShikutyosonryaku"
+            :value="inputShikutyoson"
+            v-model="inputShikutyoson"
             height = "25"
             style="max-width: 150px;"
           ></v-select>
@@ -298,7 +298,8 @@ export default {
     return {
       addData:[],
       parentFlag: false,
-      shikutyosonryakuList: ['東経市', '西経市', '南経市', '北経市'],
+      // 市区町村マスタの情報
+      shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市'],
       ja: ja,
       year: moment().format('YYYY'),
       month: moment().format('MM'),
@@ -321,7 +322,7 @@ export default {
       inputAddress: '',
       inputTell1: '',
       inputTell2: '',
-      inputShikutyosonryaku: '',
+      inputShikutyoson: '',
       inputSymd: '',
       dispSymd: '',
       inputSartY: '',
@@ -363,7 +364,7 @@ export default {
       } else if (this.inputSexFlag === 2) {
         displaySex = "女";
       } else if (this.inputSexFlag === 0) {
-        displaySex = "適用不能";
+        displaySex = "適不";
       } else {
         displaySex = "未選択";
       }
@@ -393,7 +394,7 @@ export default {
         dispAddress:      this.inputAddress,
         tell1:            this.inputTell1,
         tell2:            this.inputTell2,
-        shikutyosonryaku: this.inputShikutyosonryaku,
+        shikutyoson: this.inputShikutyoson,
         symd:             this.inputSymd,
         dispSymd:         this.dispSymd,
         startY:           this.year,
@@ -419,7 +420,7 @@ export default {
         this.inputAddress = '';
         this.inputTell1 = '';
         this.inputTell2 = '';
-        this.inputShikutyosonryaku = '';
+        this.inputShikutyoson = '';
         this.inputSymd = '';
         this.dispSymd = '';
         this.year  = moment().format('YYYY');
@@ -548,7 +549,7 @@ export default {
         this.inputAddress = '';
         this.inputTell1 = '';
         this.inputTell2 = '';
-        this.inputShikutyosonryaku = '';
+        this.inputShikutyoson = '';
         this.inputSymd = '';
         this.dispSymd = '';
         this.year = moment().format('YYYY');
@@ -573,7 +574,7 @@ export default {
     }
     .dialogHeader {
       border-radius: initial;
-      width: 100px;
+      width: 150px;
     }
     .dialogHeader-25 {
       line-height: 25px;

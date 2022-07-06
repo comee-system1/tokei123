@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <v-dialog v-model="dialog" width="1080">
+    <v-dialog v-model="dialog" width="980">
       <v-card elevation="2" class="pa-5">
         <v-toolbar-title class="text-subtitle-1"
           >サービス履歴　追加登録</v-toolbar-title
@@ -65,10 +65,10 @@
               <div>
                 <v-card elevation="0" class="pl-2 pt-4">
                   <v-row dense>
-                    <v-col cols="2">サービス事業所</v-col>
+                    <v-col class="mw100">サービス事業所</v-col>
                     <v-col>
                       <wj-combo-box
-                        class="input w100"
+                        class="input w60"
                         :text="selectData.serviceTeikyoJigyosyoCode"
                         v-model="selectData.serviceTeikyoJigyosyoCode"
                         readonly
@@ -81,7 +81,7 @@
                     </v-col>
                   </v-row>
                   <v-row dense>
-                    <v-col cols="2">サービス名称</v-col>
+                    <v-col class="mw100">サービス名称</v-col>
                     <v-col>
                       <wj-combo-box
                         class="input w40"
@@ -89,14 +89,14 @@
                         readonly
                       ></wj-combo-box>
                       <wj-combo-box
-                        class="input w300"
+                        class="input w220"
                         :text="selectData.serviceMeisyo"
                         readonly
                       ></wj-combo-box>
                     </v-col>
                   </v-row>
                   <v-row dense>
-                    <v-col cols="2">開始日</v-col>
+                    <v-col class="mw100">開始日</v-col>
                     <v-col>
                       <wj-combo-box
                         class="input w100"
@@ -109,7 +109,7 @@
                     </v-col>
                   </v-row>
                   <v-row dense>
-                    <v-col cols="2">終了日</v-col>
+                    <v-col class="mw100">終了日</v-col>
                     <v-col>
                       <wj-combo-box
                         class="input w100"
@@ -122,7 +122,7 @@
                     </v-col>
                   </v-row>
                   <v-row dense v-if="toggle_tabs == 1">
-                    <v-col cols="2">利用種類</v-col>
+                    <v-col class="mw100">利用種類</v-col>
                     <v-col>
                       <v-btn-toggle v-model="toggle_spice">
                         <v-btn small elevation="0">通常</v-btn>
@@ -795,6 +795,9 @@ div#serviceArea,
 div#serviceDialog {
   font-size: 12px;
   min-width: 550px;
+  .mw100 {
+    max-width: 100px !important;
+  }
   .input {
     width: 100px;
     height: 20px;
@@ -802,11 +805,17 @@ div#serviceDialog {
     &.w40 {
       width: 40px;
     }
+    &.w60 {
+      width: 60px;
+    }
     &.w100 {
       width: 100px;
     }
     &.w200 {
       width: 200px;
+    }
+    &.w220 {
+      width: 220px;
     }
     &.w300 {
       width: 300px;

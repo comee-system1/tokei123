@@ -2,12 +2,17 @@
   <div id="riyousyadaityoSortMenu">
     <v-row no-gutters v-if="kihonJyohoFlag">
       <v-col>
-        <v-btn-toggle class="flex-wrap" mandatory>
+        <v-btn-toggle
+          class="flex-wrap"
+          :mandatory="mandatoryFlag"
+          v-model="toggle_exclusive"
+        >
           <v-btn
             small
             color="secondary"
             dark
             outlined
+            class="addRiyousyaButton"
             style="width: 90px; height: 25px"
             @click="shinkiTourokuDialogOpen()"
           >
@@ -22,15 +27,6 @@
             @click="allowSyuseiTouroku()"
           >
             修正登録
-          </v-btn>
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-            style="width: 90px; height: 25px"
-          >
-            履歴登録
           </v-btn>
           <v-btn
             small
@@ -71,7 +67,7 @@
                 outlined
                 style="width: 110px; height: 25px"
                 @click="displaySort('new')"
-                v-if="serviceHistoryFlag != true"
+                v-if="kihonJyohoFlag"
               >
                 新規
               </v-btn>
@@ -127,8 +123,41 @@
                 outlined
                 style="width: 110px; height: 25px"
                 @click="sorted('jigyo')"
+                v-if="serviceHistoryFlag"
               >
                 事業所＋サービス
+              </v-btn>
+              <v-btn
+                small
+                color="secondary"
+                disabled
+                outlined
+                style="width: 110px; height: 25px"
+                v-if="kihonJyohoFlag"
+              >
+                有効開始日
+              </v-btn>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 55px; height: 25px"
+                @click="sorted('jigyo')"
+                v-if="kihonJyohoFlag"
+              >
+                昇順
+              </v-btn>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 55px; height: 25px"
+                @click="sorted('jigyo')"
+                v-if="kihonJyohoFlag"
+              >
+                降順
               </v-btn>
             </v-btn-toggle>
           </v-col>
@@ -182,9 +211,7 @@
         ref="alphabetButton"
         @onAlphabetical="onAlphabetical"
       ></alphabet-button>
-      <v-card
-        elevation="0"
-        class = "d-flex">
+      <v-card elevation="0" class="d-flex">
         <v-card-text class="pa-0 mr-3">
           全体：<span>{{ totalcount }}人</span>
         </v-card-text>
@@ -209,6 +236,8 @@ export default {
     return {
       toggle_displaySort: this.toggle_displayDefault(),
       toggle_sort: this.toggle_sortDefault(),
+      toggle_exclusive: '',
+      mandatoryFlag: false,
       totalcount: 0,
       malecount: 0,
       femalecount: 0,
@@ -311,13 +340,14 @@ export default {
      * 新規登録ダイアログを呼び出し
      */
     shinkiTourokuDialogOpen() {
+      this.mandatoryFlag = true;
       this.$emit('pearentShinkiDialogOpen');
     },
     /******************
      * 修正登録ダイアログの呼び出しを許可
      */
     allowSyuseiTouroku() {
-      console.log(1)
+      this.mandatoryFlag = true;
       this.$emit('pearentAllowSyuseiTouroku');
     },
     /******************
@@ -380,8 +410,15 @@ export default {
 @import '@/assets/scss/common.scss';
 
 div#riyousyadaityoSortMenu {
-  min-width: 1266px;
   font-size: 12px;
+  min-width: none !important;
+  max-width: none;
+  width: 1180px;
+
+  .addRiyousyaButton {
+    border-color: rgba(0, 0, 0, 0.12);
+    border-radius: 4px 0 0 4px;
+  }
   .v-card__text {
     width: initial;
     color: #333;
@@ -389,6 +426,9 @@ div#riyousyadaityoSortMenu {
     span {
       text-decoration: none;
     }
+  }
+  .v-btn--disabled {
+    color: #333!important;
   }
   .user-info label {
     line-height: 25px;
@@ -408,7 +448,7 @@ div#riyousyadaityoSortMenu {
   div.d-flex {
     label {
       width: 100px;
-      height: 23px;
+      height: 25px;
     }
   }
   input.wj-form-control {

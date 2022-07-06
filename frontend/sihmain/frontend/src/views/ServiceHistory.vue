@@ -19,17 +19,19 @@
         :allowMerging="6"
         :headersVisibility="'Column'"
         :allowDragging="false"
-        :allowResizing="false"
+        :allowResizing="true"
         :deferResizing="false"
         :allowSorting="false"
+        :autoRowHeights="true"
         :itemsSource="historyData"
       >
         <wj-flex-grid-column
           :binding="'code'"
           align="center"
           valign="middle"
-          :width="100"
+          :width="75"
           format="g"
+          :allowResizing="false"
           :isReadOnly="true"
           :visible="isVisible1"
         ></wj-flex-grid-column>
@@ -37,25 +39,31 @@
           :binding="'riyosyamei'"
           align="left"
           valign="middle"
-          width="2*"
+          :width="160"
           :isReadOnly="true"
+          :allowResizing="true"
           :visible="isVisible1"
+          :multiLine="true"
+          :wordWrap="true"
         ></wj-flex-grid-column>
 
         <wj-flex-grid-column
           :binding="'serviceTeikyoJigyosyoCode'"
           align="center"
           valign="middle"
-          :width="80"
+          :width="60"
           :isReadOnly="true"
+          :allowResizing="false"
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'serviceTeikyoJigyosyo'"
           align="left"
           valign="middle"
-          width="3*"
+          :width="255"
           :isReadOnly="true"
+          :multiLine="true"
+          :wordWrap="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'serviceCode'"
@@ -64,20 +72,24 @@
           :width="30"
           format="g"
           :isReadOnly="true"
+          :allowResizing="false"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'serviceMeisyo'"
           align="left"
           valign="middle"
-          width="2*"
+          :width="205"
           :isReadOnly="true"
+          :multiLine="true"
+          :wordWrap="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'code'"
           align="center"
           valign="middle"
-          :width="100"
+          :width="75"
           format="g"
+          :allowResizing="false"
           :isReadOnly="true"
           :visible="isVisible2"
         ></wj-flex-grid-column>
@@ -85,8 +97,10 @@
           :binding="'riyosyamei'"
           align="left"
           valign="middle"
-          width="2*"
+          :width="135"
           :isReadOnly="true"
+          :multiLine="true"
+          :wordWrap="true"
           :visible="isVisible2"
         ></wj-flex-grid-column>
 
@@ -95,6 +109,7 @@
           align="center"
           valign="middle"
           :width="30"
+          :allowResizing="false"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -103,6 +118,7 @@
           align="center"
           valign="middle"
           :width="100"
+          :allowResizing="false"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -111,13 +127,15 @@
           align="center"
           valign="middle"
           :width="100"
+          :allowResizing="false"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'useYear'"
+          :binding="'processTime'"
           align="right"
           valign="middle"
           :width="100"
+          :allowResizing="false"
           :isReadOnly="true"
         ></wj-flex-grid-column>
       </wj-flex-grid>
@@ -219,7 +237,7 @@ export default {
       let array = [];
       this.sortedType = type.sortedType;
       for (let i = 0; i < this.historyData.length; i++) {
-        if (this.historyData[i].code) {
+        if (isNaN(this.historyData[i].code) === false) {
           array.push(this.historyData[i]);
         }
       }
@@ -325,7 +343,7 @@ export default {
       // 表示配列の合計列を省く
       let array = [];
       for (let i = 0; i < this.historyData.length; i++) {
-        if (this.historyData[i].code) {
+        if (isNaN(this.historyData[i].code) === false) {
           let kana = this.historyData[i].kana;
           if (
             (this.kanaText.length == 0 ||
@@ -382,7 +400,7 @@ export default {
         var ht = flexGrid.hitTest(e);
 
         if (ht.cellType == wjGrid.CellType.Cell) {
-          if (_self.historyData[ht.row].code) {
+          if (isNaN(_self.historyData[ht.row].code) === false) {
             _self.selectKey = ht.row;
             _self.$refs.dialog_service.openDialog(_self.selectKey);
           }
@@ -427,7 +445,7 @@ export default {
         returns.push(historyData[i]);
         if (dict[historyData[i].serviceCode] == n) {
           returns.push({
-            serviceTeikyoJigyosyoCode: '計', // サービス提供事業所の位置に計(文字列)を表示する
+            code: '計', // サービス提供事業所の位置に計(文字列)を表示する
             riyosyamei: n + '名', //利用者名の位置にカウント数を表示するため
           });
           n = 1;
@@ -442,7 +460,7 @@ export default {
       // サービス情報が無い合計の列
       if (noServiceCount > 0 && this.sortedType == 'jigyo') {
         returns.push({
-          serviceTeikyoJigyosyoCode: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
+          code: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
           riyosyamei: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
         });
       }
@@ -507,7 +525,13 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
             e.cell.style.textAlign = 'left';
           }
-          if (e.col == 0 || e.col == 2 || e.col == 6) {
+          if (
+            e.col == 0 ||
+            e.col == 2 ||
+            e.col == 6 ||
+            e.col == 10 ||
+            e.col == 9
+          ) {
             e.cell.style.textAlign = 'center';
             e.cell.style.justifyContent = 'center';
             e.cell.style.alignItems = 'center';
@@ -516,6 +540,17 @@ export default {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
+            if (e.cell.innerText.match('-')) {
+              let val = e.cell.innerText.split('-');
+              let str = '';
+              if (val[0] > 0) {
+                str += '<span class="inline">' + val[0] + '年</span>';
+              }
+              if (val[1] > 0) {
+                str += '<span class="inline">' + val[1] + 'ヶ月</span>';
+              }
+              e.cell.innerHTML = str;
+            }
           }
         }
       });
@@ -549,29 +584,12 @@ export default {
         new wjGrid.CellRange(0, 11, 1, 11),
       ];
 
-      // サービス毎の合計数を取得
-      let dict = this.getServiceCount(this.historyData);
-      let ranges = [];
-      let rows = 0;
-      Object.keys(dict).forEach(function (key) {
-        rows += dict[key];
-        // ranges.push(new wjGrid.CellRange(rows, 0, rows, 4));
-        rows++;
-      });
-
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
             if (headerRanges[h].contains(r, c)) {
               return headerRanges[h];
-            }
-          }
-        }
-        if (panel.cellType != wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < ranges.length; h++) {
-            if (ranges[h].contains(r, c)) {
-              return ranges[h];
             }
           }
         }
@@ -583,11 +601,15 @@ export default {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
-
+div#serviceHistoryGrid {
+  width: auto;
+}
 div#serviceHistory {
   font-size: 12px;
   font-family: 'メイリオ';
-  min-width: 1266px;
+  min-width: none;
+  max-width: none;
+  width: auto;
 
   .wj-cell.wj-header.wj-align-right,
   .wj-cell.wj-header.wj-align-left,
@@ -608,6 +630,7 @@ div#serviceHistory {
       color: $font_color;
       background-color: $grid_hover_background;
     }
+    color: $font_color;
   }
   .vertical {
     text-orientation: upright;
@@ -616,6 +639,10 @@ div#serviceHistory {
     writing-mode: vertical-rl;
     letter-spacing: 0.2em;
     text-align: center;
+  }
+  .inline {
+    display: inline-block;
+    width: 40px;
   }
 }
 </style>

@@ -209,7 +209,7 @@ export default {
   methods: {
     initComboFilters(combo) {
       if (combo.hostElement.id == CMB_ID.cmb1) {
-        combo.header = this.userSelList[0].name;
+        combo.header = combo.selectedItem.name;
       } else if (combo.hostElement.id == CMB_ID.cmb2) {
         mstKsnKmk(true).then((result) => {
           this.kasanList = result;

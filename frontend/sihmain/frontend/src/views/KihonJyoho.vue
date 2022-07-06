@@ -6,17 +6,18 @@
         @pearentAllowSyuseiTouroku="pearentAllowSyuseiTouroku()"
         @displaySort="displaySort($event)"
         @sorted="sorted($event)"
+        :kihonJyohoFlag="true"
+        :serviceHistoryFlag="false"
       ></riyousyadaityo-sort-menu>
       <v-row class="mt-1" no-gutters>
         <wj-flex-grid
           id="kihonJyohoGrid"
           :headersVisibility="'Column'"
-          :autoRowHeights="true"
-          :allowDelete="false"
           :allowDragging="false"
-          :allowResizing="false"
+          :allowResizing="true"
           :deferResizing="false"
           :allowSorting="false"
+          :autoRowHeights="true"
           :selectionMode="'Row'"
           :initialized="onInitialized"
           :itemsSource="kihonjyohoData"
@@ -26,22 +27,28 @@
             :binding="'codes'"
             :header="'コード'"
             align="center"
-            :width="100"
+            :width="86"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'names'"
             :header="'利用者名'"
+            :allowResizing="true"
             align="center"
-            width="3*"
+            :width="139"
             :isReadOnly="true"
+            :multiLine="true"
+            :wordWrap="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'kana'"
-            :header="'ﾌﾘｶﾞﾅ'"
+            :header="'フリガナ'"
             align="center"
-            width="3*"
+            :width="139"
             :isReadOnly="true"
+            :allowResizing="true"
+            :multiLine="true"
+            :wordWrap="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'dispBirthymd'"
@@ -49,6 +56,7 @@
             align="center"
             :width="80"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'age'"
@@ -56,41 +64,47 @@
             align="center"
             :width="40"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'sex'"
             :header="'性別'"
             align="center"
-            :width="70"
+            :width="40"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'dispAddress'"
             :header="'住所'"
             :multiLine="true"
+            :wordWrap="true"
             align="center"
-            width="5*"
+            :width="264"
             :isReadOnly="true"
+            :allowResizing="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'tell1'"
             :header="'連絡先①'"
             align="center"
-            width="2*"
+            :width="113"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'tell2'"
             :header="'連絡先②'"
             align="center"
-            width="2*"
+            :width="113"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'shikutyosonryaku'"
+            :binding="'shikutyoson[0]'"
             :header="'市区町村'"
-            width="1.5*"
+            :width="91"
             :isReadOnly="false"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'dispSymd'"
@@ -98,6 +112,7 @@
             align="center"
             :width="80"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'dispEymd'"
@@ -105,6 +120,7 @@
             align="center"
             :width="80"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
@@ -161,7 +177,6 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh;';
     },
-    
     /************************
      * 新規登録タブ押下
      */
@@ -169,10 +184,6 @@ export default {
       this.syuseiTourokuFlag = false;
       let array = [];
       array = this.kihonjyohoData;
-      // array.push({
-      //   Codes: 1,
-      //   name: 'trao',
-      // });
 
       // モーダルに新データ追加用の配列を渡す
       this.$refs.dialog_shinki_tuika.open(array);
@@ -328,9 +339,9 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyosonryaku: '東経市',
-          symd: "20220401",
-          dispSymd: moment('20220401').format('YYYY/MM/DD'),
+          shikutyoson: ['東経市','A市'],
+          symd: ['20220701','20220401'],
+          dispSymd: moment('20220701').format('YYYY/MM/DD'),
           startY: '2022',
           startM: '05',
           startD: '20',
@@ -352,7 +363,7 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyosonryaku: '東経市',
+          shikutyoson: ['左右市','B市'],
           symd: "20220401",
           dispSymd: moment('20220401').format('YYYY/MM/DD'),
           symd: '20220520',
@@ -370,7 +381,7 @@ export default {
           birthymd: '19820222',
           dispBirthymd: moment('19820222').format('YYYY/MM/DD'),
           age: '40',
-          sex: '男',
+          sex: '適不',
           sexFlag: 1,
           postcode1: '001',
           postcode2: '2345',
@@ -378,7 +389,7 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyosonryaku: '東経市',
+          shikutyoson: ['西経市','B市'],
           symd: "20220401",
           dispSymd: moment('20220401').format('YYYY/MM/DD'),
           endDate: moment('20181115').format('YYYY/MM/DD'),
@@ -391,7 +402,7 @@ export default {
         {
           codes: '1000000004',
           jyukyuno: '1000000004', //提供サービス
-          names: '東経 明日香', // サービス種類コード
+          names: '１２３４５６７８９０１２３', // サービス種類コード
           kana: 'アスカ トウケイ', // 利用日数
           birthymd: '19880222',
           dispBirthymd: moment('19880222').format('YYYY/MM/DD'),
@@ -401,35 +412,10 @@ export default {
           postcode1: '001',
           postcode2: '2345',
           address: '〇〇市××町11-1',
-          dispAddress: '〒001-2345 〇〇市××町11-1',
-          tell1: '03-1234-5567',
+          dispAddress: '〒001-2345 １２３４５６７８９０１２３４５６７８９０',
+          tell1: '12345-1234-1234',
           tell2: '03-1111-2231',
-          shikutyosonryaku: '東経市',
-          symd: "20220401",
-          dispSymd: moment('20220401').format('YYYY/MM/DD'),
-          startY: '2022',
-          startM: '05',
-          startD: '20',
-          eymd: '20220622',
-          dispEymd: moment('20220622').format('YYYY/MM/DD'),
-        },
-        {
-          codes: '1000000005',
-          jyukyuno: '1000000005', //提供サービス
-          names: '東経 次郎', // サービス種類コード
-          kana: 'ジロウ トウケイ', // 利用日数
-          birthymd: '20000222',
-          dispBirthymd: moment('20000222').format('YYYY/MM/DD'),
-          age: '20',
-          sex: '男',
-          sexFlag: 1,
-          postcode1: '001',
-          postcode2: '2345',
-          address: '〇〇市××町11-1',
-          dispAddress: '〒001-2345 〇〇市××町11-1',
-          tell1: '03-1234-5567',
-          tell2: '03-1111-2231',
-          shikutyosonryaku: '東経市',
+          shikutyoson: ['１２３４５６'],
           symd: "20220401",
           dispSymd: moment('20220401').format('YYYY/MM/DD'),
           startY: '2022',
@@ -458,6 +444,8 @@ export default {
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
+        s.color = '#333';
+        s.fontWeight = 'initial';
         if (panel.cellType == wjGrid.CellType.Cell) {
           // セル背景の変更
           s.backgroundColor = sysConst.COLOR.gridBackground;
@@ -485,7 +473,9 @@ export default {
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
 div#kihonJyoho {
-  width: 1360px;
+  color: #333;
+  width: auto;
+  max-width: 1350px;
   font-size: 12px;
   .user-info {
     label {

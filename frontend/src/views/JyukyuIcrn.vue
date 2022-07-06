@@ -257,7 +257,7 @@ export default {
   methods: {
     initComboFilters(combo) {
       if (combo.hostElement.id == CMB_ID) {
-        combo.header = this.userSelList[0].name;
+        combo.header = combo.selectedItem.name;
       }
     },
     onUserClicked(s) {
