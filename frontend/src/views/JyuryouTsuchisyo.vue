@@ -394,6 +394,7 @@ export default {
     // グリッドリサイズ
     window.addEventListener('resize', this.handleResize);
     // 利用者コンボボックス
+    this.riyosyaCombo = [];
     this.riyosyaCombo.push(
       {
         key: 0,
@@ -409,6 +410,7 @@ export default {
       }
     );
     // 市町村コンボボックス
+    this.shityosonCombo = [];
     this.shityosonCombo.push(
         { 
           key: 0,

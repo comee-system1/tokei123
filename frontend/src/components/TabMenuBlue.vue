@@ -1,5 +1,5 @@
 <template>
-  <v-tabs height="30" v-model="tab" @change="tabChange">
+  <v-tabs height="30" v-model="tab" @change="tabChange" id="tab_menu_blue">
     <v-tab
       class="text-caption"
       :href="m.href"
@@ -14,7 +14,7 @@
 export default {
   data() {
     return {
-      tab: 'recept', // タブの初期状態
+      tab: '', // タブの初期状態
     };
   },
   props: ['tabmenu'],
@@ -30,4 +30,19 @@ export default {
 </script>
 
 <style lang=scss>
+@import '@/assets/scss/common.scss';
+
+#tab_menu_blue {
+  border-bottom: 2px solid $grid_selected_background;
+  .v-tabs-slider {
+    height: auto;
+  }
+  a {
+    &.v-tab--active {
+      background-color: $grid_selected_background;
+      transition: all 1.5s 0s ease;
+      color: $white;
+    }
+  }
+}
 </style>

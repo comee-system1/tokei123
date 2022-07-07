@@ -30,7 +30,7 @@ const COLOR = {
 const FORMAT = {
     Num: 'n0',
     Ymd: 'yyyy/MM/dd',
-    GYmd: 'gyy/MM/dd',
+    GYmd: 'gyy/MM/dd',// import '@grapecity/wijmo.cultures/wijmo.culture.ja'; が必要
 };
 const GRDROWHEIGHT = {
     Header: 20,
