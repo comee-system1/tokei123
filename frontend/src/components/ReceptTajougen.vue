@@ -18,7 +18,7 @@
         :header="'市町村名'"
         align="center"
         valign="middle"
-        width="2*"
+        :width="80"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -33,7 +33,7 @@
         :binding="'names'"
         :header="'利用者名'"
         align="center"
-        width="3*"
+        :width="140"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -48,7 +48,7 @@
         :binding="'jigyonm'"
         :multiLine="true"
         align="center"
-        width="3*"
+        :width="140"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -76,7 +76,7 @@
       <wj-flex-grid-column
         :binding="'jigyo_jigyono'"
         :header="'事業所番号'"
-        width="2*"
+        :width="100"
         align="center"
         :format="'f0'"
         :isReadOnly="true"
@@ -84,14 +84,14 @@
       <wj-flex-grid-column
         :binding="'jigyo_jigyonm'"
         :header="'事業所名'"
-        width="3*"
+        :width="130"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'svcnm'"
         :header="'提供\nサービス'"
-        width="3*"
+        :width="130"
         align="center"
         :multiLine="true"
         :isReadOnly="true"
@@ -139,7 +139,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         binding="print"
-        :width="30"
+        width="*"
         align="center"
       ></wj-flex-grid-column>
     </wj-flex-grid>
@@ -295,67 +295,6 @@ export default {
         }
       }
       return alphabetFilter.alphabetFilter(array, this.alphaSelect, 'kana');
-      // let select = this.alphaSelect;
-      // let get = [];
-      // array.forEach(function (value) {
-      //   switch (select) {
-      //     case 0:
-      //       get.push(value);
-      //       break;
-      //     case 1:
-      //       if (value.kana.match(/^[ア-オ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 2:
-      //       if (value.kana.match(/^[カ-コ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 3:
-      //       if (value.kana.match(/^[サ-ソ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 4:
-      //       if (value.kana.match(/^[タ-ト]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 5:
-      //       if (value.kana.match(/^[ナ-ノ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 6:
-      //       if (value.kana.match(/^[ハ-ホ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 7:
-      //       if (value.kana.match(/^[マ-モ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 8:
-      //       if (value.kana.match(/^[ヤ-ヨ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 9:
-      //       if (value.kana.match(/^[ラ-ロ]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //     case 10:
-      //       if (value.kana.match(/^[ワ-ン]/)) {
-      //         get.push(value);
-      //       }
-      //       break;
-      //   }
-      // });
-
-      // return get;
     },
     /******************
      * 親コンポーネントの絞り込み
@@ -570,15 +509,6 @@ export default {
         }
       });
 
-      // flexGrid.prepareCellForEdit.addHandler(function (s, e) {
-
-      //   console.log(s);
-      //   console.log(e);
-      //   var editor = flexGrid.activeEditor;
-      //   editor.value = editor.value.replace(/,/g, '');
-      //   editor.select();
-      // });
-
       flexGrid.cellEditEnding.addHandler((s, e) => {
         let col = s.columns[e.col];
         let value = changeType(
@@ -587,11 +517,6 @@ export default {
           col.format
         );
 
-        // let pt6 = flexGrid.getCellData(e.row, 6);
-        // let pt13 = flexGrid.getCellData(e.row, 13);
-        // let pt14 = flexGrid.getCellData(e.row, 14);
-
-        // if (e.col == 13) {
         if (!isNumber(value) && value.length > 0) {
           e.cancel = true;
           e.stayInEditMode = true;
@@ -851,6 +776,8 @@ export default {
 @import '@/assets/scss/common.scss';
 
 div#recept-tajyougen {
+  width: 1290px;
+  min-width: none;
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;

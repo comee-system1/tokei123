@@ -18,14 +18,14 @@
         :binding="'sityonm'"
         :header="'市町村名'"
         align="center"
-        width="2*"
+        :width="80"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'jyukyuno'"
         :header="'受給者番号'"
         align="center"
-        width="2*"
+        :width="90"
         format="'f0'"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -33,7 +33,7 @@
         :binding="'names'"
         :header="'利用者名'"
         align="center"
-        width="3*"
+        :width="140"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -48,7 +48,7 @@
         :binding="'jigyo_jigyonm'"
         :multiLine="true"
         align="center"
-        width="2*"
+        :width="140"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -77,7 +77,7 @@
       <wj-flex-grid-column
         :binding="'jigyono'"
         :header="'事業所番号'"
-        width="2*"
+        :width="100"
         align="center"
         :format="'f0'"
         :isReadOnly="true"
@@ -85,14 +85,14 @@
       <wj-flex-grid-column
         :binding="'jigyonm'"
         :header="'事業所名'"
-        width="3*"
+        :width="140"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'svcnm'"
         :header="'提供\nサービス'"
-        width="3*"
+        :width="140"
         align="center"
         :multiLine="true"
         :isReadOnly="true"
@@ -100,7 +100,7 @@
       <wj-flex-grid-column
         :binding="'sogaku'"
         :header="'総費用額'"
-        width="2*"
+        :width="80"
         align="center"
         :multiLine="true"
         :format="'n0'"
@@ -108,7 +108,7 @@
       <wj-flex-grid-column
         :binding="'riyogaku'"
         :header="'利用者\n負担額'"
-        width="2*"
+        :width="80"
         align="center"
         :format="'n0'"
         :multiLine="true"
@@ -123,7 +123,7 @@
       <wj-flex-grid-column
         :binding="'jknr_riyogaku'"
         :header="'管理結果\n後利用者\n負担額'"
-        width="2*"
+        :width="60"
         align="center"
         :multiLine="true"
       ></wj-flex-grid-column>
@@ -141,7 +141,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         binding="print"
-        :width="24"
+        width="*"
         :isReadOnly="true"
       ></wj-flex-grid-column>
     </wj-flex-grid>
@@ -1194,6 +1194,7 @@ div.receptPartsArea {
 div#recept-jijyougen {
   #grid_jijyougen {
     height: 52vh;
+    width: 1305px;
 
     .wj-cell {
       padding: 1px;

@@ -115,7 +115,7 @@
           :binding="'riyocode'"
           align="center"
           valign="middle"
-          :width="80"
+          :width="100"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -124,12 +124,13 @@
           valign="middle"
           :width="80"
           :isReadOnly="true"
+          :visible="false"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'names'"
           align="center"
           valign="middle"
-          width="2*"
+          :width="160"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -144,7 +145,7 @@
           :binding="'symd_view'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="80"
           :multiLine="true"
           :isReadOnly="true"
         ></wj-flex-grid-column>
@@ -152,7 +153,7 @@
           :binding="'eymd_view'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="80"
           :multiLine="true"
           :isReadOnly="true"
         ></wj-flex-grid-column>
@@ -180,14 +181,14 @@
           :binding="'gokei'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="80"
           :isReadOnly="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'avg'"
           align="center"
           valign="middle"
-          width="1*"
+          width="*"
           :isReadOnly="true"
         ></wj-flex-grid-column>
       </wj-flex-grid>
@@ -278,7 +279,7 @@ export default {
       } else if (height > 700) {
         ht = 70;
       }
-      this.gridHeight = 'height:' + ht + 'vh;';
+      this.gridHeight = 'height:' + ht + 'vh;width:1250px;';
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
@@ -614,7 +615,6 @@ export default {
 div#nyutaiin {
   font-size: 12px;
   font-family: 'メイリオ';
-  min-width: 1266px;
   .jijyougen-container {
     padding: 4px;
   }
