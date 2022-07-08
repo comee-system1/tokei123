@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="500"
+    width="600"
     persistent>
     <v-card class="pa-2" id="dialogShinkiTouroku">
       <v-card-title> 利用者台帳 新規利用者登録 </v-card-title>
@@ -27,8 +27,8 @@
             コード
           </v-card>
           <v-text-field
-            :value="inputCodes"
-            v-model="inputCodes"
+            :value="inputCode"
+            v-model="inputCode"
             single-line
             solo
             style="max-width: 100px;"
@@ -59,7 +59,7 @@
             elevation ="0"
             color = "#EEE"
             >
-            フリガナ
+            ﾌﾘｶﾞﾅ（半角）
           </v-card>
           <v-text-field
             class="ma-0"
@@ -72,24 +72,68 @@
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
           <v-card 
-          class="pl-1 mr-1 dialogHeader dialogHeader-25"
-          height = "25"
+          class="pl-1 mr-1 dialogHeader dialogHeader-75"
+          height = "75"
           elevation ="0"
           color = "#EEE"
           >
             生年月日
           </v-card>
-          <v-text-field
-            class="ma-0"
-            :value="inputBirthymd"
-            v-model="inputBirthymd"
-            single-line
-            solo
-            style="max-width: 80px;"
-            @blur="calcRiyousyaAge()"
-          ></v-text-field>
-          <v-card elevation ="0" class="dialogAge_emphasis ml-7 mr-3">{{this.inputAge}}</v-card>
-          <v-card elevation ="0" class="dialogAge">歳</v-card>
+          <v-card elevation ="0" class="dialogBirthday">
+            <v-card-actions class="pa-0 align-start">
+              <v-radio-group 
+                @change="switchDialogYear()"
+                column class="mt-0 pt-0 d-block mr-3" 
+                v-model="calendarKey"
+                >
+                <v-radio label="和暦" :key="1" :value="'1'" class="mb-0"></v-radio>
+                <v-radio label="西暦" :key="2" :value="'2'" class="mb-0"></v-radio>
+              </v-radio-group>
+              <v-radio-group row
+                @change="switchDialogYear()"
+                class="mt-0 pt-0 dialogWareki"
+                v-if="calendarKey === '1'"
+                v-model="nengouKey"
+                >
+                <v-radio label="大正" :key="1" :value="'大正'" class="mb-0"></v-radio>
+                <v-radio label="昭和" :key="2" :value="'昭和'" class="mb-0"></v-radio>
+                <v-radio label="平成" :key="3" :value="'平成'" class="mb-0"></v-radio>
+                <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
+              </v-radio-group>
+            </v-card-actions>
+            <v-card elevation ="0" class="d-inline-flex dialogBirthday_input">
+              {{dispNngou}}
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_y"
+                :value="inputBirthY"
+                v-model="inputBirthY"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              年
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_md"
+                :value="inputBirthM"
+                v-model="inputBirthM"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              月
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_md"
+                :value="inputBirthD"
+                v-model="inputBirthD"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              日
+              <div class="dialogAge_emphasis ml-3 mr-1">{{this.inputAge}}</div>
+              <div class="dialogAge">歳</div>
+            </v-card>
+          </v-card>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
             <v-card 
@@ -100,10 +144,10 @@
               >
               性別
             </v-card>
-            <v-radio-group class="mt-0 pt-0 dialogSex" v-model="inputSexFlag">
-              <v-radio label="男" :key="1" :value="1" class="mb-0"></v-radio>
-              <v-radio label="女" :key="2" :value="2" class="mb-0"></v-radio>
-              <v-radio label="適用不能" :key="0" :value="0" class="mb-0"></v-radio>
+            <v-radio-group row class="mt-0 pt-0" v-model="inputGenderKey">
+              <v-radio label="男" :key="1" :value="'1'" class="mb-0"></v-radio>
+              <v-radio label="女" :key="2" :value="'2'" class="mb-0"></v-radio>
+              <v-radio label="適用不能" :key="0" :value="'0'" class="mb-0"></v-radio>
             </v-radio-group>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -308,14 +352,17 @@ export default {
       datepicker_dialog: false,
 
       // 入力された値
-      inputCodes: '',
+      inputCode: '',
       inputNames: '',
       inputKana: '',
       inputBirthymd: '',
       dispBirthymd: '',
+      inputBirthY: '',
+      inputBirthM: '',
+      inputBirthD: '',
       inputAge: '',
-      inputSex: '',
-      inputSexFlag: '',
+      inputGender: '',
+      inputGenderKey: '',
       inputPostcode: '',
       inputPostcode1: '',
       inputPostcode2: '',
@@ -328,6 +375,10 @@ export default {
       inputSartY: '',
       inputSartM: '',
       inputSartD: '',
+
+      calendarKey: '',
+      nengouKey: '',
+      dispNngou: ''
     };
   },
   components: {
@@ -358,15 +409,15 @@ export default {
         this.dispSymd = moment(this.inputSymd).format('YYYY/MM/DD');
       }
       // 性別
-      let displaySex = "";    // 表示用性別
-      if (this.inputSexFlag === 1) {
-        displaySex = "男";
-      } else if (this.inputSexFlag === 2) {
-        displaySex = "女";
-      } else if (this.inputSexFlag === 0) {
-        displaySex = "適不";
+      let displayGender = "";    // 表示用性別
+      if (this.inputGenderKey === 1) {
+        displayGender = "男";
+      } else if (this.inputGenderKey === 2) {
+        displayGender = "女";
+      } else if (this.inputGenderKey === 0) {
+        displayGender = "適不";
       } else {
-        displaySex = "未選択";
+        displayGender = "";
       }
 
       // 住所
@@ -379,14 +430,14 @@ export default {
 
       // 親から受け取ったデータに入力情報を追加
       this.addData.push({
-        codes:            this.inputCodes,
+        code:            this.inputCode,
         names:            this.inputNames,
         kana:             this.inputKana,
         birthymd:         this.inputBirthymd,
         dispBirthymd:     this.dispBirthymd,
         age:              this.inputAge,
-        sex:              displaySex,
-        sexFlag:          this.inputSexFlag,
+        gender:           displayGender,
+        genderKey:        this.inputGenderKey,
         postcode:         this.inputPostcode,
         postcode1:        this.inputPostcode1,
         postcode2:        this.inputPostcode2,
@@ -407,25 +458,22 @@ export default {
       this.$emit('addFormData', this.addData);
 
       // 入力情報をリセット
-        this.inputCodes = '';
-        this.inputNames = '';
-        this.inputKana = '';
-        this.inputBirthymd = '';
-        this.dispBirthymd = '';
-        this.inputAge = '';
-        this.inputSexFlag = '';
-        this.inputPostcode = '';
-        this.inputPostcode1 = '';
-        this.inputPostcode2 = '';
-        this.inputAddress = '';
-        this.inputTell1 = '';
-        this.inputTell2 = '';
-        this.inputShikutyoson = '';
-        this.inputSymd = '';
-        this.dispSymd = '';
-        this.year  = moment().format('YYYY');
-        this.month  = moment().format('MM');
-        this.date  = moment().format('DD');
+      this.inputDataClear();
+    },
+    /***********
+     *dialog和暦西暦表示切り替え
+     */
+    switchDialogYear() {
+      if (this.calendarKey === '1') {
+        // 和暦選択時
+        console.log(this.dispNngou)
+        this.dispNngou = "  ";
+        this.dispNngou = this.nengouKey;
+      } else {
+        // 西暦選択時
+        this.dispNngou = "西暦";
+        this.nengouKey ="";
+      }
     },
     /***********
      * 生年月日からフォーカスが外れた場合に動作
@@ -536,27 +584,38 @@ export default {
      */
     shinkiTouroku_dialog_clear: function () {
       if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
-        this.inputCodes = '';
-        this.inputNames = '';
-        this.inputKana = '';
-        this.inputBirthymd = '';
-        this.dispBirthymd = '';
-        this.inputAge = '';
-        this.inputSexFlag = '';
-        this.inputPostcode = '';
-        this.inputPostcode1 = '';
-        this.inputPostcode2 = '';
-        this.inputAddress = '';
-        this.inputTell1 = '';
-        this.inputTell2 = '';
-        this.inputShikutyoson = '';
-        this.inputSymd = '';
-        this.dispSymd = '';
-        this.year = moment().format('YYYY');
-        this.month = moment().format('MM');
-        this.date = moment().format('DD');
+        this.inputDataClear();
+        console.log(1)
       }
     },
+    /***********
+     * 入力データの初期化
+     */
+    inputDataClear() {
+      this.inputCode = '';
+      this.inputNames = '';
+      this.inputKana = '';
+      this.inputBirthymd = '';
+      this.dispBirthymd = '';
+      this.inputAge = '';
+      this.inputGenderKey = '';
+      this.inputPostcode = '';
+      this.inputPostcode1 = '';
+      this.inputPostcode2 = '';
+      this.inputAddress = '';
+      this.inputTell1 = '';
+      this.inputTell2 = '';
+      this.inputShikutyoson = '';
+      this.inputSymd = '';
+      this.dispSymd = '';
+      this.year = moment().format('YYYY');
+      this.month = moment().format('MM');
+      this.date = moment().format('DD');
+
+      this.calendarKey = '',
+      this.nengouKey = '',
+      this.dispNngou = ''
+    }
   },
 };
 </script>
@@ -616,6 +675,31 @@ export default {
         display: none;
       }
     }
+    // 生年月日デザイン修正
+    .dialogBirthday {
+      .v-text-field__slot input {
+        text-align: right;
+      }
+      .dialogBirthday_input {
+        height: 25px;
+        line-height: 25px;
+        .v-input {
+          display: block;
+        }
+      }
+      .dialogBirthday_y {
+        width: 40px;
+        .v-input__slot {
+          width: 40px;
+        }
+      }
+      .dialogBirthday_md {
+        width: 25px;
+        .v-input__slot {
+          width: 25px;
+        }
+      }
+    }
     // 年齢デザイン調整
     .dialogAge {
       display: inline-block;
@@ -626,13 +710,11 @@ export default {
     .dialogAge_emphasis {
       display: inline-block;
       background: lightYellow;
-      height: 25px;
-      line-height: 25px;
       width: 50px;
       text-align: right;
       padding-right: 8px;
     }
-    // ラジオボタン（性別）デザイン修正
+    // ラジオボタンデザイン修正
     .v-input--selection-controls {
       .v-input__slot {
         margin-bottom: 0;
@@ -654,11 +736,10 @@ export default {
         display: none;
       }
       .v-radio {
-        margin-right: 8px;
+        margin-right: 0px;
       }
-      .v-input--radio-group__input {
-        flex-direction: initial;
-        align-items: flex-start;
+      .v-input--selection-controls__input {
+        margin-right: 0;
       }
     }
     // 郵便番号縦中央寄せ

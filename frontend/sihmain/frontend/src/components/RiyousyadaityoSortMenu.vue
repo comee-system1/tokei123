@@ -122,6 +122,7 @@
                 dark
                 outlined
                 style="width: 110px; height: 25px"
+                @click="sorted('jigyo')"
                 v-if="serviceHistoryFlag"
               >
                 事業所＋サービス
@@ -178,7 +179,7 @@
           <v-col class="mt-1">
             <label v-if="kihonJyohoFlag">市区町村</label>
             <wj-menu
-              class="customCombobox  mr-1"
+              class="customCombobox mr-1"
               :itemsSource="shityosonCombo"
               :itemClicked="onShityosonCombo"
               :isRequired="true"
@@ -210,6 +211,44 @@
         ref="alphabetButton"
         @onAlphabetical="onAlphabetical"
       ></alphabet-button>
+      <v-card elevation="0" class="ml-2 mr-2 d-flex">
+        <label
+          class="pa-0"
+          style="
+            width: 120px;
+            line-height: 25px;
+            color: #333;
+            border-radius: initial;
+          "
+          >日付表示切り替え
+        </label>
+        <v-btn-toggle 
+          class="flex-wrap"
+          mandatory
+          v-if="kihonJyohoFlag"
+          >
+          <v-btn
+            small
+            color="secondary"
+            dark
+            outlined
+            style="width: 110px; height: 25px"
+            @click="dateSwitch('wareki')"
+          >
+            和暦
+          </v-btn>
+          <v-btn
+            small
+            color="secondary"
+            dark
+            outlined
+            style="width: 110px; height: 25px"
+            @click="dateSwitch('seireki')"
+          >
+            西暦
+          </v-btn>
+        </v-btn-toggle>
+      </v-card>
       <v-card elevation="0" class="d-flex ml-2">
         <v-card-text class="pa-0 mr-3">
           全体：<span>{{ totalcount }}人</span>
@@ -240,7 +279,7 @@ export default {
       toggle_exclusive: '',
       mandatoryFlag: false,
       shityosonCombo: shityosonCombo,
-      filterTextShityoson: { shityosonKey: 0, shityoson:'指定なし'}, // 検索項目
+      filterTextShityoson: { shityosonKey: 0, shityoson: '指定なし' }, // 検索項目
       totalcount: 0,
       malecount: 0,
       femalecount: 0,
@@ -262,32 +301,32 @@ export default {
   components: {
     AlphabetButton,
   },
-   created() {
+  created() {
     // 市町村コンボボックス
     this.shityosonCombo = [];
     this.shityosonCombo.push(
-      { 
+      {
         key: 0,
-        text: '指定なし' 
+        text: '指定なし',
       },
       {
         key: 1,
-        text: '東経市' 
+        text: '東経市',
       },
       {
         key: 2,
-        text: '西経市'
+        text: '西経市',
       },
       {
         key: 3,
-        text: '南経市' 
+        text: '南経市',
       },
       {
         key: 4,
-        text: '北経市' 
-      },
+        text: '北経市',
+      }
     );
-   },
+  },
   methods: {
     /*********************
      * 市町村変更
@@ -296,8 +335,7 @@ export default {
       if (e.selectedIndex != -1) {
         e.header = e.text;
         // this.onShityoson(e.text, e.selectedIndex);
-        e.text,
-        e.selectedIndex
+        e.text, e.selectedIndex;
       }
       let f = document.activeElement;
       f.blur();
@@ -377,6 +415,12 @@ export default {
         serviceCode: 0,
       });
       this.serviceNaiyoCombo = group;
+    },
+    /******************
+     * 和暦西暦切り替え
+     */
+    dateSwitch(type) {
+      this.$emit('onDateSwitch', { dateType: type });
     },
     /******************
      * 新規登録ダイアログを呼び出し

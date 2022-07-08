@@ -3,8 +3,7 @@ export function getHendoData() {
     column1: '変動情報',
     column2: '加算情報'
   };
-  let hendo = [
-    {
+  let hendo = [{
       text: '利用日',
       type: 'riyo',
       merge: 3,
@@ -23,8 +22,7 @@ export function getHendoData() {
       text: '食事',
       type: 'meal',
       merge: 2,
-      data: [
-        {
+      data: [{
           text: '朝食',
           money: 300
         },
@@ -35,29 +33,26 @@ export function getHendoData() {
         {
           text: '夕食',
           money: 500
-        }]
+        }
+      ]
     },
     {
       text: '光熱水費',
       type: 'shine',
       merge: 2,
-      data: [
-        {
-          text: '',
-          money: 100
-        }
-      ]
+      data: [{
+        text: '',
+        money: 100
+      }]
     }
   ];
 
-  let taisei =
-  {
+  let taisei = {
     key: 1,
     text: '体制+個別',
-    data: [
-      {
+    data: [{
         key: 1,
-        text: "重度障害者支援加算Ⅱ2",
+        text: "１２３４５６７８９０",
         day1: 2,
         day2: 2,
         day3: 2,
@@ -84,12 +79,10 @@ export function getHendoData() {
     ]
   };
 
-  let kobetu =
-  {
+  let kobetu = {
     key: 1,
     text: '個別',
-    data: [
-      {
+    data: [{
         key: 6,
         text: "入院・外泊時加算Ⅰ",
         day1: 2,

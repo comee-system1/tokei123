@@ -349,6 +349,9 @@
       </wj-flex-grid>
     </v-container>
     <dialog-service-teikyo ref="dialogTeikyo"></dialog-service-teikyo>
+    <dialog-service-teikyo-taisei
+      ref="dialogTeikyoTaisei"
+    ></dialog-service-teikyo-taisei>
   </div>
 </template>
 
@@ -356,8 +359,10 @@
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import DialogServiceTeikyo from '../components/DialogServiceTeikyo.vue';
+import DialogServiceTeikyoTaisei from '../components/DialogServiceTeikyoTaisei.vue';
 import sysConst from '@/utiles/const';
 import TabMenuBlue from '@/components/TabMenuBlue.vue';
+import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
 export default {
   data() {
@@ -387,6 +392,7 @@ export default {
   },
   components: {
     DialogServiceTeikyo,
+    DialogServiceTeikyoTaisei,
     TabMenuBlue,
   },
   mounted() {
@@ -418,11 +424,9 @@ export default {
       this.isVisible12 = false;
       this.isVisible23 = false;
 
-      // テスト
-      this.toggle_display = 1;
-
       // 一旦データの保持
       if (this.toggle_display == 0) {
+        // 施設種類・定員
         this.isVisible2 = true;
         this.isVisible23 = true;
         this.isVisible12 = true;
@@ -432,23 +436,23 @@ export default {
         this.serviceData = this.serviceDataMain;
         this.allData = this.serviceDataMain;
       } else {
+        // 体制加算
         this.isVisible3 = true;
         this.isVisible23 = true;
-        this.isVisible12 = false;
         // 体制加算等を押下時にserviceDataを入れ替える
         this.serviceData = [];
         this.allData = [];
         this.serviceData = this.serviceDataTeisai;
         this.allData = this.serviceDataTeisai;
       }
+      this.flexGrid.itemsSource = [];
+      this.flexGrid.itemsSource = this.serviceData;
     },
     /**************
      * 子コンポーネントtabmenublueで選択した値を取得
      */
     parent_tab_menu(args) {
       this.tab = args.selectTab;
-      // テスト
-      this.tab = 'sisetu';
       this.isVisible1 = false;
       this.isVisible2 = false;
       this.isVisible3 = false;
@@ -474,7 +478,10 @@ export default {
       this.select_mandatory = true;
       if (type == 'add') {
         this.selected = 0;
-        this.$refs.dialogTeikyo.openDialog(type, '');
+        // 履歴追加では無効
+        if (this.tab != 'sisetu') {
+          this.$refs.dialogTeikyo.openDialog(type, '');
+        }
       }
       if (type == 'edit') {
         this.selected = 1;
@@ -545,6 +552,13 @@ export default {
           if (_self.selected === 1) {
             _self.$refs.dialogTeikyo.openDialog(
               'edit',
+              _self.serviceData[ht.row]
+            );
+          }
+          // 施設体制+履歴追加押下の時のみ
+          if (_self.tab == 'sisetu' && _self.selected === 0) {
+            _self.$refs.dialogTeikyoTaisei.openDialog(
+              'historyAdd',
               _self.serviceData[ht.row]
             );
           }
@@ -697,9 +711,10 @@ export default {
       ];
 
       let ranges = [];
-      if (this.serviceData.length > 0) {
-        let merge = this.createMergeArray(this.serviceData);
-
+      let merge = [];
+      if (this.toggle_display == 1) {
+        merge = this.createMergeArray(this.serviceData);
+        ranges = [];
         for (let i = 0; i < merge.length; i++) {
           ranges.push(
             new wjGrid.CellRange(merge[i].first, 0, merge[i].last - 1, 0)
@@ -737,7 +752,7 @@ export default {
             }
           }
         }
-        if (panel.cellType != wjGrid.CellType.ColumnHeader) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
           for (let h = 0; h < ranges.length; h++) {
             if (ranges[h].contains(r, c)) {
               return ranges[h];
@@ -757,7 +772,7 @@ export default {
       for (let i = 0; i < groupData.length; i++) {
         array.push({
           row: i,
-          code: groupData[i]['code'],
+          groupKey: groupData[i]['groupKey'],
         });
       }
       const groupBy = function (xs, key) {
@@ -767,7 +782,7 @@ export default {
         }, {});
       };
 
-      const mergeGroup = groupBy(array, 'code');
+      const mergeGroup = groupBy(array, 'groupKey');
       let merge = [];
       Object.keys(mergeGroup).map((key) => {
         let firsts = mergeGroup[key][0].row;
@@ -783,9 +798,23 @@ export default {
 
     getDataTeisai() {
       let serviceData = [];
-      serviceData.push(
-        {
-          code: '1001',
+      let name = [
+        '人員配置体制加算（Ⅰ）',
+        '福祉専門員配置加算（Ⅰ）',
+        '常勤看護職員配置加算（Ⅱ）',
+        '重度障害者支援加算（Ⅰ）',
+        '送迎加算（Ⅰ）',
+        '食事提供体制加算',
+        '就労移行支援体制加算（Ⅱ）',
+        '福祉・介護職員処遇改善加算',
+        '福祉・介護職員等処遇改善加算Ⅰ',
+      ];
+      let pt = ['', '', '', '', '', '', '', '5.7', '1.7'];
+      let memo = [];
+      for (let i = 0; i < 9; i++) {
+        serviceData.push({
+          groupKey: 1,
+          code: 1001,
           serviceJigyosyoMei: '障害者支援施設 ひまわり園',
           ryakusyo: '生活ひまわり園',
           serviceMeisyoCode: '22',
@@ -796,59 +825,73 @@ export default {
           seikyuDaihyoDisp: '〇',
           tekiouStartDate: '20220304',
           taiseiKasan: '加算',
-          taiseiText: '人員配置体制加算(Ⅰ)',
-          taiseiPoint: '',
-          taiseiOther: '',
-        },
-        {
-          code: '1001',
-          serviceJigyosyoMei: '障害者支援施設 ひまわり園',
+          taiseiText: name[i],
+          taiseiPoint: pt[i],
+          taiseiOther: memo[i],
+        });
+      }
+
+      name = [
+        '福祉専門員配置加算（Ⅰ）',
+        '常勤看護職員配置加算',
+        '食事提供体制加算',
+        '就労移行支援体制加算（Ⅱ）',
+        '福祉・介護職員処遇改善加算',
+        '福祉・介護職員等処遇改善加算Ⅰ',
+      ];
+      pt = ['', '', '', '', '6.3', '2.1'];
+      memo = ['', '', '利用者2人', '', '', ''];
+
+      for (let i = 0; i < 6; i++) {
+        serviceData.push({
+          groupKey: 2,
+          code: 1002,
+          serviceJigyosyoMei: '短期入所事業所 ひまわり園',
           ryakusyo: '生活ひまわり園',
-          serviceMeisyoCode: '22',
-          serviceMeisyo: '生活介護',
+          serviceMeisyoCode: '24',
+          serviceMeisyo: '短期入所',
           jigyosyoBango: '1121000011',
           enabled: true,
           seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '',
+          seikyuDaihyoDisp: '〇',
           tekiouStartDate: '20220304',
           taiseiKasan: '加算',
-          taiseiText: '福祉専門員配置加算(Ⅰ)',
-          taiseiPoint: '5.7',
-          taiseiOther: '',
-        },
-        {
-          code: '1002',
-          serviceJigyosyoMei: '障害者支援施設 ひまわり園',
-          ryakusyo: '生活ひまわり園',
-          serviceMeisyoCode: '22',
-          serviceMeisyo: '生活介護',
-          jigyosyoBango: '1121000011',
-          enabled: true,
-          seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '',
-          tekiouStartDate: '20220304',
-          taiseiKasan: '加算',
-          taiseiText: '福祉専門員配置加算(Ⅰ)',
-          taiseiPoint: '',
-          taiseiOther: '利用者2人',
-        },
-        {
-          code: '1003',
+          taiseiText: name[i],
+          taiseiPoint: pt[i],
+          taiseiOther: memo[i],
+        });
+      }
+      name = [
+        '夜勤職員配置体制加算',
+        '夜間看護体制加算	',
+        '重度障害者支援加算Ⅰ１',
+        '重度障害者支援加算Ⅰ２',
+        '口腔衛生管理体制加算',
+        '福祉・介護職員処遇改善加算Ⅰ',
+      ];
+      pt = [];
+      memo = [];
+
+      for (let i = 0; i < 6; i++) {
+        serviceData.push({
+          groupKey: 3,
+          code: 1003,
           serviceJigyosyoMei: '障害者支援施設 ひまわり園',
           ryakusyo: '生活ひまわり園',
           serviceMeisyoCode: '32',
           serviceMeisyo: '施設入所支援',
-          jigyosyoBango: '1121000002',
+          jigyosyoBango: '1121000011',
           enabled: true,
           seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '',
+          seikyuDaihyoDisp: '〇',
           tekiouStartDate: '20220304',
           taiseiKasan: '加算',
-          taiseiText: '夜間職員配置体制加算',
-          taiseiPoint: '',
-          taiseiOther: '',
-        }
-      );
+          taiseiText: name[i],
+          taiseiPoint: pt[i],
+          taiseiOther: memo[i],
+        });
+      }
+
       // コード順にソート
       serviceData.sort((a, b) => {
         if (a.code < b.code) return -1;
@@ -857,9 +900,13 @@ export default {
       });
 
       for (let i = 0; i < serviceData.length; i++) {
-        serviceData[i]['tekiouStartDate'] = moment(
-          serviceData[i].tekiouStartDate
-        ).format('YYYY/MM');
+        let y = moment(serviceData[i].tekiouStartDate).format('YYYY');
+        let m = moment(serviceData[i].tekiouStartDate).format('M') - 1;
+        let d = moment(serviceData[i].tekiouStartDate).format('D');
+        serviceData[i]['tekiouStartDate'] = wijmo.Globalize.format(
+          new Date(y, m, d),
+          'gyy/MM'
+        );
       }
 
       this.serviceDataTeisai = serviceData;
@@ -1194,11 +1241,16 @@ export default {
         }
 
         serviceData[i]['reseDisp'] = this.reseType[serviceData[i].rese];
-        serviceData[i]['tekiouStartDate'] = moment(
-          serviceData[i].tekiouStartDate
-        ).format('YYYY/MM');
         serviceData[i]['takinouJigyo'] =
           this.takinouJigyo[serviceData[i].takinouJigyo];
+
+        let y = moment(serviceData[i].tekiouStartDate).format('YYYY');
+        let m = moment(serviceData[i].tekiouStartDate).format('M') - 1;
+        let d = moment(serviceData[i].tekiouStartDate).format('D');
+        serviceData[i]['tekiouStartDate'] = wijmo.Globalize.format(
+          new Date(y, m, d),
+          'gyy/MM'
+        );
       }
       this.merge = [];
       this.serviceDataMain = serviceData;

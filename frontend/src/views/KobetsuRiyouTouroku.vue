@@ -24,7 +24,7 @@
                 <v-card class="pr-2 text-center" elevation="0" :min-width="80">
                   <label class="greyLabel">利用者名</label>
                 </v-card>
-                <v-card class="light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="240" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
                 <v-card
@@ -34,7 +34,7 @@
                 >
                   <label class="greyLabel">受給者番号</label>
                 </v-card>
-                <v-card class="light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="100" outlined tile>
                   {{ userDataSelect[0].jyukyusyabango }}
                 </v-card>
               </v-card>
@@ -952,12 +952,11 @@ export default {
       flexGrid.rows.defaultSize = 20;
       flexGrid.columns[0].width = 20;
       flexGrid.columns[1].width = 20;
-      flexGrid.columns[2].width = '8*';
-      flexGrid.columns[3].width = '8*';
+      flexGrid.columns[2].width = 40;
+      flexGrid.columns[3].width = 90;
 
       for (let i = 4; i <= this.lastdate + 3; i++) {
-        flexGrid.columns[i].width = '2.2*';
-        flexGrid.columns[i].minWidth = 24;
+        flexGrid.columns[i].width = 24;
       }
       flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
     },
@@ -1134,7 +1133,7 @@ export default {
 div#kobeturiyou {
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1266px;
+  min-width: none;
 
   .wj-cell {
     padding: 0 !important;
@@ -1150,6 +1149,7 @@ div#kobeturiyou {
 
   .container {
     padding: 4px;
+    min-width: 1320px;
   }
   .wj-cells {
     font-size: $cell_fontsize;
@@ -1161,7 +1161,7 @@ div#kobeturiyou {
   label.greyLabel {
     background-color: $selected_color;
     display: inline-block;
-    width: 140px;
+    width: 100px;
     height: 100%;
   }
   // 受給者証状況用のエリアボックス
@@ -1174,11 +1174,9 @@ div#kobeturiyou {
     max-width: 275px;
     width: 275px;
   }
-
   .rightArea {
-    min-width: 50%;
-    max-width: none;
-    width: 1020px;
+    min-width: 1020px;
+    max-width: 1020px;
   }
 
   .gridBackground {
@@ -1241,9 +1239,9 @@ div#kobeturiyou {
     }
   }
   #flexGrid {
-    width: 100%;
+    width: auto;
     max-width: none;
-    min-width: 1300px-275;
+    min-width: none;
     .wj-cell {
       padding: 0 !important;
       &.wj-frozen-row {

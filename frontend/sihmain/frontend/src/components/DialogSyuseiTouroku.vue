@@ -27,8 +27,8 @@
               コード
             </v-card>
             <v-text-field
-              :value="riyousyaCodes"
-              v-model="riyousyaCodes"
+              :value="riyousyaCode"
+              v-model="riyousyaCode"
               single-line
               solo
               style="max-width: 100px;"
@@ -99,10 +99,10 @@
             >
             性別
           </v-card>
-          <v-radio-group class="mt-0 pt-0" v-model="riyousyaSexFlag">
-            <v-radio label="男" :key="1" :value="1" class="mb-0"></v-radio>
-            <v-radio label="女" :key="2" :value="2" class="mb-0"></v-radio>
-            <v-radio label="適用不能" :key="0" :value="0" class="mb-0"></v-radio>
+          <v-radio-group class="mt-0 pt-0" v-model="riyousyaGenderKey">
+            <v-radio label="男" :key="1" :value="'1'" class="mb-0"></v-radio>
+            <v-radio label="女" :key="2" :value="'2'" class="mb-0"></v-radio>
+            <v-radio label="適用不能" :key="0" :value="'0'" class="mb-0"></v-radio>
           </v-radio-group>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -373,12 +373,12 @@ export default {
       datepicker_dialog: false,
 
       // 取得した利用者データ
-      riyousyaCodes: '',
+      riyousyaCode: '',
       riyousyaNames: '',
       riyousyaKana: '',
       riyousyabirthymd: '',
       riyousyaAge: '',
-      riyousyaSexFlag: '',
+      riyousyaGenderKey: '',
       riyousyaPostcode: '',
       riyousyaPostcode1: '',
       riyousyaPostcode2: '',
@@ -405,12 +405,12 @@ export default {
       this.date = moment(riyousyadata['symd'][0]).format('DD');
 
       // 取得したデータをモーダルのvalueに設置
-      this.riyousyaCodes =            riyousyadata['codes'];
+      this.riyousyaCode =            riyousyadata['code'];
       this.riyousyaNames =            riyousyadata['names'];
       this.riyousyaKana =             riyousyadata['kana'];
       this.riyousyabirthymd =         riyousyadata['birthymd'];
       this.riyousyaAge =              riyousyadata['age'];
-      this.riyousyaSexFlag =          riyousyadata['sexFlag'];
+      this.riyousyaGenderKey =        riyousyadata['genderKey'];
       this.riyousyaPostcode1 =        riyousyadata['postcode1'];
       this.riyousyaPostcode2 =        riyousyadata['postcode2'];
       this.riyousyaAddress =          riyousyadata['address'];
@@ -454,15 +454,15 @@ export default {
       }
       formatSymd = moment(formatSymd).format('YYYY/MM/DD');
       // 性別
-      let displaySex = "";    // 表示用性別
-      if (this.riyousyaSexFlag === 1) {
-        displaySex = "男";
-      } else if (this.riyousyaSexFlag === 2) {
-        displaySex = "女";
-      } else if (this.riyousyaSexFlag === 0) {
-        displaySex = "適用不能";
+      let displayGender = "";    // 表示用性別
+      if (this.riyousyaGenderKey === 1) {
+        displayGender = "男";
+      } else if (this.riyousyaGenderKey === 2) {
+        displayGender = "女";
+      } else if (this.riyousyaGenderKey === 0) {
+        displayGender = "適用不能";
       } else {
-        displaySex = "未選択";
+        displayGender = "未選択";
       }
 
       // 住所
@@ -475,12 +475,12 @@ export default {
 
       // 親から受け取ったデータ修正データとして登録
       this.addData.push({
-        codes:         this.riyousyaCodes,
+        code:         this.riyousyaCode,
         names:         this.riyousyaNames,
         kana:          this.riyousyaKana,
         birthymd:      formatBirthymd,
         age:           this.riyousyaAge,
-        sex:           displaySex,
+        gender:        displayGender,
         postcode:      this.riyousyaPostcode,
         address:       displayAddress,
         dispAddress:   this.inputAddress,
@@ -494,12 +494,12 @@ export default {
       // this.$emit('addFormData', this.addData);
 
       // 入力情報をリセット
-      this.riyousyaCodes = '';
+      this.riyousyaCode = '';
       this.riyousyaNames = '';
       this.riyousyaKana = '';
       this.riyousyabirthymd = '';
       this.riyousyaAge = '';
-      this.riyousyaSexFlag = '';
+      this.riyousyaGenderKey = '';
       this.riyousyaPostcode = '';
       this.riyousyaPostcode1 = '';
       this.riyousyaPostcode2 = '';
@@ -638,12 +638,12 @@ export default {
      */
     shinkiTouroku_dialog_clear: function () {
       if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
-        this.riyousyaCodes = '';
+        this.riyousyaCode = '';
         this.riyousyaNames = '';
         this.riyousyaKana = '';
         this.riyousyabirthymd = '';
         this.riyousyaAge = '';
-        this.riyousyaSexFlag = '';
+        this.riyousyaGenderKey = '';
         this.riyousyaPostcode = '';
         this.riyousyaPostcode1 = '';
         this.riyousyaPostcode2 = '';

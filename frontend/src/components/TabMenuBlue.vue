@@ -1,5 +1,5 @@
 <template>
-  <v-tabs height="30" v-model="tab" @change="tabChange" id="tab_menu_blue">
+  <v-tabs height="20" v-model="tab" @change="tabChange" id="tab_menu_blue">
     <v-tab
       class="text-caption"
       :href="m.href"

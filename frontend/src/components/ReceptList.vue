@@ -1,7 +1,7 @@
 <template>
   <div id="recept-list" class="mt-n5">
     <v-row no-gutters>
-      <v-col style="width: 80%">
+      <v-col style="width: 980px">
         <wj-flex-grid
           id="grid_recept"
           :initialized="onInitialized"
@@ -17,7 +17,7 @@
         >
         </wj-flex-grid>
       </v-col>
-      <v-col style="width: 20%">
+      <v-col style="width: 300px">
         <wj-flex-grid
           id="grid_syukei"
           :initialized="onInitializedSyukei"
@@ -403,8 +403,8 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 21;
       flexGrid.columnHeaders.rows[1].height = this.gridHeadHeight;
       flexGrid.columnHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.columns[1].width = '2*';
-      flexGrid.columnHeaders.columns[2].width = '2*';
+      flexGrid.columnHeaders.columns[1].width = 100;
+      flexGrid.columnHeaders.columns[2].width = 100;
       flexGrid.columnHeaders.columns[3].width = 30;
       flexGrid.columnHeaders.columns[4].width = 30;
     },
@@ -463,11 +463,11 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 21;
       flexGrid.columnHeaders.rows[1].height = this.gridHeadHeight;
       flexGrid.columnHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.columns[1].width = 230;
-      flexGrid.columnHeaders.columns[2].width = 160;
-      flexGrid.columnHeaders.columns[3].width = 160;
+      flexGrid.columnHeaders.columns[1].width = 100;
+      flexGrid.columnHeaders.columns[2].width = 100;
+      flexGrid.columnHeaders.columns[3].width = 140;
       flexGrid.columnHeaders.columns[4].width = 20;
-      flexGrid.columnHeaders.columns[5].width = 160;
+      flexGrid.columnHeaders.columns[5].width = 140;
       flexGrid.columnHeaders.columns[4].multiLine = true;
       flexGrid.columnHeaders.columns[6].multiLine = true;
       flexGrid.columnHeaders.columns[7].width = 1;
@@ -725,7 +725,8 @@ export default {
 @import '@/assets/scss/common.scss';
 
 div#recept-list {
-  min-width: 1266px;
+  min-width: 1280px;
+  width: 1280px;
   div#grid_recept {
     &.wj-content {
       border-radius: 4px 0px 0px 4px;

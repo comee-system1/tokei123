@@ -105,7 +105,7 @@
       <wj-flex-grid-column
         header="コード"
         binding="riyocode"
-        width="2*"
+        :width="100"
         :word-wrap="false"
         :allowResizing="true"
         :isReadOnly="true"
@@ -114,7 +114,7 @@
       <wj-flex-grid-column
         header="受給者番号"
         binding="jyukyuno"
-        :width="110"
+        :width="100"
         :word-wrap="false"
         :allowResizing="true"
         :isReadOnly="true"
@@ -123,7 +123,7 @@
       <wj-flex-grid-column
         header="利用者名"
         binding="names"
-        width="3*"
+        :width="150"
         :word-wrap="false"
         :allowResizing="true"
         :isReadOnly="true"
@@ -131,7 +131,7 @@
       <wj-flex-grid-column
         header="印"
         binding="print"
-        :width="20"
+        width="*"
         :word-wrap="false"
         :isReadOnly="true"
         :allowResizing="true"
@@ -305,30 +305,13 @@ export default {
       usersData['status'] = 'idle';
       let riyo_inf = [];
 
-      // axiosを利用するとき下記有効
-      // for (let i = 0; i < response.data.length; i++) {
-      //   riyo_inf.push({
-      //     riid: response.data[i]['riid'],
-      //     riyocode: response.data[i]['riyocode'],
-      //     names: response.data[i]['names'],
-      //     kana: response.data[i]['kana'],
-      //     jukyuid: response.data[i]['jukyuid'],
-      //     jyukyuno: response.data[i]['jyukyuno'],
-      //     sityoid: response.data[i]['sityoid'],
-      //     jidoid: response.data[i]['jidoid'],
-      //     kzkname: response.data[i]['kzkname'],
-      //     kakutei: response.data[i]['kakutei'],
-      //     print: response.data[i]['print'],
-      //   });
-      // }
-
       // axiosを利用しないとき下記有効
       userCount = 100;
       for (let i = 0; i < userCount; i++) {
         riyo_inf.push({
           riid: '5500' + i,
           riyocode: '123456' + i,
-          names: '東経太郎' + i,
+          names: '東経 太郎' + i,
           kana: 'トウケイタロウ' + i,
           jukyuid: i * 10,
           jyukyuno: '876543210' + i,

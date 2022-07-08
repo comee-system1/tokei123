@@ -7,9 +7,9 @@
       :receptFlag="false"
     ></header-services>
 
-    <v-container fluid class="jijyougen-container mt-0 user-info">
+    <div fluid class="jijyougen-container mt-0 user-info">
       <v-row no-gutters>
-        <v-col cols="9">
+        <v-col class="leftArea">
           <tab-menu-blue
             @parent_tab_menu="parent_tab_menu"
             :tabmenu="tabMenus"
@@ -142,7 +142,7 @@
             </v-btn-toggle>
           </v-row>
         </v-col>
-        <v-col cols="3">
+        <v-col class="rightArea">
           <v-row no-gutters>
             <v-col cols="6*" align="right">
               <v-btn @click="receptSyukei" v-if="receptFlag" small
@@ -179,13 +179,13 @@
       </v-row>
 
       <v-row no-gutters class="mt-1">
-        <v-col cols="4">
+        <v-col>
           <alphabet-button
             ref="alphabetButton"
             @onAlphabetical="onAlphabetical"
           ></alphabet-button>
         </v-col>
-        <v-col cols="6">
+        <v-col>
           <span v-if="TajyougenkanriJimsyoFlag"
             >※<span class="blue--text">青字</span
             >：上限額管理事業所が同一法人で別事業所の場合</span
@@ -218,7 +218,7 @@
           </wj-menu>
         </v-col>
       </v-row>
-    </v-container>
+    </div>
     <v-container fluid class="container">
       <div v-if="receptFlag"><recept-list ref="receptChild"></recept-list></div>
       <div v-if="TajyougenkanriJimsyoFlag">
@@ -561,13 +561,25 @@ export default {
 div#tajyougen {
   font-size: 12px;
   font-family: 'メイリオ';
-  min-width: 1266px;
+  text-align: left;
   .jijyougen-container {
     padding: 4px;
+    max-width: 1180px;
+    min-width: 1180px;
+    width: 1180px;
+  }
+  div {
+    .leftArea {
+      max-width: 880px;
+    }
+    .rightArea {
+      max-width: 280px;
+    }
   }
   .container {
     padding: 4px;
     margin-top: 16px;
+    min-width: 1020px;
   }
   label {
     &.serach {
