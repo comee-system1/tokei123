@@ -1,5 +1,5 @@
 <template>
-  <div id="headerAndNav">
+  <div id="headerAndNav" class="no-print">
     <!-- temporary    メニューを常に画面最上部に表示 -->
     <!-- hide-overlay メニュー表示時の背景を少し暗くする -->
     <v-navigation-drawer

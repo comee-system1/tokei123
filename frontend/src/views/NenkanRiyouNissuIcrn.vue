@@ -5,11 +5,18 @@
       @parent-service-select="parentSearch($event, searchArgument)"
       :nenkanRiyouNissuFlag="true"
       ref="childheader"
+      class="no-print"
     ></header-services>
 
-    <v-container fluid class="jijyougen-container mt-0 user-info">
+    <v-container fluid class="jijyougen-container mt-0 user-info no-print">
       <v-row no-gutters>
         <v-col cols="12">
+          <input
+            type="button"
+            value="印刷"
+            class="noprint"
+            onclick="window.print();"
+          />
           <v-row class="mt-1" no-gutters>
             <label>集計(開始終了月)</label>
             <v-btn-toggle class="flex-wrap ml-1" mandatory>
