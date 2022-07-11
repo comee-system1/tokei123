@@ -107,21 +107,21 @@
           :binding="'code'"
           align="center"
           valign="middle"
-          :width="60"
+          :width="50"
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'serviceJigyosyoMei'"
           align="center"
           valign="middle"
-          width="2*"
+          :width="240"
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
           :binding="'ryakusyo'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="180"
           format="g"
           :visible="isVisible12"
         ></wj-flex-grid-column>
@@ -136,7 +136,7 @@
           :binding="'serviceMeisyo'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="160"
           format="g"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
@@ -150,7 +150,7 @@
           :binding="'jyusyoText'"
           align="center"
           valign="middle"
-          width="2*"
+          :width="200"
           format="g"
           :multiLine="true"
           :wordWrap="true"
@@ -323,7 +323,7 @@
           :binding="'taiseiText'"
           align="center"
           valign="middle"
-          width="2*"
+          :width="280"
           format="g"
           multiLine="true"
           :visible="isVisible3"
@@ -360,6 +360,7 @@ import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import DialogServiceTeikyo from '../components/DialogServiceTeikyo.vue';
 import DialogServiceTeikyoTaisei from '../components/DialogServiceTeikyoTaisei.vue';
+
 import sysConst from '@/utiles/const';
 import TabMenuBlue from '@/components/TabMenuBlue.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
@@ -462,6 +463,7 @@ export default {
       if (this.tab == 'basic') {
         this.isVisible1 = true;
         this.isVisible12 = true;
+        this.toggle_display = 0;
       }
       if (this.tab == 'sisetu') {
         this.isVisible2 = true;
@@ -470,6 +472,9 @@ export default {
       }
       this.serviceData = this.serviceDataMain;
       this.allData = this.serviceDataMain;
+
+      this.flexGrid.itemsSource = [];
+      this.flexGrid.itemsSource = this.serviceData;
     },
     /*****************
      * ダイアログ表示
@@ -477,9 +482,12 @@ export default {
     dialog(type) {
       this.select_mandatory = true;
       if (type == 'add') {
-        this.selected = 0;
-        // 履歴追加では無効
-        if (this.tab != 'sisetu') {
+        if (this.tab == 'sisetu') {
+          //　履歴追加
+          this.selected = 2;
+        } else {
+          // 新規追加
+          this.selected = 0;
           this.$refs.dialogTeikyo.openDialog(type, '');
         }
       }
@@ -1261,11 +1269,14 @@ export default {
 </script>
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
-
+div#serviceTeikyoGrid {
+  width: auto !important;
+  max-width: 100%;
+}
 div#serviceTeikyo {
   font-size: 12px;
   font-family: 'メイリオ';
-  min-width: 1266px;
+  min-width: none;
 
   .wj-cell {
     &.wj-header {

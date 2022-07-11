@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="600"
+    width="500"
     persistent>
     <v-card class="pa-2" id="dialogShinkiTouroku">
       <v-card-title> 利用者台帳 新規利用者登録 </v-card-title>
@@ -276,28 +276,6 @@
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
           </v-btn>
-          <v-btn
-            elevation ="0"
-            color="white"
-            class="pa-0 ml-1"
-            x-small
-            @click="calendarClick(1)"
-            height="100%"
-            style="min-width: auto; height: 25px"
-            tile
-            ><v-icon>mdi-arrow-left-bold</v-icon>
-          </v-btn>
-          <v-btn
-            x-small
-            elevation ="0"
-            color="white"
-            class="pa-0 ml-1"
-            height="100%"
-            style="min-width: auto; height: 25px"
-            @click="calendarClick(2)"
-            tile
-            ><v-icon>mdi-arrow-right-bold</v-icon>
-          </v-btn>
         </v-row>
         <hr size="1" />
         <v-card class="d-flex mt-3" elevation ="0">
@@ -481,22 +459,31 @@ export default {
     calcRiyousyaAge() {
       // 入力値から年齢を計算
 
-      // 生年月日から年を切り出し
-      let inputBirthY = this.inputBirthymd.substr( 0, 4 );
+      // // 生年月日から年を切り出し
+      // let inputBirthY = this.inputBirthymd.substr( 0, 4 );
 
-      // 生年月日の月日を切り出し
-      let inputBirthMd = this.inputBirthymd.substr( 4, 6 );
+      // // 生年月日の月日を切り出し
+      // let inputBirthMd = this.inputBirthymd.substr( 4, 6 );
+      let todayMd = "";
+      let inputBirthMd = "";
+      // 西暦の場合
+      if (this.calendarKey ==='2') {
+        // 現在の月日を成形
+        todayMd = this.month + this.date;
+        console.log(todayMd);
 
-      // 現在の月日を成形
-      let todayMd = this.month + '' + this.date;
+        // 入力値の月日の成形
+        inputBirthMd = this.inputBirthM + this.inputBirthD;
 
-      if(todayMd < inputBirthMd) {
-        //今年まだ誕生日が来ていない
-        this.inputAge = this.year - inputBirthY -1;
-      } else {
-        // 既に誕生日を迎えている
-        this.inputAge = this.year - inputBirthY;
+        if(todayMd < inputBirthMd) {
+          //今年まだ誕生日が来ていない
+          this.inputAge = this.year - this.inputBirthY -1;
+        } else {
+          // 既に誕生日を迎えている
+          this.inputAge = this.year - this.inputBirthY;
+        }
       }
+
     },
     /***********
      * 住所検索を押下
@@ -564,21 +551,6 @@ export default {
       this.inputSymd = this.year + this.month + this.date;
       this.datepicker_dialog = false;
     },
-    //カレンダーボタンの日付遷移
-    // 開始日 1:前日 2:翌日
-    calendarClick(type) {
-      let changeDate = this.year + this.month + this.date;
-      if (type == 1) {
-        // ←選択時
-        this.month = moment(changeDate).subtract(1, 'days').format('MM');
-        this.date = moment(changeDate).subtract(1, 'days').format('DD');
-      } else if (type == 2) {
-        // →選択時
-        this.month = moment(changeDate).add(1, 'days').format('MM');
-        this.date = moment(changeDate).add(1, 'days').format('DD');
-      }
-      this.inputSymd = this.year + this.month + this.date;
-    },
     /***********
      * クリアボタンを押下
      */
@@ -633,7 +605,7 @@ export default {
     }
     .dialogHeader {
       border-radius: initial;
-      width: 150px;
+      width: 120px;
     }
     .dialogHeader-25 {
       line-height: 25px;

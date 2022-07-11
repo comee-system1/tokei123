@@ -7,7 +7,7 @@
             >{{ this.titleNum }}支給決定内容</label
           >
           <v-card
-            v-if="$_subGridSelected()"
+            v-if="subGridSelected"
             elevation="0"
             class="sikyuryo-header d-flex flex-row-reverse"
             flat
@@ -255,6 +255,8 @@ export default {
   data() {
     return {
       ja: ja,
+      mode: '',
+      subGridSelected: false,
       mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       koufuymd: '',
@@ -279,13 +281,13 @@ export default {
   methods: {
     changeMode() {
       this.Resize();
-      return this.$_mode() === 'modSikyuryo';
+      return this.mode === 'modSikyuryo';
     },
     Resize() {
       let height = '';
       let num = 0;
       let add = 0;
-      if (this.$_mode() !== 'modSikyuryo') {
+      if (this.mode !== 'modSikyuryo') {
         num = 14.1;
       } else {
         num = 15.1;
@@ -295,9 +297,28 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMode('modSikyuryo');
+      this.$emit('setMode', 'modSikyuryo');
       this.Resize();
     },
+    cancel() {
+      this.$emit('setMode', 'new');
+      this.changeMode();
+    },
+    setData(list, selectedData) {
+      let data = [];
+      this.clearData();
+      if (selectedData != null) {
+        this.setdata(selectedData);
+      } else {
+        list.then((value) => {
+          this.setdata(value[0][0]);
+        });
+      }
+      this.$emit('setMode', 'new');
+      this.Resize();
+    },
+    setdata(data) {},
+    clearData() {},
     getServiceSyubetu() {
       let serviceSyubetu = [];
       serviceSyubetu.push(
@@ -337,6 +358,27 @@ export default {
       grd.endUpdate();
     },
     onTextChanged(txb) {},
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+    },
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+    },
+    /****************
+     * グリッド選択情報
+     */
+    setSubGridSelected(seleced) {
+      this.$emit('setSubGridSelected', seleced);
+    },
+    setSubGridSelectedFromParent(seleced) {
+      this.subGridSelected = seleced;
+    },
   },
 };
 </script>

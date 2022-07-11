@@ -1,7 +1,7 @@
 <template>
   <v-dialog 
     v-model="parentFlag"
-    width="500"
+    width="600"
     persistent>
     <v-card class="pa-2" id="DialogSyuseiTouroku">
       <v-card-title> 利用者台帳 修正登録 </v-card-title>
@@ -72,23 +72,68 @@
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
           <v-card 
-          class="pl-1 mr-1 dialogHeader dialogHeader-25"
-          height = "25"
-          elevation="0"
+          class="pl-1 mr-1 dialogHeader dialogHeader-75"
+          height = "75"
+          elevation ="0"
           color = "#EEE"
           >
             生年月日
           </v-card>
-          <v-text-field
-            class="ma-0"
-            :value="riyousyabirthymd"
-            v-model="riyousyabirthymd"
-            single-line
-            solo
-            style="max-width: 80px;"
-          ></v-text-field>
-          <v-card elevation="0" class="dialogAge_emphasis ml-7 mr-3">{{this.riyousyaAge}}</v-card>
-          <v-card elevation="0" class="dialogAge">歳</v-card>
+          <v-card elevation ="0" class="dialogBirthday">
+            <v-card-actions class="pa-0 align-start">
+              <v-radio-group 
+                @change="switchDialogYear()"
+                column class="mt-0 pt-0 d-block mr-3" 
+                v-model="calendarKey"
+                >
+                <v-radio label="和暦" :key="1" :value="'1'" class="mb-0"></v-radio>
+                <v-radio label="西暦" :key="2" :value="'2'" class="mb-0"></v-radio>
+              </v-radio-group>
+              <v-radio-group row
+                @change="switchDialogYear()"
+                class="mt-0 pt-0 dialogWareki"
+                v-if="calendarKey === '1'"
+                v-model="nengouKey"
+                >
+                <v-radio label="大正" :key="1" :value="'大正'" class="mb-0"></v-radio>
+                <v-radio label="昭和" :key="2" :value="'昭和'" class="mb-0"></v-radio>
+                <v-radio label="平成" :key="3" :value="'平成'" class="mb-0"></v-radio>
+                <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
+              </v-radio-group>
+            </v-card-actions>
+            <v-card elevation ="0" class="d-inline-flex dialogBirthday_input">
+              {{dispNngou}}
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_y"
+                :value="riyousyaBirthY"
+                v-model="riyousyaBirthY"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              年
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_md"
+                :value="riyousyaBirthM"
+                v-model="riyousyaBirthM"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              月
+              <v-text-field
+                class="ml-1 mr-1 dialogBirthday_md"
+                :value="riyousyaBirthD"
+                v-model="riyousyaBirthD"
+                single-line
+                solo
+                @blur="calcRiyousyaAge()"
+              ></v-text-field>
+              日
+              <div class="dialogAge_emphasis ml-3 mr-1">{{this.riyousyaAge}}</div>
+              <div class="dialogAge">歳</div>
+            </v-card>
+          </v-card>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
           <v-card 
@@ -99,7 +144,7 @@
             >
             性別
           </v-card>
-          <v-radio-group class="mt-0 pt-0" v-model="riyousyaGenderKey">
+          <v-radio-group row class="mt-0 pt-0" v-model="riyousyaGenderKey">
             <v-radio label="男" :key="1" :value="'1'" class="mb-0"></v-radio>
             <v-radio label="女" :key="2" :value="'2'" class="mb-0"></v-radio>
             <v-radio label="適用不能" :key="0" :value="'0'" class="mb-0"></v-radio>
@@ -192,7 +237,7 @@
             style="max-width: 150px;"
           ></v-text-field>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="d-block shikutyoson_edit">
+        <v-row no-gutters style="flex-wrap: nowrap" class="d-block">
           <v-col>
             <v-btn-toggle
               mandatory
@@ -219,68 +264,48 @@
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col class="mt-3">
-            <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
-              <v-card 
-                class="pl-1 mr-1 dialogHeader dialogHeader-25"
-                height = "25"
-                elevation="0"
-                color = "#EEE"
-                >
-                市区町村
+          <v-col class="mt-3 d-flex">
+            <v-row no-gutters class="d-block mr-1">
+              <v-card elevation="0" class="d-flex">
+                <v-card 
+                  class="pl-1 mr-1 mb-1 dialogHeader dialogHeader-25"
+                  height = "25"
+                  elevation="0"
+                  color="#EEE"
+                  >
+                  市区町村
+                </v-card>
+                <v-select
+                  :items="shikutyosonList"
+                  solo
+                  :value="riyousyaShikutyoson"
+                  v-model="riyousyaShikutyoson"
+                  height="25"
+                  style="max-width: 150px;"
+                ></v-select>
               </v-card>
-              <v-select
-                :items="shikutyosonList"
-                solo
-                :value="riyousyaShikutyoson"
-                v-model="riyousyaShikutyoson"
-                height = "25"
-                style="max-width: 150px;"
-              ></v-select>
-            </v-row>
-            <v-row no-gutters style="flex-wrap: nowrap" class="mb-3">
-              <v-card 
-                class="pl-1 mr-1 dialogHeader dialogHeader-25"
-                height = "25"
-                elevation="0"
-                color = "#EEE"
-                >
-                有効開始
+              <v-card elevation="0" class="d-flex">
+                <v-card 
+                  class="pl-1 mr-1 dialogHeader dialogHeader-25"
+                  height = "25"
+                  elevation="0"
+                  color = "#EEE"
+                  >
+                  有効開始
+                </v-card>
+                <v-btn
+                  @click="inputCalendarClick()"
+                  tile
+                  outlined
+                  class="service dialogSymd"
+                  height="25"
+                  style="max-width: 150px;"
+                  >{{ year }}年{{ month }}月{{ date }}日
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-btn>
               </v-card>
-              <v-btn
-                @click="inputCalendarClick()"
-                tile
-                outlined
-                class="service dialogSymd"
-                height="25"
-                style="max-width: 150px;"
-                >{{ year }}年{{ month }}月{{ date }}日
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-              <v-btn
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                x-small
-                @click="calendarClick(1)"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                tile
-                ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
-              >
-              <v-btn
-                x-small
-                elevation="0"
-                color="white"
-                class="pa-0 ml-1"
-                height="100%"
-                style="min-width: auto; height: 25px"
-                @click="calendarClick(2)"
-                tile
-                ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
-              >
             </v-row>
             <wj-flex-grid
               id="shikutyosonGrid"
@@ -298,17 +323,17 @@
               <wj-flex-grid-column
                 :binding="'key'"
                 :header="''"
-                :width="30"
+                :width="20"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column  
                 :binding="'shikutyoson'"
-                width="1*"
+                :width="90"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 :binding="'symd'"
-                width="1*"
+                :width="90"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
             </wj-flex-grid>
@@ -327,7 +352,7 @@
           </v-card>
           <v-card elevation="0">
             <v-btn @click="addRiyousyadata()" tile outlined>
-              登録
+              修正登録
             </v-btn>
           </v-card>
         </v-card>
@@ -377,6 +402,9 @@ export default {
       riyousyaNames: '',
       riyousyaKana: '',
       riyousyabirthymd: '',
+      riyousyaBirthY: '',
+      riyousyaBirthM: '',
+      riyousyaBirthD: '',
       riyousyaAge: '',
       riyousyaGenderKey: '',
       riyousyaPostcode: '',
@@ -386,10 +414,14 @@ export default {
       riyousyaTell1: '',
       riyousyaTell2: '',
       riyousyaShikutyoson: '',
-      inputSymd: '',
+      riyousyaSymd: '',
       shikutyosonData: [],
       allData: [],
       mainFlexGrid: [],
+
+      calendarKey: '',
+      nengouKey: '',
+      dispNngou: ''
     };
   },
   components: {
@@ -462,7 +494,7 @@ export default {
       } else if (this.riyousyaGenderKey === 0) {
         displayGender = "適用不能";
       } else {
-        displayGender = "未選択";
+        displayGender = "";
       }
 
       // 住所
@@ -508,6 +540,21 @@ export default {
       this.riyousyaTell2 = '';
       this.riyousyaShikutyoson = '';
       this.riyousyaSymd = '';
+    },
+    /***********
+     *dialog和暦西暦表示切り替え
+     */
+    switchDialogYear() {
+      if (this.calendarKey === '1') {
+        // 和暦選択時
+        console.log(this.dispNngou)
+        this.dispNngou = "";
+        this.dispNngou = this.nengouKey;
+      } else {
+        // 西暦選択時
+        this.dispNngou = "西暦";
+        this.nengouKey ="";
+      }
     },
     /***********
      * 生年月日からフォーカスが外れた場合に動作
@@ -597,21 +644,6 @@ export default {
 
       this.inputSymd = this.year + this.month + this.date;
       this.datepicker_dialog = false;
-    },
-    //カレンダーボタンの日付遷移
-    // 開始日 1:前日 2:翌日
-    calendarClick(type) {
-      let changeDate = this.year + this.month + this.date;
-      if (type == 1) {
-        // ←選択時
-        this.month = moment(changeDate).subtract(1, 'days').format('MM');
-        this.date = moment(changeDate).subtract(1, 'days').format('DD');
-      } else if (type == 2) {
-        // →選択時
-        this.month = moment(changeDate).add(1, 'days').format('MM');
-        this.date = moment(changeDate).add(1, 'days').format('DD');
-      }
-      this.inputSymd = this.year + this.month + this.date;
     },
     /***********
      * 市区町村修正
@@ -793,6 +825,31 @@ export default {
         display: none;
       }
     }
+    // 生年月日デザイン修正
+    .dialogBirthday {
+      .v-text-field__slot input {
+        text-align: right;
+      }
+      .dialogBirthday_input {
+        height: 25px;
+        line-height: 25px;
+        .v-input {
+          display: block;
+        }
+      }
+      .dialogBirthday_y {
+        width: 40px;
+        .v-input__slot {
+          width: 40px;
+        }
+      }
+      .dialogBirthday_md {
+        width: 25px;
+        .v-input__slot {
+          width: 25px;
+        }
+      }
+    }
     // 年齢デザイン調整
     .dialogAge {
       display: inline-block;
@@ -809,7 +866,7 @@ export default {
       text-align: right;
       padding-right: 8px;
     }
-    // ラジオボタン（性別）デザイン修正
+    // ラジオボタンデザイン修正
     .v-input--selection-controls {
       .v-input__slot {
         margin-bottom: 0;
@@ -831,11 +888,10 @@ export default {
         display: none;
       }
       .v-radio {
-        margin-right: 8px;
+        margin-right: 0px;
       }
-      .v-input--radio-group__input {
-        flex-direction: initial;
-        align-items: flex-start;
+      .v-input--selection-controls__input {
+        margin-right: 0;
       }
     }
     // 郵便番号縦中央寄せ
@@ -869,7 +925,7 @@ export default {
       }
     }
     #shikutyosonGrid {
-      width: 305px;
+      width: auto;
       max-height: 92px;
       border-bottom: none;
       border-right: none;

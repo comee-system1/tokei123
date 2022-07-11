@@ -5,20 +5,14 @@
       @parent-service-select="parentSearch($event, searchArgument)"
       :nenkanRiyouNissuFlag="true"
       ref="childheader"
-      class="no-print"
     ></header-services>
 
-    <v-container fluid class="jijyougen-container mt-0 user-info no-print">
+    <v-container fluid class="jijyougen-container mt-0 user-info">
       <v-row no-gutters>
         <v-col cols="12">
-          <input
-            type="button"
-            value="印刷"
-            class="noprint"
-            onclick="window.print();"
-          />
+          <v-btn @click="printing()">印刷</v-btn>
           <v-row class="mt-1" no-gutters>
-            <label>集計(開始終了月)</label>
+            <label>{{ filterString.syukei.title }}</label>
             <v-btn-toggle class="flex-wrap ml-1" mandatory>
               <v-btn
                 small
@@ -28,7 +22,7 @@
                 style="width: 90px; height: 25px"
                 @click="filter(1)"
               >
-                含める
+                {{ filterString.syukei.ans[1] }}
               </v-btn>
               <v-btn
                 small
@@ -38,12 +32,12 @@
                 style="width: 90px; height: 25px"
                 @click="filter(0)"
               >
-                含めない
+                {{ filterString.syukei.ans[0] }}
               </v-btn>
             </v-btn-toggle>
 
-            <label class="ml-1">ソート</label>
-            <v-btn-toggle class="flex-wrap ml-1" mandatory>
+            <label class="ml-1">{{ filterString.sort.title }}</label>
+            <v-btn-toggle class="flex-wrap ml-1" mandatory v-model="sorted">
               <v-btn
                 small
                 color="secondary"
@@ -52,7 +46,7 @@
                 style="width: 90px; height: 25px"
                 @click="sort(1)"
               >
-                カナ
+                {{ filterString.sort.ans[0] }}
               </v-btn>
               <v-btn
                 small
@@ -62,7 +56,7 @@
                 style="width: 90px; height: 25px"
                 @click="sort(2)"
               >
-                コード
+                {{ filterString.sort.ans[1] }}
               </v-btn>
               <v-btn
                 small
@@ -72,10 +66,10 @@
                 style="width: 90px; height: 25px"
                 @click="sort(3)"
               >
-                受給者証番号
+                {{ filterString.sort.ans[2] }}
               </v-btn>
             </v-btn-toggle>
-            <label class="ml-1">障害支援区分</label>
+            <label class="ml-1">{{ filterString.kubun.title }}</label>
             <wj-menu
               :itemsSource="syogaisyaCombo"
               class="ml-1 w-100 customCombobox"
@@ -83,7 +77,7 @@
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
               :isRequired="true"
-              v-model="selUser"
+              :v-model="selUser"
               header="指定なし"
             ></wj-menu>
 
@@ -125,14 +119,7 @@
           :width="100"
           :isReadOnly="true"
         ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          :binding="'jyukyuno'"
-          align="center"
-          valign="middle"
-          :width="80"
-          :isReadOnly="true"
-          :visible="false"
-        ></wj-flex-grid-column>
+
         <wj-flex-grid-column
           :binding="'names'"
           align="center"
@@ -222,6 +209,12 @@ const taServiceCombo = [];
 export default {
   data() {
     return {
+      filterString: {
+        syukei: { title: '集計(開始終了月)', ans: ['含めない', '含める'] },
+        sort: { title: 'ソート', ans: ['カナ', 'コード', '受給者番号'] },
+        kubun: { title: '障害者支援区分' },
+      },
+      sorted: 0,
       nenkanRiyouNissuData: [],
       allData: [],
       alphabetSelect: 0,
@@ -229,7 +222,7 @@ export default {
       jyougenkanriCombo: jyougenkanriCombo,
       taServiceCombo: taServiceCombo,
       receptCombo: receptCombo,
-      selUser: -1,
+      selUser: 0,
       syukeiFlag: 1,
       sortFlag: 1,
       gridHeight: '', // グリッドの高さ
@@ -275,6 +268,108 @@ export default {
     this.nenkanRiyouNissuData = [];
   },
   methods: {
+    /*******************
+     * 印刷
+     */
+    printing() {
+      let doc = new wjCore.PrintDocument({
+        title: 'PrintDocumentテスト',
+      });
+      doc.Landscape = 1;
+      doc.append('<h1 align=center>年間利用日数一覧</h1>');
+      let today = moment().format('YYYY年MM月DD日');
+      doc.append(`<div align=right>${today}</div>`);
+      doc.append('<h4>検索</h4>');
+      doc.append(
+        '<div><label>' +
+          this.filterString.syukei.title +
+          '</label>:' +
+          this.filterString.syukei.ans[this.syukeiFlag] +
+          '<label style="margin-left:30px;">' +
+          this.filterString.kubun.title +
+          '</label>:' +
+          this.selUser +
+          '</div>' +
+          '<div><label>' +
+          this.filterString.sort.title +
+          '</label>:' +
+          this.filterString.sort.ans[this.sorted] +
+          '</div>'
+      );
+      let tbl =
+        '<table style="border-collapse: collapse;border-spacing: 0;width:100%;">';
+      let flex = this.mainFlexGrid;
+      // headers
+      if (flex.headersVisibility & wjGrid.HeadersVisibility.Column) {
+        tbl += '<thead >';
+
+        for (let r = 0; r < flex.columnHeaders.rows.length; r++) {
+          // tbl += this._renderRow(flex.columnHeaders, r);
+          let panel = flex.columnHeaders;
+          let row = panel.rows[r];
+          if (row.renderSize > 0) {
+            tbl += '<tr style="height:30px;">';
+            panel.columns.forEach((col, c) => {
+              let content = panel.getCellData(r, c, true);
+              if (!row.isContentHtml && !col.isContentHtml) {
+                content = wjCore.escapeHtml(content);
+              }
+              let rowspan = 1,
+                colspan = 1;
+              if (r == 0) {
+                if (c == 5) {
+                  colspan = 9;
+                } else if (c == 14) {
+                  colspan = 3;
+                }
+              }
+              if (c <= 4 || c >= 17) {
+                rowspan = 2;
+              }
+              if (r == 0 && ((c >= 6 && c <= 13) || (c >= 15 && c <= 16))) {
+                tbl += '';
+              } else {
+                if (r == 0 || (c >= 5 && c <= 16)) {
+                  content = content.replace(/\n/g, '<br>');
+                  tbl += `<td style='border:1px solid;text-align:center;' colspan="${colspan}" rowspan="${rowspan}">${content}</td>`;
+                }
+              }
+            });
+            tbl += '</tr>';
+          }
+        }
+        tbl += '</thead>';
+      }
+
+      tbl += '<tbody>';
+      for (let r = 0; r < flex.rows.length; r++) {
+        let panel = flex.cells;
+        let row = panel.rows[r];
+        if (row.renderSize > 0) {
+          tbl += '<tr>';
+          panel.columns.forEach((col, c) => {
+            let content = panel.getCellData(r, c, true);
+            if (!row.isContentHtml && !col.isContentHtml) {
+              content = wjCore.escapeHtml(content);
+              if (content < 0) {
+                content = '';
+              }
+            }
+            let align = 'left';
+            if (c == 2) {
+              align = 'center';
+            }
+            tbl += `<td style='border:1px solid;' align="${align}" >${content}</td>`;
+          });
+          tbl += '</tr>';
+        }
+      }
+      tbl += '</tbody>';
+
+      tbl += '</table>';
+      doc.append(tbl);
+      doc.print();
+    },
     /*********************
      * 画面リサイズの際の表示調整
      */
@@ -322,7 +417,7 @@ export default {
           } else {
             e.cell.style.background = sysConst.COLOR.lightYellow;
           }
-          if (e.col == 2) {
+          if (e.col == 1) {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
@@ -350,7 +445,7 @@ export default {
         }
 
         if (e.panel != flexGrid.columnHeaders) {
-          if (e.col > 5) {
+          if (e.col > 4) {
             e.cell.style.textAlign = 'right';
             e.cell.style.justifyContent = 'right';
             e.cell.style.alignItems = 'right';
@@ -361,10 +456,10 @@ export default {
           e.cell.style.borderRight = '1px solid ';
           e.cell.style.borderLeft = '1px solid ';
         }
-        if (e.col == 5) {
+        if (e.col == 4) {
           e.cell.style.borderRight = '1px solid ';
         }
-        if (e.col == 18) {
+        if (e.col == 17) {
           e.cell.style.borderLeft = '1px solid ';
         }
 
@@ -390,7 +485,7 @@ export default {
 
       // 利用日数計
       let riyonissu = result.gokei_inf.gokei_inf;
-      let c = 6;
+      let c = 5;
       for (let i = 4; i <= 12; i++) {
         let m = 'nissu' + i;
         let value = riyonissu[m];
@@ -408,7 +503,7 @@ export default {
 
       // 開所日数
       let kaisyonissu = result.kaisyo_inf.kaisyo_inf;
-      c = 6;
+      c = 5;
       for (let i = 4; i <= 12; i++) {
         let m = 'nissu' + i;
         let value = kaisyonissu[m];
@@ -432,8 +527,8 @@ export default {
       if (searchArgument.search_button) {
         this.nendo = searchArgument.defaultYear;
         var panel = this.mainFlexGrid.columnHeaders;
-        panel.setCellData(0, 6, this.nendo + '年');
-        panel.setCellData(0, 15, parseInt(this.nendo) + 1 + '年');
+        panel.setCellData(0, 7, this.nendo + '年');
+        panel.setCellData(0, 16, parseInt(this.nendo) + 1 + '年');
       }
     },
     createHeader(flexGrid) {
@@ -445,15 +540,14 @@ export default {
 
       // 現在の年
       panel.setCellData(0, 0, 'コード');
-      panel.setCellData(0, 1, '受給者証番号');
-      panel.setCellData(0, 2, '利用者名');
-      panel.setCellData(0, 3, '障害\n支援\n区分');
-      panel.setCellData(0, 4, '開始日');
-      panel.setCellData(0, 5, '終了日');
-      panel.setCellData(0, 6, this.nendo + '年');
-      panel.setCellData(0, 15, parseInt(this.nendo) + 1 + '年');
-      panel.setCellData(0, 18, '合計');
-      panel.setCellData(0, 19, '平均');
+      panel.setCellData(0, 1, '利用者名');
+      panel.setCellData(0, 2, '障害\n支援\n区分');
+      panel.setCellData(0, 3, '開始日');
+      panel.setCellData(0, 4, '終了日');
+      panel.setCellData(0, 5, this.nendo + '年');
+      panel.setCellData(0, 14, parseInt(this.nendo) + 1 + '年');
+      panel.setCellData(0, 17, '合計');
+      panel.setCellData(0, 18, '平均');
 
       footerPanel.setCellData(0, 0, '利用日数 計');
       footerPanel.setCellData(1, 0, '開所日数');
@@ -472,15 +566,15 @@ export default {
         new wjGrid.CellRange(0, 2, 1, 2),
         new wjGrid.CellRange(0, 3, 1, 3),
         new wjGrid.CellRange(0, 4, 1, 4),
-        new wjGrid.CellRange(0, 5, 1, 5),
-        new wjGrid.CellRange(0, 6, 0, 14),
-        new wjGrid.CellRange(0, 15, 0, 17),
+
+        new wjGrid.CellRange(0, 5, 0, 13),
+        new wjGrid.CellRange(0, 14, 0, 16),
+        new wjGrid.CellRange(0, 17, 1, 17),
         new wjGrid.CellRange(0, 18, 1, 18),
-        new wjGrid.CellRange(0, 19, 1, 19),
       ];
       footerRanges = [
-        new wjGrid.CellRange(0, 0, 0, 3),
-        new wjGrid.CellRange(1, 0, 1, 3),
+        new wjGrid.CellRange(0, 0, 0, 4),
+        new wjGrid.CellRange(1, 0, 1, 4),
       ];
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
@@ -556,6 +650,7 @@ export default {
      * 障害支援区分
      */
     onSyogaisyaCombo(e) {
+      this.selUser = e.selectedIndex;
       if (e.selectedIndex != -1) {
         e.header = e.text;
         this.selectedSyogaiShien = e.selectedIndex;

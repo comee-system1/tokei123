@@ -35,6 +35,7 @@
                 :titleNum="this.titleNum"
                 :dispReki="true"
                 @child_data="child_data"
+                @setSubGridSelected="setSubGridSelected"
               ></JyukyuTourokuRirekiArea>
             </div>
           </div>
@@ -147,44 +148,91 @@
               tile
             >
               <div v-if="JyukyuSyogaiFukusiFlag">
-                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
+                <JyukyuTourokuKihon
+                  ref="kihon"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                >
+                </JyukyuTourokuKihon>
                 <JyukyuTourokuSyogaiKubun
                   ref="syogaiKubun"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[0]"
                 >
                 </JyukyuTourokuSyogaiKubun>
-                <JyukyuTourokuSikyuryo :titleNum="this.titleNum[1]">
+                <JyukyuTourokuSikyuryo
+                  ref="sikyuryo"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[1]"
+                >
                 </JyukyuTourokuSikyuryo>
-                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[2]">
+                <JyukyuTourokuKeikakuSoudan
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[2]"
+                >
                 </JyukyuTourokuKeikakuSoudan>
-                <JyukyuTourokuRiyosyaFutan :titleNum="this.titleNum[3]">
+                <JyukyuTourokuRiyosyaFutan
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[3]"
+                >
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuSyogaiJiFlag">
-                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
-                <JyukyuTourokuSikyuryo :titleNum="this.titleNum[0]">
+                <JyukyuTourokuKihon
+                  ref="kihon"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                >
+                </JyukyuTourokuKihon>
+                <JyukyuTourokuSikyuryo
+                  ref="sikyuryo"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[0]"
+                >
                 </JyukyuTourokuSikyuryo>
-                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[1]">
+                <JyukyuTourokuKeikakuSoudan
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[1]"
+                >
                 </JyukyuTourokuKeikakuSoudan>
-                <JyukyuTourokuRiyosyaFutan :titleNum="this.titleNum[2]">
+                <JyukyuTourokuRiyosyaFutan
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[2]"
+                >
                 </JyukyuTourokuRiyosyaFutan>
               </div>
               <div v-else-if="JyukyuChiikiSoudanFlag">
-                <JyukyuTourokuKihon ref="kihon"> </JyukyuTourokuKihon>
-                <JyukyuTourokuKeikakuSoudan :titleNum="this.titleNum[0]">
+                <JyukyuTourokuKihon
+                  ref="kihon"
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                >
+                </JyukyuTourokuKihon>
+                <JyukyuTourokuKeikakuSoudan
+                  @setMode="setMode"
+                  @setHojoMode="setHojoMode"
+                  :titleNum="this.titleNum[0]"
+                >
                 </JyukyuTourokuKeikakuSoudan>
               </div>
             </v-card>
           </v-row>
           <hr
-            v-if="$_mode() === 'new' && !$_subGridSelected()"
+            v-if="mode === 'new' && !subGridSelected"
             size="2"
             color="#027eb0"
             style="margin-top: 4px; margin-left: 69px"
             noshade
           />
           <v-row
-            v-if="$_mode() === 'new' && !$_subGridSelected()"
+            v-if="mode === 'new' && !subGridSelected"
             no-gutters
             class="center-area-bottom d-flex flex-row"
           >
@@ -205,6 +253,7 @@
         </v-col>
         <v-col class="right-area ml-1">
           <JyukyuTourokuRightArea
+            ref="rightArea"
             :selectedTab="this.selectedTab"
             :titleTab="this.titleTab"
             :titleNum="this.titleNum"
@@ -218,7 +267,6 @@
 </template>
 <script>
 import moment from 'moment';
-import Vue from 'vue';
 import UserListPrint from '@sihs/frontend/src/components/UserListPrint.vue';
 import CommonTabMenu from '@sihs/frontend/src/components/CommonTabMenu.vue';
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon.vue';
@@ -230,53 +278,20 @@ import JyukyuTourokuRirekiArea from '../components/JyukyuTourokuRightArea.vue';
 import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
 
 import { JyukyuTourokuKihonData } from '@backend/api/JyukyuTourokuKihon';
-import { getJyukyuTourokuSyogaiKubunData } from '../data/JyukyuTourokuSyogaiKubunData.js';
+import { JyukyuTourokuSyogaiKubunData } from '@backend/api/JyukyuTourokuSyogaiKubun';
+import { JyukyuTourokuSikyuryoData } from '@backend/api/JyukyuTourokuSikyuryo';
 
-let GlobalData = new Vue({
-  data: {
-    $mode: 'new', //編集モード
-    $hojomode: 'none', //入力補助機能モード
-  },
-});
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
-Vue.mixin({
-  methods: {
-    $_mode() {
-      return GlobalData.$data.$mode;
-    },
-    $_setMode(newMode) {
-      GlobalData.$data.$mode = newMode;
-    },
-    $_hojomode() {
-      return GlobalData.$data.$hojomode;
-    },
-    $_setHojoMode(hojoMode) {
-      GlobalData.$data.$hojomode = hojoMode;
-    },
-  },
-  computed: {
-    $mode: {
-      get: function () {
-        return GlobalData.$data.$mode;
-      },
-      set: function (newMode) {
-        GlobalData.$data.$mode = newMode;
-      },
-    },
-    $hojomode: {
-      get: function () {
-        return GlobalData.$data.$hojomode;
-      },
-      set: function (hojoMode) {
-        GlobalData.$data.$hojomode = hojoMode;
-      },
-    },
-  },
-});
-
+Vue.use(VueAxios, axios);
 export default {
   data() {
     return {
+      mode: 'new', //編集モード
+      hojomode: 'none', //入力補助機能モード
+      subGridSelected: false,
       mainHeight: '',
       menuBtnClick: false,
       mainGrid: [], //表示grid
@@ -366,6 +381,7 @@ export default {
       //dataobject
       kihonDataOrg: [], //基本データ初期リスト
       syogaiKubunDataOrg: [], //障害区分データ初期リスト
+      sikyuryoDataOrg: [], //決定支給量データ初期リスト
     };
   },
   components: {
@@ -389,8 +405,8 @@ export default {
   computed: {},
   methods: {
     setTrunNew() {
-      this.$_setMode('new');
-      this.$_setSubGridSelected(false);
+      this.setMode('new');
+      this.setSubGridSelected(false);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.JyukyuSyogaiFukusiFlag = false;
         this.$nextTick(() => {
@@ -492,22 +508,41 @@ export default {
       // データ取得・表示
       let rid = this.userListComponentDatas[row].riid;
       //基本情報
-      this.kihonDataOrg = this.getJyukyuTourokuKihonData();
+      this.kihonDataOrg = this.getJyukyuTourokuKihonData(rid);
       this.setKihonData(this.kihonDataOrg, null);
       if (this.JyukyuSyogaiFukusiFlag) {
         //障害支給区分
-        this.syogaiKubunDataOrg = getJyukyuTourokuSyogaiKubunData(rid);
+        this.syogaiKubunDataOrg = this.getJyukyuTourokuSyogaiKubunData(rid);
         this.setSyogaiKubunData(this.syogaiKubunDataOrg, null);
+        //決定支給量
+        this.sikyuryoDataOrg = this.getJyukyuTourokuSikyuryoData(rid);
+        this.setSikyuryoData(this.sikyuryoDataOrg, null);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
-      this.$_setSubGridSelected(true);
+      this.setSubGridSelected(true);
     },
     async getJyukyuTourokuKihonData(rid) {
       let jinf = [];
 
-      return JyukyuTourokuKihonData().then((result) => {
-        jinf = result.jyukyu_inf;
+      return await JyukyuTourokuKihonData().then((result) => {
+        jinf.push(result.jyukyu_inf);
+        return jinf;
+      });
+    },
+    async getJyukyuTourokuSyogaiKubunData(rid) {
+      let jinf = [];
+
+      return await JyukyuTourokuSyogaiKubunData().then((result) => {
+        jinf.push(result.skryoh4_inf);
+        return jinf;
+      });
+    },
+    async getJyukyuTourokuSikyuryoData(rid) {
+      let jinf = [];
+
+      return await JyukyuTourokuSikyuryoData().then((result) => {
+        jinf.push(result.skryoh1_inf);
         return jinf;
       });
     },
@@ -517,11 +552,15 @@ export default {
     setSyogaiKubunData(list, seleced) {
       this.$refs.syogaiKubun.setData(list, seleced);
     },
+    setSikyuryoData(list, seleced) {
+      this.$refs.sikyuryo.setData(list, seleced);
+    },
     openRireki() {
       this.slideInRight.isOpen = true;
       this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.$refs.rirekiArea.setSyogaiKubunData(this.syogaiKubunDataOrg);
+        this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrg);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
@@ -559,6 +598,29 @@ export default {
         this.menu_clear();
       }
       this.menuBtnClick = false;
+    },
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+      this.$refs.kihon.setMode(pmode);
+      this.$refs.syogaiKubun.setMode(pmode);
+    },
+    /****************
+     * 入力補助モード設定
+     */
+    setHojoMode(phojomode) {
+      this.hojomode = phojomode;
+      this.$refs.rightArea.setHojoMode(phojomode);
+    },
+    /****************
+     * グリッド選択情報
+     */
+    setSubGridSelected(seleced) {
+      this.subGridSelected = seleced;
+      this.$refs.kihon.setSubGridSelectedFromParent(seleced);
+      this.$refs.syogaiKubun.setSubGridSelectedFromParent(seleced);
     },
     /****************
      * 子コンポーネントで履歴表示からのデータ取得

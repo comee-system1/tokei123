@@ -13,6 +13,7 @@
             :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewSyogai
             ref="syogaiKubun"
@@ -21,13 +22,16 @@
             :titleTab="this.titleTab"
             :syogaiNum="this.titleNum[0]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewSyogai>
           <JyukyuRirekiViewKettei
+            ref="sikyuryo"
             :basicFlag="false"
             :ketteiFlag="true"
             :titleTab="this.titleTab"
             :ketteiNum="this.titleNum[1]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
@@ -35,6 +39,7 @@
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[2]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
@@ -42,6 +47,7 @@
             :titleTab="this.titleTab"
             :futanNum="this.titleNum[3]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewRiyousya>
         </div>
         <div v-else-if="this.selectedTab == 'JyukyuSyogaiJi'">
@@ -51,13 +57,16 @@
             :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewKettei
+            ref="sikyuryo"
             :basicFlag="false"
             :ketteiFlag="true"
             :titleTab="this.titleTab"
             :ketteiNum="this.titleNum[0]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
@@ -65,6 +74,7 @@
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[1]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
             :basicFlag="false"
@@ -72,6 +82,7 @@
             :titleTab="this.titleTab"
             :futanNum="this.titleNum[2]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewRiyousya>
         </div>
         <div v-else-if="this.selectedTab == 'JyukyuChiikiSoudan'">
@@ -81,6 +92,7 @@
             :kihonFlag="true"
             :titleTab="this.titleTab"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewKeikaku
             :basicFlag="false"
@@ -88,18 +100,21 @@
             :titleTab="this.titleTab"
             :keikakuNum="this.titleNum[0]"
             @child_data="child_data"
+            @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
         </div>
       </div>
       <div v-show="!dispReki">
-        <div v-if="this.$_hojomode() === 'shichoson'">
+        <div v-if="this.hojomode === 'shichoson'">
           <JyukyuRirekiDetailShichoson
             @child_data="child_data"
+            @setHojoMode="setHojoMode"
           ></JyukyuRirekiDetailShichoson>
         </div>
-        <div v-else-if="this.$_hojomode() === 'kazoku'">
+        <div v-else-if="this.hojomode === 'kazoku'">
           <JyukyuRirekiDetailKazoku
             @child_data="child_data"
+            @setHojoMode="setHojoMode"
           ></JyukyuRirekiDetailKazoku>
         </div>
       </div>
@@ -118,36 +133,10 @@ import JyukyuRirekiViewRiyousya from '../components/JyukyuRirekiView.vue';
 import JyukyuRirekiDetailShichoson from './JyukyuRirekiDetailShichoson.vue';
 import JyukyuRirekiDetailKazoku from './JyukyuRirekiDetailKazoku.vue';
 
-let SubGlobalData = new Vue({
-  data: {
-    $subGridSelected: false,
-  },
-});
-
-Vue.mixin({
-  methods: {
-    $_subGridSelected() {
-      return SubGlobalData.$data.$subGridSelected;
-    },
-    $_setSubGridSelected(selected) {
-      SubGlobalData.$data.$subGridSelected = selected;
-    },
-  },
-  computed: {
-    $subGridSelected: {
-      get: function () {
-        return SubGlobalData.$data.$subGridSelected;
-      },
-      set: function (selected) {
-        SubGlobalData.$data.$subGridSelected = selected;
-      },
-    },
-  },
-});
-
 export default {
   data() {
     return {
+      hojomode: '',
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
@@ -187,6 +176,22 @@ export default {
     },
     setSyogaiKubunData(list) {
       this.$refs.syogaiKubun.settingData(list);
+    },
+    setSikyuryoData(list) {
+      this.$refs.sikyuryo.settingData(list);
+    },
+    /****************
+     * 入力補助モード設定
+     */
+    setHojoMode(phojomode) {
+      this.hojomode = phojomode;
+      this.$emit('setHojoMode', phojomode);
+    },
+    /****************
+     * グリッド選択情報:親へ
+     */
+    setSubGridSelected(seleced) {
+      this.$emit('setSubGridSelected', seleced);
     },
   },
 };

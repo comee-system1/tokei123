@@ -12,7 +12,7 @@
             >{{ this.titleNum }}計画相談支援</label
           >
           <v-card
-            v-if="$_subGridSelected()"
+            v-if="subGridSelected"
             elevation="0"
             class="keikakuSoudan-header d-flex flex-row-reverse"
             flat
@@ -235,6 +235,8 @@ export default {
   data() {
     return {
       ja: ja,
+      mode: '',
+      subGridSelected: false,
       mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       koufuymd: '',
@@ -258,13 +260,13 @@ export default {
   methods: {
     changeMode() {
       this.Resize();
-      return this.$_mode() === 'modKeikakuSoudan';
+      return this.mode === 'modKeikakuSoudan';
     },
     Resize() {
       let height = '';
       let num = 0;
       let add = 0;
-      if (this.$_mode() !== 'modKeikakuSoudan') {
+      if (this.mode !== 'modKeikakuSoudan') {
         num = 8.5;
       } else {
         num = 9.5;
@@ -274,7 +276,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMode('modKeikakuSoudan');
+      this.setMode('modKeikakuSoudan');
       this.Resize();
     },
     getMonitoringkikan() {
@@ -341,6 +343,19 @@ export default {
       grd.endUpdate();
     },
     onTextChanged(txb) {},
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+    },
+    /****************
+     * グリッド選択情報
+     */
+    setSubGridSelected(seleced) {
+      this.subGridSelected = seleced;
+      this.$emit('setSubGridSelected', seleced);
+    },
   },
 };
 </script>

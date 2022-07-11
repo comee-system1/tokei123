@@ -95,14 +95,3 @@ $width: 1600px;
     line-height: 20px;
   }
 }
-
-/*
-//仮 
-//本来は別ファイルを用意想定
-*/
-
-@media print {
-  .no-print {
-    display: none;
-  }
-}

@@ -114,12 +114,6 @@
 </template>
 <script>
 import moment from 'moment';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.core';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 
@@ -156,10 +150,10 @@ export default {
           title: '決定支給量',
           array: [
             { dataname: '', title: '回' },
-            { dataname: 'start', title: '開始日' },
-            { dataname: 'end', title: '終了日' },
-            { dataname: 'service', title: 'サービス種別' },
-            { dataname: 'sikyu', title: '支給量' },
+            { dataname: 'sksymdDisp', title: '開始日' },
+            { dataname: 'skeymdDisp', title: '終了日' },
+            { dataname: 'svcshuruiryaku', title: 'サービス種別' },
+            { dataname: 'dspskryotani', title: '支給量' },
           ],
         },
         keikaku: {
@@ -226,6 +220,14 @@ export default {
      * データの取得・表記
      */
     settingData(list) {
+      list.then((value) => this.setdata(value));
+    },
+    setdata(value) {
+      let list = [];
+      let v = value[0];
+      for (let i = 0; i < v.length; i++) {
+        list.push(v[i]);
+      }
       this.allData = list;
     },
     settingDatadummy(list) {
@@ -239,29 +241,6 @@ export default {
       }
       // 決定支給量
       else if (this.ketteiFlag) {
-        data = [
-          {
-            kai: 1,
-            start: '2021.08.15',
-            end: '2021.09.15',
-            service: '生活介護',
-            sikyu: '-8日/月',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            service: '',
-            sikyu: '',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            service: '',
-            sikyu: '',
-          },
-        ];
       }
       // 計画相談支援
       else if (this.keikakuFlag) {
@@ -335,6 +314,7 @@ export default {
           g = wijmo.Control.getControl('#grdSyogaiKubun');
         } else if (_self.ketteiFlag) {
           code = 'kettei';
+          g = wijmo.Control.getControl('#grdKettei');
         } else if (_self.keikakuFlag) {
           code = 'keikaku';
         } else if (_self.futanFlag) {
@@ -344,7 +324,7 @@ export default {
         if (g !== null) {
           _self.$emit('child_data', g.itemsSource[hPage.row], code);
         }
-        _self.$_setSubGridSelected(true);
+        _self.$emit('setSubGridSelected', true);
       });
       //formatItem
       flexGrid.formatItem.addHandler(function (s, e) {

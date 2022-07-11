@@ -41,8 +41,8 @@
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col>
+        <v-row no-gutter>
+          <v-col cols="4">
             <v-toolbar-title class="text-caption text-center"
               >施設種類・定員等
             </v-toolbar-title>
@@ -58,7 +58,7 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-4">
+            <v-row no-gutter class="mt-2">
               <v-col class="pa-0 mt-4 mw120">多機能型事業</v-col>
               <v-col class="mw260 pa-0">
                 <v-checkbox
@@ -68,7 +68,7 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-3">
+            <v-row no-gutter class="mt-1">
               <v-col class="pa-0 mt-1 mw120">定員区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
@@ -85,17 +85,142 @@
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
-                  :itemsSource="kubunCombo"
+                  :itemsSource="taKubunCombo"
                   :selectedValuePath="'key'"
                   :displayMemberPath="'value'"
-                  v-model="kubunCombo"
+                  v-model="taKubunCombo"
                 ></wj-combo-box>
                 <p>(各サービス種類の単位毎の利用定員)</p>
               </v-col>
             </v-row>
+            <v-row no-gutter class="mt-1">
+              <v-col class="pa-0 mt-1 mw120">人員配置区分</v-col>
+              <v-col class="mw260 pa-0">
+                <wj-combo-box
+                  class="input w200"
+                  :itemsSource="jininKubunCombo"
+                  :selectedValuePath="'key'"
+                  :displayMemberPath="'value'"
+                  v-model="jininKubunCombo"
+                ></wj-combo-box>
+              </v-col>
+            </v-row>
+            <v-row no-gutter class="mt-4">
+              <v-col class="pa-0 mt-1 mw120">事業所区分</v-col>
+              <v-col class="mw260 pa-0">
+                <wj-combo-box
+                  class="input w200"
+                  :itemsSource="jigyosyoCombo"
+                  :selectedValuePath="'key'"
+                  :displayMemberPath="'value'"
+                  v-model="jigyosyoCombo"
+                ></wj-combo-box>
+              </v-col>
+            </v-row>
+            <v-row no-gutter class="mt-4">
+              <v-col class="pa-0 mt-1 mw120">施設区分</v-col>
+              <v-col class="mw260 pa-0">
+                <wj-combo-box
+                  class="input w200"
+                  :itemsSource="sisetsuCombo"
+                  :selectedValuePath="'key'"
+                  :displayMemberPath="'value'"
+                  v-model="sisetsuCombo"
+                ></wj-combo-box>
+              </v-col>
+            </v-row>
+            <v-row no-gutter class="mt-4">
+              <v-col class="pa-0 mt-1 mw120">事業実施区分</v-col>
+              <v-col class="mw260 pa-0">
+                <wj-combo-box
+                  class="input w200"
+                  :itemsSource="jigyojissiCombo"
+                  :selectedValuePath="'key'"
+                  :displayMemberPath="'value'"
+                  v-model="jigyojissiCombo"
+                ></wj-combo-box>
+              </v-col>
+            </v-row>
+            <v-row no-gutter class="mt-2">
+              <v-col class="pa-0 mt-4 mw120">就労A型減免</v-col>
+              <v-col class="mw260 pa-0">
+                <v-checkbox
+                  v-model="syuroA"
+                  class="text-caption pa-0"
+                  label="該当"
+                ></v-checkbox>
+              </v-col>
+            </v-row>
+            <v-row no-gutter class="mt-2">
+              <v-col class="pa-0 mt-2 mw120">負担減免額</v-col>
+              <v-col class="mw260 pa-0 position-relative">
+                <v-text-field outlined class="input pa-0"></v-text-field>
+                <div class="unit">円</div>
+              </v-col>
+            </v-row>
           </v-col>
-          <v-col>aaa</v-col>
-          <v-col>aaa</v-col>
+          <v-col cols="8">
+            <v-toolbar-title class="text-caption text-center"
+              >体制加算等
+              <v-btn
+                small
+                outlined
+                class="float-right"
+                @click="taiseiKasanList_dialog = true"
+                >体制加算一覧参照</v-btn
+              >
+            </v-toolbar-title>
+            <v-row no-gutter mt-2>
+              <v-col>
+                <wj-flex-grid
+                  :initialized="onInitialized"
+                  :selectionMode="3"
+                  :allowMerging="6"
+                  :headersVisibility="'Column'"
+                  :allowDragging="false"
+                  :allowResizing="false"
+                  :deferResizing="false"
+                  :allowSorting="false"
+                  :autoRowHeights="true"
+                  :itemsSource="taiseiKasan"
+                  :isReadOnly="true"
+                  class="mt-1"
+                >
+                  <wj-flex-grid-column
+                    :binding="'name'"
+                    :header="'選択済 基本・減算・加算名称'"
+                    align="center"
+                    valign="middle"
+                    width="4*"
+                    format="g"
+                  ></wj-flex-grid-column>
+                  <wj-flex-grid-column
+                    :binding="'ritu'"
+                    :header="'率'"
+                    align="center"
+                    valign="middle"
+                    :width="30"
+                    format="g"
+                  ></wj-flex-grid-column>
+                  <wj-flex-grid-column
+                    :binding="'teiin'"
+                    :header="'加算用定員等'"
+                    align="center"
+                    valign="middle"
+                    :width="90"
+                    format="g"
+                  ></wj-flex-grid-column>
+                </wj-flex-grid>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row class="mt-15">
+          <v-col><v-btn small>削除</v-btn></v-col>
+          <v-col class="text-center mt-2"
+            >最終登録者: R03/04/01 10:30 (明治 雅)</v-col
+          >
+          <v-col class="text-end"><v-btn small>修正登録</v-btn></v-col>
         </v-row>
       </v-card>
     </v-dialog>
@@ -110,6 +235,16 @@
       >
       </v-date-picker>
     </v-dialog>
+
+    <v-dialog v-model="taiseiKasanList_dialog" width="290">
+      <div class="pa-1">
+        <v-btn-toggle class="flex-wrap" v-model="selected" mandatory>
+          <v-btn small>全部</v-btn>
+          <v-btn small>選択済</v-btn>
+          <v-btn small>未</v-btn>
+        </v-btn-toggle>
+      </div>
+    </v-dialog>
   </div>
 </template>
 
@@ -123,8 +258,10 @@ export default {
       dialog: false,
       kyutiComboIndex: '',
       datepicker_dialog: false,
+      taiseiKasanList_dialog: false,
       disabledDate: moment().format('YYYY/MM/DD'),
       picker: '',
+      taiseiKasan: [],
       kyutiCombo: [
         {
           key: 1,
@@ -149,6 +286,45 @@ export default {
           value: '41人～60人以下',
         },
       ],
+      taKubunCombo: [
+        {
+          key: 1,
+          value: '',
+        },
+        {
+          key: 2,
+          value: '',
+        },
+      ],
+      jininKubunCombo: [
+        {
+          key: 1,
+          value: 'Ⅰ型(7.5:1)',
+        },
+        {
+          key: 2,
+          value: 'Ⅱ型(7.5)',
+        },
+      ],
+      jigyosyoCombo: [
+        {
+          key: 1,
+          value: '指定',
+        },
+      ],
+      sisetsuCombo: [
+        {
+          key: 1,
+          value: '公立',
+        },
+      ],
+      jigyojissiCombo: [
+        {
+          key: 1,
+          value: '単独',
+        },
+      ],
+
       input: '',
       gaitou: '',
     };
@@ -171,6 +347,16 @@ export default {
     header_dialog_close: function () {
       this.dialog = false;
     },
+
+    /******************
+     * 体制加算等
+     */
+    onInitialized() {
+      this.getTaiseiKasan();
+    },
+    getTaiseiKasan() {
+      this.taiseiKasan = [];
+    },
   },
 };
 </script>
@@ -188,6 +374,12 @@ div#dialogTeikyoTaisei {
   }
   .position-relative {
     position: relative;
+  }
+  .unit {
+    position: absolute;
+    top: 6px;
+    left: auto;
+    right: -6px;
   }
   .calender_icon {
     position: absolute;

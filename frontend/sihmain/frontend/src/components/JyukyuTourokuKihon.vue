@@ -206,10 +206,17 @@ import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 import '@grapecity/wijmo.vue2.core';
 
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+
+Vue.use(VueAxios, axios);
 export default {
   data() {
     return {
       ja: ja,
+      mode: '',
+      subGridSelected: false,
       mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       year: moment().year(),
@@ -245,19 +252,19 @@ export default {
     dispRegistBtn() {
       let r = this.isModify;
       this.Resize();
-      this.$_setSubGridSelected(r);
+      this.setSubGridSelected(r);
       return r;
     },
     changeMode() {
       this.Resize();
-      return this.$_mode() === 'modKihon';
+      return this.mode === 'modKihon';
     },
     Resize() {
       let height = '';
       let num = 0;
       let plus = 0;
       let add = 0;
-      if (this.$_mode() !== 'modKihon') {
+      if (this.mode !== 'modKihon') {
         num = 7;
       } else {
         num = 8;
@@ -271,61 +278,52 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMode('modKihon');
+      this.$emit('setMode', 'modKihon');
       this.Resize();
     },
     onTextChanged() {},
     onGotFocusShichoson(txb) {
-      this.$_setHojoMode('shichoson');
+      this.$emit('setHojoMode', 'shichoson');
     },
     onGotFocusSikyuketteisya(txb) {
-      this.$_setHojoMode('kazoku');
+      this.$emit('setHojoMode', 'kazoku');
     },
     ckbChanged(chb) {
       if (chb) {
-        this.$_setHojoMode('kazoku');
+        this.$emit('setHojoMode', 'kazoku');
       } else {
-        this.$_setHojoMode('none');
+        this.$emit('setHojoMode', 'none');
       }
       this.Resize();
     },
     cancel() {
-      this.$_setMode('new');
+      this.$emit('setMode', 'new');
       this.changeMode();
     },
     setData(list, selectedData) {
-      let data = [];
       this.clearData();
       if (selectedData != null) {
-        this.kofuymd = moment(selectedData.kofuymd).format('YYYY-M-D');
-        this.jyukyukubun = selectedData.zantei;
-        this.jyukyuno = selectedData.jyukyuno;
-        this.setShichoson(selectedData.shichosonno, selectedData.shichosonname);
-        this.syogaisyubetuValues[0] = selectedData.ssyu1;
-        this.syogaisyubetuValues[1] = selectedData.ssyu2;
-        this.syogaisyubetuValues[2] = selectedData.ssyu3;
-        this.syogaisyubetuValues[3] = selectedData.ssyu4;
-        this.syogaiji = selectedData.jidoid > 0;
-        this.setSikyuketteisya(selectedData.dcodDisp, selectedData.jyukyuname);
-        this.isModify = true;
+        this.setdata(selectedData);
       } else {
-        data = list;
-        if (data[0].kofuymd.length > 0) {
-          this.kofuymd = moment(data[0].kofuymd).format('YYYY-M-D');
-          this.jyukyukubun = data[0].zantei;
-          this.jyukyuno = data[0].jyukyuno;
-          this.setShichoson(data[0].shichosonno, data[0].shichosonname);
-          this.syogaisyubetuValues[0] = data[0].ssyu1;
-          this.syogaisyubetuValues[1] = data[0].ssyu2;
-          this.syogaisyubetuValues[2] = data[0].ssyu3;
-          this.syogaisyubetuValues[3] = data[0].ssyu4;
-          this.syogaiji = data[0].jidoid > 0;
-          this.setSikyuketteisya(data[0].dcodDisp, data[0].jyukyuname);
-          this.isModify = true;
-        }
+        list.then((value) => this.setdata(value[0][0]));
       }
-      this.$_setMode('new');
+      this.$emit('setMode', 'new');
       this.Resize();
+    },
+    setdata(data) {
+      if (data.kofuymd.length > 0) {
+        this.kofuymda = moment(data.kofuymd).format('YYYY-M-D');
+        this.jyukyukubun = data.zantei;
+        this.jyukyuno = data.jyukyuno;
+        this.setShichoson(data.shichosonno, data.shichosonname);
+        this.syogaisyubetuValues[0] = data.ssyu1;
+        this.syogaisyubetuValues[1] = data.ssyu2;
+        this.syogaisyubetuValues[2] = data.ssyu3;
+        this.syogaisyubetuValues[3] = data.ssyu4;
+        this.syogaiji = data.jidoid > 0;
+        this.setSikyuketteisya(data.dcodDisp, data.jyukyuname);
+        this.isModify = true;
+      }
     },
     setShichoson(code, name) {
       this.shichosonno = code;
@@ -347,6 +345,22 @@ export default {
       this.syogaiji = false;
       this.setSikyuketteisya('', '');
       this.isModify = false;
+    },
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+    },
+    /****************
+     * グリッド選択情報
+     */
+    setSubGridSelected(seleced) {
+      this.$emit('setSubGridSelected', seleced);
+    },
+    setSubGridSelectedFromParent(seleced) {
+      this.isModify = true;
+      this.dispRegistBtn();
     },
   },
 };

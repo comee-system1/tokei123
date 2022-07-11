@@ -29,7 +29,7 @@
             :binding="'code'"
             :header="'コード'"
             align="center"
-            :width="90"
+            :width="70"
             :isReadOnly="true"
             :allowResizing="false"
           ></wj-flex-grid-column>
@@ -362,7 +362,7 @@ export default {
           serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
           serviceCode: 22,
           serviceMeisyo: '生活介護',
-          code: '1000000001',
+          code: '1000001',
           jyukyuno: '1000000001', //提供サービス
           names: '東経 太郎', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数
@@ -378,7 +378,7 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyoson: ['東経市','A市'],
+          shikutyoson: ['東経市','１２３４５６'],
           symd: ['20220201','20220401'],
           dispSymd: new Date('2022', Number('02') - 1, '01'),
           startY: '2022',
@@ -391,7 +391,7 @@ export default {
           serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
           serviceCode: 22,
           serviceMeisyo: '生活介護',
-          code: '1000000002',
+          code: '1000002',
           jyukyuno: '1000000002', //提供サービス
           names: '東経 花子', // サービス種類コード
           kana: 'ハナコ トウケイ', // 利用日数
@@ -421,7 +421,7 @@ export default {
           serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
           serviceCode: 41,
           serviceMeisyo: '自立訓練(機能訓練)',
-          code: '1000000003',
+          code: '1000003',
           jyukyuno: '1000000003', //提供サービス
           names: '東経 太郎', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数199200111
@@ -451,7 +451,7 @@ export default {
           serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
           serviceCode: 41,
           serviceMeisyo: '自立訓練(機能訓練)',
-          code: '1000000004',
+          code: '1234567',
           jyukyuno: '1000000004', //提供サービス
           names: '１２３４５６７８９０１２３', // サービス種類コード
           kana: 'アスカ トウケイ', // 利用日数

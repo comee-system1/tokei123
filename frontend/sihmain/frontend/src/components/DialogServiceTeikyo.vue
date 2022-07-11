@@ -229,7 +229,7 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row dense class="mt-n3">
+            <v-row dense class="mt-n3" v-if="type == 'edit'">
               <v-col cols="2" class="d-flex align-center">無効登録</v-col>
               <v-col cols="2"> 無効年月日 </v-col>
               <v-col cols="3" class="position-relative">

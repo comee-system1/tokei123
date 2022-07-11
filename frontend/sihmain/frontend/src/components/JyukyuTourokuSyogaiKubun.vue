@@ -12,7 +12,7 @@
             >{{ this.titleNum }}障害支援区分</label
           >
           <v-card
-            v-if="$_subGridSelected()"
+            v-if="subGridSelected"
             elevation="0"
             class="syogaikubun-header d-flex flex-row-reverse"
             flat
@@ -120,6 +120,8 @@ export default {
   data() {
     return {
       ja: ja,
+      mode: '',
+      subGridSelected: false,
       mainHeight: '',
       DatePickerFormat: 'yyyy年MM月dd日',
       koufuymd: '',
@@ -145,18 +147,18 @@ export default {
     dispRegistBtn() {
       let r = this.isModify;
       this.Resize();
-      this.$_setSubGridSelected(r);
+      this.setSubGridSelected(r);
       return r;
     },
     changeMode() {
       this.Resize();
-      return this.$_mode() === 'modSyogaikubun';
+      return this.mode === 'modSyogaikubun';
     },
     Resize() {
       let height = '';
       let num = 0;
       let add = 0;
-      if (this.$_mode() !== 'modSyogaikubun') {
+      if (this.mode !== 'modSyogaikubun') {
         num = 3;
       } else {
         num = 4;
@@ -166,43 +168,36 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.$_setMode('modSyogaikubun');
+      this.$emit('setMode', 'modSyogaikubun');
       this.Resize();
     },
     cancel() {
-      this.$_setMode('new');
+      this.$emit('setMode', 'new');
       this.changeMode();
     },
     setData(list, selectedData) {
       let data = [];
       this.clearData();
       if (selectedData != null) {
-        this.syogaiKubun = selectedData.syogaikbn;
-        this.syugaikubunymdStart = moment(selectedData.ntsymd).format(
-          'YYYY-M-D'
-        );
-        if (selectedData.nteymd != '99991231') {
-          this.syugaikubunymdEnd = moment(selectedData.nteymd).format(
-            'YYYY-M-D'
-          );
+        this.setSienkubun(this.setdata(selectedData));
+      } else {
+        list.then((value) => {
+          this.setSienkubun(this.setdata(value[0][0]));
+        });
+      }
+      this.$emit('setMode', 'new');
+      this.Resize();
+    },
+    setdata(data) {
+      if (data.syogaikbn > 0) {
+        this.syogaiKubun = data.syogaikbn;
+        this.syugaikubunymdStart = moment(data.ntsymd).format('YYYY-M-D');
+        if (data.nteymd != '99991231') {
+          this.syugaikubunymdEnd = moment(data.nteymd).format('YYYY-M-D');
         }
         this.isModify = true;
-      } else {
-        data = list;
-        if (data[0].syogaikbn > 0) {
-          this.syogaiKubun = data[0].syogaikbn;
-          this.syugaikubunymdStart = moment(data[0].ntsymd).format('YYYY-M-D');
-          if (data[0].nteymd != '99991231') {
-            this.syugaikubunymdEnd = moment(data[0].nteymd).format('YYYY-M-D');
-          }
-          this.isModify = true;
-        }
+        return data.syogaikbn;
       }
-      if (this.syogaiKubun > 0) {
-        this.setSienkubun(this.syogaiKubun);
-      }
-      this.$_setMode('new');
-      this.Resize();
     },
     clearData() {
       this.syogaiKubun = 0;
@@ -275,6 +270,21 @@ export default {
         }
       );
       return list;
+    },
+    /****************
+     * 編集モード設定
+     */
+    setMode(pmode) {
+      this.mode = pmode;
+    },
+    /****************
+     * グリッド選択情報
+     */
+    setSubGridSelected(seleced) {
+      this.$emit('setSubGridSelected', seleced);
+    },
+    setSubGridSelectedFromParent(seleced) {
+      this.subGridSelected = seleced;
     },
   },
 };
