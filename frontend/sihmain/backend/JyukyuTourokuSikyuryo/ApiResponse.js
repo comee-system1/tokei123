@@ -21,7 +21,7 @@ module.exports = class ApiResponse {
               skykbn: 0, // 支給区分
               svcshurui: 0, // サービス種類表示ｺｰﾄﾞ
               sksymd: '20220401', // 支給開始日
-              skeymd: '20230930', // 支給終了日
+              skeymd: '20230331', // 支給終了日
               svccode1: 0, // サービス詳細コード1
               svccode2: 0, // サービス詳細コード2
               svccode3: 0, // サービス詳細コード3

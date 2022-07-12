@@ -369,6 +369,25 @@ export default {
       this.$emit('setMode', 'modRiyosyafutan');
       this.Resize();
     },
+    cancel() {
+      this.$emit('setMode', 'new');
+      this.changeMode();
+    },
+    setData(list, selectedData) {
+      let data = [];
+      this.clearData();
+      if (selectedData != null) {
+        this.setdata(selectedData);
+      } else {
+        list.then((value) => {
+          this.setdata(value[0][0]);
+        });
+      }
+      this.$emit('setMode', 'new');
+      this.Resize();
+    },
+    setdata(data) {},
+    clearData() {},
     getTajigyosyoRiyoService() {
       let result = [];
       result.push(

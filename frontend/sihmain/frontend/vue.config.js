@@ -3,4 +3,14 @@ module.exports = defineConfig({
   transpileDependencies: [
     'vuetify'
   ],
+
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@backend': '../../../backend/',
+        '@sihmain': '../../../../SIHMAIN/',
+        '@sihs': '../../../../SIHS/',
+      }
+    }
+  },
 })

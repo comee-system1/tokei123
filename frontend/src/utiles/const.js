@@ -36,9 +36,17 @@ const GRDROWHEIGHT = {
     Header: 20,
     Row: 20,
 };
+const GRD_COL_WIDTH = {
+    UserName : 130, // 全角10文字
+    Ymd:80,         // yyyy/mm/dd
+    Time:50,        // hh:mm
+    Tantousya:70,   // 全角６文字
+    Naiyou:310,     //25文字幅
+}
 
 export default {
     COLOR,
     FORMAT,
     GRDROWHEIGHT,
+    GRD_COL_WIDTH
 }

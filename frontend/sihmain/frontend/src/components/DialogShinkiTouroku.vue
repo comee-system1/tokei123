@@ -334,7 +334,7 @@ export default {
       inputNames: '',
       inputKana: '',
       inputBirthymd: '',
-      dispBirthymd: '',
+      dispBirthymd: [],
       inputBirthY: '',
       inputBirthM: '',
       inputBirthD: '',
@@ -349,7 +349,7 @@ export default {
       inputTell2: '',
       inputShikutyoson: '',
       inputSymd: '',
-      dispSymd: '',
+      dispSymd: [],
       inputSartY: '',
       inputSartM: '',
       inputSartD: '',
@@ -376,15 +376,10 @@ export default {
 
       // 入力データをフォーマット
   
-      // 生年月日
-      this.dispBirthymd = moment(this.inputBirthymd).format('YYYY/MM/DD');
-
       // 開始日
       if (this.inputSymd === "") {
         // 開始日が空だった場合(カレンダー未操作)は今日の日付が入る
-        this.inputSymd = this.year + this.month + this.date;
-
-        this.dispSymd = moment(this.inputSymd).format('YYYY/MM/DD');
+        this.dispSymd.push(new Date(this.year, Number(this.month) - 1, this.date));
       }
       // 性別
       let displayGender = "";    // 表示用性別
@@ -406,13 +401,13 @@ export default {
       let displayAddress = ""    // 画面表示用住所
       displayAddress = displayPostcode + "\n" + this.inputAddress;
 
-      // 親から受け取ったデータに入力情報を追加
+      // 入力情報を追加
       this.addData.push({
         code:            this.inputCode,
         names:            this.inputNames,
         kana:             this.inputKana,
         birthymd:         this.inputBirthymd,
-        dispBirthymd:     this.dispBirthymd,
+        dispBirthymd:     new Date(this.inputBirthY, Number(this.inputBirthM) - 1, this.inputBirthD),
         age:              this.inputAge,
         gender:           displayGender,
         genderKey:        this.inputGenderKey,
@@ -423,15 +418,12 @@ export default {
         dispAddress:      this.inputAddress,
         tell1:            this.inputTell1,
         tell2:            this.inputTell2,
-        shikutyoson: this.inputShikutyoson,
+        shikutyoson:      this.inputShikutyoson,
         symd:             this.inputSymd,
         dispSymd:         this.dispSymd,
-        startY:           this.year,
-        startM:           this.month,
-        startD:           this.date
       });
+      console.log(this.addData);
       this.parentFlag = false;
-      console.log(this.addData)
       // 入力情報を追加した配列を親に返す
       this.$emit('addFormData', this.addData);
 
@@ -444,7 +436,6 @@ export default {
     switchDialogYear() {
       if (this.calendarKey === '1') {
         // 和暦選択時
-        console.log(this.dispNngou)
         this.dispNngou = "  ";
         this.dispNngou = this.nengouKey;
       } else {
@@ -470,7 +461,6 @@ export default {
       if (this.calendarKey ==='2') {
         // 現在の月日を成形
         todayMd = this.month + this.date;
-        console.log(todayMd);
 
         // 入力値の月日の成形
         inputBirthMd = this.inputBirthM + this.inputBirthD;
@@ -557,7 +547,6 @@ export default {
     shinkiTouroku_dialog_clear: function () {
       if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
         this.inputDataClear();
-        console.log(1)
       }
     },
     /***********
@@ -567,7 +556,7 @@ export default {
       this.inputCode = '';
       this.inputNames = '';
       this.inputKana = '';
-      this.inputBirthymd = '';
+      this.inputBirthymd = [];
       this.dispBirthymd = '';
       this.inputAge = '';
       this.inputGenderKey = '';
@@ -579,7 +568,7 @@ export default {
       this.inputTell2 = '';
       this.inputShikutyoson = '';
       this.inputSymd = '';
-      this.dispSymd = '';
+      this.dispSymd = [];
       this.year = moment().format('YYYY');
       this.month = moment().format('MM');
       this.date = moment().format('DD');

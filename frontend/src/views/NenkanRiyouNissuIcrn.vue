@@ -279,7 +279,7 @@ export default {
       doc.append('<h1 align=center>年間利用日数一覧</h1>');
       let today = moment().format('YYYY年MM月DD日');
       doc.append(`<div align=right>${today}</div>`);
-      doc.append('<h4>検索</h4>');
+      doc.append('<h4 class="f50">検索</h4>');
       doc.append(
         '<div><label>' +
           this.filterString.syukei.title +
@@ -297,7 +297,7 @@ export default {
           '</div>'
       );
       let tbl =
-        '<table style="border-collapse: collapse;border-spacing: 0;width:100%;">';
+        '<table style="border-collapse: collapse;border-spacing: 0;width:100%;" >';
       let flex = this.mainFlexGrid;
       // headers
       if (flex.headersVisibility & wjGrid.HeadersVisibility.Column) {
@@ -331,7 +331,7 @@ export default {
               } else {
                 if (r == 0 || (c >= 5 && c <= 16)) {
                   content = content.replace(/\n/g, '<br>');
-                  tbl += `<td style='border:1px solid;text-align:center;' colspan="${colspan}" rowspan="${rowspan}">${content}</td>`;
+                  tbl += `<td class='redcolor' style='border:1px solid;text-align:center;' colspan="${colspan}" rowspan="${rowspan}">${content}</td>`;
                 }
               }
             });
@@ -792,5 +792,14 @@ div.customCombobox {
   &:focus {
     background-color: #fff;
   }
+}
+
+.redcolor {
+  background-color: red !important;
+  color: green;
+  font-weight: bold;
+}
+.f50 {
+  font-size: 50px !important;
 }
 </style>

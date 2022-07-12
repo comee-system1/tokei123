@@ -3,20 +3,54 @@
     <v-dialog v-model="dialog" width="1020">
       <v-card elevation="2" class="pa-5" id="taiseiDialog">
         <v-toolbar-title class="text-subtitle-1"></v-toolbar-title>
+
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close()"
+          class="closeButton"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+
         <v-row no-gutter>
           <v-col class="pa-0 mt-1 mw120">サービス事業所名</v-col>
           <v-col class="mw260 pa-0">
-            <v-text-field outlined class="input pa-0 w260"></v-text-field>
+            <v-text-field
+              outlined
+              class="input pa-0 w260"
+              v-model="input.serviceJigyosyoMei"
+              readonly
+            ></v-text-field>
           </v-col>
           <v-col class="pa-0 mw120">
-            <v-text-field outlined class="input w120 pa-0"></v-text-field>
+            <v-text-field
+              outlined
+              class="input w120 pa-0"
+              v-model="input.jigyosyoBango"
+              readonly
+            ></v-text-field>
           </v-col>
           <v-col class="pa-0 mt-1 text-center mw120">サービス名称</v-col>
           <v-col class="mw60 pa-0">
-            <v-text-field outlined class="input pa-0"></v-text-field>
+            <v-text-field
+              outlined
+              class="input pa-0"
+              v-model="input.serviceMeisyoCode"
+              readonly
+            ></v-text-field>
           </v-col>
           <v-col class="mw260 pa-0">
-            <v-text-field outlined class="input pa-0 w260"></v-text-field>
+            <v-text-field
+              outlined
+              class="input pa-0 w260"
+              v-model="input.serviceMeisyo"
+              readonly
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-row class="mt-6">
@@ -191,7 +225,7 @@
                     :header="'選択済 基本・減算・加算名称'"
                     align="center"
                     valign="middle"
-                    width="4*"
+                    width="*"
                     format="g"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
@@ -207,7 +241,7 @@
                     :header="'加算用定員等'"
                     align="center"
                     valign="middle"
-                    :width="90"
+                    :width="180"
                     format="g"
                   ></wj-flex-grid-column>
                 </wj-flex-grid>
@@ -236,21 +270,64 @@
       </v-date-picker>
     </v-dialog>
 
-    <v-dialog v-model="taiseiKasanList_dialog" width="290">
-      <div class="pa-1">
+    <v-dialog v-model="taiseiKasanList_dialog" width="540" class="red">
+      <v-card class="pa-3">
         <v-btn-toggle class="flex-wrap" v-model="selected" mandatory>
           <v-btn small>全部</v-btn>
           <v-btn small>選択済</v-btn>
           <v-btn small>未</v-btn>
         </v-btn-toggle>
-      </div>
+
+        <wj-flex-grid
+          id="taiseilistGrid"
+          :itemsSource="taiseiKasanList"
+          :itemsSourceChanged="onTaiseilistChanged"
+          :initialized="onTaiseiListInitialized"
+          :selectionMode="3"
+          :allowMerging="6"
+          :headersVisibility="'Column'"
+          :allowDragging="false"
+          :allowResizing="false"
+          :deferResizing="false"
+          :allowSorting="false"
+          :autoRowHeights="true"
+          :isReadOnly="true"
+          class="mt-1"
+        >
+          <wj-flex-grid-column
+            :header="'基本・減算・加算一覧'"
+            :binding="'modeText'"
+            :isDisabled="true"
+            align="center"
+            valign="middle"
+            :width="34"
+            format="g"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'text'"
+            align="center"
+            valign="middle"
+            width="*"
+            format="g"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :header="'選択'"
+            :binding="'select'"
+            align="center"
+            valign="middle"
+            :width="34"
+            format="g"
+            class="pa-0"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
-
+import * as wjGrid from '@grapecity/wijmo.grid';
 export default {
   props: [],
   data() {
@@ -261,7 +338,10 @@ export default {
       taiseiKasanList_dialog: false,
       disabledDate: moment().format('YYYY/MM/DD'),
       picker: '',
+      selected: '',
+      syuroA: '',
       taiseiKasan: [],
+      taiseilist: [],
       kyutiCombo: [
         {
           key: 1,
@@ -324,8 +404,73 @@ export default {
           value: '単独',
         },
       ],
-
-      input: '',
+      taiseiKasanList: [
+        {
+          mode: '1',
+          modeText: '減算',
+          text: '定員超過',
+          select: '',
+          lot: '',
+          other: '継続就労者数[]人',
+        },
+        {
+          mode: '1',
+          modeText: '減算',
+          text: '生活支援欠如',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '1',
+          modeText: '減算',
+          text: 'サービス管理責任者欠如',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '1',
+          modeText: '減算',
+          text: '自己評価未公表減算',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '2',
+          modeText: '加算',
+          text: '評価点区分 170点以上の場合',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '2',
+          modeText: '加算',
+          text: '評価点区分 150点以上170点未満の場合',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '2',
+          modeText: '加算',
+          text: '評価点区分 130点以上150点未満の場合',
+          select: '',
+          lot: '',
+          other: '',
+        },
+        {
+          mode: '2',
+          modeText: '加算',
+          text: '評価点区分 105点以上130点未満の場合',
+          select: '',
+          lot: '',
+          other: '',
+        },
+      ],
+      input: {},
       gaitou: '',
     };
   },
@@ -335,6 +480,11 @@ export default {
     openDialog(type, data) {
       this.dialog = true;
       this.type = type;
+      this.input.serviceJigyosyoMei = data.serviceJigyosyoMei;
+      this.input.jigyosyoBango = data.jigyosyoBango;
+      this.input.serviceMeisyoCode = data.serviceMeisyoCode;
+      this.input.serviceMeisyo = data.serviceMeisyo;
+      this.getTaiseiKasan();
     },
     /**************
      * 日付選択
@@ -351,11 +501,115 @@ export default {
     /******************
      * 体制加算等
      */
-    onInitialized() {
-      this.getTaiseiKasan();
+    onInitialized(flexGrid) {
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel == flexGrid.cells) {
+          if (e.col == 0 || e.col == 2) {
+            e.cell.style.textAlign = 'left';
+          }
+        }
+      });
     },
     getTaiseiKasan() {
       this.taiseiKasan = [];
+      this.taiseiKasan.push(
+        {
+          name: '就労移行支援体制加算Ⅰ',
+          ritu: '',
+          teiin: '継続就労者数[ ]人',
+        },
+        {
+          name: '福祉専門職員配置等加算Ⅰ',
+          ritu: '',
+          teiin: '',
+        },
+        {
+          name: '評価点区分 105点以上130点未満',
+          ritu: '',
+          teiin: '',
+        }
+      );
+    },
+
+    /****************
+     * 体制加算一覧
+     */
+    onTaiseiListInitialized(flexGrid) {
+      let group = this.createMergeArray(this.taiseiKasanList);
+
+      let ranges = [];
+      for (let i = 0; i < group.length; i++) {
+        ranges.push(
+          new wjGrid.CellRange(group[i].first, 0, group[i].last - 1, 0)
+        );
+      }
+      console.log(ranges);
+      let headerRanges = [];
+      headerRanges = [new wjGrid.CellRange(0, 0, 0, 1)];
+
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < ranges.length; h++) {
+            if (ranges[h].contains(r, c)) {
+              return ranges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel.cellType == wjGrid.CellType.Cell) {
+          if (e.col == 1) {
+            e.cell.style.textAlign = 'left';
+            e.cell.style.justifyContent = 'left';
+            e.cell.style.alignItems = 'left';
+          }
+        }
+      });
+    },
+    onTaiseilistChanged(flexGrid) {
+      flexGrid.select(-1, -1);
+    },
+
+    /********************
+     * マージ作成用の配列を作成
+     */
+    createMergeArray(data) {
+      let array = [];
+      for (let i = 0; i < data.length; i++) {
+        array.push({
+          row: i,
+          mode: data[i]['mode'],
+        });
+      }
+      const groupBy = function (xs, key) {
+        return xs.reduce(function (rv, x) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+      };
+
+      const mergeGroup = groupBy(array, 'mode');
+      let merge = [];
+      Object.keys(mergeGroup).map((key) => {
+        let firsts = mergeGroup[key][0].row;
+        let lasts = mergeGroup[key][mergeGroup[key].length - 1].row + 1;
+        merge.push({
+          k: key,
+          first: firsts,
+          last: lasts,
+        });
+      });
+      return merge;
     },
   },
 };
@@ -365,10 +619,12 @@ export default {
 @import '@/assets/scss/common.scss';
 
 #taiseiDialog,
+#taiseilistGrid,
 div#dialogTeikyoTaisei {
   font-size: 12px;
   font-family: 'メイリオ';
   width: 100%;
+  text-overflow: clip;
   label {
     font-size: 12px;
   }
@@ -410,6 +666,9 @@ div#dialogTeikyoTaisei {
   }
   .mw260 {
     max-width: 260px;
+  }
+  .wj-cell {
+    text-overflow: clip !important;
   }
   .input {
     width: 200px;

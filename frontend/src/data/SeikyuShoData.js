@@ -4,7 +4,7 @@ export function getOriginalDetailData() {
   for(let i = 0; i < 4; i++){
     data['dummy'].push(
       {
-        sname: "東経市",
+        sname: "東経市国国国",
         svcname: getKubun(i),
         kensuA: i *10,
         tanisu: 56211,
@@ -81,7 +81,7 @@ export function getOriginalDetailData() {
 }
 
 function getKubun(num){
-  let serviceNames = ["生活介護","施設入所支援","短期入所","就労継続支援A型"];
+  let serviceNames = ["xx 生活介護国あいうえおあいうえお","xx 施設入所支援","xx 短期入所","xx 就労継続支援A型"];
   return serviceNames[num];
 }
 

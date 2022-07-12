@@ -169,12 +169,14 @@
                 >
                 </JyukyuTourokuSikyuryo>
                 <JyukyuTourokuKeikakuSoudan
+                  ref="keikaku"
                   @setMode="setMode"
                   @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[2]"
                 >
                 </JyukyuTourokuKeikakuSoudan>
                 <JyukyuTourokuRiyosyaFutan
+                  ref="futan"
                   @setMode="setMode"
                   @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[3]"
@@ -196,12 +198,14 @@
                 >
                 </JyukyuTourokuSikyuryo>
                 <JyukyuTourokuKeikakuSoudan
+                  ref="keikaku"
                   @setMode="setMode"
                   @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[1]"
                 >
                 </JyukyuTourokuKeikakuSoudan>
                 <JyukyuTourokuRiyosyaFutan
+                  ref="futan"
                   @setMode="setMode"
                   @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[2]"
@@ -216,6 +220,7 @@
                 >
                 </JyukyuTourokuKihon>
                 <JyukyuTourokuKeikakuSoudan
+                  ref="keikaku"
                   @setMode="setMode"
                   @setHojoMode="setHojoMode"
                   :titleNum="this.titleNum[0]"
@@ -280,6 +285,8 @@ import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
 import { JyukyuTourokuKihonData } from '@backend/api/JyukyuTourokuKihon';
 import { JyukyuTourokuSyogaiKubunData } from '@backend/api/JyukyuTourokuSyogaiKubun';
 import { JyukyuTourokuSikyuryoData } from '@backend/api/JyukyuTourokuSikyuryo';
+import { JyukyuTourokuKeikakuSoudanData } from '@backend/api/JyukyuTourokuKeikakuSoudan';
+import { JyukyuTourokuRiyosyaFutanData } from '@backend/api/JyukyuTourokuRiyosyaFutan';
 
 import Vue from 'vue';
 import axios from 'axios';
@@ -382,6 +389,8 @@ export default {
       kihonDataOrg: [], //基本データ初期リスト
       syogaiKubunDataOrg: [], //障害区分データ初期リスト
       sikyuryoDataOrg: [], //決定支給量データ初期リスト
+      keikakuSoudanDataOrg: [], //計画相談データ初期リスト
+      riyosyaFutanDataOrg: [], //利用者負担データ初期リスト
     };
   },
   components: {
@@ -517,6 +526,12 @@ export default {
         //決定支給量
         this.sikyuryoDataOrg = this.getJyukyuTourokuSikyuryoData(rid);
         this.setSikyuryoData(this.sikyuryoDataOrg, null);
+        //計画相談
+        this.keikakuSoudanDataOrg = this.getJyukyuTourokuKeikakuSoudanData(rid);
+        this.setKeikakuSoudanData(this.keikakuSoudanDataOrg, null);
+        //利用者負担
+        this.risyosyaFutanDataOrg = this.getJyukyuTourokuRiyosyaFutanData(rid);
+        this.setRiyosyaFutanData(this.risyosyaFutanDataOrg, null);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
@@ -525,7 +540,7 @@ export default {
     async getJyukyuTourokuKihonData(rid) {
       let jinf = [];
 
-      return await JyukyuTourokuKihonData().then((result) => {
+      return await JyukyuTourokuKihonData(rid).then((result) => {
         jinf.push(result.jyukyu_inf);
         return jinf;
       });
@@ -546,6 +561,22 @@ export default {
         return jinf;
       });
     },
+    async getJyukyuTourokuKeikakuSoudanData(rid) {
+      let jinf = [];
+
+      return await JyukyuTourokuKeikakuSoudanData().then((result) => {
+        jinf.push(result.skryoh3_inf);
+        return jinf;
+      });
+    },
+    async getJyukyuTourokuRiyosyaFutanData(rid) {
+      let jinf = [];
+
+      return await JyukyuTourokuRiyosyaFutanData().then((result) => {
+        jinf.push(result.skryoh2_inf);
+        return jinf;
+      });
+    },
     setKihonData(list, seleced) {
       this.$refs.kihon.setData(list, seleced);
     },
@@ -555,12 +586,20 @@ export default {
     setSikyuryoData(list, seleced) {
       this.$refs.sikyuryo.setData(list, seleced);
     },
+    setKeikakuSoudanData(list, seleced) {
+      this.$refs.keikaku.setData(list, seleced);
+    },
+    setRiyosyaFutanData(list, seleced) {
+      this.$refs.futan.setData(list, seleced);
+    },
     openRireki() {
       this.slideInRight.isOpen = true;
       this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.$refs.rirekiArea.setSyogaiKubunData(this.syogaiKubunDataOrg);
         this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrg);
+        this.$refs.rirekiArea.setKeikakuSoudanData(this.keikakuSoudanDataOrg);
+        this.$refs.rirekiArea.setRiyosyaFutanData(this.risyosyaFutanDataOrg);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }

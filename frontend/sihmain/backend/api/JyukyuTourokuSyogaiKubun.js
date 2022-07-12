@@ -20,7 +20,7 @@ export async function JyukyuTourokuSyogaiKubunData() {
             skryoh4_inf[i]['ntsymd'         ] = jyukyuInfData[i].ntsymd;
             skryoh4_inf[i]['ntsymdDisp'     ] = moment(jyukyuInfData[i].ntsymd).format('YYYY.MM.DD');
             skryoh4_inf[i]['nteymd'         ] = jyukyuInfData[i].nteymd;
-            skryoh4_inf[i]['nteymdDisp'     ] = moment(jyukyuInfData[i].nteymd).format('YYYY.MM.DD');
+            skryoh4_inf[i]['nteymdDisp'     ] = jyukyuInfData[i].nteymd==='99991231'?'':moment(jyukyuInfData[i].nteymd).format('YYYY.MM.DD');
             skryoh4_inf[i]['syogaikbn'      ] = jyukyuInfData[i].syogaikbn;
             skryoh4_inf[i]['syogaikbnDisp'  ] = jyukyuInfData[i].syogaikbn===2?'区分２':'区分３';
             skryoh4_inf[i]['tkkyu'          ] = jyukyuInfData[i].tkkyu;

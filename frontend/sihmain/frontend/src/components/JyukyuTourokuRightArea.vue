@@ -34,6 +34,7 @@
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
+            ref="keikaku"
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
@@ -42,6 +43,7 @@
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
+            ref="futan"
             :basicFlag="false"
             :futanFlag="true"
             :titleTab="this.titleTab"
@@ -69,6 +71,7 @@
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKettei>
           <JyukyuRirekiViewKeikaku
+            ref="keikaku"
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
@@ -77,6 +80,7 @@
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
           <JyukyuRirekiViewRiyousya
+            ref="futan"
             :basicFlag="false"
             :futanFlag="true"
             :titleTab="this.titleTab"
@@ -95,6 +99,7 @@
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKihon>
           <JyukyuRirekiViewKeikaku
+            ref="keikaku"
             :basicFlag="false"
             :keikakuFlag="true"
             :titleTab="this.titleTab"
@@ -179,6 +184,12 @@ export default {
     },
     setSikyuryoData(list) {
       this.$refs.sikyuryo.settingData(list);
+    },
+    setKeikakuSoudanData(list) {
+      this.$refs.keikaku.settingData(list);
+    },
+    setRiyosyaFutanData(list) {
+      this.$refs.futan.settingData(list);
     },
     /****************
      * 入力補助モード設定

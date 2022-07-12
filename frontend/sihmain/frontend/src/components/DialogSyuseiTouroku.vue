@@ -264,7 +264,7 @@
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col class="mt-3 d-flex">
+          <v-col class="pt-3 pb-3 d-flex shikutyosonEditBox">
             <v-row no-gutters class="d-block mr-1">
               <v-card elevation="0" class="d-flex">
                 <v-card 
@@ -306,6 +306,16 @@
                   </div>
                 </v-btn>
               </v-card>
+              <v-card elevation="0" class="shikutyosonDelete">
+                <v-btn
+                  @click="shinkiTouroku_dialog_delete()"
+                  tile
+                  outlined
+                  v-if="this.editShikutyosonFlag"
+                  >
+                  削除
+                </v-btn>
+              </v-card>
             </v-row>
             <wj-flex-grid
               id="shikutyosonGrid"
@@ -340,11 +350,6 @@
           </v-col>
         </v-row>
         <v-card class="d-flex justify-space-between mt-3" elevation="0">
-          <v-card elevation="0">
-            <v-btn @click="shinkiTouroku_dialog_clear()" tile outlined>
-              クリア
-            </v-btn>
-          </v-card>
           <v-card elevation="0" class="last_registrant">
             <v-card-text >
               最終登録者：2020/08/04 10:38 明治　正雄
@@ -382,14 +387,15 @@ import { ja } from 'vuejs-datepicker/dist/locale';
 import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
+import '@grapecity/wijmo.cultures/wijmo.culture.ja'
 export default {
   props: {},
   data() {
     return {
-      addData:[],
+      editData:[],
       parentFlag: false,
       // 市区町村マスタの情報
-      shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市'],
+      shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市','１２３４５６'],
       ja: ja,
       year: '',
       month: '',
@@ -415,13 +421,17 @@ export default {
       riyousyaTell2: '',
       riyousyaShikutyoson: '',
       riyousyaSymd: '',
+      riyousyaDispSymd: '',
       shikutyosonData: [],
       allData: [],
       mainFlexGrid: [],
 
-      calendarKey: '',
+      calendarKey: '1',
       nengouKey: '',
-      dispNngou: ''
+      dispNngou: '',
+      // 市区町村修正
+      editShikutyosonFlag: true,
+      addShikutyosonFlag: true
     };
   },
   components: {
@@ -450,41 +460,36 @@ export default {
       this.riyousyaTell2 =            riyousyadata['tell2'];
       this.riyousyaShikutyoson =      riyousyadata['shikutyoson'][0];
       this.riyousyaSymd =             riyousyadata['symd'][0];
+      this.riyousyaDispSymd =         riyousyadata['dispSymd'][0];
+
     // 市区町村のデータ変更履歴の配列を作成
     let shikutyosonData = [];
     for (let i = 0; i < riyousyadata['shikutyoson'].length; i++) {
       let keyValue = riyousyadata['shikutyoson'].length - i;
-      console.log(riyousyadata['symd'][i])
       shikutyosonData.push(
         {
           key: keyValue,
           shikutyoson: riyousyadata['shikutyoson'][i],
-          symd: riyousyadata['symd'][i]
+          symd: riyousyadata['dispSymd'][i]
         }
       );
     }
-     this.shikutyosonData = [];
-     this.shikutyosonData = shikutyosonData;
-      console.log(this.shikutyosonData);
-      this.allData = this.shikutyosonData;
+    this.shikutyosonData = [];
+    this.shikutyosonData = shikutyosonData;
+    this.allData = this.shikutyosonData;
     },
+
     /***********
      * 登録ボタンを押下
      */
     addRiyousyadata() {
-      this.riyousyaPostcode = this.riyousyaPostcode;
-
       // 入力データをフォーマット
-      // 生年月日
-      let formatBirthymd = moment(this.riyousyabirthymd).format('YYYY/MM/DD');
 
       // 開始日
-      let formatSymd = "";
       if (this.inputSymd === "") {
         // 開始日が空だった場合は今日の日付が入る
-        formatSymd = this.year + this.month + this.date;
+        this.dispSymd.push(new Date(this.year, Number(this.month) - 1, this.date));
       }
-      formatSymd = moment(formatSymd).format('YYYY/MM/DD');
       // 性別
       let displayGender = "";    // 表示用性別
       if (this.riyousyaGenderKey === 1) {
@@ -505,12 +510,12 @@ export default {
       let displayAddress = ""    // 画面表示用住所
       displayAddress = displayPostcode + "\n" + this.riyousyaAddress;
 
-      // 親から受け取ったデータ修正データとして登録
-      this.addData.push({
+      // 修正データとして登録
+      this.editData.push({
         code:         this.riyousyaCode,
         names:         this.riyousyaNames,
         kana:          this.riyousyaKana,
-        birthymd:      formatBirthymd,
+        birthymd:      new Date(this.inputBirthY, Number(this.inputBirthM) - 1, this.inputBirthD),
         age:           this.riyousyaAge,
         gender:        displayGender,
         postcode:      this.riyousyaPostcode,
@@ -518,28 +523,59 @@ export default {
         dispAddress:   this.inputAddress,
         tell1:         this.riyousyaTell1,
         tell2:         this.riyousyaTell2,
-        shikutyoson: this.riyousyaShikutyoson,
-        symd:          formatSymd,
+        shikutyoson:   this.riyousyaShikutyoson[0],
+        symd:          this.symd,
+        dispSymd :     new Date(this.year, Number(this.month) - 1, this.date),
       });
-      this.parentFlag = false;
+      if (this.editShikutyosonFlag === true) {
+        // 修正タブが選択されている場合
+        // 配列の値を入力値に修正
+        console.log(this.editData);
+        this.shikutyosonData[0]['shikutyoson'] = this.riyousyaShikutyoson;
+        this.shikutyosonData[0]['symd'] = this.editData[0]['dispSymd'];
+        // 表面上データの書き換え（仮）
+        this.mainFlexGrid.setCellData(0, 1, this.riyousyaShikutyoson);
+        this.mainFlexGrid.setCellData(0, 2, this.riyousyaDispSymd);
+        this.mainFlexGrid.itemsSource = this.shikutyosonData;
+        this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
+      } else if (this.addShikutyosonFlag === true) {
+        // 追加タブが選択されている場合
+        // 追加データを登録
+        this.shikutyosonData.unshift(
+          {
+            key: this.shikutyosonData.length + 1,
+            shikutyoson: this.riyousyaShikutyoson,
+            symd: this.riyousyaDispSymd
+          }
+        );
+      } else {
+        alert(エラー);
+      }
+      this.allData = this.shikutyosonData;
+      this.mainFlexGrid.itemsSource = this.shikutyosonData;
+        console.log(this.mainFlexGrid.itemsSource)
+
+      // 市区町村データ修正追加確認
+      // this.parentFlag = false;
+
       // 入力情報を追加した配列を親に返す
-      // this.$emit('addFormData', this.addData);
+      // this.$emit('addFormData', this.editData);
 
       // 入力情報をリセット
-      this.riyousyaCode = '';
-      this.riyousyaNames = '';
-      this.riyousyaKana = '';
-      this.riyousyabirthymd = '';
-      this.riyousyaAge = '';
-      this.riyousyaGenderKey = '';
-      this.riyousyaPostcode = '';
-      this.riyousyaPostcode1 = '';
-      this.riyousyaPostcode2 = '';
-      this.riyousyaAddress = '';
-      this.riyousyaTell1 = '';
-      this.riyousyaTell2 = '';
-      this.riyousyaShikutyoson = '';
-      this.riyousyaSymd = '';
+      // this.riyousyaCode = '';
+      // this.riyousyaNames = '';
+      // this.riyousyaKana = '';
+      // this.riyousyabirthymd = '';
+      // this.riyousyaAge = '';
+      // this.riyousyaGenderKey = '';
+      // this.riyousyaPostcode = '';
+      // this.riyousyaPostcode1 = '';
+      // this.riyousyaPostcode2 = '';
+      // this.riyousyaAddress = '';
+      // this.riyousyaTell1 = '';
+      // this.riyousyaTell2 = '';
+      // this.riyousyaShikutyoson = '';
+      // this.riyousyaSymd = '';
     },
     /***********
      *dialog和暦西暦表示切り替え
@@ -547,7 +583,6 @@ export default {
     switchDialogYear() {
       if (this.calendarKey === '1') {
         // 和暦選択時
-        console.log(this.dispNngou)
         this.dispNngou = "";
         this.dispNngou = this.nengouKey;
       } else {
@@ -642,52 +677,53 @@ export default {
         this.month = split[1];
         this.date = split[2];
 
-      this.inputSymd = this.year + this.month + this.date;
+      this.riyousyaDispSymd = this.year + this.month + this.date;
       this.datepicker_dialog = false;
     },
     /***********
-     * 市区町村修正
+     * 市区町村修正タブ押下
      */
     editShikutyoson() {
-      // 利用者市区町村データを再表示
-      // this.riyousyaShikutyoson =  riyousyadata['shikutyoson'][0];
-      // this.year = moment(riyousyadata['symd'][0]).format('YYYY');
-      // this.month = moment(riyousyadata['symd'][0]).format('MM');
-      // this.date = moment(riyousyadata['symd'][0]).format('DD');
+      this.editShikutyosonFlag = true;
+      this.addShikutyosonFlag = false;
+
+      // 利用者の最新の市区町村データ、有効開始日データを再表示
+      this.riyousyaShikutyoson = this.shikutyosonData[0]['shikutyoson'];
+      this.year = moment(this.shikutyosonData[0]['symd']).format('YYYY');
+      this.month = moment(this.shikutyosonData[0]['symd']).format('MM');
+      this.date = moment(this.shikutyosonData[0]['symd']).format('DD');
     },
     /***********
-     * 市区町村新規追加
+     * 市区町村新規追加タブ押下
      */
     addShikutyoson() {
+      this.editShikutyosonFlag = false;
+      this.addShikutyosonFlag = true;
+
       // 利用者市区町村データを一旦初期化
-      // this.riyousyaShikutyoson = "";
-      // this.year = "";
-      // this.month = "";
-      // this.date = "";
+      this.riyousyaShikutyoson = "";
+
+      // 有効開始日を本日に変更
+      this.year = moment().format('YYYY');
+      this.month = moment().format('MM');
+      this.date = moment().format('DD');
     },
     /***********
-     * クリアボタンを押下
+     * 削除ボタンを押下
      */
-    shinkiTouroku_dialog_clear: function () {
-      if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
-        this.riyousyaCode = '';
-        this.riyousyaNames = '';
-        this.riyousyaKana = '';
-        this.riyousyabirthymd = '';
-        this.riyousyaAge = '';
-        this.riyousyaGenderKey = '';
-        this.riyousyaPostcode = '';
-        this.riyousyaPostcode1 = '';
-        this.riyousyaPostcode2 = '';
-        this.riyousyaAddress = '';
-        this.riyousyaTell1 = '';
-        this.riyousyaTell2 = '';
-        this.riyousyaShikutyoson = '';
-        this.riyousyatSymd = '';
+    shinkiTouroku_dialog_delete: function () {
+      if (confirm('市町村データを削除します。\nよろしいですか？')) {
+        // 最新の市町村データを削除
+        this.shikutyosonData.shift();  
+        this.allData = this.shikutyosonData;
+        this.mainFlexGrid.itemsSource = this.kihonjyohoData;
       }
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
+      // 日付を和暦に変換（初期表示）
+      this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
+
       // this.getData();
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -709,12 +745,13 @@ export default {
       };
       flexGrid.mergeManager = mm;
       // グリッドのスタイルを変更
-      flexGrid.columnHeaders.rows.height = 25;
+      flexGrid.rowHeaders.rows[0].height = 27;
 
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontSize = '12px';
+        s.fontWeight = 'initial';
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           if (r == 0) {
            s.textAlign = "center"
@@ -739,33 +776,6 @@ export default {
         }
       };
     },
-    // getData() {
-    //   // let shikutyosonData = [];
-    //   // shikutyosonData.push(
-    //   //   {
-    //   //     key: '1',
-    //   //     shikutyoson: '東経市',
-    //   //     symd: '20220622~',
-    //   //   },
-    //   //   {
-    //   //     key: '2',
-    //   //     shikutyoson: '西経市',
-    //   //     symd: '20220622~',
-    //   //   },
-    //   //   {
-    //   //     key: '3',
-    //   //     shikutyoson: '北経市',
-    //   //     symd: '20220622~',
-    //   //   },
-    //   //   {
-    //   //     key: '4',
-    //   //     shikutyoson: '南経市',
-    //   //     symd: '20220622~',
-    //   //   },
-    //   // );
-    //   console.log(this.shikutyosonData);
-    //   this.allData = this.shikutyosonData;
-    // }
   }
 };
 </script>
@@ -910,6 +920,13 @@ export default {
         border-radius: 4px;
       }
     }
+    // 市区町村修正箇所
+    .shikutyosonEditBox {
+      border: solid 1px #ccc;
+      .shikutyosonDelete {
+        margin-top: 21px;
+      }
+    }
     // 最終登録者デザイン修正
     .last_registrant {
       display: flex;
@@ -926,9 +943,11 @@ export default {
     }
     #shikutyosonGrid {
       width: auto;
-      max-height: 92px;
-      border-bottom: none;
-      border-right: none;
+      max-height: 75px;
+      min-height: 75px;
+      .wj-cell {
+        height: 25px;
+      }
     }
   }
 </style>

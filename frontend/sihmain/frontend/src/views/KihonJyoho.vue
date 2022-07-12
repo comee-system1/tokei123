@@ -111,7 +111,7 @@
             :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'dispSymd'"
+            :binding="'dispSymd[0]'"
             :header="'開始日'"
             align="center"
             :width="90"
@@ -200,7 +200,6 @@ export default {
      * 和暦西暦切り替え
      */
     onDateSwitch(type) {
-      console.log(type.dateType);
       if (type.dateType === 'wareki') {
         this.mainFlexGrid.columns[3].format = sysConst.FORMAT.GYmd;
         this.mainFlexGrid.columns[10].format = sysConst.FORMAT.GYmd;
@@ -268,7 +267,6 @@ export default {
           array.push(this.kihonjyohoData[i]);
         }
       }
-      console.log(array);
       if (type.sortedType === 'kana') {
         array.sort((a, b) => {
           if (a.kana < b.kana) {
@@ -379,8 +377,8 @@ export default {
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
           shikutyoson: ['東経市','１２３４５６'],
-          symd: ['20220201','20220401'],
-          dispSymd: new Date('2022', Number('02') - 1, '01'),
+          symd: ['20220401','20220201'],
+          dispSymd: [new Date('2022', Number('04') - 1, '01'),new Date('2022', Number('02') - 1, '01')],
           startY: '2022',
           startM: '05',
           startD: '20',
@@ -406,10 +404,9 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyoson: ['左右市','B市'],
-          symd: "20220201",
-          dispSymd: new Date('2022', Number('02') - 1, '01'),
-          symd: '20220520',
+          shikutyoson: ['北経市','B市'],
+          symd: ['20220520','20220320'],
+          dispSymd: [new Date('2022', Number('05') - 1, '20'),new Date('2022', Number('03') - 1, '20')],
           startY: '2022',
           startM: '05',
           startD: '20',
@@ -423,8 +420,8 @@ export default {
           serviceMeisyo: '自立訓練(機能訓練)',
           code: '1000003',
           jyukyuno: '1000000003', //提供サービス
-          names: '東経 太郎', // サービス種類コード
-          kana: 'タロウ トウケイ', // 利用日数199200111
+          names: '東経 次郎', // サービス種類コード
+          kana: 'ジロウ トウケイ', // 利用日数199200111
           birthymd: '19820222',
           dispBirthymd: new Date('1992', Number('04') - 1, '01'),
           age: '40',
@@ -437,13 +434,12 @@ export default {
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
           shikutyoson: ['西経市','B市'],
-          symd: "20220301",
-          dispSymd: new Date('2022', Number('03') - 1, '01'),
-          eymd: moment('20181115').format('YYYY/MM/DD'),
-          symd: "",
+          symd: ['20220520','20220320'],
+          dispSymd: [new Date('2022', Number('05') - 1, '20'),new Date('2022', Number('03') - 1, '20')],
           startY: '',
           startM: '',
           startD: '',
+          eymd: moment('20181115').format('YYYY/MM/DD'),  
           eymd: "",
         },
         {
@@ -468,8 +464,8 @@ export default {
           tell1: '12345-1234-1234',
           tell2: '03-1111-2231',
           shikutyoson: ['１２３４５６'],
-          symd: "20220301",
-          dispSymd: new Date('2022', Number('03') - 1, '01'),
+          symd: ["20220301"],
+          dispSymd: [new Date('2022', Number('03') - 1, '01')],
           startY: '2022',
           startM: '03',
           startD: '01',
@@ -522,7 +518,6 @@ export default {
     changeSortting(kihonjyohoData) {
       // サービス順に並び替え
       
-      console.log(kihonjyohoData);
       kihonjyohoData.sort((a, b) => {
         if (a.serviceCode === null || b.serviceCode === null) {
           return 2;
@@ -535,10 +530,8 @@ export default {
         }
         return 0;
       });
-      console.log(12);
       // サービス毎の合計数を取得
       let dict = this.getServiceCount(kihonjyohoData);
-      console.log(dict);
       let returns = [];
       let n = 1;
       let noServiceCount = 0;
@@ -575,7 +568,6 @@ export default {
 
     getServiceCount(data) {
       // ソートが事業所+サービスの時のみ有効
-        console.log(data)
       if (this.sortedType != 'jigyo') {
         return [];
       }
@@ -604,6 +596,9 @@ export default {
       this.allData = this.kihonjyohoData;
       this.mainFlexGrid.itemsSource = [];
       this.mainFlexGrid.itemsSource = this.kihonjyohoData;
+      // 日付を和暦に変換（初期表示）
+      this.mainFlexGrid.columns[3].format = sysConst.FORMAT.GYmd;
+      this.mainFlexGrid.columns[10].format = sysConst.FORMAT.GYmd;
     }
   },
 };

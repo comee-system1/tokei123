@@ -2,48 +2,50 @@
   <div id="seikyu-sho">
     <ServiceSelection :seikyuflag="true" :seikyushoflag="true">
     </ServiceSelection>
-    <v-container class="seikyusho" fluid>
-      <v-row no-gutters>
-        <div class="service-selecter">
-          <label>市町村</label>
-          <wj-menu
-            id="comboFilters"
-            class="combo"
-            :itemsSource="sichosonList"
-            :initialized="initComboFilters"
-            :selectedIndexChanged="onSichosonIndexChanged"
-            :displayMemberPath="'text'"
-            :isRequired="true"
-            selectedValuePath="'key'"
-            style="width: 200px"
-          >
-          </wj-menu>
-          <v-btn
-            class="pa-1 ml-3"
-            :width="60"
-            style="margin-top: 2px; margin-right: 30px"
-            small
-            @click="searchClicked"
-            >検索</v-btn
-          >
-        </div>
-        <div class="print-selecter">
+    <v-container class="user-info ma-0 pa-0 ml-1" fluid>
+      <v-row style="height: 25px" class="ma-0 pa-0 mt-1" no-gutters>
+        <!-- <div class="service-selecter"> -->
+        <label>市町村</label>
+        <wj-menu
+          id="comboFilters1"
+          class="customCombobox"
+          :itemsSource="sichosonList"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          style="width: 200px"
+          selectedValuePath="key"
+          displayMemberPath="text"
+          :itemClicked="onSichosonClicked"
+        >
+        </wj-menu>
+        <v-btn
+          class="pa-1 ml-1"
+          style="width: 75px; height: 25px"
+          small
+          @click="searchClicked"
+          >検索</v-btn
+        >
+        <!-- </div> -->
+        <!-- <div class="print-selecter"> -->
+        <div id="printarea">
           <label>印刷種類</label>
-          <v-btn-toggle mandatory class="print-toggle">
+          <v-btn-toggle mandatory class="print-toggle ml-1">
             <v-btn small color="secondary" dark outlined>請求書</v-btn>
             <v-btn small color="secondary" dark outlined>一 覧</v-btn>
           </v-btn-toggle>
+          <!-- </div> -->
+          <wj-menu
+            class="ml-1"
+            id="printCombo"
+            :header="'全選択/全解除'"
+            :itemClicked="onselectedIndexChanged"
+          >
+            <wj-menu-item><b>印刷を全選択</b></wj-menu-item>
+            <wj-menu-item><b>印刷を全解除</b></wj-menu-item>
+          </wj-menu>
         </div>
-        <wj-menu
-          id="printCombo"
-          :header="'全選択/全解除'"
-          :itemClicked="onselectedIndexChanged"
-        >
-          <wj-menu-item><b>印刷を全選択</b></wj-menu-item>
-          <wj-menu-item><b>印刷を全解除</b></wj-menu-item>
-        </wj-menu>
       </v-row>
-      <v-row no-gutters>
+      <v-row no-gutters class="mt-1">
         <wj-flex-grid
           id="detailGrid"
           :itemsSource="detailGridData"
@@ -59,91 +61,91 @@
           <wj-flex-grid-column
             header="市町村名"
             binding="sname"
-            :width="'8*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="区分"
             binding="svcname"
-            :width="'10*'"
+            :width="220"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="件数"
             binding="kensuA"
-            :width="'4*'"
+            :width="40"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="単位数"
             binding="tanisu"
-            :width="'8*'"
+            :width="70"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="費用合計"
             binding="hiyoA"
-            :width="'8*'"
+            :width="90"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="A 給付費請求額"
             binding="kyufuA"
-            :width="'10*'"
+            :width="120"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="利用者負担額"
             binding="riyo"
-            :width="'8*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="自治体助成額"
             binding="jichitai"
-            :width="'8*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="件数"
             binding="kensuB"
-            :width="'4*'"
+            :width="40"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="費用合計"
             binding="hiyoB"
-            :width="'8*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="B 給付費請求額"
             binding="kyufuB"
-            :width="'10*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="A+B 請求金額"
             binding="seikyu"
-            :width="'12*'"
+            :width="100"
             :wordWrap="true"
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="印刷"
             binding="print"
-            :width="'2*'"
+            :width="40"
             :wordWrap="true"
           ></wj-flex-grid-column>
         </wj-flex-grid>
@@ -161,8 +163,8 @@ import sysConst from '@/utiles/const';
 
 // APIの戻り値をObjectに変換
 let apiResult = JSON.parse(getOriginalDetailData());
-const darkLine = '1px solid #333';
-const boldLine = '2px solid #333';
+const darkLine = '1px solid';
+const boldLine = '1px solid';
 
 export default {
   components: {
@@ -182,6 +184,14 @@ export default {
       selectedSichoson: '指定なし',
     };
   },
+
+  mounted() {
+    this.$nextTick(function () {
+      let div = document.getElementById('printarea');
+      div.style.position = 'fixed';
+      div.style.left = '820px';
+    });
+  },
   methods: {
     initComboFilters(combo) {
       let _self = this;
@@ -194,6 +204,12 @@ export default {
     },
     onSichosonIndexChanged(s) {
       this.selectedSichoson = s.text;
+    },
+    onSichosonClicked(s) {
+      s.header = this.sichosonList[s.selectedIndex].text;
+      this.selectedSichoson = this.sichosonList[s.selectedIndex].text;
+      let f = document.activeElement;
+      f.blur();
     },
     searchClicked() {
       let data = apiResult['dummy'];
@@ -314,16 +330,16 @@ export default {
           } else if (r == 1 && (c == 5 || c == 10)) {
             s.borderLeft = boldLine;
             s.borderRight = boldLine;
-            s.borderTop = boldLine;
+            // s.borderTop = boldLine;
           }
 
-          if (r == 0 && (c == 0 || c == 1 || c == 11 || c == 12)) {
-            s.borderBottom = darkLine;
-          }
+          // if (r == 0 && (c == 0 || c == 1 || c == 11 || c == 12)) {
+          //   s.borderBottom = darkLine;
+          // }
 
-          if (c >= 2 && c <= 10) {
-            s.borderBottom = darkLine;
-          }
+          // if (c >= 2 && c <= 10) {
+          //   s.borderBottom = darkLine;
+          // }
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           // 通常セルのスタイル
           if (c == 0 || c == 1) {
@@ -348,28 +364,28 @@ export default {
             s.borderRight = '1px solid rgba(0,0,0,.2)';
           }
 
-          if (c == 0 || c == 11 || c == 12) {
-            borderRowCol1.forEach((row) => {
-              if (r == row) {
-                s.borderBottom = darkLine;
-              }
-            });
-          } else {
-            borderRow.forEach((row) => {
-              if (r == row) {
-                s.borderBottom = darkLine;
-              }
-            });
-            if (borderRow.indexOf(r) == -1) {
-              s.borderBottom = '1px solid rgba(0,0,0,.2)';
-            }
-          }
+          // if (c == 0 || c == 11 || c == 12) {
+          //   borderRowCol1.forEach((row) => {
+          //     if (r == row) {
+          //       s.borderBottom = darkLine;
+          //     }
+          //   });
+          // } else {
+          //   borderRow.forEach((row) => {
+          //     if (r == row) {
+          //       s.borderBottom = darkLine;
+          //     }
+          //   });
+          //   if (borderRow.indexOf(r) == -1) {
+          //     s.borderBottom = '1px solid rgba(0,0,0,.2)';
+          //   }
+          // }
         } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
           // フッターのスタイル
           // フッターの上部に線を表示する
           if (r == 0) {
             s.borderTop = darkLine;
-            s.borderBottom = darkLine;
+            // s.borderBottom = darkLine;
             s.textAlign = 'center';
           }
 
@@ -378,7 +394,7 @@ export default {
           } else if (c == 5 || c == 10) {
             s.borderLeft = boldLine;
             s.borderRight = boldLine;
-            s.borderBottom = boldLine;
+            // s.borderBottom = boldLine;
           }
 
           if (c >= 2 && c <= 11) {
@@ -459,85 +475,59 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-* {
-  padding: 0;
-  margin: 0;
-}
-
-// 仮の対応
-div#seikyu-sho .transparent {
-  visibility: hidden;
-}
-
-@media screen and (max-width: 1366px) {
-  #detailGrid {
-    height: 73vh;
-  }
-}
-
-@media screen and (min-width: 1367px) {
-  #detailGrid {
-    height: 82vh;
-  }
-}
-
-div#seikyu-sho .service-selecter {
-  label {
-    display: inline-block;
-    margin-top: 2px;
-    margin-right: 2px;
-    padding-top: 2px;
-    font-weight: bold;
-    background: #f0ffff;
-    border: 1px solid #7db8ff;
-    height: 29px;
-    width: 60px;
-    text-align: center;
-  }
-}
-
-div#seikyu-sho .print-selecter {
-  margin-right: 0;
-  margin-left: auto;
-  label {
-    display: inline-block;
-    margin-top: 2px;
-    margin-right: 2px;
-    padding-top: 2px;
-    font-weight: bold;
-    background: #f0ffff;
-    border: 1px solid #7db8ff;
-    height: 29px;
-    width: 75px;
-    text-align: center;
-  }
-
-  .print-toggle {
-    margin-right: 10px;
-  }
-
-  .v-btn-toggle > .v-btn {
-    width: 90px;
-  }
-}
-
 div#seikyu-sho {
-  #printCombo {
-    width: 150px;
-    color: $font_color !important;
-  }
-  .combo:hover {
-    background-color: #e1e1e1;
+  @media screen and (max-width: 1366px) {
+    #detailGrid {
+      height: 73vh;
+    }
   }
 
-  .combo:focus {
-    background-color: #fff;
+  @media screen and (min-width: 1367px) {
+    #detailGrid {
+      height: 82vh;
+    }
+  }
+  #detailGrid {
+    width: auto;
   }
 
-  #comboFilters_dropdown {
-    .wj-listbox-item {
-      background-color: $white !important;
-      padding: 30px;
+  div.customCombobox {
+    position: relative;
+    width: 300px !important;
+    height: 25px !important;
+    &.customCombobox {
+      width: 160px !important;
+      div {
+        text-align: left;
+      }
+    }
+
+    .wj-btn.wj-btn-default {
+      border-left: none !important;
+    }
+    &:hover {
+      background-color: #e1e1e1;
+    }
+    &:focus {
+      background-color: #fff;
+    }
+    div * {
+      height: 21px !important;
+      padding: 0;
+      span {
+        height: 21px !important;
+        margin-top: 8px;
+      }
+      &.wj-form-control {
+        position: absolute;
+        top: -3px;
+        width: 100%;
+        padding-top: 4px;
+        padding-left: 2px;
+      }
+    }
+    input {
+      height: 25px !important;
     }
   }
 
@@ -546,6 +536,7 @@ div#seikyu-sho {
     justify-content: center;
     align-items: center;
     color: $font_color !important;
+    font-weight: normal;
   }
 
   .wj-flexgrid .wj-cell.verticalCenterCustom {
@@ -563,6 +554,212 @@ div#seikyu-sho {
   .wj-flexgrid .wj-cell.verticalRightCustom {
     display: flex;
     justify-content: right;
+    font-weight: normal;
   }
+  .user-info {
+    width: auto;
+    padding: 4px;
+
+    label:not(.labelhosoku) {
+      display: inline-block;
+      margin-right: 2px;
+      padding-top: 2px;
+      background: $view_Title_background;
+      border: none;
+      height: 25px;
+      width: 75px;
+      text-align: center;
+      line-height: 20px;
+    }
+  }
+  // .label {
+  //   border-radius: 0px;
+  //   display: inline-block;
+  //   margin-top: 2px;
+  //   margin-right: 2px;
+  //   padding-top: 2px;
+  //   // font-weight: bold;
+  //   // background: #f0ffff;
+  //   // border: 1px solid lightgray;
+  //   height: 25px;
+  //   width: 100px;
+  //   text-align: center;
+  // }
+
+  .print-selecter {
+    margin-right: 0;
+    margin-left: auto;
+    // label {
+    //   border-radius: 0px;
+    //   display: inline-block;
+    //   margin-top: 2px;
+    //   margin-right: 2px;
+    //   padding-top: 2px;
+    //   // font-weight: bold;
+    //   // background: #f0ffff;
+    //   // border: 1px solid lightgray;
+    //   height: 25px;
+    //   width: 100px;
+    //   text-align: center;
+    // }
+
+    .print-toggle {
+      margin-right: 10px;
+    }
+
+    .v-btn-toggle > .v-btn {
+      height: 25px;
+      width: 90px;
+    }
+  }
+  .v-btn-toggle > .v-btn {
+    height: 25px;
+    width: 90px;
+  }
+  // .service-selecter {
+  //   label {
+  //     border-radius: 0px;
+  //     display: inline-block;
+  //     margin-top: 2px;
+  //     margin-right: 2px;
+  //     padding-top: 2px;
+  //     // font-weight: bold;
+  //     // background: #f0ffff;
+  //     // border: 1px solid lightgray;
+  //     height: 25px;
+  //     width: 100px;
+  //     text-align: center;
+  //   }
+  // }
+
+  #printCombo {
+    position: relative;
+    width: 150px !important;
+    height: 25px !important;
+    padding: 0px;
+    &.customCombobox {
+      width: 160px !important;
+      div {
+        text-align: left;
+      }
+    }
+
+    .wj-btn.wj-btn-default {
+      border-left: none !important;
+    }
+    &:hover {
+      background-color: #e1e1e1;
+    }
+    &:focus {
+      background-color: #fff;
+    }
+    div * {
+      height: 21px !important;
+      padding: 0;
+      span {
+        height: 21px !important;
+        margin-top: 8px;
+      }
+      &.wj-form-control {
+        position: absolute;
+        top: -3px;
+        width: 100%;
+        padding-top: 4px;
+        padding-left: 2px;
+      }
+    }
+    input {
+      height: 25px !important;
+    }
+  }
+
+  // #printCombo {
+  //   width: 150px;
+  //   height: 25px !important;
+  //   color: $font_color !important;
+  // }
+  // .combo:hover {
+  //   background-color: #e1e1e1;
+  // }
+
+  // .combo:focus {
+  //   background-color: #fff;
+  // }
+
+  // #comboFilters_dropdown {
+  //   .wj-listbox-item {
+  //     background-color: $white !important;
+  //     padding: 30px;
+  //   }
+  // }
 }
+// * {
+//   padding: 0;
+//   margin: 0;
+// }
+
+// // 仮の対応
+// div#seikyu-sho .transparent {
+//   visibility: hidden;
+// }
+
+// div#seikyu-sho .service-selecter {
+//   label {
+//     display: inline-block;
+//     margin-top: 2px;
+//     margin-right: 2px;
+//     padding-top: 2px;
+//     // font-weight: bold;
+//     // background: #f0ffff;
+//     border: 1px solid lightgray;
+//     height: 25px;
+//     width: 50px;
+//     text-align: center;
+//   }
+// }
+
+// div#seikyu-sho .print-selecter {
+//   margin-right: 0;
+//   margin-left: auto;
+//   // label {
+//   //   display: inline-block;
+//   //   margin-top: 2px;
+//   //   margin-right: 2px;
+//   //   padding-top: 2px;
+//   //   // font-weight: bold;
+//   //   // background: #f0ffff;
+//   //   border: 1px solid lightgray;
+//   //   height: 25px;
+//   //   width: 75px;
+//   //   text-align: center;
+//   // }
+
+//   .print-toggle {
+//     margin-right: 10px;
+//   }
+
+//   .v-btn-toggle > .v-btn {
+//     width: 90px;
+//   }
+// }
+
+// div#seikyu-sho {
+//   #printCombo {
+//     width: 150px;
+//     color: $font_color !important;
+//   }
+//   .combo:hover {
+//     background-color: #e1e1e1;
+//   }
+
+//   .combo:focus {
+//     background-color: #fff;
+//   }
+
+//   #comboFilters_dropdown {
+//     .wj-listbox-item {
+//       background-color: $white !important;
+//       padding: 30px;
+//     }
+//   }
 </style>

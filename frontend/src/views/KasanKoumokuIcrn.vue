@@ -37,7 +37,7 @@
         </wj-menu>
         <v-btn
           class="ml-1"
-          style="width: 30px; height: 30px; margin-top: -2px"
+          style="width: 75px; height: 25px"
           @click="searchClicked"
         >
           検索
@@ -62,9 +62,7 @@
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
-        <v-spacer></v-spacer>
-        <label class="labelhosoku pt-2"> 上段：回数 下段：単位数 </label>
-        <v-spacer></v-spacer>
+        <label class="labelhosoku pt-2 ml-10"> 上段：回数 下段：単位数 </label>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <wj-flex-grid
@@ -75,7 +73,7 @@
           :allowDelete="false"
           :allowPinning="false"
           :allowMerging="'None'"
-          :allowResizing="false"
+          :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Row'"
@@ -152,7 +150,7 @@ export default {
         {
           dataname: 'name',
           title: '氏名',
-          width: 200,
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
           kasankbn: 0,
           kasanval: 0,
@@ -276,7 +274,7 @@ export default {
         newheadList.push({
           dataname: String(this.kasanList[i].kcode),
           title: this.kasanList[i].name,
-          width: 60,
+          width: 70,
           align: STYLE_ALIGN_RIGHT,
           kasankbn: this.kasanList[i].bunkbn,
           kasanval: this.kasanList[i].kcode,
@@ -294,6 +292,12 @@ export default {
         col.align = newheadList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
+
+        if (colIndex == 1) {
+          col.allowResizing = true;
+        } else {
+          col.allowResizing = false;
+        }
 
         if (colIndex == 0) {
           col.cssClass = CSS_IMAGE;
@@ -569,20 +573,13 @@ div#KasanKoumokuIcrn {
   .rowStyle {
     height: 25px;
   }
-  .wj-control .wj-input {
-    width: 250px;
-  }
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
   #kasanKoumokuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98vw;
-    min-width: 1300px;
-    height: 63vh;
+    width: auto;
+    min-width: 500px;
+    max-width: 1350px;
+    height: 65vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -639,10 +636,10 @@ div#KasanKoumokuIcrn {
   }
   div.customCombobox {
     position: relative;
-    width: 300px !important;
+    // width: 300px !important;
     height: 25px !important;
     &.customCombobox {
-      width: 160px !important;
+      // width: 160px !important;
       div {
         text-align: left;
       }
@@ -667,7 +664,7 @@ div#KasanKoumokuIcrn {
       &.wj-form-control {
         position: absolute;
         top: -3px;
-        width: 100%;
+        // width: 100%;
         padding-top: 4px;
         padding-left: 2px;
       }
@@ -675,6 +672,12 @@ div#KasanKoumokuIcrn {
     input {
       height: 25px !important;
     }
+  }
+  #comboFilters1 {
+    width: 150px !important;
+  }
+  #comboFilters2 {
+    width: 300px !important;
   }
 }
 </style>

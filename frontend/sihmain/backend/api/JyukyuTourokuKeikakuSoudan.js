@@ -22,6 +22,7 @@ export async function JyukyuTourokuKeikakuSoudanData() {
             skryoh3_inf[i]['rkeymd'			] = jyukyuInfData[i].rkeymd;        // 支給終了日
             skryoh3_inf[i]['rkeymdDisp'     ] = moment(jyukyuInfData[i].rkeymd).format('YYYY.MM.DD');
             skryoh3_inf[i]['sjgyokbn'		] = jyukyuInfData[i].sjgyokbn;      // 相談支援事業者区分
+            skryoh3_inf[i]['sjgyokbnDisp'   ] = jyukyuInfData[i].sjgyokbn===1?'自':'他';
             skryoh3_inf[i]['sjgyo'			] = jyukyuInfData[i].sjgyo;         // 相談支援事業者
             skryoh3_inf[i]['tokuti'			] = jyukyuInfData[i].tokuti;        // 特別地域加算
             skryoh3_inf[i]['monijiki'		] = jyukyuInfData[i].monijiki;      // ﾓﾆﾀﾘﾝｸﾞ時期
@@ -57,6 +58,7 @@ export async function JyukyuTourokuKeikakuSoudanData() {
                 skryoh3_inf[i]['rkeymd'			] = '';      // 支給終了日
                 skryoh3_inf[i]['rkeymdDisp'     ] = '';
                 skryoh3_inf[i]['sjgyokbn'		] = 0;      // 相談支援事業者区分
+                skryoh3_inf[i]['sjgyokbnDisp'   ] = '';
                 skryoh3_inf[i]['sjgyo'			] = 0;      // 相談支援事業者
                 skryoh3_inf[i]['tokuti'			] = 0;      // 特別地域加算
                 skryoh3_inf[i]['monijiki'		] = 0;      // ﾓﾆﾀﾘﾝｸﾞ時期

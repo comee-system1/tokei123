@@ -160,20 +160,20 @@ export default {
           title: '計画相談支援',
           array: [
             { dataname: '', title: '回' },
-            { dataname: 'start', title: '開始日' },
-            { dataname: 'end', title: '終了日' },
-            { dataname: 'ku', title: '区' },
-            { dataname: 'jijyosyo', title: '事業所名' },
+            { dataname: 'rksymdDisp', title: '開始日' },
+            { dataname: 'rkeymdDisp', title: '終了日' },
+            { dataname: 'sjgyokbnDisp', title: '区' },
+            { dataname: 'sjigyoryaku', title: '事業所名' },
           ],
         },
         futan: {
           title: '利用者負担',
           array: [
             { dataname: '', title: '回' },
-            { dataname: 'start', title: '開始日' },
-            { dataname: 'end', title: '終了日' },
-            { dataname: 'jyogen', title: '上限月額' },
-            { dataname: 'kanri', title: '管理対象' },
+            { dataname: 'tesymdDisp', title: '開始日' },
+            { dataname: 'teeymdDisp', title: '終了日' },
+            { dataname: 'fjyogenDisp', title: '上限月額' },
+            { dataname: 'jgenkbnDisp', title: '管理対象' },
           ],
         },
       },
@@ -211,9 +211,6 @@ export default {
       this.setEvents(flexGrid);
       // 未選択状態
       flexGrid.select(-1, -1);
-
-      //dummy
-      this.settingDatadummy(null);
     },
 
     /************************
@@ -230,97 +227,32 @@ export default {
       }
       this.allData = list;
     },
-    settingDatadummy(list) {
-      let data = [];
-
-      // 受給者情報
-      if (this.kihonFlag) {
-      }
-      // 受給者情報
-      else if (this.syogaiFlag) {
-      }
-      // 決定支給量
-      else if (this.ketteiFlag) {
-      }
-      // 計画相談支援
-      else if (this.keikakuFlag) {
-        data = [
-          {
-            kai: 1,
-            start: '2021.08.15',
-            end: '2021.09.15',
-            ku: '他',
-            jijyosyo: 'ひまわり相談支援事務所',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            ku: '',
-            jijyosyo: '',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            ku: '',
-            jijyosyo: '',
-          },
-        ];
-      }
-      // 利用者負担
-      else if (this.futanFlag) {
-        data = [
-          {
-            kai: 1,
-            start: '2021.08.15',
-            end: '2021.09.15',
-            jyogen: 37200,
-            kanri: '非該当',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            jyogen: '',
-            kanri: '',
-          },
-          {
-            kai: '',
-            start: '',
-            end: '',
-            jyogen: '',
-            kanri: '',
-          },
-        ];
-      }
-      this.allData = data;
-    },
     /***********************
      * イベント設定
      */
     setEvents(flexGrid) {
       let _self = this;
+      let code = '';
+      let g = null;
+      if (_self.kihonFlag) {
+        code = 'kihon';
+        g = wijmo.Control.getControl('#grdKihon');
+      } else if (_self.syogaiFlag) {
+        code = 'syogai';
+        g = wijmo.Control.getControl('#grdSyogaiKubun');
+      } else if (_self.ketteiFlag) {
+        code = 'kettei';
+        g = wijmo.Control.getControl('#grdKettei');
+      } else if (_self.keikakuFlag) {
+        code = 'keikaku';
+        g = wijmo.Control.getControl('#grdKeikaku');
+      } else if (_self.futanFlag) {
+        code = 'futan';
+        g = wijmo.Control.getControl('#grdFutan');
+      }
       //セルをクリック
       flexGrid.hostElement.addEventListener('click', function (e) {
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
-        let code = '';
-        let g = null;
-        if (_self.kihonFlag) {
-          code = 'kihon';
-          g = wijmo.Control.getControl('#grdKihon');
-        } else if (_self.syogaiFlag) {
-          code = 'syogai';
-          g = wijmo.Control.getControl('#grdSyogaiKubun');
-        } else if (_self.ketteiFlag) {
-          code = 'kettei';
-          g = wijmo.Control.getControl('#grdKettei');
-        } else if (_self.keikakuFlag) {
-          code = 'keikaku';
-        } else if (_self.futanFlag) {
-          code = 'futan';
-        }
-
         if (g !== null) {
           _self.$emit('child_data', g.itemsSource[hPage.row], code);
         }
@@ -338,6 +270,13 @@ export default {
           e.cell.style.background = sysConst.COLOR.basicGridColor;
           e.cell.style.color = sysConst.COLOR.white;
           e.cell.style.fontWeight = 'normal';
+        }
+        if (
+          code === 'futan' &&
+          e.panel != flexGrid.columnHeaders &&
+          e.col == 3
+        ) {
+          e.cell.style.textAlign = 'right';
         }
       });
     },

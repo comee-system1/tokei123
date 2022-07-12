@@ -87,7 +87,7 @@
         </v-btn-toggle>
         <v-btn
           class="ml-1"
-          style="width: 60px; height: 30px; margin-top: -4px"
+          style="width: 75px; height: 25px"
           @click="searchClicked"
         >
           検索
@@ -106,7 +106,7 @@
           :allowDelete="false"
           :allowPinning="false"
           :allowMerging="'AllHeaders'"
-          :allowResizing="false"
+          :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Row'"
@@ -125,7 +125,7 @@
           :allowDelete="false"
           :allowPinning="false"
           :allowMerging="'AllHeaders'"
-          :allowResizing="false"
+          :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Row'"
@@ -218,176 +218,132 @@ export default {
           dataname: 'kakutei',
           title: 'レ\nセ\n確\n定',
           width: 30,
-          minWidth: 30,
-          maxWidth: 30,
           align: 'center',
         },
         {
           dataname: 'dispname',
           title: '氏名',
-          width: '2*',
-          minWidth: 150,
-          maxWidth: 400,
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
           dataname: 'futan',
           title: '利用者\n負担上\n限月額\n①',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'riyoucnt',
           title: '利用\n日数',
-          width: 40,
-          minWidth: 40,
-          maxWidth: 40,
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'nyuincnt',
           title: '入院\n日数',
-          width: 40,
-          minWidth: 40,
-          maxWidth: 40,
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'svccode',
           title: '種別',
-          width: 40,
-          minWidth: 40,
-          maxWidth: 40,
+          width: 30,
           align: 'center',
         },
         {
           dataname: 'svcname',
           title: '名称',
-          width: '*',
-          minWidth: 120,
-          maxWidth: 150,
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
           dataname: 'riyounissu',
           title: '利用\n日数',
-          width: 40,
-          minWidth: 40,
-          maxWidth: 40,
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'kyufutani',
           title: '給付\n単位数',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
         {
           dataname: 'souhiyougaku',
           title: '総\n費用額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
         {
           dataname: 'itiwarisoutougaku',
           title: '１割\n相当額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
         {
           dataname: 'riyousyafutan',
           title: '利用者\n負担額\n②',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'jyougengakuchousei',
           title: '上限月額\n調整①②\n少ない数',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'jigyousyagenmen',
           title: '事業者\n減免額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'genmenriyousya',
           title: '減免後\n利用者',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'chouseiriyousya',
           title: '調整後\n利用者\n負担額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'jyougenkanrifutangaku',
           title: '上限額\n管理後\n利用者\n負担額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'ketteiriyoufutangaku',
           title: '決定\n利用者\n負担額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'kyufuhi',
           title: '給付費',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
         {
           dataname: 'jititaijyosei',
           title: '自治体\n助成分\n請求額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'kyufuhiseikyugaku',
           title: '給付費\n請求額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
         {
           dataname: 'jippisaneigaku',
           title: '実費\n算定額',
-          width: '*',
-          minWidth: 80,
-          maxWidth: 100,
+          width: 80,
           align: 'right',
         },
       ],
@@ -395,79 +351,79 @@ export default {
         {
           dataname: 'kakutei',
           title: 'レ\nセ\n確\n定',
-          width: '1*',
+          width: 30,
           align: 'center',
         },
         {
           dataname: 'name',
           title: '氏名',
-          width: '5*',
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
           dataname: 'dispsvc',
-          title: 'コード',
-          width: '2*',
+          title: '種別',
+          width: 30,
           align: 'center',
         },
         {
           dataname: 'dsymd',
           title: '開始日',
-          width: '3.5*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
           dataname: 'deymd',
           title: '終了日',
-          width: '3.5*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
           dataname: 'riyounissuu',
           title: '利用\n日数',
-          width: '1.5*',
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'nyuinnissu',
           title: '入院\n日数',
-          width: '1.5*',
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'svcnaiyou',
           title: 'サービス内容',
-          width: '10*',
+          width: 370,
           align: 'left',
         },
         {
           dataname: 'svccode',
           title: 'サービス\nコード',
-          width: '2.5*',
+          width: 60,
           align: 'center',
         },
         {
           dataname: 'tani',
           title: '単位数',
-          width: '2*',
+          width: 50,
           align: 'right',
         },
         {
           dataname: 'kaisu',
           title: '回数',
-          width: '1.5*',
+          width: 30,
           align: 'right',
         },
         {
           dataname: 'svctani',
           title: 'サービス\n単位数',
-          width: '3*',
+          width: 60,
           align: 'right',
         },
         {
           dataname: 'tekiyou',
           title: '摘要',
-          width: '10*',
+          width: 190,
           align: 'left',
         },
       ],
@@ -574,12 +530,15 @@ export default {
 
         col.binding = this.headerList[colIndex].dataname;
         col.width = this.headerList[colIndex].width;
-        col.minWidth = this.headerList[colIndex].minWidth;
-        col.maxWidth = this.headerList[colIndex].maxWidth;
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
         col.wordWrap = true;
+        if (colIndex == 1 || colIndex == 6) {
+          col.allowResizing = true;
+        } else {
+          col.allowResizing = false;
+        }
 
         if (colIndex == 0) {
           col.cssClass = CSS_IMAGE;
@@ -642,6 +601,11 @@ export default {
         col.align = this.kyufuHeaderList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
+        if (colIndex == 1) {
+          col.allowResizing = true;
+        } else {
+          col.allowResizing = false;
+        }
 
         if (colIndex == 0) {
           col.cssClass = CSS_IMAGE;
@@ -961,6 +925,9 @@ export default {
     itemsSourceChangedKyufu(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      flexGrid.beginUpdate();
+      flexGrid.autoSizeRows();
+      flexGrid.endUpdate();
     },
     searchClicked() {
       kyuhuMeisaiIcrn(this.dispPageType == 0).then((result) => {
@@ -1198,8 +1165,6 @@ div#KyuhuMeisaiIcrn {
   #kyufuGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98vw;
-    min-width: 1320px;
     height: 63vh;
     // max-height: 1080px;
     .wj-header {
@@ -1253,6 +1218,13 @@ div#KyuhuMeisaiIcrn {
       border-radius: 0px;
     }
   }
+  #seikyuGrid {
+    width: auto;
+    max-width: 1320px;
+  }
+  #kyufuGrid {
+    width: auto;
+  }
 
   .v-btn-toggle > .v-btn {
     width: 100px;
@@ -1296,6 +1268,12 @@ div#KyuhuMeisaiIcrn {
     input {
       height: 25px !important;
     }
+  }
+  #comboFilters1 {
+    width: 125px !important;
+  }
+  #comboFilters2 {
+    width: 200px !important;
   }
 }
 </style>

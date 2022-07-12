@@ -37,13 +37,11 @@
         </v-btn-toggle>
         <v-btn
           class="ml-1"
-          style="width: 60px; height: 30px; margin-top: -2px"
+          style="width: 75px; height: 25px"
           @click="searchClicked"
         >
           検索
         </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn style="width: 100px; height: 28px">受給者証修正 </v-btn>
       </v-row>
 
       <v-row class="rowStyle mt-1" no-gutters>
@@ -65,13 +63,18 @@
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
-        <v-spacer></v-spacer>
-        <div class="border-bottom ma-0" style="text-align: center">
+        <div class="border-bottom ma-0 ml-10" style="text-align: center">
           <label class="errorlabel mr-2">
             <b>エラー</b>
           </label>
           <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
         </div>
+        <v-btn
+          id="btnJyukyu"
+          class="ma-0 ml-10"
+          style="width: 100px; height: 25px"
+          >受給者証修正
+        </v-btn>
       </v-row>
 
       <v-row class="ma-0 mt-1" no-gutters>
@@ -83,7 +86,7 @@
           :allowDelete="false"
           :allowPinning="false"
           :allowMerging="'AllHeaders'"
-          :allowResizing="false"
+          :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Row'"
@@ -115,7 +118,6 @@ import sysConst from '@/utiles/const';
 import { jyukyuIcrn } from '@backend/api/JyukyuIcrn';
 
 const STR_MARU = '○';
-const TITLE_DAI = '受給者証情報';
 const TITLE_CHU = '利用者負担';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid';
@@ -139,18 +141,23 @@ export default {
           width: 100,
           align: 'center',
         },
-        { dataname: 'name', title: '氏名', width: '7*', align: 'left' },
+        {
+          dataname: 'name',
+          title: '氏名',
+          width: sysConst.GRD_COL_WIDTH.UserName,
+          align: 'left',
+        },
         {
           dataname: 'koufuymd',
           title: '交付日',
-          width: 90,
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
-        { dataname: 'engo', title: '援護者', width: 100, align: 'left' },
+        { dataname: 'engo', title: '援護者', width: 80, align: 'left' },
         {
           dataname: 'jitibangou',
           title: '助成自治\n体番号',
-          width: 70,
+          width: 60,
           align: 'center',
         },
         {
@@ -162,43 +169,49 @@ export default {
         {
           dataname: 'jyukyuname',
           title: '受給者氏名',
-          width: '7*',
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
           dataname: 'syougaisyu',
           title: '障害\n種別',
-          width: 50,
+          width: 0,
           align: 'center',
         },
         {
           dataname: 'syougaisienkbn',
           title: '障害\n支援\n区分',
-          width: 50,
+          width: 30,
           align: 'center',
         },
         {
           dataname: 'futanjyougen',
           title: '利用者負担\n上限月額',
-          width: 80,
+          width: 70,
           align: 'right',
         },
         {
           dataname: 'jyougenumu',
           title: '上限\n管理',
-          width: 50,
+          width: 40,
           align: 'center',
+        },
+        {
+          dataname: 'jyougenkanrikbn',
+          title: '上限額\n管理事業所',
+          width: 20,
+          align: 'left',
         },
         {
           dataname: 'jyougenkanri',
           title: '上限額\n管理事業所',
-          width: '7*',
+          width: 130,
           align: 'left',
         },
         {
           dataname: 'syokujiteikyo',
           title: '食事提供\n体制',
-          width: 70,
+          width: 60,
           align: 'center',
         },
         {
@@ -228,6 +241,7 @@ export default {
       viewdataAll: [],
       viewdata: [],
       serviceArgument: '', // ヘッダメニューのサービス選択
+      initflg: true,
     };
   },
   mounted() {
@@ -286,17 +300,15 @@ export default {
 
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.columnHeaders.rows[2].height = 40;
+      flexGrid.columnHeaders.rows[1].height = 40;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
 
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < 16; colIndex++) {
+      for (let colIndex = 0; colIndex < 17; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
@@ -306,6 +318,11 @@ export default {
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
+        if (colIndex == 2 || colIndex == 7 || colIndex == 13) {
+          col.allowResizing = true;
+        } else {
+          col.allowResizing = false;
+        }
 
         if (colIndex == 0) {
           col.cssClass = STYLE_DEFAULT;
@@ -320,11 +337,9 @@ export default {
           col.format = STYLE_DEFAULT;
         }
 
-        for (let rowindex = 0; rowindex < 3; rowindex++) {
+        for (let rowindex = 0; rowindex < 2; rowindex++) {
           let title = '';
-          if (1 <= colIndex && colIndex <= 14 && rowindex == 0) {
-            title = TITLE_DAI;
-          } else if (10 <= colIndex && colIndex <= 14 && rowindex == 1) {
+          if (10 <= colIndex && colIndex <= 14 && rowindex == 0) {
             title = TITLE_CHU;
           } else {
             title = this.headerList[colIndex].title;
@@ -340,8 +355,19 @@ export default {
     },
     onFormatItem(flexGrid, e) {
       if (
-        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 1) ||
-        (e.panel == flexGrid.columnHeaders && e.row == 1 && e.col == 10) ||
+        this.initflg &&
+        e.panel == flexGrid.columnHeaders &&
+        e.col == 15 &&
+        e.row == 0
+      ) {
+        this.initflg = false;
+        let btn = document.getElementById('btnJyukyu');
+        btn.style.position = 'fixed';
+        btn.style.left = e.getColumn().pos - 15 + 'px';
+      }
+
+      if (
+        (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 10) ||
         e.col == 0 ||
         e.col == 8 ||
         e.col == 9 ||
@@ -589,8 +615,8 @@ div#jyukyuicrn {
   #jyukyuIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98vw;
-    min-width: 1300px;
+    width: auto;
+    // min-width: 1300px;
     height: 63vh;
     // max-width: 100%;
     .wj-header {
