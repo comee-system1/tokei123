@@ -272,10 +272,15 @@
 
     <v-dialog v-model="taiseiKasanList_dialog" width="540" class="red">
       <v-card class="pa-3">
-        <v-btn-toggle class="flex-wrap" v-model="selected" mandatory>
-          <v-btn small>全部</v-btn>
-          <v-btn small>選択済</v-btn>
-          <v-btn small>未</v-btn>
+        <v-btn-toggle
+          class="flex-wrap"
+          v-model="selected"
+          mandatory
+          @change="onChangeSelected"
+        >
+          <v-btn small v-for="(btn, k) in botton_toggle" :key="k">{{
+            btn
+          }}</v-btn>
         </v-btn-toggle>
 
         <wj-flex-grid
@@ -342,6 +347,7 @@ export default {
       syuroA: '',
       taiseiKasan: [],
       taiseilist: [],
+      botton_toggle: ['全部', '選択済', '未'],
       kyutiCombo: [
         {
           key: 1,
@@ -486,6 +492,7 @@ export default {
       this.input.serviceMeisyo = data.serviceMeisyo;
       this.getTaiseiKasan();
     },
+
     /**************
      * 日付選択
      */
@@ -531,10 +538,73 @@ export default {
       );
     },
 
+    /*****************
+     * 体制一覧絞り込み
+     */
+    onChangeSelected() {
+      this.taiseiKasanList = [];
+      if (this.selected === 1) {
+        //選択済み
+        let array = [];
+        for (let i = 0; i < this.taiseiKasanListAll.length; i++) {
+          console.log(this.taiseiKasanListAll[i]);
+          //  if (this.taiseiKasanListAll[i].select == '1') {
+          array.push(this.taiseiKasanListAll[i]);
+          //  }
+        }
+        this.taiseiKasanList = array;
+      } else {
+        this.taiseiKasanList = this.taiseiKasanListAll;
+      }
+    },
+
     /****************
      * 体制加算一覧
      */
     onTaiseiListInitialized(flexGrid) {
+      // 体制加算一覧全データを保持
+      this.taiseiKasanListAll = this.taiseiKasanList;
+
+      // マージ
+      this.mergeTaiseiList(flexGrid);
+      // クリックイベント
+      this.onSelectedTaiseiList(flexGrid);
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel.cellType == wjGrid.CellType.Cell) {
+          if (e.col == 1) {
+            e.cell.style.textAlign = 'left';
+            e.cell.style.justifyContent = 'left';
+            e.cell.style.alignItems = 'left';
+          }
+        }
+      });
+    },
+    onTaiseilistChanged(flexGrid) {
+      flexGrid.select(-1, -1);
+    },
+    /***********************
+     * 体制加算一覧クリックイベント
+     */
+    onSelectedTaiseiList(flexGrid) {
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          if (!_self.taiseiKasanList[hPage.row].select) {
+            _self.taiseiKasanList[hPage.row].select = 1;
+            flexGrid.setCellData(hPage.row, 2, '〇');
+          } else {
+            _self.taiseiKasanList[hPage.row].select = '';
+            flexGrid.setCellData(hPage.row, 2, '');
+          }
+        }
+      });
+    },
+    /***************************
+     * 体制加算一覧マージ
+     */
+    mergeTaiseiList(flexGrid) {
       let group = this.createMergeArray(this.taiseiKasanList);
 
       let ranges = [];
@@ -543,7 +613,6 @@ export default {
           new wjGrid.CellRange(group[i].first, 0, group[i].last - 1, 0)
         );
       }
-      console.log(ranges);
       let headerRanges = [];
       headerRanges = [new wjGrid.CellRange(0, 0, 0, 1)];
 
@@ -565,21 +634,7 @@ export default {
         }
       };
       flexGrid.mergeManager = mm;
-
-      flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel.cellType == wjGrid.CellType.Cell) {
-          if (e.col == 1) {
-            e.cell.style.textAlign = 'left';
-            e.cell.style.justifyContent = 'left';
-            e.cell.style.alignItems = 'left';
-          }
-        }
-      });
     },
-    onTaiseilistChanged(flexGrid) {
-      flexGrid.select(-1, -1);
-    },
-
     /********************
      * マージ作成用の配列を作成
      */
