@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12" class="user-info">
         <v-row>
           <div class="riyousya-block">
@@ -35,7 +35,43 @@
           </v-btn-toggle>
         </v-row>
       </v-col>
-    </v-row>
+    </v-row> -->
+    <v-container class="user-info" fluid>
+      <v-row class="rowStyle">
+        <label class="pa-1">利用者</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 200px"
+          tile
+          outlined
+        >
+          {{ riyousya }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">受給者証番号</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 100px"
+          tile
+          outlined
+        >
+          {{ zyukyusyaNum }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">契約支給量</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 100px"
+          tile
+          outlined
+        >
+          {{ sikyuryoData }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">電文作成</label>
+        <v-btn-toggle mandatory class="denbun-toggle ml-1">
+          <v-btn small color="secondary" dark outlined>有り</v-btn>
+          <v-btn small color="secondary" dark outlined>無し</v-btn>
+        </v-btn-toggle>
+      </v-row>
+    </v-container>
 
     <wj-flex-grid
       id="detailGrid"
@@ -46,7 +82,6 @@
       :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
-      :autoRowHeights="true"
       :allowPinning="false"
       :allowSorting="false"
     >
@@ -238,7 +273,10 @@ export default {
       footerPanel.setCellData(0, 10, this.teiinChokaTotal);
 
       // ヘッダーとフッターの高さを調整
-      flexGrid.columnHeaders.rows[1].height = 25;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       let startingOnSunday = this.startingOnSunday;
 
@@ -265,12 +303,12 @@ export default {
             cell.innerHTML = '定員超過<br/>特例加算';
           }
 
-          if (
-            (r == 0 && !(c == 4 || c == 5)) ||
-            (r == 1 && (c == 4 || c == 5))
-          ) {
-            s.borderBottom = darkLine;
-          }
+          // if (
+          //   (r == 0 && !(c == 4 || c == 5)) ||
+          //   (r == 1 && (c == 4 || c == 5))
+          // ) {
+          //   s.borderBottom = darkLine;
+          // }
 
           if (c == 1 || c == 3 || c == 10) {
             s.borderRight = darkLine;
@@ -436,13 +474,13 @@ function getTeiinChokaTotal(data) {
 
 @media screen and (max-width: 1366px) {
   #detailGrid {
-    height: 67vh;
+    height: 75vh;
   }
 }
 
 @media screen and (min-width: 1367px) {
   #detailGrid {
-    height: 78vh;
+    height: 80vh;
   }
 }
 </style>

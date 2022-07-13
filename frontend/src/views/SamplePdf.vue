@@ -104,10 +104,6 @@ export default {
 };
 </script>
 <style>
-body {
-  margin-bottom: 24px;
-}
-
 .container-fluid .wj-viewer {
   width: 100%;
   display: block;

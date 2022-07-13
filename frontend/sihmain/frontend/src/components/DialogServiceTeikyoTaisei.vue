@@ -17,7 +17,7 @@
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
 
-        <v-row no-gutter>
+        <v-row no-gutters>
           <v-col class="pa-0 mt-1 mw120">サービス事業所名</v-col>
           <v-col class="mw260 pa-0">
             <v-text-field
@@ -53,7 +53,7 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <v-row class="mt-6">
+        <v-row class="mt-6" no-gutters>
           <v-col class="pa-0 mw120 mt-1">適用開始月</v-col>
           <v-col class="pa-0 mw120" style="position: relative">
             <v-text-field
@@ -68,20 +68,20 @@
               >mdi-calendar-month</v-icon
             >
           </v-col>
-          <v-col class="mw20 text-center mt-n2">～</v-col>
+          <v-col class="mw20 text-center mt-1">～</v-col>
           <v-col class="pa-0 ml-3">
             <v-btn outlined small>前回履歴よりコピー</v-btn>
-            <v-btn outlined small>履歴参照</v-btn>
+            <v-btn outlined small v-if="type == 'historyEdit'">履歴参照</v-btn>
           </v-col>
         </v-row>
 
-        <v-row no-gutter>
-          <v-col cols="4">
+        <v-row no-gutters class="mt-4">
+          <v-col cols="5">
             <v-toolbar-title class="text-caption text-center"
               >施設種類・定員等
             </v-toolbar-title>
-            <v-row no-gutter class="mt-3">
-              <v-col class="pa-0 mt-1 mw120">級地区分</v-col>
+            <v-row no-gutters class="mt-3">
+              <v-col class="pa-0 middle mw120">級地区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -92,8 +92,8 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-2">
-              <v-col class="pa-0 mt-4 mw120">多機能型事業</v-col>
+            <v-row no-gutters>
+              <v-col class="pa-0 middle mw120">多機能型事業</v-col>
               <v-col class="mw260 pa-0">
                 <v-checkbox
                   v-model="gaitou"
@@ -102,8 +102,9 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-1">
-              <v-col class="pa-0 mt-1 mw120">定員区分</v-col>
+
+            <v-row no-gutters>
+              <v-col class="pa-0 middle mw120">定員区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -114,8 +115,70 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-4">
-              <v-col class="pa-0 mt-1 mw120">多機能型事業<br />定員区分</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 mw120 middle">障害区分別<br />定員</v-col>
+              <v-col class="mw260 pa-0">
+                <v-row no-gutters class="mt-1">
+                  <v-col cols="4" class="mt-1"> 知的障害児 </v-col>
+                  <v-col cols="8">
+                    <wj-combo-box
+                      class="input w140"
+                      :itemsSource="kubunCombo"
+                      :selectedValuePath="'key'"
+                      :displayMemberPath="'value'"
+                    ></wj-combo-box>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="mt-1">
+                  <v-col cols="4" class="mt-1"> 自閉症児 </v-col>
+                  <v-col cols="8">
+                    <wj-combo-box
+                      class="input w140"
+                      :itemsSource="[]"
+                      :selectedValuePath="'key'"
+                      :displayMemberPath="'value'"
+                    ></wj-combo-box>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="mt-1">
+                  <v-col cols="4" class="mt-1"> 育児 </v-col>
+                  <v-col cols="8">
+                    <wj-combo-box
+                      class="input w140"
+                      :itemsSource="[]"
+                      :selectedValuePath="'key'"
+                      :displayMemberPath="'value'"
+                    ></wj-combo-box>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="mt-1">
+                  <v-col cols="4" class="mt-1"> ろうあ児 </v-col>
+                  <v-col cols="8">
+                    <wj-combo-box
+                      class="input w140"
+                      :itemsSource="[]"
+                      :selectedValuePath="'key'"
+                      :displayMemberPath="'value'"
+                    ></wj-combo-box>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="mt-1">
+                  <v-col cols="4" class="mt-1"> 肢体不自由 </v-col>
+                  <v-col cols="8">
+                    <wj-combo-box
+                      class="input w140"
+                      :itemsSource="[]"
+                      :selectedValuePath="'key'"
+                      :displayMemberPath="'value'"
+                    ></wj-combo-box>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120"
+                >多機能型事業<br />定員区分</v-col
+              >
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -127,8 +190,8 @@
                 <p>(各サービス種類の単位毎の利用定員)</p>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-1">
-              <v-col class="pa-0 mt-1 mw120">人員配置区分</v-col>
+            <v-row no-gutters>
+              <v-col class="pa-0 middle mw120">人員配置区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -139,8 +202,8 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-4">
-              <v-col class="pa-0 mt-1 mw120">事業所区分</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120">事業所区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -151,8 +214,8 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-4">
-              <v-col class="pa-0 mt-1 mw120">施設区分</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120">施設区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -163,8 +226,8 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-4">
-              <v-col class="pa-0 mt-1 mw120">事業実施区分</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120">事業実施区分</v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -175,8 +238,8 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-2">
-              <v-col class="pa-0 mt-4 mw120">就労A型減免</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120">就労A型減免</v-col>
               <v-col class="mw260 pa-0">
                 <v-checkbox
                   v-model="syuroA"
@@ -185,15 +248,15 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row no-gutter class="mt-2">
-              <v-col class="pa-0 mt-2 mw120">負担減免額</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw120">負担減免額</v-col>
               <v-col class="mw260 pa-0 position-relative">
                 <v-text-field outlined class="input pa-0"></v-text-field>
                 <div class="unit">円</div>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="8">
+          <v-col cols="7">
             <v-toolbar-title class="text-caption text-center"
               >体制加算等
               <v-btn
@@ -204,7 +267,7 @@
                 >体制加算一覧参照</v-btn
               >
             </v-toolbar-title>
-            <v-row no-gutter mt-2>
+            <v-row no-gutters mt-2>
               <v-col>
                 <wj-flex-grid
                   :initialized="onInitialized"
@@ -250,11 +313,17 @@
           </v-col>
         </v-row>
         <v-row class="mt-15">
-          <v-col><v-btn small>削除</v-btn></v-col>
+          <v-col>
+            <v-btn small v-if="type == 'historyAdd'">画面クリア</v-btn>
+            <v-btn small v-else>削除</v-btn>
+          </v-col>
           <v-col class="text-center mt-2"
             >最終登録者: R03/04/01 10:30 (明治 雅)</v-col
           >
-          <v-col class="text-end"><v-btn small>修正登録</v-btn></v-col>
+          <v-col class="text-end">
+            <v-btn small v-if="type == 'historyAdd'">履歴登録</v-btn>
+            <v-btn small v-else>修正登録</v-btn>
+          </v-col>
         </v-row>
       </v-card>
     </v-dialog>
@@ -337,6 +406,7 @@ export default {
   props: [],
   data() {
     return {
+      type: '', // ダイアログを表示した際のボタン識別
       dialog: false,
       kyutiComboIndex: '',
       datepicker_dialog: false,
@@ -410,7 +480,73 @@ export default {
           value: '単独',
         },
       ],
-      taiseiKasanList: [
+      taiseiKasanList: this.getTaiseiKasanList(),
+      input: {},
+      gaitou: '',
+    };
+  },
+  components: {},
+  mounted() {},
+  methods: {
+    openDialog(type, data) {
+      this.dialog = true;
+      this.type = type;
+      this.input.serviceJigyosyoMei = data.serviceJigyosyoMei;
+      this.input.jigyosyoBango = data.jigyosyoBango;
+      this.input.serviceMeisyoCode = data.serviceMeisyoCode;
+      this.input.serviceMeisyo = data.serviceMeisyo;
+      this.getTaiseiKasan();
+    },
+
+    /**************
+     * 日付選択
+     */
+    dateSelect() {
+      this.disabledDate = moment(this.picker).format('YYYY/MM/DD');
+      this.datepicker_dialog = false;
+    },
+
+    header_dialog_close: function () {
+      this.dialog = false;
+    },
+
+    /******************
+     * 体制加算等
+     */
+    onInitialized(flexGrid) {
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel == flexGrid.cells) {
+          if (e.col == 0 || e.col == 2) {
+            e.cell.style.textAlign = 'left';
+          }
+        }
+      });
+    },
+    getTaiseiKasan() {
+      this.taiseiKasan = [];
+      this.taiseiKasan.push(
+        {
+          name: '就労移行支援体制加算Ⅰ',
+          ritu: '',
+          teiin: '継続就労者数[ ]人',
+        },
+        {
+          name: '福祉専門職員配置等加算Ⅰ',
+          ritu: '',
+          teiin: '',
+        },
+        {
+          name: '評価点区分 105点以上130点未満',
+          ritu: '',
+          teiin: '',
+        }
+      );
+    },
+    /**********************
+     * 体制加算一覧データ
+     */
+    getTaiseiKasanList() {
+      let array = [
         {
           mode: '1',
           modeText: '減算',
@@ -475,87 +611,40 @@ export default {
           lot: '',
           other: '',
         },
-      ],
-      input: {},
-      gaitou: '',
-    };
-  },
-  components: {},
-  mounted() {},
-  methods: {
-    openDialog(type, data) {
-      this.dialog = true;
-      this.type = type;
-      this.input.serviceJigyosyoMei = data.serviceJigyosyoMei;
-      this.input.jigyosyoBango = data.jigyosyoBango;
-      this.input.serviceMeisyoCode = data.serviceMeisyoCode;
-      this.input.serviceMeisyo = data.serviceMeisyo;
-      this.getTaiseiKasan();
-    },
+      ];
 
-    /**************
-     * 日付選択
-     */
-    dateSelect() {
-      this.disabledDate = moment(this.picker).format('YYYY/MM/DD');
-      this.datepicker_dialog = false;
+      this.taiseiKasanList = array;
+      return array;
     },
-
-    header_dialog_close: function () {
-      this.dialog = false;
-    },
-
-    /******************
-     * 体制加算等
-     */
-    onInitialized(flexGrid) {
-      flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel == flexGrid.cells) {
-          if (e.col == 0 || e.col == 2) {
-            e.cell.style.textAlign = 'left';
-          }
-        }
-      });
-    },
-    getTaiseiKasan() {
-      this.taiseiKasan = [];
-      this.taiseiKasan.push(
-        {
-          name: '就労移行支援体制加算Ⅰ',
-          ritu: '',
-          teiin: '継続就労者数[ ]人',
-        },
-        {
-          name: '福祉専門職員配置等加算Ⅰ',
-          ritu: '',
-          teiin: '',
-        },
-        {
-          name: '評価点区分 105点以上130点未満',
-          ritu: '',
-          teiin: '',
-        }
-      );
-    },
-
     /*****************
      * 体制一覧絞り込み
      */
     onChangeSelected() {
-      this.taiseiKasanList = [];
-      if (this.selected === 1) {
-        //選択済み
+      if (this.selected === 1 || this.selected === 2) {
         let array = [];
+        this.taiseiKasanList = [];
+
+        //選択済み
         for (let i = 0; i < this.taiseiKasanListAll.length; i++) {
-          console.log(this.taiseiKasanListAll[i]);
-          //  if (this.taiseiKasanListAll[i].select == '1') {
-          array.push(this.taiseiKasanListAll[i]);
-          //  }
+          if (
+            (this.selected === 1 &&
+              this.taiseiKasanListAll[i] &&
+              this.taiseiKasanListAll[i].select) ||
+            (this.selected === 2 &&
+              this.taiseiKasanListAll[i] &&
+              !this.taiseiKasanListAll[i].select)
+          ) {
+            array.push(this.taiseiKasanListAll[i]);
+            //this.taiseiKasanList.concat(array);
+          }
         }
+        // console.log(array);
+
         this.taiseiKasanList = array;
       } else {
         this.taiseiKasanList = this.taiseiKasanListAll;
       }
+      this.mergeTaiseiList(this.taiseiKasanGrid);
     },
 
     /****************
@@ -564,13 +653,17 @@ export default {
     onTaiseiListInitialized(flexGrid) {
       // 体制加算一覧全データを保持
       this.taiseiKasanListAll = this.taiseiKasanList;
-
+      this.taiseiKasanGrid = flexGrid;
       // マージ
       this.mergeTaiseiList(flexGrid);
       // クリックイベント
       this.onSelectedTaiseiList(flexGrid);
+      // フォーマット
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel.cellType == wjGrid.CellType.Cell) {
+          e.cell.style.textAlign = '';
+          e.cell.style.justifyContent = '';
+          e.cell.style.alignItems = '';
           if (e.col == 1) {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
@@ -593,9 +686,11 @@ export default {
         if (ht.cellType == wjGrid.CellType.Cell) {
           if (!_self.taiseiKasanList[hPage.row].select) {
             _self.taiseiKasanList[hPage.row].select = 1;
+            _self.taiseiKasanListAll[hPage.row].select = 1;
             flexGrid.setCellData(hPage.row, 2, '〇');
           } else {
             _self.taiseiKasanList[hPage.row].select = '';
+            _self.taiseiKasanListAll[hPage.row].select = '';
             flexGrid.setCellData(hPage.row, 2, '');
           }
         }
@@ -605,7 +700,12 @@ export default {
      * 体制加算一覧マージ
      */
     mergeTaiseiList(flexGrid) {
-      let group = this.createMergeArray(this.taiseiKasanList);
+      if (flexGrid.cells.rows.length == 0) {
+        return false;
+      }
+
+      let group = [];
+      group = this.createMergeArray(this.taiseiKasanList);
 
       let ranges = [];
       for (let i = 0; i < group.length; i++) {
@@ -690,7 +790,7 @@ div#dialogTeikyoTaisei {
     position: absolute;
     top: 6px;
     left: auto;
-    right: -6px;
+    right: 26px;
   }
   .calender_icon {
     position: absolute;
@@ -725,6 +825,10 @@ div#dialogTeikyoTaisei {
   .wj-cell {
     text-overflow: clip !important;
   }
+  .middle {
+    display: flex;
+    align-items: center;
+  }
   .input {
     width: 200px;
     height: 20px;
@@ -744,6 +848,9 @@ div#dialogTeikyoTaisei {
     }
     &.w100 {
       width: 100px;
+    }
+    &.w140 {
+      width: 140px;
     }
     &.w160 {
       width: 160px;

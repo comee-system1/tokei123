@@ -31,18 +31,30 @@ $grid_unselectable_cells:#fffeed;
     padding:0;
     font-size:14px;
     color:#333333;
-  }
-    .user-info label{
-      font-size:14px;
-      background-color: $selected_color;
-      display: inline-block;
-      width: 120px;
-      height: 31px;
-      padding-top: 5px;
-      margin-right:8px;
-      border-radius: 4px;
-      text-align: center;
+    .koumokuData {
+      color: $font_color;
+      width: 350px;
+      height: 100%;
+      text-align: left;
+      background: $view_Data_Read_background;
+      border: none;
     }
+
+    .rowStyle{
+      height: 25px;
+    }
+  }
+    // .user-info label{
+    //   font-size:14px;
+    //   background-color: $selected_color;
+    //   display: inline-block;
+    //   width: 120px;
+    //   height: 31px;
+    //   padding-top: 5px;
+    //   margin-right:8px;
+    //   border-radius: 4px;
+    //   text-align: center;
+    // }
 
   .riyousya-block,.jukyusyasho-block,.keiyakuryo-block{
     float:left;
@@ -86,17 +98,27 @@ $grid_unselectable_cells:#fffeed;
     width:100px;
     margin-right:20px;
   }
-
-  .denbun-toggle{
-    margin-left:0px;
-    margin-top:2px;
+  .v-btn-toggle > .v-btn {
+    height: 25px;
   }
+  // .denbun-toggle{
+  //   // margin-left:0px;
+  //   // margin-top:2px;
+  //   >v-btn{
+  //   height: 25px;
+  //   }
+    
+  // }
 
   /* グリッドのスタイル */
   #detailGrid {
     margin-top:4px;
     font-size:12px;
     color:#333333 !important;
+    width: 1040px !important;
+    .wj-cell {
+      padding: 2px;
+    }
     ::-webkit-scrollbar {
       width: 10px;
     }
@@ -120,8 +142,12 @@ $grid_unselectable_cells:#fffeed;
   #subGrid {
     font-size:12px;
     color:#333333 !important;
+    width: 1040px !important;
     .wj-cell:not(.wj-header) {
       background: $grid_unselectable_cells;
+    }
+    .wj-cell {
+      padding: 2px;
     }
   }
 

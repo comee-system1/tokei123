@@ -422,6 +422,7 @@ export default {
       riyousyaShikutyoson: '',
       riyousyaSymd: '',
       riyousyaDispSymd: '',
+
       shikutyosonData: [],
       allData: [],
       mainFlexGrid: [],
@@ -533,11 +534,6 @@ export default {
         console.log(this.editData);
         this.shikutyosonData[0]['shikutyoson'] = this.riyousyaShikutyoson;
         this.shikutyosonData[0]['symd'] = this.editData[0]['dispSymd'];
-        // 表面上データの書き換え（仮）
-        this.mainFlexGrid.setCellData(0, 1, this.riyousyaShikutyoson);
-        this.mainFlexGrid.setCellData(0, 2, this.riyousyaDispSymd);
-        this.mainFlexGrid.itemsSource = this.shikutyosonData;
-        this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
       } else if (this.addShikutyosonFlag === true) {
         // 追加タブが選択されている場合
         // 追加データを登録
@@ -552,8 +548,10 @@ export default {
         alert(エラー);
       }
       this.allData = this.shikutyosonData;
+      this.mainFlexGrid.itemsSource = [];
       this.mainFlexGrid.itemsSource = this.shikutyosonData;
-        console.log(this.mainFlexGrid.itemsSource)
+      this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
+      console.log(this.mainFlexGrid.itemsSource)
 
       // 市区町村データ修正追加確認
       // this.parentFlag = false;
@@ -684,6 +682,9 @@ export default {
      * 市区町村修正タブ押下
      */
     editShikutyoson() {
+      // グリッドの選択を有効化する
+      this.mainFlexGrid.selectionMode = wjGrid.SelectionMode.ListBox;
+
       this.editShikutyosonFlag = true;
       this.addShikutyosonFlag = false;
 
@@ -693,10 +694,48 @@ export default {
       this.month = moment(this.shikutyosonData[0]['symd']).format('MM');
       this.date = moment(this.shikutyosonData[0]['symd']).format('DD');
     },
+    
+    /****************
+     *セルのクリックイベント
+     */
+    clickEventCell(flexGrid) {
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        if (_self.editShikutyosonFlag === true) {
+          let ht = flexGrid.hitTest(e);
+          let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+          // セル押下時のみ
+          console.log(flexGrid.Selected)
+          if (ht.cellType == wjGrid.CellType.Cell) {
+            //クリックした行の利用者データを取得
+            let SelectShikutyousonData = _self.getSelectRow(hPage.row);
+            // クリックした行の利用者データを表示
+            _self.riyousyaShikutyoson = SelectShikutyousonData['shikutyoson'];
+            _self.year = moment(SelectShikutyousonData['symd']).format('YYYY');
+            _self.month = moment(SelectShikutyousonData['symd']).format('MM');
+            _self.date = moment(SelectShikutyousonData['symd']).format('DD');
+
+            
+            return SelectShikutyousonData;
+          }
+        }
+      });
+    },
+    /*************
+     * 選択した行を取得
+     */
+    getSelectRow(row) {
+      let data = [];
+      data = this.shikutyosonData[row];
+      return data;
+    },
     /***********
      * 市区町村新規追加タブ押下
      */
     addShikutyoson() {
+      // グリッドの選択を無効にする
+      this.mainFlexGrid.selectionMode = wjGrid.SelectionMode.None;
+
       this.editShikutyosonFlag = false;
       this.addShikutyosonFlag = true;
 
@@ -721,12 +760,13 @@ export default {
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
+
+      // セルのクリックイベント(修正タブアクティブ時)
+      this.clickEventCell(flexGrid);
       // 日付を和暦に変換（初期表示）
       this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
 
       // this.getData();
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       // セルの結合
       let headerRanges = [];
@@ -947,6 +987,22 @@ export default {
       min-height: 75px;
       .wj-cell {
         height: 25px;
+      }
+      .wj-cells
+      .wj-row:hover
+      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+        transition: all 0s;
+        background: $grid_hover_background;
+      }
+
+      .wj-cells .wj-cell.wj-state-multi-selected {
+        background: $grid_selected_background;
+        color: $grid_selected_color;
+      }
+
+      .wj-cells .wj-cell.wj-state-selected {
+        background: $grid_selected_background;
+        color: $grid_selected_color;
       }
     }
   }

@@ -72,7 +72,7 @@
         <v-btn
           id="btnJyukyu"
           class="ma-0 ml-10"
-          style="width: 100px; height: 25px"
+          style="width: 100px; height: 25px; position: absolute; left: 990px"
           >受給者証修正
         </v-btn>
       </v-row>
@@ -354,18 +354,6 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onFormatItem(flexGrid, e) {
-      if (
-        this.initflg &&
-        e.panel == flexGrid.columnHeaders &&
-        e.col == 15 &&
-        e.row == 0
-      ) {
-        this.initflg = false;
-        let btn = document.getElementById('btnJyukyu');
-        btn.style.position = 'fixed';
-        btn.style.left = e.getColumn().pos - 15 + 'px';
-      }
-
       if (
         (e.panel == flexGrid.columnHeaders && e.row == 0 && e.col == 10) ||
         e.col == 0 ||

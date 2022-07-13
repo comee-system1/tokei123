@@ -4,7 +4,6 @@
     </ServiceSelection>
     <v-container class="user-info ma-0 pa-0 ml-1" fluid>
       <v-row style="height: 25px" class="ma-0 pa-0 mt-1" no-gutters>
-        <!-- <div class="service-selecter"> -->
         <label>市町村</label>
         <wj-menu
           id="comboFilters1"
@@ -25,9 +24,7 @@
           @click="searchClicked"
           >検索</v-btn
         >
-        <!-- </div> -->
-        <!-- <div class="print-selecter"> -->
-        <div id="printarea">
+        <div id="printarea" style="position: absolute; left: 820px">
           <label>印刷種類</label>
           <v-btn-toggle mandatory class="print-toggle ml-1">
             <v-btn small color="secondary" dark outlined>請求書</v-btn>
@@ -185,13 +182,6 @@ export default {
     };
   },
 
-  mounted() {
-    this.$nextTick(function () {
-      let div = document.getElementById('printarea');
-      div.style.position = 'fixed';
-      div.style.left = '820px';
-    });
-  },
   methods: {
     initComboFilters(combo) {
       let _self = this;
@@ -572,66 +562,11 @@ div#seikyu-sho {
       line-height: 20px;
     }
   }
-  // .label {
-  //   border-radius: 0px;
-  //   display: inline-block;
-  //   margin-top: 2px;
-  //   margin-right: 2px;
-  //   padding-top: 2px;
-  //   // font-weight: bold;
-  //   // background: #f0ffff;
-  //   // border: 1px solid lightgray;
-  //   height: 25px;
-  //   width: 100px;
-  //   text-align: center;
-  // }
 
-  .print-selecter {
-    margin-right: 0;
-    margin-left: auto;
-    // label {
-    //   border-radius: 0px;
-    //   display: inline-block;
-    //   margin-top: 2px;
-    //   margin-right: 2px;
-    //   padding-top: 2px;
-    //   // font-weight: bold;
-    //   // background: #f0ffff;
-    //   // border: 1px solid lightgray;
-    //   height: 25px;
-    //   width: 100px;
-    //   text-align: center;
-    // }
-
-    .print-toggle {
-      margin-right: 10px;
-    }
-
-    .v-btn-toggle > .v-btn {
-      height: 25px;
-      width: 90px;
-    }
-  }
   .v-btn-toggle > .v-btn {
     height: 25px;
     width: 90px;
   }
-  // .service-selecter {
-  //   label {
-  //     border-radius: 0px;
-  //     display: inline-block;
-  //     margin-top: 2px;
-  //     margin-right: 2px;
-  //     padding-top: 2px;
-  //     // font-weight: bold;
-  //     // background: #f0ffff;
-  //     // border: 1px solid lightgray;
-  //     height: 25px;
-  //     width: 100px;
-  //     text-align: center;
-  //   }
-  // }
-
   #printCombo {
     position: relative;
     width: 150px !important;
@@ -672,94 +607,5 @@ div#seikyu-sho {
       height: 25px !important;
     }
   }
-
-  // #printCombo {
-  //   width: 150px;
-  //   height: 25px !important;
-  //   color: $font_color !important;
-  // }
-  // .combo:hover {
-  //   background-color: #e1e1e1;
-  // }
-
-  // .combo:focus {
-  //   background-color: #fff;
-  // }
-
-  // #comboFilters_dropdown {
-  //   .wj-listbox-item {
-  //     background-color: $white !important;
-  //     padding: 30px;
-  //   }
-  // }
 }
-// * {
-//   padding: 0;
-//   margin: 0;
-// }
-
-// // 仮の対応
-// div#seikyu-sho .transparent {
-//   visibility: hidden;
-// }
-
-// div#seikyu-sho .service-selecter {
-//   label {
-//     display: inline-block;
-//     margin-top: 2px;
-//     margin-right: 2px;
-//     padding-top: 2px;
-//     // font-weight: bold;
-//     // background: #f0ffff;
-//     border: 1px solid lightgray;
-//     height: 25px;
-//     width: 50px;
-//     text-align: center;
-//   }
-// }
-
-// div#seikyu-sho .print-selecter {
-//   margin-right: 0;
-//   margin-left: auto;
-//   // label {
-//   //   display: inline-block;
-//   //   margin-top: 2px;
-//   //   margin-right: 2px;
-//   //   padding-top: 2px;
-//   //   // font-weight: bold;
-//   //   // background: #f0ffff;
-//   //   border: 1px solid lightgray;
-//   //   height: 25px;
-//   //   width: 75px;
-//   //   text-align: center;
-//   // }
-
-//   .print-toggle {
-//     margin-right: 10px;
-//   }
-
-//   .v-btn-toggle > .v-btn {
-//     width: 90px;
-//   }
-// }
-
-// div#seikyu-sho {
-//   #printCombo {
-//     width: 150px;
-//     color: $font_color !important;
-//   }
-//   .combo:hover {
-//     background-color: #e1e1e1;
-//   }
-
-//   .combo:focus {
-//     background-color: #fff;
-//   }
-
-//   #comboFilters_dropdown {
-//     .wj-listbox-item {
-//       background-color: $white !important;
-//       padding: 30px;
-//     }
-//   }
 </style>

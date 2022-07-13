@@ -1,17 +1,25 @@
 <template>
   <div>
-    <form v-on:submit.prevent="doLogin">
+    <v-form v-on:submit.prevent="doLogin" autocomplete="off">
       <label>User ID</label>
       <br />
       <input type="text" placeholder="customer id" v-model="user.userId" />
       <br />
       <label>Password</label>
       <br />
-      <input type="password" placeholder="password" v-model="user.password" />
+
+      <input
+        type="password"
+        placeholder="password"
+        v-model="user.password1"
+        style="width: 0px"
+      />
+      <input type="password" placeholder="password" v-model="user.password2" />
+
       <br />
       <p>token「{{ $store.state.userToken }}」</p>
       <button type="submit">Sign In</button>
-    </form>
+    </v-form>
   </div>
 </template>
 
@@ -109,3 +117,4 @@ export default {
   },
 };
 </script>
+

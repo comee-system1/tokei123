@@ -89,8 +89,9 @@
                 <v-radio label="和暦" :key="1" :value="'1'" class="mb-0"></v-radio>
                 <v-radio label="西暦" :key="2" :value="'2'" class="mb-0"></v-radio>
               </v-radio-group>
-              <v-radio-group row
-                @change="switchDialogYear()"
+              <v-radio-group
+                row
+                @change="switchDialogYear(),calcRiyousyaAge()"
                 class="mt-0 pt-0 dialogWareki"
                 v-if="calendarKey === '1'"
                 v-model="nengouKey"
@@ -348,8 +349,10 @@ export default {
       inputTell1: '',
       inputTell2: '',
       inputShikutyoson: '',
+      inputShikutyosonArray:[],
       inputSymd: '',
       dispSymd: [],
+      inputDispSymdArray:[],
       inputSartY: '',
       inputSartM: '',
       inputSartD: '',
@@ -375,7 +378,12 @@ export default {
       this.inputPostcode = this.inputPostcode;
 
       // 入力データをフォーマット
-  
+      // 生年月日
+      if ((this.nengouKey && this.inputBirthY) !== ''){
+        // 入力が和暦の場合、西暦に変換
+        this.inputBirthY = this.seireki(this.nengouKey + this.inputBirthY);
+      }
+
       // 開始日
       if (this.inputSymd === "") {
         // 開始日が空だった場合(カレンダー未操作)は今日の日付が入る
@@ -401,6 +409,16 @@ export default {
       let displayAddress = ""    // 画面表示用住所
       displayAddress = displayPostcode + "\n" + this.inputAddress;
 
+      // 一部入力値を配列に変更 
+      // 市区町村
+      this.inputShikutyosonArray = [];
+      this.inputShikutyosonArray.push(this.inputShikutyoson);
+
+      // 開始日
+      console.log(new Date(this.year, Number(this.month) - 1, this.date))
+      this.inputDispSymdArray = [];
+      this.inputDispSymdArray.push(new Date(this.year, Number(this.month) - 1, this.date));
+
       // 入力情報を追加
       this.addData.push({
         code:            this.inputCode,
@@ -414,13 +432,13 @@ export default {
         postcode:         this.inputPostcode,
         postcode1:        this.inputPostcode1,
         postcode2:        this.inputPostcode2,
-        address:          displayAddress,
-        dispAddress:      this.inputAddress,
+        address:          this.inputAddress,
+        dispAddress:      displayAddress,
         tell1:            this.inputTell1,
         tell2:            this.inputTell2,
-        shikutyoson:      this.inputShikutyoson,
+        shikutyoson:      this.inputShikutyosonArray,
         symd:             this.inputSymd,
-        dispSymd:         this.dispSymd,
+        dispSymd:         this.inputDispSymdArray
       });
       console.log(this.addData);
       this.parentFlag = false;
@@ -436,7 +454,7 @@ export default {
     switchDialogYear() {
       if (this.calendarKey === '1') {
         // 和暦選択時
-        this.dispNngou = "  ";
+        this.dispNngou = "";
         this.dispNngou = this.nengouKey;
       } else {
         // 西暦選択時
@@ -449,31 +467,95 @@ export default {
      */
     calcRiyousyaAge() {
       // 入力値から年齢を計算
+      if(this.calendarKey === '2' || (this.calendarKey === '1' && this.nengouKey !== '')) {
+        console.log(12)
+        // 西暦を選択、または和暦を選択かつ年号が空じゃなければ計算を実行
+        if ((this.inputBirthY &&
+            this.inputBirthM &&
+            this.inputBirthD) !== ''){
+          // 年月日、和暦、西暦の選択いずれかが未入力の場合、年齢計算をスキップ
+          // 現在の年度を取得
+          let nowY = moment().format('YYYY');
+          let seirekiY;  // 年齢計算に使用する西暦
 
-      // // 生年月日から年を切り出し
-      // let inputBirthY = this.inputBirthymd.substr( 0, 4 );
+          if (this.calendarKey ==='1') {
+            if ((this.nengouKey && this.inputBirthY) !== ''){
+              // 入力が和暦の場合、和暦を西暦に変換
+              seirekiY = this.seireki(this.nengouKey + this.inputBirthY);
+            }
+          } else if (this.calendarKey ==='2') {
+            // 入力が西暦の場合
+            seirekiY = this.inputBirthY;
+          }
+          let nowMd = ''
+          let inputBirthMd = '';
 
-      // // 生年月日の月日を切り出し
-      // let inputBirthMd = this.inputBirthymd.substr( 4, 6 );
-      let todayMd = "";
-      let inputBirthMd = "";
-      // 西暦の場合
-      if (this.calendarKey ==='2') {
-        // 現在の月日を成形
-        todayMd = this.month + this.date;
+          // 現在の月日を成形
+          nowMd = this.month + this.date;
 
-        // 入力値の月日の成形
-        inputBirthMd = this.inputBirthM + this.inputBirthD;
+          // 入力値の月日の成形
+          let formatBirthM = moment(this.inputBirthM).format('MM');
+          let formatBirthD = moment(this.inputBirthD).format('DD');
+          inputBirthMd = formatBirthM + formatBirthD;
 
-        if(todayMd < inputBirthMd) {
-          //今年まだ誕生日が来ていない
-          this.inputAge = this.year - this.inputBirthY -1;
-        } else {
-          // 既に誕生日を迎えている
-          this.inputAge = this.year - this.inputBirthY;
+          if(nowMd < inputBirthMd) {
+            //今年まだ誕生日が来ていない
+            this.inputAge = nowY - seirekiY  -1;
+          } else {
+            // 既に誕生日を迎えている
+            this.inputAge = nowY - seirekiY;
+          }
         }
       }
-
+    },
+    wareki(year) {
+      // 西暦を和暦に変換
+      var eras = [
+        {year: 2018, name: '令和'},
+        {year: 1988, name: '平成'},
+        {year: 1925, name: '昭和'},
+        {year: 1911, name: '大正'},
+        {year: 1867, name: '明治'}
+      ];
+      for(var i in eras) {
+        var era = eras[i];
+        var baseYear = era.year;
+        var eraName = era.name;
+        if(year > baseYear) {
+          var eraYear = year - baseYear;
+          if(eraYear === 1) {
+            return eraName +'元年';
+          }
+          return eraName + eraYear;
+        }
+      }
+      return null;
+    },
+    // 和暦を西暦に変換
+    seireki(warekiYear) {
+      var matches = warekiYear.match('^(明治|大正|昭和|平成|令和)([元0-9０-９]+)$');
+      if(matches) {
+        var eraName = matches[1];
+        var year = parseInt(matches[2].replace(/[元０-９]/g, function(match){
+          if(match === '元') {
+            return 1;
+          }
+          return String.fromCharCode(match.charCodeAt(0) - 65248);
+        }));
+        if(eraName === '明治') {
+          year += 1867;
+        } else if(eraName === '大正') {
+            year += 1911;
+        } else if(eraName === '昭和') {
+          year += 1925;
+        } else if(eraName === '平成') {
+          year += 1988;
+        } else if(eraName === '令和') {
+          year += 2018;
+        }
+        return year;
+      }
+      return null;
     },
     /***********
      * 住所検索を押下
@@ -534,11 +616,12 @@ export default {
      */
     dateSelect: function () {
       let split = this.picker.split('-');
-        this.year = split[0];
-        this.month = split[1];
-        this.date = split[2];
+      this.year = split[0];
+      this.month = split[1];
+      this.date = split[2];
 
       this.inputSymd = this.year + this.month + this.date;
+      console.log(this.inputSymd)
       this.datepicker_dialog = false;
     },
     /***********

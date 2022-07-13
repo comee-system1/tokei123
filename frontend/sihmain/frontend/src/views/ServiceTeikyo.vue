@@ -365,6 +365,8 @@ import sysConst from '@/utiles/const';
 import TabMenuBlue from '@/components/TabMenuBlue.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
+import { ServiceTeikyo } from '@backend/api/ServiceTeikyo';
+
 export default {
   data() {
     return {
@@ -557,7 +559,7 @@ export default {
         var ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
           // 修正登録の時のみモーダル画面の表示
-          if (_self.selected === 1) {
+          if (_self.tab == 'basic' && _self.selected === 1) {
             _self.$refs.dialogTeikyo.openDialog(
               'edit',
               _self.serviceData[ht.row]
@@ -567,6 +569,13 @@ export default {
           if (_self.tab == 'sisetu' && _self.selected === 0) {
             _self.$refs.dialogTeikyoTaisei.openDialog(
               'historyAdd',
+              _self.serviceData[ht.row]
+            );
+          }
+          // 施設体制+修正追加押下の時のみ
+          if (_self.tab == 'sisetu' && _self.selected === 1) {
+            _self.$refs.dialogTeikyoTaisei.openDialog(
+              'historyEdit',
               _self.serviceData[ht.row]
             );
           }
@@ -920,8 +929,9 @@ export default {
       this.serviceDataTeisai = serviceData;
       this.allDataTeisai = serviceData;
     },
-    getData() {
+    async getData() {
       let serviceData = [];
+      /*
       serviceData.push(
         {
           code: '1001',
@@ -1212,6 +1222,9 @@ export default {
           taisyo: '',
         }
       );
+*/
+
+      /*
       for (let i = 0; i < serviceData.length; i++) {
         // 住所を接続する
         if (serviceData[i].jyusyo) {
@@ -1260,6 +1273,7 @@ export default {
           'gyy/MM'
         );
       }
+*/
       this.merge = [];
       this.serviceDataMain = serviceData;
       this.allDataMain = serviceData;

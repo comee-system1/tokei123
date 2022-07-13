@@ -3,7 +3,8 @@
     <ServiceSelection
       @parent-service-select="parentSearch($event, searchArgument)"
       @parent-service-change="parentChange($event, searchArgument)"
-      :seikyuflag="true">
+      :seikyuflag="true"
+    >
     </ServiceSelection>
     <v-container class="jissekikiroku" fluid>
       <v-row no-gutters>
@@ -11,7 +12,8 @@
           <UserList
             @child-userslist="getUserListData"
             @child-selectedrow="getSelectedRow"
-            :selectedService="selectedService">
+            :selectedService="selectedService"
+          >
           </UserList>
         </v-col>
         <v-col class="rightArea">
@@ -20,7 +22,8 @@
             :riyousya="riyousya"
             :zyukyusyaNum="zyukyusyaNum"
             :changedService="changedService"
-            :startingOnSunday="startingOnSunday">
+            :startingOnSunday="startingOnSunday"
+          >
           </component>
         </v-col>
       </v-row>
@@ -49,7 +52,7 @@ import JissekiKirokuRyoyoKaigo from '../components/JissekiKirokuRyoyoKaigo.vue';
 export default {
   components: {
     ServiceSelection,
-    UserList
+    UserList,
   },
   data() {
     return {
@@ -69,17 +72,23 @@ export default {
     selectedService() {
       this.riyousya = '';
       this.zyukyusyaNum = '';
-    }
+    },
   },
   methods: {
-    parentChange(searchArgument){
+    parentChange(searchArgument) {
       this.changedService = searchArgument.teikyoService;
     },
     parentSearch(searchArgument) {
       this.selectedService = searchArgument.teikyoService;
-      if (searchArgument.teikyoCode == 22 && searchArgument.teikyoService.includes('経過的')) {
+      if (
+        searchArgument.teikyoCode == 22 &&
+        searchArgument.teikyoService.includes('経過的')
+      ) {
         this.displayCode = '02';
-      } else if (searchArgument.teikyoCode == 32 && searchArgument.teikyoService.includes('経過的')) {
+      } else if (
+        searchArgument.teikyoCode == 32 &&
+        searchArgument.teikyoService.includes('経過的')
+      ) {
         this.displayCode = '03';
       } else {
         this.displayCode = searchArgument.teikyoCode;
@@ -97,36 +106,50 @@ export default {
     },
     getSelectedUserData() {
       let selectedUser = this.userListData[this.selectedRow];
-      this.riyousya = selectedUser['riyocode'] + "  " + selectedUser['names'];
+      this.riyousya = selectedUser['riyocode'] + '  ' + selectedUser['names'];
       this.zyukyusyaNum = selectedUser['jyukyuno'];
-    }
-  }
-}
+    },
+  },
+};
 
-const services =[{
-  '21': JissekiKirokuRyoyoKaigo,
-  '22': SeikatsuKaigo,
-  '02': KeikatekiSeikatsuKaigo,
-  '24': Tanki,
-  '32': ShisetsuNyusho,
-  '03': KeikatekiShisetsuNyusho,
-  '34': Shukuhaku,
-  '41': KinoKunren,
-  '42': SeikatsuKunren,
-  '43': ShuroIko,
-  '44': ShuroIkoYosei,
-  '45': ShurokeizokuA,
-  '46': ShurokeizokuB,
-  '47': ShuroTeichaku,
-  '35': JiritsuSeikatsu,
-}];
+const services = [
+  {
+    21: JissekiKirokuRyoyoKaigo,
+    22: SeikatsuKaigo,
+    '02': KeikatekiSeikatsuKaigo,
+    24: Tanki,
+    32: ShisetsuNyusho,
+    '03': KeikatekiShisetsuNyusho,
+    34: Shukuhaku,
+    41: KinoKunren,
+    42: SeikatsuKunren,
+    43: ShuroIko,
+    44: ShuroIkoYosei,
+    45: ShurokeizokuA,
+    46: ShurokeizokuB,
+    47: ShuroTeichaku,
+    35: JiritsuSeikatsu,
+  },
+];
 </script>
 
 <style lang="scss">
-  @import '@/assets/scss/common.scss';
+@import '@/assets/scss/common.scss';
 
-  // 仮の対応
-  div#jisseki-kiroku .transparent{
-    visibility:hidden;
+// 仮の対応
+div#jisseki-kiroku {
+  .transparent {
+    visibility: hidden;
   }
+  .wj-header {
+    // ヘッダのみ縦横中央寄せ
+    color: $font_color;
+    font-size: $cell_fontsize;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: normal;
+  }
+}
 </style>

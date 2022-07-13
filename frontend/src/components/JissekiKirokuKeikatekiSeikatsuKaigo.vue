@@ -1,99 +1,111 @@
 <template>
   <div>
-    <v-row>
-      <v-col cols="7" class="user-info">
-        <v-row>
-          <div class="riyousya-block">
-            <label>利用者</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              class="user-box"
-              v-bind:text="riyousya"
-            ></wj-combo-box>
-          </div>
-          <div class="jukyusyasho-block">
-            <label>受給者証番号</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              class="user-box zyukyusya-num"
-              v-bind:text="zyukyusyaNum"
-            ></wj-combo-box>
-          </div>
-        </v-row>
-        <v-row class="row-2">
-          <div class="hosokuumu-block">
-            <label>補足給付摘要の有無</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              v-bind:text="tkkfhiumuData"
-              class="hosokuumu-box"
-            ></wj-combo-box>
-          </div>
-          <div class="hosokugaku-block">
-            <label>補足給付額(日額)</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              v-bind:text="tkkfhiData"
-              class="hosokugaku-box"
-            ></wj-combo-box>
-          </div>
-          <v-btn-toggle mandatory class="denbun-toggle">
-            <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-            <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-          </v-btn-toggle>
-        </v-row>
-      </v-col>
-      <v-col cols="5" class="jippisanteigaku">
-        <wj-flex-grid
-          id="jippisanteigakuGrid"
-          :itemsSource="jippisanteigakuGridData"
-          :headersVisibility="'None'"
-          :autoGenerateColumns="false"
-          :initialized="onInitializeJippisanteigakuGrid"
-          :itemsSourceChanged="onInitializeJippisanteigakuGridChanged"
-          :allowResizing="false"
-          :allowDragging="false"
-          :allowPinning="false"
-          :allowSorting="false"
-        >
-          <wj-flex-grid-column
-            binding="Column0"
-            :width="'7*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column1"
-            :width="'9*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column2"
-            :width="'9*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column3"
-            :width="'9*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column4"
-            :width="'9*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column5"
-            :width="'12*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            binding="Column6"
-            :width="'12*'"
-            :wordWrap="true"
-          ></wj-flex-grid-column>
-        </wj-flex-grid>
-      </v-col>
-    </v-row>
+    <v-container class="user-info mb-1" fluid>
+      <v-row style="width: 1200px">
+        <div style="width: 600px">
+          <v-row class="rowStyle">
+            <label class="pa-1" style="width: 150px">利用者</label>
+            <v-card
+              class="koumokuData ml-1 pa-1"
+              style="width: 200px"
+              tile
+              outlined
+            >
+              {{ riyousya }}
+            </v-card>
+            <label class="ml-1 pa-1" style="width: 100px">受給者証番号</label>
+            <v-card
+              class="koumokuData ml-1 pa-1"
+              style="width: 100px"
+              tile
+              outlined
+            >
+              {{ zyukyusyaNum }}
+            </v-card>
+          </v-row>
+          <v-row class="rowStyle mt-1">
+            <label class="pa-1" style="width: 150px">補足給付摘要の有無</label>
+            <v-card
+              class="koumokuData ml-1 pa-1"
+              style="width: 50px"
+              tile
+              outlined
+            >
+              {{ tkkfhiumuData }}
+            </v-card>
+            <label class="pa-1 ml-1" style="width: 150px"
+              >補足給付額(日額)</label
+            >
+            <v-card
+              class="koumokuData ml-1 pa-1"
+              style="width: 100px; text-align: right"
+              tile
+              outlined
+            >
+              {{ tkkfhiData }}
+            </v-card>
+          </v-row>
+          <v-row class="rowStyle mt-1">
+            <label class="pa-1" style="width: 150px">電文作成</label>
+            <v-btn-toggle mandatory class="denbun-toggle ml-1">
+              <v-btn small color="secondary" dark outlined>有り</v-btn>
+              <v-btn small color="secondary" dark outlined>無し</v-btn>
+            </v-btn-toggle>
+          </v-row>
+        </div>
+        <div style="width: 450px">
+          <wj-flex-grid
+            id="jippisanteigakuGrid"
+            :itemsSource="jippisanteigakuGridData"
+            :headersVisibility="'None'"
+            :autoGenerateColumns="false"
+            :initialized="onInitializeJippisanteigakuGrid"
+            :itemsSourceChanged="onInitializeJippisanteigakuGridChanged"
+            :allowResizing="false"
+            :allowDragging="false"
+            :allowPinning="false"
+            :allowSorting="false"
+            style="width: 450px"
+          >
+            <wj-flex-grid-column
+              binding="Column0"
+              :width="'7*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column1"
+              :width="'9*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column2"
+              :width="'9*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column3"
+              :width="'9*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column4"
+              :width="'9*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column5"
+              :width="'12*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              binding="Column6"
+              :width="'12*'"
+              :wordWrap="true"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </div>
+      </v-row>
+    </v-container>
 
     <wj-flex-grid
       id="detailGrid"
@@ -104,9 +116,9 @@
       :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
-      :autoRowHeights="true"
       :allowPinning="false"
       :allowSorting="false"
+      style="width: 1040px"
     >
       <wj-flex-grid-column
         header="日付"
@@ -317,7 +329,7 @@ export default {
         if (r == 0 || r == 1) {
           s.backgroundColor = '#eee';
           s.padding = '1px';
-          s.fontWeight = 'bold';
+          // s.fontWeight = 'bold';
         } else {
           s.backgroundColor = sysConst.COLOR.gridBackground;
         }
@@ -386,7 +398,10 @@ export default {
       footerPanel.setCellData(0, 3, this.nyuinGaihakuTotal);
 
       // ヘッダーとフッターの高さを調整
-      flexGrid.columnHeaders.rows[1].height = 45;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = 40;
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       let startingOnSunday = this.startingOnSunday;
 
@@ -413,9 +428,9 @@ export default {
             cell.innerHTML = '地域移行<br/>加算';
           }
 
-          if (r == 0 || r == 1) {
-            s.borderBottom = darkLine;
-          }
+          // if (r == 0 || r == 1) {
+          //   s.borderBottom = darkLine;
+          // }
 
           if (c == 1 || c == 2 || c == 6 || (r == 0 && c == 7) || c == 10) {
             s.borderRight = darkLine;
@@ -490,7 +505,7 @@ export default {
         if (c == 0 || c == 1 || c == 3) {
           // セルをヘッダーの色にする
           s.backgroundColor = '#eeeeee';
-          s.fontWeight = 'bold';
+          // s.fontWeight = 'bold';
         }
 
         if (c == 5) {
@@ -680,6 +695,10 @@ function getNyuinGaihakuTotal(data) {
 * {
   padding: 0;
   margin: 0;
+}
+
+.label {
+  height: 25px;
 }
 
 .hosokuumu-block,

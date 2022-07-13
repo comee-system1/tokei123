@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12" class="user-info">
         <v-row>
           <div class="riyousya-block">
@@ -25,7 +25,34 @@
           </v-btn-toggle>
         </v-row>
       </v-col>
-    </v-row>
+    </v-row> -->
+    <v-container class="user-info" fluid>
+      <v-row class="rowStyle">
+        <label class="pa-1">利用者</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 200px"
+          tile
+          outlined
+        >
+          {{ riyousya }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">受給者証番号</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 100px"
+          tile
+          outlined
+        >
+          {{ zyukyusyaNum }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">電文作成</label>
+        <v-btn-toggle mandatory class="denbun-toggle ml-1">
+          <v-btn small color="secondary" dark outlined>有り</v-btn>
+          <v-btn small color="secondary" dark outlined>無し</v-btn>
+        </v-btn-toggle>
+      </v-row>
+    </v-container>
 
     <wj-flex-grid
       id="detailGrid"
@@ -35,7 +62,6 @@
       :initialized="onInitializeDetailGrid"
       :allowResizing="false"
       :allowDragging="false"
-      :autoRowHeights="true"
       :allowPinning="false"
       :allowSorting="false"
     >
@@ -245,7 +271,11 @@ export default {
       footerPanel.setCellData(0, 0, '合計');
 
       // ヘッダーとフッターの高さを調整
-      flexGrid.columnHeaders.rows[1].height = 45;
+      // flexGrid.columnHeaders.rows[1].height = 45;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = 40;
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       let startingOnSunday = this.startingOnSunday;
 
@@ -278,9 +308,9 @@ export default {
             cell.innerHTML = '地域<br/>移行加算';
           }
 
-          if (r == 0 || r == 1) {
-            s.borderBottom = darkLine;
-          }
+          // if (r == 0 || r == 1) {
+          //   s.borderBottom = darkLine;
+          // }
 
           if (c == 1 || c == 2 || c == 9) {
             s.borderRight = darkLine;
@@ -340,6 +370,7 @@ export default {
     onInitializeSubGrid(flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         let s = cell.style;
@@ -347,7 +378,7 @@ export default {
         if (c == 0 || c == 1 || c == 3 || c == 5) {
           // セルをヘッダーの色にする
           s.backgroundColor = '#eeeeee';
-          s.fontWeight = 'bold';
+          // s.fontWeight = 'bold';
         }
 
         if (r == 1 && (c == 5 || c == 6)) {
@@ -504,7 +535,7 @@ const WeekChars = ['日', '月', '火', '水', '木', '金', '土'];
 
 @media screen and (max-width: 1366px) {
   #detailGrid {
-    height: 64vh;
+    height: 67vh;
   }
 }
 

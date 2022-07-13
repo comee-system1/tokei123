@@ -1,41 +1,41 @@
 <template>
   <div>
-    <v-row>
-      <v-col cols="12" class="user-info">
-        <v-row>
-          <div class="riyousya-block">
-            <label>利用者</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              class="user-box"
-              v-bind:text="riyousya"
-            ></wj-combo-box>
-          </div>
-          <div class="jukyusyasho-block">
-            <label>受給者証番号</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              class="user-box zyukyusya-num"
-              v-bind:text="zyukyusyaNum"
-            ></wj-combo-box>
-          </div>
-        </v-row>
-        <v-row class="row-2">
-          <div class="keiyakuryo-block">
-            <label>契約支給量</label>
-            <wj-combo-box
-              :isReadOnly="true"
-              v-bind:text="sikyuryoData"
-              class="keiyakusikyu-box user-box"
-            ></wj-combo-box>
-          </div>
-          <v-btn-toggle mandatory class="denbun-toggle">
-            <v-btn small color="secondary" dark outlined>電文作成有</v-btn>
-            <v-btn small color="secondary" dark outlined>電文作成無</v-btn>
-          </v-btn-toggle>
-        </v-row>
-      </v-col>
-    </v-row>
+    <v-container class="user-info" fluid>
+      <v-row class="rowStyle">
+        <label class="pa-1">利用者</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 200px"
+          tile
+          outlined
+        >
+          {{ riyousya }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">受給者証番号</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 100px"
+          tile
+          outlined
+        >
+          {{ zyukyusyaNum }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">契約支給量</label>
+        <v-card
+          class="koumokuData ml-1 pa-1"
+          style="width: 100px"
+          tile
+          outlined
+        >
+          {{ sikyuryoData }}
+        </v-card>
+        <label class="ml-1 pa-1" style="width: 100px">電文作成</label>
+        <v-btn-toggle mandatory class="denbun-toggle ml-1">
+          <v-btn small color="secondary" dark outlined>有り</v-btn>
+          <v-btn small color="secondary" dark outlined>無し</v-btn>
+        </v-btn-toggle>
+      </v-row>
+    </v-container>
 
     <wj-flex-grid
       id="detailGrid"
@@ -46,7 +46,6 @@
       :itemsSourceChanged="onInitializeDetailGridChanged"
       :allowResizing="false"
       :allowDragging="false"
-      :autoRowHeights="true"
       :allowPinning="false"
       :allowSorting="false"
     >
@@ -199,7 +198,11 @@ export default {
       footerPanel.setCellData(0, 5, this.kinkyuShienTotal);
 
       // ヘッダーとフッターの高さを調整
+      // flexGrid.columnHeaders.rows[1].height = 40;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = 40;
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
 
       let startingOnSunday = this.startingOnSunday;
 
@@ -220,9 +223,9 @@ export default {
             cell.innerHTML = '日常生活支援<br/>情報提供加算';
           }
 
-          if (r == 0 || r == 1) {
-            s.borderBottom = darkLine;
-          }
+          // if (r == 0 || r == 1) {
+          //   s.borderBottom = darkLine;
+          // }
 
           if (c == 1 || (r == 1 && c == 2) || c == 7) {
             s.borderRight = darkLine;
@@ -355,7 +358,7 @@ function getKinkyuShienTotal(data) {
 
 @media screen and (max-width: 1366px) {
   #detailGrid {
-    height: 67vh;
+    height: 74vh;
   }
 }
 

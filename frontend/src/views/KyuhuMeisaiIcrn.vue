@@ -880,7 +880,7 @@ export default {
             continue;
           } else if (colIndex == 7) {
             continue;
-          } else if (colIndex >= 8) {
+          } else if (colIndex == 8) {
             propkey = 'kyufutani';
           } else if (colIndex == 9) {
             propkey = 'souhiyougaku';
