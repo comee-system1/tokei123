@@ -869,6 +869,10 @@ a {
 }
 
 .input_picker {
+  width: fit-content;
+  display: inline-block;
+  position: relative;
+
   .vdp-datepicker__clear-button {
     position: absolute;
     top: 0;

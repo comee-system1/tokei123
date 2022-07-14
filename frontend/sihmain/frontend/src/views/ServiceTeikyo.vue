@@ -7,7 +7,7 @@
       ></tab-menu-blue>
 
       <v-row no-gutters class="mt-1">
-        <v-col style="max-width: 250px">
+        <v-col style="max-width: 180px">
           <v-btn-toggle
             class="flex-wrap"
             v-model="selected"
@@ -15,39 +15,38 @@
           >
             <v-btn
               small
-              color="teal"
+              :color="toggle_color"
               dark
               outlined
               class="togglebtn"
               @click="dialog('add')"
+              v-wjTooltip="{
+                tooltip: tooltipmessage.text1,
+                position: 'Right',
+              }"
             >
-              <span v-if="tab == 'basic'">新規登録</span>
-              <span v-else-if="tab == 'sisetu'">履歴追加</span>
+              <span v-if="tab == 'basic'"
+                ><v-icon small color="green">mdi-plus-circle-outline</v-icon
+                >新規登録</span
+              >
+              <span v-else-if="tab == 'sisetu' || tab == 'taisei'"
+                >履歴追加</span
+              >
             </v-btn>
             <v-btn
               small
-              color="teal"
+              color="purple"
               dark
               outlined
               class="togglebtn"
               @click="dialog('edit')"
+              v-if="tab == 'sisetu' || tab == 'taisei'"
+              v-wjTooltip="{
+                tooltip: tooltipmessage.text2,
+                position: 'Right',
+              }"
             >
               修正登録
-            </v-btn>
-          </v-btn-toggle>
-
-          <v-btn-toggle
-            class="flex-wrap mt-1"
-            mandatory
-            v-model="toggle_display"
-            v-if="tab == 'sisetu'"
-            @change="onToggleDisplay"
-          >
-            <v-btn small color="blue" dark outlined class="togglebtn auto"
-              >施設種類・定員等
-            </v-btn>
-            <v-btn small color="blue" dark outlined class="togglebtn auto"
-              >体制加算等
             </v-btn>
           </v-btn-toggle>
         </v-col>
@@ -67,7 +66,7 @@
             </v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col style="max-width: 240px">
+        <v-col>
           <label>表示</label>
           <v-btn-toggle
             class="flex-wrap"
@@ -229,7 +228,7 @@
           :binding="'sisetsusyurui'"
           align="center"
           valign="middle"
-          width="1*"
+          :width="160"
           format="g"
           multiLine="true"
           :visible="isVisible2"
@@ -366,6 +365,7 @@ import TabMenuBlue from '@/components/TabMenuBlue.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
 import { ServiceTeikyo } from '@backend/api/ServiceTeikyo';
+import { ServiceTeikyoTaisei } from '@backend/api/ServiceTeikyoTaisei';
 
 export default {
   data() {
@@ -380,7 +380,8 @@ export default {
       select_mandatory: false,
       tabMenus: [
         { href: '#basic', text: '基本情報' },
-        { href: '#sisetu', text: '施設体制' },
+        { href: '#sisetu', text: '施設種類・定員等' },
+        { href: '#taisei', text: '体制加算等' },
       ],
       tab: 'basic',
       toggle_display: '',
@@ -389,6 +390,8 @@ export default {
       isVisible3: false,
       isVisible12: false,
       isVisible23: false,
+      toggle_color: 'teal',
+      tooltipmessage: {},
     };
   },
   components: {
@@ -400,12 +403,19 @@ export default {
     this.handleResize;
   },
   created() {
-    // this.getData();
-    this.getDataTeisai();
-
     window.addEventListener('resize', this.handleResize);
   },
   methods: {
+    // トグルボタンの色
+    getToggleButtonColor() {
+      if (this.tab == 'basic') {
+        return 'teal';
+      } else {
+        this.tooltipmessage.text1 = 'ボタン選択後、履歴追加を行うデータを選択';
+        this.tooltipmessage.text2 = 'ボタン選択後、修正登録を行うデータを選択';
+        return 'purple';
+      }
+    },
     handleResize() {
       let height = window.innerHeight;
       let ht = 74;
@@ -419,9 +429,10 @@ export default {
      * 表示切替
      */
     onToggleDisplay() {
-      if (this.tab != 'sisetu') {
+      if (!(this.tab == 'sisetu' || this.tab == 'taisei')) {
         return false;
       }
+
       this.isVisible1 = false;
       this.isVisible2 = false;
       this.isVisible3 = false;
@@ -429,7 +440,7 @@ export default {
       this.isVisible23 = false;
 
       // 一旦データの保持
-      if (this.toggle_display == 0) {
+      if (this.tab == 'sisetu') {
         if (this.serviceDataMain.length < 1) {
           return false;
         }
@@ -442,8 +453,10 @@ export default {
         this.allData = [];
         this.serviceData = this.serviceDataMain;
         this.allData = this.serviceDataMain;
-      } else {
-        if (this.serviceDataTeisai.length < 1) {
+      }
+
+      if (this.tab == 'taisei') {
+        if (this.serviceDataTaisei.length < 1) {
           return false;
         }
         // 体制加算
@@ -452,8 +465,8 @@ export default {
         // 体制加算等を押下時にserviceDataを入れ替える
         this.serviceData = [];
         this.allData = [];
-        this.serviceData = this.serviceDataTeisai;
-        this.allData = this.serviceDataTeisai;
+        this.serviceData = this.serviceDataTaisei;
+        this.allData = this.serviceDataTaisei;
       }
       this.flexGrid.itemsSource = [];
       this.flexGrid.itemsSource = this.serviceData;
@@ -469,6 +482,9 @@ export default {
       if (args) {
         this.tab = args.selectTab;
       }
+
+      // ボタンの色
+      this.toggle_color = this.getToggleButtonColor();
       this.isVisible1 = false;
       this.isVisible2 = false;
       this.isVisible3 = false;
@@ -478,18 +494,20 @@ export default {
         this.isVisible1 = true;
         this.isVisible12 = true;
         this.toggle_display = 0;
+
+        this.serviceData = this.serviceDataMain;
+        this.allData = this.serviceDataMain;
+
+        this.flexGrid.itemsSource = [];
+        this.flexGrid.itemsSource = this.serviceData;
       }
-      if (this.tab == 'sisetu') {
+      if (this.tab == 'sisetu' || this.tab == 'taisei') {
         this.isVisible2 = true;
         this.isVisible12 = true;
         this.isVisible23 = true;
+
+        this.onToggleDisplay();
       }
-
-      this.serviceData = this.serviceDataMain;
-      this.allData = this.serviceDataMain;
-
-      this.flexGrid.itemsSource = [];
-      this.flexGrid.itemsSource = this.serviceData;
     },
     /*****************
      * ダイアログ表示
@@ -497,7 +515,7 @@ export default {
     dialog(type) {
       this.select_mandatory = true;
       if (type == 'add') {
-        if (this.tab == 'sisetu') {
+        if (this.tab == 'sisetu' || this.tab == 'taisei') {
           //　履歴追加
           this.selected = 2;
         } else {
@@ -571,6 +589,11 @@ export default {
         this.allDataMain = result;
         this.parent_tab_menu();
       });
+      this.getDataTaisei().then((result) => {
+        this.serviceDataTaisei = result;
+        this.allDataTaisei = result;
+      });
+
       // ヘッダセル
       this.createHeader(flexGrid);
       // フォーマット
@@ -579,24 +602,31 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
-          // 修正登録の時のみモーダル画面の表示
-          if (_self.tab == 'basic' && _self.selected === 1) {
-            _self.$refs.dialogTeikyo.openDialog(
-              'edit',
-              _self.serviceData[ht.row]
-            );
-          }
           // 施設体制+履歴追加押下の時のみ
-          if (_self.tab == 'sisetu' && _self.selected === 0) {
+          if (
+            (_self.tab == 'sisetu' || _self.tab == 'taisei') &&
+            _self.selected === 0
+          ) {
             _self.$refs.dialogTeikyoTaisei.openDialog(
               'historyAdd',
               _self.serviceData[ht.row]
             );
           }
           // 施設体制+修正追加押下の時のみ
-          if (_self.tab == 'sisetu' && _self.selected === 1) {
+          else if (
+            (_self.tab == 'sisetu' || _self.tab == 'taisei') &&
+            _self.selected === 1
+          ) {
             _self.$refs.dialogTeikyoTaisei.openDialog(
               'historyEdit',
+              _self.serviceData[ht.row]
+            );
+          }
+
+          // 修正登録の時のみモーダル画面の表示
+          else if (_self.tab == 'basic') {
+            _self.$refs.dialogTeikyo.openDialog(
+              'edit',
               _self.serviceData[ht.row]
             );
           }
@@ -755,7 +785,7 @@ export default {
 
       let ranges = [];
       let merge = [];
-      if (this.toggle_display == 1) {
+      if (this.tab == 'taisei') {
         merge = this.createMergeArray(this.serviceData);
         ranges = [];
         for (let i = 0; i < merge.length; i++) {
@@ -838,121 +868,13 @@ export default {
       return merge;
     },
 
-    getDataTeisai() {
-      let serviceData = [];
-      let name = [
-        '人員配置体制加算（Ⅰ）',
-        '福祉専門員配置加算（Ⅰ）',
-        '常勤看護職員配置加算（Ⅱ）',
-        '重度障害者支援加算（Ⅰ）',
-        '送迎加算（Ⅰ）',
-        '食事提供体制加算',
-        '就労移行支援体制加算（Ⅱ）',
-        '福祉・介護職員処遇改善加算',
-        '福祉・介護職員等処遇改善加算Ⅰ',
-      ];
-      let pt = ['', '', '', '', '', '', '', '5.7', '1.7'];
-      let memo = [];
-      for (let i = 0; i < 9; i++) {
-        serviceData.push({
-          groupKey: 1,
-          code: 1001,
-          serviceJigyosyoMei: '障害者支援施設 ひまわり園',
-          ryakusyo: '生活ひまわり園',
-          serviceMeisyoCode: '22',
-          serviceMeisyo: '生活介護',
-          jigyosyoBango: '1121000011',
-          enabled: true,
-          seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '〇',
-          tekiouStartDate: '20220304',
-          taiseiKasan: '加算',
-          taiseiText: name[i],
-          taiseiPoint: pt[i],
-          taiseiOther: memo[i],
-        });
-      }
+    async getDataTaisei() {
+      let serviceDataTaisei = [];
+      return ServiceTeikyoTaisei().then((result) => {
+        serviceDataTaisei = result.seikyu_inf;
 
-      name = [
-        '福祉専門員配置加算（Ⅰ）',
-        '常勤看護職員配置加算',
-        '食事提供体制加算',
-        '就労移行支援体制加算（Ⅱ）',
-        '福祉・介護職員処遇改善加算',
-        '福祉・介護職員等処遇改善加算Ⅰ',
-      ];
-      pt = ['', '', '', '', '6.3', '2.1'];
-      memo = ['', '', '利用者2人', '', '', ''];
-
-      for (let i = 0; i < 6; i++) {
-        serviceData.push({
-          groupKey: 2,
-          code: 1002,
-          serviceJigyosyoMei: '短期入所事業所 ひまわり園',
-          ryakusyo: '生活ひまわり園',
-          serviceMeisyoCode: '24',
-          serviceMeisyo: '短期入所',
-          jigyosyoBango: '1121000011',
-          enabled: true,
-          seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '〇',
-          tekiouStartDate: '20220304',
-          taiseiKasan: '加算',
-          taiseiText: name[i],
-          taiseiPoint: pt[i],
-          taiseiOther: memo[i],
-        });
-      }
-      name = [
-        '夜勤職員配置体制加算',
-        '夜間看護体制加算	',
-        '重度障害者支援加算Ⅰ１',
-        '重度障害者支援加算Ⅰ２',
-        '口腔衛生管理体制加算',
-        '福祉・介護職員処遇改善加算Ⅰ',
-      ];
-      pt = [];
-      memo = [];
-
-      for (let i = 0; i < 6; i++) {
-        serviceData.push({
-          groupKey: 3,
-          code: 1003,
-          serviceJigyosyoMei: '障害者支援施設 ひまわり園',
-          ryakusyo: '生活ひまわり園',
-          serviceMeisyoCode: '32',
-          serviceMeisyo: '施設入所支援',
-          jigyosyoBango: '1121000011',
-          enabled: true,
-          seikyuDaihyo: 0,
-          seikyuDaihyoDisp: '〇',
-          tekiouStartDate: '20220304',
-          taiseiKasan: '加算',
-          taiseiText: name[i],
-          taiseiPoint: pt[i],
-          taiseiOther: memo[i],
-        });
-      }
-
-      // コード順にソート
-      serviceData.sort((a, b) => {
-        if (a.code < b.code) return -1;
-        if (a.code > b.code) return 1;
-        return 0;
+        return serviceDataTaisei;
       });
-
-      for (let i = 0; i < serviceData.length; i++) {
-        let y = moment(serviceData[i].tekiouStartDate).format('YYYY');
-        let m = moment(serviceData[i].tekiouStartDate).format('M') - 1;
-        let d = moment(serviceData[i].tekiouStartDate).format('D');
-        serviceData[i]['tekiouStartDate'] = wijmo.Globalize.format(
-          new Date(y, m, d),
-          'gyy/MM'
-        );
-      }
-
-      this.serviceDataTeisai = serviceData;
-      this.allDataTeisai = serviceData;
     },
     async getData() {
       let serviceData = [];

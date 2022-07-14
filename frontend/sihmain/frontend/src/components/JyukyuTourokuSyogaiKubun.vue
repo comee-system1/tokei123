@@ -90,6 +90,7 @@
             class="input_picker"
             :format="DatePickerFormat"
             :value="syugaikubunymdEnd"
+            :clear-button="true"
             v-model="syugaikubunymdEnd"
             placeholder="終了日を選択"
           ></datepicker>

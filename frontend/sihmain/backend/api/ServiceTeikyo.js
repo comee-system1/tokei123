@@ -10,16 +10,17 @@ export async function ServiceTeikyo() {
   // テスト用
   var url = "/";
   var uniqid = 1;
+  var traceid = 1;
   config.setURL(url);
   config.setUniqID(uniqid);
+  config.setTraceID(traceid);
 
 
   return await service.getData().then(result => {
     // 利用者情報一覧
     let serviceData = [];
 
-    serviceData.push(
-      {
+    serviceData.push({
         code: '1001',
         serviceJigyosyoMei: '障害者支援施設 ひまわり園',
         ryakusyo: '生活ひまわり園',
@@ -54,8 +55,7 @@ export async function ServiceTeikyo() {
         kasan: 'なし',
         jigyojissi: '併設',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1002',
         serviceJigyosyoMei: '短期入所施設 ひまわり園',
         ryakusyo: '短期ひまわり園',
@@ -90,8 +90,7 @@ export async function ServiceTeikyo() {
         kasan: 'なし',
         jigyojissi: '',
         taisyo: 'なし',
-      },
-      {
+      }, {
         code: '1003',
         serviceJigyosyoMei: '障害者支援施設 ひまわり園',
         ryakusyo: '入所ひまわり園',
@@ -126,8 +125,7 @@ export async function ServiceTeikyo() {
         kasan: '',
         jigyojissi: '',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1004',
         serviceJigyosyoMei: '障害者支援施設 たんぽぽ園',
         ryakusyo: '生活たんぽぽ園',
@@ -162,8 +160,7 @@ export async function ServiceTeikyo() {
         kasan: '',
         jigyojissi: '本体',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1005',
         serviceJigyosyoMei: '障害者支援施設 たんぽぽ園',
         ryakusyo: '入所ひまわり園',
@@ -198,8 +195,7 @@ export async function ServiceTeikyo() {
         kasan: '',
         jigyojissi: '本体',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1006',
         serviceJigyosyoMei: '障害者支援施設 たんぽぽ園',
         ryakusyo: '自立訓練たんぽぽ園',
@@ -234,8 +230,7 @@ export async function ServiceTeikyo() {
         kasan: '',
         jigyojissi: '',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1007',
         serviceJigyosyoMei: '就労支援センター たんぽぽ園',
         ryakusyo: '就労支援たんぽぽ園',
@@ -270,8 +265,7 @@ export async function ServiceTeikyo() {
         kasan: '',
         jigyojissi: '',
         taisyo: '',
-      },
-      {
+      }, {
         code: '1008',
         serviceJigyosyoMei: '就労支援センター たんぽぽ園',
         ryakusyo: '就労支援たんぽぽ園',

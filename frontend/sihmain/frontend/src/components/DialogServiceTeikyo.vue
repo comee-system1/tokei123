@@ -21,41 +21,45 @@
 
         <div id="teikyoDialog" class="input_form">
           <v-card elevation="0" class="pl-2 pt-4">
-            <v-row dense>
-              <v-col cols="2" class="d-flex align-center">コード</v-col>
+            <v-row no-gutters>
+              <v-col cols="2" class="d-flex align-center pl-2">コード</v-col>
               <v-col>
                 <v-text-field
                   outlined
-                  class="input pa-0 w100"
+                  class="input pa-0 w100 ml-1"
                   :text="inputData.code"
                   v-model="input.code"
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">サービス事業所</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2"
+                >サービス事業所</v-col
+              >
               <v-col>
                 <v-text-field
                   outlined
-                  class="input pa-0 w400"
+                  class="input pa-0 w400 ml-1"
                   :text="inputData.serviceJigyosyoMei"
                   v-model="input.serviceJigyosyoMei"
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">略称</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2">略称</v-col>
               <v-col>
                 <v-text-field
                   outlined
-                  class="input pa-0 w200"
+                  class="input pa-0 w200 ml-1"
                   :text="inputData.ryakusyo"
                   v-model="input.ryakusyo"
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">サービス名称</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2"
+                >サービス名称</v-col
+              >
               <v-col class="mw60">
                 <v-text-field
                   outlined
@@ -66,7 +70,7 @@
               </v-col>
               <v-col>
                 <wj-combo-box
-                  class="input w200"
+                  class="input w200 ml-1"
                   :itemsSource="serviceCombo"
                   :initialized="initServiceCombo"
                   :selectedValuePath="'key'"
@@ -77,8 +81,10 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">事業所番号</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2"
+                >事業所番号</v-col
+              >
               <v-col>
                 <v-text-field
                   outlined
@@ -88,11 +94,11 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">住所</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2">住所</v-col>
               <v-col cols="10">
                 <v-flex>
-                  <v-row dense>
+                  <v-row no-gutters>
                     <v-col class="mw60">
                       <v-text-field
                         outlined
@@ -102,7 +108,7 @@
                         maxLength="3"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="mt-1 mw14"> - </v-col>
+                    <v-col class="mt-1 mw14 text-center"> - </v-col>
                     <v-col class="mw80">
                       <v-text-field
                         outlined
@@ -119,7 +125,7 @@
                     </v-col>
                   </v-row>
                 </v-flex>
-                <v-flex class="mt-3">
+                <v-flex class="mt-3 ml-1">
                   <v-textarea
                     outlined
                     hide-details="false"
@@ -129,17 +135,17 @@
                     no-resize
                     tile
                     flat
-                    dense
+                    no-gutters
                     :value="inputData.jyusyo"
                     v-model="input.jyusyo"
                   ></v-textarea>
                 </v-flex>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">電話番号</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2">電話番号</v-col>
               <v-col>
-                <v-row dense>
+                <v-row no-gutters>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -149,7 +155,7 @@
                       maxLength="3"
                     ></v-text-field>
                   </v-col>
-                  <v-col class="mt-1 mw14"> - </v-col>
+                  <v-col class="mt-1 mw14 text-center"> - </v-col>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -159,7 +165,7 @@
                       maxLength="4"
                     ></v-text-field>
                   </v-col>
-                  <v-col class="mt-1 mw14"> - </v-col>
+                  <v-col class="mt-1 mw14 text-center"> - </v-col>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -172,10 +178,10 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">FAX番号</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2">FAX番号</v-col>
               <v-col>
-                <v-row dense>
+                <v-row no-gutters>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -185,7 +191,7 @@
                       maxLength="3"
                     ></v-text-field>
                   </v-col>
-                  <v-col class="mt-1 mw14"> - </v-col>
+                  <v-col class="mt-1 mw14 text-center"> - </v-col>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -195,7 +201,7 @@
                       maxLength="4"
                     ></v-text-field>
                   </v-col>
-                  <v-col class="mt-1 mw14"> - </v-col>
+                  <v-col class="mt-1 mw14 text-center"> - </v-col>
                   <v-col class="mw80">
                     <v-text-field
                       outlined
@@ -208,8 +214,10 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">メールアドレス</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2"
+                >メールアドレス</v-col
+              >
               <v-col>
                 <v-text-field
                   outlined
@@ -219,19 +227,24 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row dense class="mt-4">
-              <v-col cols="2" class="d-flex align-center">レセプト集計</v-col>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="2" class="d-flex align-center pl-2"
+                >レセプト集計</v-col
+              >
               <v-col>
                 <v-checkbox
                   v-model="reseCheck"
-                  class="text-caption pa-0"
+                  class="text-caption pa-0 ma-0"
                   label="請求代表事業所"
+                  hide-details="false"
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row dense class="mt-n3" v-if="type == 'edit'">
-              <v-col cols="2" class="d-flex align-center">無効登録</v-col>
-              <v-col cols="2"> 無効年月日 </v-col>
+            <v-row no-gutters class="mt-4" v-if="type == 'edit'">
+              <v-col cols="2" class="d-flex align-center pa-1 pl-2"
+                >無効登録</v-col
+              >
+              <v-col cols="2" class="ml-1 mt-1"> 無効年月日 </v-col>
               <v-col cols="3" class="position-relative">
                 <v-text-field
                   outlined
@@ -241,7 +254,7 @@
                 <v-icon
                   small
                   @click="datepicker_dialog = true"
-                  class="calender_icon"
+                  class="calender_icon mt-n1 pl-3"
                   >mdi-calendar-month</v-icon
                 >
                 <v-row justify="center">
@@ -259,7 +272,7 @@
               </v-col>
               <v-col> </v-col>
             </v-row>
-            <v-row dense class="mt-6">
+            <v-row no-gutters class="mt-6">
               <v-col cols="2">
                 <v-btn small v-if="type == 'edit'" @click="disabled"
                   >無効登録</v-btn
@@ -449,13 +462,24 @@ div#teikyoDialog {
   label {
     font-size: 12px;
   }
+  div {
+    .v-input__slot {
+      padding: 0;
+    }
+  }
+  .d-flex {
+    background-color: $view_Title_background;
+  }
   .position-relative {
     position: relative;
   }
   .calender_icon {
     position: absolute;
     top: 10px;
-    right: -15px;
+    right: -20px;
+  }
+  .wj-btn {
+    border-left: none !important;
   }
   .mw14 {
     max-width: 14px;
@@ -469,11 +493,16 @@ div#teikyoDialog {
   .mw80 {
     max-width: 80px;
   }
+  .v-text-field {
+    input {
+      line-height: 18px;
+    }
+  }
   .input {
     width: 200px;
-    height: 20px;
+    height: 24px;
     border-radius: 0px;
-    padding: 0;
+    padding: 0px 0px 0px 4px;
     div {
       min-height: 20px !important;
     }

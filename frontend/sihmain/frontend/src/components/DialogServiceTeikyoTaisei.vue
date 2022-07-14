@@ -2,8 +2,6 @@
   <div class="text-center" id="dialogServiceTeikyo">
     <v-dialog v-model="dialog" width="1020">
       <v-card elevation="2" class="pa-5" id="taiseiDialog">
-        <v-toolbar-title class="text-subtitle-1"></v-toolbar-title>
-
         <v-btn
           elevation="2"
           icon
@@ -12,7 +10,7 @@
           top
           right
           @click="header_dialog_close()"
-          class="closeButton"
+          class="closeButton ml-2"
           color="secondary"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
@@ -81,7 +79,7 @@
               >施設種類・定員等
             </v-toolbar-title>
             <v-row no-gutters class="mt-3">
-              <v-col class="pa-0 middle mw120">級地区分</v-col>
+              <v-col class="pa-0 middle mw120"><label>級地区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -93,7 +91,9 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col class="pa-0 middle mw120">多機能型事業</v-col>
+              <v-col class="pa-0 middle mw120"
+                ><label>多機能型事業</label></v-col
+              >
               <v-col class="mw260 pa-0">
                 <v-checkbox
                   v-model="gaitou"
@@ -104,7 +104,7 @@
             </v-row>
 
             <v-row no-gutters>
-              <v-col class="pa-0 middle mw120">定員区分</v-col>
+              <v-col class="pa-0 middle mw120"><label>定員区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -176,8 +176,8 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120"
-                >多機能型事業<br />定員区分</v-col
+              <v-col class="pa-0 middle mw120">
+                多機能型事業<br />定員区分</v-col
               >
               <v-col class="mw260 pa-0">
                 <wj-combo-box
@@ -256,17 +256,18 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="7">
+          <v-col cols="7" class="pl-2">
+            <v-btn
+              small
+              outlined
+              class="float-right"
+              @click="taiseiKasanList_dialog = true"
+              >体制加算一覧参照</v-btn
+            >
             <v-toolbar-title class="text-caption text-center"
               >体制加算等
-              <v-btn
-                small
-                outlined
-                class="float-right"
-                @click="taiseiKasanList_dialog = true"
-                >体制加算一覧参照</v-btn
-              >
             </v-toolbar-title>
+
             <v-row no-gutters mt-2>
               <v-col>
                 <wj-flex-grid
@@ -780,9 +781,26 @@ div#dialogTeikyoTaisei {
   font-family: 'メイリオ';
   width: 100%;
   text-overflow: clip;
+
+  .v-toolbar__title {
+    background-color: $grid_hover_background;
+    height: 30px;
+    line-height: 30px;
+  }
   label {
     font-size: 12px;
   }
+  div.middle {
+    label {
+      display: inline-block;
+      width: 100px;
+      height: 26px;
+      line-height: 26px;
+      padding-left: 4px;
+      background-color: $view_Title_background;
+    }
+  }
+
   .position-relative {
     position: relative;
   }
@@ -798,6 +816,7 @@ div#dialogTeikyoTaisei {
     left: auto;
     right: 10px;
   }
+
   .mw14 {
     max-width: 14px;
   }

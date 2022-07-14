@@ -4,7 +4,7 @@ const config = require('./ApiRun');
 const moment = require('moment')
 export async function JyukyuTourokuKihonData(rid) {
     // 接続確認用URL
-    var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo='+rid+'&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/jyukyuh/';
     var uniqid = 1;
     config.setURL(url);
     config.setUniqID(uniqid);

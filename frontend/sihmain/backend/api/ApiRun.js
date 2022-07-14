@@ -7,7 +7,8 @@ HEADER['x-api-key'] = 999;
 
 let baseUrl = "";
 let uniqueId = 1;
-export function getDomain(){
+let traceId = 1;
+export function getDomain() {
     return DOMAIN;
 }
 export function setURL(url) {
@@ -22,9 +23,16 @@ export function setUniqID(id) {
 export function getUniqID() {
     return uniqueId;
 }
+export function setTraceID(id) {
+    traceId = id;
+}
+export function getTraceID() {
+    return traceId;
+}
 export async function api() {
     // x-corporation-unique-id は引数によって変わる
     HEADER['x-corporation-unique-id'] = getUniqID();
+    HEADER['x-trace-id'] = getTraceID();
     var url = getURL();
     return await axios
         .get(url, {
