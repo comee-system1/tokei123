@@ -116,7 +116,9 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 mw120 middle">障害区分別<br />定員</v-col>
+              <v-col class="pa-0 mw120 middle"
+                ><label class="ht2">障害区分別<br />定員</label></v-col
+              >
               <v-col class="mw260 pa-0">
                 <v-row no-gutters class="mt-1">
                   <v-col cols="4" class="mt-1"> 知的障害児 </v-col>
@@ -798,6 +800,9 @@ div#dialogTeikyoTaisei {
       line-height: 26px;
       padding-left: 4px;
       background-color: $view_Title_background;
+      &.ht2 {
+        height: 100%;
+      }
     }
   }
 
