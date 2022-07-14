@@ -16,7 +16,7 @@
         >
 
         <v-row no-gutters>
-          <v-col class="pa-0 mt-1 mw120">サービス事業所名</v-col>
+          <v-col class="pa-0 mt-1 mw105">サービス事業所名</v-col>
           <v-col class="mw260 pa-0">
             <v-text-field
               outlined
@@ -33,7 +33,7 @@
               readonly
             ></v-text-field>
           </v-col>
-          <v-col class="pa-0 mt-1 text-center mw120">サービス名称</v-col>
+          <v-col class="pa-0 mt-1 text-center mw105">サービス名称</v-col>
           <v-col class="mw60 pa-0">
             <v-text-field
               outlined
@@ -52,7 +52,7 @@
           </v-col>
         </v-row>
         <v-row class="mt-6" no-gutters>
-          <v-col class="pa-0 mw120 mt-1">適用開始月</v-col>
+          <v-col class="pa-0 mw105 mt-1">適用開始月</v-col>
           <v-col class="pa-0 mw120" style="position: relative">
             <v-text-field
               outlined
@@ -79,7 +79,7 @@
               >施設種類・定員等
             </v-toolbar-title>
             <v-row no-gutters class="mt-3">
-              <v-col class="pa-0 middle mw120"><label>級地区分</label></v-col>
+              <v-col class="pa-0 middle mw105"><label>級地区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -90,21 +90,22 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <v-col class="pa-0 middle mw120"
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw105"
                 ><label>多機能型事業</label></v-col
               >
               <v-col class="mw260 pa-0">
                 <v-checkbox
                   v-model="gaitou"
-                  class="text-caption pa-0"
+                  class="text-caption pa-0 mt-0"
                   label="該当"
+                  hide-details="false"
                 ></v-checkbox>
               </v-col>
             </v-row>
 
-            <v-row no-gutters>
-              <v-col class="pa-0 middle mw120"><label>定員区分</label></v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw105"><label>定員区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -116,8 +117,10 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 mw120 middle"
-                ><label class="ht2">障害区分別<br />定員</label></v-col
+              <v-col class="pa-0 mw105 middle"
+                ><label class="ht2"
+                  ><p>障害区分別<br />定員</p></label
+                ></v-col
               >
               <v-col class="mw260 pa-0">
                 <v-row no-gutters class="mt-1">
@@ -178,9 +181,11 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">
-                多機能型事業<br />定員区分</v-col
-              >
+              <v-col class="pa-0 middle mw105">
+                <label class="ht2"
+                  ><p>多機能型事業<br />定員区分</p>
+                  <p></p></label
+              ></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -192,8 +197,10 @@
                 <p>(各サービス種類の単位毎の利用定員)</p>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <v-col class="pa-0 middle mw120">人員配置区分</v-col>
+            <v-row no-gutters class="mt-1">
+              <v-col class="pa-0 middle mw105"
+                ><label>人員配置区分</label></v-col
+              >
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -205,7 +212,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">事業所区分</v-col>
+              <v-col class="pa-0 middle mw105"><label>事業所区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -217,7 +224,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">施設区分</v-col>
+              <v-col class="pa-0 middle mw105"><label>施設区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -229,7 +236,9 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">事業実施区分</v-col>
+              <v-col class="pa-0 middle mw105"
+                ><label>事業実施区分</label></v-col
+              >
               <v-col class="mw260 pa-0">
                 <wj-combo-box
                   class="input w200"
@@ -241,17 +250,20 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">就労A型減免</v-col>
+              <v-col class="pa-0 middle mw105"
+                ><label>就労A型減免</label>
+              </v-col>
               <v-col class="mw260 pa-0">
                 <v-checkbox
                   v-model="syuroA"
-                  class="text-caption pa-0"
+                  class="text-caption pa-0 mt-0"
                   label="該当"
+                  hide-details="false"
                 ></v-checkbox>
               </v-col>
             </v-row>
             <v-row no-gutters class="mt-1">
-              <v-col class="pa-0 middle mw120">負担減免額</v-col>
+              <v-col class="pa-0 middle mw105"><label>負担減免額</label></v-col>
               <v-col class="mw260 pa-0 position-relative">
                 <v-text-field outlined class="input pa-0"></v-text-field>
                 <div class="unit">円</div>
@@ -800,8 +812,19 @@ div#dialogTeikyoTaisei {
       line-height: 26px;
       padding-left: 4px;
       background-color: $view_Title_background;
+
       &.ht2 {
+        position: relative;
         height: 100%;
+        line-height: normal;
+        p {
+          position: absolute;
+          height: 35px;
+          top: 0;
+          left: 4px;
+          bottom: 0;
+          margin: auto;
+        }
       }
     }
   }
@@ -836,6 +859,9 @@ div#dialogTeikyoTaisei {
   }
   .mw80 {
     max-width: 80px;
+  }
+  .mw105 {
+    max-width: 105px;
   }
   .mw120 {
     max-width: 120px;
