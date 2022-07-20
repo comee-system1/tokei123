@@ -5,6 +5,25 @@ HEADER['Content-type'] = "application/json";
 HEADER['x-api-account'] = "tokei";
 HEADER['x-api-key'] = 999;
 
+
+axios.get("http://localhost:3000/hoge").then(function (response) {
+    console.log("OK");
+    // console.log(response);
+    //response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+    return response;
+}).catch(function (error) {
+    console.log(error);
+});
+
+// var xhr = new XMLHttpRequest();
+// xhr.open("GET","http://localhost:3000/hoge");
+// xhr.onload = function(resp){
+// console.log(resp);
+// }
+// xhr.send();
+  
+
+
 let baseUrl = "";
 let uniqueId = 1;
 export function getDomain(){
@@ -23,6 +42,8 @@ export function getUniqID() {
     return uniqueId;
 }
 export async function api() {
+
+
     // x-corporation-unique-id は引数によって変わる
     HEADER['x-corporation-unique-id'] = getUniqID();
     var url = getURL();
