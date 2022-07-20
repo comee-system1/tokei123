@@ -4,14 +4,15 @@ const config = require('./ApiRun');
 const moment = require('moment')
 export async function JyukyuTourokuKeikakuSoudanData() {
     // 接続確認用URL
-    var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/keikakusodan';
     var uniqid = 1;
     config.setURL(url);
     config.setUniqID(uniqid);
 
     return await service.getData().then(result => {
         let skryoh3_inf = [];
-        let jyukyuInfData = result.result[0].skryoh3_inf;
+        // let jyukyuInfData = result.result[0].skryoh3_inf;
+        let jyukyuInfData = result;
         for (let i = 0; i < jyukyuInfData.length; i++) {
             skryoh3_inf[i] = [];
             skryoh3_inf[i]['kai'            ] = String(i+1);

@@ -19,6 +19,7 @@
             tile
           >
             <v-btn
+              id="modifyButtonSyogaikubun"
               class="modify-button"
               style="height: 21px"
               @click="setTrunModify"
@@ -26,9 +27,10 @@
               修正</v-btn
             >
             <v-btn
+              id="addButtonSyogaikubun"
               class="modify-button"
               style="height: 21px"
-              @click="setTrunModify"
+              @click="setTrunAdd"
             >
               追加</v-btn
             >
@@ -169,22 +171,32 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
+      this.setButtonColor('modifyButtonSyogaikubun', true);
+      this.setButtonColor('addButtonSyogaikubun', false);
+      this.$emit('setMode', 'modSyogaikubun');
+      this.Resize();
+    },
+    setTrunAdd() {
+      this.setButtonColor('modifyButtonSyogaikubun', false);
+      this.setButtonColor('addButtonSyogaikubun', true);
       this.$emit('setMode', 'modSyogaikubun');
       this.Resize();
     },
     cancel() {
+      this.setButtonColor('modifyButtonSyogaikubun', false);
+      this.setButtonColor('addButtonSyogaikubun', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
-    setData(list, selectedData) {
-      let data = [];
+    setButtonColor(id, on) {
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = on ? '#fff' : 'black';
+      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+    },
+    setData(selectedData) {
       this.clearData();
-      if (selectedData != null) {
-        this.setSienkubun(this.setdata(selectedData));
-      } else {
-        list.then((value) => {
-          this.setSienkubun(this.setdata(value[0][0]));
-        });
+      if (selectedData.length > 0) {
+        this.setSienkubun(this.setdata(selectedData[0]));
       }
       this.$emit('setMode', 'new');
       this.Resize();
@@ -277,6 +289,10 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
+      if (this.mode !== 'modSyogaikubun') {
+        this.setButtonColor('modifyButtonSyogaikubun', false);
+        this.setButtonColor('addButtonSyogaikubun', false);
+      }
     },
     /****************
      * グリッド選択情報

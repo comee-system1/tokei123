@@ -14,15 +14,14 @@ export async function ServiceHistory() {
 
   return await service.getData().then(result => {
     // 利用者情報一覧
-    let seikyu_inf = [];
-
-    seikyu_inf.push({
+    let icrn_inf = [];    
+    icrn_inf.push({
       serviceTeikyoJigyosyoCode: 1001,
       serviceTeikyoJigyosyo: '０１２３４５６７８９０１２３４５６７８９',
       serviceCode: 22,
       serviceMeisyo: '０１２３４５６７８９０１２３４５',
-      code: 1234567,
-      riyosyamei: '０１２３４５６７８９',
+      riyocode: 1234567,
+      names: '０１２３４５６７８９',
       kana: 'タロウトウケイ',
       gender: '男',
       genderKey: '1',
@@ -38,8 +37,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
       serviceCode: 22,
       serviceMeisyo: '生活介護',
-      code: 10000002,
-      riyosyamei: '東経 花子',
+      riyocode: 10000002,
+      names: '東経 花子',
       kana: 'ハナコトウケイ',
       gender: '女',
       genderKey: '2',
@@ -55,8 +54,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
       serviceCode: 22,
       serviceMeisyo: '生活介護',
-      code: 10000003,
-      riyosyamei: '東経 二郎',
+      riyocode: 10000003,
+      names: '東経 二郎',
       kana: 'ジロウトウケイ',
       gender: '男',
       genderKey: '1',
@@ -72,8 +71,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
       serviceCode: 32,
       serviceMeisyo: '施設入所支援',
-      code: 10000001,
-      riyosyamei: '東経 太郎',
+      riyocode: 10000001,
+      names: '東経 太郎',
       kana: 'タロウトウケイ',
       gender: '男',
       genderKey: '1',
@@ -89,8 +88,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
       serviceCode: 32,
       serviceMeisyo: '施設入所支援',
-      code: 10000002,
-      riyosyamei: '東経 花子',
+      riyocode: 10000002,
+      names: '東経 花子',
       kana: 'ハナコトウケイ',
       gender: '女',
       genderKey: '2',
@@ -106,8 +105,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '障害者支援施設 ひまわり園',
       serviceCode: 32,
       serviceMeisyo: '施設入所支援',
-      code: 10000003,
-      riyosyamei: '東経 ジロウ',
+      riyocode: 10000003,
+      names: '東経 ジロウ',
       kana: 'ジロウトウケイ',
       gender: '',
       genderKey: '',
@@ -123,8 +122,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
       serviceCode: 41,
       serviceMeisyo: '自立訓練(機能訓練)',
-      code: 10000004,
-      riyosyamei: '東経 三郎',
+      riyocode: 10000004,
+      names: '東経 三郎',
       kana: 'サブロウトウケイ',
       gender: '男',
       genderKey: '1',
@@ -140,8 +139,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '自立訓練事業所 たんぽぽ園',
       serviceCode: 41,
       serviceMeisyo: '自立訓練(機能訓練)',
-      code: 10000005,
-      riyosyamei: '東経 明日香',
+      riyocode: 10000005,
+      names: '東経 明日香',
       kana: 'アスカトウケイ',
       gender: '女',
       genderKey: '2',
@@ -157,8 +156,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '',
       serviceCode: null,
       serviceMeisyo: '',
-      code: 10000006,
-      riyosyamei: '東経 うみか',
+      riyocode: 10000006,
+      names: '東経 うみか',
       kana: 'ウミカトウケイ',
       gender: '女',
       genderKey: '2',
@@ -174,8 +173,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '',
       serviceCode: null,
       serviceMeisyo: '',
-      code: 10000009,
-      riyosyamei: '西経 五郎',
+      riyocode: 10000009,
+      names: '西経 五郎',
       kana: 'ゴロウニシケイ',
       gender: '男',
       genderKey: '1',
@@ -191,8 +190,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '',
       serviceCode: null,
       serviceMeisyo: '',
-      code: 10000011,
-      riyosyamei: '西経 みどり',
+      riyocode: 10000011,
+      names: '西経 みどり',
       kana: 'ミドリニシケイ',
       gender: '女',
       genderKey: '2',
@@ -208,8 +207,8 @@ export async function ServiceHistory() {
       serviceTeikyoJigyosyo: '',
       serviceCode: null,
       serviceMeisyo: '',
-      code: 10000015,
-      riyosyamei: '西経 桃子',
+      riyocode: 10000015,
+      names: '西経 桃子',
       kana: 'モモコニシケイ',
       gender: '女',
       genderKey: '2',
@@ -223,11 +222,12 @@ export async function ServiceHistory() {
     });
 
     // 日付を合わせる処理
-    for (let i = 0; i < seikyu_inf.length; i++) {
-      seikyu_inf[i].processTime = seikyu_inf[i].useYear + "-" + seikyu_inf[i].useMonth;
+    for (let i = 0; i < icrn_inf.length; i++) {
+      icrn_inf[i].processTime = icrn_inf[i].useYear + "-" + icrn_inf[i].useMonth;
     }
     let returns = {
-      seikyu_inf: seikyu_inf,
+      status:1,
+      icrn_inf: icrn_inf,
     };
     return returns;
 

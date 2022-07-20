@@ -10,10 +10,10 @@ export async function ServiceTeikyo() {
   // テスト用
   var url = "/";
   var uniqid = 1;
-  var traceid = 1;
+  var pageid = 1;
   config.setURL(url);
   config.setUniqID(uniqid);
-  config.setTraceID(traceid);
+  config.setPageID(pageid);
 
 
   return await service.getData().then(result => {

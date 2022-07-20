@@ -2,7 +2,7 @@
   <div class="text-center" id="dialogServiceTeikyo">
     <v-dialog v-model="dialog" width="620">
       <v-card elevation="2" class="pa-5">
-        <v-toolbar-title class="text-subtitle-1"
+        <v-toolbar-title class="text-subtitle-1 text-center"
           >サービス提供事業所　{{ serviceTitle }}</v-toolbar-title
         >
 
@@ -32,7 +32,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2"
                 >サービス事業所</v-col
               >
@@ -45,7 +45,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2">略称</v-col>
               <v-col>
                 <v-text-field
@@ -56,7 +56,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2"
                 >サービス名称</v-col
               >
@@ -81,7 +81,7 @@
                 ></wj-combo-box>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2"
                 >事業所番号</v-col
               >
@@ -94,7 +94,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2">住所</v-col>
               <v-col cols="10">
                 <v-flex>
@@ -142,7 +142,7 @@
                 </v-flex>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2">電話番号</v-col>
               <v-col>
                 <v-row no-gutters>
@@ -178,7 +178,7 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2">FAX番号</v-col>
               <v-col>
                 <v-row no-gutters>
@@ -214,7 +214,7 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2"
                 >メールアドレス</v-col
               >
@@ -227,7 +227,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4">
+            <v-row no-gutters class="mt-2">
               <v-col cols="2" class="d-flex align-center pl-2"
                 >レセプト集計</v-col
               >
@@ -240,7 +240,7 @@
                 ></v-checkbox>
               </v-col>
             </v-row>
-            <v-row no-gutters class="mt-4" v-if="type == 'edit'">
+            <v-row no-gutters class="mt-2" v-if="type == 'edit'">
               <v-col cols="2" class="d-flex align-center pa-1 pl-2"
                 >無効登録</v-col
               >

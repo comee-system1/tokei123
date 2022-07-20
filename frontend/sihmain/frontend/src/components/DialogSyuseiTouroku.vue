@@ -32,6 +32,7 @@
               single-line
               solo
               style="max-width: 100px;"
+              maxlength="7"
             ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -50,6 +51,7 @@
             single-line
             solo
             style="max-width: 210px;"
+            maxlength="15"
           ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -59,7 +61,7 @@
           elevation="0"
           color = "#EEE"
           >
-            フリガナ
+            ﾌﾘｶﾞﾅ（半角）
           </v-card>
           <v-text-field
             class="ma-0"
@@ -68,6 +70,7 @@
             single-line
             solo
             style="max-width: 210px;"
+            maxlength="30"
           ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -82,7 +85,7 @@
           <v-card elevation ="0" class="dialogBirthday">
             <v-card-actions class="pa-0 align-start">
               <v-radio-group 
-                @change="switchDialogYear()"
+                @change="switchCalendar('year')"
                 column class="mt-0 pt-0 d-block mr-3" 
                 v-model="calendarKey"
                 >
@@ -90,7 +93,7 @@
                 <v-radio label="西暦" :key="2" :value="'2'" class="mb-0"></v-radio>
               </v-radio-group>
               <v-radio-group row
-                @change="switchDialogYear()"
+                @change="switchCalendar('nengou')"
                 class="mt-0 pt-0 dialogWareki"
                 v-if="calendarKey === '1'"
                 v-model="nengouKey"
@@ -101,7 +104,7 @@
                 <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
               </v-radio-group>
             </v-card-actions>
-            <v-card elevation ="0" class="d-inline-flex dialogBirthday_input">
+            <v-card elevation ="0" class="d-flex align-baseline">
               {{dispNngou}}
               <v-text-field
                 class="ml-1 mr-1 dialogBirthday_y"
@@ -109,6 +112,7 @@
                 v-model="riyousyaBirthY"
                 single-line
                 solo
+                maxlength="4"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               年
@@ -118,6 +122,7 @@
                 v-model="riyousyaBirthM"
                 single-line
                 solo
+                maxlength="2"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               月
@@ -127,6 +132,7 @@
                 v-model="riyousyaBirthD"
                 single-line
                 solo
+                maxlength="2"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               日
@@ -169,6 +175,7 @@
                 single-line
                 solo
                 style="max-width: 50px;"
+                maxlength="3"
               ></v-text-field>
               -
               <v-text-field
@@ -178,6 +185,7 @@
                 single-line
                 solo
                 style="max-width: 47px;"
+                maxlength="4"
               ></v-text-field>
               <v-btn
                 class = "ml-5"
@@ -200,6 +208,7 @@
               row-height="25"
               class="dialogAdrress"
               style="max-width: 300px;"
+              maxlength="50"
             ></v-textarea>
           </v-card>
         </v-row>
@@ -300,7 +309,7 @@
                   class="service dialogSymd"
                   height="25"
                   style="max-width: 150px;"
-                  >{{ year }}年{{ month }}月{{ date }}日
+                  >{{ riyousyaStartY }}年{{ riyousyaStartM }}月{{ riyousyaStartD }}日
                   <div class="float-right">
                     <v-icon small>mdi-calendar-month</v-icon>
                   </div>
@@ -342,7 +351,7 @@
                 :isReadOnly="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
-                :binding="'symd'"
+                :binding="'dispSymd'"
                 :width="90"
                 :isReadOnly="true"
               ></wj-flex-grid-column>
@@ -397,9 +406,6 @@ export default {
       // 市区町村マスタの情報
       shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市','１２３４５６'],
       ja: ja,
-      year: '',
-      month: '',
-      date: '',
       picker: '',
       datepicker_dialog: false,
 
@@ -407,13 +413,14 @@ export default {
       riyousyaCode: '',
       riyousyaNames: '',
       riyousyaKana: '',
-      riyousyabirthymd: '',
+      riyousyaBirthymd: '',
+      riyousyaDispBirthymd: '',
       riyousyaBirthY: '',
       riyousyaBirthM: '',
       riyousyaBirthD: '',
       riyousyaAge: '',
+      riyousyaGender: '',
       riyousyaGenderKey: '',
-      riyousyaPostcode: '',
       riyousyaPostcode1: '',
       riyousyaPostcode2: '',
       riyousyaAddress: '',
@@ -422,12 +429,15 @@ export default {
       riyousyaShikutyoson: '',
       riyousyaSymd: '',
       riyousyaDispSymd: '',
+      riyousyaStartY: '',
+      riyousyaStartM: '',
+      riyousyaStartD: '',
 
       shikutyosonData: [],
       allData: [],
       mainFlexGrid: [],
 
-      calendarKey: '1',
+      calendarKey: '',
       nengouKey: '',
       dispNngou: '',
       // 市区町村修正
@@ -441,17 +451,75 @@ export default {
 
   methods: {
     open(riyousyadata) {
+      
+    // 入力値を初期化
+      this.riyousyaCode = '';
+      this.riyousyaNames = '';
+      this.riyousyaKana = '';
+      this.riyousyaBirthymd = '';
+      this.riyousyaDispBirthymd = '';
+      this.riyousyaBirthY = '';
+      this.riyousyaBirthM = '';
+      this.riyousyaBirthD = '';
+      this.riyousyaAge = '';
+      this.riyousyaGender = '';
+      this.riyousyaGenderKey = '';
+      this.riyousyaPostcode1 = '';
+      this.riyousyaPostcode2 = '';
+      this.riyousyaAddress = '';
+      this.riyousyaTell1 = '';
+      this.riyousyaTell2 = '';
+      this.riyousyaShikutyoson = '';
+      this.riyousyaSymd = '';
+      this.riyousyaDispSymd = '';
+      this.riyousyaStartY = '';
+      this.riyousyaStartM = '';
+      this.riyousyaStartD = '';
+
+      this.shikutyosonData = [];
+      this.dispSymd = [];
+      this.calendarKey = '';
+      this.nengouKey = '';
+      this.dispNngou = '';
+
+      // dialog表示
       this.parentFlag = true;
-      // 利用開始日データをフォーマットして年月日を登録
-      this.year = moment(riyousyadata['symd'][0]).format('YYYY');
-      this.month = moment(riyousyadata['symd'][0]).format('MM');
-      this.date = moment(riyousyadata['symd'][0]).format('DD');
+
+      // 取得したデータを表示用に成形
+      // 生年月日
+      // 和暦を初期表示
+      this.calendarKey = '1',
+      this.riyousyaBirthY = moment(riyousyadata['birthymd']).format('YYYY');
+      this.riyousyaBirthM = moment(riyousyadata['birthymd']).format('MM');
+      this.riyousyaBirthD = moment(riyousyadata['birthymd']).format('DD');
+
+      // 西暦で取得したデータを和暦に変換し年号を設定
+      let warekiArray = [];
+      let nengou;
+      let warekiBirthY;
+
+      // 和暦に変換
+      warekiArray = this.wareki(this.riyousyaBirthY);
+      // 年号を取得
+      nengou = warekiArray[0];
+      // 年を取得
+      warekiBirthY = warekiArray[1];
+
+      // 和暦に変換した年をvalueに設定
+      this.nengouKey = nengou;
+      this.dispNngou = nengou;
+      this.riyousyaBirthY = warekiBirthY;
+
+      // 開始日
+      this.riyousyaStartY = moment(riyousyadata['symd'][0]).format('YYYY');
+      this.riyousyaStartM = moment(riyousyadata['symd'][0]).format('MM');
+      this.riyousyaStartD = moment(riyousyadata['symd'][0]).format('DD');
 
       // 取得したデータをモーダルのvalueに設置
-      this.riyousyaCode =            riyousyadata['code'];
+      this.riyousyaCode =             riyousyadata['code'];
       this.riyousyaNames =            riyousyadata['names'];
       this.riyousyaKana =             riyousyadata['kana'];
-      this.riyousyabirthymd =         riyousyadata['birthymd'];
+      this.riyousyaBirthymd =         riyousyadata['birthymd'];
       this.riyousyaAge =              riyousyadata['age'];
       this.riyousyaGenderKey =        riyousyadata['genderKey'];
       this.riyousyaPostcode1 =        riyousyadata['postcode1'];
@@ -464,6 +532,7 @@ export default {
       this.riyousyaDispSymd =         riyousyadata['dispSymd'][0];
 
     // 市区町村のデータ変更履歴の配列を作成
+    
     let shikutyosonData = [];
     for (let i = 0; i < riyousyadata['shikutyoson'].length; i++) {
       let keyValue = riyousyadata['shikutyoson'].length - i;
@@ -471,7 +540,7 @@ export default {
         {
           key: keyValue,
           shikutyoson: riyousyadata['shikutyoson'][i],
-          symd: riyousyadata['dispSymd'][i]
+          dispSymd: riyousyadata['dispSymd'][i]
         }
       );
     }
@@ -485,24 +554,33 @@ export default {
      */
     addRiyousyadata() {
       // 入力データをフォーマット
+      
+      // 生年月日
+      let birthFormatymd;
+      let birthFormatY;
 
-      // 開始日
-      if (this.inputSymd === "") {
-        // 開始日が空だった場合は今日の日付が入る
-        this.dispSymd.push(new Date(this.year, Number(this.month) - 1, this.date));
+      // 生年月日情報を西暦で登録
+      if (this.calendarKey === '1') {
+        // 和暦を選択していた場合、表示用の年を西暦に変換
+        birthFormatY = moment(this.riyousyaBirthymd).format('YYYY');
+      } else {
+        // 西暦選択時
+        birthFormatY = this.riyousyaBirthY
       }
+      // 生年月日入力値を西暦で登録
+      this.riyousyaBirthymd = birthFormatY + this.riyousyaBirthM + this.riyousyaBirthD;
+
       // 性別
       let displayGender = "";    // 表示用性別
-      if (this.riyousyaGenderKey === 1) {
+      if (this.riyousyaGenderKey === '1') {
         displayGender = "男";
-      } else if (this.riyousyaGenderKey === 2) {
+      } else if (this.riyousyaGenderKey === '2') {
         displayGender = "女";
-      } else if (this.riyousyaGenderKey === 0) {
-        displayGender = "適用不能";
+      } else if (this.riyousyaGenderKey === '0') {
+        displayGender = "適不";
       } else {
         displayGender = "";
       }
-
       // 住所
       // 入力された郵便番号をフォーマット
       let displayPostcode = "";    //画面表示用郵便番号
@@ -511,82 +589,163 @@ export default {
       let displayAddress = ""    // 画面表示用住所
       displayAddress = displayPostcode + "\n" + this.riyousyaAddress;
 
-      // 修正データとして登録
-      this.editData.push({
-        code:         this.riyousyaCode,
-        names:         this.riyousyaNames,
-        kana:          this.riyousyaKana,
-        birthymd:      new Date(this.inputBirthY, Number(this.inputBirthM) - 1, this.inputBirthD),
-        age:           this.riyousyaAge,
-        gender:        displayGender,
-        postcode:      this.riyousyaPostcode,
-        address:       displayAddress,
-        dispAddress:   this.inputAddress,
-        tell1:         this.riyousyaTell1,
-        tell2:         this.riyousyaTell2,
-        shikutyoson:   this.riyousyaShikutyoson[0],
-        symd:          this.symd,
-        dispSymd :     new Date(this.year, Number(this.month) - 1, this.date),
-      });
+      // 開始日ymd(表示用)のタイムスタンプを取得し値を設定
+      this.riyousyaDispSymd = new Date(this.riyousyaStartY, Number(this.riyousyaStartM) - 1, this.riyousyaStartD);
+
+
       if (this.editShikutyosonFlag === true) {
-        // 修正タブが選択されている場合
-        // 配列の値を入力値に修正
-        console.log(this.editData);
+        // 修正タブが選択されている場合、配列の値を入力値に変更
         this.shikutyosonData[0]['shikutyoson'] = this.riyousyaShikutyoson;
-        this.shikutyosonData[0]['symd'] = this.editData[0]['dispSymd'];
+        this.shikutyosonData[0]['symd'] = this.riyousyaSymd;
+        this.shikutyosonData[0]['dispSymd'] = this.riyousyaDispSymd;
       } else if (this.addShikutyosonFlag === true) {
-        // 追加タブが選択されている場合
-        // 追加データを登録
+        // 追加タブが選択されている場合、追加データを登録
         this.shikutyosonData.unshift(
           {
             key: this.shikutyosonData.length + 1,
             shikutyoson: this.riyousyaShikutyoson,
-            symd: this.riyousyaDispSymd
+            dispSymd: this.riyousyaDispSymd
           }
         );
       } else {
         alert(エラー);
       }
+
+      // 修正データを基本情報データに登録
+      this.editData = [];
+      this.editData.push({
+        code:          this.riyousyaCode,
+        names:         this.riyousyaNames,
+        kana:          this.riyousyaKana,
+        birthymd:      this.riyousyaBirthymd,
+        dispBirthymd:  new Date(birthFormatY, Number(this.riyousyaBirthM) - 1, this.riyousyaBirthD),
+        age:           this.riyousyaAge,
+        gender:        displayGender,
+        genderKey:     this.riyousyaGenderKey,
+        postcode1:     this.riyousyaPostcode1,
+        postcode2:     this.riyousyaPostcode2,
+        address:       this.riyousyaAddress,
+        dispAddress:   displayAddress,
+        tell1:         this.riyousyaTell1,
+        tell2:         this.riyousyaTell2,
+        shikutyoson:   this.riyousyaShikutyoson,
+        symd:          this.riyousyaSymd,
+        dispSymd:      this.riyousyaDispSymd
+      });
+      console.log(this.editData)
       this.allData = this.shikutyosonData;
       this.mainFlexGrid.itemsSource = [];
       this.mainFlexGrid.itemsSource = this.shikutyosonData;
       this.mainFlexGrid.columns[2].format = sysConst.FORMAT.GYmd;
-      console.log(this.mainFlexGrid.itemsSource)
 
-      // 市区町村データ修正追加確認
-      // this.parentFlag = false;
+      // dialogを閉じる
+      this.parentFlag = false;
 
       // 入力情報を追加した配列を親に返す
-      // this.$emit('addFormData', this.editData);
+      this.$emit('editFormData', this.editData);
 
-      // 入力情報をリセット
-      // this.riyousyaCode = '';
-      // this.riyousyaNames = '';
-      // this.riyousyaKana = '';
-      // this.riyousyabirthymd = '';
-      // this.riyousyaAge = '';
-      // this.riyousyaGenderKey = '';
-      // this.riyousyaPostcode = '';
-      // this.riyousyaPostcode1 = '';
-      // this.riyousyaPostcode2 = '';
-      // this.riyousyaAddress = '';
-      // this.riyousyaTell1 = '';
-      // this.riyousyaTell2 = '';
-      // this.riyousyaShikutyoson = '';
-      // this.riyousyaSymd = '';
+    },
+    wareki(year) {
+      // 西暦を和暦に変換
+      var eras = [
+        {year: 2018, name: '令和'},
+        {year: 1988, name: '平成'},
+        {year: 1925, name: '昭和'},
+        {year: 1911, name: '大正'},
+        {year: 1867, name: '明治'}
+      ];
+      for(var i in eras) {
+        var era = eras[i];
+        var baseYear = era.year;
+        var eraName = era.name;
+        if(year > baseYear) {
+          var eraYear = year - baseYear;
+          if(eraYear === 1) {
+            return [eraName, eraYear];
+          }
+          return [eraName, eraYear];
+        }
+      }
+      return null;
+    },
+    // 和暦を西暦に変換
+    seireki(warekiYear) {
+      var matches = warekiYear.match('^(明治|大正|昭和|平成|令和)([元0-9０-９]+)$');
+      if(matches) {
+        var eraName = matches[1];
+        var year = parseInt(matches[2].replace(/[元０-９]/g, function(match){
+          if(match === '元') {
+            return 1;
+          }
+          return String.fromCharCode(match.charCodeAt(0) - 65248);
+        }));
+        if(eraName === '明治') {
+          year += 1867;
+        } else if(eraName === '大正') {
+            year += 1911;
+        } else if(eraName === '昭和') {
+          year += 1925;
+        } else if(eraName === '平成') {
+          year += 1988;
+        } else if(eraName === '令和') {
+          year += 2018;
+        }
+        return year;
+      }
+      return null;
     },
     /***********
-     *dialog和暦西暦表示切り替え
+     * 和暦西暦表示切り替え
      */
-    switchDialogYear() {
-      if (this.calendarKey === '1') {
-        // 和暦選択時
-        this.dispNngou = "";
-        this.dispNngou = this.nengouKey;
+    switchCalendar(type) {
+      // 西暦で取得したデータを和暦に変換し年号を設定
+      let warekiArray = [];
+      let nengou;
+      let warekiBirthY;
+      // 和暦に変換
+      warekiArray = this.wareki(this.riyousyaBirthY);
+      if (type === 'year') {
+        // 和暦、西暦いずれか選択時
+        if (this.calendarKey === '1') {
+          // 和暦選択時
+          //表示用年号を初期化
+          this.dispNngou = "";
+
+          // 年が空でなかった場合和暦に変換
+          if (this.riyousyaBirthY !== '') {
+            // 年を取得
+            warekiBirthY = warekiArray[1];
+
+            // 年号を取得
+            nengou = warekiArray[0];
+            // 和暦に変換した年をvalueに設定
+            this.nengouKey = nengou;
+            this.dispNngou = nengou;
+            this.riyousyaBirthY = warekiBirthY;
+          } else {
+            // 年が空だった場合和暦選択時、年を空欄にする
+            this.riyousyaBirthY = '';
+          }
+          this.dispNngou = this.nengouKey;
+        } else {
+          // 西暦選択時
+          if ((this.nengouKey !== '') && (this.riyousyaBirthY !== '')) {
+            // 年号と年が入力されている場合西暦に変換
+            this.riyousyaBirthY = this.seireki(this.nengouKey + this.riyousyaBirthY);
+          } else {
+            // 年号と年のいずれかが入力されていなければ年を初期化
+            this.riyousyaBirthY = '';
+          }
+          // 表示用年号と年号を変更
+          this.dispNngou = "西暦";
+          this.nengouKey ="";
+        }
       } else {
-        // 西暦選択時
-        this.dispNngou = "西暦";
-        this.nengouKey ="";
+        // 年号を選択
+        // 和暦に変換した年をvalueに設定
+        this.dispNngou = this.nengouKey
+
+        // this.calcRiyousyaAge();
       }
     },
     /***********
@@ -594,22 +753,45 @@ export default {
      */
     calcRiyousyaAge() {
       // 入力値から年齢を計算
+      if(this.calendarKey === '2' || (this.calendarKey === '1' && this.nengouKey !== '')) {
+        // 西暦を選択、または和暦を選択かつ年号が空じゃなければ計算を実行
+        if ((this.riyousyaBirthY &&
+            this.riyousyaBirthM &&
+            this.riyousyaBirthD) !== ''){
+          // 年月日、和暦、西暦の選択いずれかが未入力の場合、年齢計算をスキップ
 
-      // 生年月日から年を切り出し
-      let inputBirthY = this.inputBirthymd.substr( 0, 4 );
+          // 現在の年度を取得
+          let nowY = moment().format('YYYY');
 
-      // 生年月日の月日を切り出し
-      let inputBirthMd = this.inputBirthymd.substr( 4, 6 );
+          // 年齢計算に使用する西暦
+          let seirekiY;
 
-      // 現在の月日を成形
-      let todayMd = this.month + '' + this.date;
+          if (this.calendarKey ==='1') {
+            if ((this.nengouKey && this.riyousyaBirthY) !== ''){
+              // 入力が和暦の場合、和暦を西暦に変換
+              seirekiY = this.seireki(this.nengouKey + this.riyousyaBirthY);
+            }
+          } else if (this.calendarKey ==='2') {
+            // 入力が西暦の場合
+            seirekiY = this.riyousyaBirthY;
+          }
+          let nowMd = ''
+          let riyousyaBirthMd = '';
 
-      if(todayMd < inputBirthMd) {
-        //今年まだ誕生日が来ていない
-        this.inputAge = this.year - inputBirthY -1;
-      } else {
-        // 既に誕生日を迎えている
-        this.inputAge = this.year - inputBirthY;
+          // 現在の月日を成形
+          nowMd = this.riyousyaStartM + this.riyousyaStartD;
+
+          // 入力値の月日の成形
+          // ※計算が走るタイミングで警告が出る
+          this.riyousyaBirthM = moment(this.riyousyaBirthM).format('MM');
+          if(nowMd < riyousyaBirthMd) {
+            //今年まだ誕生日が来ていない
+            this.riyousyaAge = nowY - seirekiY  -1;
+          } else {
+            // 既に誕生日を迎えている
+            this.riyousyaAge = nowY - seirekiY;
+          }
+        }
       }
     },
     /***********
@@ -662,7 +844,7 @@ export default {
      */
     inputCalendarClick: function () {
       let picker = '';
-      picker = this.year + '-' + this.month + '-' + this.date;
+      picker = this.riyousyaStartY + '-' + this.riyousyaStartM + '-' + this.riyousyaStartD;
       this.picker = picker;
       this.datepicker_dialog = true;
     },
@@ -671,11 +853,11 @@ export default {
      */
     dateSelect: function () {
       let split = this.picker.split('-');
-        this.year = split[0];
-        this.month = split[1];
-        this.date = split[2];
+        this.riyousyaStartY = split[0];
+        this.riyousyaStartM = split[1];
+        this.riyousyaStartD = split[2];
 
-      this.riyousyaDispSymd = this.year + this.month + this.date;
+      this.riyousyaSymd = this.riyousyaStartY + this.riyousyaStartM + this.riyousyaStartD;
       this.datepicker_dialog = false;
     },
     /***********
@@ -684,17 +866,17 @@ export default {
     editShikutyoson() {
       // グリッドの選択を有効化する
       this.mainFlexGrid.selectionMode = wjGrid.SelectionMode.ListBox;
-
+      if(this.addShikutyosonFlag === true) {
+        // 追加タブから切り替えた場合、利用者の最新の市区町村データ、有効開始日データを再表示
+        this.riyousyaShikutyoson = this.shikutyosonData[0]['shikutyoson'];
+        this.riyousyaStartD = moment(this.shikutyosonData[0]['dispSymd']).format('DD');
+        this.riyousyaStartY = moment(this.shikutyosonData[0]['dispSymd']).format('YYYY');
+        this.riyousyaStartM = moment(this.shikutyosonData[0]['dispSymd']).format('MM');
+      }
       this.editShikutyosonFlag = true;
       this.addShikutyosonFlag = false;
-
-      // 利用者の最新の市区町村データ、有効開始日データを再表示
-      this.riyousyaShikutyoson = this.shikutyosonData[0]['shikutyoson'];
-      this.year = moment(this.shikutyosonData[0]['symd']).format('YYYY');
-      this.month = moment(this.shikutyosonData[0]['symd']).format('MM');
-      this.date = moment(this.shikutyosonData[0]['symd']).format('DD');
     },
-    
+
     /****************
      *セルのクリックイベント
      */
@@ -705,15 +887,14 @@ export default {
           let ht = flexGrid.hitTest(e);
           let hPage = flexGrid.hitTest(e.pageX, e.pageY);
           // セル押下時のみ
-          console.log(flexGrid.Selected)
           if (ht.cellType == wjGrid.CellType.Cell) {
             //クリックした行の利用者データを取得
             let SelectShikutyousonData = _self.getSelectRow(hPage.row);
             // クリックした行の利用者データを表示
             _self.riyousyaShikutyoson = SelectShikutyousonData['shikutyoson'];
-            _self.year = moment(SelectShikutyousonData['symd']).format('YYYY');
-            _self.month = moment(SelectShikutyousonData['symd']).format('MM');
-            _self.date = moment(SelectShikutyousonData['symd']).format('DD');
+            _self.riyousyaStartY = moment(SelectShikutyousonData['dispSymd']).format('YYYY');
+            _self.riyousyaStartM = moment(SelectShikutyousonData['dispSymd']).format('MM');
+            _self.riyousyaStartD = moment(SelectShikutyousonData['dispSymd']).format('DD');
 
             
             return SelectShikutyousonData;
@@ -743,9 +924,9 @@ export default {
       this.riyousyaShikutyoson = "";
 
       // 有効開始日を本日に変更
-      this.year = moment().format('YYYY');
-      this.month = moment().format('MM');
-      this.date = moment().format('DD');
+      this.riyousyaStartY = moment().format('YYYY');
+      this.riyousyaStartM = moment().format('MM');
+      this.riyousyaStartD = moment().format('DD');
     },
     /***********
      * 削除ボタンを押下
@@ -756,6 +937,12 @@ export default {
         this.shikutyosonData.shift();  
         this.allData = this.shikutyosonData;
         this.mainFlexGrid.itemsSource = this.kihonjyohoData;
+        // 最新のデータを表示
+        this.riyousyaShikutyoson = this.shikutyosonData[0]['shikutyoson'];
+        this.riyousyaStartD = moment(this.shikutyosonData[0]['dispSymd']).format('DD');
+        this.riyousyaStartY = moment(this.shikutyosonData[0]['dispSymd']).format('YYYY');
+        this.riyousyaStartM = moment(this.shikutyosonData[0]['dispSymd']).format('MM');
+        this.riyousyaSymd = this.riyousyaStartY + this.riyousyaStartM + this.riyousyaStartD;
       }
     },
     onInitialized(flexGrid) {
@@ -988,6 +1175,7 @@ export default {
       .wj-cell {
         height: 25px;
       }
+      // 選択時カラー指定
       .wj-cells
       .wj-row:hover
       .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {

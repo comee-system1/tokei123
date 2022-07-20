@@ -3,37 +3,54 @@
     <v-row no-gutters v-if="kihonJyohoFlag">
       <v-col>
         <v-btn-toggle
+          class="flex-wrap mr-1"
+          v-model="selected"
+          :mandatory="select_mandatory"
+        >
+          <v-btn
+            small
+            :color="'teal'"
+            dark
+            outlined
+            class="togglebtn"
+            @click="shinkiTourokuDialogOpen()"
+          >
+            <span
+              ><v-icon small color="green">mdi-plus-circle-outline</v-icon
+              >新規登録</span
+            >
+          </v-btn>
+        </v-btn-toggle>
+        <v-btn-toggle
           class="flex-wrap"
           :mandatory="mandatoryFlag"
           v-model="toggle_exclusive"
         >
           <v-btn
             small
-            color="secondary"
+            color="purple"
             dark
             outlined
-            class="addRiyousyaButton"
-            style="width: 90px; height: 25px"
-            @click="shinkiTourokuDialogOpen()"
-          >
-            新規登録
-          </v-btn>
-          <v-btn
-            small
-            color="secondary"
-            dark
-            outlined
-            style="width: 90px; height: 25px"
-            @click="allowSyuseiTouroku()"
+            class="togglebtn"
+            @click="allowEditData('edit')"
+            v-wjTooltip="{
+              tooltip: 'ボタン選択後、修正登録を行うデータを選択',
+              position: 'Right',
+            }"
           >
             修正登録
           </v-btn>
           <v-btn
             small
-            color="secondary"
+            color="purple"
             dark
             outlined
-            style="width: 90px; height: 25px"
+            class="togglebtn"
+            @click="allowEditData('finish')"
+            v-wjTooltip="{
+              tooltip: 'ボタン選択後、終了登録を行うデータを選択',
+              position: 'Right',
+            }"
           >
             終了登録
           </v-btn>
@@ -132,6 +149,7 @@
                 color="secondary"
                 outlined
                 style="width: 110px; height: 25px"
+                @click="sorted('start_ascending')"
                 v-if="kihonJyohoFlag"
               >
                 有効開始日[昇順]
@@ -142,6 +160,7 @@
                 dark
                 outlined
                 style="width: 110px; height: 25px"
+                @click="sorted('start_descending')"
                 v-if="kihonJyohoFlag"
               >
                 有効開始日[降順]
@@ -180,12 +199,12 @@
             <label v-if="kihonJyohoFlag">市区町村</label>
             <wj-menu
               class="customCombobox mr-1"
-              :itemsSource="shityosonCombo"
-              :itemClicked="onShityosonCombo"
+              :itemsSource="shikutyosonCombo"
+              :itemClicked="onShikutyosonChanged"
               :isRequired="true"
               :displayMemberPath="'text'"
-              style="width: 200px"
               selectedValuePath="'key'"
+              style="width: 200px"
               header="指定なし"
               v-if="kihonJyohoFlag"
             >
@@ -214,6 +233,7 @@
       <v-card elevation="0" class="ml-2 mr-2 d-flex">
         <label
           class="pa-0"
+          v-if="kihonJyohoFlag" 
           style="
             width: 120px;
             line-height: 25px;
@@ -269,23 +289,22 @@
 <script>
 import AlphabetButton from '@/components/AlphabetButton.vue';
 
-const shityosonCombo = [];
-
 export default {
   data() {
     return {
+      selected: '',
+      select_mandatory: false,
       toggle_displaySort: this.toggle_displayDefault(),
       toggle_sort: this.toggle_sortDefault(),
       toggle_exclusive: '',
       mandatoryFlag: false,
-      shityosonCombo: shityosonCombo,
-      filterTextShityoson: { shityosonKey: 0, shityoson: '指定なし' }, // 検索項目
       totalcount: 0,
       malecount: 0,
       femalecount: 0,
       nomalecount: 0,
       serviceJigyoCombo: [],
       serviceNaiyoCombo: [],
+      shikutyosonCombo: [],
     };
   },
   props: {
@@ -303,8 +322,8 @@ export default {
   },
   created() {
     // 市町村コンボボックス
-    this.shityosonCombo = [];
-    this.shityosonCombo.push(
+    this.shikutyosonCombo = [];
+    this.shikutyosonCombo.push(
       {
         key: 0,
         text: '指定なし',
@@ -324,22 +343,14 @@ export default {
       {
         key: 4,
         text: '北経市',
+      },
+      {
+        key: 5,
+        text: '１２３４５６',
       }
     );
   },
   methods: {
-    /*********************
-     * 市町村変更
-     */
-    onShityosonCombo(e) {
-      if (e.selectedIndex != -1) {
-        e.header = e.text;
-        // this.onShityoson(e.text, e.selectedIndex);
-        e.text, e.selectedIndex;
-      }
-      let f = document.activeElement;
-      f.blur();
-    },
     /****************
      * かな検索
      */
@@ -347,6 +358,18 @@ export default {
       this.$emit('kanaSearch', {
         input: e.text,
       });
+    },
+    /*********************
+     * 市区町村選択
+     */
+    onShikutyosonChanged(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        this.$emit('selectedshikutyoson', {
+          shikutyosonMeisyo: e.text,
+          shikutyosonKey: e.selectedItem.key,
+        });
+      }
     },
     /****************
      * サービス事業選択
@@ -430,11 +453,11 @@ export default {
       this.$emit('pearentShinkiDialogOpen');
     },
     /******************
-     * 修正登録ダイアログの呼び出しを許可
+     * 修正/終了登録ダイアログの呼び出しを許可
      */
-    allowSyuseiTouroku() {
+    allowEditData(type) {
       this.mandatoryFlag = true;
-      this.$emit('pearentAllowSyuseiTouroku');
+      this.$emit('pearentAllowEditData', { editType: type });
     },
     /******************
      * 合計値の表示
@@ -500,10 +523,12 @@ div#riyousyadaityoSortMenu {
   min-width: none !important;
   max-width: none;
   width: auto;
-
-  .addRiyousyaButton {
-    border-color: rgba(0, 0, 0, 0.12);
-    border-radius: 4px 0 0 4px;
+  .togglebtn {
+    width: 80px;
+    height: 25px;
+    &.auto {
+      width: auto;
+    }
   }
   .v-card__text {
     width: initial;

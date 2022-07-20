@@ -12,6 +12,7 @@
             tile
           >
             <v-btn
+              id="modifyButtonKihon"
               class="modify-button"
               style="height: 21px"
               @click="setTrunModify"
@@ -194,7 +195,7 @@
           flat
           tile
         >
-          <v-btn class="regist-button"> 登 録</v-btn>
+          <v-btn class="regist-button" @click="regist"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -278,6 +279,7 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
+      this.setButtonColor('modifyButtonKihon', true);
       this.$emit('setMode', 'modKihon');
       this.Resize();
     },
@@ -297,22 +299,55 @@ export default {
       this.Resize();
     },
     cancel() {
+      this.setButtonColor('modifyButtonKihon', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
-    setData(list, selectedData) {
+    setButtonColor(id, on) {
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = on ? '#fff' : 'black';
+      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+    },
+    regist() {
+      if (confirm('受給者証基本情報を修正登録します。\n\nよろしいですか？')) {
+      }
+    },
+    createPutData() {
+      let resutl = [];
+      result.push({
+        jyukyuid: element.jyukyuid,
+        rysid: element.rysid,
+        jkbn: element.jkbn,
+        shichoson: element.shichoson,
+        shichosonno: element.shichosonno,
+        shichosonname: element.shichosonname,
+        kofuymd: element.kofuymd,
+        jyukyuno: element.jyukyuno,
+        jidoid: element.jidoid,
+        jidopno1: element.jidopno1,
+        jidopno2: element.jidopno2,
+        jidoadd: element.jidoadd,
+        ssyu1: element.ssyu1,
+        ssyu2: element.ssyu2,
+        ssyu3: element.ssyu3,
+        ssyu4: element.ssyu4,
+        zantei: element.zantei,
+        dcod: element.dcod,
+        jyukyuname: element.jyukyuname,
+      });
+      return resutl;
+    },
+    setData(selectedData) {
       this.clearData();
-      if (selectedData != null) {
-        this.setdata(selectedData);
-      } else {
-        list.then((value) => this.setdata(value[0][0]));
+      if (selectedData.length > 0) {
+        this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
       this.Resize();
     },
     setdata(data) {
       if (data.kofuymd.length > 0) {
-        this.kofuymda = moment(data.kofuymd).format('YYYY-M-D');
+        this.kofuymd = moment(data.kofuymd).format('YYYY-M-D');
         this.jyukyukubun = data.zantei;
         this.jyukyuno = data.jyukyuno;
         this.setShichoson(data.shichosonno, data.shichosonname);
@@ -351,6 +386,9 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
+      if (this.mode !== 'modKihon') {
+        this.setButtonColor('modifyButtonKihon', false);
+      }
     },
     /****************
      * グリッド選択情報

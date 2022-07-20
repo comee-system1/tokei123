@@ -172,14 +172,55 @@ export default {
      * code: 選択しているグリッドの種類
      */
     child_data(args, code) {
-      // console.log(args);
-      // console.log(code);
       this.$emit('child_data', args, code);
     },
     setKihonData(list) {
+      //4行以下はダミーデータ作成
+      for (let i = list.length; i < 4; i++) {
+        list[i] = [];
+        list[i].kai = '';
+        list[i].jyukyuid = 0;
+        list[i].rysid = 0;
+        list[i].jkbn = 0;
+        list[i].shichoson = '';
+        list[i].shichosonno = '';
+        list[i].shichosonname = '';
+        list[i].kofuymd = '';
+        list[i].kofuymdDisp = '';
+        list[i].jyukyuno = '';
+        list[i].jidoid = 0;
+        list[i].jido = '';
+        list[i].jidopno1 = '';
+        list[i].jidopno2 = '';
+        list[i].jidoadd = '';
+        list[i].ssyu1 = 0;
+        list[i].ssyu2 = 0;
+        list[i].ssyu3 = 0;
+        list[i].ssyu4 = 0;
+        list[i].zantei = 0;
+        list[i].dcod = 0;
+        list[i].dcodDisp = 0;
+        list[i].jyukyuname = '';
+      }
       this.$refs.kihon.settingData(list);
     },
     setSyogaiKubunData(list) {
+      //4行以下はダミーデータ作成
+      for (let i = list.length; i < 4; i++) {
+        list[i] = [];
+        list[i].kai = '';
+        list[i].syokbnid = 0;
+        list[i].jyukyuid = 0;
+        list[i].ntsymd = '';
+        list[i].ntsymdDisp = '';
+        list[i].nteymd = '';
+        list[i].nteymdDisp = '';
+        list[i].syogaikbn = 0;
+        list[i].syogaikbnDisp = '';
+        list[i].tkkyu = 0;
+        list[i].rysid = 0;
+        list[i].jkbn = 0;
+      }
       this.$refs.syogaiKubun.settingData(list);
     },
     setSikyuryoData(list) {

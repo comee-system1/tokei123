@@ -1,4 +1,6 @@
 import axios from 'axios';
+
+
 const DOMAIN = "http://192.168.30.32:80";
 const HEADER = {};
 HEADER['Content-type'] = "application/json";
@@ -7,7 +9,7 @@ HEADER['x-api-key'] = 999;
 
 let baseUrl = "";
 let uniqueId = 1;
-let traceId = 1;
+let pageid = 1;
 export function getDomain() {
     return DOMAIN;
 }
@@ -23,16 +25,19 @@ export function setUniqID(id) {
 export function getUniqID() {
     return uniqueId;
 }
-export function setTraceID(id) {
-    traceId = id;
+export function setPageID(id) {
+    pageid = id;
 }
-export function getTraceID() {
-    return traceId;
+export function getPageID() {
+    return pageid;
 }
 export async function api() {
     // x-corporation-unique-id は引数によって変わる
     HEADER['x-corporation-unique-id'] = getUniqID();
-    HEADER['x-trace-id'] = getTraceID();
+    //HEADER['x-trace-id'] = getPageID();
+    // セッションストレージから取得
+    // ログインした時に生成されるID
+    HEADER['x-trace-id'] = 'aaa1234';
     var url = getURL();
     return await axios
         .get(url, {

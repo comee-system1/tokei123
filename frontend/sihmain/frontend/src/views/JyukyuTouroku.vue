@@ -385,12 +385,18 @@ export default {
         isOpen: false,
       },
 
+      //受給者証内部ID
+      jyukyuid: 0,
       //dataobject
       kihonDataOrg: [], //基本データ初期リスト
       syogaiKubunDataOrg: [], //障害区分データ初期リスト
       sikyuryoDataOrg: [], //決定支給量データ初期リスト
       keikakuSoudanDataOrg: [], //計画相談データ初期リスト
       riyosyaFutanDataOrg: [], //利用者負担データ初期リスト
+      syogaiKubunDataOrgFiltered: [], //障害区分データ初期リスト：受給者証内部IDで絞込
+      sikyuryoDataOrgFiltered: [], //決定支給量データ初期リスト：受給者証内部IDで絞込
+      keikakuSoudanDataOrgFiltered: [], //計画相談データ初期リスト：受給者証内部IDで絞込
+      riyosyaFutanDataOrgFiltered: [], //利用者負担データ初期リスト：受給者証内部IDで絞込
     };
   },
   components: {
@@ -516,22 +522,30 @@ export default {
         this.userListComponentDatas[row].jyukyuno;
       // データ取得・表示
       let rid = this.userListComponentDatas[row].riid;
+      rid = 583;
       //基本情報
-      this.kihonDataOrg = this.getJyukyuTourokuKihonData(rid);
-      this.setKihonData(this.kihonDataOrg, null);
+      this.getJyukyuTourokuKihonData(rid).then((value) => {
+        this.kihonDataOrg = value[0];
+        this.setKihonData();
+      });
       if (this.JyukyuSyogaiFukusiFlag) {
         //障害支給区分
-        this.syogaiKubunDataOrg = this.getJyukyuTourokuSyogaiKubunData(rid);
-        this.setSyogaiKubunData(this.syogaiKubunDataOrg, null);
-        //決定支給量
-        this.sikyuryoDataOrg = this.getJyukyuTourokuSikyuryoData(rid);
-        this.setSikyuryoData(this.sikyuryoDataOrg, null);
-        //計画相談
-        this.keikakuSoudanDataOrg = this.getJyukyuTourokuKeikakuSoudanData(rid);
-        this.setKeikakuSoudanData(this.keikakuSoudanDataOrg, null);
-        //利用者負担
-        this.risyosyaFutanDataOrg = this.getJyukyuTourokuRiyosyaFutanData(rid);
-        this.setRiyosyaFutanData(this.risyosyaFutanDataOrg, null);
+        this.getJyukyuTourokuSyogaiKubunData(rid).then((value) => {
+          this.syogaiKubunDataOrg = value[0];
+          this.setSyogaiKubunData();
+        });
+        // //決定支給量
+        // this.sikyuryoDataOrg = this.getJyukyuTourokuSikyuryoData(rid);
+        // this.setSikyuryoData(this.sikyuryoDataOrg, null);
+        // this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrg);
+        // //計画相談
+        // this.keikakuSoudanDataOrg = this.getJyukyuTourokuKeikakuSoudanData(rid);
+        // this.setKeikakuSoudanData(this.keikakuSoudanDataOrg, null);
+        // this.$refs.rirekiArea.setKeikakuSoudanData(this.keikakuSoudanDataOrg);
+        // //利用者負担
+        // this.risyosyaFutanDataOrg = this.getJyukyuTourokuRiyosyaFutanData(rid);
+        // this.setRiyosyaFutanData(this.risyosyaFutanDataOrg, null);
+        // this.$refs.rirekiArea.setRiyosyaFutanData(this.risyosyaFutanDataOrg);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
@@ -548,7 +562,7 @@ export default {
     async getJyukyuTourokuSyogaiKubunData(rid) {
       let jinf = [];
 
-      return await JyukyuTourokuSyogaiKubunData().then((result) => {
+      return await JyukyuTourokuSyogaiKubunData(rid).then((result) => {
         jinf.push(result.skryoh4_inf);
         return jinf;
       });
@@ -577,11 +591,22 @@ export default {
         return jinf;
       });
     },
-    setKihonData(list, seleced) {
-      this.$refs.kihon.setData(list, seleced);
+    setKihonData() {
+      if (this.kihonDataOrg.length > 0) {
+        this.jyukyuid = this.kihonDataOrg[0].jyukyuid;
+      }
+      this.$refs.kihon.setData(this.kihonDataOrg);
     },
-    setSyogaiKubunData(list, seleced) {
-      this.$refs.syogaiKubun.setData(list, seleced);
+    setSyogaiKubunData() {
+      this.syogaiKubunDataOrgFiltered = this.syogaiKubunDataOrg.filter(
+        (value) => {
+          if (value.jyukyuid === this.jyukyuid) {
+            return value;
+          }
+        }
+      );
+      this.$refs.syogaiKubun.setData(this.syogaiKubunDataOrgFiltered);
+      this.$refs.rirekiArea.setSyogaiKubunData(this.syogaiKubunDataOrgFiltered);
     },
     setSikyuryoData(list, seleced) {
       this.$refs.sikyuryo.setData(list, seleced);
@@ -596,10 +621,12 @@ export default {
       this.slideInRight.isOpen = true;
       this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
       if (this.JyukyuSyogaiFukusiFlag) {
-        this.$refs.rirekiArea.setSyogaiKubunData(this.syogaiKubunDataOrg);
-        this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrg);
-        this.$refs.rirekiArea.setKeikakuSoudanData(this.keikakuSoudanDataOrg);
-        this.$refs.rirekiArea.setRiyosyaFutanData(this.risyosyaFutanDataOrg);
+        this.$refs.rirekiArea.setSyogaiKubunData(
+          this.syogaiKubunDataOrgFiltered
+        );
+        // this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrg);
+        // this.$refs.rirekiArea.setKeikakuSoudanData(this.keikakuSoudanDataOrg);
+        // this.$refs.rirekiArea.setRiyosyaFutanData(this.risyosyaFutanDataOrg);
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
@@ -616,6 +643,7 @@ export default {
     goto_top() {
       var target = document.getElementById(this.menuitems[0].target);
       target.scrollIntoView({
+        behavior: 'smooth',
         block: 'start',
       });
     },
@@ -629,6 +657,7 @@ export default {
       targetbtn.style.backgroundColor = item.clickon;
       var target = document.getElementById(item.target);
       target.scrollIntoView({
+        behavior: 'smooth',
         block: 'start',
       });
     },
@@ -667,14 +696,18 @@ export default {
      * code: 選択しているグリッドの種類
      */
     child_data(args, code) {
-      // console.log(args);
-      // console.log(code);
+      let list = [];
       switch (code) {
         case 'kihon':
-          this.setKihonData(this.kihonDataOrg, args);
+          list.push(args);
+          this.$refs.kihon.setData(list);
+          this.jyukyuid = args.jyukyuid;
+          //障害支給区分
+          this.setSyogaiKubunData();
           break;
         case 'syogai':
-          this.setSyogaiKubunData(this.syogaiKubunDataOrg, args);
+          list.push(args);
+          this.$refs.syogaiKubun.setData(list);
           break;
         case 'kettei':
           break;

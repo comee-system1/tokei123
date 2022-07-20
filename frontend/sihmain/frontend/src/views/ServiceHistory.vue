@@ -27,7 +27,7 @@
         :itemsSource="historyData"
       >
         <wj-flex-grid-column
-          :binding="'code'"
+          :binding="'riyocode'"
           align="center"
           valign="middle"
           :width="75"
@@ -37,7 +37,7 @@
           :visible="isVisible1"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'riyosyamei'"
+          :binding="'names'"
           align="left"
           valign="middle"
           :width="160"
@@ -85,7 +85,7 @@
           :wordWrap="true"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'code'"
+          :binding="'riyocode'"
           align="center"
           valign="middle"
           :width="75"
@@ -95,7 +95,7 @@
           :visible="isVisible2"
         ></wj-flex-grid-column>
         <wj-flex-grid-column
-          :binding="'riyosyamei'"
+          :binding="'names'"
           align="left"
           valign="middle"
           :width="135"
@@ -238,7 +238,7 @@ export default {
       let array = [];
       this.sortedType = type.sortedType;
       for (let i = 0; i < this.historyData.length; i++) {
-        if (isNaN(this.historyData[i].code) === false) {
+        if (isNaN(this.historyData[i].riyocode) === false) {
           array.push(this.historyData[i]);
         }
       }
@@ -256,13 +256,13 @@ export default {
         this.isVisible1 = true;
         this.isVisible2 = false;
       }
-      if (type.sortedType === 'code') {
+      if (type.sortedType === 'riyocode') {
         array.sort((a, b) => {
           // コードの昇順
-          if (parseInt(a.code) > parseInt(b.code)) {
+          if (parseInt(a.riyocode) > parseInt(b.riyocode)) {
             return 1;
           }
-          if (parseInt(a.code) < parseInt(b.code)) {
+          if (parseInt(a.riyocode) < parseInt(b.riyocode)) {
             return -1;
           }
           return 0;
@@ -273,10 +273,10 @@ export default {
       if (type.sortedType === 'jigyo') {
         array.sort((a, b) => {
           // コードの昇順
-          if (parseInt(a.code) > parseInt(b.code)) {
+          if (parseInt(a.riyocode) > parseInt(b.riyocode)) {
             return 1;
           }
-          if (parseInt(a.code) < parseInt(b.code)) {
+          if (parseInt(a.riyocode) < parseInt(b.riyocode)) {
             return -1;
           }
           return 0;
@@ -344,12 +344,12 @@ export default {
       // 表示配列の合計列を省く
       let array = [];
       for (let i = 0; i < this.historyData.length; i++) {
-        if (isNaN(this.historyData[i].code) === false) {
+        if (isNaN(this.historyData[i].riyocode) === false) {
           let kana = this.historyData[i].kana;
           if (
             (this.kanaText.length == 0 ||
-              this.historyData[i].riyosyamei.indexOf(this.kanaText) != -1 ||
-              this.historyData[i].code.toString().indexOf(this.kanaText) !=
+              this.historyData[i].names.indexOf(this.kanaText) != -1 ||
+              this.historyData[i].riyocode.toString().indexOf(this.kanaText) !=
                 -1) &&
             (this.serviceNaiyo.serviceCode == 0 ||
               this.serviceNaiyo.serviceCode ==
@@ -402,7 +402,7 @@ export default {
         var ht = flexGrid.hitTest(e);
 
         if (ht.cellType == wjGrid.CellType.Cell) {
-          if (isNaN(_self.historyData[ht.row].code) === false) {
+          if (isNaN(_self.historyData[ht.row].riyocode) === false) {
             _self.selectKey = ht.row;
             _self.$refs.dialog_service.openDialog(_self.selectKey);
           }
@@ -413,7 +413,7 @@ export default {
       let historyData = [];
 
       return ServiceHistory().then((result) => {
-        historyData = result.seikyu_inf;
+        historyData = result.icrn_inf;
         // サービス順に並び替え
         let returns = this.changeSortting(historyData);
         this.allData = returns;
@@ -447,8 +447,8 @@ export default {
         returns.push(historyData[i]);
         if (dict[historyData[i].serviceCode] == n) {
           returns.push({
-            code: '計', // サービス提供事業所の位置に計(文字列)を表示する
-            riyosyamei: n + '名', //利用者名の位置にカウント数を表示するため
+            riyocode: '計', // サービス提供事業所の位置に計(文字列)を表示する
+            names: n + '名', //利用者名の位置にカウント数を表示するため
           });
           n = 1;
         } else {
@@ -462,8 +462,8 @@ export default {
       // サービス情報が無い合計の列
       if (noServiceCount > 0 && this.sortedType == 'jigyo') {
         returns.push({
-          code: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
-          riyosyamei: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
+          riyocode: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
+          names: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
         });
       }
       this.noServiceCount = noServiceCount;

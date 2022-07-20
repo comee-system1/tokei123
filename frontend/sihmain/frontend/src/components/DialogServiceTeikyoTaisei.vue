@@ -16,7 +16,7 @@
         >
 
         <v-row no-gutters>
-          <v-col class="pa-0 mt-1 mw105">サービス事業所名</v-col>
+          <v-col class="mw105 middle"><label>サービス事業所名</label></v-col>
           <v-col class="mw260 pa-0">
             <v-text-field
               outlined
@@ -33,7 +33,7 @@
               readonly
             ></v-text-field>
           </v-col>
-          <v-col class="pa-0 mt-1 text-center mw105">サービス名称</v-col>
+          <v-col class="mw105 middle ml-1"><label>サービス名称</label></v-col>
           <v-col class="mw60 pa-0">
             <v-text-field
               outlined
@@ -51,8 +51,8 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <v-row class="mt-6" no-gutters>
-          <v-col class="pa-0 mw105 mt-1">適用開始月</v-col>
+        <v-row class="mt-2" no-gutters>
+          <v-col class="mw105 middle"><label>適用開始月</label></v-col>
           <v-col class="pa-0 mw120" style="position: relative">
             <v-text-field
               outlined
@@ -72,13 +72,12 @@
             <v-btn outlined small v-if="type == 'historyEdit'">履歴参照</v-btn>
           </v-col>
         </v-row>
-
-        <v-row no-gutters class="mt-4">
+        <v-row no-gutters class="mt-1">
           <v-col cols="5">
             <v-toolbar-title class="text-caption text-center"
               >施設種類・定員等
             </v-toolbar-title>
-            <v-row no-gutters class="mt-3">
+            <v-row no-gutters class="mt-1">
               <v-col class="pa-0 middle mw105"><label>級地区分</label></v-col>
               <v-col class="mw260 pa-0">
                 <wj-combo-box

@@ -1,70 +1,32 @@
-let result = [];
 module.exports = class ApiResponse {
   constructor() {
   }
   setResponse(res) {
+    let result = [];
     if(!res){
-      return [];
-    }else{
-
-      result = [];
-    
-      result.push(
-        {
-          status: 'idle',
-          jyukyu_inf:
-          [
-            {
-              jyukyuid: 1,
-              rysid: 55000,
-              jkbn: 1,
-              shichoson: 1,
-              shichosonno: '000001',
-              shichosonname: '東経市',
-              kofuymd: '20220801',
-              jyukyuno: '1234567890',
-              jidoid: 0,
-              jidopno1: '',
-              jidopno2: '',
-              jidoadd: '',
-              ssyu1: 1,
-              ssyu2: 0,
-              ssyu3: 1,
-              ssyu4: 0,
-              zantei: 0,
-              dcod: 0,
-              jyukyuname: '',
-            },
-            {
-              jyukyuid: 1,
-              rysid: 55000,
-              jkbn: 1,
-              shichoson: 1,
-              shichosonno: '000001',
-              shichosonname: '東経市',
-              kofuymd: '20220401',
-              jyukyuno: '1234567890',
-              jidoid: 1,
-              jidopno1: '',
-              jidopno2: '',
-              jidoadd: '',
-              ssyu1: 1,
-              ssyu2: 0,
-              ssyu3: 1,
-              ssyu4: 0,
-              zantei: 0,
-              dcod: '01',
-              jyukyuname: '東経　父',
-            },
-          ]
-        }          
-      )
-
-      let returns = {
-        result: result,
-      };
-      return returns;
-
+      return result;
     }
+    res.data.forEach(function(element){
+      result.push({
+        jyukyuid: element.jyukyuid,
+        rysid: element.rysid,
+        jkbn: element.jkbn,
+        shichoson: element.shichoson,
+        kofuymd: element.kofuymd,
+        jyukyuno: element.jyukyuno,
+        jidoid: element.jidoid,
+        jidopno1: element.jidopno1,
+        jidopno2: element.jidopno2,
+        jidoadd: element.jidoadd,
+        ssyu1: element.ssyu1,
+        ssyu2: element.ssyu2,
+        ssyu3: element.ssyu3,
+        ssyu4: element.ssyu4,
+        zantei: element.zantei,
+        dcod: element.dcod,
+        jyukyuname: element.jyukyuname,
+      });
+    });
+    return result;
   }
 }

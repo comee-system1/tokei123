@@ -217,14 +217,6 @@ export default {
      * データの取得・表記
      */
     settingData(list) {
-      list.then((value) => this.setdata(value));
-    },
-    setdata(value) {
-      let list = [];
-      let v = value[0];
-      for (let i = 0; i < v.length; i++) {
-        list.push(v[i]);
-      }
       this.allData = list;
     },
     /***********************

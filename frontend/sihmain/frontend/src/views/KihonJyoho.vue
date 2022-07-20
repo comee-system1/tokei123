@@ -3,9 +3,14 @@
     <v-container fluid class="mt-0 user-info">
       <riyousyadaityo-sort-menu
         @pearentShinkiDialogOpen="pearentShinkiDialogOpen()"
-        @pearentAllowSyuseiTouroku="pearentAllowSyuseiTouroku()"
+        @pearentAllowEditData="pearentAllowEditData($event)"
         @displaySort="displaySort($event)"
         @sorted="sorted($event)"
+        @alphabeted="alphabeted($event)"
+        @selectedServiceJigyo="selectedServiceJigyo($event)"
+        @selectedServiceNaiyo="selectedServiceNaiyo($event)"
+        @selectedshikutyoson="selectedshikutyoson($event)"
+        @kanaSearch="kanaSearch($event)"
         @onDateSwitch="onDateSwitch($event)"
         :kihonJyohoFlag="true"
         :serviceHistoryFlag="false"
@@ -134,6 +139,7 @@
         ></dialog-shinki-touroku>
       <dialog-syusei-touroku 
         ref="dialog_syusei_touroku"
+        @editFormData = "editFormData"
         ></dialog-syusei-touroku>
     </v-container>
   </div>
@@ -162,6 +168,10 @@ export default {
         serviceMeisyo: '',
         serviceCode: '',
       }, // サービス事業の初期
+      shikutyosonSelected: {
+        shikutyoson: '',
+        shikutyosonKey: '',
+      }, // 市区町村の初期
       kanaText: '',
       isVisible1: false, // 初期選択状態
       isVisible2: true, // 初期選択状態
@@ -170,6 +180,7 @@ export default {
       allData: [],
       mainFlexGrid: [],
       gridHeight: '', // グリッドの高さ
+      clickedCellRow: '' // クリックした行が何行目かの値
     };
   },
   components: {
@@ -210,24 +221,88 @@ export default {
         this.mainFlexGrid.columns[11].format = sysConst.FORMAT.Ymd;
       }
     },
+    /***************:
+     * かな検索
+     */
+    kanaSearch(value) {
+      this.kanaText = value.input;
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    /*************************
+     * サービス事業を選択
+     */
+    selectedServiceJigyo(service) {
+      this.serviceJigyo = {
+        serviceTeikyoJigyosyo: service.serviceTeikyoJigyosyo,
+        serviceTeikyoJigyosyoCode: service.serviceTeikyoJigyosyoCode,
+      };
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    selectedServiceNaiyo(service) {
+      this.serviceNaiyo = {
+        serviceMeisyo: service.serviceMeisyo,
+        serviceCode: service.serviceCode,
+      };
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    /*************************
+     * 市区町村を選択
+     */
+    selectedshikutyoson(shikutyoson) {
+      this.shikutyosonSelected = {
+        shikutyoson: shikutyoson.shikutyosonMeisyo,
+        shikutyosonKey: shikutyoson.shikutyosonKey,
+      };
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
+    /**********************
+     * 名前の絞り込み
+     */
+    alphabeted(data) {
+      this.alphabetKey = data.alphabetKey;
+      let arg = {
+        displaySortType: this.displaySortTypeKey,
+      };
+      this.displaySort(arg);
+    },
     /************************
      * 新規登録タブ押下
      */
     pearentShinkiDialogOpen() {
-      this.syuseiTourokuFlag = false;
       let array = [];
       array = this.kihonjyohoData;
 
       // モーダルに新データ追加用の配列を渡す
       this.$refs.dialog_shinki_tuika.open(array);
     },
-    
+
     /************************
-     * 修正登録タブ押下
+     * 修正登録/終了登録タブ押下
      */
-    pearentAllowSyuseiTouroku() {
-      this.syuseiTourokuFlag = true;
+    pearentAllowEditData(type) {
+      if (type.editType === 'edit') {
+        // 修正登録を許可
+        this.syuryoTourokuFlag = false;
+        this.syuseiTourokuFlag = true;
+      } else {
+        // 終了登録を許可
+        this.syuseiTourokuFlag = false;
+        this.syuryoTourokuFlag = true;
+      }
     },
+
 
     /****************
      *セルのクリックイベント
@@ -242,13 +317,14 @@ export default {
           if (ht.cellType == wjGrid.CellType.Cell) {
             //クリックした行の利用者データを取得
             let RiyousyaKihonData = _self.getJyukyunoRow(hPage.row);
+            _self.clickedCellRow = hPage.row;
             _self.$refs.dialog_syusei_touroku.open(RiyousyaKihonData);
           }
         }
       });
     },
     /*************
-     * 受給者番号が持つ行数の取得
+     * クリックした行の利用者データを取得
      */
     getJyukyunoRow(row) {
       let data = [];
@@ -289,9 +365,32 @@ export default {
           return 0;
         });
       }
-      let returns = this.changeSortting(array);
+      // 有効開始日（昇順）
+      if (type.sortedType === 'start_ascending') {
+        array.sort((a, b) => {
+          if (a.symd[0] > b.symd[0]) {
+            return -1;
+          }
+          if (a.symd[0] < b.symd[0]) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      // 有効開始日（降順）
+      if (type.sortedType === 'start_descending') {
+        array.sort((a, b) => {
+          if (a.symd[0] > b.symd[0]) {
+            return 1;
+          }
+          if (a.symd[0] < b.symd[0]) {
+            return -1;
+          }
+          return 0;
+        });
+      }
       this.kihonjyohoData = [];
-      this.kihonjyohoData = returns;
+      this.kihonjyohoData = array;
     },
     /****************************
      * 子コンポーネントの表示項目
@@ -304,8 +403,8 @@ export default {
         let now = moment();
         for (let i = 0; i < this.allData.length; i++) {
           let st = '';
-          if (this.allData[i].startDate) {
-            st = moment(this.allData[i].startDate);
+          if (this.allData[i].symd[0]) {
+            st = moment(this.allData[i].symd[0]);
           } else {
             st = '';
           }
@@ -344,15 +443,41 @@ export default {
       // 表示配列の合計列を省く
       let array = [];
       for (let i = 0; i < this.kihonjyohoData.length; i++) {
-        if (this.kihonjyohoData[i].code) {
-          array.push(this.kihonjyohoData[i]);
+        if (isNaN(this.kihonjyohoData[i].code) === false) {
+          let kana = this.kihonjyohoData[i].kana;
+          if (
+            (this.kanaText.length == 0 ||
+              this.kihonjyohoData[i].names.indexOf(this.kanaText) != -1 ||
+              this.kihonjyohoData[i].code.toString().indexOf(this.kanaText) !=
+                -1) &&
+            (this.serviceNaiyo.serviceCode == 0 ||
+              this.serviceNaiyo.serviceCode ==
+                this.kihonjyohoData[i].serviceCode) &&
+            (this.serviceJigyo.serviceTeikyoJigyosyoCode == 0 ||
+              this.serviceJigyo.serviceTeikyoJigyosyoCode ==
+                this.kihonjyohoData[i].serviceTeikyoJigyosyoCode) &&
+            (this.shikutyosonSelected.shikutyosonKey == 0 ||
+              this.shikutyosonSelected.shikutyosonKey ==
+                this.kihonjyohoData[i].shikutyosonKey[0]) &&
+            (this.alphabetKey == 0 ||
+              (this.alphabetKey == 1 && kana.match(/^[ア-オ]/)) ||
+              (this.alphabetKey == 2 && kana.match(/^[カ-コ]/)) ||
+              (this.alphabetKey == 3 && kana.match(/^[サ-ソ]/)) ||
+              (this.alphabetKey == 4 && kana.match(/^[タ-ト]/)) ||
+              (this.alphabetKey == 5 && kana.match(/^[ナ-ノ]/)) ||
+              (this.alphabetKey == 6 && kana.match(/^[ハ-ホ]/)) ||
+              (this.alphabetKey == 7 && kana.match(/^[マ-モ]/)) ||
+              (this.alphabetKey == 8 && kana.match(/^[ヤ-ヨ]/)) ||
+              (this.alphabetKey == 9 && kana.match(/^[ラ-ロ]/)) ||
+              (this.alphabetKey == 10 && kana.match(/^[ワ-ン]/)))
+          ) {
+            array.push(this.kihonjyohoData[i]);
+          }
         }
       }
       this.kihonjyohoData = this.changeSortting(array);
     },
     getData() {
-      // this.JyuryouTsuchisyoData = result.icrn_inf;
-      // this.allData = this.JyuryouTsuchisyoData;
       let kihonjyohoData = [];
       kihonjyohoData.push(
         {
@@ -362,12 +487,12 @@ export default {
           serviceMeisyo: '生活介護',
           code: '1000001',
           jyukyuno: '1000000001', //提供サービス
-          names: '東経 太郎', // サービス種類コード
+          names: '東経 タロウ', // サービス種類コード
           kana: 'タロウ トウケイ', // 利用日数
-          birthymd: '19920422',
+          birthymd: '19920401',
           // dispBirthymd: moment('20200901').format('YYYY/MM/DD'),
-          dispBirthymd: new Date('2000', Number('04') - 1, '01'),
-          age: '20',
+          dispBirthymd: new Date('1992', Number('04') - 1, '01'),
+          age: '30',
           gender: '男',
           genderKey: '1',
           postcode1: '001',
@@ -376,7 +501,8 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyoson: ['東経市','１２３４５６'],
+          shikutyoson: ['東経市','南経市'],
+          shikutyosonKey: [1,3],
           symd: ['20220401','20220201'],
           dispSymd: [new Date('2022', Number('04') - 1, '01'),new Date('2022', Number('02') - 1, '01')],
           startY: '2022',
@@ -393,9 +519,9 @@ export default {
           jyukyuno: '1000000002', //提供サービス
           names: '東経 花子', // サービス種類コード
           kana: 'ハナコ トウケイ', // 利用日数
-          birthymd: '19920122',
-          dispBirthymd: new Date('1990', Number('04') - 1, '01'),
-          age: '30',
+          birthymd: '19800122',
+          dispBirthymd: new Date('1980', Number('01') - 1, '22'),
+          age: '42',
           gender: '女',
           genderKey: '2',
           postcode1: '001',
@@ -404,7 +530,8 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyoson: ['北経市','B市'],
+          shikutyoson: ['北経市','西経市'],
+          shikutyosonKey: [4,1],
           symd: ['20220520','20220320'],
           dispSymd: [new Date('2022', Number('05') - 1, '20'),new Date('2022', Number('03') - 1, '20')],
           startY: '2022',
@@ -422,9 +549,9 @@ export default {
           jyukyuno: '1000000003', //提供サービス
           names: '東経 次郎', // サービス種類コード
           kana: 'ジロウ トウケイ', // 利用日数199200111
-          birthymd: '19820222',
-          dispBirthymd: new Date('1992', Number('04') - 1, '01'),
-          age: '40',
+          birthymd: '20200101',
+          dispBirthymd: new Date('2020', Number('01') - 1, '01'),
+          age: '2',
           gender: '適不',
           genderKey: '0',
           postcode1: '001',
@@ -433,9 +560,10 @@ export default {
           dispAddress: '〒001-2345 〇〇市××町11-1',
           tell1: '03-1234-5567',
           tell2: '03-1111-2231',
-          shikutyoson: ['西経市','B市'],
-          symd: ['20220520','20220320'],
-          dispSymd: [new Date('2022', Number('05') - 1, '20'),new Date('2022', Number('03') - 1, '20')],
+          shikutyoson: ['西経市','東経市'],
+          shikutyosonKey: [2,1],
+          symd: ['20220620','20220320'],
+          dispSymd: [new Date('2022', Number('06') - 1, '20'),new Date('2022', Number('03') - 1, '20')],
           startY: '',
           startM: '',
           startD: '',
@@ -451,10 +579,10 @@ export default {
           jyukyuno: '1000000004', //提供サービス
           names: '１２３４５６７８９０１２３', // サービス種類コード
           kana: 'アスカ トウケイ', // 利用日数
-          birthymd: '19880222',
+          birthymd: '19420222',
           // dispBirthymd: moment('19880222').format('YYYY/MM/DD'),
-          dispBirthymd: new Date('1980', Number('04') - 1, '01'),
-          age: '34',
+          dispBirthymd: new Date('1942', Number('02') - 1, '02'),
+          age: '80',
           gender: '女',
           genderKey: '2',
           postcode1: '001',
@@ -464,6 +592,7 @@ export default {
           tell1: '12345-1234-1234',
           tell2: '03-1111-2231',
           shikutyoson: ['１２３４５６'],
+          shikutyosonKey: [5],
           symd: ["20220301"],
           dispSymd: [new Date('2022', Number('03') - 1, '01')],
           startY: '2022',
@@ -479,6 +608,10 @@ export default {
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.getData();
+
+      
+      this.$refs.childRiyousyadaityo.setTotalcount(this.kihonjyohoData);
+
       // セルのクリックイベント(修正登録タブアクティブ時)
       this.clickEventCell(flexGrid);
 
@@ -486,9 +619,6 @@ export default {
       this.mainFlexGrid.columns[3].format = sysConst.FORMAT.GYmd;
       this.mainFlexGrid.columns[10].format = sysConst.FORMAT.GYmd;
       this.mainFlexGrid.columns[11].format = sysConst.FORMAT.GYmd;
-
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
       flexGrid.itemsSource = this.kihonjyohoData;
 
@@ -531,32 +661,14 @@ export default {
         return 0;
       });
       // サービス毎の合計数を取得
-      let dict = this.getServiceCount(kihonjyohoData);
       let returns = [];
-      let n = 1;
       let noServiceCount = 0;
       for (let i = 0; i < kihonjyohoData.length; i++) {
         returns.push(kihonjyohoData[i]);
-        if (dict[kihonjyohoData[i].serviceCode] == n) {
-          returns.push({
-            code: '計', // サービス提供事業所の位置に計(文字列)を表示する
-            riyosyamei: n + '名', //利用者名の位置にカウント数を表示するため
-          });
-          n = 1;
-        } else {
-          n++;
-        }
         // サービスコードが無いカウント
         if (!kihonjyohoData[i].serviceCode) {
           noServiceCount++;
         }
-      }
-      // サービス情報が無い合計の列
-      if (noServiceCount > 0 && this.sortedType == 'jigyo') {
-        returns.push({
-          code: '未登録 計', // サービス提供事業所の位置に計(文字列)を表示する
-          riyosyamei: noServiceCount + '名', //利用者名の位置にカウント数を表示するため
-        });
       }
       this.noServiceCount = noServiceCount;
 
@@ -598,6 +710,33 @@ export default {
       // 日付を和暦に変換（初期表示）
       this.mainFlexGrid.columns[3].format = sysConst.FORMAT.GYmd;
       this.mainFlexGrid.columns[10].format = sysConst.FORMAT.GYmd;
+    },
+    editFormData(editData) {
+      // 修正データを基本情報配列に置き換え
+      this.kihonjyohoData[this.clickedCellRow]['code']            = editData[0]['code'];
+      this.kihonjyohoData[this.clickedCellRow]['names']           = editData[0]['names'];
+      this.kihonjyohoData[this.clickedCellRow]['kana']            = editData[0]['kana'];
+      this.kihonjyohoData[this.clickedCellRow]['birthymd']        = editData[0]['birthymd'];
+      this.kihonjyohoData[this.clickedCellRow]['dispBirthymd']    = editData[0]['dispBirthymd'];
+      this.kihonjyohoData[this.clickedCellRow]['age']             = editData[0]['age'];
+      this.kihonjyohoData[this.clickedCellRow]['gender']          = editData[0]['gender'];
+      this.kihonjyohoData[this.clickedCellRow]['genderKey']       = editData[0]['genderKey'];
+      this.kihonjyohoData[this.clickedCellRow]['postcode1']       = editData[0]['postcode1'];
+      this.kihonjyohoData[this.clickedCellRow]['postcode2']       = editData[0]['postcode2'];
+      this.kihonjyohoData[this.clickedCellRow]['address']         = editData[0]['address'];
+      this.kihonjyohoData[this.clickedCellRow]['dispAddress']     = editData[0]['dispAddress'];
+      this.kihonjyohoData[this.clickedCellRow]['tell1']           = editData[0]['tell1'];
+      this.kihonjyohoData[this.clickedCellRow]['tell2']           = editData[0]['tell2'];
+      this.kihonjyohoData[this.clickedCellRow]['shikutyoson'][0]  = editData[0]['shikutyoson'];
+      this.kihonjyohoData[this.clickedCellRow]['symd'][0]         = editData[0]['symd'];
+      this.kihonjyohoData[this.clickedCellRow]['dispSymd'][0]     = editData[0]['dispSymd'];
+
+      this.allData = this.kihonjyohoData;
+      this.mainFlexGrid.itemsSource = [];
+      this.mainFlexGrid.itemsSource = this.kihonjyohoData;
+      // 日付を和暦に変換（初期表示）
+      this.mainFlexGrid.columns[3].format = sysConst.FORMAT.GYmd;
+      this.mainFlexGrid.columns[10].format = sysConst.FORMAT.GYmd;
     }
   },
 };
@@ -608,6 +747,23 @@ div#kihonJyohoGrid {
   width: auto;
   min-width: none;
   max-width: none;
+  // 選択時カラー指定
+  .wj-cells
+  .wj-row:hover
+  .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
+
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
 }
 div#kihonJyoho {
   font-family: 'メイリオ';

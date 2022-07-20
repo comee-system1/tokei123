@@ -32,6 +32,7 @@
             single-line
             solo
             style="max-width: 100px;"
+            maxlength="7"
           ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -50,6 +51,7 @@
             single-line
             solo
             style="max-width: 210px;"
+            maxlength="15"
           ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -68,6 +70,7 @@
             single-line
             solo
             style="max-width: 210px;"
+            maxlength="30"
           ></v-text-field>
         </v-row>
         <v-row no-gutters style="flex-wrap: nowrap" class="mb-1">
@@ -82,7 +85,7 @@
           <v-card elevation ="0" class="dialogBirthday">
             <v-card-actions class="pa-0 align-start">
               <v-radio-group 
-                @change="switchDialogYear()"
+                @change="switchCalendar()"
                 column class="mt-0 pt-0 d-block mr-3" 
                 v-model="calendarKey"
                 >
@@ -91,7 +94,7 @@
               </v-radio-group>
               <v-radio-group
                 row
-                @change="switchDialogYear(),calcRiyousyaAge()"
+                @change="switchCalendar(),calcRiyousyaAge()"
                 class="mt-0 pt-0 dialogWareki"
                 v-if="calendarKey === '1'"
                 v-model="nengouKey"
@@ -102,7 +105,7 @@
                 <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
               </v-radio-group>
             </v-card-actions>
-            <v-card elevation ="0" class="d-inline-flex dialogBirthday_input">
+            <v-card elevation ="0" class="d-flex align-baseline">
               {{dispNngou}}
               <v-text-field
                 class="ml-1 mr-1 dialogBirthday_y"
@@ -110,6 +113,7 @@
                 v-model="inputBirthY"
                 single-line
                 solo
+                maxlength="4"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               年
@@ -119,6 +123,7 @@
                 v-model="inputBirthM"
                 single-line
                 solo
+                maxlength="2"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               月
@@ -128,6 +133,7 @@
                 v-model="inputBirthD"
                 single-line
                 solo
+                maxlength="2"
                 @blur="calcRiyousyaAge()"
               ></v-text-field>
               日
@@ -170,6 +176,7 @@
                 single-line
                 solo
                 style="max-width: 50px;"
+                maxlength="3"
               ></v-text-field>
               -
               <v-text-field
@@ -179,6 +186,7 @@
                 single-line
                 solo
                 style="max-width: 47px;"
+                maxlength="4"
               ></v-text-field>
               <v-btn
                 class = "ml-5"
@@ -201,6 +209,7 @@
               row-height="25"
               class="dialogAdrress"
               style="max-width: 300px;"
+              maxlength="50"
             ></v-textarea>
           </v-card>
         </v-row>
@@ -272,7 +281,7 @@
             class="service dialogSymd"
             height="25"
             style="max-width: 150px;"
-            >{{ year }}年{{ month }}月{{ date }}日
+            >{{ inputSartY }}年{{ inputSartM }}月{{ inputSartD }}日
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
@@ -324,9 +333,6 @@ export default {
       // 市区町村マスタの情報
       shikutyosonList: ['東経市', '西経市', '南経市', '北経市','A市','B市'],
       ja: ja,
-      year: moment().format('YYYY'),
-      month: moment().format('MM'),
-      date: moment().format('DD'),
       picker: '',
       datepicker_dialog: false,
 
@@ -335,27 +341,24 @@ export default {
       inputNames: '',
       inputKana: '',
       inputBirthymd: '',
-      dispBirthymd: [],
+      dispBirthymd: '',
       inputBirthY: '',
       inputBirthM: '',
       inputBirthD: '',
       inputAge: '',
       inputGender: '',
       inputGenderKey: '',
-      inputPostcode: '',
       inputPostcode1: '',
       inputPostcode2: '',
       inputAddress: '',
       inputTell1: '',
       inputTell2: '',
       inputShikutyoson: '',
-      inputShikutyosonArray:[],
-      inputSymd: '',
+      inputSymd: [],
       dispSymd: [],
-      inputDispSymdArray:[],
-      inputSartY: '',
-      inputSartM: '',
-      inputSartD: '',
+      inputSartY: moment().format('YYYY'),
+      inputSartM: moment().format('MM'),
+      inputSartD: moment().format('DD'),
 
       calendarKey: '',
       nengouKey: '',
@@ -375,8 +378,6 @@ export default {
      * 登録ボタンを押下
      */
     addRiyousyadata() {
-      this.inputPostcode = this.inputPostcode;
-
       // 入力データをフォーマット
       // 生年月日
       if ((this.nengouKey && this.inputBirthY) !== ''){
@@ -384,18 +385,16 @@ export default {
         this.inputBirthY = this.seireki(this.nengouKey + this.inputBirthY);
       }
 
-      // 開始日
-      if (this.inputSymd === "") {
-        // 開始日が空だった場合(カレンダー未操作)は今日の日付が入る
-        this.dispSymd.push(new Date(this.year, Number(this.month) - 1, this.date));
-      }
+      // 生年月日データを作成
+      this.inputBirthymd = this.inputBirthY + this.inputBirthM + this.inputBirthD;
+
       // 性別
       let displayGender = "";    // 表示用性別
-      if (this.inputGenderKey === 1) {
+      if (this.inputGenderKey === '1') {
         displayGender = "男";
-      } else if (this.inputGenderKey === 2) {
+      } else if (this.inputGenderKey === '2') {
         displayGender = "女";
-      } else if (this.inputGenderKey === 0) {
+      } else if (this.inputGenderKey === '0') {
         displayGender = "適不";
       } else {
         displayGender = "";
@@ -410,14 +409,30 @@ export default {
       displayAddress = displayPostcode + "\n" + this.inputAddress;
 
       // 一部入力値を配列に変更 
+
       // 市区町村
-      this.inputShikutyosonArray = [];
-      this.inputShikutyosonArray.push(this.inputShikutyoson);
+      let shikutyosonArray = [];
+      shikutyosonArray.push(this.inputShikutyoson);
 
       // 開始日
-      console.log(new Date(this.year, Number(this.month) - 1, this.date))
-      this.inputDispSymdArray = [];
-      this.inputDispSymdArray.push(new Date(this.year, Number(this.month) - 1, this.date));
+      let symdArray = [];
+      if( !(this.inputSymd).length ) {
+        // 開始日が空だった場合(カレンダー未操作)は今日の日付が入る
+        let inputSymd = this.inputSartY + this.inputSartM +this.inputSartD;
+        (symdArray).push(inputSymd);
+      }
+
+      symdArray.push(this.inputSymd);
+
+      // 開始日(表示用)
+      let formatDispSymd;
+      let dispSymdArray = [];
+
+      // 開始日ymd(表示用)のタイムスタンプを取得
+      formatDispSymd = new Date(this.inputSartY, Number(this.inputSartM) - 1, this.inputSartD);
+
+      // 配列化
+      dispSymdArray.push(formatDispSymd);
 
       // 入力情報を追加
       this.addData.push({
@@ -429,18 +444,17 @@ export default {
         age:              this.inputAge,
         gender:           displayGender,
         genderKey:        this.inputGenderKey,
-        postcode:         this.inputPostcode,
         postcode1:        this.inputPostcode1,
         postcode2:        this.inputPostcode2,
         address:          this.inputAddress,
         dispAddress:      displayAddress,
         tell1:            this.inputTell1,
         tell2:            this.inputTell2,
-        shikutyoson:      this.inputShikutyosonArray,
-        symd:             this.inputSymd,
-        dispSymd:         this.inputDispSymdArray
+        shikutyoson:      shikutyosonArray,
+        symd:             symdArray,
+        dispSymd:         dispSymdArray,
       });
-      console.log(this.addData);
+      console.log(this.addData)
       this.parentFlag = false;
       // 入力情報を追加した配列を親に返す
       this.$emit('addFormData', this.addData);
@@ -451,7 +465,7 @@ export default {
     /***********
      *dialog和暦西暦表示切り替え
      */
-    switchDialogYear() {
+    switchCalendar() {
       if (this.calendarKey === '1') {
         // 和暦選択時
         this.dispNngou = "";
@@ -468,7 +482,6 @@ export default {
     calcRiyousyaAge() {
       // 入力値から年齢を計算
       if(this.calendarKey === '2' || (this.calendarKey === '1' && this.nengouKey !== '')) {
-        console.log(12)
         // 西暦を選択、または和暦を選択かつ年号が空じゃなければ計算を実行
         if ((this.inputBirthY &&
             this.inputBirthM &&
@@ -491,12 +504,12 @@ export default {
           let inputBirthMd = '';
 
           // 現在の月日を成形
-          nowMd = this.month + this.date;
+          nowMd = this.inputSartM + this.inputSartD;
 
           // 入力値の月日の成形
-          let formatBirthM = moment(this.inputBirthM).format('MM');
-          let formatBirthD = moment(this.inputBirthD).format('DD');
-          inputBirthMd = formatBirthM + formatBirthD;
+          // ※計算が走るタイミングで警告が出る
+          this.inputBirthM = moment(this.inputBirthM).format('MM');
+          this.inputBirthD = moment(this.inputBirthD).format('DD');
 
           if(nowMd < inputBirthMd) {
             //今年まだ誕生日が来ていない
@@ -607,7 +620,7 @@ export default {
      */
     inputCalendarClick: function () {
       let picker = '';
-      picker = this.year + '-' + this.month + '-' + this.date;
+      picker = this.inputSartY + '-' + this.inputSartM + '-' + this.inputSartD;
       this.picker = picker;
       this.datepicker_dialog = true;
     },
@@ -616,12 +629,11 @@ export default {
      */
     dateSelect: function () {
       let split = this.picker.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      this.date = split[2];
+      this.inputSartY = split[0];
+      this.inputSartM = split[1];
+      this.inputSartD = split[2];
 
-      this.inputSymd = this.year + this.month + this.date;
-      console.log(this.inputSymd)
+      this.inputSymd = this.inputSartY + this.inputSartM + this.inputSartD;
       this.datepicker_dialog = false;
     },
     /***********
@@ -639,22 +651,24 @@ export default {
       this.inputCode = '';
       this.inputNames = '';
       this.inputKana = '';
-      this.inputBirthymd = [];
+      this.inputBirthymd = '';
       this.dispBirthymd = '';
+      this.inputBirthY = '';
+      this.inputBirthM = '';
+      this.inputBirthD = '';
       this.inputAge = '';
       this.inputGenderKey = '';
-      this.inputPostcode = '';
       this.inputPostcode1 = '';
       this.inputPostcode2 = '';
       this.inputAddress = '';
       this.inputTell1 = '';
       this.inputTell2 = '';
       this.inputShikutyoson = '';
-      this.inputSymd = '';
+      this.inputSymd = [];
       this.dispSymd = [];
-      this.year = moment().format('YYYY');
-      this.month = moment().format('MM');
-      this.date = moment().format('DD');
+      this.inputSartY = moment().format('YYYY');
+      this.inputSartM = moment().format('MM');
+      this.inputSartD = moment().format('DD');
 
       this.calendarKey = '',
       this.nengouKey = '',
@@ -724,13 +738,6 @@ export default {
       .v-text-field__slot input {
         text-align: right;
       }
-      .dialogBirthday_input {
-        height: 25px;
-        line-height: 25px;
-        .v-input {
-          display: block;
-        }
-      }
       .dialogBirthday_y {
         width: 40px;
         .v-input__slot {
@@ -754,6 +761,8 @@ export default {
     .dialogAge_emphasis {
       display: inline-block;
       background: lightYellow;
+      height: 25px;
+      line-height: 25px;
       width: 50px;
       text-align: right;
       padding-right: 8px;
