@@ -7,7 +7,7 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="rowStyle" no-gutters>
+      <v-row class="sort_menu" no-gutters>
         <v-col class="no-flex-grow">
           <div class="d-flex">
             <label>利用者</label>
@@ -40,7 +40,6 @@
         </v-col>
         <v-col>
           <label class="ml-1 align-end">ソート</label>
-          <!-- mandatoryは初期選択 -->
           <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
               small
@@ -74,7 +73,7 @@
             </v-btn>
           </v-btn-toggle>
           <v-btn
-            class="ml-1"
+            class="ml-1 mt-1"
             small
             style="width: 60px; height: 25px;"
           >
@@ -201,7 +200,7 @@
           </div>
         </v-col>
       </v-row>
-      <v-row class="justify-sm-space-between align-end mt-1" no-gutters>
+      <v-row class="justify-sm-space-between align-end mt-1 follow-grid-width" no-gutters>
         <v-btn-toggle class="flex-wrap" mandatory>
           <v-btn
             small
@@ -236,7 +235,7 @@
           :headersVisibility="'Column'"
           :allowDelete="false"
           :allowDragging="false"
-          :allowResizing="false"
+          :allowResizing="true"
           :deferResizing="false"
           :allowSorting="false"
           :selectionMode="'Row'"
@@ -248,70 +247,81 @@
             :binding="'jyukyuno'"
             :header="'受給者番号'"
             align="center"
-            :width="100"
+            :width="90"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'rnames'"
             :header="'利用者名'"
             align="center"
-            width="2*"
+            :width="130"
             :isReadOnly="true"
+            :wordWrap="true"
+            :allowResizing="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'sityoryaku'"
             :header="'援護者'"
             align="center"
-            width="1.5*"
+            :width="80"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'gsogaku'"
             :header="'サービスに要した費用の全体の額(A)'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'gfutan'"
             :header="'利用者負担(B)'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'honninbun'"
             :header="'(本人分)a'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'keigentou'"
             :header="'(軽減等)b'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'gtokubetu'"
             :header="'特定障害者特別給付費(C)'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'dairi'"
             :header="'代理受領額(A)-(B)+(C)'"
             align="center"
-            width="1.5*"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :header="'受領日'"
             align="center"
-            :width="160"
+            :width="100"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'print'"
@@ -319,14 +329,15 @@
             align="center"
             :width="20"
             :isReadOnly="true"
+            :allowResizing="false"
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
-      <v-row class="mt-2">
-        <v-col class="pt-0 pb-0 mr-8 d-flex justify-end">
+      <v-row class="mt-2 follow-grid-width">
+        <v-col class="pt-0 pb-0 mr-1 d-flex justify-end">
           <v-btn
             small
-            style="width: 160px; height: 25px;"
+            style="width: 100px; height: 25px;"
             @click="registerJyuryoubi()"
           >
             受領日登録
@@ -591,33 +602,17 @@ export default {
      * 受領日の書き込み
      */
     registerJyuryoubi() {
-      let jyuryoubiYmd = this.year + '年' + this.month + '月' + this.date + '日'
+      let jyuryoubiYmd = new Date(this.year, Number(this.month) - 1, this.date)
       for (let i = 0; i < this.JyuryouTsuchisyoData.length; i++) {
         if ((this.mainFlexGrid.getCellData(i, 10) === '〇') &&
         ((this.mainFlexGrid.getCellData(i, 9) === null) ||
         ((this.mainFlexGrid.getCellData(i, 9) === ' ')))) {
-          // 受領日を表示
+          // 丸がついているデータに受領日を表示
           this.mainFlexGrid.setCellData(i, 9 ,jyuryoubiYmd);
-        }
-        // 選択されている受領日を取得
-        let yuryoubiView = "";
-        let formatYear  = ""
-        let formatMonth = ""
-        let formatDate  = ""
-
-        if (this.mainFlexGrid.getCellData(i, 9) !== null) {
-
-          yuryoubiView = this.mainFlexGrid.getCellData(i, 9);
-          // 登録する値をフォーマット
-          formatYear = yuryoubiView.substr(0, 4);
-          formatMonth = yuryoubiView.substr(5, 2);
-          formatDate = yuryoubiView.substr(8, 2);
-        } else {
-            yuryoubiView = "";
         }
 
         // 選択されている受領日を登録
-        this.JyuryouTsuchisyoData[i]['jyuymd'] = formatYear + formatMonth + formatDate;
+        this.JyuryouTsuchisyoData[i]['jyuymd'] = this.year + this.month + this.date;
       }
     },
     /**************
@@ -966,9 +961,18 @@ div#JyuryouTsuchisyo {
   font-size: 14px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
-  min-width: 1266px !important;
-  max-width: 1920px;
+  min-width: none;
+  max-width: none;
   width: auto;
+  .sort_menu {
+  min-width: 1300px;
+  }
+  .wj-flexgrid {
+    width: auto;
+  }
+  .follow-grid-width {
+    width: 1030px;
+  }
   .user-info {
     label {
       margin-right: 4px!important;

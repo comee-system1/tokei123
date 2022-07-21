@@ -19,6 +19,7 @@
             tile
           >
             <v-btn
+              id="modifyButtonKeikakuSoudan"
               class="modify-button"
               style="height: 21px"
               @click="setTrunModify"
@@ -26,9 +27,10 @@
               修正</v-btn
             >
             <v-btn
+              id="addButtonKeikakuSoudan"
               class="modify-button"
               style="height: 21px"
-              @click="setTrunModify"
+              @click="setTrunAdd"
             >
               追加</v-btn
             >
@@ -51,9 +53,10 @@
         >
           <wj-combo-box
             class="keikakuSoudan-sienjigyosyo-input2"
-            :textChanged="onTextChanged"
+            :gotFocus="selectSienjigyosyo"
             placeholder="事業所を選択"
             :readonly="true"
+            :text="jigyosyoidname"
           ></wj-combo-box>
         </v-card>
       </v-row>
@@ -75,8 +78,8 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdStart"
-            v-model="sienkubunymdStart"
+            :value="rksymd"
+            v-model="rksymd"
             placeholder="開始日を選択"
           ></datepicker>
           &nbsp;～&nbsp;
@@ -84,8 +87,8 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdEnd"
-            v-model="sienkubunymdEnd"
+            :value="rkeymd"
+            v-model="rkeymd"
             placeholder="終了日を選択"
           ></datepicker>
         </v-card>
@@ -117,6 +120,7 @@
             <wj-combo-box
               class="keikakuSoudan-monitoringkikan-input"
               :textChanged="onTextChanged"
+              :text="monijiki"
             ></wj-combo-box>
             <label style="padding-top: 2px">ヶ月</label>
             <v-card elevation="0" class="pl-1 d-flex flex-row">
@@ -151,49 +155,23 @@
           </v-card>
         </v-card>
       </v-row>
-      <v-row no-gutters class="keikakuSoudan-kasankoumoku-row">
+      <v-row no-gutters class="keikakuSoudan-kasankoumoku-row d-flex flex-row">
         <v-card
           elevation="0"
           class="keikakuSoudan-title-length4 d-flex flex-row"
-          style="height: 50px; padding-top: 15px"
           flat
           tile
         >
           加算項目
         </v-card>
-        <v-card elevation="0" flat tile>
-          <wj-flex-grid
-            id="gridKasankoumoku"
-            class="no-scrollbars"
-            :initialized="onInitializedKasankoumoku"
-            :itemsSource="kasankoumokuData"
-            :headersVisibility="'None'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowDragging="false"
-            :allowPinning="false"
-            :allowResizing="false"
-            :allowSorting="false"
-            :isReadOnly="true"
-            :alternatingRowStep="0"
-            :selectionMode="'None'"
-            style="
-              width: 300px;
-              height: 51px;
-              border-bottom: none;
-              border-right: none;
-              font-size: 12px;
-              margin-left: 4px;
-              border-radius: 2px;
-            "
-          >
-            <wj-flex-grid-column
-              :binding="'value'"
-              :allowMerging="true"
-              width="*"
-            ></wj-flex-grid-column>
-          </wj-flex-grid>
+        <v-card
+          elevation="0"
+          class="keikakuSoudan-kasankoumoku-selection d-flex flex-row"
+          flat
+          tile
+        >
+          <v-checkbox class="item-button" label="特別地区加算" v-model="tokuti">
+          </v-checkbox>
         </v-card>
       </v-row>
       <v-row
@@ -201,18 +179,14 @@
         no-gutters
         class="keikakuSoudan-button-row"
       >
-        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
-          キャンセル</v-btn
-        >
+        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="keikakuSoudan-bottom-regist d-flex flex-row-reverse"
           flat
           tile
         >
-          <v-btn class="regist-button" @click="openDialog_Term('regist')">
-            登 録</v-btn
-          >
+          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -243,11 +217,17 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      sienkubunymdStart: '',
-      sienkubunymdEnd: '',
+
       monitoringkikan: -1,
       monitoringkikanData: this.getMonitoringkikan(),
-      kasankoumokuData: this.getKasankoumoku(),
+
+      isModify: false,
+      jigyosyoid: 0,
+      jigyosyoidname: '',
+      rksymd: '',
+      rkeymd: '',
+      monijiki: 0,
+      tokuti: 0,
     };
   },
   props: ['titleNum'],
@@ -267,37 +247,70 @@ export default {
       let num = 0;
       let add = 0;
       if (this.mode !== 'modKeikakuSoudan') {
-        num = 8.5;
+        num = 7.7;
       } else {
-        num = 9.5;
+        num = 8.7;
         add = 4;
       }
       height = 'calc((29px * ' + num + ') + ' + add + 'px)';
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
-      this.setMode('modKeikakuSoudan');
+      this.setButtonColor('modifyButtonKeikakuSoudan', true);
+      this.setButtonColor('addButtonKeikakuSoudan', false);
+      this.$emit('setMode', 'modKeikakuSoudan');
+      this.Resize();
+    },
+    setTrunAdd() {
+      this.setButtonColor('modifyButtonKeikakuSoudan', false);
+      this.setButtonColor('addButtonKeikakuSoudan', true);
+      this.$emit('setMode', 'modKeikakuSoudan');
       this.Resize();
     },
     cancel() {
+      this.setButtonColor('modifyButtonKeikakuSoudan', false);
+      this.setButtonColor('addButtonKeikakuSoudan', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
-    setData(list, selectedData) {
-      let data = [];
+    setButtonColor(id, on) {
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = on ? '#fff' : 'black';
+      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+    },
+    setData(selectedData) {
       this.clearData();
-      if (selectedData != null) {
-        this.setdata(selectedData);
-      } else {
-        list.then((value) => {
-          this.setdata(value[0][0]);
-        });
+      if (selectedData.length > 0) {
+        this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
       this.Resize();
     },
-    setdata(data) {},
-    clearData() {},
+    setdata(data) {
+      if (data.rksymd.length > 0) {
+        this.setJigyosyo(data.sjgyo, data.sjigyoname);
+        this.rksymd = moment(data.rksymd).format('YYYY-M-D');
+        if (data.rkeymd != '99991231') {
+          this.rkeymd = moment(data.rkeymd).format('YYYY-M-D');
+        }
+        this.monijiki = data.monijiki;
+        this.tokuti = data.tokuti;
+        this.isModify = true;
+      }
+    },
+    setJigyosyo(code, name) {
+      this.jigyosyoid = code;
+      this.jigyosyoidname = name;
+    },
+    clearData() {
+      this.isModify = false;
+      this.jigyosyoid = 0;
+      this.jigyosyoidname = '';
+      this.rksymd = '';
+      this.rkeymd = '';
+      this.monijiki = 0;
+      this.tokuti = 0;
+    },
     getMonitoringkikan() {
       let result = [];
       result.push({
@@ -350,30 +363,28 @@ export default {
 
       flexGrid.endUpdate();
     },
-    getKasankoumoku() {
-      let serviceSyubetu = [];
-      serviceSyubetu.push({ value: '加算項目を選択' }, { value: '' });
-      return serviceSyubetu;
-    },
-    onInitializedKasankoumoku(grd) {
-      grd.beginUpdate();
-      grd.cells.rows.defaultSize = 25;
-
-      grd.endUpdate();
-    },
     onTextChanged(txb) {},
+    selectSienjigyosyo() {
+      this.$emit('setHojoMode', 'jigyosyo');
+    },
     /****************
      * 編集モード設定
      */
     setMode(pmode) {
       this.mode = pmode;
+      if (this.mode !== 'modKeikakuSoudan') {
+        this.setButtonColor('modifyButtonKeikakuSoudan', false);
+        this.setButtonColor('addButtonKeikakuSoudan', false);
+      }
     },
     /****************
      * グリッド選択情報
      */
     setSubGridSelected(seleced) {
-      this.subGridSelected = seleced;
       this.$emit('setSubGridSelected', seleced);
+    },
+    setSubGridSelectedFromParent(seleced) {
+      this.subGridSelected = seleced;
     },
   },
 };
@@ -506,8 +517,20 @@ div#JyukyuTourokuKeikakuSoudan {
   }
 
   .keikakuSoudan-kasankoumoku-row {
-    height: 50px;
+    height: 25px;
     margin: 4px 4px 0px 4px;
+    .keikakuSoudan-kasankoumoku-selection {
+      height: 100%;
+      width: 300px;
+      margin-left: 4px;
+      padding-left: 0px;
+      .item-button {
+        width: 200px;
+        margin-top: -3px;
+        margin-left: -27px;
+        transform: scale(0.75);
+      }
+    }
   }
 
   .keikakuSoudan-button-row {

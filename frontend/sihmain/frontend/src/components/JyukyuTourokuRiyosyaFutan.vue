@@ -19,6 +19,7 @@
             tile
           >
             <v-btn
+              id="modifyButtonRiyosyafutan"
               class="modify-button"
               style="height: 21px"
               @click="setTrunModify"
@@ -26,9 +27,10 @@
               修正</v-btn
             >
             <v-btn
+              id="addButtonRiyosyafutan"
               class="modify-button"
               style="height: 21px"
-              @click="setTrunModify"
+              @click="setTrunAdd"
             >
               追加</v-btn
             >
@@ -296,18 +298,14 @@
         no-gutters
         class="riyosyafutan-button-row"
       >
-        <v-btn class="cancel-button" @click="openDialog_Term('regist')">
-          キャンセル</v-btn
-        >
+        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="riyosyafutan-bottom-regist d-flex flex-row-reverse"
           flat
           tile
         >
-          <v-btn class="regist-button" @click="openDialog_Term('regist')">
-            登 録</v-btn
-          >
+          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>
@@ -366,22 +364,32 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
+      this.setButtonColor('modifyButtonRiyosyafutan', true);
+      this.setButtonColor('addButtonRiyosyafutan', false);
+      this.$emit('setMode', 'modRiyosyafutan');
+      this.Resize();
+    },
+    setTrunAdd() {
+      this.setButtonColor('modifyButtonRiyosyafutan', false);
+      this.setButtonColor('addButtonRiyosyafutan', true);
       this.$emit('setMode', 'modRiyosyafutan');
       this.Resize();
     },
     cancel() {
+      this.setButtonColor('modifyButtonRiyosyafutan', false);
+      this.setButtonColor('addButtonRiyosyafutan', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
-    setData(list, selectedData) {
-      let data = [];
+    setButtonColor(id, on) {
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = on ? '#fff' : 'black';
+      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+    },
+    setData(selectedData) {
       this.clearData();
-      if (selectedData != null) {
-        this.setdata(selectedData);
-      } else {
-        list.then((value) => {
-          this.setdata(value[0][0]);
-        });
+      if (selectedData.length > 0) {
+        this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
       this.Resize();
@@ -421,13 +429,19 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
+      if (this.mode !== 'modRiyosyafutan') {
+        this.setButtonColor('modifyButtonRiyosyafutan', false);
+        this.setButtonColor('addButtonRiyosyafutan', false);
+      }
     },
     /****************
      * グリッド選択情報
      */
     setSubGridSelected(seleced) {
-      this.subGridSelected = seleced;
       this.$emit('setSubGridSelected', seleced);
+    },
+    setSubGridSelectedFromParent(seleced) {
+      this.subGridSelected = seleced;
     },
   },
 };

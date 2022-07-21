@@ -14,6 +14,7 @@
             tile
           >
             <v-btn
+              id="modifyButtonSikyuryo"
               class="modify-button"
               style="height: 21px"
               @click="setTrunModify"
@@ -21,9 +22,10 @@
               修正</v-btn
             >
             <v-btn
+              id="addButtonSikyuryo"
               class="modify-button"
               style="height: 21px"
-              @click="setTrunModify"
+              @click="setTrunAdd"
             >
               追加</v-btn
             >
@@ -232,7 +234,7 @@
         >
       </v-row>
       <v-row v-if="this.changeMode()" no-gutters class="sikyuryo-button-row">
-        <v-btn class="cancel-button"> キャンセル</v-btn>
+        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
           class="sikyuryo-bottom-regist d-flex flex-row-reverse"
@@ -297,22 +299,32 @@ export default {
       this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
+      this.setButtonColor('modifyButtonSikyuryo', true);
+      this.setButtonColor('addButtonSikyuryo', false);
+      this.$emit('setMode', 'modSikyuryo');
+      this.Resize();
+    },
+    setTrunAdd() {
+      this.setButtonColor('modifyButtonSikyuryo', false);
+      this.setButtonColor('addButtonSikyuryo', true);
       this.$emit('setMode', 'modSikyuryo');
       this.Resize();
     },
     cancel() {
+      this.setButtonColor('modifyButtonSikyuryo', false);
+      this.setButtonColor('addButtonSikyuryo', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
-    setData(list, selectedData) {
-      let data = [];
+    setButtonColor(id, on) {
+      var targetbtn = document.getElementById(id);
+      targetbtn.style.color = on ? '#fff' : 'black';
+      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+    },
+    setData(selectedData) {
       this.clearData();
-      if (selectedData != null) {
-        this.setdata(selectedData);
-      } else {
-        list.then((value) => {
-          this.setdata(value[0][0]);
-        });
+      if (selectedData.length > 0) {
+        this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
       this.Resize();
@@ -363,12 +375,10 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-    },
-    /****************
-     * 編集モード設定
-     */
-    setMode(pmode) {
-      this.mode = pmode;
+      if (this.mode !== 'modSikyuryo') {
+        this.setButtonColor('modifyButtonSikyuryo', false);
+        this.setButtonColor('addButtonSikyuryo', false);
+      }
     },
     /****************
      * グリッド選択情報

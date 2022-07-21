@@ -15,7 +15,7 @@ module.exports = class ApiResponse {
             status: 'idle',
             riid: '1000000000',
             riyocode: '1000000000',
-            names: '東経太郎',
+            names: '１２３４５６７８９０',
             kana: 'タロウトウケイ',
             jyukyu_inf: {
               jyukyuno: '100012360',
@@ -43,11 +43,11 @@ module.exports = class ApiResponse {
               eymddsp: '',
               // 区分が1の場合は病院名
               // 区分が2の場合は外泊先
-              ngname: '東経市市民病院',
+              ngname: '１２３４５６７８９０１２３４５',
               // 区分が1、入退院区分が1の場合は、備考(開始日)
               // 区分が1、入退院区分が2の場合は、備考(終了日)
               // 区分が2の場合は、備考(開始日)
-              bikoudsp: '備考',
+              bikoudsp: '１２３４５６７８９０１２３４５６７８９０',
             }
           }
         },

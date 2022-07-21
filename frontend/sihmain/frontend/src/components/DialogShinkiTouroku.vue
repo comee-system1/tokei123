@@ -105,7 +105,7 @@
                 <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
               </v-radio-group>
             </v-card-actions>
-            <v-card elevation ="0" class="d-flex align-baseline">
+            <v-card elevation ="0" class="d-inline-flex align-center dialogBirthday_input">
               {{dispNngou}}
               <v-text-field
                 class="ml-1 mr-1 dialogBirthday_y"
@@ -138,7 +138,7 @@
               ></v-text-field>
               日
               <div class="dialogAge_emphasis ml-3 mr-1">{{this.inputAge}}</div>
-              <div class="dialogAge">歳</div>
+              歳
             </v-card>
           </v-card>
         </v-row>
@@ -290,12 +290,22 @@
         <hr size="1" />
         <v-card class="d-flex mt-3" elevation ="0">
           <v-card elevation ="0" class="ml-1">
-            <v-btn @click="shinkiTouroku_dialog_clear()" tile outlined>
+            <v-btn
+              elevation="1"
+              height = "25"
+              small
+              @click="shinkiTouroku_dialog_clear()"
+              >
               クリア
             </v-btn>
           </v-card>
           <v-card elevation ="0" class="ml-auto">
-            <v-btn @click="addRiyousyadata()" tile outlined>
+            <v-btn
+              elevation="1"
+              height = "25"
+              small
+              @click="addRiyousyadata()"
+              >
               登録
             </v-btn>
           </v-card>
@@ -717,7 +727,7 @@ export default {
         .v-text-field__slot {
           input {
             height: 25px;
-            max-height: 25px;
+            line-height: 25px;
           }
         }
         // 住所幅文字調整
@@ -751,19 +761,12 @@ export default {
         }
       }
     }
-    // 年齢デザイン調整
-    .dialogAge {
-      display: inline-block;
-      height: 25px;
-      line-height: 25px;
-      padding: 0;
-    }
     .dialogAge_emphasis {
       display: inline-block;
       background: lightYellow;
+      width: 50px;
       height: 25px;
       line-height: 25px;
-      width: 50px;
       text-align: right;
       padding-right: 8px;
     }

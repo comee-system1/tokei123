@@ -7,8 +7,8 @@
     ></header-services>
 
     <v-container class="user-info" fluid>
-      <v-row class="rowStyle d-flex justify-space-between" no-gutters>
-        <v-col class="d-flex justify-start col-7">
+      <div class="sort_menu">
+        <v-row class="d-flex justify-space-between" no-gutters>
           <div class="d-flex">
             <label>利用者</label>
             <wj-menu
@@ -22,9 +22,76 @@
               style="width: 200px"
             >
             </wj-menu>
+            <v-btn
+              class="ml-1"
+              small
+              style="width: 60px; height: 25px;"
+              >
+              検索
+            </v-btn>
           </div>
+          <div class="d-flex">
+            <label>印刷種類</label>
+            <!-- mandatoryは初期選択 -->
+            <v-btn-toggle class="flex-wrap" mandatory
+              >
+              <!-- 印刷種類「一覧」選択時「入退院・外泊」は選択不可 -->
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 90px"
+                @click="disabledSwitch(1)"
+              >
+                報告書
+              </v-btn>
+              <v-checkbox
+                v-if="this.insatsuFlag.houkokusyoFlag"
+                v-model="selNyutaiin"
+                label="入退院"
+                class="nyutaiinCheckbox"
+                color="primary"
+              ></v-checkbox>
+              <v-checkbox
+                v-if="this.insatsuFlag.houkokusyoFlag"
+                v-model="selGaihaku"
+                label="外泊"
+                class="nyutaiinCheckbox"
+                color="primary"
+              ></v-checkbox>
+              <v-checkbox
+                v-if="this.insatsuFlag.disabledFlag"
+                v-model="selNyutaiinDisabled"
+                label="入退院"
+                class="nyutaiinCheckbox"
+                color="primary"
+                disabled
+              ></v-checkbox>
+              <v-checkbox
+                v-if="this.insatsuFlag.disabledFlag"
+                v-model="selGaihakuDisabled"
+                label="外泊"
+                class="nyutaiinCheckbox"
+                color="primary"
+                disabled
+              ></v-checkbox>
+              <v-btn
+                small
+                color="secondary"
+                dark
+                outlined
+                style="width: 90px"
+                @click="disabledSwitch(2)"
+              >
+                一覧
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+        </v-row>
+        <v-row class="mt-1" no-gutters>
           <div>
-            <label class="ml-1">ソート</label>
+            <label>ソート</label>
             <!-- mandatoryは初期選択 -->
             <v-btn-toggle class="flex-wrap" mandatory>
               <v-btn
@@ -59,89 +126,23 @@
               </v-btn>
             </v-btn-toggle>
           </div>
-            <v-btn
-              class="ml-1"
-              small
-              style="width: 60px; height: 25px;"
-              >
-                検索
-              </v-btn>
-        </v-col>
-        <v-col class="d-flex justify-end">
-          <label>印刷種類</label>
-          <!-- mandatoryは初期選択 -->
-          <v-btn-toggle class="flex-wrap" mandatory
-            >
-            <!-- 印刷種類「一覧」選択時「入退院・外泊」は選択不可 -->
+        </v-row>
+        <v-row class="mt-1 justify-sm-space-between align-end" no-gutters>
+          <v-btn-toggle class="flex-wrap" mandatory>
             <v-btn
               small
-              color="secondary"
-              dark
               outlined
-              style="width: 90px"
-              @click="disabledSwitch(1)"
+              v-for="(n, k) in alphabet"
+              :key="n"
+              :width="25"
+              :height="25"
+              :min-width="25"
+              :max-width="25"
+              @click="onAlphabet(k)"
             >
-              報告書
-            </v-btn>
-            <v-checkbox
-              v-if="this.insatsuFlag.houkokusyoFlag"
-              v-model="selNyutaiin"
-              label="入退院"
-              class="nyutaiinCheckbox"
-              color="primary"
-            ></v-checkbox>
-            <v-checkbox
-              v-if="this.insatsuFlag.houkokusyoFlag"
-              v-model="selGaihaku"
-              label="外泊"
-              class="nyutaiinCheckbox"
-              color="primary"
-            ></v-checkbox>
-            <v-checkbox
-              v-if="this.insatsuFlag.disabledFlag"
-              v-model="selNyutaiinDisabled"
-              label="入退院"
-              class="nyutaiinCheckbox"
-              color="primary"
-              disabled
-            ></v-checkbox>
-            <v-checkbox
-              v-if="this.insatsuFlag.disabledFlag"
-              v-model="selGaihakuDisabled"
-              label="外泊"
-              class="nyutaiinCheckbox"
-              color="primary"
-              disabled
-            ></v-checkbox>
-            <v-btn
-              small
-              color="secondary"
-              dark
-              outlined
-              style="width: 90px"
-              @click="disabledSwitch(2)"
-            >
-              一覧
+              {{ n }}
             </v-btn>
           </v-btn-toggle>
-        </v-col>
-      </v-row>
-      <v-row class="mt-1 justify-sm-space-between align-end" no-gutters>
-        <v-btn-toggle class="flex-wrap" mandatory>
-          <v-btn
-            small
-            outlined
-            v-for="(n, k) in alphabet"
-            :key="n"
-            :width="25"
-            :height="25"
-            :min-width="25"
-            :max-width="25"
-            @click="onAlphabet(k)"
-          >
-            {{ n }}
-          </v-btn>
-        </v-btn-toggle>
           <wj-menu
             :header="'全選択/全解除'"
             :itemClicked="onselectedIndexChanged"
@@ -154,79 +155,90 @@
               <b>印刷を全解除</b>
             </wj-menu-item>
           </wj-menu>
-      </v-row>
-      <v-row class="mt-1" no-gutters>
-        <wj-flex-grid
-          id="nyuTaiinGrid"
-          :headersVisibility="'Column'"
-          :allowDelete="false"
-          :allowDragging="false"
-          :allowResizing="false"
-          :deferResizing="false"
-          :allowSorting="false"
-          :selectionMode="'Row'"
-          :initialized="onInitialized"
-          :itemsSourceChanged="onitemsSourceChanged"
-          :itemsSource="nyuTaiinData"
-          :style="gridHeight"
-        >
-          <wj-flex-grid-column
-            :binding="'jyukyuno'"
-            :header="'受給者番号'"
-            align="center"
-            :width="100"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'names'"
-            :header="'氏名'"
-            align="center"
-            width="2*"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'nyuutaigai'"
-            :header="'入退院外泊の別'"
-            align="center"
-            :width="65"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'symddsp'"
-            :header="'入退院・外泊開始年月日'"
-            align="center"
-            :width="150"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'eymddsp'"
-            :header="'外泊終了年月日'"
-            align="center"
-            :width="150"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'ngname'"
-            :header="'入院先医療機関名/外泊先'"
-            align="center"
-            width="2*"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'bikoudsp'"
-            :header="'備考'"
-            width="3*"
-            :isReadOnly="false"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'print'"
-            :header="'印刷'"
-            align="center"
-            :width="20"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-        </wj-flex-grid>
-      </v-row>
+        </v-row>
+        <v-row class="mt-1" no-gutters>
+          <wj-flex-grid
+            id="nyuTaiinGrid"
+            :headersVisibility="'Column'"
+            :allowDelete="false"
+            :allowDragging="false"
+            :allowResizing="true"
+            :deferResizing="false"
+            :allowSorting="false"
+            :selectionMode="'Row'"
+            :initialized="onInitialized"
+            :itemsSourceChanged="onitemsSourceChanged"
+            :itemsSource="nyuTaiinData"
+            :style="gridHeight"
+          >
+            <wj-flex-grid-column
+              :binding="'jyukyuno'"
+              :header="'受給者番号'"
+              align="center"
+              :width="80"
+              :isReadOnly="true"
+              :allowResizing="false"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'names'"
+              :header="'氏名'"
+              align="center"
+              :width="130"
+              :isReadOnly="true"
+              :multiLine="true"
+              :wordWrap="true"
+              :allowResizing="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'nyuutaigai'"
+              :header="'入退院外泊の別'"
+              align="center"
+              :width="65"
+              :isReadOnly="true"
+              :allowResizing="false"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'symddsp'"
+              :header="'入退院・外泊開始年月日'"
+              align="center"
+              :width="150"
+              :isReadOnly="true"
+              :allowResizing="false"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'eymddsp'"
+              :header="'外泊終了年月日'"
+              align="center"
+              :width="150"
+              :isReadOnly="true"
+              :allowResizing="false"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'ngname'"
+              :header="'入院先医療機関名/外泊先'"
+              align="center"
+              :width="200"
+              :isReadOnly="true"
+              :allowResizing="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'bikoudsp'"
+              :header="'備考'"
+              :width="250"
+              :isReadOnly="false"
+              :allowResizing="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :binding="'print'"
+              :header="'印刷'"
+              align="center"
+              :width="20"
+              :isReadOnly="true"
+              :allowResizing="false"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-row>
+      </div>
     </v-container>
   </div>
 </template>
@@ -807,10 +819,15 @@ div#nyuTaiin {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
-  // overflow-x: scroll;
-  min-width: 1266px !important;
-  max-width: 1920px;
+  min-width: none;
+  max-width: none;
   width: auto;
+  .sort_menu {
+    width: 1047px;
+  }
+  .wj-flexgrid {
+    width: auto;
+  }
   .wj-control {
      .wj-template {
       height: 23px !important;

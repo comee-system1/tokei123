@@ -236,8 +236,8 @@ export default {
           src: 'mdi-account-group-outline',
           lists: [
             { name: '基本情報', link: '/KihonJyoho' },
-            { name: '受給者証登録', link: '/JyukyuTouroku' },
             { name: 'サービス履歴', link: '/ServiceHistory' },
+            { name: '受給者証登録', link: '/JyukyuTouroku' },
           ],
         },
         {

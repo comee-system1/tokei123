@@ -104,7 +104,7 @@
                 <v-radio label="令和" :key="4" :value="'令和'" class="mb-0"></v-radio>
               </v-radio-group>
             </v-card-actions>
-            <v-card elevation ="0" class="d-flex align-baseline">
+            <v-card elevation ="0" class="d-inline-flex align-center dialogBirthday_input">
               {{dispNngou}}
               <v-text-field
                 class="ml-1 mr-1 dialogBirthday_y"
@@ -137,7 +137,7 @@
               ></v-text-field>
               日
               <div class="dialogAge_emphasis ml-3 mr-1">{{this.riyousyaAge}}</div>
-              <div class="dialogAge">歳</div>
+              歳
             </v-card>
           </v-card>
         </v-row>
@@ -273,7 +273,7 @@
               </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col class="pt-3 pb-3 d-flex shikutyosonEditBox">
+          <v-col class="pt-1 pb-1 d-flex shikutyosonEditBox">
             <v-row no-gutters class="d-block mr-1">
               <v-card elevation="0" class="d-flex">
                 <v-card 
@@ -315,12 +315,12 @@
                   </div>
                 </v-btn>
               </v-card>
-              <v-card elevation="0" class="shikutyosonDelete">
+              <v-card elevation="0" class="mt-1">
                 <v-btn
-                  @click="shinkiTouroku_dialog_delete()"
-                  tile
-                  outlined
+                  elevation="1"
+                  small
                   v-if="this.editShikutyosonFlag"
+                  @click="shinkiTouroku_dialog_delete()"
                   >
                   削除
                 </v-btn>
@@ -358,14 +358,19 @@
             </wj-flex-grid>
           </v-col>
         </v-row>
-        <v-card class="d-flex justify-space-between mt-3" elevation="0">
+        <v-card class="d-flex justify-space-between mt-1" elevation="0">
           <v-card elevation="0" class="last_registrant">
             <v-card-text >
               最終登録者：2020/08/04 10:38 明治　正雄
             </v-card-text>
           </v-card>
           <v-card elevation="0">
-            <v-btn @click="addRiyousyadata()" tile outlined>
+            <v-btn
+              elevation="1"
+              height = "25"
+              small
+              @click="addRiyousyadata()"
+              >
               修正登録
             </v-btn>
           </v-card>
@@ -1021,6 +1026,7 @@ export default {
     .dialogHeader {
       border-radius: initial;
       width: 150px;
+      text-align: center;
     }
     .dialogHeader-25 {
       line-height: 25px;
@@ -1029,6 +1035,12 @@ export default {
       line-height: 75px;
     }
     // inputのデザイン修正
+    .v-card__title {
+      padding: 0 12px;
+    }
+    .container {
+      padding: 4px 12px;
+    }
     .v-text-field {
       .v-input__control {
         min-height: initial;
@@ -1067,13 +1079,6 @@ export default {
       .v-text-field__slot input {
         text-align: right;
       }
-      .dialogBirthday_input {
-        height: 25px;
-        line-height: 25px;
-        .v-input {
-          display: block;
-        }
-      }
       .dialogBirthday_y {
         width: 40px;
         .v-input__slot {
@@ -1087,19 +1092,12 @@ export default {
         }
       }
     }
-    // 年齢デザイン調整
-    .dialogAge {
-      display: inline-block;
-      height: 25px;
-      line-height: 25px;
-      padding: 0;
-    }
     .dialogAge_emphasis {
       display: inline-block;
       background: lightYellow;
+      width: 50px;
       height: 25px;
       line-height: 25px;
-      width: 50px;
       text-align: right;
       padding-right: 8px;
     }
@@ -1150,9 +1148,9 @@ export default {
     // 市区町村修正箇所
     .shikutyosonEditBox {
       border: solid 1px #ccc;
-      .shikutyosonDelete {
-        margin-top: 21px;
-      }
+      // .shikutyosonDelete {
+      //   margin-top: 21px;
+      // }
     }
     // 最終登録者デザイン修正
     .last_registrant {
