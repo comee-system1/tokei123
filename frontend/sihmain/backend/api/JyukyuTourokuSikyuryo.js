@@ -30,13 +30,13 @@ export async function JyukyuTourokuSikyuryoData(rid) {
             skryoh1_inf[i]['svccode5'		] = jyukyuInfData[i].svccode5;       // サービス詳細コード5
             skryoh1_inf[i]['svccode6'		] = jyukyuInfData[i].svccode6;       // サービス詳細コード6
             skryoh1_inf[i]['svccode7'		] = jyukyuInfData[i].svccode7;       // サービス詳細コード7
-            skryoh1_inf[i]['kihonryo1'		] = jyukyuInfData[i].kihonryo1;      // 基本支給量1
-            skryoh1_inf[i]['kihonryo2'		] = jyukyuInfData[i].kihonryo2;      // 基本支給量2
-            skryoh1_inf[i]['kihonryo3'		] = jyukyuInfData[i].kihonryo3;      // 基本支給量3
-            skryoh1_inf[i]['kihonryo4'		] = jyukyuInfData[i].kihonryo4;      // 基本支給量4
-            skryoh1_inf[i]['kihonryo5'		] = jyukyuInfData[i].kihonryo5;      // 基本支給量5
-            skryoh1_inf[i]['kihonryo6'		] = jyukyuInfData[i].kihonryo6;      // 基本支給量6
-            skryoh1_inf[i]['kihonryo7'		] = jyukyuInfData[i].kihonryo7;      // 基本支給量7
+            skryoh1_inf[i]['kihnryo1'		] = jyukyuInfData[i].kihnryo1;       // 基本支給量1
+            skryoh1_inf[i]['kihnryo2'		] = jyukyuInfData[i].kihnryo2;       // 基本支給量2
+            skryoh1_inf[i]['kihnryo3'		] = jyukyuInfData[i].kihnryo3;       // 基本支給量3
+            skryoh1_inf[i]['kihnryo4'		] = jyukyuInfData[i].kihnryo4;       // 基本支給量4
+            skryoh1_inf[i]['kihnryo5'		] = jyukyuInfData[i].kihnryo5;       // 基本支給量5
+            skryoh1_inf[i]['kihnryo6'		] = jyukyuInfData[i].kihnryo6;       // 基本支給量6
+            skryoh1_inf[i]['kihnryo7'		] = jyukyuInfData[i].kihnryo7;       // 基本支給量7
             skryoh1_inf[i]['ikairyo1'		] = jyukyuInfData[i].ikairyo1;       // 1回あたりの支給量1
             skryoh1_inf[i]['ikairyo2'		] = jyukyuInfData[i].ikairyo2;       // 1回あたりの支給量2
             skryoh1_inf[i]['ikairyo3'		] = jyukyuInfData[i].ikairyo3;       // 1回あたりの支給量3
@@ -102,9 +102,8 @@ export async function JyukyuTourokuSikyuryoData(rid) {
             skryoh1_inf[i]['longnyuinnam'	] = jyukyuInfData[i].longnyuinnam;   // 長期入院者名称
             skryoh1_inf[i]['tankyuinnam'	] = jyukyuInfData[i].tankyuinnam;    // たん吸引名称
             skryoh1_inf[i]['taisyonam'		] = jyukyuInfData[i].taisyonam;      // 退所名称
-            skryoh1_inf[i]['dspskryo'		] = jyukyuInfData[i].dspskryo;       // 表示用支給量
-            skryoh1_inf[i]['dspsktani'		] = jyukyuInfData[i].dspsktani;      // 支給量単位
-            skryoh1_inf[i]['dspskryotani'   ] = jyukyuInfData[i].dspskryo + jyukyuInfData[i].dspsktani;
+            skryoh1_inf[i]['dspskryo1'		] = jyukyuInfData[i].dspskryo1;      // 表示用支給量1:基本支給量
+            skryoh1_inf[i]['dspskryo2'		] = jyukyuInfData[i].dspskryo2;      // 表示用支給量2:1回当たりの支給量等
 
         }
 

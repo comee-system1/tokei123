@@ -8,6 +8,7 @@ module.exports = class ApiResponse {
       return result;
     } 
     res.data.forEach(function(element){
+      console.log(element);
       result.push({
         sikyuid: element.sikyuid, // 支給量内部ID
         jyukyuid: element.jyukyuid, // 受給者証内部ID
@@ -22,13 +23,13 @@ module.exports = class ApiResponse {
         svccode5: element.svccode5, // サービス詳細コード5
         svccode6: element.svccode6, // サービス詳細コード6
         svccode7: element.svccode7, // サービス詳細コード7
-        kihonryo1: element.kihonryo1, // 基本支給量1
-        kihonryo2: element.kihonryo2, // 基本支給量2
-        kihonryo3: element.kihonryo3, // 基本支給量3
-        kihonryo4: element.kihonryo4, // 基本支給量4
-        kihonryo5: element.kihonryo5, // 基本支給量5
-        kihonryo6: element.kihonryo6, // 基本支給量6
-        kihonryo7: element.kihonryo7, // 基本支給量7
+        kihnryo1: element.kihnryo1, // 基本支給量1
+        kihnryo2: element.kihnryo2, // 基本支給量2
+        kihnryo3: element.kihnryo3, // 基本支給量3
+        kihnryo4: element.kihnryo4, // 基本支給量4
+        kihnryo5: element.kihnryo5, // 基本支給量5
+        kihnryo6: element.kihnryo6, // 基本支給量6
+        kihnryo7: element.kihnryo7, // 基本支給量7
         ikairyo1: element.ikairyo1, // 1回あたりの支給量1
         ikairyo2: element.ikairyo2, // 1回あたりの支給量2
         ikairyo3: element.ikairyo3, // 1回あたりの支給量3
@@ -94,8 +95,8 @@ module.exports = class ApiResponse {
         longnyuinnam: element.longnyuinnam, // 長期入院者名称
         tankyuinnam: element.tankyuinnam, // たん吸引名称
         taisyonam: element.taisyonam, // 退所名称
-        dspskryo: element.dspskryo, // 表示用支給量
-        dspsktani: element.dspsktani, // 支給量単位
+        dspskryo1: element.dspskryo1, // 表示用支給量1
+        dspskryo2: element.dspskryo2, // 表示用支給量2
       }
       );
     });

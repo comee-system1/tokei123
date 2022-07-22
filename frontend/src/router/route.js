@@ -13,6 +13,7 @@ import SamplePdf from '../views/SamplePdf.vue'
 
 import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
+import KobetsuRiyouTouroku2 from '../views/KobetsuRiyouTouroku2.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
@@ -32,169 +33,177 @@ const jigyosyoTitle = "事業所情報";
 
 Vue.use(VueRouter)
 const routes = [{
-    path: '/KihonJyoho',
-    name: '基本情報',
-    component: KihonJyoho,
-    meta: {
-        title: usedTitle,
-        calender: true
+        path: '/KihonJyoho',
+        name: '基本情報',
+        component: KihonJyoho,
+        meta: {
+            title: usedTitle,
+            calender: true
+        },
     },
-},
-{
-    path: '/JyukyuTouroku',
-    name: '受給者証登録',
-    component: JyukyuTouroku,
-    meta: {
-        title: usedTitle,
-        calender: true
+    {
+        path: '/JyukyuTouroku',
+        name: '受給者証登録',
+        component: JyukyuTouroku,
+        meta: {
+            title: usedTitle,
+            calender: true
+        },
     },
-},
-{
-    path: '/ServiceHistory',
-    name: 'サービス履歴登録',
-    component: ServiceHistory,
-    meta: {
-        title: usedTitle,
-        calender: true
+    {
+        path: '/ServiceHistory',
+        name: 'サービス履歴登録',
+        component: ServiceHistory,
+        meta: {
+            title: usedTitle,
+            calender: true
+        },
     },
-},
-{
-    path: '/JyukyuIcrn',
-    name: '利用者受給者証一覧',
-    component: JyukyuIcrn,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/JyukyuIcrn',
+        name: '利用者受給者証一覧',
+        component: JyukyuIcrn,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/KyuhuMeisai',
-    name: '給付明細書',
-    component: KyuhuMeisai,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/KyuhuMeisai',
+        name: '給付明細書',
+        component: KyuhuMeisai,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/KyuhuMeisaiIcrn',
-    name: '介護給付明細一覧',
-    component: KyuhuMeisaiIcrn,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/KyuhuMeisaiIcrn',
+        name: '介護給付明細一覧',
+        component: KyuhuMeisaiIcrn,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/JissekiKiroku',
-    name: '実績記録票',
-    component: JissekiKirokuParent,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/JissekiKiroku',
+        name: '実績記録票',
+        component: JissekiKirokuParent,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/SeikyuSho',
-    name: '請求書',
-    component: SeikyuSho,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/SeikyuSho',
+        name: '請求書',
+        component: SeikyuSho,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/ShisetsuTaisei',
-    name: '施設体制確認',
-    component: ShisetsuTaisei,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/ShisetsuTaisei',
+        name: '施設体制確認',
+        component: ShisetsuTaisei,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/ReceptSyukei',
-    name: 'レセプト集計',
-    component: ReceptSyukei,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/ReceptSyukei',
+        name: 'レセプト集計',
+        component: ReceptSyukei,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/TemporaryPage',
-    name: '仮のページ',
-    component: TemporaryPage
-},
-{
-    path: '/ApiTemporaryPage',
-    name: 'API仮のページ',
-    component: ApiTemporaryPage
-},
-{
-    path: '/KobetsuRiyouTouroku',
-    name: '個別利用状況登録',
-    component: KobetsuRiyouTouroku,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/TemporaryPage',
+        name: '仮のページ',
+        component: TemporaryPage
     },
-},
-{
-    path: '/KasanKoumokuIcrn',
-    name: '加算項目一覧',
-    component: KasanKoumokuIcrn,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/ApiTemporaryPage',
+        name: 'API仮のページ',
+        component: ApiTemporaryPage
     },
-},
-{
-    path: '/JyuryouTsuchisyo',
-    name: '受領通知書',
-    component: JyuryouTsuchisyo,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/KobetsuRiyouTouroku',
+        name: '個別利用状況登録',
+        component: KobetsuRiyouTouroku,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/NyutaiinHokoku',
-    name: '入退院報告書',
-    component: NyutaiinHokoku,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/KobetsuRiyouTouroku2',
+        name: '個別利用状況登録',
+        component: KobetsuRiyouTouroku2,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/NenkanRiyouNissuIcrn',
-    name: '年間利用日数一覧',
-    component: NenkanRiyouNissuIcrn,
-    meta: {
-        title: receptTitle,
+    {
+        path: '/KasanKoumokuIcrn',
+        name: '加算項目一覧',
+        component: KasanKoumokuIcrn,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/ServiceTeikyo',
-    name: 'サービス提供事業所',
-    component: ServiceTeikyo,
-    meta: {
-        title: jigyosyoTitle,
+    {
+        path: '/JyuryouTsuchisyo',
+        name: '受領通知書',
+        component: JyuryouTsuchisyo,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/SampleLogin',
-    name: 'ログイン',
-    component: SampleLogin,
-    meta: {
-        title: 'ログインページのタイトル',
+    {
+        path: '/NyutaiinHokoku',
+        name: '入退院報告書',
+        component: NyutaiinHokoku,
+        meta: {
+            title: receptTitle,
+        },
     },
-},
-{
-    path: '/SampleAuth',
-    name: 'authのみ',
-    parentName: '親の仮のページ2',
-    component: SampleAuth,
-    meta: {
-        requiresAuth: true
-    }
-},
-{
-    path: '/SamplePdf',
-    name: 'pdfのみ',
-    parentName: '親の仮のページ2',
-    component: SamplePdf,
-},
+    {
+        path: '/NenkanRiyouNissuIcrn',
+        name: '年間利用日数一覧',
+        component: NenkanRiyouNissuIcrn,
+        meta: {
+            title: receptTitle,
+        },
+    },
+    {
+        path: '/ServiceTeikyo',
+        name: 'サービス提供事業所',
+        component: ServiceTeikyo,
+        meta: {
+            title: jigyosyoTitle,
+        },
+    },
+    {
+        path: '/SampleLogin',
+        name: 'ログイン',
+        component: SampleLogin,
+        meta: {
+            title: 'ログインページのタイトル',
+        },
+    },
+    {
+        path: '/SampleAuth',
+        name: 'authのみ',
+        parentName: '親の仮のページ2',
+        component: SampleAuth,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/SamplePdf',
+        name: 'pdfのみ',
+        parentName: '親の仮のページ2',
+        component: SamplePdf,
+    },
 ]
 
 const router = new VueRouter({

@@ -132,12 +132,12 @@
               >
             </v-card>
           </v-card>
-          <v-card elevation="0" flat tile>
+          <v-card elevation="0" flat tile style="height: 300px">
             <wj-flex-grid
-              id="gridMonitoringkikan"
+              v-for="item of monitoring"
+              :key="item.id"
               class="no-scrollbars"
               :initialized="onInitializedMonitoringkikan"
-              :itemsSource="monitoringkikanData"
               :headersVisibility="'Column'"
               :autoGenerateColumns="false"
               :allowAddNew="false"
@@ -150,6 +150,15 @@
               :isReadOnly="true"
               :alternatingRowStep="0"
               :selectionMode="'None'"
+              style="
+                width: 433px;
+                height: 73px;
+                border-bottom: none;
+                border-right: none;
+                font-size: 12px;
+                margin-left: 4px;
+                border-radius: 2px;
+              "
             >
             </wj-flex-grid>
           </v-card>
@@ -218,8 +227,76 @@ export default {
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
 
-      monitoringkikan: -1,
-      monitoringkikanData: this.getMonitoringkikan(),
+      months: [
+        { id: 'jan', value: '1' },
+        { id: 'feb', value: '2' },
+        { id: 'mar', value: '3' },
+        { id: 'apr', value: '4' },
+        { id: 'may', value: '5' },
+        { id: 'jun', value: '6' },
+        { id: 'jul', value: '7' },
+        { id: 'aug', value: '8' },
+        { id: 'sep', value: '9' },
+        { id: 'oct', value: '10' },
+        { id: 'nov', value: '11' },
+        { id: 'dec', value: '12' },
+      ],
+
+      monitoring: [
+        [
+          {
+            id: 1,
+            jan: '',
+            feb: '',
+            mar: '',
+            apr: '',
+            may: '',
+            jun: '',
+            jul: '',
+            aug: '',
+            sep: '',
+            oct: '',
+            nov: '',
+            dec: '',
+          },
+        ],
+        [
+          {
+            id: 2,
+            jan: '',
+            feb: '',
+            mar: '',
+            apr: '',
+            may: '',
+            jun: '',
+            jul: '',
+            aug: '',
+            sep: '',
+            oct: '',
+            nov: '',
+            dec: '',
+          },
+        ],
+        [
+          {
+            id: 3,
+            jan: '',
+            feb: '',
+            mar: '',
+            apr: '',
+            may: '',
+            jun: '',
+            jul: '',
+            aug: '',
+            sep: '',
+            oct: '',
+            nov: '',
+            dec: '',
+          },
+        ],
+      ],
+
+      gridId: 0,
 
       isModify: false,
       jigyosyoid: 0,
@@ -238,6 +315,10 @@ export default {
     this.Resize();
   },
   methods: {
+    setMonitoring() {
+      let result = [];
+      return result;
+    },
     changeMode() {
       this.Resize();
       return this.mode === 'modKeikakuSoudan';
@@ -247,9 +328,9 @@ export default {
       let num = 0;
       let add = 0;
       if (this.mode !== 'modKeikakuSoudan') {
-        num = 7.7;
+        num = 13.1;
       } else {
-        num = 8.7;
+        num = 14.1;
         add = 4;
       }
       height = 'calc((29px * ' + num + ') + ' + add + 'px)';
@@ -296,6 +377,14 @@ export default {
         this.monijiki = data.monijiki;
         this.tokuti = data.tokuti;
         this.isModify = true;
+
+        for (let i = 0; i < this.monitoring.length; i++) {
+          let y = Number(this.rksymd.substr(0, 4));
+          let flexGrid = wijmo.Control.getControl(
+            '#gridMonitoringkikan' + String(i + 1)
+          );
+          this.setGrid(flexGrid, y + i);
+        }
       }
     },
     setJigyosyo(code, name) {
@@ -310,15 +399,6 @@ export default {
       this.rkeymd = '';
       this.monijiki = 0;
       this.tokuti = 0;
-    },
-    getMonitoringkikan() {
-      let result = [];
-      result.push({
-        kouban: '1',
-        jigyonum: '1100112345',
-        jigyoname: 'たんぽぽ就労事業所',
-      });
-      return result;
     },
     onInitializedMonitoringkikan(flexGrid) {
       flexGrid.beginUpdate();
@@ -335,33 +415,38 @@ export default {
       for (let colIndex = 0; colIndex < 12; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
-        col.wordWrap = true;
-        if (colIndex >= 0 && colIndex <= 8) {
-          col.binding = String(colIndex + 4);
-          col.header = String(colIndex + 4);
-        } else {
-          col.binding = String(colIndex - 8);
-          col.header = String(colIndex - 8);
-        }
+        col.wordWrap = false;
+        col.header = this.months[colIndex].value + '月';
+        col.binding = this.months[colIndex].id;
         col.width = 36;
         col.align = 'center';
         col.allowMerging = true;
         col.multiLine = true;
+      }
 
+      this.setGrid(flexGrid, 0);
+      this.gridId++;
+
+      flexGrid.endUpdate();
+    },
+    setGrid(flexGrid, y) {
+      for (let colIndex = 0; colIndex < 12; colIndex++) {
         for (let rowindex = 0; rowindex < 2; rowindex++) {
           let title = '';
           if (rowindex == 0) {
-            if (0 <= colIndex && colIndex <= 8) {
-              title = '2022年';
-            } else {
-              title = '2023年';
+            if (y > 0) {
+              if (0 <= colIndex && colIndex <= 8) {
+                title = y + '年';
+              } else {
+                title = y + 1 + '年';
+              }
             }
             flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
           }
         }
       }
-
-      flexGrid.endUpdate();
+      flexGrid.itemsSource = [];
+      flexGrid.itemsSource = this.monitoring[0];
     },
     onTextChanged(txb) {},
     selectSienjigyosyo() {
@@ -372,7 +457,7 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-      if (this.mode !== 'modKeikakuSoudan') {
+      if (this.mode !== 'new' && this.mode !== 'modKeikakuSoudan') {
         this.setButtonColor('modifyButtonKeikakuSoudan', false);
         this.setButtonColor('addButtonKeikakuSoudan', false);
       }
@@ -470,7 +555,7 @@ div#JyukyuTourokuKeikakuSoudan {
 
   .keikakuSoudan-monitoringkikan-row {
     width: 600px;
-    height: 102px;
+    height: 260px;
     margin: 4px 4px 0px 4px;
     .keikakuSoudan-monitoringkikan-section {
       width: 450px;

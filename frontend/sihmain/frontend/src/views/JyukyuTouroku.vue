@@ -392,11 +392,11 @@ export default {
       //dataobject
       kihonDataOrg: [], //基本データ初期リスト
       syogaiKubunDataOrg: [], //障害区分データ初期リスト
-      sikyuryoDataOrg: [], //決定支給量データ初期リスト
+      sikyuryoDataOrg: [], //支給決定内容データ初期リスト
       keikakuSoudanDataOrg: [], //計画相談データ初期リスト
       riyosyaFutanDataOrg: [], //利用者負担データ初期リスト
       syogaiKubunDataOrgFiltered: [], //障害区分データ初期リスト：受給者証内部IDで絞込
-      sikyuryoDataOrgFiltered: [], //決定支給量データ初期リスト：受給者証内部IDで絞込
+      sikyuryoDataOrgFiltered: [], //支給決定内容データ初期リスト：受給者証内部IDで絞込
       keikakuSoudanDataOrgFiltered: [], //計画相談データ初期リスト：受給者証内部IDで絞込
       riyosyaFutanDataOrgFiltered: [], //利用者負担データ初期リスト：受給者証内部IDで絞込
 
@@ -551,7 +551,7 @@ export default {
           this.syogaiKubunDataOrg = value[0];
           this.setSyogaiKubunData();
         });
-        //決定支給量
+        //支給決定内容
         this.getJyukyuTourokuSikyuryoData(rid).then((value) => {
           this.sikyuryoDataOrg = value[0];
           this.setSikyuryoData();
@@ -788,28 +788,48 @@ export default {
           this.jyukyuid = args.jyukyuid;
           //障害支給区分
           this.setSyogaiKubunData();
-          //決定支給量
+          //支給決定内容
           this.setSikyuryoData();
           //計画相談
           this.setKeikakuSoudanData();
           //利用者負担
           this.setRiyosyaFutanData();
+          this.move_to(
+            this.menuitems[0],
+            this.menuitems[0].target + String(this.menuitems[0].id)
+          );
           break;
         case 'syogai':
           list.push(args);
           this.$refs.syogaiKubun.setData(list);
+          this.move_to(
+            this.menuitems[1],
+            this.menuitems[1].target + String(this.menuitems[1].id)
+          );
           break;
         case 'kettei':
           list.push(args);
           this.$refs.sikyuryo.setData(list);
+          this.move_to(
+            this.menuitems[2],
+            this.menuitems[2].target + String(this.menuitems[2].id)
+          );
           break;
         case 'keikaku':
           list.push(args);
           this.$refs.keikaku.setData(list);
+          this.move_to(
+            this.menuitems[3],
+            this.menuitems[3].target + String(this.menuitems[3].id)
+          );
           break;
         case 'futan':
           list.push(args);
           this.$refs.futan.setData(list);
+          this.move_to(
+            this.menuitems[4],
+            this.menuitems[4].target + String(this.menuitems[4].id)
+          );
           break;
         case 'shichoson':
           this.$refs.kihon.setShichoson(args.code, args.name);

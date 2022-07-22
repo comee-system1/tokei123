@@ -24,7 +24,7 @@
                 <v-card class="pr-2 text-center" elevation="0" :min-width="80">
                   <label class="greyLabel">利用者名</label>
                 </v-card>
-                <v-card class="light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="240" outlined tile>
                   {{ userDataSelect[0].riyosyo }}
                 </v-card>
                 <v-card
@@ -34,7 +34,7 @@
                 >
                   <label class="greyLabel">受給者番号</label>
                 </v-card>
-                <v-card class="light_yellow" :width="180" outlined tile>
+                <v-card class="light_yellow" :width="100" outlined tile>
                   {{ userDataSelect[0].jyukyusyabango }}
                 </v-card>
               </v-card>
@@ -135,12 +135,15 @@ import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import isDate from '@/utiles/isDate';
 import dateFormatString from '@/utiles/dateFormatString';
-import { getHendoData2 } from '@/data/kobetsuRiyoHendo2.js';
-import { getRiyobi } from '@/data/kobetsuRiyobi2.js';
-import { getNyutaiin } from '@/data/kobetsuNyutaiin2.js';
-import { getGaihaku } from '@/data/kobetsuGaihaku2.js';
-import { getMeal } from '@/data/kobetsuMeal2.js';
-import { getKounetusuihi } from '@/data/kobetsuKounetusuihi2.js';
+import { getHendoData } from '@/data/kobetsuRiyoHendo.js';
+import { getRiyobi } from '@/data/kobetsuRiyobi.js';
+
+import { KobetsuNyutaiin } from '@backend/api/KobetsuNyutaiin';
+
+// import { getNyutaiin } from '@/data/kobetsuNyutaiin.js';
+import { getGaihaku } from '@/data/kobetsuGaihaku.js';
+import { getMeal } from '@/data/kobetsuMeal.js';
+import { getKounetusuihi } from '@/data/kobetsuKounetusuihi.js';
 //const startPoint = 4;
 //const totalPoint = startPoint + 1;
 import sysConst from '@/utiles/const';
@@ -190,11 +193,14 @@ export default {
   },
   methods: {
     onInitialized(flexGrid) {
+
+
+
       // 初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
-      this.rowHendoData = getHendoData2();
+      this.rowHendoData = getHendoData();
       this.riyoubiData = getRiyobi();
-      this.nyutaiinData = getNyutaiin();
+     // this.nyutaiinData = getNyutaiin();
       this.gaihakuData = getGaihaku();
       this.mealsData = getMeal();
       this.shineData = getKounetusuihi();
@@ -205,10 +211,12 @@ export default {
     },
     onChangeInitialized(flexGrid) {
       flexGrid.frozenColumns = 4;
+      /*
       if (flexGrid.rows.length > 0) {
         flexGrid.rows[1].height = 30;
         flexGrid.rows[2].height = 30;
       }
+      */
     },
     /**************
      * セルのクリックイベント
@@ -325,6 +333,8 @@ export default {
       let m = moment(this.year + '-' + this.month + '-01');
       this.lastdate = m.daysInMonth();
       if (serviceArgument['search_button']) {
+        // ユーザ選択の無効化
+        this.$refs.user_list_print.userCheckInvalide();
         this.userDataSelect[0]['riyosyo'] = '';
         this.userDataSelect[0]['jyukyusyabango'] = '';
         this.$refs.user_list_print.setChildTeikyocode(
@@ -347,6 +357,18 @@ export default {
      * 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
      */
     setUserSelectPoint(row) {
+
+      // 選択したユーザデータを取得
+      // 入退院・外泊情報
+      KobetsuNyutaiin().then((result) => {
+console.log(result);
+
+      });
+
+
+
+
+      
       this.userDataSelect[0]['riyosyo'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -358,9 +380,9 @@ export default {
       this.mainGrid.columns.clear();
       this.viewdata = [];
       this.createHeader(this.mainGrid);
-      this.createRowHeader(this.mainGrid);
+   //   this.createRowHeader(this.mainGrid);
       this.createMerge(this.mainGrid);
-      this.settingPoint();
+   //   this.settingPoint();
 
       // 値の設定
       this.selectType = '';
@@ -381,8 +403,10 @@ export default {
      * 値の登録
      */
     settingPoint() {
+/*
       let riyoGoukei = 0;
       let m = 0; // 食事のキー
+
       for (let i = 0; i < this.viewdata.length; i++) {
         if (this.viewdata[i].type == 'riyo') {
           for (let day = 1; day <= this.lastdate; day++) {
@@ -400,7 +424,6 @@ export default {
           this.viewdata[i].type == 'nyutai' ||
           this.viewdata[i].type == 'gaihaku'
         ) {
-          // console.log(this.nyutaiinData);
           // 日付の調整
           if (this.viewdata[i].type == 'gaihaku') {
             this.settingArrowView(this.gaihakuData, i);
@@ -454,6 +477,7 @@ export default {
           }
         }
       }
+      */
     },
 
     /*********************
@@ -716,9 +740,14 @@ export default {
 
       // 食事用マージ
       this.mealMarges(cellRanges);
+
       // 変動情報項目一覧マージ
       for (let i = 0; i < this.hendoRow; i++) {
-        cellRanges.push(new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge));
+        if (this.viewdata[i]) {
+          cellRanges.push(
+            new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge)
+          );
+        }
       }
 
       // 加算情報
@@ -776,7 +805,7 @@ export default {
         cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
       }
 
-      let mm = new wjGrid.MergeManager(flexGrid);
+      let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           for (let h = 0; h < headerRanges.length; h++) {
@@ -816,6 +845,7 @@ export default {
      * 列ヘッダ
      */
     createRowHeader() {
+      /*
       let hendo = this.rowHendoData.hendo;
       let hendoRow = 0;
       let views = [];
@@ -905,6 +935,7 @@ export default {
       }
       this.viewdata = views;
       this.hendoRow = hendoRow;
+      */
     },
 
     /**************************
@@ -946,12 +977,11 @@ export default {
       flexGrid.rows.defaultSize = 20;
       flexGrid.columns[0].width = 20;
       flexGrid.columns[1].width = 20;
-      flexGrid.columns[2].width = '8*';
-      flexGrid.columns[3].width = '8*';
+      flexGrid.columns[2].width = 40;
+      flexGrid.columns[3].width = 90;
 
       for (let i = 4; i <= this.lastdate + 3; i++) {
-        flexGrid.columns[i].width = '2.2*';
-        flexGrid.columns[i].minWidth = 24;
+        flexGrid.columns[i].width = 24;
       }
       flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
     },
@@ -1021,7 +1051,6 @@ export default {
           this.nyutaiinData['date'][selectKey] = selectData;
         }
       }
-      console.log(this.gaihakuData);
 
       for (let i = 1; i <= this.lastdate; i++) {
         let d = 'day' + i;
@@ -1032,7 +1061,6 @@ export default {
         }
       }
       this.settingPoint();
-      console.log(this.viewdata);
       this.num = 0;
       this.deleteGridFlag = false;
       this.mainGrid.itemsSource = [];
@@ -1056,6 +1084,7 @@ export default {
 
     // 入退院ダイアログの削除ボタン押下
     kikantuika_dialog_delete() {
+      /*
       this.selectType = this.$refs.dialog_kikantuika.registData.type;
       // 削除する配列のキー
       let selectKey = this.$refs.dialog_kikantuika.registData.selectKey;
@@ -1091,6 +1120,7 @@ export default {
 
       this.mainGrid.itemsSource = [];
       this.mainGrid.itemsSource = this.viewdata;
+      */
     },
     // 加算追加ダイアログの削除ボタン押下
     kasantuika_dialog_delete() {
@@ -1130,7 +1160,7 @@ export default {
 div#kobeturiyou {
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1266px;
+  min-width: none;
 
   .wj-cell {
     padding: 0 !important;
@@ -1146,12 +1176,10 @@ div#kobeturiyou {
 
   .container {
     padding: 4px;
+    min-width: 1320px;
   }
   .wj-cells {
     font-size: $cell_fontsize;
-  }
-  .wj-cell {
-    padding: 1px !important;
   }
   .wj-cells .wj-cell.wj-state-selected {
     background-color: $light-white !important;
@@ -1160,7 +1188,7 @@ div#kobeturiyou {
   label.greyLabel {
     background-color: $selected_color;
     display: inline-block;
-    width: 140px;
+    width: 100px;
     height: 100%;
   }
   // 受給者証状況用のエリアボックス
@@ -1173,11 +1201,9 @@ div#kobeturiyou {
     max-width: 275px;
     width: 275px;
   }
-
   .rightArea {
-    min-width: 50%;
-    max-width: none;
-    width: 1020px;
+    min-width: 1020px;
+    max-width: 1020px;
   }
 
   .gridBackground {
@@ -1240,9 +1266,9 @@ div#kobeturiyou {
     }
   }
   #flexGrid {
-    width: 100%;
+    width: auto;
     max-width: none;
-    min-width: 1300px-275;
+    min-width: none;
     .wj-cell {
       padding: 0 !important;
       &.wj-frozen-row {

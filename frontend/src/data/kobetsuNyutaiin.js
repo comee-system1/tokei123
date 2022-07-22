@@ -2,11 +2,10 @@ export function getNyutaiin() {
   let nyutaiin = {};
   nyutaiin = {
     jyukyusyabango: '8765432100',
-    date: [
-      {
+    date: [{
         key: 1,
         byouinName: '東経国立病院',
-        nyuuinbi: '2022-05-06',
+        nyuuinbi: '2022-06-02',
         taiinbi: '2022-06-18',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,
@@ -20,7 +19,7 @@ export function getNyutaiin() {
       {
         key: 2,
         byouinName: '西経国立病院',
-        nyuuinbi: '2022-06-26',
+        nyuuinbi: '2022-07-26',
         taiinbi: '2022-07-28',
         nyuuinbiShiseturiyo: 1,
         nyuuinbiBreakfast: true,

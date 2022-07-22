@@ -429,7 +429,7 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-      if (this.mode !== 'modRiyosyafutan') {
+      if (this.mode !== 'new' && this.mode !== 'modRiyosyafutan') {
         this.setButtonColor('modifyButtonRiyosyafutan', false);
         this.setButtonColor('addButtonRiyosyafutan', false);
       }

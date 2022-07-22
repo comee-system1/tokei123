@@ -289,7 +289,7 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-      if (this.mode !== 'modSyogaikubun') {
+      if (this.mode !== 'new' && this.mode !== 'modSyogaikubun') {
         this.setButtonColor('modifyButtonSyogaikubun', false);
         this.setButtonColor('addButtonSyogaikubun', false);
       }

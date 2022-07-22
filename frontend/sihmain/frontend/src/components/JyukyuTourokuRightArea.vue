@@ -262,13 +262,13 @@ export default {
         list[i].svccode5 = 0; // サービス詳細コード5
         list[i].svccode6 = 0; // サービス詳細コード6
         list[i].svccode7 = 0; // サービス詳細コード7
-        list[i].kihonryo1 = 0; // 基本支給量1
-        list[i].kihonryo2 = 0; // 基本支給量2
-        list[i].kihonryo3 = 0; // 基本支給量3
-        list[i].kihonryo4 = 0; // 基本支給量4
-        list[i].kihonryo5 = 0; // 基本支給量5
-        list[i].kihonryo6 = 0; // 基本支給量6
-        list[i].kihonryo7 = 0; // 基本支給量7
+        list[i].kihnryo1 = 0; // 基本支給量1
+        list[i].kihnryo2 = 0; // 基本支給量2
+        list[i].kihnryo3 = 0; // 基本支給量3
+        list[i].kihnryo4 = 0; // 基本支給量4
+        list[i].kihnryo5 = 0; // 基本支給量5
+        list[i].kihnryo6 = 0; // 基本支給量6
+        list[i].kihnryo7 = 0; // 基本支給量7
         list[i].ikairyo1 = 0; // 1回あたりの支給量1
         list[i].ikairyo2 = 0; // 1回あたりの支給量2
         list[i].ikairyo3 = 0; // 1回あたりの支給量3
@@ -333,9 +333,8 @@ export default {
         list[i].longnyuinnam = ''; // 長期入院者名称
         list[i].tankyuinnam = ''; // たん吸引名称
         list[i].taisyonam = ''; // 退所名称
-        list[i].dspskryo = ''; // 表示用支給量
-        list[i].dspsktani = ''; // 支給量単位
-        list[i].dspskryotani = '';
+        list[i].dspskryo1 = ''; // 表示用支給量1
+        list[i].dspskryo2 = ''; // 表示用支給量2
       }
       this.$refs.sikyuryo.settingData(list);
     },

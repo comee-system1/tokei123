@@ -264,6 +264,13 @@ export default {
           e.cell.style.fontWeight = 'normal';
         }
         if (
+          code === 'keikaku' &&
+          e.panel != flexGrid.columnHeaders &&
+          e.col == 4
+        ) {
+          e.cell.style.textAlign = 'left';
+        }
+        if (
           code === 'futan' &&
           e.panel != flexGrid.columnHeaders &&
           e.col == 3
@@ -357,17 +364,17 @@ export default {
       }
       // 相談支援
       else if (this.keikakuFlag) {
-        flexGrid.columns[1].width = 81;
-        flexGrid.columns[2].width = 81;
+        flexGrid.columns[1].width = 85;
+        flexGrid.columns[2].width = 85;
         flexGrid.columns[3].width = 23;
         flexGrid.columns[4].width = '4*';
       }
       // 利用者負担
       else if (this.futanFlag) {
-        flexGrid.columns[1].width = 81;
-        flexGrid.columns[2].width = 81;
+        flexGrid.columns[1].width = 95;
+        flexGrid.columns[2].width = 95;
         flexGrid.columns[3].width = '4*';
-        flexGrid.columns[4].width = '4*';
+        flexGrid.columns[4].width = 70;
       }
     },
     /********************

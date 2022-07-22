@@ -375,7 +375,7 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-      if (this.mode !== 'modSikyuryo') {
+      if (this.mode !== 'new' && this.mode !== 'modSikyuryo') {
         this.setButtonColor('modifyButtonSikyuryo', false);
         this.setButtonColor('addButtonSikyuryo', false);
       }
