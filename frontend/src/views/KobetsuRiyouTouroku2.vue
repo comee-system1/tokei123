@@ -138,7 +138,11 @@ import dateFormatString from '@/utiles/dateFormatString';
 import { getHendoData } from '@/data/kobetsuRiyoHendo.js';
 import { getRiyobi } from '@/data/kobetsuRiyobi.js';
 
-import { KobetsuNyutaiin } from '@backend/api/KobetsuNyutaiin';
+// 一覧データ取得
+import { KobetsuIcrnNyusho } from '@backend/api/KobetsuIcrnNyusho';
+
+// ダイアログに表示される
+// import { KobetsuNyutaiin } from '@backend/api/KobetsuNyutaiin';
 
 // import { getNyutaiin } from '@/data/kobetsuNyutaiin.js';
 import { getGaihaku } from '@/data/kobetsuGaihaku.js';
@@ -193,14 +197,11 @@ export default {
   },
   methods: {
     onInitialized(flexGrid) {
-
-
-
       // 初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.rowHendoData = getHendoData();
       this.riyoubiData = getRiyobi();
-     // this.nyutaiinData = getNyutaiin();
+      // this.nyutaiinData = getNyutaiin();
       this.gaihakuData = getGaihaku();
       this.mealsData = getMeal();
       this.shineData = getKounetusuihi();
@@ -327,25 +328,26 @@ export default {
      * ヘッダメニューのサービス初回選択 更新ボタン
      */
     parentServiceSelect(serviceArgument) {
-      this.teikyoCode = serviceArgument.teikyoCode;
-      this.year = serviceArgument['teikyo_year'];
-      this.month = serviceArgument['teikyo_month'];
-      let m = moment(this.year + '-' + this.month + '-01');
-      this.lastdate = m.daysInMonth();
-      if (serviceArgument['search_button']) {
-        // ユーザ選択の無効化
-        this.$refs.user_list_print.userCheckInvalide();
-        this.userDataSelect[0]['riyosyo'] = '';
-        this.userDataSelect[0]['jyukyusyabango'] = '';
-        this.$refs.user_list_print.setChildTeikyocode(
-          this.teikyoCode,
-          serviceArgument['search_button']
-        );
-        this.mainGrid.columns.clear();
-        this.viewdata = [];
-        this.createHeader(this.mainGrid);
-        this.createMerge(this.mainGrid);
-      }
+      console.log(serviceArgument);
+      // this.teikyoCode = serviceArgument.teikyoCode;
+      // this.year = serviceArgument['teikyo_year'];
+      // this.month = serviceArgument['teikyo_month'];
+      // let m = moment(this.year + '-' + this.month + '-01');
+      // this.lastdate = m.daysInMonth();
+      // if (serviceArgument['search_button']) {
+      //   // ユーザ選択の無効化
+      //   this.$refs.user_list_print.userCheckInvalide();
+      //   this.userDataSelect[0]['riyosyo'] = '';
+      //   this.userDataSelect[0]['jyukyusyabango'] = '';
+      //   this.$refs.user_list_print.setChildTeikyocode(
+      //     this.teikyoCode,
+      //     serviceArgument['search_button']
+      //   );
+      //   this.mainGrid.columns.clear();
+      //   this.viewdata = [];
+      //   this.createHeader(this.mainGrid);
+      //   this.createMerge(this.mainGrid);
+      // }
     },
     /**********************
      * 左メニューで作成されたユーザ一覧の取得を行う
@@ -357,18 +359,137 @@ export default {
      * 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
      */
     setUserSelectPoint(row) {
-
       // 選択したユーザデータを取得
       // 入退院・外泊情報
-      KobetsuNyutaiin().then((result) => {
-console.log(result);
+      //       KobetsuNyutaiin().then((result) => {
+      // console.log(result);
 
+      //       });
+      let self = this;
+      // データの取得
+      KobetsuIcrnNyusho().then((result) => {
+        // ヘッダ作成
+        this.createHeader(this.mainGrid);
+
+        //this.mainGrid.columns.clear();
+        console.log(result);
+
+        // 左カラムの作成
+        let views = [];
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 1,
+          komoku0: '変動情報',
+          komoku1: '利用日',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 2,
+          komoku0: '変動情報',
+          komoku1: '入院・退院日',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 2,
+          komoku0: '変動情報',
+          komoku1: '外泊日',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 3,
+          kmkkbn6: 300,
+          komoku0: '変動情報',
+          komoku1: '食事',
+          komoku3: '朝食',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 3,
+          kmkkbn6: 400,
+          komoku0: '変動情報',
+          komoku1: '食事',
+          komoku3: '昼食',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 3,
+          kmkkbn6: 500,
+          komoku0: '変動情報',
+          komoku1: '食事',
+          komoku3: '夕食',
+        });
+        views.push({
+          kmkkbn1: 1,
+          kmkkbn2: 4,
+          kmkkbn6: 100,
+          komoku0: '変動情報',
+          komoku1: '光熱水費',
+          komoku3: '',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 1,
+          komoku0: '加算情報',
+          komoku1: '体制＋個別',
+          komoku2: '0123456789',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 1,
+          komoku0: '加算情報',
+          komoku1: '体制＋個別',
+          komoku2: '重度障碍者支援加算',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 1,
+          komoku0: '加算情報',
+          komoku1: '体制＋個別',
+          komoku2: '栄養マネジメント加算',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 1,
+          komoku0: '加算情報',
+          komoku1: '体制＋個別',
+          komoku2: '療養食加算',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 1,
+          komoku0: '加算情報',
+          komoku1: '体制＋個別',
+          komoku2: '口腔衛星管理加算',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 2,
+          komoku0: '加算情報',
+          komoku1: '個別',
+          komoku2: '入院外泊時加算',
+        });
+        views.push({
+          kmkkbn1: 2,
+          mstkasanh0: 2,
+          komoku0: '加算情報',
+          komoku1: '個別',
+          komoku2: '地域以降加算',
+        });
+
+        let viewdata = [];
+        for (let i = 0; i < views.length; i++) {
+          // 食事・光熱水費の金額をkomoku3に追記する
+          if (views[i].kmkkbn2 === 3 || views[i].kmkkbn2 === 4) {
+            views[i].komoku3 += '@' + views[i].kmkkbn6 + '/回';
+          }
+          viewdata.push(views[i]);
+        }
+
+        views = viewdata;
+
+        this.createMerge(this.mainGrid, views);
+        self.viewdata = views;
       });
-
-
-
-
-      
       this.userDataSelect[0]['riyosyo'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -377,16 +498,297 @@ console.log(result);
       this.userDataSelect[0]['jyukyusyabango'] =
         this.userListComponentDatas[row].jyukyuno;
 
-      this.mainGrid.columns.clear();
-      this.viewdata = [];
-      this.createHeader(this.mainGrid);
-   //   this.createRowHeader(this.mainGrid);
-      this.createMerge(this.mainGrid);
-   //   this.settingPoint();
+      // this.viewdata = [];
+      //   this.createRowHeader(this.mainGrid);
+      // this.createMerge(this.mainGrid);
+      //   this.settingPoint();
 
       // 値の設定
       this.selectType = '';
       this.editGridFlag = '';
+    },
+
+    /**************************
+     * ヘッダ作成
+     */
+    createHeader(flexGrid) {
+      /*
+      if (flexGrid.columnHeaders.rows.length != 1) {
+        flexGrid.columnHeaders.rows.removeAt(0, new wjGrid.Row());
+      }
+      */
+      //  flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+
+      flexGrid.columns.insert(0, new wjGrid.Column());
+      flexGrid.columns.insert(1, new wjGrid.Column());
+      flexGrid.columns.insert(2, new wjGrid.Column());
+      flexGrid.columns.insert(3, new wjGrid.Column());
+      let column = 0;
+      flexGrid.columns[column++].binding = 'komoku0';
+      flexGrid.columns[column++].binding = 'komoku1';
+      flexGrid.columns[column++].binding = 'komoku2';
+      flexGrid.columns[column++].binding = 'komoku3';
+
+      let c = column++;
+      // 日付ヘッダ
+      for (let day = 1; day <= this.lastdate; day++) {
+        flexGrid.columns.insert(c, new wjGrid.Column());
+        flexGrid.columns[c].binding = 'day' + day;
+        c = column++;
+      }
+
+      flexGrid.columns.insert(column++, new wjGrid.Column());
+      flexGrid.columns.insert(column++, new wjGrid.Column());
+      flexGrid.columns[c].binding = 'gokei';
+      flexGrid.columns[c + 1].binding = 'kingaku';
+      flexGrid.columnHeaders.setCellData(0, 0, '項目');
+      for (let day = 1; day <= this.lastdate; day++) {
+        let date = this.year + '/' + this.month + '/' + day;
+        flexGrid.columnHeaders.setCellData(0, day + 3, date);
+      }
+      flexGrid.columnHeaders.setCellData(0, c, '計');
+      flexGrid.columnHeaders.setCellData(0, c + 1, '金額');
+
+      flexGrid.columnHeaders.rows.defaultSize = 38;
+      flexGrid.rows.defaultSize = 20;
+      flexGrid.columns[0].width = 20;
+      flexGrid.columns[1].width = 20;
+      flexGrid.columns[2].width = 40;
+      flexGrid.columns[3].width = 90;
+
+      for (let i = 4; i <= this.lastdate + 3; i++) {
+        flexGrid.columns[i].width = 24;
+      }
+      flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
+    },
+
+    /*****************
+     * マージ
+     */
+    createMerge(flexGrid, data) {
+      let headerRanges = [];
+      let cellRanges = [];
+
+      // 変動情報の数を取得
+      this.hendoRow = data.filter(function (x) {
+        return x.kmkkbn1 === 1;
+      }).length;
+
+      // 加算情報の数を取得
+      this.kasanRow = data.filter(function (x) {
+        return x.kmkkbn1 === 2;
+      }).length;
+
+      // 食事の行数
+      this.mealRowCount = data.filter(function (x) {
+        return x.kmkkbn2 === 3;
+      }).length;
+
+      // 体制＋個別の行数
+      this.taiseiKobetsuRow = data.filter(function (x) {
+        return x.mstkasanh0 === 1;
+      }).length;
+
+      // 個別の行数
+      this.kobetsuRow = data.filter(function (x) {
+        return x.mstkasanh0 === 2;
+      }).length;
+
+      headerRanges = [new wjGrid.CellRange(0, 0, 0, 3)];
+
+      // 変動情報のマージ
+      cellRanges.push(new wjGrid.CellRange(0, 0, this.hendoRow - 1, 0));
+      // 食事の最初の行数
+      let mealFirstRow = 0;
+      for (let i = 0; i < data.length; i++) {
+        // 利用日・入院日退院日
+        if (data[i].kmkkbn2 === 1 || data[i].kmkkbn2 === 2) {
+          cellRanges.push(new wjGrid.CellRange(i, 1, i, 3));
+        }
+        // 食事の最初の行数を取得
+        if (data[i].kmkkbn2 === 3 && mealFirstRow === 0) {
+          mealFirstRow = i;
+        }
+        // 光熱水費
+        if (data[i].kmkkbn2 === 4) {
+          cellRanges.push(new wjGrid.CellRange(i, 1, i, 2));
+        }
+
+        // 体制＋個別
+        if (data[i].mstkasanh0 === 1) {
+          cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
+        }
+
+        // 個別
+        if (data[i].mstkasanh0 === 2) {
+          cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
+        }
+      }
+
+      //食事のマージ
+      cellRanges.push(
+        new wjGrid.CellRange(
+          mealFirstRow,
+          1,
+          mealFirstRow + this.mealRowCount - 1,
+          2
+        )
+      );
+
+      // 加算情報のマージ
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          0,
+          this.hendoRow + this.kasanRow - 1,
+          0
+        )
+      );
+
+      // 体制＋個別のマージ
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          1,
+          this.hendoRow + this.taiseiKobetsuRow - 1,
+          1
+        )
+      );
+
+      // 個別のマージ
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow + this.taiseiKobetsuRow,
+          1,
+          this.hendoRow + this.taiseiKobetsuRow + this.kobetsuRow - 1,
+          1
+        )
+      );
+
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+
+      /*
+      let headerRanges = [];
+      let cellRanges = [];
+      headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)]; // 項目
+      // 日付マージ
+      for (let day = 4; day < this.lastdate + 4; day++) {
+        headerRanges.push(new wjGrid.CellRange(0, day, 1, day));
+      }
+      // 合計マージ
+      headerRanges.push(
+        new wjGrid.CellRange(0, this.lastdate + 4, 1, this.lastdate + 4)
+      );
+      // 金額
+      headerRanges.push(
+        new wjGrid.CellRange(0, this.lastdate + 5, 1, this.lastdate + 5)
+      );
+      // 変動情報
+      cellRanges = [new wjGrid.CellRange(0, 0, this.hendoRow - 1, 0)];
+
+      // 食事用マージ
+      this.mealMarges(cellRanges);
+
+      // 変動情報項目一覧マージ
+      for (let i = 0; i < this.hendoRow; i++) {
+        if (this.viewdata[i]) {
+          cellRanges.push(
+            new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge)
+          );
+        }
+      }
+
+      // 加算情報
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          0,
+          this.hendoRow +
+            this.rowHendoData.taisei.data.length +
+            this.rowHendoData.kobetu.data.length -
+            1,
+          0
+        )
+      );
+
+      // 体制+個別
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow,
+          1,
+          this.hendoRow + this.rowHendoData.taisei.data.length - 1,
+          1
+        )
+      );
+      // 個別
+      cellRanges.push(
+        new wjGrid.CellRange(
+          this.hendoRow + this.rowHendoData.taisei.data.length,
+          1,
+          this.hendoRow +
+            this.rowHendoData.taisei.data.length +
+            this.rowHendoData.kobetu.data.length -
+            1,
+          1
+        )
+      );
+
+      // 加算情報項目一覧 体制＋個別マージ
+      for (
+        let i = this.hendoRow;
+        i < this.hendoRow + this.rowHendoData.taisei.data.length;
+        i++
+      ) {
+        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
+      }
+      // 加算情報項目一覧 個別マージ
+      for (
+        let i = this.hendoRow + this.rowHendoData.taisei.data.length;
+        i <
+        this.hendoRow +
+          this.rowHendoData.taisei.data.length +
+          this.rowHendoData.kobetu.data.length;
+        i++
+      ) {
+        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
+      }
+
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+      */
     },
 
     /***************
@@ -403,7 +805,7 @@ console.log(result);
      * 値の登録
      */
     settingPoint() {
-/*
+      /*
       let riyoGoukei = 0;
       let m = 0; // 食事のキー
 
@@ -716,114 +1118,7 @@ console.log(result);
         }
       });
     },
-    /*****************
-     * マージ
-     */
-    createMerge(flexGrid) {
-      let headerRanges = [];
-      let cellRanges = [];
-      headerRanges = [new wjGrid.CellRange(0, 0, 1, 3)]; // 項目
-      // 日付マージ
-      for (let day = 4; day < this.lastdate + 4; day++) {
-        headerRanges.push(new wjGrid.CellRange(0, day, 1, day));
-      }
-      // 合計マージ
-      headerRanges.push(
-        new wjGrid.CellRange(0, this.lastdate + 4, 1, this.lastdate + 4)
-      );
-      // 金額
-      headerRanges.push(
-        new wjGrid.CellRange(0, this.lastdate + 5, 1, this.lastdate + 5)
-      );
-      // 変動情報
-      cellRanges = [new wjGrid.CellRange(0, 0, this.hendoRow - 1, 0)];
 
-      // 食事用マージ
-      this.mealMarges(cellRanges);
-
-      // 変動情報項目一覧マージ
-      for (let i = 0; i < this.hendoRow; i++) {
-        if (this.viewdata[i]) {
-          cellRanges.push(
-            new wjGrid.CellRange(i, 1, i, this.viewdata[i].merge)
-          );
-        }
-      }
-
-      // 加算情報
-      cellRanges.push(
-        new wjGrid.CellRange(
-          this.hendoRow,
-          0,
-          this.hendoRow +
-            this.rowHendoData.taisei.data.length +
-            this.rowHendoData.kobetu.data.length -
-            1,
-          0
-        )
-      );
-
-      // 体制+個別
-      cellRanges.push(
-        new wjGrid.CellRange(
-          this.hendoRow,
-          1,
-          this.hendoRow + this.rowHendoData.taisei.data.length - 1,
-          1
-        )
-      );
-      // 個別
-      cellRanges.push(
-        new wjGrid.CellRange(
-          this.hendoRow + this.rowHendoData.taisei.data.length,
-          1,
-          this.hendoRow +
-            this.rowHendoData.taisei.data.length +
-            this.rowHendoData.kobetu.data.length -
-            1,
-          1
-        )
-      );
-
-      // 加算情報項目一覧 体制＋個別マージ
-      for (
-        let i = this.hendoRow;
-        i < this.hendoRow + this.rowHendoData.taisei.data.length;
-        i++
-      ) {
-        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
-      }
-      // 加算情報項目一覧 個別マージ
-      for (
-        let i = this.hendoRow + this.rowHendoData.taisei.data.length;
-        i <
-        this.hendoRow +
-          this.rowHendoData.taisei.data.length +
-          this.rowHendoData.kobetu.data.length;
-        i++
-      ) {
-        cellRanges.push(new wjGrid.CellRange(i, 2, i, 3));
-      }
-
-      let mm = new wjGrid.MergeManager();
-      mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
-            }
-          }
-        }
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < cellRanges.length; h++) {
-            if (cellRanges[h].contains(r, c)) {
-              return cellRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-    },
     mealMarges(cellRanges) {
       let stMeal = 0;
       let edMeal = 0;
@@ -936,54 +1231,17 @@ console.log(result);
       this.viewdata = views;
       this.hendoRow = hendoRow;
       */
-    },
+      //      let views = [];
+      /*
+      let i = 0;
+      views[i] = [];
+      views[i]['komoku0'] = 'aaaa';
+      views[i]['komoku1'] = 'aaaa';
+      views[i]['komoku2'] = 'aaaa';
 
-    /**************************
-     * ヘッダ作成
-     */
-    createHeader(flexGrid) {
-      if (flexGrid.columnHeaders.rows.length != 1) {
-        flexGrid.columnHeaders.rows.removeAt(0, new wjGrid.Row());
-      }
-      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
-
-      flexGrid.columns.insert(0, new wjGrid.Column());
-      flexGrid.columns.insert(1, new wjGrid.Column());
-      flexGrid.columns.insert(2, new wjGrid.Column());
-      flexGrid.columns.insert(3, new wjGrid.Column());
-      let column = 0;
-      flexGrid.columns[column++].binding = 'komoku0';
-      flexGrid.columns[column++].binding = 'komoku1';
-      flexGrid.columns[column++].binding = 'komoku2';
-      flexGrid.columns[column++].binding = 'komoku3';
-      let c = column++;
-      for (let day = 1; day <= this.lastdate; day++) {
-        flexGrid.columns.insert(c, new wjGrid.Column());
-        flexGrid.columns[c].binding = 'day' + day;
-        c = column++;
-      }
-      flexGrid.columns.insert(column++, new wjGrid.Column());
-      flexGrid.columns.insert(column++, new wjGrid.Column());
-      flexGrid.columns[c].binding = 'gokei';
-      flexGrid.columns[c + 1].binding = 'kingaku';
-      flexGrid.columnHeaders.setCellData(0, 0, '項目');
-      for (let day = 1; day <= this.lastdate; day++) {
-        let date = this.year + '/' + this.month + '/' + day;
-        flexGrid.columnHeaders.setCellData(0, day + 3, date);
-      }
-      flexGrid.columnHeaders.setCellData(0, c, '計');
-      flexGrid.columnHeaders.setCellData(0, c + 1, '金額');
-
-      flexGrid.rows.defaultSize = 20;
-      flexGrid.columns[0].width = 20;
-      flexGrid.columns[1].width = 20;
-      flexGrid.columns[2].width = 40;
-      flexGrid.columns[3].width = 90;
-
-      for (let i = 4; i <= this.lastdate + 3; i++) {
-        flexGrid.columns[i].width = 24;
-      }
-      flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
+      console.log(views);
+*/
+      //      this.viewdata = views;
     },
     /*********************
      * 画面リサイズの際の表示調整
