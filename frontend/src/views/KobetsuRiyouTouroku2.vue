@@ -212,12 +212,10 @@ export default {
     },
     onChangeInitialized(flexGrid) {
       flexGrid.frozenColumns = 4;
-      /*
       if (flexGrid.rows.length > 0) {
         flexGrid.rows[1].height = 30;
         flexGrid.rows[2].height = 30;
       }
-      */
     },
     /**************
      * セルのクリックイベント
@@ -368,10 +366,9 @@ export default {
       let self = this;
       // データの取得
       KobetsuIcrnNyusho().then((result) => {
+        this.mainGrid.columns.clear();
         // ヘッダ作成
         this.createHeader(this.mainGrid);
-
-        //this.mainGrid.columns.clear();
         console.log(result);
 
         // 左カラムの作成
@@ -381,12 +378,45 @@ export default {
           kmkkbn2: 1,
           komoku0: '変動情報',
           komoku1: '利用日',
+          day1: '〇',
+          day2: '〇',
+          day3: '〇',
+          day4: '〇',
+          day5: '〇',
+          day6: '〇',
+          kei: 6,
         });
         views.push({
           kmkkbn1: 1,
           kmkkbn2: 2,
           komoku0: '変動情報',
           komoku1: '入院・退院日',
+          nyugai_inf: [
+            {
+              kbn: 1,
+              ngsymd: '20220602',
+              ngeymd: '20220706',
+              seikyu: 1,
+              nissu: 4,
+            },
+            {
+              kbn: 1,
+              ngsymd: '20220707',
+              ngeymd: '20220709',
+              seikyu: 1,
+              nissu: 4,
+            },
+          ],
+          day1: '〇',
+          day2: '〇',
+          day3: '〇',
+          day4: '〇',
+          day5: '〇',
+          day6: '',
+          day7: '〇',
+          day8: '〇',
+          day9: '〇',
+          kei: 10,
         });
         views.push({
           kmkkbn1: 1,
@@ -480,8 +510,59 @@ export default {
         for (let i = 0; i < views.length; i++) {
           // 食事・光熱水費の金額をkomoku3に追記する
           if (views[i].kmkkbn2 === 3 || views[i].kmkkbn2 === 4) {
-            views[i].komoku3 += '@' + views[i].kmkkbn6 + '/回';
+            views[i].komoku3 += ' @' + views[i].kmkkbn6 + '/回';
           }
+          // 入院・退院日用のデータを作成
+          if (views[i].nyugai_inf) {
+            let nyugai_inf = views[i].nyugai_inf;
+            let nyuuinbi = [];
+            let nyuuinbi_st = [];
+            let nyuuinbi_ed = [];
+            let nyuuinbi_box_date = [];
+            for (let i = 0; i < nyugai_inf.length; i++) {
+              // 入院・退院日用のデータ
+              if (nyugai_inf[i].kbn === 1) {
+                // 日付のloop作成
+                let start = nyugai_inf[i].ngsymd;
+                // 開始日が今月ではないとき 開始日を今月の1日にする
+                if (
+                  moment(nyugai_inf[i].ngsymd).format('MM') !=
+                  moment().format('MM')
+                ) {
+                  start = moment().startOf('month').format('YYYYMMDD');
+                }
+                let end = nyugai_inf[i].ngeymd;
+                for (let dd = start; dd <= end; dd++) {
+                  // 日付取得
+                  let day = moment(dd.toString()).format('D');
+                  if (dd == start) {
+                    nyuuinbi_st.push(day);
+                  } else if (dd == end) {
+                    nyuuinbi_ed.push(day);
+                  } else {
+                    nyuuinbi.push(day);
+                  }
+                }
+                let boxdate =
+                  moment(nyugai_inf[i].ngsymd).format('M/D') +
+                  '～' +
+                  moment(nyugai_inf[i].ngeymd).format('M/D') +
+                  '[' +
+                  nyugai_inf[i].nissu +
+                  ']';
+                let startKey = moment(start).format('D');
+                nyuuinbi_box_date.push({
+                  startKey: startKey,
+                  date: boxdate,
+                });
+              }
+            }
+            views[i].nyuuinbi_st = nyuuinbi_st;
+            views[i].nyuuinbi_ed = nyuuinbi_ed;
+            views[i].nyuuinbi_box_date = nyuuinbi_box_date;
+            views[i].nyuuinbi = nyuuinbi;
+          }
+
           viewdata.push(views[i]);
         }
 
@@ -490,6 +571,8 @@ export default {
         this.createMerge(this.mainGrid, views);
         self.viewdata = views;
       });
+
+      // 選択したユーザー一覧の内容
       this.userDataSelect[0]['riyosyo'] =
         this.userListComponentDatas[row].riyocode +
         ' ' +
@@ -539,7 +622,7 @@ export default {
 
       flexGrid.columns.insert(column++, new wjGrid.Column());
       flexGrid.columns.insert(column++, new wjGrid.Column());
-      flexGrid.columns[c].binding = 'gokei';
+      flexGrid.columns[c].binding = 'kei';
       flexGrid.columns[c + 1].binding = 'kingaku';
       flexGrid.columnHeaders.setCellData(0, 0, '項目');
       for (let day = 1; day <= this.lastdate; day++) {
@@ -965,11 +1048,104 @@ export default {
      */
     methodCellFormatSetting(flexGrid) {
       let _self = this;
-
       flexGrid.formatItem.addHandler(function (s, e) {
         let tmpitem = e.panel.rows[e.row].dataItem;
         let html = e.cell.innerHTML;
         let text = e.cell.innerText;
+        // 文字列を縦に変更
+        let classname = '';
+        if (e.panel != flexGrid.columnHeaders) {
+          if (e.col == 0) {
+            classname = 'vertical';
+          }
+          if (e.col == 1 && e.row >= _self.hendoRow) {
+            classname = 'vertical';
+          }
+          // 利用日の表示
+          if (
+            tmpitem &&
+            tmpitem.kmkkbn1 == 1 &&
+            tmpitem.kmkkbn2 == 1 &&
+            e.col >= 4 &&
+            e.col < _self.lastdate + 4
+          ) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            positionCenter(e);
+          }
+          // 入院・退院
+          if (
+            tmpitem &&
+            tmpitem.kmkkbn1 == 1 &&
+            tmpitem.kmkkbn2 == 2 &&
+            e.col >= 4 &&
+            e.col < _self.lastdate + 4
+          ) {
+            let d = (e.col - 3).toString();
+            // console.log(tmpitem.nyuuinbi_box_date);
+            if (tmpitem.nyuuinbi) {
+              let color = 'color_red';
+              // nyuuinbiカラムの数値と一致するときに赤線に変更
+              // 始まり
+              var boxdate = tmpitem.nyuuinbi_box_date.find(
+                (v) => v.startKey == d
+              );
+              console.log(boxdate);
+              let box = '';
+              if (boxdate) {
+                box = '<div>' + boxdate.date + '</div>';
+              }
+              if (tmpitem.nyuuinbi_st.indexOf(d) != -1) {
+                html = "<div class='arrow-box " + color + "'></div>";
+                html += "<div class='arrow-start " + color + "'></div>";
+                html += "<div class='datearea'>" + box + '</div>';
+              }
+              // 中間
+              if (tmpitem.nyuuinbi.indexOf(d) != -1) {
+                html = "<div class='arrow-box " + color + "'></div>";
+              }
+              // 終わり
+              if (tmpitem.nyuuinbi_ed.indexOf(d) != -1) {
+                html = "<div class='arrow-box " + color + "'></div>";
+                if (tmpitem.nyuuinbi_st.indexOf(d) != -1) {
+                  html +=
+                    "<div class='arrow-center " +
+                    color +
+                    "'><div class='" +
+                    color +
+                    "'></div></div>";
+                  html += "<div class='datearea'>" + box + '</div>';
+                } else {
+                  html += "<div class='arrow-end " + color + "'></div>";
+                }
+              }
+            }
+
+            wjCore.setCss(e.cell, {
+              display: 'table',
+              tableLayout: 'absolute',
+            });
+            wjCore.setCss(e.cell.children[0], {
+              display: 'table-cell',
+              verticalAlign: 'middle',
+            });
+          }
+        }
+
+        if (e.panel == flexGrid.columnHeaders) {
+          // 日付表示
+          if (isDate.isDate(text)) {
+            html = dateFormatString.dateFormatString(text);
+            positionCenter(e);
+          }
+
+          if (e.row == 0 && (e.col == 0 || e.col >= _self.lastdate + 4)) {
+            positionCenter(e);
+          }
+        }
+
+        e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
+
+        /*
         let classname = '';
         if (e.panel != flexGrid.columnHeaders) {
           // 変動情報を縦に変更
@@ -1106,16 +1282,18 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
         }
+        */
+
         function positionCenter(e) {
           e.cell.style.textAlign = 'center';
           e.cell.style.justifyContent = 'center';
           e.cell.style.alignItems = 'center';
         }
-        function positionRight(e) {
-          e.cell.style.textAlign = 'right';
-          e.cell.style.justifyContent = 'right';
-          e.cell.style.alignItems = 'right';
-        }
+        // function positionRight(e) {
+        //   e.cell.style.textAlign = 'right';
+        //   e.cell.style.justifyContent = 'right';
+        //   e.cell.style.alignItems = 'right';
+        // }
       });
     },
 

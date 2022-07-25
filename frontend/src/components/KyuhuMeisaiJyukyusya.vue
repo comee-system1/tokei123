@@ -1,0 +1,158 @@
+<template>
+  <div id="kyuhumeisai-jyukyusya" class="d-flex">
+    <wj-flex-grid
+        id="kyuhumeisai-jyukyusya-grid"
+        :headersVisibility="'Row'"
+        :alternatingRowStep="0"
+        :initialized="onInitialized"
+        :isReadOnly="true"
+        :deferResizing="false"
+        :allowAddNew="false"
+        :allowDelete="false"
+        :allowDragging="false"
+        :allowPinning="false"
+        :allowResizing="false"
+        :allowSorting="false"
+      >
+    </wj-flex-grid>
+  </div>
+</template>
+<script>
+import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
+export default {
+  data() {
+    return {
+      syougaijiFlag: true,
+      mainFlexGrid:[],
+      jyukyusyaGridData:[],
+      selectUserData:[]
+    };
+  },
+  methods: {
+    onInitialized(flexGrid) {
+      this.mainFlexGrid = flexGrid;
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      // セルの作成と文字列挿入
+      this.createCell(flexGrid);
+      // セルのマージ
+      this.mergeCell(flexGrid);
+      // セルのデザイン修正
+      this.formatCell(flexGrid);
+    },
+    /**
+     * セルの作成
+     */
+    createCell(flexGrid) {
+      let jyukyusyaGridRow;
+      if (this.syougaijiFlag === true) {
+        // 障害児表示フラグがTRUEの場合3行表示
+        jyukyusyaGridRow = 3;
+      } else {
+        // 障害児表示フラグがFALSEの場合2行表示
+        jyukyusyaGridRow = 2;
+      }
+      // セルの作成
+      while (flexGrid.columns.length < 10) {
+        flexGrid.columns.push(new wjGrid.Column());
+      }
+      while (flexGrid.rows.length < jyukyusyaGridRow) {
+        flexGrid.rows.push(new wjGrid.Row());
+      }
+      flexGrid.rowHeaders.columns.defaultSize = 250;
+      flexGrid.columns.defaultSize = 20;
+    },
+    /**
+     * セルのマージ
+     */
+    mergeCell(flexGrid) {
+      let mm = new wjGrid.MergeManager();
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(1, 0, 1, 9),
+        new wjGrid.CellRange(2, 0, 2, 9),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
+    /**
+     * セルのデザイン修正
+     */
+    formatCell(flexGrid) {
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        // グリッド内共通スタイル
+        let s = cell.style;
+        s.fontWeight = 'normal';
+        s.textAlign = 'center';
+        // s.backgroundColor = sysConst.COLOR.selectedColor;
+        // ヘッダーデザイン修正
+        if (panel.cellType == wjGrid.CellType.RowHeader) {
+          if ((r == 0) && (c == 0)) {
+            cell.innerHTML = '受給者証番号';
+          }
+          if ((r == 1) && (c == 0)) {
+            cell.innerHTML = '支給決定障害者等氏名';
+          }
+          if ((r == 2) && (c == 0)) {
+            cell.innerHTML = '支給決定に係る障害児氏名';
+          }
+        }
+        // セルデザイン修正
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          s.backgroundColor = sysConst.COLOR.gridBackground;
+          if ((r == 1) || (r == 2)) {
+            s.textAlign = 'left';
+            s.paddingLeft = '4px';
+          }
+        }
+      };
+    },
+    /**
+     * 親コンポーネントで選択したユーザーデータを加工し表示
+     */
+    setJyukyusyaData(selectUserData){
+      // 受給者証番号を分割して表示
+      let jyukyusyaCodeSplit = [];
+      jyukyusyaCodeSplit = selectUserData['jyukyuno'].split('');
+      this.mainFlexGrid.setCellData(0, 0, jyukyusyaCodeSplit[0]);
+      this.mainFlexGrid.setCellData(0, 1, jyukyusyaCodeSplit[1]);
+      this.mainFlexGrid.setCellData(0, 2, jyukyusyaCodeSplit[2]);
+      this.mainFlexGrid.setCellData(0, 3, jyukyusyaCodeSplit[3]);
+      this.mainFlexGrid.setCellData(0, 4, jyukyusyaCodeSplit[4]);
+      this.mainFlexGrid.setCellData(0, 5, jyukyusyaCodeSplit[5]);
+      this.mainFlexGrid.setCellData(0, 6, jyukyusyaCodeSplit[6]);
+      this.mainFlexGrid.setCellData(0, 7, jyukyusyaCodeSplit[7]);
+      this.mainFlexGrid.setCellData(0, 8, jyukyusyaCodeSplit[8]);
+      this.mainFlexGrid.setCellData(0, 9, jyukyusyaCodeSplit[9]);
+
+      // 支給決定障害者氏名を表示
+      this.mainFlexGrid.setCellData(1, 0, selectUserData['names']);
+      if (this.syougaijiFlag === true) {
+        // 支給決定に係る障害児氏名を表示(仮)
+        this.mainFlexGrid.setCellData(2, 0, '東経 太郎');
+      }
+    },
+  }
+}
+</script>
+<style lang="scss" scope>
+@import '@/assets/scss/common.scss';
+
+#kyuhumeisai-jyukyusya-grid {
+  width: 452px;
+  &.wj-content {
+    border-right: none;
+    border-bottom: none;
+  }
+}
+</style>

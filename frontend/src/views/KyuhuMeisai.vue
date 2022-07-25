@@ -18,131 +18,21 @@
           </UserList>
         </v-col>
         <v-col class="rightArea kyuhumeisai">
-          <v-row no-gutters justify="space-between">
-            <v-col cols="6">
-              <wj-flex-grid
-                id="kyuhujukyuyaGrid"
-                :itemsSource="kyuhujukyuyaGridData"
-                :headersVisibility="'None'"
-                :autoGenerateColumns="false"
-                :initialized="onInitializedKyuhujukyuyaGrid"
-                :allowAddNew="false"
-                :allowDelete="false"
-                :allowDragging="false"
-                :allowPinning="false"
-                :allowResizing="false"
-                :allowSorting="false"
+          <v-row no-gutters class="mb-1">
+            <v-col>
+              <kyuhu-meisai-jyukyusya
+                ref="jyukyusyaData"
               >
-                <wj-flex-grid-column
-                  binding="Column0"
-                  :width="250"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column1"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column2"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column3"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column4"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column5"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column6"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column7"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column8"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column9"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  binding="Column10"
-                  :width="'1*'"
-                  :wordWrap="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
+              </kyuhu-meisai-jyukyusya>
             </v-col>
-            <v-col cols="4">
-              <div class="confirmTitle pl-2 mb-1 white--text">
+            <v-col class="no-flex-grow">
+              <div class="confirmTitle mb-1 white--text">
                 確定済:2021.08.08 14:19 (担当者:大正 雅夫)
               </div>
-              <v-row no-gutters justify="end">
-                <v-col cols="11">
-                  <wj-flex-grid
-                    id="styousonGrid"
-                    :itemsSource="styousonGridData"
-                    :headersVisibility="'None'"
-                    :autoGenerateColumns="false"
-                    :initialized="onInitializedStyousonGrid"
-                    :allowResizing="false"
-                    :allowDragging="false"
-                  >
-                    <wj-flex-grid-column
-                      binding="Column0"
-                      :width="200"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column1"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column2"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column3"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column4"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column5"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                    <wj-flex-grid-column
-                      binding="Column6"
-                      :width="'1*'"
-                      :wordWrap="true"
-                    ></wj-flex-grid-column>
-                  </wj-flex-grid>
-                </v-col>
-              </v-row>
+                <kyuhu-meisai-shityoson
+                ref="selectUserData1"
+                >
+                </kyuhu-meisai-shityoson>
             </v-col>
           </v-row>
           <v-row no-gutters justify="space-between">
@@ -277,6 +167,8 @@ import HeaderServices from '../components/HeaderServices.vue';
 import UserList from '../components/UserList';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import CommonTabMenu from '../components/CommonTabMenu.vue';
+import KyuhuMeisaiJyukyusya from '../components/KyuhuMeisaiJyukyusya.vue';
+import KyuhuMeisaiShityoson from '../components/KyuhuMeisaiShityoson.vue';
 import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
 import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
 import sysConst from '@/utiles/const';
@@ -286,6 +178,8 @@ export default {
     HeaderServices,
     CommonTabMenu,
     UserList,
+    KyuhuMeisaiJyukyusya,
+    KyuhuMeisaiShityoson,
     KyuhuMeisairan,
     KyuhuSeikyugaku,
   },
@@ -296,8 +190,6 @@ export default {
       gridReloadFlag: false,
       dateArgument: '',
       searchArgument: '',
-      kyuhujukyuyaGridData: this.getKyuhujukyuyaGridData(),
-      styousonGridData: this.getStyousonGridData(),
       jigyousyaGridData: this.getJigyousyaGridData(),
       chiikikubunGridData: this.getChiikikubunGridData(),
       // タブの制御Flag
@@ -310,158 +202,6 @@ export default {
     };
   },
   methods: {
-    onInitializedKyuhujukyuyaGrid: function (flexGrid) {
-      this.getKyuhujukyuyaGridData();
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(flexGrid);
-      // 結合するセルの範囲を指定
-      let cellRanges = [
-        new wjGrid.CellRange(1, 1, 1, 10),
-        new wjGrid.CellRange(2, 1, 2, 10),
-      ];
-      // getMergedRangeメソッドをオーバーライドする
-      mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < cellRanges.length; h++) {
-            if (cellRanges[h].contains(r, c)) {
-              return cellRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-      // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        // グリッド内共通スタイル
-        let s = cell.style;
-        s.fontWeight = 'normal';
-        s.textAlign = 'center';
-        s.color = sysConst.COLOR.fontColor;
-        s.backgroundColor = sysConst.COLOR.gridBackground;
-        if (c == 0) {
-          s.backgroundColor = sysConst.COLOR.selectedColor;
-        }
-        if ((r == 1 && c == 1) || (r == 2 && c == 2)) {
-          s.textAlign = 'left';
-          s.paddingLeft = '4px';
-        }
-        // セルと大枠の罫線が重複してしまうのでセルの罫線を消す
-        if (r == 2) {
-          s.borderBottom = 'none';
-        }
-        if (c == 10 || (r > 0 && c == 1)) {
-          s.borderRight = 'none';
-        }
-      };
-    },
-    getKyuhujukyuyaGridData: function () {
-      let kyuhujukyuyaGridData = [];
-      kyuhujukyuyaGridData.push(
-        {
-          Column0: '受給者証番号',
-          Column1: '',
-          Column2: '',
-          Column3: '',
-          Column4: '',
-          Column5: '',
-          Column6: '',
-          Column7: '',
-          Column8: '',
-          Column9: '',
-          Column10: '',
-        },
-        {
-          Column0: '支給決定障害者等氏名',
-          Column1: '',
-        },
-        {
-          Column0: '支給決定に係る障害児氏名',
-          Column1: '',
-        }
-      );
-      this.kyuhujukyuyaGridData = kyuhujukyuyaGridData;
-    },
-    onInitializedStyousonGrid: function (flexGrid) {
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        // グリッド内共通スタイル
-        let s = cell.style;
-        s.textAlign = 'center';
-        s.fontWeight = 'normal';
-        s.backgroundColor = sysConst.COLOR.gridBackground;
-        if (c == 0) {
-          s.backgroundColor = sysConst.COLOR.selectedColor;
-        }
-        // セルと大枠の罫線が重複してしまうのでセルの罫線を消す
-        if (r == 1) {
-          s.borderBottom = 'none';
-        }
-        if (c == 6) {
-          s.borderRight = 'none';
-        }
-        // ヘッダー扱いのセルに文字列を挿入
-        if (r == 0 && c == 0) {
-          cell.innerHTML = '市町村番号';
-        }
-        if (r == 1 && c == 0) {
-          cell.innerHTML = '助成自治体番号';
-        }
-      };
-    },
-    getStyousonGridData: function () {
-      let styousonGridData = [];
-      if (this.gridReloadFlag != true) {
-        // 初回空データ表示
-        styousonGridData.push(
-          {
-            // 市町村番号
-            Column1: '',
-            Column2: '',
-            Column3: '',
-            Column4: '',
-            Column5: '',
-            Column6: '',
-          },
-          {
-            // 助成自治体番号
-            Column1: '',
-            Column2: '',
-            Column3: '',
-            Column4: '',
-            Column5: '',
-            Column6: '',
-          }
-        );
-      } else {
-        styousonGridData.push(
-          {
-            // 市町村番号
-            Column1: '1',
-            Column2: '1',
-            Column3: '0',
-            Column4: '0',
-            Column5: '0',
-            Column6: '1',
-          },
-          {
-            // 助成自治体番号
-            Column1: '',
-            Column2: '',
-            Column3: '',
-            Column4: '',
-            Column5: '',
-            Column6: '',
-          }
-        );
-      }
-      return styousonGridData;
-    },
     onInitializedJigyousyaGrid: function (flexGrid) {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -647,26 +387,11 @@ export default {
     },
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
     getSelectedRow(row) {
-      this.getKyuhujukyuyaGridData();
-
-      // 受給者番号を分割
-      let jyukyunoSplit = [];
-      jyukyunoSplit = this.userListComponentDatas[row]['jyukyuno'].split('');
-
-      // 受給者番号の表示
-      this.kyuhujukyuyaGridData[0]['Column1'] = jyukyunoSplit[0];
-      this.kyuhujukyuyaGridData[0]['Column2'] = jyukyunoSplit[1];
-      this.kyuhujukyuyaGridData[0]['Column3'] = jyukyunoSplit[2];
-      this.kyuhujukyuyaGridData[0]['Column4'] = jyukyunoSplit[3];
-      this.kyuhujukyuyaGridData[0]['Column5'] = jyukyunoSplit[4];
-      this.kyuhujukyuyaGridData[0]['Column6'] = jyukyunoSplit[5];
-      this.kyuhujukyuyaGridData[0]['Column7'] = jyukyunoSplit[6];
-      this.kyuhujukyuyaGridData[0]['Column8'] = jyukyunoSplit[7];
-      this.kyuhujukyuyaGridData[0]['Column9'] = jyukyunoSplit[8];
-      this.kyuhujukyuyaGridData[0]['Column10'] = jyukyunoSplit[9];
-      // 支給決定障害者等氏名の表示
-      this.kyuhujukyuyaGridData[1]['Column1'] =
-        this.userListComponentDatas[row]['names'];
+      // 各子コンポーネントに選択したユーザーデータを送る
+      // 受給者Grid
+      this.$refs.jyukyusyaData.setJyukyusyaData(this.userListComponentDatas[row]);
+      // 市町村Grid
+      this.$refs.selectUserData1.setShityosonCode(this.userListComponentDatas[row]);
 
       // ユーザー選択時、他のグリッドを再読み込み
       this.gridReloadFlag = true;
@@ -679,8 +404,6 @@ export default {
       }
     },
     reloadMeisaiMethod: function () {
-      // 市町村番号グリッド
-      this.styousonGridData = this.getStyousonGridData();
       // 指定事業所番号グリッド
       this.jigyousyaGridData = this.getJigyousyaGridData();
       // 地域区分グリッド
@@ -727,6 +450,10 @@ export default {
     width: 1020px;
     margin-left: 4px;
     font-size: 12px;
+    .no-flex-grow {
+      // フレックス伸長係数を0に設定
+      flex-grow: 0;
+    }
     .wj-cell {
       padding: 0;
     }
@@ -748,6 +475,7 @@ export default {
     }
   }
   .confirmTitle {
+    width: 350px;
     font-size: $cell_fontsize;
     background-color: #ce3e47;
     color: $white;

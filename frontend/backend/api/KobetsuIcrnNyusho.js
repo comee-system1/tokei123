@@ -4,9 +4,7 @@ const config = require('./ApiRun');
 const moment = require('moment')
 export async function KobetsuIcrnNyusho() {
     // 接続確認用URL
-    //var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
-    // test用
-    var url = '/';
+    var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
 
     var uniqid = 1;
     config.setURL(url);
@@ -16,8 +14,7 @@ export async function KobetsuIcrnNyusho() {
         // 利用者情報一覧
         let returns = [];
         let riyo_inf = [];
-        riyo_inf.push(
-            {
+        riyo_inf.push({
                 riid: 1,
                 riyocode: 10000,
                 names: '東経 太郎0',
@@ -27,8 +24,7 @@ export async function KobetsuIcrnNyusho() {
                 kmkkbn1: 1,
                 kmkkbn2: 1, // 利用日
                 kmkkbn2_text: '利用日',
-            },
-            {
+            }, {
                 riid: 1,
                 riyocode: 10000,
                 names: '東経 太郎0',
