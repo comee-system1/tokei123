@@ -110,6 +110,7 @@
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'shikutyoson[0]'"
+            align="center"
             :header="'市区町村'"
             :width="91"
             :isReadOnly="false"
@@ -447,7 +448,7 @@ export default {
           let kana = this.kihonjyohoData[i].kana;
           if (
             (this.kanaText.length == 0 ||
-              this.kihonjyohoData[i].names.indexOf(this.kanaText) != -1 ||
+              this.kihonjyohoData[i].kana.indexOf(this.kanaText) != -1 ||
               this.kihonjyohoData[i].code.toString().indexOf(this.kanaText) !=
                 -1) &&
             (this.serviceNaiyo.serviceCode == 0 ||

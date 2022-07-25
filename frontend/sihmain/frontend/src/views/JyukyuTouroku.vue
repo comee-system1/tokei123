@@ -571,6 +571,7 @@ export default {
       }
       this.setSubGridSelected(true);
     },
+    //apiからデータ取得
     async getJyukyuTourokuKihonData(rid) {
       let jinf = [];
 
@@ -611,6 +612,7 @@ export default {
         return jinf;
       });
     },
+    //各コンポーネントと履歴にデータ設定
     setKihonData() {
       if (this.kihonDataOrg.length > 0) {
         this.jyukyuid = this.kihonDataOrg[0].jyukyuid;
@@ -663,6 +665,7 @@ export default {
         this.risyosyaFutanDataOrgFiltered
       );
     },
+    //履歴表示
     openRireki() {
       this.slideInRight.isOpen = true;
       this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
@@ -681,6 +684,7 @@ export default {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }
     },
+    //マスタダミーデータ
     getMstData() {
       this.shichosonList = [];
       this.shichosonList.push(
@@ -709,6 +713,7 @@ export default {
         { id: 0, code: '', name: '' }
       );
     },
+    //メニューボタン操作各種
     menu_clear() {
       for (let i = 0; i < this.menuitems.length; i++) {
         var btn = document.getElementById(

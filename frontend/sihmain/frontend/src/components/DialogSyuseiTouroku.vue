@@ -702,55 +702,18 @@ export default {
     /***********
      * 和暦西暦表示切り替え
      */
-    switchCalendar(type) {
-      // 西暦で取得したデータを和暦に変換し年号を設定
-      let warekiArray = [];
-      let nengou;
-      let warekiBirthY;
-      // 和暦に変換
-      warekiArray = this.wareki(this.riyousyaBirthY);
-      if (type === 'year') {
-        // 和暦、西暦いずれか選択時
-        if (this.calendarKey === '1') {
-          // 和暦選択時
-          //表示用年号を初期化
-          this.dispNngou = "";
-
-          // 年が空でなかった場合和暦に変換
-          if (this.riyousyaBirthY !== '') {
-            // 年を取得
-            warekiBirthY = warekiArray[1];
-
-            // 年号を取得
-            nengou = warekiArray[0];
-            // 和暦に変換した年をvalueに設定
-            this.nengouKey = nengou;
-            this.dispNngou = nengou;
-            this.riyousyaBirthY = warekiBirthY;
-          } else {
-            // 年が空だった場合和暦選択時、年を空欄にする
-            this.riyousyaBirthY = '';
-          }
-          this.dispNngou = this.nengouKey;
-        } else {
-          // 西暦選択時
-          if ((this.nengouKey !== '') && (this.riyousyaBirthY !== '')) {
-            // 年号と年が入力されている場合西暦に変換
-            this.riyousyaBirthY = this.seireki(this.nengouKey + this.riyousyaBirthY);
-          } else {
-            // 年号と年のいずれかが入力されていなければ年を初期化
-            this.riyousyaBirthY = '';
-          }
-          // 表示用年号と年号を変更
-          this.dispNngou = "西暦";
-          this.nengouKey ="";
-        }
+    switchCalendar() {
+      // 入力された年と歳を初期化
+      this.riyousyaBirthY = '';
+      this.riyousyaAge = '';
+      if (this.calendarKey === '1') {
+        // 和暦選択時
+        this.dispNngou = "";
+        this.dispNngou = this.nengouKey;
       } else {
-        // 年号を選択
-        // 和暦に変換した年をvalueに設定
-        this.dispNngou = this.nengouKey
-
-        // this.calcRiyousyaAge();
+        // 西暦選択時
+        this.dispNngou = "西暦";
+        this.nengouKey ="";
       }
     },
     /***********

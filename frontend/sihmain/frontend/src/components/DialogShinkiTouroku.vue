@@ -473,9 +473,12 @@ export default {
       this.inputDataClear();
     },
     /***********
-     *dialog和暦西暦表示切り替え
+     * 和暦西暦表示切り替え
      */
     switchCalendar() {
+      // 入力された年と歳を初期化
+      this.inputBirthY = '';
+      this.inputAge = '';
       if (this.calendarKey === '1') {
         // 和暦選択時
         this.dispNngou = "";

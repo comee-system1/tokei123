@@ -55,8 +55,8 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdStart"
-            v-model="sienkubunymdStart"
+            :value="tesymd"
+            v-model="tesymd"
             placeholder="開始日を選択"
           ></datepicker>
           &nbsp;～&nbsp;
@@ -64,8 +64,8 @@
             :language="ja"
             class="input_picker"
             :format="DatePickerFormat"
-            :value="sienkubunymdEnd"
-            v-model="sienkubunymdEnd"
+            :value="teeymd"
+            v-model="teeymd"
             placeholder="終了日を選択"
           ></datepicker>
         </v-card>
@@ -91,7 +91,7 @@
           <label style="padding-top: 4px; padding-left: 4px">円</label>
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-jougenkanritaisyo-row">
+      <v-row no-gutters class="riyosyafutan-jgenkbn-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length6 d-flex flex-row"
@@ -102,21 +102,21 @@
         </v-card>
         <v-card
           elevation="0"
-          class="riyosyafutan-jougenkanritaisyo-selection d-flex flex-row"
+          class="riyosyafutan-jgenkbn-selection d-flex flex-row"
           flat
           tile
         >
           <v-radio-group
             row
-            v-model="jougenkanritaisyo"
-            class="riyosyafutan-jougenkanritaisyo-group"
+            v-model="jgenkbn"
+            class="riyosyafutan-jgenkbn-group"
           >
             <v-radio label="非該当" :key="1" :value="1"></v-radio>
             <v-radio label="該当" :key="0" :value="0"></v-radio>
           </v-radio-group>
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-jougenkanrijigyosyo-row">
+      <v-row no-gutters class="riyosyafutan-jgenknrikbn-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length4 d-flex flex-row"
@@ -128,14 +128,14 @@
         </v-card>
         <v-card
           elevation="0"
-          class="riyosyafutan-jougenkanrijigyosyo-selection d-flex flex-row"
+          class="riyosyafutan-jgenknrikbn-selection d-flex flex-row"
           flat
           tile
         >
           <v-radio-group
             row
-            v-model="jougenkanrijigyosyo"
-            class="riyosyafutan-jougenkanrijigyosyo-group"
+            v-model="jgenknrikbn"
+            class="riyosyafutan-jgenknrikbn-group"
           >
             <v-card elevation="0" flat tile>
               <v-card elevation="0" class="d-flex flex-row" flat tile>
@@ -150,11 +150,11 @@
                 tile
               >
                 <wj-combo-box
-                  class="riyosyafutan-jougenkanrijigyosyo-input"
+                  class="riyosyafutan-jgenknrikbn-input"
                   :textChanged="onTextChanged"
                 ></wj-combo-box>
                 <wj-combo-box
-                  class="riyosyafutan-jougenkanrijigyosyo-input2"
+                  class="riyosyafutan-jgenknrikbn-input2"
                   :textChanged="onTextChanged"
                 ></wj-combo-box>
               </v-card>
@@ -222,7 +222,7 @@
           </wj-flex-grid>
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-syokujiteikyotaisei-row">
+      <v-row no-gutters class="riyosyafutan-sykksn-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length6 d-flex flex-row"
@@ -233,21 +233,17 @@
         </v-card>
         <v-card
           elevation="0"
-          class="riyosyafutan-syokujiteikyotaisei-selection d-flex flex-row"
+          class="riyosyafutan-sykksn-selection d-flex flex-row"
           flat
           tile
         >
-          <v-radio-group
-            row
-            v-model="syokujiteikyotaisei"
-            class="riyosyafutan-syokujiteikyotaisei-group"
-          >
+          <v-radio-group row v-model="sykksn" class="riyosyafutan-sykksn-group">
             <v-radio label="非該当" :key="1" :value="1"></v-radio>
             <v-radio label="該当" :key="0" :value="0"></v-radio>
           </v-radio-group>
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-tokutetokubetukyufuhi-row">
+      <v-row no-gutters class="riyosyafutan-tkkfhi-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length5 d-flex flex-row"
@@ -259,15 +255,11 @@
         </v-card>
         <v-card
           elevation="0"
-          class="riyosyafutan-tokutetokubetukyufuhi-selection d-flex flex-row"
+          class="riyosyafutan-tkkfhi-selection d-flex flex-row"
           flat
           tile
         >
-          <v-radio-group
-            row
-            v-model="tokutetokubetukyufuhi"
-            class="riyosyafutan-tokutetokubetukyufuhi-group"
-          >
+          <v-radio-group row v-model="tkkfhi" class="riyosyafutan-tkkfhi-group">
             <v-card elevation="0" flat tile>
               <v-card elevation="0" class="d-flex flex-row" flat tile>
                 <v-radio label="非当該" :key="0" :value="0"></v-radio>
@@ -282,7 +274,7 @@
                 tile
               >
                 <wj-combo-box
-                  class="riyosyafutan-tokutetokubetukyufuhi-input"
+                  class="riyosyafutan-tkkfhi-input"
                   :textChanged="onTextChanged"
                 ></wj-combo-box>
                 <label style="padding-top: 4px; padding-left: 4px"
@@ -329,13 +321,34 @@ export default {
       year: moment().year(),
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
-      jougenkanritaisyo: -1,
-      jougenkanrijigyosyo: -1,
+
+      jyogenid: 0,
+      jyukyuid: 0,
+
+      tesymd: '',
+      teeymd: '',
+
+      ftn: 0,
+      fjyogen: 0,
+
+      jgenkbn: -1,
+      jgenknrikbn: -1,
+      jgenknri: 0,
+      jgenname: '',
+      jgenryaku: '',
+
+      sykksn: -1,
+
+      tkkfhi: -1,
+      tkkfhi12: 0,
+
+      syafukug: 0,
+      kyftok: 0,
+      kyuftokkbn: 0,
+      tasikgn: 0,
+      mushojdo: 0,
+
       riyosyafutanTajigyosyoRiyoServiceData: this.getTajigyosyoRiyoService(),
-      syokujiteikyotaisei: -1,
-      tokutetokubetukyufuhi: -1,
-      sienkubunymdStart: '',
-      sienkubunymdEnd: '',
     };
   },
   props: ['titleNum'],
@@ -394,8 +407,60 @@ export default {
       this.$emit('setMode', 'new');
       this.Resize();
     },
-    setdata(data) {},
-    clearData() {},
+    setdata(data) {
+      this.jyogenid = data.jyogenid; //利用者負担関係内部ID
+      this.jyukyuid = data.jyukyuid; //受給者証内部ID
+
+      this.tesymd = data.tesymd; //適用開始日
+      this.teeymd = data.teeymd; //適用終了日
+
+      this.ftn = data.ftn; //利用者負担割合
+      this.fjyogen = data.fjyogen; //利用者負担上限月額
+
+      this.jgenkbn = data.jgenkbn; //上限管理対象区分
+      this.jgenknrikbn = data.jgenknrikbn; //上限管理委託事業者区分
+      this.jgenknri = data.jgenknri; //上限管理委託事業者内部ID
+      this.jgenname = data.jgenname; //上限管理事業者名
+      this.jgenryaku = data.jgenryaku; //上限管理事業者略称
+
+      this.sykksn = data.sykksn; //食事提供加算
+
+      this.tkkfhi = data.tkkfhi; //特定障害者特別給付費
+      this.tkkfhi12 = data.tkkfhi12; //特定障害者特別給付費(GH/CH)
+
+      this.syafukug = data.syafukug; //社会福祉法人減額
+      this.kyftok = data.kyftok; //給付費等の額の特例
+      this.kyuftokkbn = data.kyuftokkbn; //給付費等の額の特例の有無
+      this.tasikgn = data.tasikgn; //多子軽減対象
+      this.mushojdo = data.mushojdo; //無償化対象児童
+    },
+    clearData() {
+      this.jyogenid = 0;
+      this.jyukyuid = 0;
+
+      this.tesymd = '';
+      this.teeymd = '';
+
+      this.ftn = 0;
+      this.fjyogen = 0;
+
+      this.jgenkbn = -1;
+      this.jgenknrikbn = -1;
+      this.jgenknri = 0;
+      this.jgenname = '';
+      this.jgenryaku = '';
+
+      this.sykksn = -1;
+
+      this.tkkfhi = -1;
+      this.tkkfhi12 = 0;
+
+      this.syafukug = 0;
+      this.kyftok = 0;
+      this.kyuftokkbn = 0;
+      this.tasikgn = 0;
+      this.mushojdo = 0;
+    },
     getTajigyosyoRiyoService() {
       let result = [];
       result.push(
@@ -528,13 +593,13 @@ div#JyukyuTourokuRiyosyaFutan {
     }
   }
 
-  .riyosyafutan-jougenkanritaisyo-row {
+  .riyosyafutan-jgenkbn-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    .riyosyafutan-jougenkanritaisyo-selection {
+    .riyosyafutan-jgenkbn-selection {
       height: 100%;
       padding-left: 0px;
-      .riyosyafutan-jougenkanritaisyo-group {
+      .riyosyafutan-jgenkbn-group {
         width: 200px;
         margin-top: 0px;
         margin-left: -18px;
@@ -544,35 +609,35 @@ div#JyukyuTourokuRiyosyaFutan {
     }
   }
 
-  .riyosyafutan-jougenkanrijigyosyo-row {
+  .riyosyafutan-jgenknrikbn-row {
     height: 50px;
     margin: 4px 4px 0px 4px;
-    .riyosyafutan-jougenkanrijigyosyo-selection {
+    .riyosyafutan-jgenknrikbn-selection {
       width: 400px;
       height: 100%;
       margin-left: 4px;
-      .riyosyafutan-jougenkanrijigyosyo-group {
+      .riyosyafutan-jgenknrikbn-group {
         margin-top: -10px;
         margin-left: -49px;
         padding-top: -50px;
         transform: scale(0.75);
       }
-      .riyosyafutan-jougenkanrijigyosyo-input {
+      .riyosyafutan-jgenknrikbn-input {
         height: 25px;
         margin-left: -1px;
         border-radius: revert;
         border-radius: 3px;
       }
-      .riyosyafutan-jougenkanrijigyosyo-input.wj-control .wj-input {
+      .riyosyafutan-jgenknrikbn-input.wj-control .wj-input {
         width: 300px;
       }
-      .riyosyafutan-jougenkanrijigyosyo-input2 {
+      .riyosyafutan-jgenknrikbn-input2 {
         height: 25px;
         margin-left: -1px;
         border-radius: revert;
         border-radius: 3px;
       }
-      .riyosyafutan-jougenkanrijigyosyo-input2.wj-control .wj-input {
+      .riyosyafutan-jgenknrikbn-input2.wj-control .wj-input {
         width: 200px;
       }
     }
@@ -583,13 +648,13 @@ div#JyukyuTourokuRiyosyaFutan {
     margin: 4px 4px 0px 4px;
   }
 
-  .riyosyafutan-syokujiteikyotaisei-row {
+  .riyosyafutan-sykksn-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
-    .riyosyafutan-syokujiteikyotaisei-selection {
+    .riyosyafutan-sykksn-selection {
       height: 100%;
       padding-left: 0px;
-      .riyosyafutan-syokujiteikyotaisei-group {
+      .riyosyafutan-sykksn-group {
         width: 200px;
         margin-top: 0px;
         margin-left: -20px;
@@ -599,20 +664,20 @@ div#JyukyuTourokuRiyosyaFutan {
     }
   }
 
-  .riyosyafutan-tokutetokubetukyufuhi-row {
+  .riyosyafutan-tkkfhi-row {
     height: 50px;
     margin: 4px 4px 0px 4px;
-    .riyosyafutan-tokutetokubetukyufuhi-selection {
+    .riyosyafutan-tkkfhi-selection {
       width: 400px;
       height: 100%;
       margin-left: 4px;
-      .riyosyafutan-tokutetokubetukyufuhi-group {
+      .riyosyafutan-tkkfhi-group {
         margin-top: -10px;
         margin-left: -49px;
         padding-top: -50px;
         transform: scale(0.75);
       }
-      .riyosyafutan-tokutetokubetukyufuhi-input {
+      .riyosyafutan-tkkfhi-input {
         width: 100px;
         height: 25px;
         margin-left: -1px;

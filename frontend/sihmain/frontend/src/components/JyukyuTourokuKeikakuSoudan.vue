@@ -120,13 +120,14 @@
             <wj-combo-box
               class="keikakuSoudan-monitoringkikan-input"
               :textChanged="onTextChanged"
+              v-model="monijiki"
               :text="monijiki"
             ></wj-combo-box>
             <label style="padding-top: 2px">ヶ月</label>
             <v-card elevation="0" class="pl-1 d-flex flex-row">
               <v-btn
                 class="monitoringkikan-setauto-button"
-                @click="openDialog_Term('copy_last')"
+                @click="setMonitoring()"
               >
                 自動設定</v-btn
               >
@@ -135,6 +136,7 @@
           <v-card elevation="0" flat tile style="height: 300px">
             <wj-flex-grid
               v-for="item of monitoring"
+              :id="'gridMonitoringkikan' + item.id"
               :key="item.id"
               class="no-scrollbars"
               :initialized="onInitializedMonitoringkikan"
@@ -183,11 +185,7 @@
           </v-checkbox>
         </v-card>
       </v-row>
-      <v-row
-        v-if="this.changeMode()"
-        no-gutters
-        class="keikakuSoudan-button-row"
-      >
+      <v-row v-if="changeMode()" no-gutters class="keikakuSoudan-button-row">
         <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
@@ -243,66 +241,61 @@ export default {
       ],
 
       monitoring: [
-        [
-          {
-            id: 1,
-            jan: '',
-            feb: '',
-            mar: '',
-            apr: '',
-            may: '',
-            jun: '',
-            jul: '',
-            aug: '',
-            sep: '',
-            oct: '',
-            nov: '',
-            dec: '',
-          },
-        ],
-        [
-          {
-            id: 2,
-            jan: '',
-            feb: '',
-            mar: '',
-            apr: '',
-            may: '',
-            jun: '',
-            jul: '',
-            aug: '',
-            sep: '',
-            oct: '',
-            nov: '',
-            dec: '',
-          },
-        ],
-        [
-          {
-            id: 3,
-            jan: '',
-            feb: '',
-            mar: '',
-            apr: '',
-            may: '',
-            jun: '',
-            jul: '',
-            aug: '',
-            sep: '',
-            oct: '',
-            nov: '',
-            dec: '',
-          },
-        ],
+        {
+          id: 1,
+          jan: '',
+          feb: '',
+          mar: '',
+          apr: '',
+          may: '',
+          jun: '',
+          jul: '',
+          aug: '',
+          sep: '',
+          oct: '',
+          nov: '',
+          dec: '',
+        },
+        {
+          id: 2,
+          jan: '',
+          feb: '',
+          mar: '',
+          apr: '',
+          may: '',
+          jun: '',
+          jul: '',
+          aug: '',
+          sep: '',
+          oct: '',
+          nov: '',
+          dec: '',
+        },
+        {
+          id: 3,
+          jan: '',
+          feb: '',
+          mar: '',
+          apr: '',
+          may: '',
+          jun: '',
+          jul: '',
+          aug: '',
+          sep: '',
+          oct: '',
+          nov: '',
+          dec: '',
+        },
       ],
+      putmarkMonth: [],
 
       gridId: 0,
 
       isModify: false,
       jigyosyoid: 0,
       jigyosyoidname: '',
-      rksymd: '',
-      rkeymd: '',
+      rksymd: null,
+      rkeymd: null,
       monijiki: 0,
       tokuti: 0,
     };
@@ -315,10 +308,6 @@ export default {
     this.Resize();
   },
   methods: {
-    setMonitoring() {
-      let result = [];
-      return result;
-    },
     changeMode() {
       this.Resize();
       return this.mode === 'modKeikakuSoudan';
@@ -378,13 +367,8 @@ export default {
         this.tokuti = data.tokuti;
         this.isModify = true;
 
-        for (let i = 0; i < this.monitoring.length; i++) {
-          let y = Number(this.rksymd.substr(0, 4));
-          let flexGrid = wijmo.Control.getControl(
-            '#gridMonitoringkikan' + String(i + 1)
-          );
-          this.setGrid(flexGrid, y + i);
-        }
+        this.clearmMonitoringAll();
+        this.setMonitoring();
       }
     },
     setJigyosyo(code, name) {
@@ -395,10 +379,53 @@ export default {
       this.isModify = false;
       this.jigyosyoid = 0;
       this.jigyosyoidname = '';
-      this.rksymd = '';
-      this.rkeymd = '';
+      this.rksymd = null;
+      this.rkeymd = null;
       this.monijiki = 0;
       this.tokuti = 0;
+      this.clearmMonitoringAll();
+    },
+    clearmMonitoringAll() {
+      for (let i = 0; i < this.monitoring.length; i++) {
+        this.monitoring[i].jan = '';
+        this.monitoring[i].feb = '';
+        this.monitoring[i].mar = '';
+        this.monitoring[i].apr = '';
+        this.monitoring[i].may = '';
+        this.monitoring[i].jun = '';
+        this.monitoring[i].jul = '';
+        this.monitoring[i].aug = '';
+        this.monitoring[i].sep = '';
+        this.monitoring[i].oct = '';
+        this.monitoring[i].nov = '';
+        this.monitoring[i].dec = '';
+      }
+    },
+    clearmMonitoringHyphen(i) {
+      this.monitoring[i].jan =
+        this.monitoring[i].jan === '-' ? '' : this.monitoring[i].jan;
+      this.monitoring[i].feb =
+        this.monitoring[i].feb === '-' ? '' : this.monitoring[i].feb;
+      this.monitoring[i].mar =
+        this.monitoring[i].mar === '-' ? '' : this.monitoring[i].mar;
+      this.monitoring[i].apr =
+        this.monitoring[i].apr === '-' ? '' : this.monitoring[i].apr;
+      this.monitoring[i].may =
+        this.monitoring[i].may === '-' ? '' : this.monitoring[i].may;
+      this.monitoring[i].jun =
+        this.monitoring[i].jun === '-' ? '' : this.monitoring[i].jun;
+      this.monitoring[i].jul =
+        this.monitoring[i].jul === '-' ? '' : this.monitoring[i].jul;
+      this.monitoring[i].aug =
+        this.monitoring[i].aug === '-' ? '' : this.monitoring[i].aug;
+      this.monitoring[i].sep =
+        this.monitoring[i].sep === '-' ? '' : this.monitoring[i].sep;
+      this.monitoring[i].oct =
+        this.monitoring[i].oct === '-' ? '' : this.monitoring[i].oct;
+      this.monitoring[i].nov =
+        this.monitoring[i].nov === '-' ? '' : this.monitoring[i].nov;
+      this.monitoring[i].dec =
+        this.monitoring[i].dec === '-' ? '' : this.monitoring[i].dec;
     },
     onInitializedMonitoringkikan(flexGrid) {
       flexGrid.beginUpdate();
@@ -416,39 +443,254 @@ export default {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = false;
-        col.header = this.months[colIndex].value + '月';
-        col.binding = this.months[colIndex].id;
         col.width = 36;
         col.align = 'center';
         col.allowMerging = true;
         col.multiLine = true;
       }
 
-      this.setGrid(flexGrid, 0);
+      this.setGrid(flexGrid, this.gridId, null, null, 0);
       this.gridId++;
+
+      this.clickEventCell(flexGrid);
+
+      let _self = this;
+      let _grid = flexGrid;
+      // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        if (panel.cellType == wjGrid.CellType.Cell && r == 0) {
+          // グリッド内共通スタイル
+          let s = cell.style;
+          if (cell.innerText === '-') {
+            s.backgroundColor = '#ccc';
+          } else {
+            if (_self.putmarkMonth.length > 0) {
+              let header = _grid.columnHeaders;
+              let y = header.getCellData(0, c, true);
+              let m = header.getCellData(1, c, true);
+              let ym = '';
+              if (y.indexOf('年') > -1) {
+                y = y.replace('年', '');
+              }
+              if (m.indexOf('月') > -1) {
+                m = m.replace('月', '');
+              }
+              ym = y + m.padStart(2, '0');
+              let yellow = _self.putmarkMonth.indexOf(ym) > -1;
+              if (yellow) {
+                s.backgroundColor = 'ivory';
+              } else {
+                s.backgroundColor = '#fff';
+              }
+            }
+          }
+        }
+      };
 
       flexGrid.endUpdate();
     },
-    setGrid(flexGrid, y) {
-      for (let colIndex = 0; colIndex < 12; colIndex++) {
-        for (let rowindex = 0; rowindex < 2; rowindex++) {
-          let title = '';
-          if (rowindex == 0) {
-            if (y > 0) {
-              if (0 <= colIndex && colIndex <= 8) {
-                title = y + '年';
-              } else {
-                title = y + 1 + '年';
-              }
+    /****************
+     *セルのクリックイベント
+     */
+    clickEventCell(flexGrid) {
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        // セル押下時のみ
+        if (ht.cellType == wjGrid.CellType.Cell && ht.row == 0) {
+          let data = flexGrid.rows[ht.row].dataItem;
+          let header = flexGrid.columnHeaders;
+          let m = header.getCellData(1, ht.col, true);
+          m = m.replace('月', '');
+          if (flexGrid.getCellData(ht.row, ht.col) !== '-') {
+            switch (Number(m) - 1) {
+              case 0:
+                data.jan = data.jan.length > 0 ? '' : '○';
+                break;
+              case 1:
+                data.feb = data.feb.length > 0 ? '' : '○';
+                break;
+              case 2:
+                data.mar = data.mar.length > 0 ? '' : '○';
+                break;
+              case 3:
+                data.apr = data.apr.length > 0 ? '' : '○';
+                break;
+              case 4:
+                data.may = data.may.length > 0 ? '' : '○';
+                break;
+              case 5:
+                data.jun = data.jun.length > 0 ? '' : '○';
+                break;
+              case 6:
+                data.jul = data.jul.length > 0 ? '' : '○';
+                break;
+              case 7:
+                data.aug = data.aug.length > 0 ? '' : '○';
+                break;
+              case 8:
+                data.sep = data.sep.length > 0 ? '' : '○';
+                break;
+              case 9:
+                data.oct = data.oct.length > 0 ? '' : '○';
+                break;
+              case 10:
+                data.nov = data.nov.length > 0 ? '' : '○';
+                break;
+              case 11:
+                data.dec = data.dec.length > 0 ? '' : '○';
+                break;
             }
-            flexGrid.columnHeaders.setCellData(rowindex, colIndex, title);
+            flexGrid.refresh();
           }
         }
-      }
-      flexGrid.itemsSource = [];
-      flexGrid.itemsSource = this.monitoring[0];
+      });
     },
-    onTextChanged(txb) {},
+    setGrid(flexGrid, index, symd, eymd, momikikan) {
+      let sy = symd == null ? 0 : symd.getFullYear();
+      let sm = symd == null ? 0 : symd.getMonth() + 1;
+      let mindex = sm == 0 ? 0 : sm - 1;
+
+      let s = moment(symd);
+      let e = moment(eymd);
+      let cnt = 0;
+      while (s <= e) {
+        if (cnt % momikikan == 0) {
+          this.putmarkMonth.push(s.format('YYYYMM'));
+        }
+        s = s.add(1, 'months');
+        cnt++;
+      }
+
+      this.clearmMonitoringHyphen(index);
+
+      for (let colIndex = 0; colIndex < 12; colIndex++) {
+        let col = flexGrid.columns[colIndex];
+
+        col.header = this.months[mindex].value + '月';
+        col.binding = this.months[mindex].id;
+
+        let _sy = sy + index;
+        let title = '';
+        if (sy > 0) {
+          if (sm > 1) {
+            if (Number(this.months[mindex].value) < sm) {
+              _sy++;
+            }
+          }
+          title = _sy + '年';
+        }
+        flexGrid.columnHeaders.setCellData(0, colIndex, title);
+
+        if (sy > 0) {
+          let _ymd = moment(_sy + '-' + this.months[mindex].value + '-1');
+          if (_ymd.isAfter(eymd)) {
+            switch (mindex) {
+              case 0:
+                this.monitoring[index].jan = '-';
+                break;
+              case 1:
+                this.monitoring[index].feb = '-';
+                break;
+              case 2:
+                this.monitoring[index].mar = '-';
+                break;
+              case 3:
+                this.monitoring[index].apr = '-';
+                break;
+              case 4:
+                this.monitoring[index].may = '-';
+                break;
+              case 5:
+                this.monitoring[index].jun = '-';
+                break;
+              case 6:
+                this.monitoring[index].jul = '-';
+                break;
+              case 7:
+                this.monitoring[index].aug = '-';
+                break;
+              case 8:
+                this.monitoring[index].sep = '-';
+                break;
+              case 9:
+                this.monitoring[index].oct = '-';
+                break;
+              case 10:
+                this.monitoring[index].nov = '-';
+                break;
+              case 11:
+                this.monitoring[index].dec = '-';
+                break;
+            }
+          } else {
+            let putmark = -1;
+            if (this.putmarkMonth.indexOf(_ymd.format('YYYYMM')) > -1) {
+              putmark = mindex;
+            }
+            switch (putmark) {
+              case 0:
+                this.monitoring[index].jan = '○';
+                break;
+              case 1:
+                this.monitoring[index].feb = '○';
+                break;
+              case 2:
+                this.monitoring[index].mar = '○';
+                break;
+              case 3:
+                this.monitoring[index].apr = '○';
+                break;
+              case 4:
+                this.monitoring[index].may = '○';
+                break;
+              case 5:
+                this.monitoring[index].jun = '○';
+                break;
+              case 6:
+                this.monitoring[index].jul = '○';
+                break;
+              case 7:
+                this.monitoring[index].aug = '○';
+                break;
+              case 8:
+                this.monitoring[index].sep = '○';
+                break;
+              case 9:
+                this.monitoring[index].oct = '○';
+                break;
+              case 10:
+                this.monitoring[index].nov = '○';
+                break;
+              case 11:
+                this.monitoring[index].dec = '○';
+                break;
+            }
+          }
+        }
+        if (mindex == 11) {
+          mindex = 0;
+        } else {
+          mindex++;
+        }
+      }
+      let items = [];
+      items.push(this.monitoring[index]);
+      flexGrid.itemsSource = items;
+      flexGrid.refresh();
+    },
+    setMonitoring() {
+      if (this.rksymd != null && this.rkeymd != null && this.monijiki > 0) {
+        for (let i = 0; i < this.monitoring.length; i++) {
+          let flexGrid = wijmo.Control.getControl(
+            '#gridMonitoringkikan' + String(i + 1)
+          );
+          this.setGrid(flexGrid, i, this.rksymd, this.rkeymd, this.monijiki);
+        }
+      }
+    },
+    onTextChanged(txb) {
+      this.monijiki = Number(txb.text);
+    },
     selectSienjigyosyo() {
       this.$emit('setHojoMode', 'jigyosyo');
     },
