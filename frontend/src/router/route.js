@@ -23,6 +23,7 @@ import JyukyuTouroku from '@sihmain/frontend/src/views/JyukyuTouroku.vue'
 import ServiceHistory from '@sihmain/frontend/src/views/ServiceHistory.vue'
 import KihonJyoho from '@sihmain/frontend/src/views/KihonJyoho.vue'
 import ServiceTeikyo from '@sihmain/frontend/src/views/ServiceTeikyo.vue'
+import KeiyakuHokoku from '@sihmain/frontend/src/views/KeiyakuHokoku.vue'
 
 // store
 import Store from '@/store/index.js'
@@ -54,6 +55,15 @@ const routes = [{
         path: '/ServiceHistory',
         name: 'サービス履歴登録',
         component: ServiceHistory,
+        meta: {
+            title: usedTitle,
+            calender: true
+        },
+    },
+    {
+        path: '/KeiyakuHokoku',
+        name: '契約報告書',
+        component: KeiyakuHokoku,
         meta: {
             title: usedTitle,
             calender: true

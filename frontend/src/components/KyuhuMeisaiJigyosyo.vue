@@ -1,7 +1,7 @@
 <template>
-  <div id="kyuhumeisai-shityoson">
+  <div id="kyuhumeisai-jigyosyo" class="d-flex">
     <wj-flex-grid
-        id="kyuhumeisai-shityoson-grid"
+        id="kyuhumeisai-jigyosyo-grid"
         :headersVisibility="'Row'"
         :alternatingRowStep="0"
         :initialized="onInitialized"
@@ -23,7 +23,7 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      jyoseijichitaiFlag: true,
+      tourokuJgyosyoFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -34,6 +34,8 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      // セルのマージ
+      this.mergeCell(flexGrid);
       // セルのデザイン修正
       this.formatCell(flexGrid);
     },
@@ -41,76 +43,86 @@ export default {
      * セルの作成
      */
     createCell(flexGrid) {
-      let jyukyusyaGridRow;
-      if (this.jyoseijichitaiFlag === true) {
-        // 助成自治体表示フラグがTRUEの場合3行表示
-        jyukyusyaGridRow = 2;
-      } else {
-        // 助成自治体表示フラグがFALSEの場合2行表示
-        jyukyusyaGridRow = 1;
-      }
       // セルの作成
-      while (flexGrid.columns.length < 6) {
+      while (flexGrid.columns.length < 10) {
         flexGrid.columns.push(new wjGrid.Column());
       }
-      while (flexGrid.rows.length < jyukyusyaGridRow) {
+      while (flexGrid.rows.length < 2) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      flexGrid.rowHeaders.columns.defaultSize = 120;
+      flexGrid.rowHeaders.columns.defaultSize = 250;
       flexGrid.columns.defaultSize = 30;
+    },
+    /**
+     * セルのマージ
+     */
+    mergeCell(flexGrid) {
+      let mm = new wjGrid.MergeManager();
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(1, 0, 1, 9),
+        new wjGrid.CellRange(2, 0, 2, 9),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
     },
     /**
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
-      
+      let _self = this;
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
-        s.backgroundColor = sysConst.COLOR.selectedColor;
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
-            cell.innerHTML = '市町村番号';
+            if (_self.tourokuJgyosyoFlag === true) {
+              cell.innerHTML = '登録事業所番号';
+            } else {
+              cell.innerHTML = '指定事業所番号';
+            }
           }
           if ((r == 1) && (c == 0)) {
-            cell.innerHTML = '助成自治体番号';
+            cell.innerHTML = '事業者名';
           }
         }
         // セルデザイン修正
         if (panel.cellType == wjGrid.CellType.Cell) {
           s.backgroundColor = sysConst.COLOR.gridBackground;
+          if ((r == 1) || (r == 2)) {
+            s.textAlign = 'left';
+            s.paddingLeft = '4px';
+          }
         }
       };
     },
     /**
      * 親コンポーネントで選択したユーザーデータを加工し表示
      */
-    setShityosonData(shityosonData){
-      // 市町村番号を分割して表示
-      // API取得時修正
-      let shityosonCodeSplit = [];
-      shityosonCodeSplit = String(shityosonData['sityoid']).split('');
-      for (let i = 0; i <shityosonCodeSplit.length; i++) {
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
+    setJigyosyoData(jigyosyoData){
+      // 受給者証番号を分割して表示
+      console.log(jigyosyoData)
+      let jimusyoBangoeSplit = [];
+      jimusyoBangoeSplit = jigyosyoData['jimusyoBango'].split('');
+      for (let i = 0; i <jimusyoBangoeSplit.length -1; i++) {
+        // 暫定上記繰り返しの-1は後に修正
+        this.mainFlexGrid.setCellData(0, i, jimusyoBangoeSplit[i]);
       }
-      this.mainFlexGrid.setCellData(0, 3, '0');
-      this.mainFlexGrid.setCellData(0, 4, '0');
-      this.mainFlexGrid.setCellData(0, 5, '0');
 
-      
-      // 助成自治体番号を分割して表示
-      // API取得時修正
-      this.mainFlexGrid.setCellData(1, 0, '0');
-      this.mainFlexGrid.setCellData(1, 1, '1');
-      this.mainFlexGrid.setCellData(1, 2, '2');
-      this.mainFlexGrid.setCellData(1, 3, '3');
-      this.mainFlexGrid.setCellData(1, 4, '4');
-      this.mainFlexGrid.setCellData(1, 5, '5');
+      // // 事業者名を表示
+      this.mainFlexGrid.setCellData(1, 0, jigyosyoData['serviceJigyo']);
     },
   }
 }
@@ -118,7 +130,7 @@ export default {
 <style lang="scss" scope>
 @import '@/assets/scss/common.scss';
 
-#kyuhumeisai-shityoson-grid {
+#kyuhumeisai-jigyosyo-grid {
   &.wj-content {
     border-right: none;
     border-bottom: none;

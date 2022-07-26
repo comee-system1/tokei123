@@ -238,6 +238,7 @@ export default {
             { name: '基本情報', link: '/KihonJyoho' },
             { name: 'サービス履歴', link: '/ServiceHistory' },
             { name: '受給者証登録', link: '/JyukyuTouroku' },
+            { name: '契約報告書', link: '/KeiyakuHokoku' },
           ],
         },
         {
@@ -366,7 +367,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 div#headerAndNav {
   .nav-list-name {

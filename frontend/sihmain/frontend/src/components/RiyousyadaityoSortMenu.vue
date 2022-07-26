@@ -233,7 +233,7 @@
       <v-card elevation="0" class="ml-2 mr-2 d-flex">
         <label
           class="pa-0"
-          v-if="kihonJyohoFlag" 
+          v-if="kihonJyohoFlag"
           style="
             width: 120px;
             line-height: 25px;
@@ -242,11 +242,7 @@
           "
           >日付表示切り替え
         </label>
-        <v-btn-toggle 
-          class="flex-wrap"
-          mandatory
-          v-if="kihonJyohoFlag"
-          >
+        <v-btn-toggle class="flex-wrap" mandatory v-if="kihonJyohoFlag">
           <v-btn
             small
             color="secondary"

@@ -13,33 +13,233 @@ export async function KobetsuIcrnNyusho() {
     return await service.getData().then(result => {
         // 利用者情報一覧
         let returns = [];
-        let riyo_inf = [];
-        riyo_inf.push({
-                riid: 1,
-                riyocode: 10000,
-                names: '東経 太郎0',
-                kana: 'タロウトウケイ',
-                jyukyuno: 'A0001',
-                keikaku: 1,
-                kmkkbn1: 1,
-                kmkkbn2: 1, // 利用日
-                kmkkbn2_text: '利用日',
-            }, {
-                riid: 1,
-                riyocode: 10000,
-                names: '東経 太郎0',
-                kana: 'タロウトウケイ',
-                jyukyuno: 'A0001',
-                keikaku: 1,
-                kmkkbn1: 1,
-                kmkkbn2: 2, // 入院日・外泊日
-                kmkkbn2: '入院日・退院日',
-            },
+        let views = [];
+        // riyo_inf.push({
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 1,
+            komoku0: '変動情報',
+            komoku1: '利用日',
+            day1: '〇',
+            day2: '〇',
+            day3: '〇',
+            day4: '〇',
+            day5: '〇',
+            day6: '〇',
+            kei: 6,
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 2,
+            komoku0: '変動情報',
+            komoku1: '入院・退院日',
+            nyugai_inf: [{
+                    kbn: 1,
+                    ngsymd: '20220602',
+                    ngeymd: '20220706',
+                    seikyu: 1,
+                    nissu: 4,
+                },
+                {
+                    kbn: 1,
+                    ngsymd: '20220707',
+                    ngeymd: '20220709',
+                    seikyu: 1,
+                    nissu: 4,
+                },
+            ],
+            day1: '〇',
+            day2: '〇',
+            day3: '〇',
+            day4: '〇',
+            day5: '〇',
+            day6: '',
+            day7: '〇',
+            day8: '〇',
+            day9: '〇',
+            kei: 10,
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 2,
+            komoku0: '変動情報',
+            komoku1: '外泊日',
 
-        );
+            nyugai_inf: [{
+                    kbn: 2,
+                    ngsymd: '20220714',
+                    ngeymd: '20220718',
+                    seikyu: 1,
+                    nissu: 4,
+                },
+                {
+                    kbn: 2,
+                    ngsymd: '20220720',
+                    ngeymd: '20220724',
+                    seikyu: 1,
+                    nissu: 4,
+                },
+            ],
+            day14: '〇',
+            day15: '〇',
+            day16: '〇',
+            day17: '〇',
+            day18: '〇',
+            day20: '〇',
+            day21: '〇',
+            day22: '〇',
+            day23: '〇',
+            day24: '〇',
+            kei: 10,
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 3,
+            kmkkbn6: 300,
+            komoku0: '変動情報',
+            komoku1: '食事',
+            komoku3: '朝食',
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 3,
+            kmkkbn6: 400,
+            komoku0: '変動情報',
+            komoku1: '食事',
+            komoku3: '昼食',
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 3,
+            kmkkbn6: 500,
+            komoku0: '変動情報',
+            komoku1: '食事',
+            komoku3: '夕食',
+        });
+        views.push({
+            kmkkbn1: 1,
+            kmkkbn2: 4,
+            kmkkbn6: 100,
+            komoku0: '変動情報',
+            komoku1: '光熱水費',
+            komoku3: '',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 1,
+            komoku0: '加算情報',
+            komoku1: '体制＋個別',
+            komoku2: '0123456789',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 1,
+            komoku0: '加算情報',
+            komoku1: '体制＋個別',
+            komoku2: '重度障碍者支援加算',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 1,
+            komoku0: '加算情報',
+            komoku1: '体制＋個別',
+            komoku2: '栄養マネジメント加算',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 1,
+            komoku0: '加算情報',
+            komoku1: '体制＋個別',
+            komoku2: '療養食加算',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 1,
+            komoku0: '加算情報',
+            komoku1: '体制＋個別',
+            komoku2: '口腔衛星管理加算',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 2,
+            komoku0: '加算情報',
+            komoku1: '個別',
+            komoku2: '入院外泊時加算',
+        });
+        views.push({
+            kmkkbn1: 2,
+            mstkasanh0: 2,
+            komoku0: '加算情報',
+            komoku1: '個別',
+            komoku2: '地域以降加算',
+        });
+
+        let viewdata = [];
+        for (let i = 0; i < views.length; i++) {
+            // 食事・光熱水費の金額をkomoku3に追記する
+            if (views[i].kmkkbn2 === 3 || views[i].kmkkbn2 === 4) {
+                views[i].komoku3 += ' @' + views[i].kmkkbn6 + '/回';
+            }
+            // 入院・退院日用のデータを作成
+            if (views[i].nyugai_inf) {
+                let nyugai_inf = views[i].nyugai_inf;
+                let nyuuinbi = [];
+                let nyuuinbi_st = [];
+                let nyuuinbi_ed = [];
+                let nyuuinbi_box_date = [];
+                for (let i = 0; i < nyugai_inf.length; i++) {
+                    // 入院・退院日用のデータ
+                    if (nyugai_inf[i].kbn === 1 || nyugai_inf[i].kbn === 2) {
+                        // 日付のloop作成
+                        let start = nyugai_inf[i].ngsymd;
+                        // 開始日が今月ではないとき 開始日を今月の1日にする
+                        if (
+                            moment(nyugai_inf[i].ngsymd).format('MM') !=
+                            moment().format('MM')
+                        ) {
+                            start = moment().startOf('month').format('YYYYMMDD');
+                        }
+                        let end = nyugai_inf[i].ngeymd;
+                        for (let dd = start; dd <= end; dd++) {
+                            // 日付取得
+                            let day = moment(dd.toString()).format('D');
+                            if (dd == start) {
+                                nyuuinbi_st.push(day);
+                            } else if (dd == end) {
+                                nyuuinbi_ed.push(day);
+                            } else {
+                                nyuuinbi.push(day);
+                            }
+                        }
+                        let boxdate =
+                            moment(nyugai_inf[i].ngsymd).format('M/D') +
+                            '～' +
+                            moment(nyugai_inf[i].ngeymd).format('M/D') +
+                            '[' +
+                            nyugai_inf[i].nissu +
+                            ']';
+                        let startKey = moment(start).format('D');
+                        nyuuinbi_box_date.push({
+                            startKey: startKey,
+                            date: boxdate,
+                            kbn: nyugai_inf[i].kbn,
+                        });
+                    }
+                }
+                views[i].nyuuinbi_st = nyuuinbi_st;
+                views[i].nyuuinbi_ed = nyuuinbi_ed;
+                views[i].nyuuinbi_box_date = nyuuinbi_box_date;
+                views[i].nyuuinbi = nyuuinbi;
+            }
+
+            viewdata.push(views[i]);
+        }
+
+
+        views = viewdata;
         returns = {
             status: 'idle',
-            riyo_inf: riyo_inf
+            riyo_inf: views
         };
         return returns;
     });

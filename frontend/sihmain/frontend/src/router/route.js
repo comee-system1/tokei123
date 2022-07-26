@@ -15,72 +15,71 @@ import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
-    {
-        path:'/JyukyuIcrn',
-        name:'利用者受給者証一覧',
-        component:JyukyuIcrn
+const routes = [{
+        path: '/JyukyuIcrn',
+        name: '利用者受給者証一覧',
+        component: JyukyuIcrn
     },
     {
-        path:'/KyuhuMeisai',
-        name:'給付明細書',
-        component:KyuhuMeisai
+        path: '/KyuhuMeisai',
+        name: '給付明細書',
+        component: KyuhuMeisai
     },
     {
-        path:'/KyuhuMeisaiIcrn',
-        name:'介護給付明細一覧',
-        component:KyuhuMeisaiIcrn
+        path: '/KyuhuMeisaiIcrn',
+        name: '介護給付明細一覧',
+        component: KyuhuMeisaiIcrn
     },
     {
-        path:'/JissekiKiroku',
-        name:'実績記録表',
+        path: '/JissekiKiroku',
+        name: '実績記録表',
         component: JissekiKirokuParent
     },
     {
-        path:'/SeikyuSho',
-        name:'請求書',
+        path: '/SeikyuSho',
+        name: '請求書',
         component: SeikyuSho
     },
     {
-        path:'/ShisetsuTaisei',
-        name:'施設体制確認',
+        path: '/ShisetsuTaisei',
+        name: '施設体制確認',
         component: ShisetsuTaisei
     },
     {
-        path:'/JijyougenkanriJimsyo',
-        name:'自上限管理事務所用',
+        path: '/JijyougenkanriJimsyo',
+        name: '自上限管理事務所用',
         component: JijyougenkanriJimsyo
     },
     {
-        path:'/TajyougenkanriJimsyo',
-        name:'他上限管理事務所用',
+        path: '/TajyougenkanriJimsyo',
+        name: '他上限管理事務所用',
         component: TajyougenkanriJimsyo
     },
     {
-        path:'/ReceptSyukei',
-        name:'レセプト集計',
+        path: '/ReceptSyukei',
+        name: 'レセプト集計',
         component: ReceptSyukei
     },
     {
-        path:'/TemporaryPage',
-        name:'仮のページ',
+        path: '/TemporaryPage',
+        name: '仮のページ',
         component: TemporaryPage
     },
     {
-        path:'/KobetsuRiyouTouroku',
-        name:'個別利用状況登録',
+        path: '/KobetsuRiyouTouroku',
+        name: '個別利用状況登録',
         component: KobetsuRiyouTouroku
     },
     {
-        path:'/KasanKoumokuIcrn',
-        name:'加算項目一覧',
+        path: '/KasanKoumokuIcrn',
+        name: '加算項目一覧',
         component: KasanKoumokuIcrn
     },
 ]
 
 const router = new VueRouter({
-    mode:'history',
-    base:process.env.BASE_URL,
+    mode: 'history',
+    base: process.env.BASE_URL,
     routes
 })
 

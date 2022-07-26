@@ -25,8 +25,6 @@ export default {
     return {
       syougaijiFlag: true,
       mainFlexGrid:[],
-      jyukyusyaGridData:[],
-      selectUserData:[]
     };
   },
   methods: {
@@ -61,7 +59,7 @@ export default {
         flexGrid.rows.push(new wjGrid.Row());
       }
       flexGrid.rowHeaders.columns.defaultSize = 250;
-      flexGrid.columns.defaultSize = 20;
+      flexGrid.columns.defaultSize = 30;
     },
     /**
      * セルのマージ
@@ -94,7 +92,6 @@ export default {
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
-        // s.backgroundColor = sysConst.COLOR.selectedColor;
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
@@ -120,23 +117,16 @@ export default {
     /**
      * 親コンポーネントで選択したユーザーデータを加工し表示
      */
-    setJyukyusyaData(selectUserData){
+    setJyukyusyaData(jyukyusyaData){
       // 受給者証番号を分割して表示
       let jyukyusyaCodeSplit = [];
-      jyukyusyaCodeSplit = selectUserData['jyukyuno'].split('');
-      this.mainFlexGrid.setCellData(0, 0, jyukyusyaCodeSplit[0]);
-      this.mainFlexGrid.setCellData(0, 1, jyukyusyaCodeSplit[1]);
-      this.mainFlexGrid.setCellData(0, 2, jyukyusyaCodeSplit[2]);
-      this.mainFlexGrid.setCellData(0, 3, jyukyusyaCodeSplit[3]);
-      this.mainFlexGrid.setCellData(0, 4, jyukyusyaCodeSplit[4]);
-      this.mainFlexGrid.setCellData(0, 5, jyukyusyaCodeSplit[5]);
-      this.mainFlexGrid.setCellData(0, 6, jyukyusyaCodeSplit[6]);
-      this.mainFlexGrid.setCellData(0, 7, jyukyusyaCodeSplit[7]);
-      this.mainFlexGrid.setCellData(0, 8, jyukyusyaCodeSplit[8]);
-      this.mainFlexGrid.setCellData(0, 9, jyukyusyaCodeSplit[9]);
+      jyukyusyaCodeSplit = jyukyusyaData['jyukyuno'].split('');
+      for (let i = 0; i <jyukyusyaCodeSplit.length; i++) {
+        this.mainFlexGrid.setCellData(0, i, jyukyusyaCodeSplit[i]);
+      }
 
       // 支給決定障害者氏名を表示
-      this.mainFlexGrid.setCellData(1, 0, selectUserData['names']);
+      this.mainFlexGrid.setCellData(1, 0, jyukyusyaData['names']);
       if (this.syougaijiFlag === true) {
         // 支給決定に係る障害児氏名を表示(仮)
         this.mainFlexGrid.setCellData(2, 0, '東経 太郎');
@@ -149,7 +139,6 @@ export default {
 @import '@/assets/scss/common.scss';
 
 #kyuhumeisai-jyukyusya-grid {
-  width: 452px;
   &.wj-content {
     border-right: none;
     border-bottom: none;
