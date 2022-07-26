@@ -1,25 +1,25 @@
 <template>
   <v-layout>
     <v-flex md12 class="basic-info" style="position: relative; z-index: 5">
-      <div class="service-selection-area">
-        <label>サービス</label>
+      <div class="service-selection-area mt-1 mb-0" no-gutters>
+        <label style="height: 25px">サービス</label>
         <v-btn
           elevation="0"
           outlined
           tile
           disabled
-          height="30"
+          height="25"
           class="service"
           color="red"
           >{{ jigyosyoCode }}</v-btn
         >
-        <v-btn @click="comboClick()" tile outlined height="30" class="service"
+        <v-btn @click="comboClick()" tile outlined height="25" class="service"
           >{{ selectButton }}
           <div class="float-right">▼</div></v-btn
         >
       </div>
 
-      <div class="month-selection-area">
+      <div class="month-selection-area mt-1 mb-0">
         <label v-if="nenkanRiyouNissuFlag == true">年度</label>
         <label v-else>提供月</label>
         <datepickerYear
@@ -38,7 +38,7 @@
           tile
           outlined
           class="service"
-          height="30"
+          height="25"
           >{{ year }}年{{ month }}月
           <div class="float-right">
             <v-icon small>mdi-calendar-month</v-icon>
@@ -52,7 +52,7 @@
           x-small
           @click="calendarClick(1)"
           height="100%"
-          style="min-width: auto; height: 30px"
+          style="min-width: auto; height: 25px"
           tile
           ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
         >
@@ -62,12 +62,12 @@
           color="white"
           class="pa-0 ml-1"
           height="100%"
-          style="min-width: auto; height: 30px"
+          style="min-width: auto; height: 25px"
           @click="calendarClick(2)"
           tile
           ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
         >
-        <span style="margin-left: 30px" v-if="seikyuflag">
+        <span style="margin-left: 25px" v-if="seikyuflag">
           <label>請求月</label>
 
           <v-btn
@@ -76,7 +76,7 @@
             @click="inputCalendarClick('seikyu')"
             tile
             outlined
-            height="30"
+            height="25"
             >{{ seikyu_year }}年{{ seikyu_month }}月
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
@@ -90,7 +90,7 @@
             x-small
             @click="calendarClick(3)"
             height="100%"
-            style="min-width: auto; height: 30px"
+            style="min-width: auto; height: 25px"
             tile
             ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
           >
@@ -98,16 +98,22 @@
             x-small
             elevation="0"
             color="white"
-            class="pa-0 ml-1"
+            class="pa-0 ml-1 mt-0"
             height="100%"
-            style="min-width: auto; height: 30px"
+            style="min-width: auto; height: 25px"
             @click="calendarClick(4)"
             tile
             ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
           >
         </span>
 
-        <v-btn class="pa-1 ml-3" :width="60" small @click="searchButton()">
+        <v-btn
+          class="pa-1 ml-3"
+          :width="60"
+          height="25"
+          small
+          @click="searchButton()"
+        >
           更新
         </v-btn>
         <!-- ↓ 請求一覧画面用 -->
@@ -118,6 +124,7 @@
               v-on:click="kanryoToggleSwitch()"
               class="pa-1 ml-3 kanryo-touroku"
               :width="60"
+              height="25"
               small
               >完了登録</v-btn
             >
@@ -806,5 +813,9 @@ export default {
   background: #fcd7e0;
   margin-left: 10px;
   padding: 2px 10px;
+}
+
+.month-selection-area .vdp-datepicker input {
+  height: 25px;
 }
 </style>
