@@ -1,6 +1,11 @@
 <template>
   <div id="KeiyakuHokoku">
     <v-container fluid class="container pa-1">
+      <tab-menu-blue
+        @parent_tab_menu="parent_tab_menu"
+        :tabmenu="tabMenus"
+      ></tab-menu-blue>
+
       <v-row no-gutters class="mt-1">
         <v-col class="d-flex" cols="3">
           <v-row no-gutters class="d-block no-flex-grow mr-1">
@@ -61,7 +66,7 @@
         </v-col>
         <v-col class="d-flex ml-n3">
           <v-row no-gutters class="d-block no-flex-grow mr-1">
-            <v-col>
+            <v-col v-show="display2">
               <label>印刷種類</label>
               <v-btn-toggle
                 class="flex-wrap"
@@ -134,7 +139,7 @@
             @onAlphabetical="onAlphabetical"
           ></alphabet-button>
         </v-col>
-        <v-col class="text-end">
+        <v-col class="text-end" v-show="display2">
           <v-btn-toggle
             class="flex-wrap"
             v-model="toggle_select"
@@ -154,7 +159,7 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="mt-1 mb-1">
-        <v-col cols="12">
+        <v-col :cols="col">
           <wj-flex-grid
             id="KeiyakuHokokuGrid"
             :initialized="onInitialized"
@@ -221,6 +226,31 @@
               :allowSorting="false"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
+              :header="'済'"
+              :binding="'sumi'"
+              align="center"
+              valign="middle"
+              :width="50"
+              format="g"
+              :isReadOnly="true"
+              :allowResizing="false"
+              :allowSorting="true"
+              :visible="isVisible1"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :header="'終了'"
+              :binding="'syuryo'"
+              align="center"
+              valign="middle"
+              :width="50"
+              format="g"
+              :isReadOnly="true"
+              :allowResizing="false"
+              :allowSorting="true"
+              :visible="isVisible1"
+            ></wj-flex-grid-column>
+
+            <wj-flex-grid-column
               :header="'事業所名'"
               :binding="'jigyoname'"
               align="center"
@@ -230,17 +260,19 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="true"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'番号'"
               :binding="'lcnt'"
               align="center"
               valign="middle"
-              :width="40"
+              :width="50"
               format="g"
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="false"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'契約支給量'"
@@ -252,6 +284,7 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="true"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'契約日'"
@@ -263,6 +296,7 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="true"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'提供終了日'"
@@ -274,6 +308,7 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="true"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'理由'"
@@ -285,6 +320,7 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="true"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'提供量'"
@@ -296,6 +332,7 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="false"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'選択'"
@@ -307,156 +344,156 @@
               :isReadOnly="true"
               :allowResizing="false"
               :allowSorting="false"
+              :visible="isVisible2"
             ></wj-flex-grid-column>
           </wj-flex-grid>
         </v-col>
+        <v-col cols="6" class="pl-1" v-show="display1">
+          <v-card outlined tile>
+            <v-card-title class="pa-2"> 契約量登録 </v-card-title>
+            <v-row no-gutters class="ma-2">
+              <v-col cols="2"><label class="w">利用者名</label></v-col>
+              <v-col cols="2" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  readonly
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.riyocode"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  outlined
+                  dense
+                  readonly
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.rnames"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-divider class="mt-2"></v-divider>
+            <v-row no-gutters class="ma-2">
+              <v-col cols="2"><label class="w">サービス内容</label></v-col>
+              <v-col cols="6" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  readonly
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.svcname"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2">
+              <v-col cols="2"><label class="w">決定支給量等</label></v-col>
+              <v-col cols="4" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  readonly
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.sikyunaiyo"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  readonly
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.sikyunaiyo"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-3">
+              <v-col cols="2"><label class="w">事業所名</label></v-col>
+              <v-col cols="2" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  class="inputs rounded-0"
+                  hide-details="false"
+                  v-model="input.jigyono"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <wj-menu
+                  class="w-100 customCombobox"
+                  :isRequired="true"
+                  header="指定なし"
+                  :displayMemberPath="'text'"
+                  selectedValuePath="'key'"
+                  :itemsSource="jigyosyoCombo"
+                  :itemClicked="onselectedJigyosyoInput"
+                  v-model="input.jigyoname"
+                  thin
+                ></wj-menu>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-n1">
+              <v-col cols="2"><label class="w">番号</label></v-col>
+              <v-col cols="1" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  class="inputs rounded-0"
+                  hide-details="false"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-n1">
+              <v-col cols="2"><label class="w">契約支給量</label></v-col>
+              <v-col cols="2" class="ml-1">
+                <v-text-field
+                  outlined
+                  dense
+                  class="inputs rounded-0"
+                  hide-details="false"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" class="ml-1 mt-1">/月 </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-n1">
+              <v-col cols="2"><label class="w">契約日</label></v-col>
+              <v-col cols="2" class="ml-1">
+                <datepicker
+                  :language="ja"
+                  :format="DatePickerFormat"
+                  class="input_picker"
+                ></datepicker>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-n1">
+              <v-col cols="2"><label class="w">理由</label></v-col>
+              <v-col cols="2" class="ml-1">
+                <wj-menu
+                  class="w-100 customCombobox"
+                  :isRequired="true"
+                  :displayMemberPath="'text'"
+                  selectedValuePath="'key'"
+                  :itemsSource="reasonCombo"
+                  :itemClicked="onselectedReasonChanged"
+                  thin
+                ></wj-menu>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="ma-2 mt-15">
+              <v-col cols="3"><v-btn>画面クリア</v-btn></v-col>
+              <v-col cols="6" class="text-center mt-2">
+                最終登録者：R03/08/04 10:38 明治 雅夫
+              </v-col>
+              <v-col cols="3" class="text-end"><v-btn>登録</v-btn></v-col>
+            </v-row>
+          </v-card>
+        </v-col>
       </v-row>
     </v-container>
-
-    <v-dialog width="600" v-model="KeiyakuHokokuDialog">
-      <v-card outlined tile id="KeiyakuHokokuDialog">
-        <v-card-title class="pa-2"> 契約量登録 </v-card-title>
-        <v-row no-gutters class="ma-2">
-          <v-col cols="2"><label class="w">利用者名</label></v-col>
-          <v-col cols="2" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              readonly
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.riyocode"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              outlined
-              dense
-              readonly
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.rnames"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2"></v-divider>
-        <v-row no-gutters class="ma-2">
-          <v-col cols="2"><label class="w">サービス内容</label></v-col>
-          <v-col cols="6" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              readonly
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.svcname"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2">
-          <v-col cols="2"><label class="w">決定支給量等</label></v-col>
-          <v-col cols="4" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              readonly
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.sikyunaiyo"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="4" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              readonly
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.sikyunaiyo"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-3">
-          <v-col cols="2"><label class="w">事業所名</label></v-col>
-          <v-col cols="2" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              class="inputs rounded-0"
-              hide-details="false"
-              v-model="input.jigyono"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="4">
-            <wj-menu
-              class="w-100 customCombobox"
-              :isRequired="true"
-              header="指定なし"
-              :displayMemberPath="'text'"
-              selectedValuePath="'key'"
-              :itemsSource="jigyosyoCombo"
-              :itemClicked="onselectedJigyosyoInput"
-              v-model="input.jigyoname"
-              thin
-            ></wj-menu>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
-          <v-col cols="2"><label class="w">番号</label></v-col>
-          <v-col cols="1" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              class="inputs rounded-0"
-              hide-details="false"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
-          <v-col cols="2"><label class="w">契約支給量</label></v-col>
-          <v-col cols="2" class="ml-1">
-            <v-text-field
-              outlined
-              dense
-              class="inputs rounded-0"
-              hide-details="false"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="2" class="ml-1 mt-1">/月 </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
-          <v-col cols="2"><label class="w">契約日</label></v-col>
-          <v-col cols="2" class="ml-1">
-            <datepicker
-              :language="ja"
-              :format="DatePickerFormat"
-              class="input_picker"
-            ></datepicker>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
-          <v-col cols="2"><label class="w">理由</label></v-col>
-          <v-col cols="2" class="ml-1">
-            <wj-menu
-              class="w-100 customCombobox"
-              :isRequired="true"
-              :displayMemberPath="'text'"
-              selectedValuePath="'key'"
-              :itemsSource="reasonCombo"
-              :itemClicked="onselectedReasonChanged"
-              thin
-            ></wj-menu>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="ma-2 mt-15">
-          <v-col cols="3"><v-btn>画面クリア</v-btn></v-col>
-          <v-col cols="6" class="text-center mt-2">
-            最終登録者：R03/08/04 10:38 明治 雅夫
-          </v-col>
-          <v-col cols="3" class="text-end"><v-btn>登録</v-btn></v-col>
-        </v-row>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -473,7 +510,11 @@ import { ja } from 'vuejs-datepicker/dist/locale';
 export default {
   data() {
     return {
-      KeiyakuHokokuDialog: false,
+      isVisible1: true,
+      isVisible2: true,
+      display1: true,
+      display2: true,
+      col: 6,
       year: moment().year(),
       tabMenus: [
         { href: '#amount', text: '契約量登録' },
@@ -564,6 +605,24 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh; width:100%;';
     },
+    /**************
+     * 子コンポーネントtabmenublueで選択した値を取得
+     */
+    parent_tab_menu(args) {
+      if (args.selectTab === 'list') {
+        this.isVisible1 = false;
+        this.isVisible2 = true;
+        this.display1 = false;
+        this.display2 = true;
+        this.col = 12;
+      } else {
+        this.isVisible1 = true;
+        this.isVisible2 = false;
+        this.display1 = true;
+        this.display2 = false;
+        this.col = 6;
+      }
+    },
 
     /************
      * アルファベットの絞り込み
@@ -593,23 +652,16 @@ export default {
 
       // セルフォーマット
       flexGrid.formatItem.addHandler(function (s, e) {
-        let text = e.cell.innerText;
         if (e.panel == flexGrid.cells) {
-          e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          if (
-            e.col == 1 ||
-            e.col == 3 ||
-            e.col == 4 ||
-            e.col == 5 ||
-            e.col == 7
-          ) {
+          if (e.col == 5 || e.col == 6) {
+            e.cell.style.backgroundColor = sysConst.COLOR.white;
+          } else {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          }
+          if (e.col == 1 || e.col == 3 || e.col == 4) {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
-          }
-
-          if (e.col == 12) {
-            e.cell.style.backgroundColor = sysConst.COLOR.white;
           }
         }
       });
@@ -619,8 +671,6 @@ export default {
         let ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         if (ht.cellType == wjGrid.CellType.Cell) {
-          _self.KeiyakuHokokuDialog = true;
-
           // データの取得
           let riyocode = _self.keiyakuHokokuData[hPage.row].riyocode;
           let svcsyocode = _self.keiyakuHokokuData[hPage.row].svcsyocode;
@@ -858,7 +908,6 @@ div#KeiyakuHokoku {
   max-width: 1340px;
   width: 1340px;
 }
-#KeiyakuHokokuDialog,
 div#KeiyakuHokoku {
   font-size: 12px;
   font-family: 'メイリオ';
