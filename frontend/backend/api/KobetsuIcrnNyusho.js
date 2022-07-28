@@ -4,8 +4,8 @@ const config = require('./ApiRun');
 const moment = require('moment')
 export async function KobetsuIcrnNyusho() {
     // 接続確認用URL
-    var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
-
+    //var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    var url = "/";
     var uniqid = 1;
     config.setURL(url);
     config.setUniqID(uniqid);
@@ -34,19 +34,19 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '変動情報',
             komoku1: '入院・退院日',
             nyugai_inf: [{
-                    kbn: 1,
-                    ngsymd: '20220602',
-                    ngeymd: '20220706',
-                    seikyu: 1,
-                    nissu: 4,
-                },
-                {
-                    kbn: 1,
-                    ngsymd: '20220707',
-                    ngeymd: '20220709',
-                    seikyu: 1,
-                    nissu: 4,
-                },
+                kbn: 1,
+                ngsymd: '20220602',
+                ngeymd: '20220706',
+                seikyu: 1,
+                nissu: 4,
+            },
+            {
+                kbn: 1,
+                ngsymd: '20220707',
+                ngeymd: '20220709',
+                seikyu: 1,
+                nissu: 4,
+            },
             ],
             day1: '〇',
             day2: '〇',
@@ -66,19 +66,19 @@ export async function KobetsuIcrnNyusho() {
             komoku1: '外泊日',
 
             nyugai_inf: [{
-                    kbn: 2,
-                    ngsymd: '20220714',
-                    ngeymd: '20220718',
-                    seikyu: 1,
-                    nissu: 4,
-                },
-                {
-                    kbn: 2,
-                    ngsymd: '20220720',
-                    ngeymd: '20220724',
-                    seikyu: 1,
-                    nissu: 4,
-                },
+                kbn: 2,
+                ngsymd: '20220714',
+                ngeymd: '20220718',
+                seikyu: 1,
+                nissu: 4,
+            },
+            {
+                kbn: 2,
+                ngsymd: '20220720',
+                ngeymd: '20220724',
+                seikyu: 1,
+                nissu: 4,
+            },
             ],
             day14: '〇',
             day15: '〇',
@@ -99,6 +99,13 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '変動情報',
             komoku1: '食事',
             komoku3: '朝食',
+            day1: '〇',
+            day2: '〇',
+            day3: '〇',
+            day4: '〇',
+            day5: '〇',
+            kei: 5,
+            kingaku: 4800,
         });
         views.push({
             kmkkbn1: 1,
@@ -107,6 +114,13 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '変動情報',
             komoku1: '食事',
             komoku3: '昼食',
+            day11: '〇',
+            day12: '〇',
+            day13: '〇',
+            day14: '〇',
+            day15: '〇',
+            kei: 5,
+            kingaku: 5800,
         });
         views.push({
             kmkkbn1: 1,
@@ -115,6 +129,13 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '変動情報',
             komoku1: '食事',
             komoku3: '夕食',
+            day21: '〇',
+            day22: '〇',
+            day23: '〇',
+            day24: '〇',
+            day25: '〇',
+            kei: 5,
+            kingaku: 6800,
         });
         views.push({
             kmkkbn1: 1,
@@ -123,6 +144,14 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '変動情報',
             komoku1: '光熱水費',
             komoku3: '',
+            day5: '〇',
+            day7: '〇',
+            day8: '〇',
+            day9: '〇',
+            day10: '〇',
+            kei: 18,
+            kingaku: 1800,
+
         });
         views.push({
             kmkkbn1: 2,
@@ -151,6 +180,12 @@ export async function KobetsuIcrnNyusho() {
             komoku0: '加算情報',
             komoku1: '体制＋個別',
             komoku2: '療養食加算',
+            day5: '〇',
+            day7: '〇',
+            day8: '〇',
+            day9: '〇',
+            day10: '〇',
+            kei: 18,
         });
         views.push({
             kmkkbn1: 2,

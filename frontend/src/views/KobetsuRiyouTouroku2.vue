@@ -876,6 +876,37 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
             positionCenter(e);
           }
+          // 金額
+          if (e.col == _self.lastdate + 5) {
+            if (text.length == 0) {
+              e.cell.style.backgroundColor = sysConst.COLOR.lightGray;
+            } else {
+              positionRight(e);
+              e.cell.style.backgroundColor = sysConst.COLOR.white;
+            }
+          }
+          // 合計
+          if (e.col == _self.lastdate + 4) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            positionRight(e);
+          }
+          // 食事
+          if (
+            tmpitem &&
+            tmpitem.kmkkbn1 == 1 &&
+            (tmpitem.kmkkbn2 == 3 || tmpitem.kmkkbn2 == 4) &&
+            e.col >= 4 &&
+            e.col < _self.lastdate + 4
+          ) {
+            positionCenter(e);
+            e.cell.style.color = sysConst.COLOR.blueTextColor;
+          }
+
+          // セルの中央
+          if (e.col >= 4 && e.col < _self.lastdate + 4) {
+            positionCenter(e);
+          }
+
           // 入院・退院
           if (
             tmpitem &&
@@ -954,155 +985,16 @@ export default {
 
         e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
 
-        /*
-        let classname = '';
-        if (e.panel != flexGrid.columnHeaders) {
-          // 変動情報を縦に変更
-          // 体制＋個別を縦
-          if (
-            (e.row == 0 && e.col == 0) ||
-            (e.row == _self.hendoRow && e.col == 0) ||
-            (e.row == _self.hendoRow && e.col == 1) ||
-            (e.row == _self.hendoRow + _self.rowHendoData.taisei.data.length &&
-              e.col == 1)
-          ) {
-            classname = 'vertical';
-          }
-
-          // グリッドの値を変更
-          // 入退院 / 外泊
-          if (
-            e.col > 3 &&
-            e.col <= _self.lastdate + 3 &&
-            (e.row == 1 || e.row == 2)
-          ) {
-            let color = 'color_red';
-            if (tmpitem.type == 'gaihaku') {
-              color = 'color_green';
-            }
-            if (text === 'start' || text === 'start-m' || text === 'center') {
-              if (text === 'start') {
-                html = "<div class='arrow-box " + color + "'></div>";
-                html += "<div class='arrow-start " + color + "'></div>";
-              } else if (text === 'center') {
-                html = "<div class='arrow-box " + color + "'></div>";
-                html +=
-                  "<div class='arrow-center '><div class='" +
-                  color +
-                  "'></div><div class='" +
-                  color +
-                  "'></div></div>";
-              } else {
-                html = "<div class='arrow-box " + color + "'></div>";
-              }
-              html +=
-                "<div class='datearea' id='key-" +
-                tmpitem.key[_self.num] +
-                "'><div>" +
-                tmpitem.st[_self.num] +
-                '～' +
-                tmpitem.ed[_self.num] +
-                '[' +
-                parseInt(tmpitem.diff[_self.num] + 1) +
-                ']</div></div>';
-              _self.num++;
-              if (_self.num >= tmpitem.st.length) {
-                _self.num = 0;
-              }
-            }
-            if (text === 'middle') {
-              html = "<div class='arrow-box " + color + "'></div>";
-            }
-            if (text === 'end') {
-              html = "<div class='arrow-box " + color + "'></div>";
-              html += "<div class='arrow-end " + color + "'></div>";
-            }
-          } else if (e.col >= 4 && e.col <= _self.lastdate + 3) {
-            positionCenter(e);
-            e.cell.style.color = sysConst.COLOR.fontColor;
-            if (text === '1') {
-              html = '〇';
-            }
-            if (text === '2') {
-              e.cell.style.color = sysConst.COLOR.blueTextColor;
-              html = '〇';
-            }
-            if (text === '0') {
-              e.cell.style.color = sysConst.COLOR.blueTextColor;
-              html = '×';
-            }
-            if (text === '3' || text == '') {
-              html = '';
-            }
-          }
-
-          if (e.col == _self.lastdate + 4) {
-            classname = 'pr-1';
-            e.cell.style.backgroundColor = sysConst.COLOR.white;
-          }
-          if (e.col == _self.lastdate + 5) {
-            classname = 'pr-1';
-            if (text === 'none') {
-              html = '';
-              e.cell.style.backgroundColor = sysConst.COLOR.selectedColor;
-            }
-            if (e.row >= _self.hendoRow) {
-              e.cell.style.backgroundColor = sysConst.COLOR.selectedColor;
-            }
-            positionRight(e);
-          }
-          if (e.col == 3) {
-            positionRight(e);
-          }
-        }
-
-        if (e.panel == flexGrid.columnHeaders) {
-          // 日付表示
-          if (isDate.isDate(text)) {
-            html = dateFormatString.dateFormatString(text);
-            positionCenter(e);
-          }
-
-          if (e.row == 0 && (e.col == 0 || e.col >= _self.lastdate + 4)) {
-            positionCenter(e);
-          }
-        }
-
-        e.cell.innerHTML = '<div class="' + classname + '">' + html + '</div>';
-        if (e.panel != flexGrid.columnHeaders) {
-          if (
-            e.col >= 4 &&
-            e.col <= _self.lastdate + 3 &&
-            (e.row == 1 || e.row == 2)
-          ) {
-            wjCore.setCss(e.cell, {
-              display: 'table',
-              tableLayout: 'absolute',
-            });
-            wjCore.setCss(e.cell.children[0], {
-              display: 'table-cell',
-              verticalAlign: 'middle',
-            });
-          }
-          if (e.row === 0 && e.col > 3 && e.col <= _self.lastdate + 4) {
-            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          }
-          if (e.col === _self.lastdate + 4) {
-            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          }
-        }
-        */
-
         function positionCenter(e) {
           e.cell.style.textAlign = 'center';
           e.cell.style.justifyContent = 'center';
           e.cell.style.alignItems = 'center';
         }
-        // function positionRight(e) {
-        //   e.cell.style.textAlign = 'right';
-        //   e.cell.style.justifyContent = 'right';
-        //   e.cell.style.alignItems = 'right';
-        // }
+        function positionRight(e) {
+          e.cell.style.textAlign = 'right';
+          e.cell.style.justifyContent = 'right';
+          e.cell.style.alignItems = 'right';
+        }
       });
     },
 
