@@ -1,52 +1,6 @@
 <template>
   <div class="mt-1">
-    <v-row no-gutters>
-      <v-col>
-        <wj-flex-grid
-          id="riyousyahutanGrid"
-          :itemsSource="riyousyahutanGridData"
-          :headersVisibility="'None'"
-          :autoGenerateColumns="false"
-          :initialized="onInitializedRiyousyahutanGrid"
-          :allowAddNew="false"
-          :allowDelete="false"
-          :allowDragging="false"
-          :allowPinning="false"
-          :allowResizing="false"
-          :allowSorting="false"
-        >
-          <wj-flex-grid-column binding="Column0" :width="250" ></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column1" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column2" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column3" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column4" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column5" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column6" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column7" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column8" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column9" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column10" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column11" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column12" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column13" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column14" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column15" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column16" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column17" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column18" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column19" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column20" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column21" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column22" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column23" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column24" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column25" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column26" :width="'1*'"></wj-flex-grid-column>
-          <wj-flex-grid-column binding="Column27" :width="'1*'"></wj-flex-grid-column>
-        </wj-flex-grid>
-      </v-col>
-    </v-row>
-    <v-row  no-gutters>
+    <!-- <v-row  no-gutters>
       <v-col>
         <wj-flex-grid
           id="servicessyubetuGrid"
@@ -76,7 +30,7 @@
           <wj-flex-grid-column binding="nyuinNissuu" :width="'0.5*'" :wordWrap="true"></wj-flex-grid-column>
         </wj-flex-grid>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row no-gutters>
       <v-col>
       <wj-flex-grid
@@ -171,191 +125,12 @@ export default {
     return {
       year: moment().year(),
       month: moment().format('MM'),
-      riyousyahutanGridData:this.getRiyousyahutanGridData(),
       servicesyubetuGridData:this.getServiceSyubetuGridData(),
       gridList: [],
       tplImage: CellMaker.makeImage({}),
     };
   },
   methods: {
-    onInitializedRiyousyahutanGrid:function(flexGrid){
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(flexGrid);
-      // 結合するセルの範囲を指定
-      let cellRanges = [
-        new wjGrid.CellRange(0,8,0,17),
-        new wjGrid.CellRange(0,18,0,19),
-        new wjGrid.CellRange(0,20,0,27),
-        new wjGrid.CellRange(1,1,1,7),
-        new wjGrid.CellRange(1,18,1,20),
-        new wjGrid.CellRange(1,22,1,24),
-        new wjGrid.CellRange(1,25,1,27),
-        new wjGrid.CellRange(1,0,2,0),
-        new wjGrid.CellRange(2,1,2,7),
-        new wjGrid.CellRange(2,8,2,27),
-      ];
-      // getMergedRangeメソッドをオーバーライドする
-      mm.getMergedRange = function(panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < cellRanges.length; h++) {
-            if (cellRanges[h].contains(r, c)) {
-              return cellRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-
-       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell){
-        // グリッド内共通スタイル
-        let s = cell.style;
-        s.fontWeight = 'normal';
-        s.textAlign = 'center';
-        s.backgroundColor= sysConst.COLOR.gridBackground;
-        if(c == 0 || (r != 0 && c == 1) || (r == 0 && c == 8) || (r == 1 && c == 18) || (r == 1 && c == 22)){
-          s.backgroundColor = sysConst.COLOR.selectedColor;
-        }
-        // グリッド非表示スタイル
-        if(r == 0) {
-          s.borderTop = '1px solid rgba(0,0,0,.2)'
-        }
-        if(r == 0 && c == 0) {
-          s.borderTop = '1px solid rgba(0,0,0,.2)'
-          s.borderLeft = '1px solid rgba(0,0,0,.2)'
-          s.borderRadius = '4px 0 0 0'
-        }
-        if(r == 1 && c == 0) {
-          s.borderLeft = '1px solid rgba(0,0,0,.2)'
-          s.borderRadius = '0 0 0 4px'
-        }
-        if(r == 0 && c == 18 || r == 2 && c == 25) {
-          s.borderBottom = '1px solid rgba(0,0,0,.2)'
-          s.borderRight = '1px solid rgba(0,0,0,.2)'
-          s.borderRadius = '0 4px 0 0'
-        }
-        if(r == 1 && c == 18|| c ==21 || c ==22 || c == 25) {
-        // 管理結果、管理結果額のセル幅を調整
-          s.borderTop = '1px solid rgba(0,0,0,.2)'
-          s.top = '18px'
-          s.height = '20px'
-        }
-        if(r == 1 && c == 25) {
-          s.borderRadius = '0 4px 0 0'
-        }
-        if(r == 0 && c == 20) {
-          cell.style.display = 'none'
-        }
-        if(r == 2 && c == 8) {
-          s.borderRadius = '0 0 4px 0'
-        }
-        // ヘッダー扱いのセルに文字列を挿入
-        if ((r == 0) && (c == 0)) {
-          cell.innerHTML = '利用者負担上限月額①';
-        }
-        if ((r == 0) && (c == 8)) {
-          cell.innerHTML = '就労継続支援Ａ型事業者負担減免対象者';
-        }
-        if(r == 1 && c == 0) {
-          cell.innerHTML = '利用者負担上限額<br/>管理事業所';
-        }
-        
-        if(r == 1 && c == 1) {
-          cell.innerHTML = '指定事業所番号';
-        }
-        if(r == 1 && c == 18) {
-          cell.innerHTML = '管理結果';
-        }
-        if(r == 1 && c == 22) {
-          cell.innerHTML = '管理結果額';
-        }
-        if(r == 2 && c == 1) {
-          cell.innerHTML = '事業所名';
-        }
-      }
-    },
-    getRiyousyahutanGridData:function(){
-      let riyousyahutanGridData = [];
-      if (this.$parent.$data.gridReloadFlag == false) {
-        // 初回空データ表示
-         riyousyahutanGridData.push(
-          {
-          // 利用者負担上限月額①
-          Column1: "",
-          Column2: "",
-          Column3: "",
-          Column4: "",
-          Column5: "",
-          Column6: "",
-          Column7: "",
-          // 就労継続支援Ａ型事業者負担減免対象者
-          Column18:"",
-          },
-          {
-          // 指定事業所番号
-          Column8:  "",
-          Column9:  "",
-          Column10: "",
-          Column11: "",
-          Column12: "",
-          Column13: "",
-          Column14: "",
-          Column15: "",
-          Column16: "",
-          Column17: "",
-          // 管理結果
-          Column21: "",
-          // 管理結果額
-          Column25: "",
-          },
-          {
-          // 事業所名
-          Column8: "",
-          }
-        )
-      } else {
-      //データ表示
-        riyousyahutanGridData.push(
-          {
-            // 利用者負担上限月額①
-            Column1: "1",
-            Column2: "1",
-            Column3: "0",
-            Column4: "0",
-            Column5: "0",
-            Column6: "1",
-            Column7: "2",
-            // 就労継続支援Ａ型事業者負担減免対象者
-            Column18:"１：無",
-          },
-          {
-            // 指定事業所番号
-            Column8:  "1",
-            Column9:  "1",
-            Column10: "2",
-            Column11: "1",
-            Column12: "0",
-            Column13: "0",
-            Column14: "0",
-            Column15: "0",
-            Column16: "1",
-            Column17: "1",
-            // 管理結果
-            Column21: "",
-            // 管理結果額
-            Column25: "",
-          },
-          {
-            // 事業所名
-            Column8: "",
-          }
-        )
-      }
-      return riyousyahutanGridData;
-    },
     onInitializedServicessyubetuGrid:function(flexGrid){
       // サービス種別の配列数を算出
       let syubetuCount;
@@ -542,7 +317,7 @@ export default {
     // ユーザークリック時データを再読み込み
     reloadMeisairanMethod:function() {
       // 利用者負担上限額グリッド
-      this.riyousyahutanGridData = this.getRiyousyahutanGridData();
+      // this.riyousyahutanGridData = this.getRiyousyahutanGridData();
       // サービス種別グリッド
       this.servicesyubetuGridData = this.getServiceSyubetuGridData();
       // 給付明細欄グリッド

@@ -87,6 +87,8 @@
           <wj-combo-box
             class="riyosyafutan-futanjougengetugaku-input2"
             :textChanged="onTextChanged"
+            v-model="fjyogen"
+            :text="fjyogen"
           ></wj-combo-box>
           <label style="padding-top: 4px; padding-left: 4px">円</label>
         </v-card>
@@ -112,7 +114,7 @@
             class="riyosyafutan-jgenkbn-group"
           >
             <v-radio label="非該当" :key="1" :value="1"></v-radio>
-            <v-radio label="該当" :key="0" :value="0"></v-radio>
+            <v-radio label="該当" :key="2" :value="2"></v-radio>
           </v-radio-group>
         </v-card>
       </v-row>
@@ -152,10 +154,14 @@
                 <wj-combo-box
                   class="riyosyafutan-jgenknrikbn-input"
                   :textChanged="onTextChanged"
+                  v-model="jgenname"
+                  :text="jgenname"
                 ></wj-combo-box>
                 <wj-combo-box
                   class="riyosyafutan-jgenknrikbn-input2"
                   :textChanged="onTextChanged"
+                  v-model="jgenryaku"
+                  :text="jgenryaku"
                 ></wj-combo-box>
               </v-card>
             </v-card>
@@ -239,7 +245,7 @@
         >
           <v-radio-group row v-model="sykksn" class="riyosyafutan-sykksn-group">
             <v-radio label="非該当" :key="1" :value="1"></v-radio>
-            <v-radio label="該当" :key="0" :value="0"></v-radio>
+            <v-radio label="該当" :key="2" :value="2"></v-radio>
           </v-radio-group>
         </v-card>
       </v-row>
@@ -259,7 +265,11 @@
           flat
           tile
         >
-          <v-radio-group row v-model="tkkfhi" class="riyosyafutan-tkkfhi-group">
+          <v-radio-group
+            row
+            v-model="tkkfhiKbn"
+            class="riyosyafutan-tkkfhi-group"
+          >
             <v-card elevation="0" flat tile>
               <v-card elevation="0" class="d-flex flex-row" flat tile>
                 <v-radio label="非当該" :key="0" :value="0"></v-radio>
@@ -276,6 +286,8 @@
                 <wj-combo-box
                   class="riyosyafutan-tkkfhi-input"
                   :textChanged="onTextChanged"
+                  v-model="tkkfhiValue"
+                  :text="tkkfhiValue"
                 ></wj-combo-box>
                 <label style="padding-top: 4px; padding-left: 4px"
                   >円／日</label
@@ -341,6 +353,8 @@ export default {
 
       tkkfhi: -1,
       tkkfhi12: 0,
+      tkkfhiKbn: 0,
+      tkkfhiValue: '',
 
       syafukug: 0,
       kyftok: 0,
@@ -408,31 +422,47 @@ export default {
       this.Resize();
     },
     setdata(data) {
-      this.jyogenid = data.jyogenid; //利用者負担関係内部ID
-      this.jyukyuid = data.jyukyuid; //受給者証内部ID
+      if (data.tesymd.length > 0) {
+        this.jyogenid = data.jyogenid; //利用者負担関係内部ID
+        this.jyukyuid = data.jyukyuid; //受給者証内部ID
 
-      this.tesymd = data.tesymd; //適用開始日
-      this.teeymd = data.teeymd; //適用終了日
+        this.tesymd = moment(data.tesymd).format('YYYY-M-D'); //適用開始日
+        if (data.teeymd != '99991231') {
+          this.teeymd = moment(data.teeymd).format('YYYY-M-D'); //適用終了日
+        }
 
-      this.ftn = data.ftn; //利用者負担割合
-      this.fjyogen = data.fjyogen; //利用者負担上限月額
+        this.ftn = data.ftn; //利用者負担割合
+        this.fjyogen = data.fjyogen; //利用者負担上限月額
 
-      this.jgenkbn = data.jgenkbn; //上限管理対象区分
-      this.jgenknrikbn = data.jgenknrikbn; //上限管理委託事業者区分
-      this.jgenknri = data.jgenknri; //上限管理委託事業者内部ID
-      this.jgenname = data.jgenname; //上限管理事業者名
-      this.jgenryaku = data.jgenryaku; //上限管理事業者略称
+        this.jgenkbn = data.jgenkbn; //上限管理対象区分
+        this.jgenknrikbn = data.jgenknrikbn; //上限管理委託事業者区分
+        this.jgenknri = data.jgenknri; //上限管理委託事業者内部ID
+        this.jgenname = data.jgenname; //上限管理事業者名
+        this.jgenryaku = data.jgenryaku; //上限管理事業者略称
 
-      this.sykksn = data.sykksn; //食事提供加算
+        this.sykksn = data.sykksn; //食事提供加算
 
-      this.tkkfhi = data.tkkfhi; //特定障害者特別給付費
-      this.tkkfhi12 = data.tkkfhi12; //特定障害者特別給付費(GH/CH)
+        this.tkkfhi = data.tkkfhi; //特定障害者特別給付費
+        this.tkkfhi12 = data.tkkfhi12; //特定障害者特別給付費(GH/CH)
+        if (data.tkkfhi == 0 && this.tkkfhi12 == 0) {
+          this.tkkfhiKbn = 0;
+          this.tkkfhiValue = 0;
+        } else if (data.tkkfhi > 0) {
+          this.tkkfhiKbn = 1;
+          this.tkkfhiValue = data.tkkfhi;
+        } else if (data.tkkfhi12 > 0) {
+          this.tkkfhiKbn = 2;
+          this.tkkfhiValue = data.tkkfhi12;
+        }
 
-      this.syafukug = data.syafukug; //社会福祉法人減額
-      this.kyftok = data.kyftok; //給付費等の額の特例
-      this.kyuftokkbn = data.kyuftokkbn; //給付費等の額の特例の有無
-      this.tasikgn = data.tasikgn; //多子軽減対象
-      this.mushojdo = data.mushojdo; //無償化対象児童
+        this.syafukug = data.syafukug; //社会福祉法人減額
+        this.kyftok = data.kyftok; //給付費等の額の特例
+        this.kyuftokkbn = data.kyuftokkbn; //給付費等の額の特例の有無
+        this.tasikgn = data.tasikgn; //多子軽減対象
+        this.mushojdo = data.mushojdo; //無償化対象児童
+
+        this.isModify = true;
+      }
     },
     clearData() {
       this.jyogenid = 0;
@@ -444,7 +474,7 @@ export default {
       this.ftn = 0;
       this.fjyogen = 0;
 
-      this.jgenkbn = -1;
+      this.jgenkbn = 0;
       this.jgenknrikbn = -1;
       this.jgenknri = 0;
       this.jgenname = '';
@@ -452,8 +482,10 @@ export default {
 
       this.sykksn = -1;
 
-      this.tkkfhi = -1;
+      this.tkkfhi = 0;
       this.tkkfhi12 = 0;
+      this.tkkfhiKbn = -1;
+      this.tkkfhiValue = 0;
 
       this.syafukug = 0;
       this.kyftok = 0;

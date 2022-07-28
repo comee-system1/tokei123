@@ -290,6 +290,9 @@ import { JyukyuTourokuSikyuryoData } from '@backend/api/JyukyuTourokuSikyuryo';
 import { JyukyuTourokuKeikakuSoudanData } from '@backend/api/JyukyuTourokuKeikakuSoudan';
 import { JyukyuTourokuRiyosyaFutanData } from '@backend/api/JyukyuTourokuRiyosyaFutan';
 
+//マスタ
+import { JyukyuTourokuSikyuryoLayoutData } from '@backend/api/JyukyuTourokuSikyuryoLayout';
+
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
@@ -403,6 +406,7 @@ export default {
       //マスタ
       shichosonList: [],
       jigyosyoList: [],
+      sikyuryoLayoutList: [],
     };
   },
   components: {
@@ -453,12 +457,14 @@ export default {
     handleResize() {
       let height = window.innerHeight;
       let targetElement = document.getElementById('JyukyuTouroku');
-      let clientRect = targetElement.getBoundingClientRect();
-      let y = clientRect.top;
-      //alert(y);
-      let ht = '';
-      ht = height - y - 20;
-      this.mainHeight = 'height:' + ht + 'px;';
+      if (targetElement != null) {
+        let clientRect = targetElement.getBoundingClientRect();
+        let y = clientRect.top;
+        //alert(y);
+        let ht = '';
+        ht = height - y - 20;
+        this.mainHeight = 'height:' + ht + 'px;';
+      }
     },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
@@ -563,7 +569,7 @@ export default {
         });
         //利用者負担
         this.getJyukyuTourokuRiyosyaFutanData(rid).then((value) => {
-          this.risyosyaFutanDataOrg = value[0];
+          this.riyosyaFutanDataOrg = value[0];
           this.setRiyosyaFutanData();
         });
       } else if (this.JyukyuSyogaiJiFlag) {
@@ -612,6 +618,15 @@ export default {
         return jinf;
       });
     },
+    //マスタ
+    async getJyukyuTourokuSikyuryoLayoutData() {
+      let jinf = [];
+
+      return await JyukyuTourokuSikyuryoLayoutData().then((result) => {
+        jinf.push(result.layout_inf);
+        return jinf;
+      });
+    },
     //各コンポーネントと履歴にデータ設定
     setKihonData() {
       if (this.kihonDataOrg.length > 0) {
@@ -627,8 +642,8 @@ export default {
           }
         }
       );
-      this.$refs.syogaiKubun.setData(this.syogaiKubunDataOrgFiltered);
       this.$refs.rirekiArea.setSyogaiKubunData(this.syogaiKubunDataOrgFiltered);
+      this.$refs.syogaiKubun.setData(this.syogaiKubunDataOrgFiltered);
     },
     setSikyuryoData() {
       this.sikyuryoDataOrgFiltered = this.sikyuryoDataOrg.filter((value) => {
@@ -636,8 +651,8 @@ export default {
           return value;
         }
       });
-      this.$refs.sikyuryo.setData(this.sikyuryoDataOrgFiltered);
       this.$refs.rirekiArea.setSikyuryoData(this.sikyuryoDataOrgFiltered);
+      this.$refs.sikyuryo.setData(this.sikyuryoDataOrgFiltered);
     },
     setKeikakuSoudanData() {
       this.keikakuSoudanDataOrgFiltered = this.keikakuSoudanDataOrg.filter(
@@ -647,23 +662,23 @@ export default {
           }
         }
       );
-      this.$refs.keikaku.setData(this.keikakuSoudanDataOrgFiltered);
       this.$refs.rirekiArea.setKeikakuSoudanData(
         this.keikakuSoudanDataOrgFiltered
       );
+      this.$refs.keikaku.setData(this.keikakuSoudanDataOrgFiltered);
     },
     setRiyosyaFutanData() {
-      this.risyosyaFutanDataOrgFiltered = this.risyosyaFutanDataOrg.filter(
+      this.riyosyaFutanDataOrgFiltered = this.riyosyaFutanDataOrg.filter(
         (value) => {
           if (value.jyukyuid === this.jyukyuid) {
             return value;
           }
         }
       );
-      this.$refs.futan.setData(this.risyosyaFutanDataOrgFiltered);
       this.$refs.rirekiArea.setRiyosyaFutanData(
-        this.risyosyaFutanDataOrgFiltered
+        this.riyosyaFutanDataOrgFiltered
       );
+      this.$refs.futan.setData(this.riyosyaFutanDataOrgFiltered);
     },
     //履歴表示
     openRireki() {
@@ -678,7 +693,7 @@ export default {
           this.keikakuSoudanDataOrgFiltered
         );
         this.$refs.rirekiArea.setRiyosyaFutanData(
-          this.risyosyaFutanDataOrgFiltered
+          this.riyosyaFutanDataOrgFiltered
         );
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
@@ -712,6 +727,10 @@ export default {
         { id: 0, code: '', name: '' },
         { id: 0, code: '', name: '' }
       );
+      //支給決定内容レイアウトマスタ
+      this.getJyukyuTourokuSikyuryoLayoutData().then((value) => {
+        this.sikyuryoLayoutList = value[0];
+      });
     },
     //メニューボタン操作各種
     menu_clear() {

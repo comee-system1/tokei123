@@ -40,7 +40,7 @@ export async function api() {
     // x-corporation-unique-id は引数によって変わる
     HEADER['x-corporation-unique-id'] = getUniqID();
 
-    await setLogging(getUniqID());
+    // await setLogging(getUniqID());
 
     var url = getURL();
     return await axios

@@ -197,7 +197,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 
 import HeaderServices from '../components/HeaderServices.vue';
-import { nenkanRiyouNissuIcrn } from '@backend/api/NenkanRiyouNissuIcrn';
+import { connect } from '@connect/connect';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 
@@ -389,13 +389,15 @@ export default {
       this.nendo = this.getChildYear();
       this.createHeader(flexGrid);
       this.createHeaderMerge(flexGrid);
-
-      nenkanRiyouNissuIcrn().then((result) => {
-        // データ取得
+      let uniqid = 1; // 現在は1のみapiが実行する
+      let traceid = 123;
+      connect(this.$route.path, uniqid, traceid).then((result) => {
+        console.log('getData1234');
+        console.log(result);
         this.getData(result);
-        // フッタデータ登録
         this.settingFooterData(flexGrid, result);
       });
+
       // フォーマット
       this.createSyukeiCellFormat(flexGrid);
     },

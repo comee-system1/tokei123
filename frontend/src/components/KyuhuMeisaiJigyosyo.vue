@@ -50,7 +50,7 @@ export default {
       while (flexGrid.rows.length < 2) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      flexGrid.rowHeaders.columns.defaultSize = 250;
+      flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
     },
     /**
@@ -85,6 +85,7 @@ export default {
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
+        s.lineHeight = '19px';
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
@@ -96,14 +97,19 @@ export default {
           }
           if ((r == 1) && (c == 0)) {
             cell.innerHTML = '事業者名';
+            s.borderRadius = '0 0 0 4px';
           }
         }
         // セルデザイン修正
         if (panel.cellType == wjGrid.CellType.Cell) {
           s.backgroundColor = sysConst.COLOR.gridBackground;
+          if ((r == 0) && (c == 9)) {
+            s.borderRadius = '0 4px 0 0';
+          }
           if ((r == 1) || (r == 2)) {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
+            s.borderRadius = '0 0 4px 0';
           }
         }
       };
@@ -113,10 +119,9 @@ export default {
      */
     setJigyosyoData(jigyosyoData){
       // 受給者証番号を分割して表示
-      console.log(jigyosyoData)
       let jimusyoBangoeSplit = [];
       jimusyoBangoeSplit = jigyosyoData['jimusyoBango'].split('');
-      for (let i = 0; i <jimusyoBangoeSplit.length -1; i++) {
+      for (let i = 0; i < jimusyoBangoeSplit.length -1; i++) {
         // 暫定上記繰り返しの-1は後に修正
         this.mainFlexGrid.setCellData(0, i, jimusyoBangoeSplit[i]);
       }

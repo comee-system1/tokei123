@@ -371,6 +371,7 @@ div#JyukyuTourokuSyogaiKubun {
     }
   }
   div.customCombobox.customCombobox {
+    margin-top: 2px;
     width: 100px !important;
     font-size: 12px !important;
   }

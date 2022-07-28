@@ -1,5 +1,5 @@
 <template>
-  <div id="JyukyuTourokuSikyuryo" :style="mainHeight">
+  <div id="JyukyuTourokuSikyuryo">
     <v-container fluid class="sikyuryo-container">
       <v-row no-gutters class="sikyuryo-header-row">
         <v-card elevation="0" class="sikyuryo-header d-flex flex-row" flat tile>
@@ -107,6 +107,35 @@
           </v-card>
         </v-row>
         <v-row
+          v-show="item.sikyuryotouDisp"
+          no-gutters
+          class="sikyuryo-sikyuryotou-row2"
+        >
+          <v-card
+            elevation="0"
+            class="sikyuryo-title-length4 d-flex flex-row"
+            flat
+            tile
+          >
+            支給量等
+          </v-card>
+          <p class="required">*</p>
+          <v-card
+            elevation="0"
+            class="sikyuryo-sikyuryotou-input d-flex flex-row"
+          >
+            <wj-combo-box
+              class="sikyuryo-sikyuryotou-input2"
+              :textChanged="onTextChanged"
+            ></wj-combo-box>
+            <label style="padding-top: 4px; padding-left: 4px">：</label>
+            <wj-combo-box
+              class="sikyuryo-sikyuryotou-input2"
+              :textChanged="onTextChanged"
+            ></wj-combo-box>
+          </v-card>
+        </v-row>
+        <v-row
           v-show="item.sikyukikanDisp"
           no-gutters
           class="sikyuryo-sikyukikan-row"
@@ -192,6 +221,32 @@
             </wj-flex-grid>
           </v-card>
         </v-row>
+        <v-row no-gutters class="sikyuryo-syogaisyurui-row">
+          <v-card
+            elevation="0"
+            class="sikyuryo-title-length4 d-flex flex-row"
+            flat
+            tile
+          >
+            障害種類
+          </v-card>
+          <v-card
+            elevation="0"
+            class="sikyuryo-syogaisyurui-combobox d-flex flex-row"
+          >
+            <wj-menu
+              id="comboSyogaisyurui"
+              class="customCombobox"
+              :initialized="initComboSyogaisyurui"
+              :isRequired="true"
+              :itemsSource="syogaisyuruiCombo"
+              :displayMemberPath="'text'"
+              selectedValuePath="'key'"
+              :itemClicked="onSelectedSyogaisyurui"
+            >
+            </wj-menu>
+          </v-card>
+        </v-row>
         <v-row
           v-show="item.keikasotiDisp"
           no-gutters
@@ -228,12 +283,20 @@
           style="margin: 4px"
         ></v-divider>
       </v-card>
-      <v-row no-gutters class="sikyuryo-addbutton-row">
-        <v-btn class="sikyuryo-add-button" style="height: 30px">
+      <v-row no-gutters class="sikyuryo-addbutton-row mb-1">
+        <v-btn
+          class="sikyuryo-add-button"
+          style="height: 30px"
+          @click="addService"
+        >
           サービス種別を追加</v-btn
         >
       </v-row>
-      <v-row v-if="this.changeMode()" no-gutters class="sikyuryo-button-row">
+      <v-row
+        v-if="this.changeMode()"
+        no-gutters
+        class="sikyuryo-button-row mb-2"
+      >
         <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
         <v-card
           elevation="0"
@@ -266,6 +329,8 @@ export default {
       month: moment().format('MM'),
       lastdate: moment().daysInMonth(),
       serviceSyubetu: this.getServiceSyubetu(),
+      syogaisyuruiCombo: this.getSyogaisyuruiCombo(),
+
       sikyuryotou: -1,
       sienkubunymdStart: '',
       sienkubunymdEnd: '',
@@ -277,38 +342,20 @@ export default {
   components: {
     Datepicker,
   },
-  mounted() {
-    this.Resize();
-  },
+  mounted() {},
   methods: {
     changeMode() {
-      this.Resize();
       return this.mode === 'modSikyuryo';
-    },
-    Resize() {
-      let height = '';
-      let num = 0;
-      let add = 0;
-      if (this.mode !== 'modSikyuryo') {
-        num = 14.1;
-      } else {
-        num = 15.1;
-        add = 4;
-      }
-      height = 'calc((29px * ' + num + ') + ' + add + 'px)';
-      this.mainHeight = 'height:' + height + ';';
     },
     setTrunModify() {
       this.setButtonColor('modifyButtonSikyuryo', true);
       this.setButtonColor('addButtonSikyuryo', false);
       this.$emit('setMode', 'modSikyuryo');
-      this.Resize();
     },
     setTrunAdd() {
       this.setButtonColor('modifyButtonSikyuryo', false);
       this.setButtonColor('addButtonSikyuryo', true);
       this.$emit('setMode', 'modSikyuryo');
-      this.Resize();
     },
     cancel() {
       this.setButtonColor('modifyButtonSikyuryo', false);
@@ -327,30 +374,54 @@ export default {
         this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
-      this.Resize();
     },
     setdata(data) {},
     clearData() {},
+    addService() {
+      this.serviceSyubetu.push({
+        servicecode: String(this.serviceSyubetu.length + 1),
+        servicename: '生活支援',
+        keikasoti: 1,
+        sikyuryotouDisp: false,
+        sikyukikanDisp: true,
+        kasankoumokuDisp: true,
+        keikasotiDisp: true,
+        sikyuryoKasankoumokuData: [{ value: '加算項目を選択' }, { value: '' }],
+      });
+    },
     getServiceSyubetu() {
-      let serviceSyubetu = [];
-      serviceSyubetu.push(
-        {
-          servicecode: '22',
-          servicename: '生活支援',
-          keikasoti: -1,
-          sikyuryotouDisp: false,
-          sikyukikanDisp: true,
-          kasankoumokuDisp: true,
-          keikasotiDisp: true,
-          sikyuryoKasankoumokuData: [
-            { value: '加算項目を選択' },
-            { value: '' },
-          ],
-        },
+      let list = [];
+      list.push(
+        // {
+        //   servicecode: '11',
+        //   servicename: 'ああああああ',
+        //   keikasoti: 1,
+        //   sikyuryotouDisp: false,
+        //   sikyukikanDisp: true,
+        //   kasankoumokuDisp: true,
+        //   keikasotiDisp: true,
+        //   sikyuryoKasankoumokuData: [
+        //     { value: '加算項目を選択' },
+        //     { value: '' },
+        //   ],
+        // },
+        // {
+        //   servicecode: '22',
+        //   servicename: '生活支援',
+        //   keikasoti: 0,
+        //   sikyuryotouDisp: false,
+        //   sikyukikanDisp: true,
+        //   kasankoumokuDisp: true,
+        //   keikasotiDisp: true,
+        //   sikyuryoKasankoumokuData: [
+        //     { value: '加算項目を選択' },
+        //     { value: '' },
+        //   ],
+        // },
         {
           servicecode: '32',
           servicename: '施設入所支援',
-          keikasoti: -1,
+          keikasoti: 0,
           sikyuryotouDisp: true,
           sikyukikanDisp: true,
           kasankoumokuDisp: true,
@@ -361,7 +432,53 @@ export default {
           ],
         }
       );
-      return serviceSyubetu;
+      return list;
+    },
+    initComboSyogaisyurui(combo) {
+      combo.header = this.syogaisyuruiCombo[0].text;
+      var obj = document.getElementById('comboSyogaisyurui');
+      obj.style.color = 'gray';
+    },
+    onSelectedSyogaisyurui(e) {
+      if (e.selectedIndex != -1) {
+        e.header = e.text;
+        var obj = document.getElementById('comboSyogaisyurui');
+        if (e.selectedIndex == 0) {
+          obj.style.color = 'gray';
+        } else {
+          obj.style.color = 'black';
+        }
+      }
+    },
+    getSyogaisyuruiCombo() {
+      let list = [];
+      list.push(
+        {
+          key: 0,
+          text: '障害種類を選択',
+        },
+        {
+          key: 1,
+          text: '知的障害児',
+        },
+        {
+          key: 2,
+          text: '自閉症児',
+        },
+        {
+          key: 3,
+          text: '盲児',
+        },
+        {
+          key: 4,
+          text: 'ろうあ児',
+        },
+        {
+          key: 5,
+          text: '肢体不自由児',
+        }
+      );
+      return list;
     },
     onInitializedKasankoumoku(grd) {
       grd.beginUpdate();
@@ -405,7 +522,6 @@ div#JyukyuTourokuSikyuryo {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;
-  height: calc(29px * 14.1);
   .sikyuryo-container {
     padding: 0px !important;
   }
@@ -483,6 +599,25 @@ div#JyukyuTourokuSikyuryo {
     }
   }
 
+  .sikyuryo-sikyuryotou-row2 {
+    height: 25px;
+    margin: 4px 4px 0px 4px;
+    position: relative; /*相対配置*/
+    .sikyuryo-sikyuryotou-input {
+      height: 100%;
+    }
+    .sikyuryo-sikyuryotou-input2 {
+      width: 60px;
+      margin-top: -1px;
+      margin-left: 4px;
+      font-size: 12px;
+    }
+    .sikyuryo-sikyuryotou.wj-control .wj-input {
+      width: 60px;
+      text-align: right;
+    }
+  }
+
   .sikyuryo-sikyukikan-row {
     height: 25px;
     margin: 4px 4px 0px 4px;
@@ -495,6 +630,26 @@ div#JyukyuTourokuSikyuryo {
   .sikyuryo-kasankoumoku-row {
     height: 50px;
     margin: 4px 4px 0px 4px;
+  }
+
+  .sikyuryo-syogaisyurui-row {
+    height: 25px;
+    margin: 4px 4px 0px 4px;
+    position: relative; /*相対配置*/
+    .sikyuryo-syogaisyurui-combobox {
+      height: 25px;
+      margin-top: -2px;
+      margin-left: 4px;
+      padding-left: -2px;
+      .sikyuryo-syogaisyurui-items {
+        font-size: 12px;
+      }
+    }
+  }
+  div.customCombobox.customCombobox {
+    margin-top: 2px;
+    width: 150px !important;
+    font-size: 12px !important;
   }
 
   .no-scrollbars.wj-flexgrid [wj-part='root'] {

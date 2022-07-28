@@ -1,5 +1,5 @@
 <template>
-  <div id="kyuhumeisai-shityoson">
+  <div id="kyuhumeisai-shityoson" class="d-flex">
     <wj-flex-grid
         id="kyuhumeisai-shityoson-grid"
         :headersVisibility="'Row'"
@@ -70,6 +70,7 @@ export default {
         s.fontWeight = 'normal';
         s.textAlign = 'center';
         s.backgroundColor = sysConst.COLOR.selectedColor;
+        s.lineHeight = '19px';
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {

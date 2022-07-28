@@ -47,8 +47,8 @@ export async function JyukyuTourokuKeikakuSoudanData(rid) {
             // skryoh3_inf[i]['sjgyo'			] = 11;         // 相談支援事業者
             // skryoh3_inf[i]['tokuti'			] = 1;        // 特別地域加算
             // skryoh3_inf[i]['monijiki'		] = 5;      // ﾓﾆﾀﾘﾝｸﾞ時期
-            skryoh3_inf[i]['sjigyoname'		] = '事業所名１１１１';    // 相談支援事業者名
-            skryoh3_inf[i]['sjigyoryaku'	] = '事業所1111';   // 相談支援事業者略称
+            // skryoh3_inf[i]['sjigyoname'		] = '事業所名１１１１';    // 相談支援事業者名
+            // skryoh3_inf[i]['sjigyoryaku'	] = '事業所1111';   // 相談支援事業者略称
         }
 
         //支給開始日降順でソート

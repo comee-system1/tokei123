@@ -1,5 +1,5 @@
 <template>
-  <div id="kyuhumeisai-kubun">
+  <div id="kyuhumeisai-kubun" class="d-flex">
     <wj-flex-grid
         id="kyuhumeisai-kubun-grid"
         :headersVisibility="'Row'"
@@ -96,6 +96,7 @@ export default {
         s.fontWeight = 'normal';
         s.textAlign = 'center';
         s.backgroundColor = sysConst.COLOR.selectedColor;
+        s.lineHeight = '19px';
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
             s.borderTop = 'none';
@@ -164,7 +165,6 @@ export default {
     setKubunData(kubunData){
       // API取得時修正
       // 地域区分
-      console.log(kubunData)
       this.mainFlexGrid.setCellData(0, 0, kubunData['tiikikubun']);
 
       
@@ -181,7 +181,6 @@ export default {
 @import '@/assets/scss/common.scss';
 
 #kyuhumeisai-kubun-grid {
-  // width: 350px;
   &.wj-content {
     border: none;
   }

@@ -19,7 +19,7 @@
           </UserList>
         </v-col>
         <v-col class="rightArea kyuhumeisai">
-          <v-row no-gutters>
+          <v-row no-gutters class="mb-1">
             <v-col>
               <v-row no-gutters class="mb-1">
                 <kyuhu-meisai-jyukyusya
@@ -27,7 +27,7 @@
                 >
                 </kyuhu-meisai-jyukyusya>
               </v-row>
-              <v-row no-gutters class="mb-1">
+              <v-row no-gutters>
                 <kyuhu-meisai-jigyosyo
                   ref="jigyosyoData"
                 >
@@ -39,12 +39,12 @@
                 <div class="confirmTitle mb-1 white--text">
                   確定済:2021.08.08 14:19 (担当者:大正 雅夫)
                 </div>
-                  <kyuhu-meisai-shityoson
-                  ref="shityosonData"
-                  >
-                  </kyuhu-meisai-shityoson>
+                <kyuhu-meisai-shityoson
+                ref="shityosonData"
+                >
+                </kyuhu-meisai-shityoson>
               </v-row>
-              <v-row no-gutters class="mb-1 no-flex-grow justify-end">
+              <v-row no-gutters class="no-flex-grow justify-end">
                 <kyuhu-meisai-kubun
                 ref="kubunData"
                 >
@@ -56,14 +56,24 @@
             @parent_common_tab_menu="parent_common_tab_menu"
             :tabmenu="tabmenus"
           ></common-tab-menu>
-          <v-row no-gutters>
+          <v-row no-gutters v-if="ServiceMeisaiFlag">
             <v-col>
-              <div v-if="ServiceMeisaiFlag">
-                <kyuhu-meisairan ref="reloadMeisairan"></kyuhu-meisairan>
-              </div>
-              <div v-if="SeikyugakuSyukeiFlag">
-                <kyuhu-seikyugaku ref="reloadSeikyugaku"></kyuhu-seikyugaku>
-              </div>
+              <kyuhu-meisai-riyouhutan
+              ref="riyousyaHutanData"
+              class="mt-1"
+              >
+              </kyuhu-meisai-riyouhutan>
+              <kyuhu-meisai-service
+              ref="serviceData"
+              class="mt-1"
+              >
+              </kyuhu-meisai-service>
+              <kyuhu-meisairan ref="reloadMeisairan"></kyuhu-meisairan>
+            </v-col>
+          </v-row>
+          <v-row no-gutters v-if="SeikyugakuSyukeiFlag">
+            <v-col>
+              <kyuhu-seikyugaku ref="reloadSeikyugaku"></kyuhu-seikyugaku>
             </v-col>
           </v-row>
         </v-col>
@@ -75,15 +85,17 @@
 <script>
 import HeaderServices from '../components/HeaderServices.vue';
 import UserList from '../components/UserList';
-import * as wjGrid from '@grapecity/wijmo.grid';
+// import * as wjGrid from '@grapecity/wijmo.grid';
 import CommonTabMenu from '../components/CommonTabMenu.vue';
 import KyuhuMeisaiJyukyusya from '../components/KyuhuMeisaiJyukyusya.vue';
 import KyuhuMeisaiShityoson from '../components/KyuhuMeisaiShityoson.vue';
 import KyuhuMeisaiJigyosyo from '../components/KyuhuMeisaiJigyosyo.vue';
 import KyuhuMeisaiKubun from '../components/KyuhuMeisaiKubun.vue';
+import KyuhuMeisaiRiyouhutan from '../components/KyuhuMeisaiRiyouhutan.vue';
+import KyuhuMeisaiService from '../components/KyuhuMeisaiService.vue';
 import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
 import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
-import sysConst from '@/utiles/const';
+// import sysConst from '@/utiles/const';
 
 export default {
   components: {
@@ -94,6 +106,8 @@ export default {
     KyuhuMeisaiShityoson,
     KyuhuMeisaiJigyosyo,
     KyuhuMeisaiKubun,
+    KyuhuMeisaiRiyouhutan,
+    KyuhuMeisaiService,
     KyuhuMeisairan,
     KyuhuSeikyugaku,
   },
@@ -106,7 +120,6 @@ export default {
       gridReloadFlag: false,
       dateArgument: '',
       searchArgument: '',
-      chiikikubunGridData: this.getChiikikubunGridData(),
       // タブの制御Flag
       ServiceMeisaiFlag: true, // ServiceMeisaiFlagの初期表示状態
       SeikyugakuSyukeiFlag: false, // seikyugakuSyukeiFlagの初期表示状態
@@ -117,93 +130,6 @@ export default {
     };
   },
   methods: {
-    onInitializedChiikikubunGrid: function (flexGrid) {
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(flexGrid);
-      // 結合するセルの範囲を指定
-      let cellRanges = [new wjGrid.CellRange(1, 0, 1, 1)];
-      // getMergedRangeメソッドをオーバーライドする
-      mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < cellRanges.length; h++) {
-            if (cellRanges[h].contains(r, c)) {
-              return cellRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-
-      // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        // グリッド内共通スタイル
-        let s = cell.style;
-        s.fontWeight = 'normal';
-        s.textAlign = 'center';
-        s.backgroundColor = sysConst.COLOR.selectedColor;
-        if ((r == 0 && c == 2) || (r == 1 && c == 2)) {
-          s.backgroundColor = sysConst.COLOR.gridBackground;
-        }
-        if (r == 0 && c == 0) {
-          cell.style.display = 'none';
-        }
-        if ((r == 0 && c == 1) || (r == 1 && c == 0)) {
-          s.borderTop = '1px solid rgba(0,0,0,.2)';
-          s.borderLeft = '1px solid rgba(0,0,0,.2)';
-        }
-        if (r == 0 && c == 1) {
-          s.borderBottom = 'none';
-        }
-        if (r == 0 && c == 1) {
-          s.borderRadius = '4px 0 0 0';
-        }
-        if (r == 0 && c == 2) {
-          s.borderTop = '1px solid rgba(0,0,0,.2)';
-        }
-        if (r == 1 && c == 0) {
-          s.borderRadius = '4px 0 0 4px';
-        }
-        if (r == 0 && c == 2) {
-          s.borderBottom = 'none';
-          s.borderRadius = '0 4px 0 0';
-        }
-        if (r == 1 && c == 2) {
-          s.borderTop = '1px solid rgba(0,0,0,.2)';
-          s.borderRadius = '0 0 4px 0';
-        }
-      };
-    },
-    getChiikikubunGridData: function () {
-      let chiikikubunGridData = [];
-      if (this.gridReloadFlag != true) {
-        chiikikubunGridData.push(
-          {
-            Column1: '地域区分',
-            Column2: '',
-          },
-          {
-            Column0: '就労継続支援Ａ型事業者負担減免措置実施',
-            Column2: '',
-          }
-        );
-      } else {
-        let chiikikubun = '１級地';
-        chiikikubunGridData.push(
-          {
-            Column1: '地域区分',
-            Column2: chiikikubun,
-          },
-          {
-            Column0: '就労継続支援Ａ型事業者負担減免措置実施',
-            Column2: '１：無',
-          }
-        );
-      }
-      return chiikikubunGridData;
-    },
     // 左メニューで作成されたユーザ一覧の取得
     getUserListData(data) {
       this.userListComponentDatas = data;
@@ -211,18 +137,20 @@ export default {
     // 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
     getSelectedRow(row) {
       // 各子コンポーネントに選択したユーザーデータを送る
+      // （選択したユーザーデータから取得、ヘッダーから取得、別途APIで取得）
       // 受給者Grid
       this.$refs.jyukyusyaData.setJyukyusyaData(this.userListComponentDatas[row]);
+
       // 市町村Grid
       this.$refs.shityosonData.setShityosonData(this.userListComponentDatas[row]);
+
       // 事業所Grid (ヘッダー選択情報から取得)
       this.$refs.jigyosyoData.setJigyosyoData(this.selectedJigyosyo);
-      // 区分Grid (仮データ)
-      let kubun = {tiikikubun:'1 級地',kinroukeizokushien:'1 :無'};
-      this.$refs.kubunData.setKubunData(kubun);
+
+      this.getApiData();
+
       // ユーザー選択時、他のグリッドを再読み込み
       this.gridReloadFlag = true;
-      this.reloadMeisaiMethod();
       if (this.ServiceMeisaiFlag == true) {
         this.$refs.reloadMeisairan.reloadMeisairanMethod();
       }
@@ -230,19 +158,73 @@ export default {
         this.$refs.reloadSeikyugaku.reloadSeikyugakuMethod();
       }
     },
+    /**************
+     * APIからデータを取得して子各コンポーネントに渡す
+     */
+    getApiData() {
+      // 区分Grid (仮データ)
+      let kubun = {tiikikubun:'1 級地',kinroukeizokushien:'1 :無'};
+      this.$refs.kubunData.setKubunData(kubun);
+
+      // 利用者負担Grid (仮データ)
+      let riyousyaHutan =
+      {
+        jyogengaku1:        '9300',           // 利用者負担上限月額①
+        kinroukeizokushien: '1 :無',          // 就労継続支援Ａ型事業者負担減免対象者
+        syogaishien:        '1 :無',          // 障害支援区分
+        jigyosyobango:      '1234567890',     // 指定事業所番号
+        kanrikekka:         '',               // 管理結果
+        kanrikekkagaku:     '',               // 管理結果額
+        jigyosyoname:       '',               // 事業所名
+      };
+      this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
+
+      // サービス種別 (仮データ)
+      let serviceData = [];
+      serviceData.push(
+        {
+          uid: 1,
+          serviceNo:         "22",
+          sYmd:              "2022/04/01",
+          eYmd:              "2022/08/01",
+          riyouNissuu:       "31",
+          nyuinNissuu:       "",
+        },
+        {
+          uid: 2,
+          serviceNo:        "32",
+          sYmd:             "2022/04/01",
+          eYmd:             "2022/08/01",
+          riyouNissuu:      "31",
+          nyuinNissuu:      "",
+        },
+        {
+          uid: 3,
+          serviceNo:        "32",
+          sYmd:             "2022/04/01",
+          eYmd:             "2022/08/03",
+          riyouNissuu:      "31",
+          nyuinNissuu:      "",
+        },
+        {
+          uid: 4,
+          serviceNo:        "32",
+          sYmd:             "2022/04/01",
+          eYmd:             "2022/08/03",
+          riyouNissuu:      "31",
+          nyuinNissuu:      "",
+        }
+      )
+      this.$refs.serviceData.setServiceData(serviceData);
+    },
     /***************
      * ヘッダメニューのサービスを選択時
      */
     parentServiceSelect(serviceArgument) {
-      console.log(serviceArgument)
       // ヘッダメニューの選択情報を取得
       this.selectedJigyosyo['serviceJigyo'] = serviceArgument['serviceJigyo'];
       this.selectedJigyosyo['jimusyoBango'] = serviceArgument['jimusyoBango'];
       this.selectedJigyosyo['teikyoCode'] = serviceArgument['teikyoCode'];
-    },
-    reloadMeisaiMethod: function () {
-      // 地域区分グリッド
-      this.chiikikubunGridData = this.getChiikikubunGridData();
     },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
@@ -308,6 +290,17 @@ export default {
       background: $grid_selected_background;
       color: $grid_selected_color;
     }
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
   }
   .confirmTitle {
     width: 360px;

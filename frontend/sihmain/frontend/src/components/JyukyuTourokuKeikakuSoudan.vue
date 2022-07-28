@@ -386,6 +386,7 @@ export default {
       this.clearmMonitoringAll();
     },
     clearmMonitoringAll() {
+      this.putmarkMonth = [];
       for (let i = 0; i < this.monitoring.length; i++) {
         this.monitoring[i].jan = '';
         this.monitoring[i].feb = '';
@@ -399,33 +400,62 @@ export default {
         this.monitoring[i].oct = '';
         this.monitoring[i].nov = '';
         this.monitoring[i].dec = '';
+
+        let flexGrid = wijmo.Control.getControl(
+          '#gridMonitoringkikan' + String(i + 1)
+        );
+        flexGrid.refresh();
       }
     },
-    clearmMonitoringHyphen(i) {
+    clearmMonitoring(i) {
       this.monitoring[i].jan =
-        this.monitoring[i].jan === '-' ? '' : this.monitoring[i].jan;
+        this.monitoring[i].jan === '-' || this.monitoring[i].jan === '●'
+          ? ''
+          : this.monitoring[i].jan;
       this.monitoring[i].feb =
-        this.monitoring[i].feb === '-' ? '' : this.monitoring[i].feb;
+        this.monitoring[i].feb === '-' || this.monitoring[i].feb === '●'
+          ? ''
+          : this.monitoring[i].feb;
       this.monitoring[i].mar =
-        this.monitoring[i].mar === '-' ? '' : this.monitoring[i].mar;
+        this.monitoring[i].mar === '-' || this.monitoring[i].mar === '●'
+          ? ''
+          : this.monitoring[i].mar;
       this.monitoring[i].apr =
-        this.monitoring[i].apr === '-' ? '' : this.monitoring[i].apr;
+        this.monitoring[i].apr === '-' || this.monitoring[i].apr === '●'
+          ? ''
+          : this.monitoring[i].apr;
       this.monitoring[i].may =
-        this.monitoring[i].may === '-' ? '' : this.monitoring[i].may;
+        this.monitoring[i].may === '-' || this.monitoring[i].may === '●'
+          ? ''
+          : this.monitoring[i].may;
       this.monitoring[i].jun =
-        this.monitoring[i].jun === '-' ? '' : this.monitoring[i].jun;
+        this.monitoring[i].jun === '-' || this.monitoring[i].jun === '●'
+          ? ''
+          : this.monitoring[i].jun;
       this.monitoring[i].jul =
-        this.monitoring[i].jul === '-' ? '' : this.monitoring[i].jul;
+        this.monitoring[i].jul === '-' || this.monitoring[i].jul === '●'
+          ? ''
+          : this.monitoring[i].jul;
       this.monitoring[i].aug =
-        this.monitoring[i].aug === '-' ? '' : this.monitoring[i].aug;
+        this.monitoring[i].aug === '-' || this.monitoring[i].aug === '●'
+          ? ''
+          : this.monitoring[i].aug;
       this.monitoring[i].sep =
-        this.monitoring[i].sep === '-' ? '' : this.monitoring[i].sep;
+        this.monitoring[i].sep === '-' || this.monitoring[i].sep === '●'
+          ? ''
+          : this.monitoring[i].sep;
       this.monitoring[i].oct =
-        this.monitoring[i].oct === '-' ? '' : this.monitoring[i].oct;
+        this.monitoring[i].oct === '-' || this.monitoring[i].oct === '●'
+          ? ''
+          : this.monitoring[i].oct;
       this.monitoring[i].nov =
-        this.monitoring[i].nov === '-' ? '' : this.monitoring[i].nov;
+        this.monitoring[i].nov === '-' || this.monitoring[i].nov === '●'
+          ? ''
+          : this.monitoring[i].nov;
       this.monitoring[i].dec =
-        this.monitoring[i].dec === '-' ? '' : this.monitoring[i].dec;
+        this.monitoring[i].dec === '-' || this.monitoring[i].dec === '●'
+          ? ''
+          : this.monitoring[i].dec;
     },
     onInitializedMonitoringkikan(flexGrid) {
       flexGrid.beginUpdate();
@@ -501,7 +531,9 @@ export default {
           let header = flexGrid.columnHeaders;
           let m = header.getCellData(1, ht.col, true);
           m = m.replace('月', '');
-          if (flexGrid.getCellData(ht.row, ht.col) !== '-') {
+          if (flexGrid.getCellData(ht.row, ht.col) === '●') {
+            alert('終期月は変更できません。');
+          } else if (flexGrid.getCellData(ht.row, ht.col) !== '-') {
             switch (Number(m) - 1) {
               case 0:
                 data.jan = data.jan.length > 0 ? '' : '○';
@@ -546,8 +578,8 @@ export default {
       });
     },
     setGrid(flexGrid, index, symd, eymd, momikikan) {
-      let sy = symd == null ? 0 : symd.getFullYear();
-      let sm = symd == null ? 0 : symd.getMonth() + 1;
+      let sy = symd == null ? 0 : moment(symd).year();
+      let sm = symd == null ? 0 : moment(symd).month() + 1;
       let mindex = sm == 0 ? 0 : sm - 1;
 
       let s = moment(symd);
@@ -561,7 +593,7 @@ export default {
         cnt++;
       }
 
-      this.clearmMonitoringHyphen(index);
+      this.clearmMonitoring(index);
 
       for (let colIndex = 0; colIndex < 12; colIndex++) {
         let col = flexGrid.columns[colIndex];
@@ -583,7 +615,7 @@ export default {
 
         if (sy > 0) {
           let _ymd = moment(_sy + '-' + this.months[mindex].value + '-1');
-          if (_ymd.isAfter(eymd)) {
+          if (_ymd.isAfter(e)) {
             switch (mindex) {
               case 0:
                 this.monitoring[index].jan = '-';
@@ -620,6 +652,45 @@ export default {
                 break;
               case 11:
                 this.monitoring[index].dec = '-';
+                break;
+            }
+          } else if (_ymd.format('YYYYMM') === e.format('YYYYMM')) {
+            switch (mindex) {
+              case 0:
+                this.monitoring[index].jan = '●';
+                break;
+              case 1:
+                this.monitoring[index].feb = '●';
+                break;
+              case 2:
+                this.monitoring[index].mar = '●';
+                break;
+              case 3:
+                this.monitoring[index].apr = '●';
+                break;
+              case 4:
+                this.monitoring[index].may = '●';
+                break;
+              case 5:
+                this.monitoring[index].jun = '●';
+                break;
+              case 6:
+                this.monitoring[index].jul = '●';
+                break;
+              case 7:
+                this.monitoring[index].aug = '●';
+                break;
+              case 8:
+                this.monitoring[index].sep = '●';
+                break;
+              case 9:
+                this.monitoring[index].oct = '●';
+                break;
+              case 10:
+                this.monitoring[index].nov = '●';
+                break;
+              case 11:
+                this.monitoring[index].dec = '●';
                 break;
             }
           } else {
@@ -676,7 +747,6 @@ export default {
       let items = [];
       items.push(this.monitoring[index]);
       flexGrid.itemsSource = items;
-      flexGrid.refresh();
     },
     setMonitoring() {
       if (this.rksymd != null && this.rkeymd != null && this.monijiki > 0) {
@@ -685,6 +755,7 @@ export default {
             '#gridMonitoringkikan' + String(i + 1)
           );
           this.setGrid(flexGrid, i, this.rksymd, this.rkeymd, this.monijiki);
+          flexGrid.refresh();
         }
       }
     },

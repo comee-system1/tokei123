@@ -58,7 +58,7 @@ export default {
       while (flexGrid.rows.length < jyukyusyaGridRow) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-      flexGrid.rowHeaders.columns.defaultSize = 250;
+      flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
     },
     /**
@@ -87,21 +87,34 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
+      let _self = this;
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.fontWeight = 'normal';
         s.textAlign = 'center';
-        // ヘッダーデザイン修正
+        s.lineHeight = '19px';
+        // ヘッダーデザイン修正、borderRadius修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
             cell.innerHTML = '受給者証番号';
+            s.borderRadius = '4px 0 0 0';
           }
           if ((r == 1) && (c == 0)) {
             cell.innerHTML = '支給決定障害者等氏名';
           }
           if ((r == 2) && (c == 0)) {
             cell.innerHTML = '支給決定に係る障害児氏名';
+          }
+          if (_self.syougaijiFlag) {
+            // 障害児FlagがTRUEの場合
+            if ((r == 2) && (c == 0)) {
+              s.borderRadius = '0 0 0 4px ';
+            }
+          } else {
+            if ((r == 2) && (c == 0)) {
+              s.borderRadius = '0 0 0 4px';
+            }
           }
         }
         // セルデザイン修正
@@ -110,6 +123,20 @@ export default {
           if ((r == 1) || (r == 2)) {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
+          }
+          // borderRadius修正
+          if ((r == 0) && (c == 9)) {
+            s.borderRadius = '0 4px 0 0';
+          }
+          if (_self.syougaijiFlag) {
+            // 障害児FlagがTRUEの場合
+            if ((r == 2) && (c == 0)) {
+              s.borderRadius = '0 0 4px 0';
+            }
+          } else {
+            if ((r == 1) && (c == 0)) {
+              s.borderRadius = '0 0 4px 0';
+            }
           }
         }
       };

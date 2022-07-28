@@ -551,12 +551,14 @@ export default {
     handleResize: function () {
       let height = window.innerHeight;
       let targetElement = document.getElementById('user-list-print_scrollbar');
-      var clientRect = targetElement.getBoundingClientRect();
-      var y = clientRect.top;
-      //alert(y);
-      let ht = '';
-      ht = height - y - 190;
-      this.gridHeight = 'height:' + ht + 'px;';
+      if (targetElement != null) {
+        var clientRect = targetElement.getBoundingClientRect();
+        var y = clientRect.top;
+        //alert(y);
+        let ht = '';
+        ht = height - y - 190;
+        this.gridHeight = 'height:' + ht + 'px;';
+      }
     },
   },
 };

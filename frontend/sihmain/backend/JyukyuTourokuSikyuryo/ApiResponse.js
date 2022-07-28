@@ -8,7 +8,6 @@ module.exports = class ApiResponse {
       return result;
     } 
     res.data.forEach(function(element){
-      console.log(element);
       result.push({
         sikyuid: element.sikyuid, // 支給量内部ID
         jyukyuid: element.jyukyuid, // 受給者証内部ID

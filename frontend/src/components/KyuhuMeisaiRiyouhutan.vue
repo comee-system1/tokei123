@@ -1,0 +1,250 @@
+<template>
+  <div id="kyuhumeisai-riyouhutan" class="d-flex">
+    <wj-flex-grid
+        id="kyuhumeisai-riyouhutan-grid"
+        :headersVisibility="'Row'"
+        :alternatingRowStep="0"
+        :initialized="onInitialized"
+        :isReadOnly="true"
+        :deferResizing="false"
+        :allowAddNew="false"
+        :allowDelete="false"
+        :allowDragging="false"
+        :allowPinning="false"
+        :allowResizing="false"
+        :allowSorting="false"
+      >
+    </wj-flex-grid>
+  </div>
+</template>
+<script>
+import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
+export default {
+  data() {
+    return {
+      syogaiShienFlag: true,
+      mainFlexGrid:[],
+    };
+  },
+  methods: {
+    onInitialized(flexGrid) {
+      this.mainFlexGrid = flexGrid;
+      // グリッドの選択を無効にする
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      // セルの作成と文字列挿入
+      this.createCell(flexGrid);
+      // セルのマージ
+      this.mergeCell(flexGrid);
+      // セルのデザイン修正
+      this.formatCell(flexGrid);
+    },
+    /**
+     * セルの作成
+     */
+    createCell(flexGrid) {
+      // セルの作成
+      while (flexGrid.columns.length < 28) {
+        flexGrid.columns.push(new wjGrid.Column());
+      }
+      while (flexGrid.rows.length < 3) {
+        flexGrid.rows.push(new wjGrid.Row());
+      }
+      flexGrid.rowHeaders.columns.defaultSize = 200;
+      flexGrid.columns.defaultSize = 30;
+    },
+    /**
+     * セルのマージ
+     */
+    mergeCell(flexGrid) {
+      let mm = new wjGrid.MergeManager();
+      // 結合するセルの範囲を指定
+      let cellRanges = [
+        new wjGrid.CellRange(0, 7, 0, 16),
+        new wjGrid.CellRange(0, 17, 0, 21),
+        new wjGrid.CellRange(0, 22, 0, 24),
+        new wjGrid.CellRange(0, 25, 0, 27),
+        new wjGrid.CellRange(1, 0, 1, 6),
+        new wjGrid.CellRange(1, 17, 1, 19),
+        new wjGrid.CellRange(1, 20, 1, 21),
+        new wjGrid.CellRange(1, 22, 1, 24),
+        new wjGrid.CellRange(1, 25, 1, 27),
+        new wjGrid.CellRange(2, 0, 2, 6),
+        new wjGrid.CellRange(2, 7, 2, 27),
+      ];
+      let headerRanges = [
+        new wjGrid.CellRange(1, 0, 2, 0),
+      ];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
+            }
+          }
+        } else if (panel.cellType == wjGrid.CellType.RowHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
+    /**
+     * セルのデザイン修正
+     */
+    formatCell(flexGrid) {
+      let _self = this;
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        // グリッド内共通スタイル
+        let s = cell.style;
+        s.fontWeight = 'normal';
+        s.textAlign = 'center';
+        s.lineHeight = '19px';
+        // ヘッダーデザイン修正
+        if (panel.cellType == wjGrid.CellType.RowHeader) {
+          if ((r == 0) && (c == 0)) {
+            cell.innerHTML = '利用者負担上限月額①';
+          }
+          if ((r == 1) && (c == 0)) {
+            cell.innerHTML = '利用者負担上限額<br/>管理事業所';
+          }
+          // 線を補填
+          if (c == 0) {
+            s.borderLeft = '1px solid rgba(0,0,0,.2)';
+          }
+          if (r == 0) {
+            s.borderTop = '1px solid rgba(0,0,0,.2)';
+          }
+          // borderRadiusを修正
+          if (r == 0 && c == 0) {
+            s.borderRadius = '4px 0 0 0';
+          }
+          if (r == 1 && c == 0) {
+            s.borderRadius = '0 0 0 4px';
+          }
+        }
+        // セルデザイン修正
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          s.backgroundColor = sysConst.COLOR.gridBackground;
+          // 疑似ヘッダーを作成
+          if ((r == 0) && (c == 7)) {
+            cell.innerHTML = '<div class="riyouhutan-header">就労継続支援Ａ型事業者負担減免対象者</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          if ((r == 0) && (c == 20)) {
+            cell.innerHTML = '<div class="riyouhutan-header">障害支援区分</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          if ((r == 1) && (c == 0)) {
+            cell.innerHTML = '<div class="riyouhutan-header">指定事業所番号</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          if ((r == 1) && (c == 17)) {
+            cell.innerHTML = '<div class="riyouhutan-header">管理結果</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          if ((r == 1) && (c == 22)) {
+            cell.innerHTML = '<div class="riyouhutan-header">管理結果額</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          if ((r == 2) && (c == 0)) {
+            cell.innerHTML = '<div class="riyouhutan-header">事業所名</div>';
+            s.backgroundColor = sysConst.COLOR.selectedColor;
+          }
+          // 線を補填
+          if(r == 0){
+            s.borderTop = '1px solid rgba(0,0,0,.2)';
+          }
+          // borderRadiusを修正
+          if ((r == 2) && (c == 7)) {
+            s.borderRadius = '0 0 4px 0';
+          }
+          if (_self.syogaiShienFlag) {
+            if ((r == 0) && (c == 22)) {
+              // 障害支援FlagがTRUEの場合
+              cell.innerHTML = '<div class="riyouhutan-header">障害支援区分</div>';
+              s.backgroundColor = sysConst.COLOR.selectedColor;
+            }
+            // borderRadiusを修正
+            if ((r == 0) && (c == 25)) {
+              s.borderRadius = '0 4px 0 0';
+            }
+          } else {
+            // 障害支援FlagがFALSEの場合
+            for (let i = 22; i < 28; i++) {
+              if ((r == 0) && (c == i)) {
+                // 障害支援を非表示
+                cell.style.display = 'none';
+              }
+            }
+            // borderRadiusを修正
+            if ((r == 0) && (c == 17)) {
+              s.borderRadius = '0 4px 0 0';
+            }
+            if ((r == 1) && (c == 25)) {
+              s.borderRadius = '0 4px 0 0';
+            }
+            for (let i = 22; i < 28; i++) {
+              if ((r == 1) && (c == i)) {
+                // 2行目線上部を補填、高さ調整
+                s.borderTop = '1px solid rgba(0,0,0,.2)';
+                s.height = '20px';
+                s.top = '18px';
+              }
+            }
+          }
+        }
+      };
+    },
+    /**
+     * 親コンポーネントで選択したユーザーデータを加工し表示
+     */
+    setRiyousyaHutanData(riyousyaHutanData){
+      // 取得したデータ挿入（API取得時修正）
+
+      // 利用者負担上限月額①
+      let riyouhutangakuSplit = [];
+      riyouhutangakuSplit = riyousyaHutanData['jyogengaku1'].split('');
+      let l = '';
+      l = riyouhutangakuSplit.length;
+      // 値を右寄せで挿入
+      for (let i = 6; 0 < l; i--) {
+        // 「i」がセルのx座標、「ｌ」がriyouhutangakuの桁数
+        this.mainFlexGrid.setCellData(0, i, riyouhutangakuSplit[l-1]);
+        l--;
+      }
+      // 就労継続支援Ａ型事業者負担減免対象者
+      this.mainFlexGrid.setCellData(0, 17, riyousyaHutanData['kinroukeizokushien']);
+
+      // 障害支援区分
+      if (this.syogaiShienFlag) {
+        this.mainFlexGrid.setCellData(0, 25, riyousyaHutanData['kinroukeizokushien']);
+      }
+
+      // 指定事業所番号を分割して表示
+      let jigyosyoBangoSplit = [];
+      jigyosyoBangoSplit = riyousyaHutanData['jigyosyobango'].split('');
+      for (let i = 0; i <jigyosyoBangoSplit.length; i++) {
+        console.log(jigyosyoBangoSplit[i])
+        this.mainFlexGrid.setCellData(1, i + 7, jigyosyoBangoSplit[i]);
+      }
+    }
+  }
+}
+</script>
+<style lang="scss" scope>
+@import '@/assets/scss/common.scss';
+
+#kyuhumeisai-riyouhutan-grid {
+  &.wj-content {
+    border: none;
+  }
+  .riyouhutan-header {
+    background-color: #eee;
+  }
+}
+</style>
