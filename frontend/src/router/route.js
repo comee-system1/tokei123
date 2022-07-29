@@ -13,7 +13,6 @@ import SamplePdf from '../views/SamplePdf.vue'
 
 import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
-import KobetsuRiyouTouroku2 from '../views/KobetsuRiyouTouroku2.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
 import KasanKoumokuIcrn from '../views/KasanKoumokuIcrn.vue'
 import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
@@ -143,14 +142,7 @@ const routes = [{
             title: receptTitle,
         },
     },
-    {
-        path: '/KobetsuRiyouTouroku2',
-        name: '個別利用状況登録',
-        component: KobetsuRiyouTouroku2,
-        meta: {
-            title: receptTitle,
-        },
-    },
+
     {
         path: '/KasanKoumokuIcrn',
         name: '加算項目一覧',

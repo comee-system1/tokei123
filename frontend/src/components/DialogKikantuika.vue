@@ -183,6 +183,8 @@
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
+import { KobetsuNyutai } from '@backend/api/KobetsuNyutai';
+
 export default {
   data() {
     return {
@@ -216,7 +218,7 @@ export default {
     /****************
      * 削除ボタンを押下
      */
-    kikantuika_dialog_delete: function () {
+    kikantuika_dialog_delete() {
       if (
         confirm(
           '日付データの削除を行います。\n削除データは復旧できません。\nよろしいですか？'
@@ -233,31 +235,24 @@ export default {
     /***********
      * クリアボタンを押下
      */
-    kikantuika_dialog_clear: function () {
-      if (confirm('入力データの初期化を行います。\nよろしいですか？')) {
-        this.nyuuinbi = '';
-        this.taiinbi = '';
-        this.nyuuinbiShiseturiyo = '';
-        this.nyuuinbiBreakfast = '';
-        this.nyuuinbiLunch = '';
-        this.nyuuinbiDinner = '';
-        this.taiinbiShiseturiyo = '';
-        this.taiinbiBreakfast = '';
-        this.taiinbiLunch = '';
-        this.taiinbiDinner = '';
-        this.taiinbiAida = '';
-        this.byouinName = '';
-      }
+    kikantuika_dialog_clear() {
+      this.nyuuinbi = '';
+      this.taiinbi = '';
+      this.nyuuinbiShiseturiyo = '';
+      this.nyuuinbiBreakfast = '';
+      this.nyuuinbiLunch = '';
+      this.nyuuinbiDinner = '';
+      this.taiinbiShiseturiyo = '';
+      this.taiinbiBreakfast = '';
+      this.taiinbiLunch = '';
+      this.taiinbiDinner = '';
+      this.taiinbiAida = '';
+      this.byouinName = '';
     },
     /*************
      * 登録ボタンを押下
      */
-    kikantuika_dialog_regist: function () {
-      // 日付エラーチェック
-      if (!this.nyuuinbi) {
-        alert('入院日を入力してください');
-        return false;
-      }
+    kikantuika_dialog_regist() {
       let nyuuinbi = moment(this.nyuuinbi).format('YYYY-M-D');
       let taiinbi = '';
       let taiinbi_notFlag = false;
@@ -288,10 +283,14 @@ export default {
         taiinbiAida: this.taiinbiAida,
         byouinName: this.byouinName,
       };
+
+      // ここでAPIで登録処理を行う想定
+
       this.$emit('kikantuika_dialog_regist');
       this.dialogFlag = false;
     },
-    parentFromOpenDialog(data, type) {
+    parentFromOpenDialog(params, type) {
+      this.kikantuika_dialog_clear();
       if (type == 'nyutaiin_add') {
         this.dateStart = '入院日';
         this.dateEnd = '退院日';
@@ -305,24 +304,37 @@ export default {
       }
       this.dialogFlag = true;
       this.type = type;
-      //selectKeyが空欄のときは新規追加
-      this.selectKey = data ? data.selectKey : '';
-      this.nyuuinbi = data ? data.nyuuinbi : '';
-      this.byouinName = data ? data.byouinName : '';
-      if (data.taiinbi_notFlag) {
-        this.taiinbi = '';
-      } else {
-        this.taiinbi = data ? data.taiinbi : '';
+      if (typeof params === 'object') {
+        let args = {};
+        args = {
+          getkbn: 0,
+          riid: params.riid,
+          kbn: params.kbn,
+          ngsymd: params.ngsymd,
+          rendo: params.rend,
+        };
+        KobetsuNyutai(args).then((result) => {
+          this.nyuuinbi = moment(
+            result.ngsymd + '00:00:00',
+            'YYYY-MM-DD'
+          ).format('YYYY-MM-DD');
+          this.byouinName = result.byoinname;
+          this.nyuuinbiShiseturiyo = '';
+          this.nyuuinbiBreakfast = result.ssyoku1;
+          this.nyuuinbiLunch = result.ssyoku2;
+          this.nyuuinbiDinner = result.ssyoku3;
+          this.nyuuinbiAida = result.ssyoku4;
+          this.taiinbi = moment(
+            result.ngeymd + '00:00:00',
+            'YYYY-MM-DD'
+          ).format('YYYY-MM-DD');
+          this.taiinbiShiseturiyo = '';
+          this.taiinbiBreakfast = result.ssyoku1;
+          this.taiinbiLunch = result.ssyoku2;
+          this.taiinbiDinner = result.ssyoku3;
+          this.taiinbiAida = result.ssyoku4;
+        });
       }
-      this.nyuuinbiShiseturiyo = data ? data.nyuuinbiShiseturiyo : 0;
-      this.nyuuinbiBreakfast = data ? data.nyuuinbiBreakfast : 0;
-      this.nyuuinbiLunch = data ? data.nyuuinbiLunch : 0;
-      this.nyuuinbiDinner = data ? data.nyuuinbiDinner : 0;
-      this.taiinbiShiseturiyo = data ? data.taiinbiShiseturiyo : 0;
-      this.taiinbiBreakfast = data ? data.taiinbiBreakfast : 0;
-      this.taiinbiLunch = data ? data.taiinbiLunch : 0;
-      this.taiinbiDinner = data ? data.taiinbiDinner : 0;
-      this.taiinbiAida = data ? data.taiinbiAida : 0;
     },
   },
 };
