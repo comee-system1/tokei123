@@ -1,6 +1,26 @@
 <template>
   <div id="KeiyakuHokoku">
     <v-container fluid class="container pa-1">
+      <v-row no-gutters>
+        <v-btn-toggle
+          class="flex-wrap"
+          mandatory
+          v-model="buttonMenu"
+          @change="buttonMenusChange()"
+        >
+          <v-btn
+            small
+            color="secondary"
+            dark
+            outlined
+            style="width: 80px; height: 25px"
+            v-for="val in buttonMenus"
+            :key="val"
+          >
+            {{ val }}
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
       <v-row no-gutters class="mt-1">
         <v-col class="d-flex" cols="3">
           <v-row no-gutters class="d-block no-flex-grow mr-1">
@@ -315,6 +335,17 @@
 
     <v-dialog width="600" v-model="KeiyakuHokokuDialog">
       <v-card outlined tile id="KeiyakuHokokuDialog">
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="KeiyakuHokokuDialog = false"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
         <v-card-title class="pa-2"> 契約量登録 </v-card-title>
         <v-row no-gutters class="ma-2">
           <v-col cols="2"><label class="w">利用者名</label></v-col>
@@ -475,11 +506,8 @@ export default {
     return {
       KeiyakuHokokuDialog: false,
       year: moment().year(),
-      tabMenus: [
-        { href: '#amount', text: '契約量登録' },
-        { href: '#finish', text: '終了登録' },
-        { href: '#list', text: '一覧参照' },
-      ],
+      buttonMenus: ['契約量登録', '終了登録'],
+      buttonMenu: 0,
       jyukyuSyaSyo: ['障害者', '障害児', '地域相談'],
       jyukyuPrint: ['一覧', '契約報告書'],
       toggleSort: ['カナ', 'コード', '受給者番号'],
@@ -564,7 +592,10 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh; width:100%;';
     },
-
+    /***************************
+     * 登録パターンボタン
+     */
+    buttonMenusChange() {},
     /************
      * アルファベットの絞り込み
      */
