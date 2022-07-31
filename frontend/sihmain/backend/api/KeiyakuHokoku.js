@@ -38,8 +38,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           jigyoname: '東経ヘルパーセンター',
           lcnt: 1,
           ryokyk: '16:00/月',
-          symd: 'R03/04/01'
-        }, ]
+          symd: 'R03/04/01',
+          riyu: '1:新規契約',
+          teikyonaiyo: '8:00',
+        },]
       }, {
         svcsyucode: '11',
         svcsyocode: '10002',
@@ -49,21 +51,23 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
         sumi: '',
         syuryo: '',
         ktkkeiyakunew_inf: [{
-            jigyono: '10001',
-            jigyoname: '東経ヘルパーセンター',
-            lcnt: 2,
-            ryokyk: '10:00/月',
-            symd: 'R03/04/01'
+          jigyono: '10001',
+          jigyoname: '東経ヘルパーセンター',
+          lcnt: 2,
+          ryokyk: '10:00/月',
+          symd: 'R03/04/01',
+          riyu: '2:契約の変更',
 
-          },
-          {
-            jigyono: '10001',
-            jigyoname: '東経ヘルパーセンター',
-            lcnt: 3,
-            ryokyk: '15:00/月',
-            symd: 'R03/04/01'
-
-          }
+        },
+        {
+          jigyono: '10001',
+          jigyoname: '東経ヘルパーセンター',
+          lcnt: 3,
+          ryokyk: '15:00/月',
+          symd: 'R03/04/01',
+          eymd: 'R03/04/01',
+          riyu: '1:新規契約',
+        }
         ]
       }, {
         svcsyucode: '22',
@@ -77,9 +81,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           jigyoname: '障害支援施設たんぽぽ園',
           lcnt: 1,
           ryokyk: '当該月日数-8日',
-          symd: 'R03/04/01'
+          symd: 'R03/04/01',
+          riyu: '1:新規契約',
 
-        }, ]
+        },]
       }, {
         svcsyucode: '24',
         svcname: '短期入所',
@@ -89,9 +94,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
         syuryo: '',
         ktkkeiyakunew_inf: [{
           jigyono: '10002',
-          jigyoname: '障害支援施設たんぽぽ園'
+          jigyoname: '障害支援施設たんぽぽ園',
+          riyu: '1:新規契約',
 
-        }, ]
+        },]
       }]
 
     }, {
@@ -111,9 +117,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           jigyoname: '東経ヘルパーセンター',
           lcnt: 1,
           ryokyk: '13:00/月',
-          symd: 'R03/04/02'
+          symd: 'R03/04/02',
+          riyu: '1:新規契約',
 
-        }, ]
+        },]
       }, {
         svcsyucode: '22',
         svcname: '生活介護',
@@ -127,9 +134,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           lcnt: 2,
           ryokyk: '当該月日数-8日',
           symd: 'R03/04/02',
-          eymd: 'R03/04/02'
+          eymd: 'R03/04/02',
+          riyu: '1:新規契約',
 
-        }, ]
+        },]
       }, {
         svcsyucode: '45',
         svcname: '就労継続支援A型',
@@ -142,9 +150,10 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           jigyoname: '障害支援施設たんぽぽ園',
           lcnt: 3,
           ryokyk: '当該月日数-8日',
-          symd: 'R03/04/02'
+          symd: 'R03/04/02',
+          riyu: '1:新規契約',
 
-        }, ]
+        },]
       }, {
         svcsyucode: '52',
         svcname: '計画相談支援',
@@ -155,7 +164,7 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
         ktkkeiyakunew_inf: [{
           jigyono: '10003',
           jigyoname: '相談支援センターひなぎく',
-        }, ]
+        },]
       }]
     }, {
       jyukyuno: 10000003,
@@ -169,6 +178,8 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
         jyukyuid: 3,
         sumi: '',
         syuryo: '',
+        riyu: '1:新規契約',
+
       }]
     });
     //　配列の補正
@@ -190,12 +201,18 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
           let lcnt = "";
           let ryokyk = "";
           let symd = "";
+          let eymd = "";
+          let riyu = "";
+          let teikyonaiyo = "";
           if (array[i].sikyuryo_inf[j].ktkkeiyakunew_inf) {
             ktkkeiyakunew_inf = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k];
             jigyoname = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].jigyoname;
             lcnt = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].lcnt;
             ryokyk = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].ryokyk;
             symd = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].symd;
+            eymd = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].eymd;
+            riyu = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].riyu;
+            teikyonaiyo = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].teikyonaiyo;
           }
           icrn_inf.push({
             riyocode: array[i].riyocode,
@@ -212,7 +229,9 @@ export async function KeiyakuHokoku(riyocode = 0, svcsyocode = 0) {
             lcnt: lcnt,
             ryokyk: ryokyk,
             symd: symd,
-
+            eymd: eymd,
+            riyu: riyu,
+            teikyonaiyo: teikyonaiyo,
           });
         }
       }

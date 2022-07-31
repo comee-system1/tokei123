@@ -466,6 +466,27 @@
           </v-col>
         </v-row>
         <v-row no-gutters class="ma-2 mt-n1">
+          <v-col cols="2"><label class="w">提供終了日</label></v-col>
+          <v-col cols="2" class="ml-1">
+            <datepicker
+              :language="ja"
+              :format="DatePickerFormat"
+              class="input_picker"
+            ></datepicker>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="ma-2 mt-n1">
+          <v-col cols="2"><label class="w">既提供量</label></v-col>
+          <v-col cols="2" class="ml-1">
+            <v-text-field
+              outlined
+              dense
+              class="inputs rounded-0"
+              hide-details="false"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="ma-2 mt-n1">
           <v-col cols="2"><label class="w">理由</label></v-col>
           <v-col cols="2" class="ml-1">
             <wj-menu
@@ -556,6 +577,10 @@ export default {
           key: '10001',
           text: '1:新規契約',
         },
+        {
+          key: '10002',
+          text: '2:契約の変更',
+        },
       ], // 理由
       jigyosyoSelected: -1,
       serviceSelected: -1,
@@ -632,11 +657,17 @@ export default {
             e.col == 3 ||
             e.col == 4 ||
             e.col == 5 ||
-            e.col == 7
+            e.col == 7 ||
+            e.col == 10
           ) {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
+          }
+          if (e.col == 11) {
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
           }
 
           if (e.col == 12) {
