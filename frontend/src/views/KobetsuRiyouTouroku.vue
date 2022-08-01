@@ -270,6 +270,7 @@ export default {
                 _self.viewdata[ht.row]
               )[0];
               _self.viewdata[ht.row]['kei'] = calc(_self.viewdata[ht.row])[1];
+              _self.alertMessageFlag = true;
             }
           }
           flexGrid.refresh();

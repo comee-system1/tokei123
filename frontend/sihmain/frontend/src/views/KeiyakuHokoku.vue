@@ -418,18 +418,16 @@
               v-model="input.jigyono"
             ></v-text-field>
           </v-col>
-          <v-col cols="4">
-            <wj-menu
-              class="w-100 customCombobox"
-              :isRequired="true"
-              header="指定なし"
-              :displayMemberPath="'text'"
-              selectedValuePath="'key'"
-              :itemsSource="jigyosyoCombo"
-              :itemClicked="onselectedJigyosyoInput"
+          <v-col cols="6">
+            <v-select
+              :items="jigyosyoCombo"
+              dense
+              outlined
+              height="25"
+              class="pa-0 selectCombobox rounded-0"
+              hide-details="false"
               v-model="input.jigyoname"
-              thin
-            ></wj-menu>
+            ></v-select>
           </v-col>
         </v-row>
         <v-row no-gutters class="ma-2 mt-n1">
@@ -461,21 +459,21 @@
             <datepicker
               :language="ja"
               :format="DatePickerFormat"
-              class="input_picker"
+              class="input_picker rounded-0"
             ></datepicker>
           </v-col>
         </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
+        <v-row no-gutters class="ma-2 mt-n1" v-if="this.buttonMenu == 1">
           <v-col cols="2"><label class="w">提供終了日</label></v-col>
           <v-col cols="2" class="ml-1">
             <datepicker
               :language="ja"
               :format="DatePickerFormat"
-              class="input_picker"
+              class="input_picker rounded-0"
             ></datepicker>
           </v-col>
         </v-row>
-        <v-row no-gutters class="ma-2 mt-n1">
+        <v-row no-gutters class="ma-2 mt-n1" v-if="this.buttonMenu == 1">
           <v-col cols="2"><label class="w">既提供量</label></v-col>
           <v-col cols="2" class="ml-1">
             <v-text-field
@@ -489,15 +487,17 @@
         <v-row no-gutters class="ma-2 mt-n1">
           <v-col cols="2"><label class="w">理由</label></v-col>
           <v-col cols="2" class="ml-1">
-            <wj-menu
-              class="w-100 customCombobox"
-              :isRequired="true"
+            <v-select
+              :items="reasonCombo"
+              dense
+              outlined
+              height="25"
               :displayMemberPath="'text'"
               selectedValuePath="'key'"
-              :itemsSource="reasonCombo"
-              :itemClicked="onselectedReasonChanged"
-              thin
-            ></wj-menu>
+              class="pa-0 selectCombobox w-100 rounded-0"
+              hide-details="false"
+              v-model="input.riyu"
+            ></v-select>
           </v-col>
         </v-row>
         <v-row no-gutters class="ma-2 mt-15">
@@ -505,7 +505,9 @@
           <v-col cols="6" class="text-center mt-2">
             最終登録者：R03/08/04 10:38 明治 雅夫
           </v-col>
-          <v-col cols="3" class="text-end"><v-btn>登録</v-btn></v-col>
+          <v-col cols="3" class="text-end"
+            ><v-btn @click="registed">登録</v-btn></v-col
+          >
         </v-row>
       </v-card>
     </v-dialog>
@@ -521,6 +523,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
+import { postConnect } from '@connect/postConnect';
 
 export default {
   data() {
@@ -587,12 +590,16 @@ export default {
       DatePickerFormat: 'yyyy年MM月dd日',
       ja: ja,
       input: {
+        riid: '', // 利用者内部ID
+        riyokyk: '', // 契約支給量 number
+        svcsyucode: '', // サービス種類
         riyocode: '',
         rnames: '',
         svcname: '',
         sikyunaiyo: '',
         jigyono: '',
         jigyoname: '',
+        riyu: '',
       },
       toggle_print: '',
     };
@@ -617,10 +624,7 @@ export default {
       }
       this.gridHeight = 'height:' + ht + 'vh; width:100%;';
     },
-    /***************************
-     * 登録パターンボタン
-     */
-    buttonMenusChange() {},
+
     /************
      * アルファベットの絞り込み
      */
@@ -695,6 +699,26 @@ export default {
           });
         }
       });
+    },
+
+    /*************************
+     * 登録ボタンを押下
+     */
+    registed() {
+      console.log(this.input);
+      let uniqid = 1; // 現在は1のみapiが実行する
+      let traceid = 123;
+
+      postConnect(this.$route.path, uniqid, traceid).then((result) => {
+        console.log('getData1234');
+        console.log(result);
+        this.getData(result);
+        this.settingFooterData(flexGrid, result);
+      });
+      //     input: {
+      // riid: '', // 利用者内部ID
+      // riyokyk: '', // 契約支給量 number
+      // svcsyucode: '', // サービス種類
     },
     // 配列のグループ化
     groupping(xs, key) {
@@ -822,19 +846,7 @@ export default {
       }
       this.filtered();
     },
-    onselectedJigyosyoInput(e) {
-      if (e.selectedIndex != -1) {
-        e.header = e.text;
-      }
-    },
-    /********************************
-     * 理由選択
-     */
-    onselectedReasonChanged(e) {
-      if (e.selectedIndex != -1) {
-        e.header = e.text;
-      }
-    },
+
     /********************************
      * サービス選択
      */
@@ -1001,5 +1013,22 @@ div#KeiyakuHokoku {
     width: 240px !important;
     border-radius: 0px !important;
   }
+  .selectCombobox {
+    max-width: 300px;
+    height: 25px;
+    font-size: 11px;
+    width: 300px;
+    border-bottom: 1px solid #bbb;
+    div.v-input__slot {
+      min-height: 25px;
+      div.v-input__append-inner {
+        margin-top: 0px;
+      }
+    }
+  }
 }
+// .v-list-item {
+//   min-height: 25px !important;
+//   font-size: 12px !important;
+// }
 </style>
