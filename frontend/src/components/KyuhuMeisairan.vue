@@ -125,85 +125,11 @@ export default {
     return {
       year: moment().year(),
       month: moment().format('MM'),
-      servicesyubetuGridData:this.getServiceSyubetuGridData(),
       gridList: [],
       tplImage: CellMaker.makeImage({}),
     };
   },
   methods: {
-    onInitializedServicessyubetuGrid:function(flexGrid){
-      // サービス種別の配列数を算出
-      let syubetuCount;
-      syubetuCount = getSyubetuData().length;
-      
-      // グリッドの選択を無効にする
-      flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
-      // セルの結合/////////////////////////////////////////////////////////////////
-      let mm = new wjGrid.MergeManager(flexGrid);
-      // 結合するセルの範囲を指定
-      let cellRanges = [
-        new wjGrid.CellRange(0,0,syubetuCount - 1,0),
-      ];
-      // getMergedRangeメソッドをオーバーライドする
-      mm.getMergedRange = function(panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < cellRanges.length; h++) {
-            if (cellRanges[h].contains(r, c)) {
-              return cellRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-
-       // グリッドのスタイルをカスタマイズ
-      flexGrid.itemFormatter = function(panel,r,c,cell){
-        // グリッド内共通スタイル
-        let s = cell.style;
-        s.textAlign = 'center';
-        s.fontWeight = "normal";
-        s.backgroundColor = sysConst.COLOR.selectedColor;
-        if(c == 1 || c == 3 || c == 5 ||  c == 7 ||  c == 9){
-          s.backgroundColor = sysConst.COLOR.gridBackground;
-        }
-        if(c == 2){
-          cell.innerHTML = '開始年月日';
-        }
-        if(c == 4){
-          cell.innerHTML = '終了年月日';
-        }
-        if(c == 6){
-          cell.innerHTML = '利用日数';
-        }
-        if(c == 8){
-          cell.innerHTML = '入院人数';
-        }
-        // セルと大枠の罫線が重複してしまうのでセルの罫線を消す
-        if(c == 9){
-           s.borderRight = 'none'
-        }
-      }
-    },
-    getServiceSyubetuGridData:function(){
-      let servicesyubetuGridData = [];
-      if (this.$parent.$data.gridReloadFlag == false) {
-        // 初回空データ表示
-        for (let f = 0; f < 3; f++) {
-          servicesyubetuGridData.push({
-            serviceNo:         "",
-            kaisiYmd:          "",
-            syuryoYmd:         "",
-            riyouNissuu:       "",
-            nyuinNissuu:       ""
-          });
-        }
-      } else {
-        // 挿入したサービス種別データをservicesyubetuGridDataに代入
-        servicesyubetuGridData = getSyubetuData()
-      }
-      return servicesyubetuGridData;
-    },
     getMeisairanDataData: function () {
       let meisairanData = [];
       if (this.$parent.$data.gridReloadFlag == false) {
@@ -316,56 +242,11 @@ export default {
     },
     // ユーザークリック時データを再読み込み
     reloadMeisairanMethod:function() {
-      // 利用者負担上限額グリッド
-      // this.riyousyahutanGridData = this.getRiyousyahutanGridData();
-      // サービス種別グリッド
-      this.servicesyubetuGridData = this.getServiceSyubetuGridData();
       // 給付明細欄グリッド
       this.gridList.itemsSource  = this.getMeisairanDataData();
     }
   },
 };
-
-/**************
- * 
- *サービス種別データを設定
- */
-
-function getSyubetuData() {
-  
-  let syubetuData = [];
-  syubetuData.push(
-    {
-      uid: 1,
-      serviceNo:        "22",
-      kaisiYmd:         "2022年3月23日",
-      syuryoYmd:         "",
-      riyouNissuu:       "31",
-      nyuinNissuu:       "",
-    },
-    {
-      uid: 2,
-      serviceNo:        "32",
-      kaisiYmd:         "2022年3月23日",
-      syuryoYmd:         "",
-      riyouNissuu:       "31",
-      nyuinNissuu:       "",
-    }
-  )
-  // データが３未満だった場合空の行を追加
-  if (syubetuData.length < 3) {
-    for (let f = 0; syubetuData.length < 3; f++) {
-      syubetuData.push({
-        serviceNo:        "",
-        kaisiYmd:         "",
-        syuryoYmd:         "",
-        riyouNissuu:       "",
-        nyuinNissuu:       ""
-      });
-    }
-  }
-  return syubetuData;
-}
 
 /**************
  * 

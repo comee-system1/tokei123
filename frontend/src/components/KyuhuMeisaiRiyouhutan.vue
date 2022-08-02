@@ -23,7 +23,8 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      syogaiShienFlag: true,
+      genmenTaisyosyFlag:false,
+      syogaiShienFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -61,9 +62,8 @@ export default {
       // 結合するセルの範囲を指定
       let cellRanges = [
         new wjGrid.CellRange(0, 7, 0, 16),
-        new wjGrid.CellRange(0, 17, 0, 21),
-        new wjGrid.CellRange(0, 22, 0, 24),
-        new wjGrid.CellRange(0, 25, 0, 27),
+        new wjGrid.CellRange(0, 17, 0, 19),
+        new wjGrid.CellRange(0, 20, 0, 27),
         new wjGrid.CellRange(1, 0, 1, 6),
         new wjGrid.CellRange(1, 17, 1, 19),
         new wjGrid.CellRange(1, 20, 1, 21),
@@ -131,13 +131,16 @@ export default {
         if (panel.cellType == wjGrid.CellType.Cell) {
           s.backgroundColor = sysConst.COLOR.gridBackground;
           // 疑似ヘッダーを作成
-          if ((r == 0) && (c == 7)) {
-            cell.innerHTML = '<div class="riyouhutan-header">就労継続支援Ａ型事業者負担減免対象者</div>';
-            s.backgroundColor = sysConst.COLOR.selectedColor;
-          }
-          if ((r == 0) && (c == 20)) {
-            cell.innerHTML = '<div class="riyouhutan-header">障害支援区分</div>';
-            s.backgroundColor = sysConst.COLOR.selectedColor;
+          if (_self.syogaiShienFlag) {
+            if ((r == 0) && (c == 7)) {
+              cell.innerHTML = '<div class="riyouhutan-header">障害支援区分</div>';
+              s.backgroundColor = sysConst.COLOR.selectedColor;
+            }
+          } else {
+            if ((r == 0) && (c == 7)) {
+              cell.innerHTML = '<div class="riyouhutan-header">就労継続支援Ａ型事業者負担減免対象者</div>';
+              s.backgroundColor = sysConst.COLOR.selectedColor;
+            }
           }
           if ((r == 1) && (c == 0)) {
             cell.innerHTML = '<div class="riyouhutan-header">指定事業所番号</div>';
@@ -163,32 +166,40 @@ export default {
           if ((r == 2) && (c == 7)) {
             s.borderRadius = '0 0 4px 0';
           }
-          if (_self.syogaiShienFlag) {
-            if ((r == 0) && (c == 22)) {
-              // 障害支援FlagがTRUEの場合
-              cell.innerHTML = '<div class="riyouhutan-header">障害支援区分</div>';
-              s.backgroundColor = sysConst.COLOR.selectedColor;
-            }
-            // borderRadiusを修正
-            if ((r == 0) && (c == 25)) {
-              s.borderRadius = '0 4px 0 0';
-            }
-          } else {
-            // 障害支援FlagがFALSEの場合
-            for (let i = 22; i < 28; i++) {
+          if ((r == 1) && (c == 25)) {
+            s.borderRadius = '0 4px 0 0';
+          }
+          if(_self.genmenTaisyosyFlag) {
+            // 就労継続支援A型事業者負担減免措置実施のセルを（0, 7, 0, 16）表示時のデザイン
+            for (let i = 20; i < 28; i++) {
               if ((r == 0) && (c == i)) {
-                // 障害支援を非表示
+                // 不要なセルを非表示
                 cell.style.display = 'none';
               }
-            }
-            // borderRadiusを修正
-            if ((r == 0) && (c == 17)) {
-              s.borderRadius = '0 4px 0 0';
             }
             if ((r == 1) && (c == 25)) {
               s.borderRadius = '0 4px 0 0';
             }
-            for (let i = 22; i < 28; i++) {
+            for (let i = 20; i < 28; i++) {
+              if ((r == 1) && (c == i)) {
+                // 2行目線上部を補填、高さ調整
+                s.borderTop = '1px solid rgba(0,0,0,.2)';
+                s.height = '20px';
+                s.top = '18px';
+              }
+            }
+          } else{
+            for (let i = 7; i < 28; i++) {
+              if ((r == 0) && (c == i)) {
+                // 不要なセルを非表示（就労継続支援A型事業者負担減免措置実施が非表示時）
+                cell.style.display = 'none';
+              }
+            }
+            // borderRadiusを修正
+            if ((r == 0) && (c == 6)) {
+              s.borderRadius = '0 4px 0 0';
+            }
+            for (let i = 7; i < 28; i++) {
               if ((r == 1) && (c == i)) {
                 // 2行目線上部を補填、高さ調整
                 s.borderTop = '1px solid rgba(0,0,0,.2)';
@@ -217,11 +228,13 @@ export default {
         this.mainFlexGrid.setCellData(0, i, riyouhutangakuSplit[l-1]);
         l--;
       }
-      // 就労継続支援Ａ型事業者負担減免対象者
-      this.mainFlexGrid.setCellData(0, 17, riyousyaHutanData['kinroukeizokushien']);
+      if (this.genmenTaisyosyFlag && this.syogaiShienFlag === false) {
+        // 就労継続支援Ａ型事業者負担減免対象者
+        this.mainFlexGrid.setCellData(0, 17, riyousyaHutanData['kinroukeizokushien']);
+      }
 
       // 障害支援区分
-      if (this.syogaiShienFlag) {
+      if (this.genmenTaisyosyFlag && this.syogaiShienFlag) {
         this.mainFlexGrid.setCellData(0, 25, riyousyaHutanData['kinroukeizokushien']);
       }
 
@@ -229,7 +242,6 @@ export default {
       let jigyosyoBangoSplit = [];
       jigyosyoBangoSplit = riyousyaHutanData['jigyosyobango'].split('');
       for (let i = 0; i <jigyosyoBangoSplit.length; i++) {
-        console.log(jigyosyoBangoSplit[i])
         this.mainFlexGrid.setCellData(1, i + 7, jigyosyoBangoSplit[i]);
       }
     }

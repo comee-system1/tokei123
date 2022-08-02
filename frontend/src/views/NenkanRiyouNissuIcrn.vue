@@ -391,7 +391,11 @@ export default {
       this.createHeaderMerge(flexGrid);
       let uniqid = 1; // 現在は1のみapiが実行する
       let traceid = 123;
-      getConnect(this.$route.path, uniqid, traceid).then((result) => {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+      };
+      getConnect(this.$route.path, params).then((result) => {
         console.log('getData1234');
         console.log(result);
         this.getData(result);

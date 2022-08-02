@@ -22,15 +22,11 @@
           <v-row no-gutters class="mb-1">
             <v-col>
               <v-row no-gutters class="mb-1">
-                <kyuhu-meisai-jyukyusya
-                  ref="jyukyusyaData"
-                >
+                <kyuhu-meisai-jyukyusya ref="jyukyusyaData">
                 </kyuhu-meisai-jyukyusya>
               </v-row>
               <v-row no-gutters>
-                <kyuhu-meisai-jigyosyo
-                  ref="jigyosyoData"
-                >
+                <kyuhu-meisai-jigyosyo ref="jigyosyoData">
                 </kyuhu-meisai-jigyosyo>
               </v-row>
             </v-col>
@@ -39,16 +35,11 @@
                 <div class="confirmTitle mb-1 white--text">
                   確定済:2021.08.08 14:19 (担当者:大正 雅夫)
                 </div>
-                <kyuhu-meisai-shityoson
-                ref="shityosonData"
-                >
+                <kyuhu-meisai-shityoson ref="shityosonData">
                 </kyuhu-meisai-shityoson>
               </v-row>
               <v-row no-gutters class="no-flex-grow justify-end">
-                <kyuhu-meisai-kubun
-                ref="kubunData"
-                >
-                </kyuhu-meisai-kubun>
+                <kyuhu-meisai-kubun ref="kubunData"> </kyuhu-meisai-kubun>
               </v-row>
             </v-col>
           </v-row>
@@ -58,22 +49,19 @@
           ></common-tab-menu>
           <v-row no-gutters v-if="ServiceMeisaiFlag">
             <v-col>
-              <kyuhu-meisai-riyouhutan
-              ref="riyousyaHutanData"
-              class="mt-1"
-              >
+              <kyuhu-meisai-riyouhutan ref="riyousyaHutanData" class="mt-1">
               </kyuhu-meisai-riyouhutan>
-              <kyuhu-meisai-service
-              ref="serviceData"
-              class="mt-1"
-              >
+              <kyuhu-meisai-service ref="serviceData" class="mt-1">
               </kyuhu-meisai-service>
-              <kyuhu-meisairan ref="reloadMeisairan"></kyuhu-meisairan>
+              <kyuhu-meisai-list ref="meisaiListData" class="mt-1">
+              </kyuhu-meisai-list>
+              <!-- <kyuhu-meisairan ref="reloadMeisairan"></kyuhu-meisairan> -->
             </v-col>
           </v-row>
           <v-row no-gutters v-if="SeikyugakuSyukeiFlag">
             <v-col>
-              <kyuhu-seikyugaku ref="reloadSeikyugaku"></kyuhu-seikyugaku>
+              <!-- <kyuhu-seikyugaku ref="reloadSeikyugaku"></kyuhu-seikyugaku> -->
+              <kyuhu-meisai-seikyugaku class="mt-1"> </kyuhu-meisai-seikyugaku>
             </v-col>
           </v-row>
         </v-col>
@@ -93,8 +81,9 @@ import KyuhuMeisaiJigyosyo from '../components/KyuhuMeisaiJigyosyo.vue';
 import KyuhuMeisaiKubun from '../components/KyuhuMeisaiKubun.vue';
 import KyuhuMeisaiRiyouhutan from '../components/KyuhuMeisaiRiyouhutan.vue';
 import KyuhuMeisaiService from '../components/KyuhuMeisaiService.vue';
-import KyuhuMeisairan from '../components/KyuhuMeisairan.vue';
-import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
+import KyuhuMeisaiList from '../components/KyuhuMeisaiList.vue';
+// import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
+import KyuhuMeisaiSeikyugaku from '../components/KyuhuMeisaiSeikyugaku.vue';
 // import sysConst from '@/utiles/const';
 
 export default {
@@ -108,24 +97,68 @@ export default {
     KyuhuMeisaiKubun,
     KyuhuMeisaiRiyouhutan,
     KyuhuMeisaiService,
-    KyuhuMeisairan,
-    KyuhuSeikyugaku,
+    KyuhuMeisaiList,
+    KyuhuMeisaiSeikyugaku,
+    // KyuhuSeikyugaku,
   },
   data() {
     return {
       userListData: [], // 利用者一覧表示データ
       selectedRow: '', // 利用者一覧の選択行
       serviceArgument: '', // ヘッダメニューのサービス選択
-      selectedJigyosyo: [{ serviceJigyo: '', jimusyoBango: '', teikyoCode: '' }], // 選択された事業所
-      gridReloadFlag: false,
+      selectedJigyosyo: [
+        { serviceJigyo: '', jimusyoBango: '', teikyoCode: '' },
+      ], // 選択された事業所
       dateArgument: '',
       searchArgument: '',
       // タブの制御Flag
-      ServiceMeisaiFlag: true, // ServiceMeisaiFlagの初期表示状態
-      SeikyugakuSyukeiFlag: false, // seikyugakuSyukeiFlagの初期表示状態
+      ServiceMeisaiFlag: false, // ServiceMeisaiFlagの初期表示状態
+      SeikyugakuSyukeiFlag: true, // seikyugakuSyukeiFlagの初期表示状態
       tabmenus: [
         { href: '#ServiceMeisai', text: 'サービス明細欄' },
         { href: '#SeikyugakuSyukei', text: '請求額集計欄' },
+      ],
+      // Gridの表示Flag
+      riyousyaHutanGridFlag: false,
+      serviceGridFlag: false,
+      seikyugakuGridFlag: false,
+      tokuteiSyogaiGrid: false,
+      // タブの表示フラグ（請求額非表示）
+      seikyugakuTabFlag: false,
+      // Grid内データの表示、変更Flag
+      // 受給者Grid
+      jyukyusyaHeader: [
+        {
+          shimeiHeader: '',
+          syogaijiFlag: false,
+          syogaijiShimeiHeader: '',
+        },
+      ],
+      // 事業所Grid
+      jigyosyoBangoHeader: '',
+      // 市町村Grid
+      shityosonHeader: [
+        {
+          bangouHeader: '',
+          jyoseijichitaiFlag: false, //助成自治体番号表示Flag
+        },
+      ],
+      // 区分Grid
+      genmensotiFlag: false, // 就労継続支援A型事業者負担減免措置実施表示Flag
+      // 利用者負担Grid
+      riyouhutanHeader: [
+        {
+          genmenTaisyosyFlag: false, //就労継続支援A型減免対象者or障害支援区分表示Flag
+          genmenTaisyosyaHeader: '',
+        },
+      ],
+      // 利用者負担Grid
+      seikyugakuHeader: [
+        {
+          agataGenmenFlag: false, //A型減免表示Flag
+          kougakusyogaiFlag: false,
+          kougakusyogaiHeader: '', //高額障害福祉サービス費or高額障害児通所給付費
+        },
       ],
     };
   },
@@ -139,21 +172,21 @@ export default {
       // 各子コンポーネントに選択したユーザーデータを送る
       // （選択したユーザーデータから取得、ヘッダーから取得、別途APIで取得）
       // 受給者Grid
-      this.$refs.jyukyusyaData.setJyukyusyaData(this.userListComponentDatas[row]);
+      this.$refs.jyukyusyaData.setJyukyusyaData(
+        this.userListComponentDatas[row]
+      );
 
       // 市町村Grid
-      this.$refs.shityosonData.setShityosonData(this.userListComponentDatas[row]);
+      this.$refs.shityosonData.setShityosonData(
+        this.userListComponentDatas[row]
+      );
 
       // 事業所Grid (ヘッダー選択情報から取得)
       this.$refs.jigyosyoData.setJigyosyoData(this.selectedJigyosyo);
 
+      // APIからデータを取得
       this.getApiData();
 
-      // ユーザー選択時、他のグリッドを再読み込み
-      this.gridReloadFlag = true;
-      if (this.ServiceMeisaiFlag == true) {
-        this.$refs.reloadMeisairan.reloadMeisairanMethod();
-      }
       if (this.SeikyugakuSyukeiFlag == true) {
         this.$refs.reloadSeikyugaku.reloadSeikyugakuMethod();
       }
@@ -163,59 +196,64 @@ export default {
      */
     getApiData() {
       // 区分Grid (仮データ)
-      let kubun = {tiikikubun:'1 級地',kinroukeizokushien:'1 :無'};
+      let kubun = { tiikikubun: '1 級地', kinroukeizokushien: '1 :無' };
       this.$refs.kubunData.setKubunData(kubun);
 
-      // 利用者負担Grid (仮データ)
-      let riyousyaHutan =
-      {
-        jyogengaku1:        '9300',           // 利用者負担上限月額①
-        kinroukeizokushien: '1 :無',          // 就労継続支援Ａ型事業者負担減免対象者
-        syogaishien:        '1 :無',          // 障害支援区分
-        jigyosyobango:      '1234567890',     // 指定事業所番号
-        kanrikekka:         '',               // 管理結果
-        kanrikekkagaku:     '',               // 管理結果額
-        jigyosyoname:       '',               // 事業所名
-      };
-      this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
+      if (this.ServiceMeisaiFlag == true) {
+        // サービス明細欄タブアクティブの場合
+        // 利用者負担Grid (仮データ)
+        let riyousyaHutan = {
+          jyogengaku1: '9300', // 利用者負担上限月額①
+          kinroukeizokushien: '1 :無', // 就労継続支援Ａ型事業者負担減免対象者
+          syogaishien: '1 :無', // 障害支援区分
+          jigyosyobango: '1234567890', // 指定事業所番号
+          kanrikekka: '', // 管理結果
+          kanrikekkagaku: '', // 管理結果額
+          jigyosyoname: '', // 事業所名
+        };
+        this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
 
-      // サービス種別 (仮データ)
-      let serviceData = [];
-      serviceData.push(
-        {
-          uid: 1,
-          serviceNo:         "22",
-          sYmd:              "2022/04/01",
-          eYmd:              "2022/08/01",
-          riyouNissuu:       "31",
-          nyuinNissuu:       "",
-        },
-        {
-          uid: 2,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/01",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        },
-        {
-          uid: 3,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/03",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        },
-        {
-          uid: 4,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/03",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        }
-      )
-      this.$refs.serviceData.setServiceData(serviceData);
+        // サービス種別 (仮データ)
+        let serviceData = [];
+        serviceData.push(
+          {
+            uid: 1,
+            serviceNo: '22',
+            sYmd: '2022/04/01',
+            eYmd: '2022/08/01',
+            riyouNissuu: '31',
+            nyuinNissuu: '',
+          },
+          {
+            uid: 2,
+            serviceNo: '32',
+            sYmd: '2022/04/01',
+            eYmd: '2022/08/01',
+            riyouNissuu: '31',
+            nyuinNissuu: '',
+          },
+          {
+            uid: 3,
+            serviceNo: '32',
+            sYmd: '2022/04/01',
+            eYmd: '2022/08/03',
+            riyouNissuu: '31',
+            nyuinNissuu: '',
+          },
+          {
+            uid: 4,
+            serviceNo: '32',
+            sYmd: '2022/04/01',
+            eYmd: '2022/08/03',
+            riyouNissuu: '31',
+            nyuinNissuu: '',
+          }
+        );
+        this.$refs.serviceData.setServiceData(serviceData);
+
+        // 明細リストGrid
+        this.$refs.meisaiListData.getMeisaiListData();
+      }
     },
     /***************
      * ヘッダメニューのサービスを選択時

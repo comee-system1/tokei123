@@ -518,12 +518,15 @@
 import moment from 'moment';
 import TabMenuBlue from '@/components/TabMenuBlue.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-import { KeiyakuHokoku } from '@backend/api/KeiyakuHokoku';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 import { postConnect } from '@connect/postConnect';
+import { getConnect } from '@connect/getConnect';
+
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
 
 export default {
   data() {
@@ -690,8 +693,8 @@ export default {
           // データの取得
           let riyocode = _self.keiyakuHokokuData[hPage.row].riyocode;
           let svcsyocode = _self.keiyakuHokokuData[hPage.row].svcsyocode;
+
           _self.getDataDetail(riyocode, svcsyocode).then((result) => {
-            console.log(result);
             _self.input.riyocode = result.riyocode;
             _self.input.rnames = result.rnames;
             _self.input.svcname = result.svcsyucode + ':' + result.svcname;
@@ -706,19 +709,20 @@ export default {
      */
     registed() {
       console.log(this.input);
-      let uniqid = 1; // 現在は1のみapiが実行する
-      let traceid = 123;
 
-      postConnect(this.$route.path, uniqid, traceid).then((result) => {
+      let params = {
+        code: 'POST',
+        uniqid: uniqid,
+        traceid: traceid,
+        inskbn: 0,
+      };
+
+      postConnect(this.$route.path, params).then((result) => {
         console.log('getData1234');
-        console.log(result);
-        this.getData(result);
-        this.settingFooterData(flexGrid, result);
+        // console.log(result);
+        // this.getData(result);
+        // this.settingFooterData(flexGrid, result);
       });
-      //     input: {
-      // riid: '', // 利用者内部ID
-      // riyokyk: '', // 契約支給量 number
-      // svcsyucode: '', // サービス種類
     },
     // 配列のグループ化
     groupping(xs, key) {
@@ -905,9 +909,12 @@ export default {
     async getData() {
       let keiyakuHokokuData = [];
 
-      return KeiyakuHokoku().then((result) => {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+      };
+      return getConnect(this.$route.path, params).then((result) => {
         keiyakuHokokuData = result.icrn_inf;
-
         return keiyakuHokokuData;
       });
     },
@@ -917,7 +924,14 @@ export default {
     async getDataDetail(riyocode, svcsyocode) {
       let keiyakuHokokuData = [];
 
-      return KeiyakuHokoku(riyocode, svcsyocode).then((result) => {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        riyocode: riyocode,
+        svcsyocode: svcsyocode,
+      };
+
+      return getConnect(this.$route.path, params).then((result) => {
         // 1件帰ってくる予定 テスト用に0番目のデータを指定
         keiyakuHokokuData = result.icrn_inf[0];
         return keiyakuHokokuData;
