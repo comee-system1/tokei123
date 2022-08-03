@@ -212,6 +212,12 @@ import '@grapecity/wijmo.vue2.core';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { CellMaker } from '@grapecity/wijmo.grid.cellmaker';
 import '@grapecity/wijmo.vue2.input';
+
+const MONI_DEFAULT = '';
+const MONI_KIKAN_MATU = '●';
+const MONI_TUKI = '○';
+const MONI_KIKAN_GAI = '-';
+
 export default {
   data() {
     return {
@@ -243,51 +249,52 @@ export default {
       monitoring: [
         {
           id: 1,
-          jan: '',
-          feb: '',
-          mar: '',
-          apr: '',
-          may: '',
-          jun: '',
-          jul: '',
-          aug: '',
-          sep: '',
-          oct: '',
-          nov: '',
-          dec: '',
+          jan: MONI_DEFAULT,
+          feb: MONI_DEFAULT,
+          mar: MONI_DEFAULT,
+          apr: MONI_DEFAULT,
+          may: MONI_DEFAULT,
+          jun: MONI_DEFAULT,
+          jul: MONI_DEFAULT,
+          aug: MONI_DEFAULT,
+          sep: MONI_DEFAULT,
+          oct: MONI_DEFAULT,
+          nov: MONI_DEFAULT,
+          dec: MONI_DEFAULT,
         },
         {
           id: 2,
-          jan: '',
-          feb: '',
-          mar: '',
-          apr: '',
-          may: '',
-          jun: '',
-          jul: '',
-          aug: '',
-          sep: '',
-          oct: '',
-          nov: '',
-          dec: '',
+          jan: MONI_DEFAULT,
+          feb: MONI_DEFAULT,
+          mar: MONI_DEFAULT,
+          apr: MONI_DEFAULT,
+          may: MONI_DEFAULT,
+          jun: MONI_DEFAULT,
+          jul: MONI_DEFAULT,
+          aug: MONI_DEFAULT,
+          sep: MONI_DEFAULT,
+          oct: MONI_DEFAULT,
+          nov: MONI_DEFAULT,
+          dec: MONI_DEFAULT,
         },
         {
           id: 3,
-          jan: '',
-          feb: '',
-          mar: '',
-          apr: '',
-          may: '',
-          jun: '',
-          jul: '',
-          aug: '',
-          sep: '',
-          oct: '',
-          nov: '',
-          dec: '',
+          jan: MONI_DEFAULT,
+          feb: MONI_DEFAULT,
+          mar: MONI_DEFAULT,
+          apr: MONI_DEFAULT,
+          may: MONI_DEFAULT,
+          jun: MONI_DEFAULT,
+          jul: MONI_DEFAULT,
+          aug: MONI_DEFAULT,
+          sep: MONI_DEFAULT,
+          oct: MONI_DEFAULT,
+          nov: MONI_DEFAULT,
+          dec: MONI_DEFAULT,
         },
       ],
-      putmarkMonth: [],
+      putmarkMonthYotei: [],
+      putmarkMonthJisseki: [],
 
       gridId: 0,
 
@@ -298,6 +305,7 @@ export default {
       rkeymd: null,
       monijiki: 0,
       tokuti: 0,
+      monilist: [],
     };
   },
   props: ['titleNum'],
@@ -310,13 +318,13 @@ export default {
   methods: {
     changeMode() {
       this.Resize();
-      return this.mode === 'modKeikakuSoudan';
+      return this.mode == 'modKeikakuSoudan';
     },
     Resize() {
       let height = '';
       let num = 0;
       let add = 0;
-      if (this.mode !== 'modKeikakuSoudan') {
+      if (this.mode != 'modKeikakuSoudan') {
         num = 13.1;
       } else {
         num = 14.1;
@@ -365,6 +373,7 @@ export default {
         }
         this.monijiki = data.monijiki;
         this.tokuti = data.tokuti;
+        this.monilist = data.skryoh3_moni2;
         this.isModify = true;
 
         this.clearmMonitoringAll();
@@ -383,23 +392,25 @@ export default {
       this.rkeymd = null;
       this.monijiki = 0;
       this.tokuti = 0;
+      this.monilist = [];
       this.clearmMonitoringAll();
     },
     clearmMonitoringAll() {
-      this.putmarkMonth = [];
+      this.putmarkMonthYotei = [];
+      this.putmarkMonthJisseki = [];
       for (let i = 0; i < this.monitoring.length; i++) {
-        this.monitoring[i].jan = '';
-        this.monitoring[i].feb = '';
-        this.monitoring[i].mar = '';
-        this.monitoring[i].apr = '';
-        this.monitoring[i].may = '';
-        this.monitoring[i].jun = '';
-        this.monitoring[i].jul = '';
-        this.monitoring[i].aug = '';
-        this.monitoring[i].sep = '';
-        this.monitoring[i].oct = '';
-        this.monitoring[i].nov = '';
-        this.monitoring[i].dec = '';
+        this.monitoring[i].jan = MONI_DEFAULT;
+        this.monitoring[i].feb = MONI_DEFAULT;
+        this.monitoring[i].mar = MONI_DEFAULT;
+        this.monitoring[i].apr = MONI_DEFAULT;
+        this.monitoring[i].may = MONI_DEFAULT;
+        this.monitoring[i].jun = MONI_DEFAULT;
+        this.monitoring[i].jul = MONI_DEFAULT;
+        this.monitoring[i].aug = MONI_DEFAULT;
+        this.monitoring[i].sep = MONI_DEFAULT;
+        this.monitoring[i].oct = MONI_DEFAULT;
+        this.monitoring[i].nov = MONI_DEFAULT;
+        this.monitoring[i].dec = MONI_DEFAULT;
 
         let flexGrid = wijmo.Control.getControl(
           '#gridMonitoringkikan' + String(i + 1)
@@ -409,52 +420,64 @@ export default {
     },
     clearmMonitoring(i) {
       this.monitoring[i].jan =
-        this.monitoring[i].jan === '-' || this.monitoring[i].jan === '●'
-          ? ''
+        this.monitoring[i].jan == MONI_KIKAN_GAI ||
+        this.monitoring[i].jan == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].jan;
       this.monitoring[i].feb =
-        this.monitoring[i].feb === '-' || this.monitoring[i].feb === '●'
-          ? ''
+        this.monitoring[i].feb == MONI_KIKAN_GAI ||
+        this.monitoring[i].feb == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].feb;
       this.monitoring[i].mar =
-        this.monitoring[i].mar === '-' || this.monitoring[i].mar === '●'
-          ? ''
+        this.monitoring[i].mar == MONI_KIKAN_GAI ||
+        this.monitoring[i].mar == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].mar;
       this.monitoring[i].apr =
-        this.monitoring[i].apr === '-' || this.monitoring[i].apr === '●'
-          ? ''
+        this.monitoring[i].apr == MONI_KIKAN_GAI ||
+        this.monitoring[i].apr == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].apr;
       this.monitoring[i].may =
-        this.monitoring[i].may === '-' || this.monitoring[i].may === '●'
-          ? ''
+        this.monitoring[i].may == MONI_KIKAN_GAI ||
+        this.monitoring[i].may == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].may;
       this.monitoring[i].jun =
-        this.monitoring[i].jun === '-' || this.monitoring[i].jun === '●'
-          ? ''
+        this.monitoring[i].jun == MONI_KIKAN_GAI ||
+        this.monitoring[i].jun == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].jun;
       this.monitoring[i].jul =
-        this.monitoring[i].jul === '-' || this.monitoring[i].jul === '●'
-          ? ''
+        this.monitoring[i].jul == MONI_KIKAN_GAI ||
+        this.monitoring[i].jul == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].jul;
       this.monitoring[i].aug =
-        this.monitoring[i].aug === '-' || this.monitoring[i].aug === '●'
-          ? ''
+        this.monitoring[i].aug == MONI_KIKAN_GAI ||
+        this.monitoring[i].aug == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].aug;
       this.monitoring[i].sep =
-        this.monitoring[i].sep === '-' || this.monitoring[i].sep === '●'
-          ? ''
+        this.monitoring[i].sep == MONI_KIKAN_GAI ||
+        this.monitoring[i].sep == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].sep;
       this.monitoring[i].oct =
-        this.monitoring[i].oct === '-' || this.monitoring[i].oct === '●'
-          ? ''
+        this.monitoring[i].oct == MONI_KIKAN_GAI ||
+        this.monitoring[i].oct == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].oct;
       this.monitoring[i].nov =
-        this.monitoring[i].nov === '-' || this.monitoring[i].nov === '●'
-          ? ''
+        this.monitoring[i].nov == MONI_KIKAN_GAI ||
+        this.monitoring[i].nov == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].nov;
       this.monitoring[i].dec =
-        this.monitoring[i].dec === '-' || this.monitoring[i].dec === '●'
-          ? ''
+        this.monitoring[i].dec == MONI_KIKAN_GAI ||
+        this.monitoring[i].dec == MONI_KIKAN_MATU
+          ? MONI_DEFAULT
           : this.monitoring[i].dec;
     },
     onInitializedMonitoringkikan(flexGrid) {
@@ -491,10 +514,10 @@ export default {
         if (panel.cellType == wjGrid.CellType.Cell && r == 0) {
           // グリッド内共通スタイル
           let s = cell.style;
-          if (cell.innerText === '-') {
+          if (cell.innerText == MONI_KIKAN_GAI) {
             s.backgroundColor = '#ccc';
           } else {
-            if (_self.putmarkMonth.length > 0) {
+            if (_self.putmarkMonthYotei.length > 0) {
               let header = _grid.columnHeaders;
               let y = header.getCellData(0, c, true);
               let m = header.getCellData(1, c, true);
@@ -506,7 +529,7 @@ export default {
                 m = m.replace('月', '');
               }
               ym = y + m.padStart(2, '0');
-              let yellow = _self.putmarkMonth.indexOf(ym) > -1;
+              let yellow = _self.putmarkMonthYotei.indexOf(ym) > -1;
               if (yellow) {
                 s.backgroundColor = 'ivory';
               } else {
@@ -531,45 +554,45 @@ export default {
           let header = flexGrid.columnHeaders;
           let m = header.getCellData(1, ht.col, true);
           m = m.replace('月', '');
-          if (flexGrid.getCellData(ht.row, ht.col) === '●') {
+          if (flexGrid.getCellData(ht.row, ht.col) == MONI_KIKAN_MATU) {
             alert('終期月は変更できません。');
-          } else if (flexGrid.getCellData(ht.row, ht.col) !== '-') {
+          } else if (flexGrid.getCellData(ht.row, ht.col) != MONI_KIKAN_GAI) {
             switch (Number(m) - 1) {
               case 0:
-                data.jan = data.jan.length > 0 ? '' : '○';
+                data.jan = data.jan.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 1:
-                data.feb = data.feb.length > 0 ? '' : '○';
+                data.feb = data.feb.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 2:
-                data.mar = data.mar.length > 0 ? '' : '○';
+                data.mar = data.mar.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 3:
-                data.apr = data.apr.length > 0 ? '' : '○';
+                data.apr = data.apr.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 4:
-                data.may = data.may.length > 0 ? '' : '○';
+                data.may = data.may.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 5:
-                data.jun = data.jun.length > 0 ? '' : '○';
+                data.jun = data.jun.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 6:
-                data.jul = data.jul.length > 0 ? '' : '○';
+                data.jul = data.jul.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 7:
-                data.aug = data.aug.length > 0 ? '' : '○';
+                data.aug = data.aug.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 8:
-                data.sep = data.sep.length > 0 ? '' : '○';
+                data.sep = data.sep.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 9:
-                data.oct = data.oct.length > 0 ? '' : '○';
+                data.oct = data.oct.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 10:
-                data.nov = data.nov.length > 0 ? '' : '○';
+                data.nov = data.nov.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
               case 11:
-                data.dec = data.dec.length > 0 ? '' : '○';
+                data.dec = data.dec.length > 0 ? MONI_DEFAULT : MONI_TUKI;
                 break;
             }
             flexGrid.refresh();
@@ -582,18 +605,30 @@ export default {
       let sm = symd == null ? 0 : moment(symd).month() + 1;
       let mindex = sm == 0 ? 0 : sm - 1;
 
+      //モニタリング情報予定
       let s = moment(symd);
       let e = moment(eymd);
-      let cnt = 0;
+      let cnt = 1;
       while (s <= e) {
         if (cnt % momikikan == 0) {
-          this.putmarkMonth.push(s.format('YYYYMM'));
+          if (this.putmarkMonthYotei.indexOf(s.format('YYYYMM')) == -1) {
+            this.putmarkMonthYotei.push(s.format('YYYYMM'));
+          }
         }
         s = s.add(1, 'months');
         cnt++;
       }
 
-      this.clearmMonitoring(index);
+      //モニタリング情報実績
+      if (this.monilist.length > 0) {
+        for (let i = 0; i < this.monilist.length; i++) {
+          if (this.putmarkMonthJisseki.indexOf(this.monilist[i].ym) == -1) {
+            this.putmarkMonthJisseki.push(this.monilist[i].ym);
+          }
+        }
+      }
+
+      // this.clearmMonitoring(index);
 
       for (let colIndex = 0; colIndex < 12; colIndex++) {
         let col = flexGrid.columns[colIndex];
@@ -618,122 +653,125 @@ export default {
           if (_ymd.isAfter(e)) {
             switch (mindex) {
               case 0:
-                this.monitoring[index].jan = '-';
+                this.monitoring[index].jan = MONI_KIKAN_GAI;
                 break;
               case 1:
-                this.monitoring[index].feb = '-';
+                this.monitoring[index].feb = MONI_KIKAN_GAI;
                 break;
               case 2:
-                this.monitoring[index].mar = '-';
+                this.monitoring[index].mar = MONI_KIKAN_GAI;
                 break;
               case 3:
-                this.monitoring[index].apr = '-';
+                this.monitoring[index].apr = MONI_KIKAN_GAI;
                 break;
               case 4:
-                this.monitoring[index].may = '-';
+                this.monitoring[index].may = MONI_KIKAN_GAI;
                 break;
               case 5:
-                this.monitoring[index].jun = '-';
+                this.monitoring[index].jun = MONI_KIKAN_GAI;
                 break;
               case 6:
-                this.monitoring[index].jul = '-';
+                this.monitoring[index].jul = MONI_KIKAN_GAI;
                 break;
               case 7:
-                this.monitoring[index].aug = '-';
+                this.monitoring[index].aug = MONI_KIKAN_GAI;
                 break;
               case 8:
-                this.monitoring[index].sep = '-';
+                this.monitoring[index].sep = MONI_KIKAN_GAI;
                 break;
               case 9:
-                this.monitoring[index].oct = '-';
+                this.monitoring[index].oct = MONI_KIKAN_GAI;
                 break;
               case 10:
-                this.monitoring[index].nov = '-';
+                this.monitoring[index].nov = MONI_KIKAN_GAI;
                 break;
               case 11:
-                this.monitoring[index].dec = '-';
+                this.monitoring[index].dec = MONI_KIKAN_GAI;
                 break;
             }
-          } else if (_ymd.format('YYYYMM') === e.format('YYYYMM')) {
+          } else if (_ymd.format('YYYYMM') == e.format('YYYYMM')) {
             switch (mindex) {
               case 0:
-                this.monitoring[index].jan = '●';
+                this.monitoring[index].jan = MONI_KIKAN_MATU;
                 break;
               case 1:
-                this.monitoring[index].feb = '●';
+                this.monitoring[index].feb = MONI_KIKAN_MATU;
                 break;
               case 2:
-                this.monitoring[index].mar = '●';
+                this.monitoring[index].mar = MONI_KIKAN_MATU;
                 break;
               case 3:
-                this.monitoring[index].apr = '●';
+                this.monitoring[index].apr = MONI_KIKAN_MATU;
                 break;
               case 4:
-                this.monitoring[index].may = '●';
+                this.monitoring[index].may = MONI_KIKAN_MATU;
                 break;
               case 5:
-                this.monitoring[index].jun = '●';
+                this.monitoring[index].jun = MONI_KIKAN_MATU;
                 break;
               case 6:
-                this.monitoring[index].jul = '●';
+                this.monitoring[index].jul = MONI_KIKAN_MATU;
                 break;
               case 7:
-                this.monitoring[index].aug = '●';
+                this.monitoring[index].aug = MONI_KIKAN_MATU;
                 break;
               case 8:
-                this.monitoring[index].sep = '●';
+                this.monitoring[index].sep = MONI_KIKAN_MATU;
                 break;
               case 9:
-                this.monitoring[index].oct = '●';
+                this.monitoring[index].oct = MONI_KIKAN_MATU;
                 break;
               case 10:
-                this.monitoring[index].nov = '●';
+                this.monitoring[index].nov = MONI_KIKAN_MATU;
                 break;
               case 11:
-                this.monitoring[index].dec = '●';
+                this.monitoring[index].dec = MONI_KIKAN_MATU;
                 break;
             }
           } else {
             let putmark = -1;
-            if (this.putmarkMonth.indexOf(_ymd.format('YYYYMM')) > -1) {
+            if (
+              this.putmarkMonthYotei.indexOf(_ymd.format('YYYYMM')) > -1 ||
+              this.putmarkMonthJisseki.indexOf(_ymd.format('YYYYMM')) > -1
+            ) {
               putmark = mindex;
             }
             switch (putmark) {
               case 0:
-                this.monitoring[index].jan = '○';
+                this.monitoring[index].jan = MONI_TUKI;
                 break;
               case 1:
-                this.monitoring[index].feb = '○';
+                this.monitoring[index].feb = MONI_TUKI;
                 break;
               case 2:
-                this.monitoring[index].mar = '○';
+                this.monitoring[index].mar = MONI_TUKI;
                 break;
               case 3:
-                this.monitoring[index].apr = '○';
+                this.monitoring[index].apr = MONI_TUKI;
                 break;
               case 4:
-                this.monitoring[index].may = '○';
+                this.monitoring[index].may = MONI_TUKI;
                 break;
               case 5:
-                this.monitoring[index].jun = '○';
+                this.monitoring[index].jun = MONI_TUKI;
                 break;
               case 6:
-                this.monitoring[index].jul = '○';
+                this.monitoring[index].jul = MONI_TUKI;
                 break;
               case 7:
-                this.monitoring[index].aug = '○';
+                this.monitoring[index].aug = MONI_TUKI;
                 break;
               case 8:
-                this.monitoring[index].sep = '○';
+                this.monitoring[index].sep = MONI_TUKI;
                 break;
               case 9:
-                this.monitoring[index].oct = '○';
+                this.monitoring[index].oct = MONI_TUKI;
                 break;
               case 10:
-                this.monitoring[index].nov = '○';
+                this.monitoring[index].nov = MONI_TUKI;
                 break;
               case 11:
-                this.monitoring[index].dec = '○';
+                this.monitoring[index].dec = MONI_TUKI;
                 break;
             }
           }
@@ -750,6 +788,7 @@ export default {
     },
     setMonitoring() {
       if (this.rksymd != null && this.rkeymd != null && this.monijiki > 0) {
+        this.clearmMonitoringAll();
         for (let i = 0; i < this.monitoring.length; i++) {
           let flexGrid = wijmo.Control.getControl(
             '#gridMonitoringkikan' + String(i + 1)
@@ -770,7 +809,7 @@ export default {
      */
     setMode(pmode) {
       this.mode = pmode;
-      if (this.mode !== 'new' && this.mode !== 'modKeikakuSoudan') {
+      if (this.mode != 'new' && this.mode != 'modKeikakuSoudan') {
         this.setButtonColor('modifyButtonKeikakuSoudan', false);
         this.setButtonColor('addButtonKeikakuSoudan', false);
       }

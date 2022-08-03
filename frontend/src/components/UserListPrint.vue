@@ -1,157 +1,185 @@
 <template>
   <div id="user-list-print_scrollbar">
-    <v-row no-gutters>
-      <v-col col="12">
+    <div
+      v-show="$route.path === '/KobetsuRiyouTouroku'"
+      :class="{
+        switchArea: switchAreaFlag == true,
+        switchAreaRight: switchAreaRightFlag == true,
+        switchAreaLeft: switchAreaLeftFlag == true,
+      }"
+      @click="switched"
+    >
+      <v-icon
+        small
+        :class="{ anim_right: animtype == 1, anim_left: animtype == 2 }"
+        >{{ switchIcon }}</v-icon
+      >
+    </div>
+    <v-row
+      no-gutters
+      :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
+    >
+      <v-col
+        :style="
+          $route.path === '/KobetsuRiyouTouroku'
+            ? 'max-width: 94%'
+            : 'max-width:100%;'
+        "
+      >
         <v-row no-gutters>
-          <wj-combo-box
-            :textChanged="onTextChangedUser"
-            style="width: 100%"
-            placeholder="カナ検索"
-          ></wj-combo-box>
-        </v-row>
-        <v-row no-gutters class="mt-1">
-          <v-col>
-            <wj-menu
-              id="comboFilters"
-              class="combo"
-              :initialized="initComboFilters"
-              :isRequired="true"
-              style="width: 100%"
-              :itemsSource="filterCombo"
-              :displayMemberPath="'text'"
-              selectedValuePath="'key'"
-            >
-            </wj-menu>
+          <v-col col="12">
+            <v-row no-gutters>
+              <wj-combo-box
+                :textChanged="onTextChangedUser"
+                style="width: 100%"
+                placeholder="カナ検索"
+              ></wj-combo-box>
+            </v-row>
+            <v-row no-gutters class="mt-1">
+              <v-col>
+                <wj-menu
+                  id="comboFilters"
+                  class="combo"
+                  :initialized="initComboFilters"
+                  :isRequired="true"
+                  style="width: 100%"
+                  :itemsSource="filterCombo"
+                  :displayMemberPath="'text'"
+                  selectedValuePath="'key'"
+                >
+                </wj-menu>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mt-1">
+              <v-col>
+                <v-card
+                  outlined
+                  tile
+                  @click="sortUser(1)"
+                  :class="{
+                    'text-center': true,
+                    'text-caption': true,
+                    grey: sortFlag.codeFlag,
+                    'lighten-2': sortFlag.codeFlag,
+                  }"
+                >
+                  コード
+                </v-card>
+              </v-col>
+              <v-col>
+                <v-card
+                  :class="{
+                    'text-center': true,
+                    'text-caption': true,
+                    grey: sortFlag.kanaFlag,
+                    'lighten-2': sortFlag.kanaFlag,
+                  }"
+                  outlined
+                  tile
+                  @click="sortUser(2)"
+                  >カナ</v-card
+                >
+              </v-col>
+              <v-col>
+                <v-card
+                  :class="{
+                    'text-center': true,
+                    'text-caption': true,
+                    grey: sortFlag.bangoFlag,
+                    'lighten-2': sortFlag.bangoFlag,
+                  }"
+                  outlined
+                  tile
+                  @click="sortUser(3)"
+                  >受給者番号</v-card
+                >
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
-        <v-row no-gutters class="mt-1">
-          <v-col>
-            <v-card
+        <div class="mt-1">
+          <v-btn-toggle class="flex-wrap" mandatory>
+            <v-btn
               outlined
-              tile
-              @click="sortUser(1)"
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: sortFlag.codeFlag,
-                'lighten-2': sortFlag.codeFlag,
-              }"
+              v-for="(n, k) in alphabet"
+              :key="n"
+              :width="23.5"
+              p-0
+              style="min-width: auto; padding: 9px; height: 10px"
+              @click="onAlphabet(k)"
+              >{{ n }}</v-btn
             >
-              コード
-            </v-card>
-          </v-col>
-          <v-col>
-            <v-card
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: sortFlag.kanaFlag,
-                'lighten-2': sortFlag.kanaFlag,
-              }"
-              outlined
-              tile
-              @click="sortUser(2)"
-              >カナ</v-card
-            >
-          </v-col>
-          <v-col>
-            <v-card
-              :class="{
-                'text-center': true,
-                'text-caption': true,
-                grey: sortFlag.bangoFlag,
-                'lighten-2': sortFlag.bangoFlag,
-              }"
-              outlined
-              tile
-              @click="sortUser(3)"
-              >受給者番号</v-card
-            >
-          </v-col>
-        </v-row>
+          </v-btn-toggle>
+        </div>
+        <wj-flex-grid
+          id="userGrid"
+          class="mt-1"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :selectionMode="3"
+          :style="gridHeight"
+          :initialized="onInitializedUser"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="usersData"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowDragging="false"
+          :allowPinning="false"
+          :allowResizing="false"
+          :allowSorting="false"
+        >
+          <wj-flex-grid-column
+            header="コード"
+            binding="riyocode"
+            :width="100"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            v-if="riyocodeFlag"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="受給者番号"
+            binding="jyukyuno"
+            :width="100"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            v-if="jyukyunoFlag"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="利用者名"
+            binding="names"
+            :width="132"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="印"
+            binding="print"
+            width="*"
+            :word-wrap="false"
+            :isReadOnly="true"
+            :allowResizing="true"
+            class="text-caption"
+            align="center"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+
+        <wj-menu
+          :header="'全選択/全解除'"
+          :itemClicked="onselectedIndexChanged"
+          style="width: 100%"
+        >
+          <wj-menu-item>
+            <b>印刷を全選択</b>
+          </wj-menu-item>
+          <wj-menu-item>
+            <b>印刷を全解除</b>
+          </wj-menu-item>
+        </wj-menu>
       </v-col>
     </v-row>
-    <div class="mt-1">
-      <v-btn-toggle class="flex-wrap" mandatory>
-        <v-btn
-          outlined
-          v-for="(n, k) in alphabet"
-          :key="n"
-          :width="25"
-          p-0
-          style="min-width: auto; padding: 9px; height: 10px"
-          @click="onAlphabet(k)"
-          >{{ n }}</v-btn
-        >
-      </v-btn-toggle>
-    </div>
-    <wj-flex-grid
-      id="userGrid"
-      class="mt-1"
-      :autoSearch="true"
-      :headersVisibility="'Column'"
-      :selectionMode="3"
-      :style="gridHeight"
-      :initialized="onInitializedUser"
-      :itemsSourceChanged="onItemsSourceChanged"
-      :itemsSource="usersData"
-      :allowAddNew="false"
-      :allowDelete="false"
-      :allowDragging="false"
-      :allowPinning="false"
-      :allowResizing="false"
-      :allowSorting="false"
-    >
-      <wj-flex-grid-column
-        header="コード"
-        binding="riyocode"
-        :width="100"
-        :word-wrap="false"
-        :allowResizing="true"
-        :isReadOnly="true"
-        v-if="riyocodeFlag"
-      ></wj-flex-grid-column>
-      <wj-flex-grid-column
-        header="受給者番号"
-        binding="jyukyuno"
-        :width="100"
-        :word-wrap="false"
-        :allowResizing="true"
-        :isReadOnly="true"
-        v-if="jyukyunoFlag"
-      ></wj-flex-grid-column>
-      <wj-flex-grid-column
-        header="利用者名"
-        binding="names"
-        :width="150"
-        :word-wrap="false"
-        :allowResizing="true"
-        :isReadOnly="true"
-      ></wj-flex-grid-column>
-      <wj-flex-grid-column
-        header="印"
-        binding="print"
-        width="*"
-        :word-wrap="false"
-        :isReadOnly="true"
-        :allowResizing="true"
-        class="text-caption"
-        align="center"
-      ></wj-flex-grid-column>
-    </wj-flex-grid>
-
-    <wj-menu
-      :header="'全選択/全解除'"
-      :itemClicked="onselectedIndexChanged"
-      style="width: 100%"
-    >
-      <wj-menu-item>
-        <b>印刷を全選択</b>
-      </wj-menu-item>
-      <wj-menu-item>
-        <b>印刷を全解除</b>
-      </wj-menu-item>
-    </wj-menu>
   </div>
 </template>
 <script>
@@ -186,6 +214,11 @@ let alphabet = [
 export default {
   data() {
     return {
+      switchIcon: 'mdi-chevron-left',
+      animtype: '0',
+      switchAreaFlag: true,
+      switchAreaRightFlag: false,
+      switchAreaLeftFlag: false,
       usersData: [],
       isDroppedDown: false,
       alphabet: alphabet,
@@ -212,6 +245,17 @@ export default {
   },
 
   methods: {
+    switched() {
+      this.animtype = this.animtype == '1' ? '2' : '1';
+      if (this.switchAreaRightFlag == true) {
+        this.switchAreaRightFlag = false;
+        this.switchAreaLeftFlag = true;
+      } else {
+        this.switchAreaRightFlag = true;
+        this.switchAreaLeftFlag = false;
+      }
+      this.$emit('childLeftArea', this.message);
+    },
     /*************************
      * 絞り込みコンボボックス
      */
@@ -563,7 +607,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
 div#comboFilters {
@@ -576,6 +620,95 @@ div#user-list-print_scrollbar {
   width: 275px;
   #filterCombo {
     width: 100%;
+  }
+
+  .switchArea {
+    width: 14px;
+    height: 97%;
+    background-color: $black;
+    position: fixed;
+    top: 0;
+    left: 266px;
+    z-index: 1;
+    &.switchAreaRight {
+      animation: switchAreaRightMove 2s forwards;
+    }
+    &.switchAreaLeft {
+      animation: switchAreaLeftMove 2s forwards;
+    }
+    i {
+      color: $white;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+      height: 3.2rem;
+
+      &.anim_right {
+        animation: rotate-right 2s forwards;
+      }
+      &.anim_left {
+        animation: rotate-left 2s forwards;
+      }
+    }
+  }
+  @keyframes switchAreaLeftMove {
+    from {
+      transform: translateX(-260px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes switchAreaRightMove {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-260px);
+    }
+  }
+  @keyframes rotate-right {
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+  @keyframes rotate-left {
+    0% {
+      transform: rotate(180deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  .v_enter_to {
+    animation: slide 2s forwards;
+  }
+  .v_enter_from {
+    animation: slideUp 2s forwards;
+  }
+
+  @keyframes slide {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-264px);
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateX(-264px);
+    }
+    to {
+      transform: translateX(0px);
+    }
   }
 
   .wj-cell {

@@ -14,10 +14,18 @@
             ref="user_list_print"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
+            @childLeftArea="changeLeftArea"
           >
           </user-list-print>
         </v-col>
-        <v-col class="rightArea ml-1">
+        <v-col
+          :class="{
+            rightArea: marginDefault == true,
+            'ml-1': mltype == true,
+            moveLeft: moveLeft == true,
+            moveRight: moveRight == true,
+          }"
+        >
           <v-row class="mt-0" no-gutters>
             <v-col>
               <v-card class="d-flex flex-row" flat tile>
@@ -160,6 +168,11 @@ export default {
       viewdata: [],
       // hendoRow: 0, // 変動情報の行数
       num: 0,
+      marginDefault: true,
+      moveRight: false,
+      moveLeft: false,
+      mltype: true,
+      headerWidth: { 2: 40, 3: 90, 4: 34 },
     };
   },
   components: {
@@ -175,6 +188,24 @@ export default {
     window.addEventListener('resize', this.handleResize);
   },
   methods: {
+    /*******************************
+     * ユーザー一覧コンポーネントの開閉ボタンを押下
+     */
+    changeLeftArea() {
+      if (this.moveLeft == true) {
+        this.moveRight = true;
+        this.moveLeft = false;
+        this.headerWidth = { 2: 40, 3: 90, 4: 34 };
+      } else {
+        this.moveLeft = true;
+        this.moveRight = false;
+        this.headerWidth = { 2: 140, 3: 190, 4: 64 };
+      }
+
+      if (this.userDataSelect[0].jyukyusyabango.length > 0) {
+        this.createHeader(this.mainGrid);
+      }
+    },
     onInitialized(flexGrid) {
       // 初回の提供サービスコードを渡す
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
@@ -184,6 +215,7 @@ export default {
       this.methodCellClickEvent(flexGrid);
     },
     onChangeInitialized(flexGrid) {
+      this.mainGrid = flexGrid;
       flexGrid.frozenColumns = 4;
       if (flexGrid.rows.length > 0) {
         flexGrid.rows[1].height = 30;
@@ -360,47 +392,49 @@ export default {
      * ヘッダ作成
      */
     createHeader(flexGrid) {
-      flexGrid.columns.insert(0, new wjGrid.Column());
-      flexGrid.columns.insert(1, new wjGrid.Column());
-      flexGrid.columns.insert(2, new wjGrid.Column());
-      flexGrid.columns.insert(3, new wjGrid.Column());
-      let column = 0;
-      flexGrid.columns[column++].binding = 'komoku0';
-      flexGrid.columns[column++].binding = 'komoku1';
-      flexGrid.columns[column++].binding = 'komoku2';
-      flexGrid.columns[column++].binding = 'komoku3';
+      if (flexGrid.columns.length < 1) {
+        flexGrid.columns.insert(0, new wjGrid.Column());
+        flexGrid.columns.insert(1, new wjGrid.Column());
+        flexGrid.columns.insert(2, new wjGrid.Column());
+        flexGrid.columns.insert(3, new wjGrid.Column());
+        let column = 0;
+        flexGrid.columns[column++].binding = 'komoku0';
+        flexGrid.columns[column++].binding = 'komoku1';
+        flexGrid.columns[column++].binding = 'komoku2';
+        flexGrid.columns[column++].binding = 'komoku3';
 
-      let c = column++;
-      // 日付ヘッダ
-      for (let day = 1; day <= this.lastdate; day++) {
-        flexGrid.columns.insert(c, new wjGrid.Column());
-        flexGrid.columns[c].binding = 'day' + day;
-        c = column++;
+        let c = column++;
+        // 日付ヘッダ
+        for (let day = 1; day <= this.lastdate; day++) {
+          flexGrid.columns.insert(c, new wjGrid.Column());
+          flexGrid.columns[c].binding = 'day' + day;
+          c = column++;
+        }
+
+        flexGrid.columns.insert(column++, new wjGrid.Column());
+        flexGrid.columns.insert(column++, new wjGrid.Column());
+        flexGrid.columns[c].binding = 'kei';
+        flexGrid.columns[c + 1].binding = 'kingaku';
+        flexGrid.columnHeaders.setCellData(0, 0, '項目');
+        for (let day = 1; day <= this.lastdate; day++) {
+          let date = this.year + '/' + this.month + '/' + day;
+          flexGrid.columnHeaders.setCellData(0, day + 3, date);
+        }
+        flexGrid.columnHeaders.setCellData(0, c, '計');
+        flexGrid.columnHeaders.setCellData(0, c + 1, '金額');
       }
-
-      flexGrid.columns.insert(column++, new wjGrid.Column());
-      flexGrid.columns.insert(column++, new wjGrid.Column());
-      flexGrid.columns[c].binding = 'kei';
-      flexGrid.columns[c + 1].binding = 'kingaku';
-      flexGrid.columnHeaders.setCellData(0, 0, '項目');
-      for (let day = 1; day <= this.lastdate; day++) {
-        let date = this.year + '/' + this.month + '/' + day;
-        flexGrid.columnHeaders.setCellData(0, day + 3, date);
-      }
-      flexGrid.columnHeaders.setCellData(0, c, '計');
-      flexGrid.columnHeaders.setCellData(0, c + 1, '金額');
-
       flexGrid.columnHeaders.rows.defaultSize = 38;
       flexGrid.rows.defaultSize = 20;
       flexGrid.columns[0].width = 20;
       flexGrid.columns[1].width = 20;
-      flexGrid.columns[2].width = 40;
-      flexGrid.columns[3].width = 90;
+      flexGrid.columns[2].width = this.headerWidth[2];
+      flexGrid.columns[3].width = this.headerWidth[3];
 
       for (let i = 4; i <= this.lastdate + 3; i++) {
         flexGrid.columns[i].width = 24;
       }
-      flexGrid.columnHeaders.columns[this.lastdate + 4].width = 34;
+      flexGrid.columnHeaders.columns[this.lastdate + 4].width =
+        this.headerWidth[4];
     },
 
     /*****************
@@ -534,85 +568,6 @@ export default {
       this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.userDataSelect[0]['riyosyo'] = '';
       this.userDataSelect[0]['jyukyusyabango'] = '';
-    },
-
-    /*********************
-     * 矢印を登録する
-     */
-    settingArrowView(data, i) {
-      this.viewdata[i]['key'] = [];
-      this.viewdata[i]['st'] = [];
-      this.viewdata[i]['ed'] = [];
-      this.viewdata[i]['diff'] = [];
-      let gokei = 0;
-      // 月末の取得
-      let date = this.year + '-' + this.month + '-01';
-      let matu = moment(date).endOf('month');
-      let si = moment(date).startOf('month');
-      let useDay = [];
-      for (let n = 0; n < data.date.length; n++) {
-        let end = '';
-        if (data.date[n].taiinbi) {
-          end = moment(data.date[n].taiinbi);
-        }
-        let nextMonthFlag = false;
-        // 前月以前の場合は月初を指定する
-        let start = moment(data.date[n].nyuuinbi);
-        let beforeMonthFlag = false;
-        // 変更前のデータ(表示用)
-        let beforeStart = start;
-        let beforeEnd = end;
-        // 翌月以降の場合は月末を指定する
-        if (end > matu || !end) {
-          end = matu;
-          nextMonthFlag = true;
-        }
-
-        if (start < si) {
-          start = si;
-          beforeMonthFlag = true;
-        }
-
-        let diff = end.diff(start, 'days');
-        gokei += diff;
-        this.viewdata[i]['key'].push(n);
-        this.viewdata[i]['st'].push(beforeStart.format('M/D'));
-        if (beforeEnd) {
-          this.viewdata[i]['ed'].push(beforeEnd.format('M/D'));
-        } else {
-          this.viewdata[i]['ed'].push('未設定');
-        }
-        this.viewdata[i]['diff'].push(diff);
-
-        for (let day = 0; day <= diff; day++) {
-          let dayAdd = moment(start).add(day, 'd').format('D');
-          let d = 'day' + dayAdd;
-
-          if (day === 0) {
-            // 既存データのtaiinbiの日付が重複しているとき
-            if (useDay.indexOf(d) != -1) {
-              this.viewdata[i][d] = 'center';
-            } else if (!beforeMonthFlag) {
-              this.viewdata[i][d] = 'start';
-            } else {
-              this.viewdata[i][d] = 'start-m';
-            }
-          } else if (day == diff) {
-            if (!nextMonthFlag) {
-              // 使った日付を保持
-              useDay.push(d);
-              this.viewdata[i][d] = 'end';
-            } else {
-              this.viewdata[i][d] = 'middle';
-            }
-          } else {
-            this.viewdata[i][d] = 'middle';
-          }
-        }
-
-        this.viewdata[i]['gokei'] = gokei + data.date.length;
-        this.viewdata[i]['kingaku'] = 'none';
-      }
     },
 
     /************************
@@ -872,6 +827,29 @@ div#kobeturiyou {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: none;
+
+  .moveLeft {
+    animation: slideLeftArea 2s forwards;
+  }
+  .moveRight {
+    animation: slideRightArea 2s forwards;
+  }
+  @keyframes slideLeftArea {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-260px);
+    }
+  }
+  @keyframes slideRightArea {
+    from {
+      transform: translateX(-260px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 
   .wj-cell {
     padding: 0 !important;

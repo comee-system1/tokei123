@@ -26,13 +26,15 @@ export async function JyukyuTourokuSikyuryoLayoutData() {
             layout_inf[i]['kzkkbn'      ] =  jyukyuInfData[i].kzkkbn; //家族区分
             layout_inf[i]['jitakbn'     ] =  jyukyuInfData[i].jitakbn; //自他施設表示区分            
             
-            let sellst = jyukyuInfData[i].sellst;   // 選択肢リスト
-            for (let j = 0; j < sellst.length; j++) {
-                layout_inf[i]['sellst'] = [];
-                layout_inf[i]['sellst']['code'        ] =  sellst[i].code; //コード
-                layout_inf[i]['sellst']['selname'     ] =  sellst[i].selname; //名称
-                layout_inf[i]['sellst']['defsel'      ] =  sellst[i].defsel; //デフォルト選択
+            let buff = jyukyuInfData[i].sellst;   // 選択肢リスト
+            let temp = [];
+            for (let j = 0; j < buff.length; j++) {
+                temp[j] = [];
+                temp[j]['code'        ] =  buff[j].code; //コード
+                temp[j]['selname'     ] =  buff[j].selname; //名称
+                temp[j]['defsel'      ] =  buff[j].defsel; //デフォルト選択
             }            
+            layout_inf[i]['sellst'      ] =  temp;
         }
 
         //サービス種類表示ｺｰﾄﾞでソート

@@ -24,7 +24,7 @@ exports.registed = async function (param, input) {
  */
 exports.connected = async function (param) {
     //var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
-    let url = "http://192.168.30.32/sodan/v1/mst/sodantaiou?pJigyoid=43"; //サンプルURL
+    let url = "http://192.168.30.32/syogai/daityo/v1/keiyaku/keiyakuryoicrn/?getkbn=0&srcymd=20220714&kbn=1&sibori=1";
     config.setURL(url);
     config.setUniqID(param.uniqid);
     config.setTraceID(param.traceid);
@@ -48,10 +48,11 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10001',
-                    jigyoname: '東経ヘルパーセンター',
+                    jigyoryaku: '東経ヘルパーセンター',
                     lcnt: 1,
                     ryokyk: '16:00/月',
-                    symd: 'R03/04/01',
+                    symd: '2022/04/01',
+                    eymd: '2022/04/21',
                     riyu: '1:新規契約',
                     teikyonaiyo: '8:00',
                 }, ]
@@ -65,20 +66,21 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                         jigyono: '10001',
-                        jigyoname: '東経ヘルパーセンター',
+                        jigyoryaku: '東経ヘルパーセンター',
                         lcnt: 2,
                         ryokyk: '10:00/月',
-                        symd: 'R03/04/01',
+                        symd: '2022/04/01',
+                        eymd: '2022/04/01',
                         riyu: '2:契約の変更',
 
                     },
                     {
                         jigyono: '10001',
-                        jigyoname: '東経ヘルパーセンター',
+                        jigyoryaku: '東経ヘルパーセンター',
                         lcnt: 3,
                         ryokyk: '15:00/月',
-                        symd: 'R03/04/01',
-                        eymd: 'R03/04/01',
+                        symd: '2022/04/01',
+                        eymd: '2022/04/01',
                         riyu: '1:新規契約',
                     }
                 ]
@@ -91,10 +93,11 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10002',
-                    jigyoname: '障害支援施設たんぽぽ園',
+                    jigyoryaku: '障害支援施設たんぽぽ園',
                     lcnt: 1,
                     ryokyk: '当該月日数-8日',
-                    symd: 'R03/04/01',
+                    symd: '2022/04/01',
+                    eymd: '2022/04/01',
                     riyu: '1:新規契約',
 
                 }, ]
@@ -107,7 +110,7 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10002',
-                    jigyoname: '障害支援施設たんぽぽ園',
+                    jigyoryaku: '障害支援施設たんぽぽ園',
                     riyu: '1:新規契約',
 
                 }, ]
@@ -127,10 +130,11 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10001',
-                    jigyoname: '東経ヘルパーセンター',
+                    jigyoryaku: '東経ヘルパーセンター',
                     lcnt: 1,
                     ryokyk: '13:00/月',
-                    symd: 'R03/04/02',
+                    symd: '2022/04/02',
+                    eymd: '2022/04/11',
                     riyu: '1:新規契約',
 
                 }, ]
@@ -143,11 +147,11 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10002',
-                    jigyoname: '障害支援施設たんぽぽ園',
+                    jigyoryaku: '障害支援施設たんぽぽ園',
                     lcnt: 2,
                     ryokyk: '当該月日数-8日',
-                    symd: 'R03/04/02',
-                    eymd: 'R03/04/02',
+                    symd: '2022/04/02',
+                    eymd: '2022/04/11',
                     riyu: '1:新規契約',
 
                 }, ]
@@ -160,10 +164,11 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10002',
-                    jigyoname: '障害支援施設たんぽぽ園',
+                    jigyoryaku: '障害支援施設たんぽぽ園',
                     lcnt: 3,
                     ryokyk: '当該月日数-8日',
-                    symd: 'R03/04/02',
+                    symd: '2022/04/02',
+                    eymd: '2022/04/11',
                     riyu: '1:新規契約',
 
                 }, ]
@@ -176,7 +181,7 @@ exports.connected = async function (param) {
                 syuryo: '',
                 ktkkeiyakunew_inf: [{
                     jigyono: '10003',
-                    jigyoname: '相談支援センターひなぎく',
+                    jigyoryaku: '相談支援センターひなぎく',
                 }, ]
             }]
         }, {
@@ -219,7 +224,7 @@ exports.connected = async function (param) {
                     let teikyonaiyo = "";
                     if (array[i].sikyuryo_inf[j].ktkkeiyakunew_inf) {
                         ktkkeiyakunew_inf = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k];
-                        jigyoname = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].jigyoname;
+                        jigyoryaku = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].jigyoryaku;
                         lcnt = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].lcnt;
                         ryokyk = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].ryokyk;
                         symd = array[i].sikyuryo_inf[j].ktkkeiyakunew_inf[k].symd;
@@ -238,7 +243,7 @@ exports.connected = async function (param) {
                         jyukyuid: array[i].sikyuryo_inf[j].jyukyuid,
                         jigyono: jigyono,
                         jyukyuno: array[i].jyukyuno,
-                        jigyoname: jigyoname,
+                        jigyoryaku: jigyoryaku,
                         lcnt: lcnt,
                         ryokyk: ryokyk,
                         symd: symd,

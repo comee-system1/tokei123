@@ -536,15 +536,15 @@ export default {
       // データ取得・表示
       let rid = this.userListComponentDatas[row].riid;
       if (rid == 55000) {
-        rid = 583;
+        rid = 589;
       } else if (rid == 55001) {
-        rid = 308;
+        rid = 590;
       } else if (rid == 550010) {
-        rid = 309;
+        rid = 591;
       } else if (rid == 550011) {
         rid = 592;
       } else if (rid == 550012) {
-        rid = 591;
+        rid = 593;
       }
       //基本情報
       this.getJyukyuTourokuKihonData(rid).then((value) => {
@@ -775,10 +775,14 @@ export default {
     setMode(pmode) {
       this.mode = pmode;
       this.$refs.kihon.setMode(pmode);
-      this.$refs.syogaiKubun.setMode(pmode);
-      this.$refs.sikyuryo.setMode(pmode);
-      this.$refs.keikaku.setMode(pmode);
-      this.$refs.futan.setMode(pmode);
+      if (this.JyukyuSyogaiFukusiFlag) {
+        this.$refs.syogaiKubun.setMode(pmode);
+        this.$refs.sikyuryo.setMode(pmode);
+        this.$refs.keikaku.setMode(pmode);
+        this.$refs.futan.setMode(pmode);
+      } else if (this.JyukyuSyogaiJiFlag) {
+      } else if (this.JyukyuChiikiSoudanFlag) {
+      }
     },
     /****************
      * 入力補助モード設定
@@ -793,10 +797,14 @@ export default {
     setSubGridSelected(seleced) {
       this.subGridSelected = seleced;
       this.$refs.kihon.setSubGridSelectedFromParent(seleced);
-      this.$refs.syogaiKubun.setSubGridSelectedFromParent(seleced);
-      this.$refs.sikyuryo.setSubGridSelectedFromParent(seleced);
-      this.$refs.keikaku.setSubGridSelectedFromParent(seleced);
-      this.$refs.futan.setSubGridSelectedFromParent(seleced);
+      if (this.JyukyuSyogaiFukusiFlag) {
+        this.$refs.syogaiKubun.setSubGridSelectedFromParent(seleced);
+        this.$refs.sikyuryo.setSubGridSelectedFromParent(seleced);
+        this.$refs.keikaku.setSubGridSelectedFromParent(seleced);
+        this.$refs.futan.setSubGridSelectedFromParent(seleced);
+      } else if (this.JyukyuSyogaiJiFlag) {
+      } else if (this.JyukyuChiikiSoudanFlag) {
+      }
     },
     /****************
      * 子コンポーネントで履歴表示からのデータ取得
@@ -810,14 +818,18 @@ export default {
           list.push(args);
           this.$refs.kihon.setData(list);
           this.jyukyuid = args.jyukyuid;
-          //障害支給区分
-          this.setSyogaiKubunData();
-          //支給決定内容
-          this.setSikyuryoData();
-          //計画相談
-          this.setKeikakuSoudanData();
-          //利用者負担
-          this.setRiyosyaFutanData();
+          if (this.JyukyuSyogaiFukusiFlag) {
+            //障害支給区分
+            this.setSyogaiKubunData();
+            //支給決定内容
+            this.setSikyuryoData();
+            //計画相談
+            this.setKeikakuSoudanData();
+            //利用者負担
+            this.setRiyosyaFutanData();
+          } else if (this.JyukyuSyogaiJiFlag) {
+          } else if (this.JyukyuChiikiSoudanFlag) {
+          }
           this.move_to(
             this.menuitems[0],
             this.menuitems[0].target + String(this.menuitems[0].id)

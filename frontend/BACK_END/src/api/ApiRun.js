@@ -100,9 +100,9 @@ exports.apiPost = async function () {
             return response;
         })
         .catch(function (error) {
-            console.log('API ERROR!');
-            //console.log(error);
-            //console.log(typeof error);
+            console.log('API ERROR');
+            console.log(error);
+            // console.log(typeof error);
             // for (let key of Object.keys(error)) {
             //     console.log(key);
             //     console.log(error[key]);

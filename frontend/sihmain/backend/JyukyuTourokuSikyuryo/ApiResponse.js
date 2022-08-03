@@ -41,11 +41,11 @@ module.exports = class ApiResponse {
         kasan3: element.kasan3, // 加算コード3
         kasan4: element.kasan4, // 加算コード4
         kasan5: element.kasan5, // 加算コード5
-        kasanryo1: element.kasanryo1, // 加算支給量1
-        kasanryo2: element.kasanryo2, // 加算支給量2
-        kasanryo3: element.kasanryo3, // 加算支給量3
-        kasanryo4: element.kasanryo4, // 加算支給量4
-        kasanryo5: element.kasanryo5, // 加算支給量5
+        kasanryo1: element.kasnryo1, // 加算支給量1
+        kasanryo2: element.kasnryo2, // 加算支給量2
+        kasanryo3: element.kasnryo3, // 加算支給量3
+        kasanryo4: element.kasnryo4, // 加算支給量4
+        kasanryo5: element.kasnryo5, // 加算支給量5
         teido: element.teido, // 障害区分
         ninzu: element.ninzu, // 居宅の人数
         kyodo: element.kyodo, // 共同生活介護利用型
@@ -65,37 +65,69 @@ module.exports = class ApiResponse {
         rysid: element.rysid, // 利用者内部ID
         jkbn: element.jkbn, // 受給者証区分
         
-        svcshuruinam: element.svcshuruinam, // サービス種別名称
-        svcshuruiryaku: element.svcshuruiryaku, // サービス種別略称
-        svccodenam: element.svccodenam, // サービス詳細名称
-        svccoderyaku: element.svccoderyaku, // サービス詳細略称
-        kasannam1: element.kasannam1, // 加算名1
-        kasanryaku1: element.kasanryaku1, // 加算略称1
-        kasannam2: element.kasannam2, // 加算名2
-        kasanryaku2: element.kasanryaku2, // 加算略称2
-        kasannam3: element.kasannam3, // 加算名3
-        kasanryaku3: element.kasanryaku3, // 加算略称3
-        kasannam4: element.kasannam4, // 加算名4
-        kasanryaku4: element.kasanryaku4, // 加算略称4
-        kasannam5: element.kasannam5, // 加算名5
-        kasanryaku5: element.kasanryaku5, // 加算略称5
-        teidonam: element.teidonam, // 障害区分名称
-        kyodonam: element.kyodonam, // 共同生活介護利用型名称
-        kyotknam: element.kyotknam, // 経過的居宅介護利用型名称
-        tasyogainam: element.tasyogainam, // 他障害受入名称
-        kyodonam: element.kyodonam, // 共同生活介護利用型名称
-        koyonam: element.koyonam, // 雇用契約名称
-        kisonen1nam: element.kisonen1nam, // 障害基礎年金1級名称
-        ktkriyonam: element.ktkriyonam, // 個人単位での居宅介護利用名称
-        keisochinam: element.keisochinam, // 経過措置利用者名称
-        skjiptnam: element.skjiptnam, // 食事入力名称
-        skhaitinam: element.skhaitinam, // 生活介護人員配置名称
-        sikakunam: element.sikakunam, // 視覚障害名称
-        longnyuinnam: element.longnyuinnam, // 長期入院者名称
-        tankyuinnam: element.tankyuinnam, // たん吸引名称
-        taisyonam: element.taisyonam, // 退所名称
-        dspskryo1: element.dspskryo1, // 表示用支給量1
-        dspskryo2: element.dspskryo2, // 表示用支給量2
+        svcshuruinam: element.svcShuruiName, // サービス種別名称
+        svcshuruiryaku: element.svcShuruiRyaku, // サービス種別略称
+        svccodenam: element.svccodeNam, // サービス詳細名称
+        svccoderyaku: element.svccodeRyaku, // サービス詳細略称
+        kasannam1: element.kasanNam1, // 加算名1
+        kasanryaku1: element.kasanRyaku1, // 加算略称1
+        kasannam2: element.kasanNam2, // 加算名2
+        kasanryaku2: element.kasanRyaku2, // 加算略称2
+        kasannam3: element.kasanNam3, // 加算名3
+        kasanryaku3: element.kasanRyaku3, // 加算略称3
+        kasannam4: element.kasanNam4, // 加算名4
+        kasanryaku4: element.kasanRyaku4, // 加算略称4
+        kasannam5: element.kasanNam5, // 加算名5
+        kasanryaku5: element.kasanRyaku5, // 加算略称5
+        teidonam: element.teidoNam, // 障害区分名称
+        kyodonam: element.kyodoNam, // 共同生活介護利用型名称
+        kyotknam: element.kyotkNam, // 経過的居宅介護利用型名称
+        tasyogainam: element.tasyogaiNam, // 他障害受入名称
+        kyodonam: element.kyodoNam, // 共同生活介護利用型名称
+        koyonam: element.koyoNam, // 雇用契約名称
+        kisonen1nam: element.kisonen1Nam, // 障害基礎年金1級名称
+        ktkriyonam: element.ktkriyoNam, // 個人単位での居宅介護利用名称
+        keisochinam: element.keisochiNam, // 経過措置利用者名称
+        skjiptnam: element.skjiptNam, // 食事入力名称
+        skhaitinam: element.skhaitiNam, // 生活介護人員配置名称
+        sikakunam: element.sikakuNam, // 視覚障害名称
+        longnyuinnam: element.longnyuinNam, // 長期入院者名称
+        tankyuinnam: element.tankyuinNam, // たん吸引名称
+        taisyonam: element.taisyoNam, // 退所名称
+        dspskryo1: 'element.dspskryo1', // 表示用支給量1
+        dspskryo2: 'element.dspskryo2', // 表示用支給量2
+        
+        // svcshuruinam: element.svcshuruinam, // サービス種別名称
+        // svcshuruiryaku: element.svcshuruiryaku, // サービス種別略称
+        // svccodenam: element.svccodenam, // サービス詳細名称
+        // svccoderyaku: element.svccoderyaku, // サービス詳細略称
+        // kasannam1: element.kasannam1, // 加算名1
+        // kasanryaku1: element.kasanryaku1, // 加算略称1
+        // kasannam2: element.kasannam2, // 加算名2
+        // kasanryaku2: element.kasanryaku2, // 加算略称2
+        // kasannam3: element.kasannam3, // 加算名3
+        // kasanryaku3: element.kasanryaku3, // 加算略称3
+        // kasannam4: element.kasannam4, // 加算名4
+        // kasanryaku4: element.kasanryaku4, // 加算略称4
+        // kasannam5: element.kasannam5, // 加算名5
+        // kasanryaku5: element.kasanryaku5, // 加算略称5
+        // teidonam: element.teidonam, // 障害区分名称
+        // kyodonam: element.kyodonam, // 共同生活介護利用型名称
+        // kyotknam: element.kyotknam, // 経過的居宅介護利用型名称
+        // tasyogainam: element.tasyogainam, // 他障害受入名称
+        // kyodonam: element.kyodonam, // 共同生活介護利用型名称
+        // koyonam: element.koyonam, // 雇用契約名称
+        // kisonen1nam: element.kisonen1nam, // 障害基礎年金1級名称
+        // ktkriyonam: element.ktkriyonam, // 個人単位での居宅介護利用名称
+        // keisochinam: element.keisochinam, // 経過措置利用者名称
+        // skjiptnam: element.skjiptnam, // 食事入力名称
+        // skhaitinam: element.skhaitinam, // 生活介護人員配置名称
+        // sikakunam: element.sikakunam, // 視覚障害名称
+        // longnyuinnam: element.longnyuinnam, // 長期入院者名称
+        // tankyuinnam: element.tankyuinnam, // たん吸引名称
+        // taisyonam: element.taisyonam, // 退所名称
+        // dspskryo1: element.dspskryo1, // 表示用支給量1
+        // dspskryo2: element.dspskryo2, // 表示用支給量2
       }
       );
     });

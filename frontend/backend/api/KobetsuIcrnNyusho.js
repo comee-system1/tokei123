@@ -36,14 +36,14 @@ export async function KobetsuIcrnNyusho() {
             nyugai_inf: [{
                     kbn: 1,
                     ngsymd: '20220602',
-                    ngeymd: '20220706',
+                    ngeymd: '20220806',
                     seikyu: 1,
                     nissu: 4,
                 },
                 {
                     kbn: 1,
-                    ngsymd: '20220707',
-                    ngeymd: '20220709',
+                    ngsymd: '20220807',
+                    ngeymd: '20220809',
                     seikyu: 1,
                     nissu: 4,
                 },
@@ -67,15 +67,15 @@ export async function KobetsuIcrnNyusho() {
 
             nyugai_inf: [{
                     kbn: 2,
-                    ngsymd: '20220714',
-                    ngeymd: '20220718',
+                    ngsymd: '20220814',
+                    ngeymd: '20220818',
                     seikyu: 1,
                     nissu: 4,
                 },
                 {
                     kbn: 2,
-                    ngsymd: '20220720',
-                    ngeymd: '20220724',
+                    ngsymd: '20220820',
+                    ngeymd: '20220824',
                     seikyu: 1,
                     nissu: 4,
                 },

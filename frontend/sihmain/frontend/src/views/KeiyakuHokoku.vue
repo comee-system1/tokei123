@@ -2,12 +2,7 @@
   <div id="KeiyakuHokoku">
     <v-container fluid class="container pa-1">
       <v-row no-gutters>
-        <v-btn-toggle
-          class="flex-wrap"
-          mandatory
-          v-model="buttonMenu"
-          @change="buttonMenusChange()"
-        >
+        <v-btn-toggle class="flex-wrap" mandatory v-model="buttonMenu">
           <v-btn
             small
             color="secondary"
@@ -242,7 +237,7 @@
             ></wj-flex-grid-column>
             <wj-flex-grid-column
               :header="'事業所名'"
-              :binding="'jigyoname'"
+              :binding="'jigyoryaku'"
               align="center"
               valign="middle"
               :width="200"
@@ -278,7 +273,7 @@
               :binding="'symd'"
               align="center"
               valign="middle"
-              :width="80"
+              :width="100"
               format="g"
               :isReadOnly="true"
               :allowResizing="false"
@@ -289,7 +284,7 @@
               :binding="'eymd'"
               align="center"
               valign="middle"
-              :width="80"
+              :width="100"
               format="g"
               :isReadOnly="true"
               :allowResizing="false"
@@ -426,7 +421,7 @@
               height="25"
               class="pa-0 selectCombobox rounded-0"
               hide-details="false"
-              v-model="input.jigyoname"
+              v-model="input.jigyoryaku"
             ></v-select>
           </v-col>
         </v-row>
@@ -438,6 +433,7 @@
               dense
               class="inputs rounded-0"
               hide-details="false"
+              v-model="input.lcnt"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -449,9 +445,9 @@
               dense
               class="inputs rounded-0"
               hide-details="false"
+              v-model="input.ryokyk"
             ></v-text-field>
           </v-col>
-          <v-col cols="2" class="ml-1 mt-1">/月 </v-col>
         </v-row>
         <v-row no-gutters class="ma-2 mt-n1">
           <v-col cols="2"><label class="w">契約日</label></v-col>
@@ -460,6 +456,7 @@
               :language="ja"
               :format="DatePickerFormat"
               class="input_picker rounded-0"
+              v-model="input.symd"
             ></datepicker>
           </v-col>
         </v-row>
@@ -470,6 +467,7 @@
               :language="ja"
               :format="DatePickerFormat"
               class="input_picker rounded-0"
+              v-model="input.eymd"
             ></datepicker>
           </v-col>
         </v-row>
@@ -481,6 +479,7 @@
               dense
               class="inputs rounded-0"
               hide-details="false"
+              v-model="input.teikyonaiyo"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -601,7 +600,11 @@ export default {
         svcname: '',
         sikyunaiyo: '',
         jigyono: '',
-        jigyoname: '',
+        jigyoryaku: '',
+        lcnt: '',
+        ryokyk: '',
+        symd: '',
+        teikyonaiyo: '',
         riyu: '',
       },
       toggle_print: '',
@@ -695,10 +698,23 @@ export default {
           let svcsyocode = _self.keiyakuHokokuData[hPage.row].svcsyocode;
 
           _self.getDataDetail(riyocode, svcsyocode).then((result) => {
+            _self.input = {};
             _self.input.riyocode = result.riyocode;
             _self.input.rnames = result.rnames;
             _self.input.svcname = result.svcsyucode + ':' + result.svcname;
             _self.input.sikyunaiyo = result.sikyunaiyo;
+            _self.input.riyu = result.riyu;
+
+            // 終了登録
+            if (_self.buttonMenu === 1) {
+              _self.input.jigyono = result.jigyono;
+              _self.input.jigyoryaku = result.jigyoryaku;
+              _self.input.lcnt = result.lcnt;
+              _self.input.ryokyk = result.ryokyk;
+              _self.input.symd = result.symd;
+              _self.input.eymd = result.eymd;
+              _self.input.teikyonaiyo = result.teikyonaiyo;
+            }
           });
         }
       });
@@ -715,6 +731,31 @@ export default {
         uniqid: uniqid,
         traceid: traceid,
         inskbn: 0,
+        kkbn: 0,
+        sityoid: 0,
+        jigyono: 'a123',
+        jigyoid: 123,
+        jigyokbn: 1,
+        riid: 1,
+        hokbn: 1,
+        svcsyucode: 1,
+        svccode1: 'a1',
+        svccode2: 'b1',
+        ryokyk: 1,
+        ryotyk: 1,
+        symd: '20220101',
+        eymd: '20220201',
+        tflg: 1,
+        lcnt: 1,
+        pageno: 1,
+        denkbn: 1,
+        jskhyo: 1,
+        nocnvflg: 1,
+        ryoji: 1,
+        ryota: 1,
+        ryonew: 1,
+        sikyuid: 1,
+        siid: 1,
       };
 
       postConnect(this.$route.path, params).then((result) => {
