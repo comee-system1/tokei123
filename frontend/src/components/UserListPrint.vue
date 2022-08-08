@@ -1,5 +1,5 @@
 <template>
-  <div id="user-list-print_scrollbar">
+  <div id="user-list-print_scrollbar" :style="styles">
     <div
       v-show="$route.path === '/KobetsuRiyouTouroku'"
       :class="{
@@ -117,7 +117,6 @@
           :autoSearch="true"
           :headersVisibility="'Column'"
           :selectionMode="3"
-          :style="gridHeight"
           :initialized="onInitializedUser"
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="usersData"
@@ -190,7 +189,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjcCore from '@grapecity/wijmo';
-import sysConst from '@/utiles/const';
+// import sysConst from '@/utiles/const';
 
 // import '@backend/api/UserListPrint';
 
@@ -226,7 +225,6 @@ export default {
       riyocodeFlag: true,
       jyukyunoFlag: false,
       useTeikyoCode: '',
-      gridHeight: '',
       filterCombo: this.getFilterCombo(),
       filterFlag: { allFlag: true, nyukyoFlag: false, taikyoFlag: false },
       sortFlag: { kanaFlag: false, codeFlag: true, bangoFlag: false },
@@ -235,16 +233,28 @@ export default {
       checkAll: '', // すべてチェック
       textSearch: '',
       filterSearch: 1, // 全員・入居者・など
+      headerheight: 280,
     };
   },
   mounted() {
-    this.handleResize;
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
-
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('userGrid') != null) {
+        document.getElementById('userGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     switched() {
       this.animtype = this.animtype == '1' ? '2' : '1';
       if (this.switchAreaRightFlag == true) {
@@ -486,12 +496,9 @@ export default {
       this.usersData = data;
     },
     onItemsSourceChanged(flexGrid) {
+      flexGrid.select(-1, -1);
       // 初期選択を解除
-      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-    },
-    userCheckInvalide() {
-      // 初期選択を解除
-      // this.userGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      // flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
@@ -558,6 +565,7 @@ export default {
 
       // 初回のユーザ選択値
       // _self.$emit('child-select', 0);
+      let row = -1;
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
@@ -570,39 +578,13 @@ export default {
           if (p == '') mark = '〇';
           _self.usersData[ht.row]['print'] = mark;
           flexGrid.setCellData(ht.row, 2, mark);
-
-          flexGrid.select(-1, -1);
+          flexGrid.select(row, 0);
         } else if (e.target.innerText.length > 0) {
-          let row = hPage._row;
-          //flexGrid.select(hPage.row, hPage.col);
-          if (e.panel != flexGrid.columnHeaders) {
-            flexGrid.itemFormatter = function (panel, r, c, cell) {
-              if (r == hPage.row && panel != flexGrid.columnHeaders) {
-                cell.style.color = sysConst.COLOR.white;
-                cell.style.backgroundColor =
-                  sysConst.COLOR.gridSelectedBackground;
-              }
-            };
-          }
+          row = hPage._row;
 
           _self.$emit('child-select', row);
         }
       });
-    },
-    /*********************
-     * 画面リサイズの際の表示調整
-     */
-    handleResize: function () {
-      let height = window.innerHeight;
-      let targetElement = document.getElementById('user-list-print_scrollbar');
-      if (targetElement != null) {
-        var clientRect = targetElement.getBoundingClientRect();
-        var y = clientRect.top;
-        //alert(y);
-        let ht = '';
-        ht = height - y - 190;
-        this.gridHeight = 'height:' + ht + 'px;';
-      }
     },
   },
 };
@@ -621,7 +603,9 @@ div#user-list-print_scrollbar {
   #filterCombo {
     width: 100%;
   }
-
+  #userGrid {
+    height: var(--height);
+  }
   .switchArea {
     width: 14px;
     height: 97%;

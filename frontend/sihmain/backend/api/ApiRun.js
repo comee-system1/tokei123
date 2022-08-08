@@ -50,13 +50,48 @@ export async function api() {
             return response;
         })
         .catch(function (error) {
-            console.log('ERROR');
+            // console.log('ERROR');
             console.log(error);
-            console.log(typeof error);
-            for (let key of Object.keys(error)) {
-                console.log(key);
-                console.log(error[key]);
-            }
+            // console.log(typeof error);
+            // for (let key of Object.keys(error)) {
+            //     console.log(key);
+            //     console.log(error[key]);
+            // }
+            return false;
+        });
+}
+
+export async function apiPost() {
+
+    // x-corporation-unique-id は引数によって変わる
+
+    const HEADER = {};
+
+    HEADER['Content-type'] = "application/json";
+    HEADER['x-api-account'] = 'tokei';
+    HEADER['x-api-key'] = '999';
+    HEADER['x-trace-id'] = this.getTraceID();
+    HEADER['x-corporation-unique-id'] = this.getUniqID();
+    var url = this.getURL();
+    var input = this.getInputs();
+    console.log("inputs");
+    console.log(input);
+    // テストデータ
+    return await axios
+        .post(url, input, {
+            headers: HEADER
+        })
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            console.log('API ERROR');
+            console.log(error);
+            // console.log(typeof error);
+            // for (let key of Object.keys(error)) {
+            //     console.log(key);
+            //     console.log(error[key]);
+            // }
             return false;
         });
 }

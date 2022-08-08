@@ -238,6 +238,7 @@ export default {
             { name: '基本情報', link: '/KihonJyoho' },
             { name: 'サービス履歴', link: '/ServiceHistory' },
             { name: '受給者証登録', link: '/JyukyuTouroku' },
+            { name: '受給者証登録2', link: '/JyukyuTouroku2' },
             { name: '契約報告書', link: '/KeiyakuHokoku' },
           ],
         },

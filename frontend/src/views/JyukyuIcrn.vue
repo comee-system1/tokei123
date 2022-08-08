@@ -8,7 +8,93 @@
 
     <v-container class="user-info" fluid>
       <v-row class="rowStyle mt-0" no-gutters>
-        <label>利用者</label>
+        <v-menu open-on-hover bottom offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mr-1">
+              <v-icon left dark> mdi-filter-menu-outline </v-icon>
+              {{ riyousya }}
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item-group color="primary">
+              <v-list-item v-for="(item, index) in userSelList" :key="index">
+                <v-list-item-title @click="riyousyaclick(item)">{{
+                  item.name
+                }}</v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-menu>
+
+        <v-menu open-on-hover bottom offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mr-1">
+              <v-icon left dark> mdi-filter-menu-outline </v-icon>
+              入退所者
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item-group color="primary">
+              <v-list-item
+                v-for="(item, index) in siborikomiSelList"
+                :key="index"
+              >
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-menu>
+
+        <v-btn
+          class="mr-1"
+          style="width: 100px; height: 20px"
+          @click="searchClicked"
+        >
+          <v-icon left dark> mdi-magnify </v-icon>
+          検索
+        </v-btn>
+
+        <v-menu open-on-hover bottom offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="green" dark v-bind="attrs" v-on="on" class="mr-1">
+              <v-icon left dark> mdi-sort-alphabetical-ascending </v-icon>
+              ソート
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item-group color="primary">
+              <v-list-item v-for="(item, index) in sortSelList" :key="index">
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-menu>
+        <v-menu open-on-hover bottom offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mr-1">
+              <v-icon left dark> mdi-filter-menu-outline </v-icon>
+              カナ絞込
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item-group color="primary">
+              <v-list-item v-for="(item, index) in kanaList" :key="index">
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-menu>
+        <v-card class="errorInf pa-0" outlined tile>
+          <span style="color: red; font-weight: bold">エラー</span>
+          {{ errCnt }} 人 / {{ viewdata.length }} 人中
+        </v-card>
+        <v-btn
+          id="btnJyukyu"
+          style="width: 100px; height: 20px; position: absolute; left: 1030px"
+          >受給者証修正
+        </v-btn>
+
+        <!-- <label>利用者</label>
         <wj-menu
           id="comboFilters"
           class="customCombobox"
@@ -41,40 +127,40 @@
           @click="searchClicked"
         >
           検索
-        </v-btn>
+        </v-btn> -->
       </v-row>
 
-      <v-row class="rowStyle mt-1" no-gutters>
-        <label>ソート</label>
-        <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
-          <v-btn
-            v-for="n in sortSelList"
-            :key="n.val"
-            small
-            color="secondary"
-            dark
-            outlined
-            @click="sortUser(n.val)"
-          >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-      </v-row>
-      <v-row class="rowStyle mt-1" no-gutters>
+      <!-- <v-row class="rowStyle mt-1" no-gutters>
+          <label>ソート</label>
+          <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
+            <v-btn
+              v-for="n in sortSelList"
+              :key="n.val"
+              small
+              color="secondary"
+              dark
+              outlined
+              @click="sortUser(n.val)"
+            >
+              {{ n.name }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-row> -->
+      <v-row class="rowStyle mt-1" no-gutters v-if="false">
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
-        <div class="border-bottom ma-0 ml-10" style="text-align: center">
+        <!-- <div class="border-bottom ma-0 ml-10" style="text-align: center">
           <label class="errorlabel mr-2">
             <b>エラー</b>
           </label>
           <span>{{ errCnt }} 人 / {{ viewdata.length }} 人中</span>
-        </div>
-        <v-btn
+        </div> -->
+        <!-- <v-btn
           id="btnJyukyu"
           class="ma-0 ml-10"
           style="width: 100px; height: 25px; position: absolute; left: 990px"
           >受給者証修正
-        </v-btn>
+        </v-btn> -->
       </v-row>
 
       <v-row class="ma-0 mt-1" no-gutters>
@@ -238,10 +324,24 @@ export default {
         { val: 1, name: 'カナ' },
         { val: 2, name: '受給者番号' },
       ],
+      kanaList: [
+        { val: 0, name: '全て表示' },
+        { val: 1, name: 'ア行' },
+        { val: 2, name: 'カ行' },
+        { val: 3, name: 'サ行' },
+        { val: 4, name: 'タ行' },
+        { val: 5, name: 'ナ行' },
+        { val: 6, name: 'ハ行' },
+        { val: 7, name: 'マ行' },
+        { val: 8, name: 'ヤ行' },
+        { val: 9, name: 'ラ行' },
+        { val: 10, name: 'ワ行' },
+      ],
       viewdataAll: [],
       viewdata: [],
       serviceArgument: '', // ヘッダメニューのサービス選択
       initflg: true,
+      riyousya: '利用者',
     };
   },
   mounted() {
@@ -269,6 +369,9 @@ export default {
     },
   },
   methods: {
+    riyousyaclick(item) {
+      this.riyousya = '利用者：' + item.name;
+    },
     initComboFilters(combo) {
       if (combo.hostElement.id == CMB_ID) {
         combo.header = combo.selectedItem.name;
@@ -545,7 +648,7 @@ export default {
 @import '@/assets/scss/common.scss';
 div#jyukyuicrn {
   color: $font_color;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
@@ -553,7 +656,7 @@ div#jyukyuicrn {
   max-width: 1920px;
   width: auto;
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
   span#selectUserExamNumber,
   span#selectUserText {
@@ -605,7 +708,7 @@ div#jyukyuicrn {
     font-size: $cell_fontsize;
     width: auto;
     // min-width: 1300px;
-    height: 63vh;
+    height: 77vh;
     // max-width: 100%;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -698,5 +801,25 @@ div#jyukyuicrn {
       height: 25px !important;
     }
   }
+  .v-btn:not(.v-btn--round).v-size--default {
+    height: 20px;
+  }
+
+  .errorInf {
+    text-align: center;
+    height: 22px;
+    width: 200px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-color: red;
+    position: absolute;
+    left: 800px;
+  }
+}
+.v-list-item--dense,
+.v-list--dense .v-list-item {
+  min-height: 20px;
+  margin-top: 5px;
 }
 </style>

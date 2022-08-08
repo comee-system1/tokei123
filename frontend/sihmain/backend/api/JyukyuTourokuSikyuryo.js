@@ -103,7 +103,7 @@ export async function JyukyuTourokuSikyuryoData(rid) {
             skryoh1_inf[i]['longnyuinnam'	] = jyukyuInfData[i].longnyuinnam;   // 長期入院者名称
             skryoh1_inf[i]['tankyuinnam'	] = jyukyuInfData[i].tankyuinnam;    // たん吸引名称
             skryoh1_inf[i]['taisyonam'		] = jyukyuInfData[i].taisyonam;      // 退所名称
-            skryoh1_inf[i]['dspskryo1'		] = jyukyuInfData[i].dspskryo1;      // 表示用支給量1:基本支給量
+            skryoh1_inf[i]['dspskryo'       ] = jyukyuInfData[i].dspskryo;       // 表示用支給量1:基本支給量
             skryoh1_inf[i]['dspskryo2'		] = jyukyuInfData[i].dspskryo2;      // 表示用支給量2:1回当たりの支給量等
 
         }

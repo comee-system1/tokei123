@@ -1,5 +1,5 @@
 <template>
-  <div id="kobeturiyou">
+  <div id="kobeturiyou" :style="styles">
     <header-services
       @parent-service-select="parentServiceSelect($event, serviceArgument)"
       @parent-service-change="parentServiceChange($event, serviceArgument)"
@@ -112,7 +112,6 @@
             :allowResizing="false"
             :allowSorting="false"
             :selectionMode="'None'"
-            :style="gridHeight"
             :itemsSource="viewdata"
           ></wj-flex-grid>
         </v-col>
@@ -163,7 +162,6 @@ export default {
       alertMessageFlag: false, // 変更時のアラートメッセージ
       editGridFlag: false, // grid編集状態フラグ
       // kasanRow: 0, // 加算情報の行数
-      gridHeight: '', // グリッドの高さ
       rowCounts: {}, // 各行数
       viewdata: [],
       // hendoRow: 0, // 変動情報の行数
@@ -173,6 +171,7 @@ export default {
       moveLeft: false,
       mltype: true,
       headerWidth: { 2: 40, 3: 90, 4: 34 },
+      headerheight: 180,
     };
   },
   components: {
@@ -181,13 +180,27 @@ export default {
     DialogKikantuika,
     DialogKasantuika,
   },
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   mounted() {
-    this.handleResize;
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
-  },
+
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('flexGrid') != null) {
+        document.getElementById('flexGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
+
     /*******************************
      * ユーザー一覧コンポーネントの開閉ボタンを押下
      */
@@ -751,20 +764,6 @@ export default {
       }
     },
 
-    /*********************
-     * 画面リサイズの際の表示調整
-     */
-    handleResize() {
-      let height = window.innerHeight;
-      let ht = 64;
-      if (height > 800) {
-        ht = 75;
-      } else if (height > 700) {
-        ht = 70;
-      }
-      this.gridHeight = 'height:' + ht + 'vh;';
-    },
-
     /*************************
      * ダイアログの表示
      */
@@ -958,6 +957,7 @@ div#kobeturiyou {
     width: auto;
     max-width: none;
     min-width: none;
+    height: var(--height);
     .wj-cell {
       padding: 0 !important;
       &.wj-frozen-row {

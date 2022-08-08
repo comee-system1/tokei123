@@ -1,25 +1,15 @@
 <template>
-  <div id="JyukyuTourokuKihon" :style="mainHeight">
+  <div id="JyukyuTourokuKihon2">
     <v-container fluid class="kihon-container">
       <v-row no-gutters class="kihon-header-row">
-        <v-card elevation="0" class="kihon-header d-flex flex-row" flat tile>
+        <v-card
+          elevation="0"
+          id="kihonheader"
+          class="kihon-header d-flex flex-row"
+          flat
+          tile
+        >
           <label class="kihon-header-title">受給者証基本情報</label>
-          <v-card
-            v-if="subGridSelected"
-            elevation="0"
-            class="kihon-header d-flex flex-row-reverse"
-            flat
-            tile
-          >
-            <v-btn
-              id="modifyButtonKihon"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunModify"
-            >
-              修正</v-btn
-            >
-          </v-card>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-kofuymd-row">
@@ -32,18 +22,8 @@
           交付年月日
         </v-card>
         <p class="required">*</p>
-        <v-card elevation="0" class="kihon-kofuymd-picker d-flex flex-row">
-          <datepicker
-            :language="ja"
-            class="input_picker"
-            :format="DatePickerFormat"
-            :value="kofuymd"
-            v-model="kofuymd"
-            placeholder="日付を選択"
-          ></datepicker>
-        </v-card>
-        <v-card elevation="0" class="pl-1 d-flex flex-row">
-          <v-btn class="kihon-copy-button"> 前回コピー</v-btn>
+        <v-card elevation="0" class="kihon-kofuymd-picker d-flex flex-row ml-1">
+          {{ kofuymd }}
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-kubun-row">
@@ -57,14 +37,11 @@
         </v-card>
         <v-card
           elevation="0"
-          class="kihon-kubun-selection d-flex flex-row"
+          class="kihon-kubun-selection d-flex flex-row ml-2"
           flat
           tile
         >
-          <v-radio-group row v-model="jyukyukubun" class="kihon-kubun-group">
-            <v-radio label="通常" :key="0" :value="0"></v-radio>
-            <v-radio label="暫定" :key="1" :value="1"></v-radio>
-          </v-radio-group>
+          {{ jyukyukubun }}
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-jyukyusyabangou-row">
@@ -79,14 +56,9 @@
         <p class="required">*</p>
         <v-card
           elevation="0"
-          class="kihon-jyukyusyabangou-input d-flex flex-row"
+          class="kihon-jyukyusyabangou-input d-flex flex-row ml-2"
         >
-          <wj-combo-box
-            class="kihon-jyukyusyabangou-input2"
-            :textChanged="onTextChanged"
-            placeholder="番号を入力"
-            :text="jyukyuno"
-          ></wj-combo-box>
+          {{ jyukyuno }}
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-shichosonbangou-row">
@@ -101,18 +73,9 @@
         <p class="required">*</p>
         <v-card
           elevation="0"
-          class="kihon-shichosonbangou-input d-flex flex-row"
+          class="kihon-shichosonbangou-input d-flex flex-row ml-2"
         >
-          <wj-combo-box
-            class="kihon-shichosonbangou-input2"
-            :textChanged="onTextChanged"
-            :gotFocus="onGotFocusShichoson"
-            placeholder="番号を入力"
-            :text="this.shichosonno"
-          ></wj-combo-box>
-        </v-card>
-        <v-card class="kihon-shichosonbangou-disp" outlined>
-          {{ shichosonname }}
+          {{ shichosonno + ' ' + shichosonname }}
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-syogaisyubetu-row d-flex flex-row">
@@ -136,11 +99,12 @@
             :key="item.id"
             :label="item.id + '.' + item.name"
             v-model="syogaisyubetuValues[item.id - 1]"
+            disabled
           >
           </v-checkbox>
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-jyukyusyakubun-row mb-1">
+      <v-row no-gutters class="kihon-jyukyusyakubun-row">
         <v-card
           elevation="0"
           class="kihon-title-length5 d-flex flex-row"
@@ -158,11 +122,12 @@
             label="障害児"
             v-model="syogaiji"
             @change="ckbChanged"
+            disabled
           >
           </v-checkbox>
         </v-card>
       </v-row>
-      <v-row v-if="syogaiji" no-gutters class="kihon-sikyuketteisya-row mb-1">
+      <v-row v-if="syogaiji" no-gutters class="kihon-sikyuketteisya-row">
         <v-card
           elevation="0"
           class="kihon-title-length5 d-flex flex-row"
@@ -173,29 +138,9 @@
         </v-card>
         <v-card
           elevation="0"
-          class="kihon-sikyuketteisya-input d-flex flex-row"
+          class="kihon-sikyuketteisya-input d-flex flex-row ml-2"
         >
-          <wj-combo-box
-            class="kihon-sikyuketteisya-input2"
-            :textChanged="onTextChanged"
-            :gotFocus="onGotFocusSikyuketteisya"
-            placeholder="番号を入力"
-            :text="sikyuketteisyano"
-          ></wj-combo-box>
-        </v-card>
-        <v-card class="kihon-sikyuketteisya-disp" outlined>
-          {{ sikyuketteisya }}
-        </v-card>
-      </v-row>
-      <v-row v-if="this.changeMode()" no-gutters class="kihon-button-row mb-2">
-        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
-        <v-card
-          elevation="0"
-          class="kihon-bottom-regist d-flex flex-row-reverse"
-          flat
-          tile
-        >
-          <v-btn class="regist-button" @click="regist"> 登 録</v-btn>
+          {{ sikyuketteisyano + ' ' + sikyuketteisya }}
         </v-card>
       </v-row>
     </v-container>
@@ -232,8 +177,9 @@ export default {
       ],
 
       isModify: false,
+      selectedData: [],
       kofuymd: '',
-      jyukyukubun: -1,
+      jyukyukubun: '',
       jyukyuno: '',
       shichosonno: '',
       shichosonname: '',
@@ -251,10 +197,6 @@ export default {
     changeMode() {
       return this.mode === 'modKihon';
     },
-    setTrunModify() {
-      this.setButtonColor('modifyButtonKihon', true);
-      this.$emit('setMode', 'modKihon');
-    },
     onTextChanged() {},
     onGotFocusShichoson(txb) {
       this.$emit('setHojoMode', 'shichoson');
@@ -270,7 +212,7 @@ export default {
       }
     },
     cancel() {
-      this.setButtonColor('modifyButtonKihon', false);
+      // this.setButtonColor('modifyButtonKihon', false);
       this.$emit('setMode', 'new');
       this.changeMode();
     },
@@ -311,14 +253,16 @@ export default {
     setData(selectedData) {
       this.clearData();
       if (selectedData.length > 0) {
+        this.selectedData = selectedData;
         this.setdata(selectedData[0]);
       }
       this.$emit('setMode', 'new');
     },
     setdata(data) {
+      if (data == null) return;
       if (data.kofuymd.length > 0) {
         this.kofuymd = moment(data.kofuymd).format('YYYY-M-D');
-        this.jyukyukubun = data.zantei;
+        this.jyukyukubun = data.zantei == 0 ? '通常' : '暫定';
         this.jyukyuno = data.jyukyuno;
         this.setShichoson(data.shichosonno, data.shichosonname);
         this.syogaisyubetuValues[0] = data.ssyu1;
@@ -340,7 +284,7 @@ export default {
     },
     clearData() {
       this.kofuymd = '';
-      this.jyukyukubun = -1;
+      this.jyukyukubun = '';
       this.jyukyuno = '';
       this.setShichoson('', '');
       this.syogaisyubetuValues[0] = 0;
@@ -357,7 +301,7 @@ export default {
     setMode(pmode) {
       this.mode = pmode;
       if (this.mode !== 'new' && this.mode !== 'modKihon') {
-        this.setButtonColor('modifyButtonKihon', false);
+        // this.setButtonColor('modifyButtonKihon', false);
       }
     },
     /****************
@@ -374,7 +318,7 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#JyukyuTourokuKihon {
+div#JyukyuTourokuKihon2 {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;

@@ -13,10 +13,4 @@ module.exports = class Service {
             return api;
         });
     }
-    async postData() {
-
-        return await repo.connectApiPost().then(result => {
-            return result;
-        });
-    }
 }

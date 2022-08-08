@@ -1,5 +1,5 @@
 <template>
-  <div id="JyukyuTourokuSikyuryo">
+  <div id="JyukyuTourokuSikyuryo2">
     <v-container fluid class="sikyuryo-container">
       <v-row no-gutters class="sikyuryo-header-row">
         <v-card elevation="0" class="sikyuryo-header d-flex flex-row" flat tile>
@@ -144,7 +144,7 @@
             </v-radio-group>
           </v-card>
         </v-row>
-        <v-row
+        <!-- <v-row
           v-show="item.sikyuryotouDisp"
           no-gutters
           class="sikyuryo-sikyuryotou-row2"
@@ -340,7 +340,7 @@
               <v-radio label="１年以上" :key="0" :value="0"></v-radio>
             </v-radio-group>
           </v-card>
-        </v-row>
+        </v-row> -->
         <v-row
           v-show="item.kasankoumokuDisp"
           no-gutters
@@ -390,7 +390,7 @@
             </wj-flex-grid>
           </v-card>
         </v-row>
-        <v-row no-gutters class="sikyuryo-syogaisyurui-row">
+        <!-- <v-row no-gutters class="sikyuryo-syogaisyurui-row">
           <v-card
             elevation="0"
             class="sikyuryo-title-length4 d-flex flex-row"
@@ -502,7 +502,7 @@
               <v-radio label="有り" :key="0" :value="0"></v-radio>
             </v-radio-group>
           </v-card>
-        </v-row>
+        </v-row> -->
         <v-row
           v-show="item.keikasotiDisp"
           no-gutters
@@ -532,7 +532,7 @@
             </v-radio-group>
           </v-card>
         </v-row>
-        <v-row
+        <!-- <v-row
           v-show="item.keikasotiDisp"
           no-gutters
           class="sikyuryo-keikasoti-row"
@@ -700,7 +700,7 @@
               <v-radio label="該当" :key="0" :value="0"></v-radio>
             </v-radio-group>
           </v-card>
-        </v-row>
+        </v-row> -->
         <!-- <v-divider color="#ce3e47" height="20px" style="margin: 4px;" v-show="serviceSyubetu.length-1!=index"></v-divider> -->
         <v-divider
           color="#ce3e47"
@@ -790,8 +790,10 @@ export default {
     },
     setButtonColor(id, on) {
       var targetbtn = document.getElementById(id);
-      targetbtn.style.color = on ? '#fff' : 'black';
-      targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+      if (targetbtn != null) {
+        targetbtn.style.color = on ? '#fff' : 'black';
+        targetbtn.style.backgroundColor = on ? '#444' : '#f5f5f5';
+      }
     },
     setData(selectedData) {
       this.clearData();
@@ -943,7 +945,7 @@ div#comboSienkubun {
   }
 }
 
-div#JyukyuTourokuSikyuryo {
+div#JyukyuTourokuSikyuryo2 {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;

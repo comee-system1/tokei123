@@ -99,8 +99,8 @@
         :itemsSourceChanged="onItemsSourceChanged"
         :isReadOnly="true"
         class="mt-1"
-        :style="gridHeight"
         :frozen-columns="5"
+        :style="styles"
       >
         <wj-flex-grid-column
           :binding="'code'"
@@ -392,6 +392,7 @@ export default {
       isVisible23: false,
       toggle_color: 'teal',
       tooltipmessage: {},
+      headerheight: 130,
     };
   },
   components: {
@@ -400,11 +401,18 @@ export default {
     TabMenuBlue,
   },
   mounted() {
-    this.handleResize;
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
+
   methods: {
     // トグルボタンの色
     getToggleButtonColor() {
@@ -416,13 +424,14 @@ export default {
         return 'purple';
       }
     },
-    handleResize() {
-      let height = window.innerHeight;
-      let ht = 74;
-      if (height > 800) {
-        ht = 84;
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    calculateWindowHeight() {
+      if (document.getElementById('serviceTeikyoGrid') != null) {
+        document.getElementById('serviceTeikyoGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
       }
-      this.gridHeight = 'height:' + ht + 'vh; width:100%;';
     },
 
     /*********************
@@ -894,6 +903,7 @@ export default {
 div#serviceTeikyoGrid {
   width: auto !important;
   max-width: 100%;
+  height: var(--height);
 }
 div#serviceTeikyo {
   font-size: 12px;

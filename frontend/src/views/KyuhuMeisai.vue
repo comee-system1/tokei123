@@ -81,6 +81,7 @@
               <!-- <kyuhu-seikyugaku ref="reloadSeikyugaku"></kyuhu-seikyugaku> -->
               <kyuhu-meisai-seikyugaku
               class="mt-1"
+              ref="seikyugakuData"
               >
               </kyuhu-meisai-seikyugaku>
             </v-col>
@@ -202,9 +203,6 @@ export default {
       // APIからデータを取得
       this.getApiData();
 
-      if (this.SeikyugakuSyukeiFlag == true) {
-        this.$refs.reloadSeikyugaku.reloadSeikyugakuMethod();
-      }
     },
     /**************
      * APIからデータを取得して子各コンポーネントに渡す
@@ -216,60 +214,199 @@ export default {
 
       if (this.ServiceMeisaiFlag == true) {
         // サービス明細欄タブアクティブの場合
-      // 利用者負担Grid (仮データ)
-      let riyousyaHutan =
-      {
-        jyogengaku1:        '9300',           // 利用者負担上限月額①
-        kinroukeizokushien: '1 :無',          // 就労継続支援Ａ型事業者負担減免対象者
-        syogaishien:        '1 :無',          // 障害支援区分
-        jigyosyobango:      '1234567890',     // 指定事業所番号
-        kanrikekka:         '',               // 管理結果
-        kanrikekkagaku:     '',               // 管理結果額
-        jigyosyoname:       '',               // 事業所名
-      };
-      this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
+        // 利用者負担Grid (仮データ)
+        let riyousyaHutan =
+        {
+          jyogengaku1:        '9300',           // 利用者負担上限月額①
+          kinroukeizokushien: '1 :無',          // 就労継続支援Ａ型事業者負担減免対象者
+          syogaishien:        '1 :無',          // 障害支援区分
+          jigyosyobango:      '1234567890',     // 指定事業所番号
+          kanrikekka:         '',               // 管理結果
+          kanrikekkagaku:     '',               // 管理結果額
+          jigyosyoname:       '',               // 事業所名
+        };
+        this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
 
-      // サービス種別 (仮データ)
-      let serviceData = [];
-      serviceData.push(
-        {
-          uid: 1,
-          serviceNo:         "22",
-          sYmd:              "2022/04/01",
-          eYmd:              "2022/08/01",
-          riyouNissuu:       "31",
-          nyuinNissuu:       "",
-        },
-        {
-          uid: 2,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/01",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        },
-        {
-          uid: 3,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/03",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        },
-        {
-          uid: 4,
-          serviceNo:        "32",
-          sYmd:             "2022/04/01",
-          eYmd:             "2022/08/03",
-          riyouNissuu:      "31",
-          nyuinNissuu:      "",
-        }
-      )
-      this.$refs.serviceData.setServiceData(serviceData);
+        // サービス種別 (仮データ)
+        let serviceData = [];
+        serviceData.push(
+          {
+            uid: 1,
+            serviceNo:         "22",
+            sYmd:              "2022/04/01",
+            eYmd:              "2022/08/01",
+            riyouNissuu:       "31",
+            nyuinNissuu:       "",
+          },
+          {
+            uid: 2,
+            serviceNo:        "32",
+            sYmd:             "2022/04/01",
+            eYmd:             "2022/08/01",
+            riyouNissuu:      "31",
+            nyuinNissuu:      "",
+          },
+          {
+            uid: 3,
+            serviceNo:        "32",
+            sYmd:             "2022/04/01",
+            eYmd:             "2022/08/03",
+            riyouNissuu:      "31",
+            nyuinNissuu:      "",
+          },
+          {
+            uid: 4,
+            serviceNo:        "32",
+            sYmd:             "2022/04/01",
+            eYmd:             "2022/08/03",
+            riyouNissuu:      "31",
+            nyuinNissuu:      "",
+          }
+        )
+        this.$refs.serviceData.setServiceData(serviceData);
 
-      // 明細リストGrid
-      this.$refs.meisaiListData.getMeisaiListData();
-        
+        // 明細リストGrid
+        this.$refs.meisaiListData.getMeisaiListData();
+      }
+      if (this.SeikyugakuSyukeiFlag == true) {
+        let seikyugakuApiData = [
+          {
+            teikyoService:  '施設入所支援',
+            servicecode: '32',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '生活介護',
+            servicecode: '22',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '就労移行支援',
+            servicecode: '44',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '療養介護',
+            servicecode: '21',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '短期入所',
+            servicecode: '24',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '生活介護',
+            servicecode: '22',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+          {
+            teikyoService:  '生活介護',
+            servicecode: '22',
+            serviceriyounissu: 31,
+            kyuhutanisu: 11360,
+            tanisutanka: 11.32,
+            souhiyougaku: 128595,
+            itiwarisoutougaku: 12859,
+            riyousyahutan2: 12859,
+            jyougengetugaku:9300,
+            jigyousyagenmengaku: '',
+            genmenriyousyahutan: '',
+            tyouseigohutan: 9300,
+            jyougenriyousyahutangaku: '',
+            ketteiriyousyahutangaku: 9300,
+            kyuhuhi: 119295,
+            tokubetutaisakuhi: '',
+            zititaizyoseibun: '',
+          },
+        ];
+        // 請求額集計欄リストGrid
+      console.log(7777777777777777777)
+        this.$refs.seikyugakuData.getSeikyugakuData(seikyugakuApiData);
       }
     },
     /***************

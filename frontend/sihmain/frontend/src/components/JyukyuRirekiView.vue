@@ -153,7 +153,7 @@ export default {
             { dataname: 'sksymdDisp', title: '開始日' },
             { dataname: 'skeymdDisp', title: '終了日' },
             { dataname: 'svcshuruiryaku', title: 'サービス種別' },
-            { dataname: 'dspskryotani', title: '支給量' },
+            { dataname: 'dspskryo', title: '支給量' },
           ],
         },
         keikaku: {
@@ -345,9 +345,9 @@ export default {
       if (this.kihonFlag) {
         flexGrid.columns[1].width = 81;
         flexGrid.columns[2].width = '3*';
-        flexGrid.columns[3].width = '4*';
+        flexGrid.columns[3].width = '3.5*';
         flexGrid.columns[4].width = 22;
-        flexGrid.columns[5].width = '3*';
+        flexGrid.columns[5].width = '3.5*';
       }
       // 障害者支援区分
       else if (this.syogaiFlag) {

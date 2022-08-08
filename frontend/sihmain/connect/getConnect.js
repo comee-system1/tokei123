@@ -9,6 +9,6 @@ export async function getConnect(type, params) {
         return response.data.response;
     }).catch(function (error) {
         console.log("api接続用サーバーに接続失敗。BACKENDの実行確認");
-        console.log(error);
+        // console.log(error);
     });
 }

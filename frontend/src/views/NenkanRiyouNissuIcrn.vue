@@ -95,7 +95,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-container fluid class="container">
+    <v-container fluid class="container" style="styles">
       <wj-flex-grid
         id="grid_nyutaiin"
         class="mt-n5"
@@ -110,7 +110,6 @@
         :allowSorting="false"
         :autoGenerateColumns="false"
         :itemsSource="nenkanRiyouNissuData"
-        :style="gridHeight"
       >
         <wj-flex-grid-column
           :binding="'riyocode'"
@@ -225,7 +224,6 @@ export default {
       selUser: 0,
       syukeiFlag: 1,
       sortFlag: 1,
-      gridHeight: '', // グリッドの高さ
       searchArgument: '',
       selectedSyogaiShien: 0,
       syogaisyaCombo: [
@@ -254,6 +252,7 @@ export default {
           text: '5',
         },
       ],
+      headerheight: 260,
     };
   },
   components: {
@@ -261,13 +260,30 @@ export default {
     AlphabetButton,
   },
   mounted() {
-    this.handleResize();
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
   created() {
-    window.addEventListener('resize', this.handleResize);
     this.nenkanRiyouNissuData = [];
   },
   methods: {
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    calculateWindowHeight() {
+      if (document.getElementById('grid_nyutaiin') != null) {
+        document.getElementById('grid_nyutaiin').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     /*******************
      * 印刷
      */
@@ -369,19 +385,6 @@ export default {
       tbl += '</table>';
       doc.append(tbl);
       doc.print();
-    },
-    /*********************
-     * 画面リサイズの際の表示調整
-     */
-    handleResize() {
-      let height = window.innerHeight;
-      let ht = 62;
-      if (height > 800) {
-        ht = 75;
-      } else if (height > 700) {
-        ht = 70;
-      }
-      this.gridHeight = 'height:' + ht + 'vh;width:1250px;';
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
@@ -725,6 +728,9 @@ div#nyutaiin {
   font-family: 'メイリオ';
   .jijyougen-container {
     padding: 4px;
+  }
+  div#grid_nyutaiin {
+    height: var(--height);
   }
   .wj-flexgrid .wj-cell {
     font-size: 12px;

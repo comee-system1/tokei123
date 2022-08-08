@@ -2,6 +2,23 @@ const Service = require('../JyukyuTourokuKihon/Service')
 const service = new Service();
 const config = require('./ApiRun');
 const moment = require('moment')
+/********************
+ * データ登録用
+ */
+ export async function JyukyuTourokuKihonDataPost(input) {
+    var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
+    console.log(input);
+    config.setURL(url);
+    config.setUniqID(uniqid);
+    config.setTraceID(traceid);
+    config.setInputs(input);
+    return await service.postData().then(result => {
+        console.log(result);
+    });
+}
+/********************
+ * データ取得用
+ */
 export async function JyukyuTourokuKihonData(rid) {
     // 接続確認用URL
     // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/jyukyuh?getkbn=0&rysid=' + rid;

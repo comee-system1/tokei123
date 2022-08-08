@@ -1,9 +1,10 @@
 <template>
   <div id="recept-list" class="mt-n5">
-    <v-row no-gutters>
+    <v-row no-gutters :style="styles">
       <v-col style="width: 980px">
         <wj-flex-grid
           id="grid_recept"
+          class="no-scrollbars"
           :initialized="onInitialized"
           :allowMerging="6"
           :headersVisibility="'Column'"
@@ -13,7 +14,6 @@
           :deferResizing="false"
           :allowSorting="false"
           :autoGenerateColumns="false"
-          :style="gridHeight"
         >
         </wj-flex-grid>
       </v-col>
@@ -29,7 +29,6 @@
           :deferResizing="false"
           :allowSorting="false"
           :autoGenerateColumns="false"
-          :style="gridHeight"
         >
         </wj-flex-grid>
       </v-col>
@@ -43,11 +42,16 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
-import { ReceptList } from '@backend/api/ReceptList';
 import alphabetFilter from '@/utiles/alphabetFilter';
 
+import { getConnect } from '@connect/getConnect';
+
 Vue.use(VueAxios, axios);
-let basicPos = 8; // 基本情報の列数
+let basicPos = 7; // 基本情報の列数
+
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
+
 export default {
   data() {
     return {
@@ -62,54 +66,54 @@ export default {
       alphaSelect: 0, // アルファベット選択の初期
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterTextJyogen: { jyougenkanrijiKey: 0, jyougenkanriji: '全員' }, // 検索項目
-      serviceWidth: '', // 提供サービスのタイトル幅
+      headerheight: 260,
     };
   },
   components: {},
   mounted() {
-    this.handleResize;
-
-    ReceptList().then((result) => {
-      //this.receptData = this.getData();
-
-      this.receptData = result.seikyu_inf;
-      this.allData = this.receptData;
-
-      // 値の登録
-      this.mainFlexGrid.itemsSource = this.filtered();
-
-      // 値の登録
-      this.mainSyukeiFlexGrid.itemsSource = this.filtered();
-    });
+    this.getData();
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
-
   methods: {
     /*********************
      * 画面リサイズの際の表示調整
      */
-    teikyoServiceTitle() {
-      let grid_syukei =
-        document.getElementById('grid_syukei').getBoundingClientRect().left -
-        620;
-      return grid_syukei;
-    },
-    handleResize() {
-      let grid_syukei =
-        document.getElementById('grid_syukei').getBoundingClientRect().left -
-        840;
-      this.serviceWidth = grid_syukei;
-
-      let height = window.innerHeight;
-      let ht = 54;
-      if (height > 800) {
-        ht = 67;
-      } else if (height > 700) {
-        ht = 58;
+    calculateWindowHeight() {
+      if (
+        document.getElementById('grid_recept') != null &&
+        document.getElementById('grid_syukei') != null
+      ) {
+        document.getElementById('grid_recept').style.height =
+          window.innerHeight - this.headerheight + 'px';
+        document.getElementById('grid_syukei').style.height =
+          window.innerHeight - this.headerheight + 'px';
       }
-      this.gridHeight = 'height:' + ht + 'vh; width:100%;';
+    },
+
+    async getData() {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        receptType: 'list',
+      };
+
+      return getConnect(this.$route.path, params).then((result) => {
+        this.receptData = result.seikyu_inf;
+        this.allData = this.receptData;
+        // 値の登録
+        this.mainFlexGrid.itemsSource = this.filtered();
+        // 値の登録
+        this.mainSyukeiFlexGrid.itemsSource = this.filtered();
+      });
     },
 
     onInitialized(flexGrid) {
@@ -124,7 +128,12 @@ export default {
       this.createCellFormat(flexGrid);
 
       this.edittingCell(flexGrid);
-      this.serviceWidth = this.teikyoServiceTitle();
+
+      // スクロールバー同期
+      let _self = this;
+      flexGrid.scrollPositionChanged.addHandler(function () {
+        _self.mainSyukeiFlexGrid.scrollPosition = flexGrid.scrollPosition;
+      });
     },
 
     /********************
@@ -142,6 +151,12 @@ export default {
       this.clickEventCell(syukeiGrid);
 
       this.edittingCell(syukeiGrid);
+
+      // スクロールバー同期
+      let _self = this;
+      syukeiGrid.scrollPositionChanged.addHandler(function () {
+        _self.mainFlexGrid.scrollPosition = syukeiGrid.scrollPosition;
+      });
     },
 
     /********
@@ -315,14 +330,7 @@ export default {
             }
             basicPos++;
           }
-          if (e.row == 0 && e.col == _self.basicPos - 1) {
-            text =
-              '<div id="servicePadding" style="width:' +
-              _self.serviceWidth +
-              'px;"><span>' +
-              text +
-              '</span></div>';
-          }
+
           if (e.col == 0 && e.row == 1) {
             classname = 'vertical';
           }
@@ -332,7 +340,7 @@ export default {
           e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
         }
 
-        if (e.col == 7) {
+        if (e.col == _self.basicPos - 1) {
           e.cell.style.borderRight = sysConst.COLOR.separateBorderColor;
         }
 
@@ -403,8 +411,8 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 21;
       flexGrid.columnHeaders.rows[1].height = this.gridHeadHeight;
       flexGrid.columnHeaders.columns[0].width = 30;
-      flexGrid.columnHeaders.columns[1].width = 100;
-      flexGrid.columnHeaders.columns[2].width = 100;
+      flexGrid.columnHeaders.columns[1].width = '*';
+      flexGrid.columnHeaders.columns[2].width = '*';
       flexGrid.columnHeaders.columns[3].width = 30;
       flexGrid.columnHeaders.columns[4].width = 30;
     },
@@ -431,7 +439,7 @@ export default {
       ) {
         flexGrid.columns.push(new wjGrid.Column());
       }
-      panel.setCellData(0, 7, '提供サービス');
+      panel.setCellData(0, this.basicPos, '提供サービス');
       for (let i = 0; i < this.teikyoService.length; i++) {
         let value = '';
         value = this.teikyoService[i].servicekey + this.teikyoService[i].value;
@@ -450,7 +458,6 @@ export default {
       flexGrid.columns[4].binding = 'jyougenicon';
       flexGrid.columns[5].binding = 'jyougen';
       flexGrid.columns[6].binding = 'riyosyafutan';
-      flexGrid.columns[7].binding = '';
       for (let i = 0; i < this.teikyoService.length; i++) {
         if (this.teikyoService[i].servicekey) {
           let k = i + this.basicPos;
@@ -470,12 +477,11 @@ export default {
       flexGrid.columnHeaders.columns[5].width = 140;
       flexGrid.columnHeaders.columns[4].multiLine = true;
       flexGrid.columnHeaders.columns[6].multiLine = true;
-      flexGrid.columnHeaders.columns[7].width = 1;
 
       for (let i = this.basicPos; i < this.receptSyukeiPos; i++) {
         flexGrid.columnHeaders.columns[i].multiLine = true;
         flexGrid.columnHeaders.columns[i].minWidth = 50;
-        flexGrid.columnHeaders.columns[i].width = 30;
+        flexGrid.columnHeaders.columns[i].width = 26;
       }
       flexGrid.rows.defaultSize = 20;
     },
@@ -483,7 +489,7 @@ export default {
      * ヘッダセルのマージ
      */
     createHeaderMerge(flexGrid, type) {
-      let receptSyukeiPos = this.receptSyukeiPos;
+      // let receptSyukeiPos = this.receptSyukeiPos;
       let headerRanges = [];
       if (type == 'syukei') {
         headerRanges = [
@@ -496,7 +502,7 @@ export default {
         headerRanges = [
           new wjGrid.CellRange(0, 0, 0, 6), // 基本情報
           new wjGrid.CellRange(1, 4, 1, 5), // 上限額管理事務所
-          new wjGrid.CellRange(0, receptSyukeiPos, 1, receptSyukeiPos), // レセプト
+          //new wjGrid.CellRange(0, receptSyukeiPos, 1, receptSyukeiPos), // レセプト
           new wjGrid.CellRange(
             0,
             this.basicPos,
@@ -721,13 +727,14 @@ export default {
   },
 };
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
 div#recept-list {
-  min-width: 1280px;
-  width: 1280px;
+  width: 1200px;
+
   div#grid_recept {
+    height: var(--height);
     &.wj-content {
       border-radius: 4px 0px 0px 4px;
       border-right: none !important;
@@ -739,19 +746,21 @@ div#recept-list {
         &.wj-frozen-col {
           border-right: 1px solid rgba(0, 0, 0, 0.2);
         }
-        &:nth-child(7) {
+        &:nth-child(6) {
           border-right: 1px solid rgba(0, 0, 0, 0.2);
         }
-        &:nth-child(8) {
-          border: none;
-        }
-        &:nth-child(9) {
+        // &:nth-child(7) {
+        //   border: none;
+        // }
+        &:nth-child(7) {
           border-left: none;
+          border-right: 1px solid $black;
         }
       }
     }
   }
   div#grid_syukei {
+    height: var(--height);
     border-left: none !important;
 
     &.wj-content {
@@ -773,6 +782,9 @@ div#recept-list {
     overflow-y: none;
     -ms-overflow-style: none;
 
+    &.no-scrollbars.wj-flexgrid [wj-part='root'] {
+      overflow: hidden !important;
+    }
     .wj-flexgrid .wj-cell {
       display: flex;
       align-items: center;

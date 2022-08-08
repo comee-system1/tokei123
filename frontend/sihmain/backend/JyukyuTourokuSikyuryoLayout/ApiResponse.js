@@ -7,7 +7,6 @@ module.exports = class ApiResponse {
     if(!res){
       return result;
     } 
-    console.log('res');
     res.data.forEach(function(element){
       let sellst = [];
       for(let i = 0;i<element.sellst.length;i++){

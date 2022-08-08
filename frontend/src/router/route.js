@@ -19,6 +19,7 @@ import JyuryouTsuchisyo from '../views/JyuryouTsuchisyo.vue'
 import NyutaiinHokoku from '../views/NyutaiinHokoku.vue'
 import NenkanRiyouNissuIcrn from '../views/NenkanRiyouNissuIcrn.vue'
 import JyukyuTouroku from '@sihmain/frontend/src/views/JyukyuTouroku.vue'
+import JyukyuTouroku2 from '@sihmain/frontend/src/views/JyukyuTouroku2.vue'
 import ServiceHistory from '@sihmain/frontend/src/views/ServiceHistory.vue'
 import KihonJyoho from '@sihmain/frontend/src/views/KihonJyoho.vue'
 import ServiceTeikyo from '@sihmain/frontend/src/views/ServiceTeikyo.vue'
@@ -45,6 +46,15 @@ const routes = [{
         path: '/JyukyuTouroku',
         name: '受給者証登録',
         component: JyukyuTouroku,
+        meta: {
+            title: usedTitle,
+            calender: true
+        },
+    },
+    {
+        path: '/JyukyuTouroku2',
+        name: '受給者証登録2',
+        component: JyukyuTouroku2,
         meta: {
             title: usedTitle,
             calender: true

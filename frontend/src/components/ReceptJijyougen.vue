@@ -1,5 +1,5 @@
 <template>
-  <div id="recept-jijyougen" class="mt-n5">
+  <div id="recept-jijyougen" class="mt-n5" :style="styles">
     <wj-flex-grid
       id="grid_jijyougen"
       :initialized="onInitialized"
@@ -12,7 +12,6 @@
       :deferResizing="false"
       :allowSorting="false"
       :itemsSource="receptData"
-      :style="gridHeight"
     >
       <wj-flex-grid-column
         :binding="'sityonm'"
@@ -85,7 +84,7 @@
       <wj-flex-grid-column
         :binding="'jigyonm'"
         :header="'事業所名'"
-        :width="140"
+        width="*"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -141,7 +140,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         binding="print"
-        width="*"
+        :width="24"
         :isReadOnly="true"
       ></wj-flex-grid-column>
     </wj-flex-grid>
@@ -253,18 +252,16 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
 import '@/assets/scss/common.scss';
-import { ReceptJijyougen } from '@backend/api/ReceptJijyougen';
-import { ReceptJijyougenCalc } from '@backend/api/ReceptJijyougenCalc';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import alphabetFilter from '@/utiles/alphabetFilter';
 
-Vue.use(VueAxios, axios);
+import { getConnect } from '@connect/getConnect';
+
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
 
 export default {
   data() {
@@ -276,37 +273,38 @@ export default {
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       filterSibori: { type: 1 }, // 絞込
       alphaSelect: 0,
-      gridHeight: '', // グリッドの高さ
       jigyosyoAdd: { flag: false },
       editGridFlag: false,
       jigyosyoMisiyoConfirm: { flag: false, message: '' }, // 事業所未使用
       receptParts: [], // レセプト追加用
       completeJudgeButton: 0, // 確定登録・解除ボタン判定
       editBackColorCell: [],
+      headerheight: 260,
     };
   },
-  components: {},
   mounted() {
-    this.handleResize();
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
+
   methods: {
     /*********************
      * 画面リサイズの際の表示調整
      */
-    handleResize() {
-      let height = window.innerHeight;
-      let ht = 54;
-      if (height > 800) {
-        ht = 65;
-      } else if (height > 700) {
-        ht = 58;
+    calculateWindowHeight() {
+      if (document.getElementById('grid_jijyougen') != null) {
+        document.getElementById('grid_jijyougen').style.height =
+          window.innerHeight - this.headerheight + 'px';
       }
-      this.gridHeight = 'height:' + ht + 'vh;';
     },
-
     /*******************
      * 確定登録・解除ボタン
      */
@@ -603,12 +601,13 @@ export default {
     },
 
     onInitialized(flexGrid) {
-      // flexGrid.select(-1, -1);
-      ReceptJijyougen().then((result) => {
+      this.mainFlexGrid = flexGrid;
+
+      // データ取得
+      this.getData().then((result) => {
         this.receptData = result;
         this.allData = this.receptData;
         this.receptData = this.filtered();
-        this.mainFlexGrid = flexGrid;
         // ヘッダ情報の作成
         this.createHeader(flexGrid);
 
@@ -622,7 +621,16 @@ export default {
       // セルの値を編集
       this.edittingCell(flexGrid);
     },
-
+    async getData() {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        receptType: 'jijyogen',
+      };
+      return getConnect(this.$route.path, params).then((result) => {
+        return result;
+      });
+    },
     onitemsSourceChanged(flexGrid) {
       this.mainFlexGrid = flexGrid;
       this.merge = this.createMergeArray(this.receptData);
@@ -950,20 +958,24 @@ export default {
      * 親コンポーネントの上限管理計算ボタン
      */
     parentReceptCalc() {
-      ReceptJijyougenCalc().then((result) => {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        receptType: 'jijyogenCalc',
+      };
+      return getConnect(this.$route.path, params).then((result) => {
+        // 計算を行い取得したデータの再表示を行う
         console.log(result);
-        for (let i = 0; i < this.receptData.length; i++) {
-          if (this.receptData[i]['jyougengakukanrikeisan'] == 1) {
-            // 表示データの検索
-            let data = this.dataFilter(result, this.receptData[i]);
-            // 1→2に変更
-            this.receptData[i]['jyougengakukanrikeisan'] = 2;
-            this.receptData[i]['jknrcalc'] = data.jknrcalc;
-            this.receptData[i]['jknr_riyogaku'] = data.jknr_riyogaku;
-            this.receptData[i]['jknr_rslt'] = data.jknr_rslt;
-          }
-        }
+
+        // 結果を適当に指定
+        let i = 0;
+        this.receptData[i]['jyougengakukanrikeisan'] = 2;
+        this.receptData[i]['jknrcalc'] = '●';
+        this.receptData[i]['jknr_riyogaku'] = 100;
+        this.receptData[i]['jknr_rslt'] = '〇';
+
         this.mainFlexGrid.refresh();
+        return result;
       });
     },
     dataFilter(array, search) {
@@ -1162,7 +1174,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
 div.receptParts {
@@ -1193,8 +1205,8 @@ div.receptPartsArea {
 
 div#recept-jijyougen {
   #grid_jijyougen {
-    height: 52vh;
-    width: 1305px;
+    height: var(--height);
+    width: 1300px;
 
     .wj-cell {
       padding: 1px;

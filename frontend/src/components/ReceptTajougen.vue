@@ -1,5 +1,5 @@
 <template>
-  <div id="recept-tajyougen" class="mt-n5">
+  <div id="recept-tajyougen" class="mt-n5" :style="styles">
     <wj-flex-grid
       id="grid_tajyougen"
       :initialized="onInitialized"
@@ -11,7 +11,6 @@
       :deferResizing="false"
       :allowSorting="false"
       :itemsSource="receptData"
-      :style="gridHeight"
     >
       <wj-flex-grid-column
         :binding="'sityonm'"
@@ -62,14 +61,14 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'hannei'"
-        :width="30"
+        :width="24"
         :isReadOnly="true"
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'cnt'"
         :header="verticalHeader[4]"
-        :width="30"
+        :width="24"
         align="center"
         :isReadOnly="true"
       ></wj-flex-grid-column>
@@ -108,7 +107,7 @@
       <wj-flex-grid-column
         :binding="'riyogaku'"
         :header="centerHeader[0]"
-        :width="60"
+        width="*"
         align="right"
         :format="'n0'"
         :multiLine="true"
@@ -133,13 +132,13 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :binding="'resekakutei'"
-        :width="30"
+        :width="24"
         :isReadOnly="true"
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         binding="print"
-        width="*"
+        :width="24"
         align="center"
       ></wj-flex-grid-column>
     </wj-flex-grid>
@@ -147,17 +146,17 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { isNumber, changeType, DataType } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import * as wijmo from '@grapecity/wijmo';
-import { ReceptTajyougen } from '@backend/api/ReceptTajyougen';
+
 import alphabetFilter from '@/utiles/alphabetFilter';
 
-Vue.use(VueAxios, axios);
+import { getConnect } from '@connect/getConnect';
+
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
 
 export default {
   data() {
@@ -185,30 +184,31 @@ export default {
       alphaSelect: 0,
       editedCells: [],
       completeJudgeButton: 0, // 確定登録・解除ボタン判定
-      gridHeight: '', // グリッドの高さ
       customerMap: [1, 2, 3],
+      headerheight: 260,
     };
   },
-  components: {},
   mounted() {
-    this.handleResize();
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
-  created() {
-    window.addEventListener('resize', this.handleResize);
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
   methods: {
     /*********************
      * 画面リサイズの際の表示調整
      */
-    handleResize() {
-      let height = window.innerHeight;
-      let ht = 54;
-      if (height > 800) {
-        ht = 67;
-      } else if (height > 700) {
-        ht = 58;
+    calculateWindowHeight() {
+      if (document.getElementById('grid_tajyougen') != null) {
+        document.getElementById('grid_tajyougen').style.height =
+          window.innerHeight - this.headerheight + 'px';
       }
-      this.gridHeight = 'height:' + ht + 'vh;';
     },
     /*******************
      * 確定登録・解除ボタン
@@ -404,7 +404,8 @@ export default {
     },
 
     onInitialized(flexGrid) {
-      ReceptTajyougen().then((result) => {
+      // データ取得
+      this.getData().then((result) => {
         // 親の自上限管理のコンボボックスを設定する関数を実行
         this.$emit('settingJyogenCombobox', result);
 
@@ -429,6 +430,18 @@ export default {
       // セルの値を編集
       this.edittingCell(flexGrid);
     },
+
+    async getData() {
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        receptType: 'tajyogen',
+      };
+      return getConnect(this.$route.path, params).then((result) => {
+        return result;
+      });
+    },
+
     /****************
      *
      */
@@ -567,39 +580,7 @@ export default {
         return x + ',';
       });
     },
-    // 後ほど消す
-    onItemsSourceChanged(flexGrid) {
-      let receptData = this.allData;
-      console.log('change');
-      console.log(this.editGridFlag);
-      console.log(receptData);
-      if (this.editGridFlag) {
-        while (flexGrid.rows.length < receptData.length) {
-          flexGrid.rows.push(new wjGrid.Row());
-        }
 
-        for (let i = 0; i < receptData.length; i++) {
-          let j = 0;
-          flexGrid.setCellData(i, j++, receptData[i]['sityonm']);
-          flexGrid.setCellData(i, j++, receptData[i]['jyukyuno']);
-          flexGrid.setCellData(i, j++, receptData[i]['names']);
-          flexGrid.setCellData(i, j++, receptData[i]['jigyokbn']);
-          flexGrid.setCellData(i, j++, receptData[i]['jigyonm']);
-          flexGrid.setCellData(i, j++, receptData[i]['fjyogen']);
-          flexGrid.setCellData(i, j++, receptData[i]['hanneikey']);
-          flexGrid.setCellData(i, j++, receptData[i]['cnt']);
-          flexGrid.setCellData(i, j++, receptData[i]['jigyo_jigyono']);
-          flexGrid.setCellData(i, j++, receptData[i]['jigyo_jigyonm']);
-          flexGrid.setCellData(i, j++, receptData[i]['svcnm']);
-          flexGrid.setCellData(i, j++, receptData[i]['sogaku']);
-          flexGrid.setCellData(i, j++, receptData[i]['riyogaku']);
-          flexGrid.setCellData(i, j++, receptData[i]['jknr_riyogaku']);
-          flexGrid.setCellData(i, j++, receptData[i]['jknr_rslt']);
-          flexGrid.setCellData(i, j++, receptData[i]['resekakutei']);
-          flexGrid.setCellData(i, j++, receptData[i]['print']);
-        }
-      }
-    },
     /*****************
      * セルのフォーマット指定
      */
@@ -715,13 +696,17 @@ export default {
           e.cell.style.borderLeft = sysConst.COLOR.separateBorderColor;
         }
 
+        if (e.panel == flexGrid.columnHeaders) {
+          if (e.col == 13) {
+            if (e.row == 1) {
+              classname = 'vertical pl-2';
+            }
+          }
+        }
+
         if (classname) {
           e.cell.innerHTML =
-            '<div class="text-center w-100 ' +
-            classname +
-            '">' +
-            html +
-            '</div>';
+            '<div class="text-center ' + classname + '">' + html + '</div>';
         }
       });
       this.completeJudgeButton = 0;
@@ -772,21 +757,33 @@ export default {
   },
 };
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#recept-tajyougen {
-  width: 1290px;
+div#grid_tajyougen {
+  width: 1280px;
   min-width: none;
+  height: var(--height);
   .wj-flexgrid .wj-cell {
     display: flex;
     align-items: center;
     font-size: 12px;
     font-weight: normal;
   }
+  .wj-cell {
+    padding: 1px;
+  }
+  .wj-header.wj-cell {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    justify-content: center;
+  }
+
   .wj-header.wj-cell {
     font-size: 12px;
     text-align: center !important;
+    font-weight: normal;
   }
   .wj-cell.wj-state-selected {
     color: $font_color;

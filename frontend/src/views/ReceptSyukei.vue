@@ -7,7 +7,7 @@
       :receptFlag="false"
     ></header-services>
 
-    <div fluid class="jijyougen-container mt-0 user-info">
+    <div fluid class="jijyougen-container mt-0 user-info" :style="styles">
       <v-row no-gutters>
         <v-col class="leftArea">
           <tab-menu-blue
@@ -261,6 +261,7 @@ export default {
       ],
       sortFlag: { kanaFlag: true, codeFlag: false, bangoFlag: false },
       filterFlag: { allFlag: true, jyogenFlag: false, misyoriFlag: false },
+      width: '1180px',
     };
   },
   components: {
@@ -270,6 +271,14 @@ export default {
     ReceptJijyougen,
     TabMenuBlue,
     AlphabetButton,
+  },
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      return {
+        '--width': this.width,
+      };
+    },
   },
   created() {
     this.receptCombo = [];
@@ -422,12 +431,15 @@ export default {
       this.TajyougenkanriJimsyoFlag = false;
       this.JijyougenkanriJimsyoFlag = false;
       if (args.selectTab == 'recept') {
+        this.width = '1180px';
         this.receptFlag = true;
       }
       if (args.selectTab == 'TajyougenkanriJimsyo') {
+        this.width = '1280px';
         this.TajyougenkanriJimsyoFlag = true;
       }
       if (args.selectTab == 'JijyougenkanriJimsyo') {
+        this.width = '1300px';
         this.JijyougenkanriJimsyoFlag = true;
       }
     },
@@ -564,16 +576,16 @@ div#tajyougen {
   text-align: left;
   .jijyougen-container {
     padding: 4px;
-    max-width: 1180px;
-    min-width: 1180px;
-    width: 1180px;
+    max-width: var(--width);
+    min-width: var(--width);
+    width: var(--width);
   }
   div {
     .leftArea {
-      max-width: 880px;
+      max-width: 70%;
     }
     .rightArea {
-      max-width: 280px;
+      max-width: 30%;
     }
   }
   .container {
