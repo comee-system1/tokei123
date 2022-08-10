@@ -1,7 +1,6 @@
 <template>
   <v-dialog v-model="dialogFlag" width="500">
     <v-card class="pa-2" id="dialogKikantuika">
-      <v-card-title class="text-h5"> {{ dateTitle }} </v-card-title>
       <v-container>
         <v-btn
           elevation="2"
@@ -14,145 +13,123 @@
           color="secondary"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
+        <v-card-title class="pa-2"> {{ dateTitle }} </v-card-title>
 
-        <v-row no-gutters style="flex-wrap: nowrap">
-          <v-col cols="3">
-            <v-card elevation="0">{{ dateStart }} </v-card>
-          </v-col>
-          <v-col cols="9" class="ml-2">
-            <v-card class="pa-0" elevation="0">
-              <datepicker
-                :language="ja"
-                class="input_picker"
-                :format="DatePickerFormat"
-                :value="nyuuinbi"
-                v-model="nyuuinbi"
-              ></datepicker>
-              <v-card class="d-flex" flat tile>
-                <v-card elevation="0">
-                  <v-radio-group row v-model="nyuuinbiShiseturiyo"
-                    >施設の利用
-                    <v-radio
-                      label="あり"
-                      :key="1"
-                      :value="1"
-                      class="ml-2"
-                    ></v-radio>
-                    <v-radio label="なし" :key="0" :value="0"></v-radio>
-                  </v-radio-group>
-                </v-card>
-              </v-card>
-            </v-card>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"
+            ><label class="w">{{ dateStart }}</label></v-col
+          >
+          <v-col cols="10" class="pl-1">
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="ngsymd"
+              v-model="ngsymd"
+            ></datepicker>
           </v-col>
         </v-row>
-
-        <v-row no-gutters style="flex-wrap: nowrap" class="mx-auto">
-          <v-col cols="3" class="mt-5">食事 </v-col>
-          <v-col cols="9" class="mx-auto">
-            <v-row>
-              <v-col
-                ><v-checkbox
-                  label="朝食"
-                  v-model="nyuuinbiBreakfast"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-              <v-col
-                ><v-checkbox
-                  label="昼食"
-                  v-model="nyuuinbiLunch"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-              <v-col
-                ><v-checkbox
-                  label="夕食"
-                  v-model="nyuuinbiDinner"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-            </v-row>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">施設の利用</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <v-btn-toggle>
+              <v-btn
+                small
+                v-for="val in riyobutton"
+                :key="val.key"
+                :value="val.key"
+                v-model="riyoStart[val.key]"
+                height="25"
+                >{{ val.value }}</v-btn
+              >
+            </v-btn-toggle>
           </v-col>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-          <v-col cols="3" class="flex-grow-0 flex-shrink-0">
-            {{ dateName }}
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">食事</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <v-btn-toggle multiple>
+              <v-btn
+                small
+                v-for="val in mealStart"
+                :key="val.key"
+                :value="val.value"
+                v-model="mealStartSelect[val.key]"
+                height="25"
+                >{{ val.name }}</v-btn
+              >
+            </v-btn-toggle>
           </v-col>
-          <v-col cols="9">
+        </v-row>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">病院名</label></v-col>
+          <v-col cols="10" class="pl-1">
             <v-text-field
-              label="病院名を入力"
-              class="mx-auto mt-n5"
-              :value="byouinName"
-              v-model="byouinName"
+              dense
+              hide-details="false"
+              height="20"
+              :value="byoinname"
+              v-model="byoinname"
             ></v-text-field>
           </v-col>
         </v-row>
-      </v-container>
-      <v-container>
-        <v-row no-gutters style="flex-wrap: nowrap">
-          <v-col cols="3" class="flex-grow-0 flex-shrink-0">
-            <v-card elevation="0">{{ dateEnd }} </v-card>
-          </v-col>
-          <v-col cols="9" class="flex-grow-0 flex-shrink-0 ml-2">
-            <v-card class="pa-0" elevation="0">
-              <datepicker
-                :language="ja"
-                class="input_picker"
-                :format="DatePickerFormat"
-                :value="taiinbi"
-                :clear-button="true"
-                v-model="taiinbi"
-              ></datepicker>
-              <v-card class="d-flex" color="lighten-2" flat tile>
-                <v-card class="pa-0" elevation="0">
-                  <v-radio-group row v-model="taiinbiShiseturiyo"
-                    >施設の利用
-                    <v-radio
-                      label="あり"
-                      :key="1"
-                      :value="1"
-                      class="ml-2"
-                    ></v-radio>
-                    <v-radio label="なし" :key="0" :value="0"></v-radio>
-                  </v-radio-group>
-                </v-card>
-              </v-card>
-            </v-card>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"
+            ><label class="w">{{ dateEnd }} </label></v-col
+          >
+          <v-col cols="10" class="pl-1">
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="ngeymd"
+              :clear-button="true"
+              v-model="ngeymd"
+            ></datepicker>
           </v-col>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="mx-auto">
-          <v-col cols="3" class="mt-5">食事 </v-col>
-          <v-col cols="9" class="mx-auto">
-            <v-row>
-              <v-col
-                ><v-checkbox
-                  label="朝食"
-                  v-model="taiinbiBreakfast"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-              <v-col
-                ><v-checkbox
-                  label="昼食"
-                  v-model="taiinbiLunch"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-              <v-col
-                ><v-checkbox
-                  label="夕食"
-                  v-model="taiinbiDinner"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-              <v-col
-                ><v-checkbox
-                  label="間"
-                  v-model="taiinbiAida"
-                  input-value="true"
-                ></v-checkbox
-              ></v-col>
-            </v-row>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">施設の利用</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <v-btn-toggle>
+              <v-btn
+                small
+                v-for="val in riyobutton"
+                :key="val.key"
+                :value="val.key"
+                height="25"
+                v-model="riyoEnd[val.key]"
+                >{{ val.value }}</v-btn
+              >
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">食事</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <v-btn-toggle multiple>
+              <v-btn
+                small
+                v-for="val in mealEnd"
+                :key="val.key"
+                :value="val.value"
+                height="25"
+                v-model="mealEndSelect[val.key]"
+                >{{ val.name }}</v-btn
+              >
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">外泊先</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <v-text-field
+              dense
+              hide-details="false"
+              height="20"
+              :value="gaihaku"
+              v-model="gaihaku"
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -183,7 +160,10 @@
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
-import { KobetsuNyutai } from '@backend/api/KobetsuNyutai';
+
+import { getConnect } from '@connect/getConnect';
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
 
 export default {
   data() {
@@ -192,19 +172,72 @@ export default {
       ja: ja,
       DatePickerFormat: 'yyyy年MM月dd日',
       dialogFlag: false,
-      nyuuinbi: '',
-      byouinName: '',
-      taiinbi: '',
-      nyuuinbiShiseturiyo: 1,
-      nyuuinbiBreakfast: false,
-      nyuuinbiLunch: false,
-      nyuuinbiDinner: false,
-      taiinbiShiseturiyo: 1,
-      taiinbiBreakfast: false,
-      taiinbiLunch: false,
-      taiinbiDinner: false,
-      taiinbiAida: false,
+      ngsymd: '',
+      ngeymd: '',
+      byoinname: '',
+      gaihaku: '',
+      negymd: '',
+      riyoStart: [],
+      riyoEnd: [],
       registData: {},
+      getApiData: [],
+      riyobutton: [
+        {
+          key: 1,
+          value: 'あり',
+        },
+        {
+          key: 0,
+          value: 'なし',
+        },
+      ],
+      mealStartSelect: [],
+      mealStart: [
+        {
+          key: 'ssyoku1',
+          value: '1',
+          name: '朝食',
+        },
+        {
+          key: 'ssyoku2',
+          value: '2',
+          name: '昼食',
+        },
+        {
+          key: 'ssyoku3',
+          value: '3',
+          name: '夕食',
+        },
+        {
+          key: 'ssyoku4',
+          value: '4',
+          name: '間食',
+        },
+      ],
+      mealEndSelect: [],
+      mealEnd: [
+        {
+          key: 'esyoku1',
+          value: '1',
+          name: '朝食',
+        },
+        {
+          key: 'esyoku2',
+          value: '2',
+          name: '昼食',
+        },
+        {
+          key: 'esyoku3',
+          value: '3',
+          name: '夕食',
+        },
+        {
+          key: 'esyoku4',
+          value: '4',
+          name: '間食',
+        },
+      ],
+
       dateTitle: '',
       dateStart: '',
       dateEnd: '',
@@ -236,53 +269,22 @@ export default {
      * クリアボタンを押下
      */
     kikantuika_dialog_clear() {
-      this.nyuuinbi = '';
-      this.taiinbi = '';
-      this.nyuuinbiShiseturiyo = '';
-      this.nyuuinbiBreakfast = '';
-      this.nyuuinbiLunch = '';
-      this.nyuuinbiDinner = '';
-      this.taiinbiShiseturiyo = '';
-      this.taiinbiBreakfast = '';
-      this.taiinbiLunch = '';
-      this.taiinbiDinner = '';
-      this.taiinbiAida = '';
-      this.byouinName = '';
+      this.ngsymd = '';
+      this.negymd = '';
+      this.byoinname = '';
+      this.gaihaku = '';
     },
     /*************
      * 登録ボタンを押下
      */
     kikantuika_dialog_regist() {
-      let nyuuinbi = moment(this.nyuuinbi).format('YYYY-M-D');
-      let taiinbi = '';
-      let taiinbi_notFlag = false;
-      if (this.taiinbi) {
-        taiinbi = moment(this.taiinbi).format('YYYY-M-D');
-        let diff = moment(this.taiinbi).diff(moment(this.nyuuinbi));
-        if (diff < 0 || !this.nyuuinbi) {
-          alert('日付の指定に誤りがあります。');
-          return false;
-        }
-      } else {
-        taiinbi_notFlag = true;
-      }
-      this.registData = {
-        type: this.type, // nyutaiin や gaihaku等
-        selectKey: this.selectKey, // nyuutaiinやgaihakuの配列のキー
-        nyuuinbi: nyuuinbi,
-        taiinbi: taiinbi,
-        taiinbi_notFlag: taiinbi_notFlag,
-        nyuuinbiShiseturiyo: this.nyuuinbiShiseturiyo,
-        nyuuinbiBreakfast: this.nyuuinbiBreakfast,
-        nyuuinbiLunch: this.nyuuinbiLunch,
-        nyuuinbiDinner: this.nyuuinbiDinner,
-        taiinbiShiseturiyo: this.taiinbiShiseturiyo,
-        taiinbiBreakfast: this.taiinbiBreakfast,
-        taiinbiLunch: this.taiinbiLunch,
-        taiinbiDinner: this.taiinbiDinner,
-        taiinbiAida: this.taiinbiAida,
-        byouinName: this.byouinName,
-      };
+      console.log(this.mealStartSelect);
+      console.log(this.mealEndSelect);
+      console.log(moment(this.ngsymd).format('YYYY-M-D'));
+      console.log(moment(this.egsymd).format('YYYY-M-D'));
+      console.log(this.byoinname);
+      console.log(this.gaihaku);
+      console.log(this.getApiData);
 
       // ここでAPIで登録処理を行う想定
 
@@ -304,36 +306,55 @@ export default {
       }
       this.dialogFlag = true;
       this.type = type;
+      params['uniqid'] = uniqid;
+      params['traceid'] = traceid;
+      // 追加時はapiを利用しない
+      // データの編集時はif文の中でapiを利用する
       if (typeof params === 'object') {
-        let args = {};
-        args = {
-          getkbn: 0,
-          riid: params.riid,
-          kbn: params.kbn,
-          ngsymd: params.ngsymd,
-          rendo: params.rend,
-        };
-        KobetsuNyutai(args).then((result) => {
-          this.nyuuinbi = moment(
-            result.ngsymd + '00:00:00',
-            'YYYY-MM-DD'
-          ).format('YYYY-MM-DD');
-          this.byouinName = result.byoinname;
-          this.nyuuinbiShiseturiyo = '';
-          this.nyuuinbiBreakfast = result.ssyoku1;
-          this.nyuuinbiLunch = result.ssyoku2;
-          this.nyuuinbiDinner = result.ssyoku3;
-          this.nyuuinbiAida = result.ssyoku4;
-          this.taiinbi = moment(
-            result.ngeymd + '00:00:00',
-            'YYYY-MM-DD'
-          ).format('YYYY-MM-DD');
-          this.taiinbiShiseturiyo = '';
-          this.taiinbiBreakfast = result.ssyoku1;
-          this.taiinbiLunch = result.ssyoku2;
-          this.taiinbiDinner = result.ssyoku3;
-          this.taiinbiAida = result.ssyoku4;
-        });
+        return getConnect(this.$route.path + 'Nyutai', params).then(
+          (result) => {
+            this.getApiData = result;
+            // 入院日
+            this.ngsymd = moment(result.ngsymd).format('YYYY-MM-DD');
+            // 退院日
+            this.ngeymd = moment(result.ngeymd).format('YYYY-MM-DD');
+            // 施設の利用設定
+            this.riyoSelected(result);
+            // 食事設定
+            for (let i = 0; i < this.mealStart.length; i++) {
+              let mkey = this.mealStart[i].key;
+              this.mealStartSelect[mkey] = result[mkey] ? true : false;
+            }
+            for (let i = 0; i < this.mealEnd.length; i++) {
+              let mkey = this.mealEnd[i].key;
+              this.mealEndSelect[mkey] = result[mkey] ? true : false;
+            }
+            // 病院
+            this.byoinname = result.byoinname;
+            // 外泊
+            this.gaihaku = result.gaihaku;
+          }
+        );
+      }
+    },
+
+    // 施設の利用ボタン選択配列
+    riyoSelected(result) {
+      if (result.seikyu == 0) {
+        this.riyoStart[1] = true;
+        this.riyoEnd[1] = true;
+      }
+      if (result.seikyu == 1) {
+        this.riyoStart[0] = true;
+        this.riyoEnd[1] = true;
+      }
+      if (result.seikyu == 2) {
+        this.riyoStart[0] = true;
+        this.riyoEnd[1] = true;
+      }
+      if (result.seikyu == 3) {
+        this.riyoStart[0] = true;
+        this.riyoEnd[0] = true;
       }
     },
   },
@@ -343,6 +364,22 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 #dialogKikantuika {
+  font-size: 12px;
+  label {
+    display: inline-block;
+    margin-right: 2px;
+    padding-top: 2px;
+    background: #eee;
+    border: none;
+    height: 24px;
+    width: 75px;
+    text-align: center;
+    line-height: 20px;
+    &.w {
+      width: 100%;
+    }
+  }
+
   .input_picker {
     width: fit-content;
     display: inline-block;

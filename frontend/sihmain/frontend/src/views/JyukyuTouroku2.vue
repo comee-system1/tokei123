@@ -316,25 +316,18 @@ import JyukyuTourokuRightArea from '../components/JyukyuTourokuRightArea.vue';
 
 import jyukyuTourokuDialog from '../components/JyukyuTourokuDialog.vue';
 
-import { JyukyuTourokuKihonData } from '@backend/api/JyukyuTourokuKihon';
-import { JyukyuTourokuSyogaiKubunData } from '@backend/api/JyukyuTourokuSyogaiKubun';
-import { JyukyuTourokuSikyuryoData } from '@backend/api/JyukyuTourokuSikyuryo';
-import { JyukyuTourokuKeikakuSoudanData } from '@backend/api/JyukyuTourokuKeikakuSoudan';
-import { JyukyuTourokuRiyosyaFutanData } from '@backend/api/JyukyuTourokuRiyosyaFutan';
+import { postConnect } from '@connect/postConnect';
+import { getConnect } from '@connect/getConnect';
 
-//マスタ
-import { JyukyuTourokuSikyuryoLayoutData } from '@backend/api/JyukyuTourokuSikyuryoLayout';
-
-import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
-
-Vue.use(VueAxios, axios);
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
 
 const MOUSE_OVER_KIHON = '#175752';
 const MOUSE_LEAVE_KIHON = '#1f7872';
-const MOUSE_OVER_OTHER = '#969696';
+const MOUSE_OVER_OTHER = '#afafaf';
 const MOUSE_LEAVE_OTHER = '#c6c6c6';
+const MOUSE_OVER_BACK = '#f6f6f6';
+const MOUSE_LEAVE_BACK = '#fff';
 const ID_KIHON = 'c-kihon';
 const ID_SYOGAIKUBN = 'c-syogaiKubun';
 
@@ -460,46 +453,41 @@ export default {
     },
     mouseover(id) {
       if (id == ID_KIHON) {
-        let elmH = document.getElementById('kihonheader');
-        elmH.style.backgroundColor = MOUSE_OVER_KIHON;
+        this.overCardColor(ID_KIHON, 'kihonheader', MOUSE_OVER_KIHON);
       } else if (id == ID_SYOGAIKUBN) {
-        let elmH = document.getElementById('syogaikubunheader');
-        elmH.style.backgroundColor = MOUSE_OVER_OTHER;
+        this.overCardColor(
+          ID_SYOGAIKUBN,
+          'syogaikubunheader',
+          MOUSE_OVER_OTHER
+        );
       }
     },
     mouseleave(id) {
-      let elm = document.getElementById(id);
-      elm.classList.remove('elevation-1');
-      elm.classList.add('elevation-5');
-      elm.classList.remove('ml-3');
+      this.mouseupCard(id);
       if (id == ID_KIHON) {
-        elm = document.getElementById(ID_SYOGAIKUBN);
+        let elm = document.getElementById(ID_SYOGAIKUBN);
         elm.classList.remove('ml-1');
-        let elmH = document.getElementById('kihonheader');
-        elmH.style.backgroundColor = MOUSE_LEAVE_KIHON;
+        this.leaveCardColor(ID_KIHON, 'kihonheader', MOUSE_LEAVE_KIHON);
       } else if (id == ID_SYOGAIKUBN) {
-        let elmH = document.getElementById('syogaikubunheader');
-        elmH.style.backgroundColor = MOUSE_LEAVE_OTHER;
+        this.leaveCardColor(
+          ID_SYOGAIKUBN,
+          'syogaikubunheader',
+          MOUSE_LEAVE_OTHER
+        );
       }
     },
     mousedown(id) {
-      let elm = document.getElementById(id);
-      elm.classList.remove('elevation-5');
-      elm.classList.add('elevation-1');
-      elm.classList.add('ml-3');
+      this.mousedownCard(id);
       if (id == ID_KIHON) {
-        elm = document.getElementById(ID_SYOGAIKUBN);
+        let elm = document.getElementById(ID_SYOGAIKUBN);
         elm.classList.add('ml-1');
       } else if (id == ID_SYOGAIKUBN) {
       }
     },
     mouseup(id) {
-      let elm = document.getElementById(id);
-      elm.classList.remove('elevation-1');
-      elm.classList.add('elevation-5');
-      elm.classList.remove('ml-3');
+      this.mouseupCard(id);
       if (id == ID_KIHON) {
-        elm = document.getElementById(ID_SYOGAIKUBN);
+        let elm = document.getElementById(ID_SYOGAIKUBN);
         elm.classList.remove('ml-1');
         this.setMode('modKihon');
         this.jyukyuTourokuDialogOpen(id, 'modKihon');
@@ -507,6 +495,30 @@ export default {
         this.setMode('modSyogaikubun');
         this.jyukyuTourokuDialogOpen(id, 'modSyogaikubun');
       }
+    },
+    overCardColor(id1, id2, color) {
+      let elmH = document.getElementById(id1);
+      elmH.style.backgroundColor = MOUSE_OVER_BACK;
+      elmH = document.getElementById(id2);
+      elmH.style.backgroundColor = color;
+    },
+    leaveCardColor(id1, id2, color) {
+      let elmH = document.getElementById(id1);
+      elmH.style.backgroundColor = MOUSE_LEAVE_BACK;
+      elmH = document.getElementById(id2);
+      elmH.style.backgroundColor = color;
+    },
+    mousedownCard(id) {
+      let elm = document.getElementById(id);
+      elm.classList.remove('elevation-5');
+      elm.classList.add('elevation-1');
+      elm.classList.add('ml-3');
+    },
+    mouseupCard(id) {
+      let elm = document.getElementById(id);
+      elm.classList.remove('elevation-1');
+      elm.classList.add('elevation-5');
+      elm.classList.remove('ml-3');
     },
     setTrunNew() {
       this.setMode('new');
@@ -606,28 +618,28 @@ export default {
       }
       //基本情報
       this.getJyukyuTourokuKihonData(rid).then((value) => {
-        this.kihonDataOrg = value[0];
+        this.kihonDataOrg = value;
         this.setKihonData();
       });
       if (this.JyukyuSyogaiFukusiFlag) {
         //障害支給区分
         this.getJyukyuTourokuSyogaiKubunData(rid).then((value) => {
-          this.syogaiKubunDataOrg = value[0];
+          this.syogaiKubunDataOrg = value;
           this.setSyogaiKubunData();
         });
         //支給決定内容
         this.getJyukyuTourokuSikyuryoData(rid).then((value) => {
-          this.sikyuryoDataOrg = value[0];
+          this.sikyuryoDataOrg = value;
           this.setSikyuryoData();
         });
         //計画相談
         this.getJyukyuTourokuKeikakuSoudanData(rid).then((value) => {
-          this.keikakuSoudanDataOrg = value[0];
+          this.keikakuSoudanDataOrg = value;
           this.setKeikakuSoudanData();
         });
         //利用者負担
         this.getJyukyuTourokuRiyosyaFutanData(rid).then((value) => {
-          this.riyosyaFutanDataOrg = value[0];
+          this.riyosyaFutanDataOrg = value;
           this.setRiyosyaFutanData();
         });
       } else if (this.JyukyuSyogaiJiFlag) {
@@ -637,52 +649,79 @@ export default {
     },
     //apiからデータ取得
     async getJyukyuTourokuKihonData(rid) {
-      let jinf = [];
-
-      return await JyukyuTourokuKihonData(rid).then((result) => {
-        jinf.push(result.jyukyu_inf);
-        return jinf;
-      });
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        rid: rid,
+      };
+      return getConnect(this.$route.path.replace('2', 'Kihon'), params).then(
+        (result) => {
+          return result.jyukyu_inf;
+        }
+      );
     },
     async getJyukyuTourokuSyogaiKubunData(rid) {
-      let jinf = [];
-
-      return await JyukyuTourokuSyogaiKubunData(rid).then((result) => {
-        jinf.push(result.skryoh4_inf);
-        return jinf;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        rid: rid,
+      };
+      return getConnect(
+        this.$route.path.replace('2', 'SyogaiKubun'),
+        params
+      ).then((result) => {
+        return result.skryoh4_inf;
       });
     },
     async getJyukyuTourokuSikyuryoData(rid) {
-      let jinf = [];
-
-      return await JyukyuTourokuSikyuryoData(rid).then((result) => {
-        jinf.push(result.skryoh1_inf);
-        return jinf;
-      });
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        rid: rid,
+      };
+      return getConnect(this.$route.path.replace('2', 'Sikyuryo'), params).then(
+        (result) => {
+          return result.skryoh1_inf;
+        }
+      );
     },
     async getJyukyuTourokuKeikakuSoudanData(rid) {
-      let jinf = [];
-
-      return await JyukyuTourokuKeikakuSoudanData(rid).then((result) => {
-        jinf.push(result.skryoh3_inf);
-        return jinf;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        rid: rid,
+      };
+      return getConnect(
+        this.$route.path.replace('2', 'KeikakuSoudan'),
+        params
+      ).then((result) => {
+        return result.skryoh3_inf;
       });
     },
     async getJyukyuTourokuRiyosyaFutanData(rid) {
-      let jinf = [];
-
-      return await JyukyuTourokuRiyosyaFutanData(rid).then((result) => {
-        jinf.push(result.skryoh2_inf);
-        return jinf;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        rid: rid,
+      };
+      return getConnect(
+        this.$route.path.replace('2', 'RiyosyaFutan'),
+        params
+      ).then((result) => {
+        return result.skryoh2_inf;
       });
     },
     //マスタ
     async getJyukyuTourokuSikyuryoLayoutData() {
-      let jinf = [];
-
-      return await JyukyuTourokuSikyuryoLayoutData().then((result) => {
-        jinf.push(result.layout_inf);
-        return jinf;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+      };
+      return getConnect(
+        this.$route.path.replace('2', 'SikyuryoLayout'),
+        params
+      ).then((result) => {
+        return result.layout_inf;
       });
     },
     //各コンポーネントと履歴にデータ設定
@@ -826,8 +865,6 @@ export default {
         this.$refs.sikyuryo.setMode(pmode);
         this.$refs.keikaku.setMode(pmode);
         this.$refs.futan.setMode(pmode);
-        if (pmode == 'modKihon') {
-        }
       } else if (this.JyukyuSyogaiJiFlag) {
       } else if (this.JyukyuChiikiSoudanFlag) {
       }

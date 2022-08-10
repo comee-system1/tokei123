@@ -24,12 +24,7 @@
           障害支援区分
         </v-card>
         <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="syogaikubun-sienkubun-combobox d-flex flex-row ml-2"
-        >
-          {{ syogaiKubunDisp }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ syogaiKubunDisp }}</p>
       </v-row>
       <v-row no-gutters class="syogaikubun-yukokikan-row">
         <v-card
@@ -41,12 +36,7 @@
           有効期間
         </v-card>
         <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="syogaikubun-yukokikan-picker d-flex flex-row ml-2"
-        >
-          {{ syugaikubunymdDisp }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ syugaikubunymdDisp }}</p>
       </v-row>
     </v-container>
   </div>

@@ -172,6 +172,7 @@ export default {
       mltype: true,
       headerWidth: { 2: 40, 3: 90, 4: 34 },
       headerheight: 180,
+      riid: '', // 利用者内部ID
     };
   },
   components: {
@@ -215,13 +216,11 @@ export default {
         this.headerWidth = { 2: 140, 3: 190, 4: 64 };
       }
 
-      if (this.userDataSelect[0].jyukyusyabango.length > 0) {
+      if (this.riid) {
         this.createHeader(this.mainGrid);
       }
     },
     onInitialized(flexGrid) {
-      // 初回の提供サービスコードを渡す
-      this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.mainGrid = flexGrid;
       this.methodCellFormatSetting(flexGrid);
       // セルのクリックイベント
@@ -270,11 +269,11 @@ export default {
                 // 入退院
                 params = {
                   getkbn: 0,
-                  riid: 1,
+                  riid: _self.riid,
                   kbn: 1,
-                  ngsymd: selectedData.nyugai_inf[parentKey[1]].ngsymd,
-                  rendo: 0,
+                  ngsymd: '20220806',
                 };
+                console.log(params);
                 _self.$refs.dialog_kikantuika.parentFromOpenDialog(
                   params,
                   'nyutaiin_add'
@@ -284,10 +283,9 @@ export default {
                 // 外泊
                 params = {
                   getkbn: 0,
-                  riid: 1,
-                  kbn: 2,
-                  ngsymd: selectedData.nyugai_inf[parentKey[1]].ngsymd,
-                  rendo: 0,
+                  srcymd: '20220810',
+                  jkbn: 0,
+                  keiyakuid: 1,
                 };
 
                 _self.$refs.dialog_kikantuika.parentFromOpenDialog(
@@ -349,11 +347,7 @@ export default {
         // ユーザ選択の無効化
         this.$refs.user_list_print.userCheckInvalide();
         this.userDataSelect[0]['riyosyo'] = '';
-        this.userDataSelect[0]['jyukyusyabango'] = '';
-        this.$refs.user_list_print.setChildTeikyocode(
-          this.teikyoCode,
-          serviceArgument['search_button']
-        );
+        this.riid = '';
         this.mainGrid.columns.clear();
       }
     },
@@ -384,6 +378,7 @@ export default {
      * 左メニューのユーザ一覧からユーザーを選択したとき、メイン画面に選択値を表示する
      */
     setUserSelectPoint(row) {
+      this.riid = this.userListComponentDatas[row].riid;
       // データの取得
       this.getData();
 
@@ -578,7 +573,6 @@ export default {
      */
     parentServiceChange(serviceArgument) {
       this.teikyoCode = serviceArgument.teikyoCode;
-      this.$refs.user_list_print.setChildTeikyocode(this.teikyoCode);
       this.userDataSelect[0]['riyosyo'] = '';
       this.userDataSelect[0]['jyukyusyabango'] = '';
     },
@@ -803,16 +797,34 @@ export default {
 
     // 変動情報ダイアログの表示
     openDialog_Term(type) {
-      if (this.userDataSelect[0]['jyukyusyabango']) {
-        this.$refs.dialog_kikantuika.parentFromOpenDialog('', type);
+      let params = {};
+      params = {
+        getkbn: 0,
+        riid: this.riid,
+        kbn: 1,
+        ngsymd: '20220806',
+      };
+      if (this.riid) {
+        this.$refs.dialog_kikantuika.parentFromOpenDialog(params, type);
       } else {
         alert('利用者を選択してください。');
       }
     },
     // 加算追加ダイアログの表示
     openDialog_Add() {
-      if (this.userDataSelect[0]['jyukyusyabango']) {
-        this.$refs.dialog_kasantuika.parentFromOpenDialog('0', 'add');
+      if (this.riid) {
+        let params = {};
+        params = {
+          getkbn: 0,
+          setym: '202201',
+          entpriid: 1234,
+          riid: this.riid,
+          hokbn: 1,
+          svcsyucode: 1,
+          kcode: 1,
+          ksnsymd: '20220806',
+        };
+        this.$refs.dialog_kasantuika.parentFromOpenDialog(params, 'add');
       } else {
         alert('利用者を選択してください。');
       }
@@ -828,10 +840,10 @@ div#kobeturiyou {
   min-width: none;
 
   .moveLeft {
-    animation: slideLeftArea 2s forwards;
+    animation: slideLeftArea $seconds forwards;
   }
   .moveRight {
-    animation: slideRightArea 2s forwards;
+    animation: slideRightArea $seconds forwards;
   }
   @keyframes slideLeftArea {
     from {

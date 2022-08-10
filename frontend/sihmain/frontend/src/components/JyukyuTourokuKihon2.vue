@@ -22,9 +22,7 @@
           交付年月日
         </v-card>
         <p class="required">*</p>
-        <v-card elevation="0" class="kihon-kofuymd-picker d-flex flex-row ml-1">
-          {{ kofuymd }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ kofuymd }}</p>
       </v-row>
       <v-row no-gutters class="kihon-kubun-row">
         <v-card
@@ -35,14 +33,7 @@
         >
           区分
         </v-card>
-        <v-card
-          elevation="0"
-          class="kihon-kubun-selection d-flex flex-row ml-2"
-          flat
-          tile
-        >
-          {{ jyukyukubun }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ jyukyukubun }}</p>
       </v-row>
       <v-row no-gutters class="kihon-jyukyusyabangou-row">
         <v-card
@@ -54,12 +45,7 @@
           受給者番号
         </v-card>
         <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="kihon-jyukyusyabangou-input d-flex flex-row ml-2"
-        >
-          {{ jyukyuno }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ jyukyuno }}</p>
       </v-row>
       <v-row no-gutters class="kihon-shichosonbangou-row">
         <v-card
@@ -71,12 +57,7 @@
           市町村番号
         </v-card>
         <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="kihon-shichosonbangou-input d-flex flex-row ml-2"
-        >
-          {{ shichosonno + ' ' + shichosonname }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ shichosonno + ' ' + shichosonname }}</p>
       </v-row>
       <v-row no-gutters class="kihon-syogaisyubetu-row d-flex flex-row">
         <v-card
@@ -136,12 +117,7 @@
         >
           支給決定者
         </v-card>
-        <v-card
-          elevation="0"
-          class="kihon-sikyuketteisya-input d-flex flex-row ml-2"
-        >
-          {{ sikyuketteisyano + ' ' + sikyuketteisya }}
-        </v-card>
+        <p class="ml-2 mb-0">{{ sikyuketteisyano + ' ' + sikyuketteisya }}</p>
       </v-row>
     </v-container>
   </div>
@@ -225,31 +201,6 @@ export default {
       if (confirm('受給者証基本情報を修正登録します。\n\nよろしいですか？')) {
       }
     },
-    createPutData() {
-      let resutl = [];
-      result.push({
-        jyukyuid: element.jyukyuid,
-        rysid: element.rysid,
-        jkbn: element.jkbn,
-        shichoson: element.shichoson,
-        shichosonno: element.shichosonno,
-        shichosonname: element.shichosonname,
-        kofuymd: element.kofuymd,
-        jyukyuno: element.jyukyuno,
-        jidoid: element.jidoid,
-        jidopno1: element.jidopno1,
-        jidopno2: element.jidopno2,
-        jidoadd: element.jidoadd,
-        ssyu1: element.ssyu1,
-        ssyu2: element.ssyu2,
-        ssyu3: element.ssyu3,
-        ssyu4: element.ssyu4,
-        zantei: element.zantei,
-        dcod: element.dcod,
-        jyukyuname: element.jyukyuname,
-      });
-      return resutl;
-    },
     setData(selectedData) {
       this.clearData();
       if (selectedData.length > 0) {
@@ -322,6 +273,9 @@ div#JyukyuTourokuKihon2 {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;
+  .p {
+    height: 25px;
+  }
   .kihon-container {
     padding: 0px !important;
   }

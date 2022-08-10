@@ -1,13 +1,17 @@
 <template>
   <v-dialog v-model="dialog_add_flag" width="500">
-    <v-card class="pa-2">
+    <v-card class="pa-2" id="dialogKasantuika">
       <v-card-title> 個別加算追加登録 </v-card-title>
       <v-card class="d-flex justify-center" flat>
         <v-card class="pa-2" elevation="0">
-          <wj-combo-box
-            :items-source="addSelect"
-            :selectedIndexChanged="ontextChanged"
-          ></wj-combo-box>
+          <v-select
+            :items="addSelect"
+            dense
+            outlined
+            height="25"
+            hide-details="false"
+            class="pa-0 selectCombobox"
+          ></v-select>
         </v-card>
       </v-card>
       <v-container class="lighten-5">
@@ -22,45 +26,36 @@
           color="secondary"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-        <v-row no-gutters style="flex-wrap: nowrap">
-          <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-            <v-card elevation="0">開始日 </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-card elevation="0">
-              <datepicker
-                :language="ja"
-                :format="DatePickerFormat"
-                class="input_picker"
-              ></datepicker>
-            </v-card>
+
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">開始日</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <datepicker
+              :language="ja"
+              :format="DatePickerFormat"
+              class="input_picker"
+              v-model="ksnsymd"
+            ></datepicker>
           </v-col>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="mt-1">
-          <v-col cols="4">
-            <v-card elevation="0">終了日 </v-card>
-          </v-col>
-          <v-col cols="8">
-            <v-card elevation="0">
-              <datepicker
-                :language="ja"
-                :format="DatePickerFormat"
-                class="input_picker"
-              ></datepicker>
-            </v-card>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">終了日</label></v-col>
+          <v-col cols="10" class="pl-1">
+            <datepicker
+              :language="ja"
+              :format="DatePickerFormat"
+              class="input_picker"
+              v-model="ksneymd"
+            ></datepicker>
           </v-col>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="mt-5 mx-auto">
-          <v-col cols="4">
-            <v-card elevation="0">単位数 </v-card>
-          </v-col>
-          <v-col cols="8"> 30単位/日 </v-col>
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">単位数</label></v-col>
+          <v-col cols="10" class="pl-1"> 30単位/日 </v-col>
         </v-row>
-        <v-row no-gutters style="flex-wrap: nowrap" class="mt-3">
-          <v-col cols="4" class="flex-grow-0 flex-shrink-0">
-            <v-card elevation="0">留意事項 </v-card>
-          </v-col>
-          <v-col cols="8">
+        <v-row no-gutters class="ma-2">
+          <v-col cols="2"><label class="w">留意事項</label></v-col>
+          <v-col cols="10" class="pl-1">
             <ol>
               <li>入所日(算定日)から30日を限度</li>
               <li>同一敷地外の病院に30日以上入院した場合は、再算定可能</li>
@@ -96,6 +91,10 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
+import { getConnect } from '@connect/getConnect';
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
+
 export default {
   props: [],
   data() {
@@ -104,10 +103,12 @@ export default {
       ja: ja,
       DatePickerFormat: 'yyyy年MM月dd日',
       dialog_add_flag: false,
-      addSelect: '',
+      addSelect: [],
       selected: {},
       registData: {},
       dialog_delete_flag: true,
+      ksnsymd: '',
+      ksneymd: '',
     };
   },
   components: {
@@ -115,11 +116,6 @@ export default {
   },
 
   methods: {
-    ontextChanged: function (e) {
-      this.selected = {
-        name: this.addSelect[e.selectedIndex],
-      };
-    },
     kasantuika_dialog_delete() {
       this.$emit('kasantuika_dialog_delete');
       this.dialog_add_flag = false;
@@ -136,11 +132,10 @@ export default {
       this.$emit('kasantuika_dialog_regist');
       this.dialog_add_flag = false;
     },
-    parentFromOpenDialog(kasanid, type) {
+    parentFromOpenDialog(params, type) {
       // 今選択しているヘッダにあるサービス
       // 仕様の可否は仕様確認後
       // type:add(追加) type:taisei_kobetu type:kobetu 想定
-      this.kasanid = kasanid;
       this.type = type;
       //削除ボタン表示可否
       if (type == 'add') {
@@ -151,10 +146,45 @@ export default {
       this.addSelect = ['入所時特別支援加算', '入所時特別支援加算2'];
 
       this.dialog_add_flag = true;
+
+      params['uniqid'] = uniqid;
+      params['traceid'] = traceid;
+      return getConnect(this.$route.path + 'Kasan', params).then();
     },
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import '@/assets/scss/common.scss';
+#dialogKasantuika {
+  font-size: 12px;
+  label {
+    display: inline-block;
+    margin-right: 2px;
+    padding-top: 2px;
+    background: #eee;
+    border: none;
+    height: 24px;
+    width: 75px;
+    text-align: center;
+    line-height: 20px;
+    &.w {
+      width: 100%;
+    }
+  }
+  .selectCombobox {
+    max-width: 300px;
+    height: 25px;
+    font-size: 11px;
+    width: 300px;
+    border-bottom: 1px solid #ccc;
+    div.v-input__slot {
+      min-height: 25px;
+      div.v-input__append-inner {
+        margin-top: 0px;
+      }
+    }
+  }
+}
 </style>

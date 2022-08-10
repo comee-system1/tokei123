@@ -4,8 +4,8 @@ const config = require('./ApiRun');
 const moment = require('moment')
 export async function JyukyuTourokuSyogaiKubunData(rid) {
     // 接続確認用URL
-    // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/shogaikbn?getkbn=0&rysid=' + rid;
-    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/shogaikbn?getkbn=0';
+    // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/syogaikbn?getkbn=0&rysid=' + rid;
+    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/syogaikbn?getkbn=0';
     var uniqid = 1;
     config.setURL(url);
     config.setUniqID(uniqid);

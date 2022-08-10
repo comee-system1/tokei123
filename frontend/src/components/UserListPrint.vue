@@ -134,6 +134,8 @@
             :word-wrap="false"
             :allowResizing="true"
             :isReadOnly="true"
+            format="d"
+            align="center"
             v-if="riyocodeFlag"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
@@ -148,10 +150,11 @@
           <wj-flex-grid-column
             header="利用者名"
             binding="names"
-            :width="132"
+            :width="120"
             :word-wrap="false"
             :allowResizing="true"
             :isReadOnly="true"
+            align="center"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="印"
@@ -184,19 +187,11 @@
 <script>
 import * as wjCore from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
-
-import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
-import * as wjcCore from '@grapecity/wijmo';
 // import sysConst from '@/utiles/const';
+import { getConnect } from '@connect/getConnect';
 
-// import '@backend/api/UserListPrint';
-
-Vue.use(VueAxios, axios);
-// let userUrl = 'http:// local-tokei/';
 let userDataSelect = [];
-let userCount = 0;
+//let userCount = 0;
 let alphabet = [
   '全',
   'ア',
@@ -210,6 +205,10 @@ let alphabet = [
   'ラ',
   'ワ',
 ];
+
+let uniqid = 1; // 現在は1のみapiが実行する
+let traceid = 123;
+
 export default {
   data() {
     return {
@@ -299,13 +298,7 @@ export default {
       );
       return filterCombo;
     },
-    setChildTeikyocode(teikyoCode, serachbutton) {
-      // this.usersData = [];
-      if (serachbutton) {
-        this.usersData = this.createUser();
-      }
-      this.useTeikyoCode = teikyoCode;
-    },
+
     sortUser(sortType) {
       this.sortFlag.kanaFlag = false;
       this.sortFlag.codeFlag = false;
@@ -356,35 +349,24 @@ export default {
     },
     createUser() {
       let usersData = [];
-      usersData['status'] = 'idle';
-      let riyo_inf = [];
+      let params = [];
+      params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        getkbn: 0,
+        jkbn: 0,
+        sdnflg: 0,
+        symd: '20220801',
+        eymd: '20220901',
+      };
 
-      // axiosを利用しないとき下記有効
-      userCount = 100;
-      for (let i = 0; i < userCount; i++) {
-        riyo_inf.push({
-          riid: '5500' + i,
-          riyocode: '123456' + i,
-          names: '東経 太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          jukyuid: i * 10,
-          jyukyuno: '876543210' + i,
-          sityoid: i * 30,
-          jidoid: i * 40,
-          kzkname: '東経家族' + i,
-          kakutei: 0,
-          nyukyo: i % 2,
-          taikyo: i % 4,
-          print: '',
-        });
-      }
-      // --axiosを利用しないとき下記有効
+      return getConnect('/userListPrint', params).then((result) => {
+        usersData['riyo_inf'] = result.icrn_inf;
+        userDataSelect = usersData;
 
-      usersData['riyo_inf'] = riyo_inf;
-      userDataSelect = usersData;
-
-      this.userFilter();
-      return this.usersData;
+        this.userFilter();
+        return this.usersData;
+      });
     },
 
     userFilter(s) {
@@ -500,14 +482,14 @@ export default {
       // 初期選択を解除
       // flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
+    userCheckInvalide() {
+      this.userGrid.select(-1, -1);
+    },
     onInitializedUser(flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
 
-      // axiosを利用しない時下記1行有効
-      if (_self.usersData.length == 0) {
-        _self.usersData = _self.createUser();
-      }
+      _self.createUser();
 
       let i = 0;
       while (flexGrid.columns.length < 3) {
@@ -518,71 +500,58 @@ export default {
         flexGrid.columns.push(clm);
         i++;
       }
-
-      while (flexGrid.rows.length < userCount) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-      // flexGrid.columnHeaders.rows.defaultSize = 20;
-      // flexGrid.rows.defaultSize = 20;
-
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.cell.children.length == 0) {
+          // フリガナの表示
           if (e.panel == s.cells && e.col == 1) {
-            let tooltip = new wjcCore.Tooltip();
+            let tooltip = new wjCore.Tooltip();
             // let note = this.usersData[e.row].kana;
             let note = '<small>' + _self.usersData[e.row].kana + '</small>';
-            wjcCore.toggleClass(e.cell, 'wj-has-notes');
+            wjCore.toggleClass(e.cell, 'wj-has-notes');
             tooltip.setTooltip(e.cell, note);
           }
-
-          let align = '';
-          if (e.col == 2) {
-            align = 'center';
-          } else {
-            align = 'left';
+          if (e.panel == s.cells && e.col == 0) {
+            e.cell.style.textAlign = 'right';
+            e.cell.style.justifyContent = 'right';
+            e.cell.style.alignItems = 'right';
           }
+          if (e.panel == s.cells && e.col == 1) {
+            e.cell.style.textAlign = 'left';
+            e.cell.style.justifyContent = 'left';
+            e.cell.style.alignItems = 'left';
+          }
+
           let str = e.cell.innerHTML;
           str = '' + str + '';
           e.cell.innerHTML = wjCore.escapeHtml(str.replace(',', ''));
-
-          if (e.col == 2) {
-            e.cell.style.textAlign = 'center';
-          }
-          wjCore.setCss(e.cell, {
-            display: 'table',
-            tableLayout: 'fixed',
-          });
-          wjCore.setCss(e.cell.children[0], {
-            display: 'table-cell',
-            textAlign: align,
-            verticalAlign: 'middle',
-          });
         }
       });
 
       // configure the grid
       flexGrid.alternatingRowStep = 0;
-
-      // 初回のユーザ選択値
-      // _self.$emit('child-select', 0);
       let row = -1;
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
 
-        // 印刷箇所を押下
-        if (ht.cellType == wjGrid.CellType.Cell && ht.col == 2) {
-          let p = flexGrid.getCellData(ht.row, 2);
-          let mark = '';
-          if (p == '〇') mark = '';
-          if (p == '') mark = '〇';
-          _self.usersData[ht.row]['print'] = mark;
-          flexGrid.setCellData(ht.row, 2, mark);
-          flexGrid.select(row, 0);
-        } else if (e.target.innerText.length > 0) {
-          row = hPage._row;
-
-          _self.$emit('child-select', row);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          // 印刷箇所を押下
+          if (ht.col == 2) {
+            //let p = flexGrid.getCellData(ht.row, 2);
+            let p = _self.usersData[ht.row]['print'];
+            let mark = '';
+            if (!p || p == ' ') {
+              mark = '〇';
+            } else {
+              mark = ' ';
+            }
+            _self.usersData[ht.row]['print'] = mark;
+            flexGrid.setCellData(ht.row, 2, mark);
+            //  flexGrid.select(row, 0);
+          } else if (e.target.innerText.length > 0) {
+            row = hPage._row;
+            _self.$emit('child-select', row);
+          }
         }
       });
     },
@@ -615,10 +584,10 @@ div#user-list-print_scrollbar {
     left: 266px;
     z-index: 1;
     &.switchAreaRight {
-      animation: switchAreaRightMove 2s forwards;
+      animation: switchAreaRightMove $seconds forwards;
     }
     &.switchAreaLeft {
-      animation: switchAreaLeftMove 2s forwards;
+      animation: switchAreaLeftMove $seconds forwards;
     }
     i {
       color: $white;
@@ -631,10 +600,10 @@ div#user-list-print_scrollbar {
       height: 3.2rem;
 
       &.anim_right {
-        animation: rotate-right 2s forwards;
+        animation: rotate-right $seconds forwards;
       }
       &.anim_left {
-        animation: rotate-left 2s forwards;
+        animation: rotate-left $seconds forwards;
       }
     }
   }
@@ -672,10 +641,10 @@ div#user-list-print_scrollbar {
   }
 
   .v_enter_to {
-    animation: slide 2s forwards;
+    animation: slide $seconds forwards;
   }
   .v_enter_from {
-    animation: slideUp 2s forwards;
+    animation: slideUp $seconds forwards;
   }
 
   @keyframes slide {
