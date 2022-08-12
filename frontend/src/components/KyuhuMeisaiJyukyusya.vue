@@ -23,7 +23,7 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      syougaijiFlag: true,
+      syougaijiFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -40,26 +40,22 @@ export default {
       this.formatCell(flexGrid);
     },
     /**
-     * セルの作成
+     * セルの作成と表示設定
      */
     createCell(flexGrid) {
-      let jyukyusyaGridRow;
-      if (this.syougaijiFlag === true) {
-        // 障害児表示フラグがTRUEの場合3行表示
-        jyukyusyaGridRow = 3;
-      } else {
-        // 障害児表示フラグがFALSEの場合2行表示
-        jyukyusyaGridRow = 2;
-      }
       // セルの作成
       while (flexGrid.columns.length < 10) {
         flexGrid.columns.push(new wjGrid.Column());
       }
-      while (flexGrid.rows.length < jyukyusyaGridRow) {
+      while (flexGrid.rows.length < 3) {
         flexGrid.rows.push(new wjGrid.Row());
       }
       flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
+      // 障害児FragがFALSEの場合、障害児氏名項目を非表示
+      if (this.syougaijiFlag === false) {
+        flexGrid.rows[2].visible = false;
+      } 
     },
     /**
      * セルのマージ
@@ -87,7 +83,6 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
-      let _self = this;
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
@@ -106,16 +101,6 @@ export default {
           if ((r == 2) && (c == 0)) {
             cell.innerHTML = '支給決定に係る障害児氏名';
           }
-          if (_self.syougaijiFlag) {
-            // 障害児FlagがTRUEの場合
-            if ((r == 2) && (c == 0)) {
-              s.borderRadius = '0 0 0 4px ';
-            }
-          } else {
-            if ((r == 2) && (c == 0)) {
-              s.borderRadius = '0 0 0 4px';
-            }
-          }
         }
         // セルデザイン修正
         if (panel.cellType == wjGrid.CellType.Cell) {
@@ -127,16 +112,6 @@ export default {
           // borderRadius修正
           if ((r == 0) && (c == 9)) {
             s.borderRadius = '0 4px 0 0';
-          }
-          if (_self.syougaijiFlag) {
-            // 障害児FlagがTRUEの場合
-            if ((r == 2) && (c == 0)) {
-              s.borderRadius = '0 0 4px 0';
-            }
-          } else {
-            if ((r == 1) && (c == 0)) {
-              s.borderRadius = '0 0 4px 0';
-            }
           }
         }
       };

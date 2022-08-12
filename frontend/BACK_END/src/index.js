@@ -64,8 +64,8 @@ app.get('/:name/:param/:folder', (req, res) => {
         });
         return true;
     }).catch(function (error) {
-        console.log("接続失敗");
-        // console.log(error);
+        console.log("接続失敗1");
+        console.log(error);
         return false;
     });
 });

@@ -1,14 +1,23 @@
-const Service = require('../../NenkanRiyouNissuIcrn/Service')
+const Service = require('../../SIHS/NenkanRiyouNissuIcrn/Service')
 const service = new Service();
 const config = require('../ApiRun');
 const moment = require('moment');
-exports.connected = async function (uniqid, traceid) {
-    //var url = config.getDomain() + '/Sodan/v1/syukei/kensu?pHostname=PC01&pJigyoid=43&pTaisyo=1&pSymd=20220301&pEymd=20220331&pSiid=0&pChiku=0';
-    let url = "http://192.168.30.32/sodan/v1/mst/sodantaiou?pJigyoid=43"; //サンプルURL
+exports.connected = async function (param) {
+
+    let query = "";
+    Object.keys(param).forEach(function (key) {
+        if (key != 'uniqid' && key != 'traceid') {
+            query += "&" + key + "=" + param[key];
+        }
+    });
+    query = query.replace(/&/, '');
+
+    var url = config.getDomain() + '/syogai/recept/v1/riyonissu/riyonissu/?' + query;
     config.setURL(url);
-    config.setUniqID(uniqid);
-    config.setTraceID(traceid);
+    config.setUniqID(param.uniqid);
+    config.setTraceID(param.traceid);
     return await service.getData().then(result => {
+        //console.log(result);
         // 利用者情報一覧
         let riyo_inf = [];
         let riyo = result.riyo_inf;
@@ -54,6 +63,8 @@ exports.connected = async function (uniqid, traceid) {
             gokei_inf: gokei_inf,
             kaisyo_inf: kaisyo_inf
         };
+
+
         //console.log(returns);
 
         return returns;

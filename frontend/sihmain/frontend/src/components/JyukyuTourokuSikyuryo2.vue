@@ -2,7 +2,13 @@
   <div id="JyukyuTourokuSikyuryo2">
     <v-container fluid class="sikyuryo-container">
       <v-row no-gutters class="sikyuryo-header-row">
-        <v-card elevation="0" class="sikyuryo-header d-flex flex-row" flat tile>
+        <v-card
+          id="sikyuryoheader"
+          elevation="0"
+          class="sikyuryo-header d-flex flex-row"
+          flat
+          tile
+        >
           <label class="sikyuryo-header-title"
             >{{ this.titleNum }}支給決定内容</label
           >

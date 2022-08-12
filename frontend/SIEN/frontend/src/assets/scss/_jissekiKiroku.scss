@@ -1,0 +1,138 @@
+$grid_unselectable_cells:#fffeed;
+
+#jisseki-kiroku {
+  font-size: 14px;
+  font-family: 'メイリオ';
+  min-width: 1266px !important;
+
+  input{
+    font-family: 'メイリオ';
+  }
+
+  .container.jissekikiroku{
+    padding:4px;
+  }
+
+  .leftArea {
+    min-width: 275px;
+    max-width: 275px;
+    width: 275px;
+  }
+
+  .rightArea {
+    min-width: 50%;
+    max-width: none;
+    width: 1020px;
+    margin-left:4px;
+  }
+
+  /* 利用者情報エリアのスタイル */
+  .user-info{
+    padding:0;
+    font-size:14px;
+    color:#333333;
+  }
+    .user-info label{
+      font-size:14px;
+      background-color: $selected_color;
+      display: inline-block;
+      width: 120px;
+      height: 31px;
+      padding-top: 5px;
+      margin-right:8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+  .riyousya-block,.jukyusyasho-block,.keiyakuryo-block{
+    float:left;
+  }
+
+  .riyousya-block{
+    width:315px;
+  }
+
+  .jukyusyasho-block{
+    margin-left:10px;
+    width:265px;
+  }
+
+  .keiyakuryo-block{
+    width:250px;
+  }
+
+  .user-box{
+    border:none;
+    width:185px;
+    background-color: $light_yellow;
+    border: thin solid rgba(0, 0, 0, 0.12);
+    border-radius: 0 !important;
+  }
+
+  .user-box.zyukyusya-num{
+    width:135px;
+  }
+
+  .v-input--selection-controls{
+    padding:0;
+    margin:0;
+  }
+
+  .row-2{
+    margin-top:4px;
+  }
+
+  .keiyakusikyu-box {
+    width:100px;
+    margin-right:20px;
+  }
+
+  .denbun-toggle{
+    margin-left:20px;
+    margin-top:2px;
+  }
+
+  /* グリッドのスタイル */
+  #detailGrid {
+    margin-top:4px;
+    font-size:12px;
+    color:#333333 !important;
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 0px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: $brawn;
+      border-radius: 0px;
+    }
+    .wj-cell:not(.wj-header) {
+      background: $grid_unselectable_cells;
+    }
+  }
+
+  #detailGrid .wj-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#333333 !important;
+  }
+
+  /* 一旦グリッドの枠線を表示しない */
+  /* #detailGrid.wj-control.wj-content.wj-flexgrid {
+    border: 2px solid #348498;
+  } */
+
+  #subGrid {
+    font-size:12px;
+    color:#333333 !important;
+  }
+
+  /* 一旦グリッドの枠線を表示しない */
+  /* #subGrid.wj-control.wj-content.wj-flexgrid {
+    border: 2px solid #348498;
+  } */
+
+}

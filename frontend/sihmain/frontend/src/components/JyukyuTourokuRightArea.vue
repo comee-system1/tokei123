@@ -6,7 +6,13 @@
 
     <v-container fluid class="pt-0 mt-0">
       <div v-show="dispReki">
-        <div v-if="this.selectedTab == 'JyukyuSyogaiFukusi'">
+        <div
+          v-if="
+            this.selectedTab == 'JyukyuSyogaiFukusi' ||
+            this.selectedTab == 'JyukyuSyogaiJi' ||
+            this.selectedTab == 'JyukyuChiikiSoudan'
+          "
+        >
           <JyukyuRirekiViewKihon
             ref="kihon"
             :basicFlag="true"
@@ -15,6 +21,8 @@
             @child_data="child_data"
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKihon>
+        </div>
+        <div v-if="this.selectedTab == 'JyukyuSyogaiFukusi'">
           <JyukyuRirekiViewSyogai
             ref="syogaiKubun"
             :basicFlag="false"
@@ -24,6 +32,13 @@
             @child_data="child_data"
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewSyogai>
+        </div>
+        <div
+          v-if="
+            this.selectedTab == 'JyukyuSyogaiFukusi' ||
+            this.selectedTab == 'JyukyuSyogaiJi'
+          "
+        >
           <JyukyuRirekiViewKettei
             ref="sikyuryo"
             :basicFlag="false"
@@ -33,6 +48,14 @@
             @child_data="child_data"
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKettei>
+        </div>
+        <div
+          v-if="
+            this.selectedTab == 'JyukyuSyogaiFukusi' ||
+            this.selectedTab == 'JyukyuSyogaiJi' ||
+            this.selectedTab == 'JyukyuChiikiSoudan'
+          "
+        >
           <JyukyuRirekiViewKeikaku
             ref="keikaku"
             :basicFlag="false"
@@ -42,6 +65,13 @@
             @child_data="child_data"
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewKeikaku>
+        </div>
+        <div
+          v-if="
+            this.selectedTab == 'JyukyuSyogaiFukusi' ||
+            this.selectedTab == 'JyukyuSyogaiJi'
+          "
+        >
           <JyukyuRirekiViewRiyousya
             ref="futan"
             :basicFlag="false"
@@ -51,62 +81,6 @@
             @child_data="child_data"
             @setSubGridSelected="setSubGridSelected"
           ></JyukyuRirekiViewRiyousya>
-        </div>
-        <div v-else-if="this.selectedTab == 'JyukyuSyogaiJi'">
-          <JyukyuRirekiViewKihon
-            ref="kihon"
-            :basicFlag="true"
-            :kihonFlag="true"
-            :titleTab="this.titleTab"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewKihon>
-          <JyukyuRirekiViewKettei
-            ref="sikyuryo"
-            :basicFlag="false"
-            :ketteiFlag="true"
-            :titleTab="this.titleTab"
-            :ketteiNum="this.titleNum[0]"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewKettei>
-          <JyukyuRirekiViewKeikaku
-            ref="keikaku"
-            :basicFlag="false"
-            :keikakuFlag="true"
-            :titleTab="this.titleTab"
-            :keikakuNum="this.titleNum[1]"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewKeikaku>
-          <JyukyuRirekiViewRiyousya
-            ref="futan"
-            :basicFlag="false"
-            :futanFlag="true"
-            :titleTab="this.titleTab"
-            :futanNum="this.titleNum[2]"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewRiyousya>
-        </div>
-        <div v-else-if="this.selectedTab == 'JyukyuChiikiSoudan'">
-          <JyukyuRirekiViewKihon
-            ref="kihon"
-            :basicFlag="true"
-            :kihonFlag="true"
-            :titleTab="this.titleTab"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewKihon>
-          <JyukyuRirekiViewKeikaku
-            ref="keikaku"
-            :basicFlag="false"
-            :keikakuFlag="true"
-            :titleTab="this.titleTab"
-            :keikakuNum="this.titleNum[0]"
-            @child_data="child_data"
-            @setSubGridSelected="setSubGridSelected"
-          ></JyukyuRirekiViewKeikaku>
         </div>
       </div>
       <div v-show="!dispReki">

@@ -397,16 +397,22 @@ export default {
       let params = {
         uniqid: uniqid,
         traceid: traceid,
+        getkbn: 0,
+        entpriid: 0,
+        hokbn: 1,
+        svcsyucode: 1,
+        symd: '20220101',
+        eymd: '20220101',
+        syukeikbn: 1,
       };
       getConnect(this.$route.path, params).then((result) => {
-        console.log('getData1234');
         console.log(result);
         this.getData(result);
         this.settingFooterData(flexGrid, result);
-      });
 
-      // フォーマット
-      this.createSyukeiCellFormat(flexGrid);
+        // フォーマット
+        this.createSyukeiCellFormat(flexGrid);
+      });
     },
     /**************
      * フォーマット
@@ -493,40 +499,40 @@ export default {
       var footerPanel = flexGrid.columnFooters;
 
       // 利用日数計
-      let riyonissu = result.gokei_inf.gokei_inf;
+      let riyonissu = result.gokei_inf;
       let c = 5;
       for (let i = 4; i <= 12; i++) {
-        let m = 'nissu' + i;
+        let m = 'keinissu' + i;
         let value = riyonissu[m];
         footerPanel.setCellData(0, c, value);
         c++;
       }
       for (let i = 1; i <= 3; i++) {
-        let m = 'nissu' + i;
+        let m = 'keinissu' + i;
         let value = riyonissu[m];
         footerPanel.setCellData(0, c, value);
         c++;
       }
-      footerPanel.setCellData(0, c++, riyonissu.gokei);
-      footerPanel.setCellData(0, c++, riyonissu.avg);
+      footerPanel.setCellData(0, c++, riyonissu['keinissukei']);
+      footerPanel.setCellData(0, c++, riyonissu['keiavg']);
 
       // 開所日数
-      let kaisyonissu = result.kaisyo_inf.kaisyo_inf;
+      let kaisyonissu = result.kaisyo_inf;
       c = 5;
       for (let i = 4; i <= 12; i++) {
-        let m = 'nissu' + i;
+        let m = 'kainissu' + i;
         let value = kaisyonissu[m];
         footerPanel.setCellData(1, c, value);
         c++;
       }
       for (let i = 1; i <= 3; i++) {
-        let m = 'nissu' + i;
+        let m = 'kainissu' + i;
         let value = kaisyonissu[m];
         footerPanel.setCellData(1, c, value);
         c++;
       }
-      footerPanel.setCellData(1, c++, kaisyonissu.gokei);
-      footerPanel.setCellData(1, c++, kaisyonissu.avg);
+      footerPanel.setCellData(1, c++, kaisyonissu['kainissukei']);
+      footerPanel.setCellData(1, c++, kaisyonissu['kaiavg']);
     },
     /************
      * ヘッダフッタ作成
@@ -731,6 +737,7 @@ div#nyutaiin {
   }
   div#grid_nyutaiin {
     height: var(--height);
+    max-width: 1280px;
   }
   .wj-flexgrid .wj-cell {
     font-size: 12px;

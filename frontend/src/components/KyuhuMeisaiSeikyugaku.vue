@@ -4,10 +4,9 @@
       <v-col class = "d-flex">
         <wj-flex-grid
             id="kyuhu-seikyugaku-grid"
-            :headersVisibility="'All'"
+            :headersVisibility="'None'"
             :alternatingRowStep="0"
             :initialized="onInitialized"
-            :itemsSourceChanged="onitemsSourceChanged"
             :isReadOnly="true"
             :deferResizing="false"
             :allowAddNew="false"
@@ -23,7 +22,7 @@
           </wj-flex-grid>
           <wj-flex-grid
             id="kyuhu-seikyugaku-total"
-            :headersVisibility="'Column'"
+            :headersVisibility="'None'"
             :alternatingRowStep="0"
             :initialized="onInitializedTotal"
             :isReadOnly="true"
@@ -47,28 +46,64 @@
 export default {
   data() {
     return {
+      dispItemPtn:0,
+      syogaijiFrag:true,
       seikyugakuApiData:[],
       seikyugakuData:[],
+      seikyugakuObj:[
+        {
+          title:'サービス種類コード',title2:'',key:'servicecode',key2:'teikyoService'
+        },
+        {
+          title:'サービス利用日数',title2:'',key:'serviceriyounissu'
+        },
+        {
+          title:'給付単位数',title2:'',key:'kyuhutanisu'
+        },
+        {
+          title:'単位数単価',title2:'',key:'tanisutanka'
+        },
+        {
+          title:'総費用額',title2:'',key:'souhiyougaku'
+        },
+        {
+          title:'１割相当額',title2:'',key:'itiwarisoutougaku'
+        },
+        {
+          title:'利用者負担額(②)',title2:'',key:'riyousyahutan2'
+        },
+        {
+          title:'上限月額調整',title2:'',key:'jyougengetugaku'
+        },
+        {
+          title:'Ａ型減免',title2:'事業者減免額',key:'jigyousyagenmengaku'
+        },
+        {
+          title:'Ａ型減免',title2:'減免後利用者負担額',key:'genmenriyousyahutan'
+        },
+        {
+          title:'調整後利用者負担額',title2:'',key:'tyouseigohutan'
+        },
+        {
+          title:'上限額管理後利用者負担額',title2:'',key:'jyougenriyousyahutangaku'
+        },
+        {
+          title:'決定利用者負担額',title2:'',key:'ketteiriyousyahutangaku'
+        },
+        {
+          title:'請求額',title2:'給付費',key:'kyuhuhi'
+        },
+        {
+          title:'請求額',title2:'特別対策費',key:'tokubetutaisakuhi'
+        },
+        {
+          title:'自治体助成分請求額',title2:'',key:'jititaijyoseibun'
+        }
+      ],
       columnLength:'',
       mainFlexGrid:[],
-      footerFlexGrid:[],
+      totalFlexGrid:[],
       // Grid各行のデータ
-      svcsyu:[],              // サービス種類コード、サービス種類名
-      nissu:[],               // サービス利用日数
-      kyufuTani:[],           // 給付単位数
-      taniTanka:[],           // 単位数単価
-      sogaku:[],              // 総費用額
-      ichiwari:[],            // １割相当額
-      riyogaku2:[],           // 利用者負担額(②)
-      jyogengaku:[],          // 上限月額調整
-      aJigyoGenmengaku:[],    // Ａ型減免事業者減免額
-      ariyosyaFutangaku:[],   // Ａ型減免後利用者負担額
-      tyoseigoFutangaku:[],   // 調整後利用者負担額
-      jyogenFutangaku:[],     // 上限額管理後利用者負担額
-      ketteiFutangaku:[],     // 決定利用者負担額
-      tokubetuKyufugakuhi:[], // 特別給付費
-      tokubetuTaisakuhi:[],   // 請求額(特別対策費)
-      jichitaiJyoseigaku:[],  // 自治体助成分請求額
 
       // 合計Grid合計値
       totalKyufuTani:'',
@@ -91,20 +126,15 @@ export default {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
 
-      // Apiからのデータをセット
-      this.setSeikyugakuData(flexGrid);
-      // ヘッダー、セルの調整
+      // Gridを作成
+      this.createGrid(flexGrid)
+
+      // セルの設定
       this.settingGrid(flexGrid);
+
       // セルのマージ
       this.mergeCell(flexGrid);
-      // セルのデザイン修正
-      this.formatCell(flexGrid);
-    },
-    onitemsSourceChanged(flexGrid) {
-      // ヘッダー、セルの調整
-      this.settingGrid(flexGrid);
-      // セルのマージ
-      this.mergeCell(flexGrid);
+
       // セルのデザイン修正
       this.formatCell(flexGrid);
     },
@@ -115,239 +145,162 @@ export default {
       // 表示する数を仮定(Gridの列の数)
       //APIデータ差し替え時修正(仮データ)//
       this.seikyugakuApiData = seikyugakuApiData;
-      this.setSeikyugakuData(this.mainFlexGrid);
+      this.onInitialized(this.mainFlexGrid);
       this.setTotalGrid();
     },
     /**************
-     * 初回表示、Grid作成
+     * セルの設定
      */
-    createEmptyCell(flexGrid) {
-      // 空のセルをセット
-      while (flexGrid.columns.length < 20) {
-        flexGrid.columns.push(new wjGrid.Column());
-      }
-      while (flexGrid.rows.length < 16) {
-        flexGrid.rows.push(new wjGrid.Row());
-      }
-    },
-    /**************
-     * ヘッダー作成、セルのサイズ調整
-     */
-    settingGrid(flexGrid) {  
-      // マージ箇所があるためヘッダーを追加
-      if(flexGrid.rowHeaders.columns.length < 2) {
-        flexGrid.rowHeaders.columns.push(new wjGrid.Column());
-      }
-      flexGrid.rowHeaders.columns[0].width = 70;
-      flexGrid.rowHeaders.columns[1].width = 130;
+    settingGrid(flexGrid) {
+      flexGrid.columns[0].width = 70;
+      flexGrid.columns[0].cssClass = 'wj-header';
+      flexGrid.columns[1].width = 130;
+      flexGrid.columns[1].cssClass = 'wj-header';
+      flexGrid.rows.insert(0, new wjGrid.Row());
+      flexGrid.rows[0].cssClass = 'wj-header';
       flexGrid.columns.defaultSize = 30;
-
-      // ヘッダーに文字を挿入
-      console.log(flexGrid.columns)
-      if (0 < flexGrid.columns.length) {
-        flexGrid.columnHeaders.setCellData(0, 0, '');
-      }
-      flexGrid.rowHeaders.setCellData(0, 0, 'サービス種類コード');
-      flexGrid.rowHeaders.setCellData(1, 0, 'サービス利用日数');
-      flexGrid.rowHeaders.setCellData(1, 1, 'サービス利用日数');
-      flexGrid.rowHeaders.setCellData(2, 0, '給付単位数');
-      flexGrid.rowHeaders.setCellData(2, 0, '給付単位数');
-      flexGrid.rowHeaders.setCellData(3, 0, '単位数単価');
-      flexGrid.rowHeaders.setCellData(4, 0, '総費用額');
-      flexGrid.rowHeaders.setCellData(5, 0, '１割相当額');
-      flexGrid.rowHeaders.setCellData(6, 0, '利用者負担額②');
-      flexGrid.rowHeaders.setCellData(7, 0, '上限月額調整');
-      flexGrid.rowHeaders.setCellData(8, 0, 'A型減免');
-      flexGrid.rowHeaders.setCellData(8, 1, '事業者減免額');
-      flexGrid.rowHeaders.setCellData(9, 1, '減免額利用者負担');
-      flexGrid.rowHeaders.setCellData(10, 0, '調整後利用者負担');
-      flexGrid.rowHeaders.setCellData(11, 0, '上限額管理後利用者');
-      flexGrid.rowHeaders.setCellData(12, 0, '決定利用者負担額');
-      flexGrid.rowHeaders.setCellData(13, 0, '請求額');
-      flexGrid.rowHeaders.setCellData(13, 1, '給付日');
-      flexGrid.rowHeaders.setCellData(14, 1, '特別対策費');
-      flexGrid.rowHeaders.setCellData(15, 0, '自治体助成分請求書');
+      // セルの非表示設定
+      this.settingDisplyItem(flexGrid)
     },
     /**************
-     * 利用者クリック時、取得したデータをGridにセット
+     * Gidを作成
      */
-    setSeikyugakuData() {
-      // 配列データを初期化
-      this.seikyugakuData      = [];
-      this.svcsyu              = [];
-      this.nissu               = [];
-      this.kyufuTani           = [];
-      this.taniTanka           = [];
-      this.sogaku              = [];
-      this.ichiwari            = [];
-      this.riyogaku2           = [];
-      this.jyogengaku          = [];
-      this.aJigyoGenmengaku    = [];
-      this.ariyosyaFutangaku   = [];
-      this.tyoseigoFutangaku   = [];
-      this.jyogenFutangaku     = [];
-      this.ketteiFutangaku     = [];
-      this.tokubetuKyufugakuhi = [];
-      this.tokubetuTaisakuhi   = [];
-      this.jichitaiJyoseigaku  = [];
-
-      // データを格納する配列を作成
+    createGrid() {
+      // 請求額集計欄Gridの配列を作成
       let seikyugakuData = [];
+        //-1はヘッダー2列目分
+        let row = [];
 
-      seikyugakuData.push(
-        this.svcsyu,              // サービス種類コード、サービス種類名
-        this.nissu,               // サービス利用日数
-        this.kyufuTani,           // 給付単位数
-        this.taniTanka,           // 単位数単価
-        this.sogaku,              // 総費用額
-        this.ichiwari,            // １割相当額
-        this.riyogaku2,           // 利用者負担額(②)
-        this.jyogengaku,          // 上限月額調整
-        this.aJigyoGenmengaku,    // Ａ型減免事業者減免額
-        this.ariyosyaFutangaku,   // Ａ型減免後利用者負担額
-        this.tyoseigoFutangaku,   // 調整後利用者負担額
-        this.jyogenFutangaku,     // 上限額管理後利用者負担額
-        this.ketteiFutangaku,     // 請求額
-        this.tokubetuKyufugakuhi, // 特別給付費
-        this.tokubetuTaisakuhi,   // 請求額(特別対策費)
-        this.jichitaiJyoseigaku,  // 自治体助成分請求額
-      );
-      // 配列にデータを挿入
-      for (let i = 0; i < this.seikyugakuApiData.length; i++) {
-        // サービス種類コード、サービス種類名
-        this.svcsyu.push(this.seikyugakuApiData[i].servicecode);
-        this.svcsyu.push(this.seikyugakuApiData[i].teikyoService,'','');
-
-        // サービス利用日数
-        this.nissu.push(this.seikyugakuApiData[i].serviceriyounissu);
-        this.nissu.push('日','','');
-
-        // 給付単位数
-        this.kyufuTani.push(this.seikyugakuApiData[i].kyuhutanisu,'','','');
-
-        // 単位数単価
-        this.taniTanka.push(this.seikyugakuApiData[i].tanisutanka,'','円/単位','');
-
-        // 総費用額
-        this.sogaku.push(this.seikyugakuApiData[i].souhiyougaku,'','','');
-
-        // 1割相当額
-        this.ichiwari.push(this.seikyugakuApiData[i].itiwarisoutougaku,'','','');
-
-        // 利用者負担額②
-        this.riyogaku2.push(this.seikyugakuApiData[i].riyousyahutan2,'','','');
-
-        // 上限月額調整
-        this.jyogengaku.push(this.seikyugakuApiData[i].jyougengetugaku,'','','');
-
-        // Ａ型減免事業者減免額
-        this.aJigyoGenmengaku.push(this.seikyugakuApiData[i].jigyousyagenmengaku,'','','');
-
-        // Ａ型減免後利用者負担額
-        this.ariyosyaFutangaku.push(this.seikyugakuApiData[i].genmenriyousyahutan,'','','');
-
-        // 調整後利用者負担額
-        this.tyoseigoFutangaku.push(this.seikyugakuApiData[i].tyouseigohutan,'','','');
-
-        // 上限額管理後利用者負担額
-        this.jyogenFutangaku.push(this.seikyugakuApiData[i].jyougenriyousyahutangaku,'','','');
-
-        // 決定利用者負担額
-        this.ketteiFutangaku.push(this.seikyugakuApiData[i].ketteiriyousyahutangaku,'','','');
-
-        // 給付費
-        this.tokubetuKyufugakuhi.push(this.seikyugakuApiData[i].kyuhuhi,'','','');
-
-        // 請求額(特別対策費)
-        this.tokubetuTaisakuhi.push(this.seikyugakuApiData[i].tokubetutaisakuhi,'','','');
-
-        // 自治体助成分請求額
-        this.jichitaiJyoseigaku.push(this.seikyugakuApiData[i].zititaizyoseibun,'','','');
+      if(this.seikyugakuApiData.length) {
+        // APIデータが取得できている場合はAPIデータの数を設定
+        this.columnLength = this.seikyugakuApiData.length * 4;
+        for (let r = 0; r < this.seikyugakuObj.length; r++) {
+          let objData = this.seikyugakuObj[r];
+          let servicecodeRoop = 0;
+          let servicenissuRoop = 0;
+          let tanisutankaRoop = 0;
+          let othersRoop = 0;
+          row = {
+            title: objData.title,
+            title2: objData.title2,
+          };
+          for (let i = 0; i < this.columnLength; i++) {
+            let c = 'column' + i;
+            if (r === 0) {
+              // サービス種類コード、サービス利用項目のループ
+              if (i % 4 === 0) {
+                // 4の倍数の時、サービス種類コードを挿入
+                row[c]  = this.seikyugakuApiData[servicecodeRoop][objData.key];
+              } else if (i % 4 === 1) {
+                // 4の倍数+1の時、サービス利用項目を挿入
+                row[c]  = this.seikyugakuApiData[servicecodeRoop][objData.key2];
+                servicecodeRoop++;
+              } else {
+                // 上記以外は空白を挿入
+                row[c]  = '';
+              }
+            } else if (r === 1){
+              // サービス利用日数のループ
+              if ((i % 4 === 0)) {
+                row[c]  = this.seikyugakuApiData[servicenissuRoop][objData.key];
+                servicenissuRoop++;
+              } else if (i % 4 === 1) {
+                row[c]  = '日';
+              } else {
+                row[c]  = '';
+              }
+            } else if (r === 3){
+              // 単位数単価のループ
+              if ((i % 4 === 0)) {
+                row[c]  = this.seikyugakuApiData[tanisutankaRoop][objData.key];
+                tanisutankaRoop++;
+              } else if (i % 4 === 2) {
+                row[c]  = '円/単位';
+              } else {
+                row[c]  = '';
+              }
+            } else {
+              // 上記以外の項目のループ
+              if ((i % 4 === 0)) {
+                row[c]  = this.seikyugakuApiData[othersRoop][objData.key];
+                othersRoop++;
+              } else {
+              row[c]  = '';
+              }
+            }
+          }
+          seikyugakuData.push(row);
+        }
+      } else {
+        // APIデータが取得できていない場合は空データを設定
+        this.columnLength = 20;
+        console.log(this.columnLength)
+        for (let r = 0; r < this.seikyugakuObj.length; r++) {
+          let objData = this.seikyugakuObj[r];
+          row = {
+            title: objData.title,
+            title2: objData.title2,
+          };
+          for (let i = 0; i < this.columnLength; i++) {
+            let c = 'column' + i;
+            row[c]  = '';
+          }
+          seikyugakuData.push(row);
+        }
+        console.log(row)
       }
-      this.seikyugakuData = seikyugakuData;
-      this.mainFlexGrid.itemsSource = this.seikyugakuData;
+      this.mainFlexGrid.itemsSource = seikyugakuData;
     },
     /**************
      * セルのマージ
      */
     mergeCell(flexGrid) {
-      // GridのColumn数を取得
-      let columnLength;
-      if (this.seikyugakuData.length) {
-        columnLength = this.seikyugakuData[0].length;
-      } else {
-        columnLength = 20;
-      }
       let mm = new wjGrid.MergeManager();
       // 結合するセルの範囲を指定
-      let rowhHeaderRanges = []
-      // 列ヘッダーのマージ
-      for (let i = 0; i < 17; i++){
-         if ((i == 8 ) || (i == 13)){
-          rowhHeaderRanges.push(
-            new wjGrid.CellRange(i, 0, i + 1, 0),
-          );
-        }
-        if (!(i == 8 || i == 9 || i == 13 || i == 14)){
-          rowhHeaderRanges.push(
-            new wjGrid.CellRange(i, 0, i, 1),
-          );
-        }
-      }
-      // 行ヘッダーのマージ
-      let columnHeaderRanges = [
-        new wjGrid.CellRange(0, 0, 0, columnLength -1),
-      ];
-      // ヘッダー交差部分のマージ
-      let TopLeftRanges = [
-        new wjGrid.CellRange(0, 0, 0, 1),
-      ];
-      // セルのマージ
+      // // セルのマージ
       let cellRanges = [];
-      for (let r = 0; r < 17; r++) {
-        if (r == 0 || r == 1) {
-          for (let c = 0; c < columnLength; c++){
+      for (let r = 0; r < flexGrid.itemsSource.length + 1; r++) {
+        // ヘッダーのマージ
+        if (r !== 9 && r !== 10 && r !==14 && r !==15) {
+          cellRanges.push(
+            new wjGrid.CellRange(r, 0, r, 1),
+            new wjGrid.CellRange(9, 0, 10, 0),
+            new wjGrid.CellRange(14, 0, 15, 0),
+          );
+        }
+        if (r == 1 || r == 2) {
+          // サービス種類コード、利用日数のセルをマージ
+          for (let c = 1; c < this.columnLength -1; c++){
             cellRanges.push(
-              new wjGrid.CellRange(r, 1 + c * 4, r, 3 + c * 4),
+              new wjGrid.CellRange(r, 4 * c -1, r, 4 * c + 1),
             );
           }
-        } else if (r == 3) {
-          // 4行目は2、3列目を結合
-          for (let c = 0; c < columnLength; c++) {
+        } else if (r == 4) {
+          // 単位数単価セルをマージ
+          for (let c = 1; c < this.columnLength -1; c++){
             cellRanges.push(
-            new wjGrid.CellRange(r, c, r, c + 1),
-            new wjGrid.CellRange(r, 2 + c * 2, r, 2 + c * 2 + 1),
+              new wjGrid.CellRange(r, 2 * c, r, 2 * c + 1),
             );
           }
+        } else if (r == 0) {
+          // 列ヘッダーをマージ
+          cellRanges.push(
+            new wjGrid  .CellRange(0, 2, 0, this.columnLength +1),
+          );
         } else {
-          for (let c = 0; c < columnLength; c++) {
+          for (let c = 1; c < this.columnLength -1; c++){
             cellRanges.push(
-            new wjGrid.CellRange(r, 4 * c, r, 4 * c + 3),
+              new wjGrid.CellRange(r, 4 * c -2, r, 4 * c + 1),
+              new wjGrid.CellRange(r, 2, r, 5),
+              new wjGrid.CellRange(r, 6, r, 9),
+              new wjGrid.CellRange(r, 10, r, 13),
             );
           }
         }
       }
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.RowHeader) {
-          for (let h = 0; h < rowhHeaderRanges.length; h++) {
-            if (rowhHeaderRanges[h].contains(r, c)) {
-              return rowhHeaderRanges[h];
-            }
-          }
-        } else if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < columnHeaderRanges.length; h++) {
-            if (columnHeaderRanges[h].contains(r, c)) {
-              return columnHeaderRanges[h];
-            }
-          }
-        } else if (panel.cellType == wjGrid.CellType.TopLeft) {
-          for (let h = 0; h < TopLeftRanges.length; h++) {
-            if (TopLeftRanges[h].contains(r, c)) {
-              return TopLeftRanges[h];
-            }
-          }
-        } else if (panel.cellType == wjGrid.CellType.Cell) {
+        if (panel.cellType == wjGrid.CellType.Cell) {
           for (let h = 0; h < cellRanges.length; h++) {
             if (cellRanges[h].contains(r, c)) {
               return cellRanges[h];
@@ -361,32 +314,66 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
-      // let _self = this;
+      let _self = this;
       flexGrid.itemFormatter = function(panel,r,c,cell){
         // グリッドの共通スタイル
         let s = cell.style;
         s.fontWeight = "normal";
-        if (panel.cellType == wjGrid.CellType.RowHeader) {
-          // 列ヘッダーのスタイルをカスタマイズ
-          s.textAlign = 'center';
-          if (((r == 8) && (c == 0)) || ((r == 13) && (c == 0))) {
-            s.lineHeight = '40px';
-          }
-        }
         if (panel.cellType == wjGrid.CellType.Cell) {
-          // セルのスタイルをカスタマイズ
-          s.textAlign = 'right';
-          s.paddingRight = '4px';
-          s.backgroundColor = sysConst.COLOR.gridBackground;
-          if ((r == 0) || (r == 1)) {
+          if ((c == 0) || (c == 1)){
+            // 行ヘッダー（セル）のカスタマイズ
             s.textAlign = 'center';
-            if((((c -1) % 4) == 0) && (r == 1)) {
-              s.textAlign = 'left';
-              s.paddingLeft = '4px';
+            if ((r == 9) && (c == 0)) {
+              s.lineHeight = '40px';
+            }
+            if ((r == 14) && (c == 0)) {
+              if(_self.dispItemPtn === 2) {
+                s.lineHeight = '40px';
+              }
             }
           }
-          if (r == 3) {
-            s.textAlign = 'center';
+          if ((c !== 0) && (c !== 1) && (r !== 0)){
+            // セル部分のスタイル
+            s.backgroundColor = sysConst.COLOR.gridBackground;
+            s.textAlign = 'right';
+            s.paddingRight = '4px';
+            if ((r == 1) || (r == 2)) {
+              s.textAlign = 'center';
+              if((((c +1) % 4) == 0) && (r == 2)) {
+                s.textAlign = 'left';
+                s.paddingLeft = '4px';
+              }
+            }
+              if (r == 4) {
+                s.textAlign = 'center';
+              }
+          }
+        }
+      }
+    },
+    ////////////////////////////////// 合計額Gridと共通 //////////////////////////////////
+
+    /**************
+     * セルの非表示設定
+     */
+    settingDisplyItem(flexGrid) {
+      if (this.dispItemPtn === 1) {
+        // 様式A-1の場合、特別対策費を非表示
+        flexGrid.rows[15].visible = false;
+      } else if (this.dispItemPtn === 2) {
+        // 様式A-2,E-2の場合、A型減免を非表示
+        flexGrid.rows[9].visible = false;
+        flexGrid.rows[10].visible = false;
+      } else if (this.dispItemPtn === 3) {
+        // 様式B,Eの場合、特別対策費とA型減免を非表示
+        flexGrid.rows[9].visible = false;
+        flexGrid.rows[10].visible = false;
+        flexGrid.rows[15].visible = false;
+      } else if (this.dispItemPtn === 4) {
+        // 様式Dの場合、１割相当額～自治体助成分請求額を非表示
+        for (let i = 6; i < 17; i ++) {
+          if (i !== 14) {
+            flexGrid.rows[i].visible = false;
           }
         }
       }
@@ -397,7 +384,7 @@ export default {
      * 合計グリッド
      */
     onInitializedTotal(flexGrid) {
-      this.footerFlexGrid = flexGrid;
+      this.totalFlexGrid = flexGrid;
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // 合計グリッドセルを作成
@@ -409,24 +396,26 @@ export default {
      */
     createTotalGrid(flexGrid) {
       // 空のセルをセット
-      while (flexGrid.columns.length <1) {
+      while (flexGrid.columns.length < 1) {
         flexGrid.columns.push(new wjGrid.Column());
       }
-      while (flexGrid.rows.length < 16) {
+      while (flexGrid.rows.length < 17) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-
       flexGrid.columnHeaders.rows[0].height = 20;
       flexGrid.rows.defaultSize = 20;
       flexGrid.columns.defaultSize = 120;
       flexGrid.rows.height = 20;
-      flexGrid.setCellData(0, 0, '合計');
+      flexGrid.setCellData(1, 0, '合計');
 
+      // セルの非表示設定
+      this.settingDisplyItem(flexGrid)
+      
       // セルのマージ
       let mm = new wjGrid.MergeManager();
       let cellRanges = [];
       cellRanges.push(
-        new wjGrid.CellRange(0 , 0, 1, 0),
+        new wjGrid.CellRange(1 , 0, 2, 0),
       );
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function (panel, r, c) {
@@ -453,13 +442,14 @@ export default {
           s.backgroundColor = sysConst.COLOR.gridBackground;
           s.textAlign = 'right';
           s.paddingRight = '4px'
-          if (r == 0) {
+          if (r == 1) {
             s.textAlign = 'center';
             s.lineHeight = '40px';
             s.backgroundColor = sysConst.COLOR.selectedColor;
           }
-          if ((r == 3) || (r == 5) || (r == 6)) {
+          if ((r == 0) || (r == 1) ||  (r == 4) || (r == 6) || (r == 7)) {
             s.backgroundColor = sysConst.COLOR.selectedColor;
+            
           }
         }
       }
@@ -482,17 +472,17 @@ export default {
       this.totalJichitaiJyoseigaku =  1456788;
 
       // 合計値をGridに挿入
-      this.footerFlexGrid.setCellData(2, 0,  this.totalKyufuTani);
-      this.footerFlexGrid.setCellData(4, 0,  this.totalSogaku);
-      this.footerFlexGrid.setCellData(7, 0,  this.totalJyogengaku);
-      this.footerFlexGrid.setCellData(8, 0,  this.totalAJigyoGenmengaku);
-      this.footerFlexGrid.setCellData(9, 0,  this.totalAriyosyaFutangaku);
-      this.footerFlexGrid.setCellData(10, 0, this.totalTyoseigoFutangaku);
-      this.footerFlexGrid.setCellData(11, 0, this.totalJyogenFutangaku);
-      this.footerFlexGrid.setCellData(12, 0, this.totalKetteiFutangaku);
-      this.footerFlexGrid.setCellData(13, 0, this.totalTokubetuKyufugakuhi);
-      this.footerFlexGrid.setCellData(14, 0, this.totalTokubetuTaisakuhi);
-      this.footerFlexGrid.setCellData(15, 0, this.totalJichitaiJyoseigaku);
+      this.totalFlexGrid.setCellData(3, 0,  this.totalKyufuTani);
+      this.totalFlexGrid.setCellData(5, 0,  this.totalSogaku);
+      this.totalFlexGrid.setCellData(8, 0,  this.totalJyogengaku);
+      this.totalFlexGrid.setCellData(9, 0,  this.totalAJigyoGenmengaku);
+      this.totalFlexGrid.setCellData(10, 0,  this.totalAriyosyaFutangaku);
+      this.totalFlexGrid.setCellData(11, 0, this.totalTyoseigoFutangaku);
+      this.totalFlexGrid.setCellData(12, 0, this.totalJyogenFutangaku);
+      this.totalFlexGrid.setCellData(13, 0, this.totalKetteiFutangaku);
+      this.totalFlexGrid.setCellData(14, 0, this.totalTokubetuKyufugakuhi);
+      this.totalFlexGrid.setCellData(15, 0, this.totalTokubetuTaisakuhi);
+      this.totalFlexGrid.setCellData(16, 0, this.totalJichitaiJyoseigaku);
     },
   }
 };
@@ -503,7 +493,7 @@ export default {
   color: #333;
   #kyuhu-seikyugaku-grid {
     border-radius: 4px 0 0 4px;
-    max-width: calc(800px + 1px);
+    max-width: calc(800px + 2px);
     width: auto;
     position: relative;
     border-right: solid 1px $black;

@@ -1,4 +1,4 @@
-const Service = require('../../KobetsuRiyouTourokuNyutai/Service')
+const Service = require('../../SIHS/KobetsuRiyouTourokuNyutai/Service');
 const service = new Service();
 const config = require('../ApiRun');
 const moment = require('moment');

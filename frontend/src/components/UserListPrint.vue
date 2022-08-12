@@ -1,7 +1,6 @@
 <template>
   <div id="user-list-print_scrollbar" :style="styles">
     <div
-      v-show="$route.path === '/KobetsuRiyouTouroku'"
       :class="{
         switchArea: switchAreaFlag == true,
         switchAreaRight: switchAreaRightFlag == true,
@@ -19,13 +18,7 @@
       no-gutters
       :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
     >
-      <v-col
-        :style="
-          $route.path === '/KobetsuRiyouTouroku'
-            ? 'max-width: 94%'
-            : 'max-width:100%;'
-        "
-      >
+      <v-col style="max-width: 94%">
         <v-row no-gutters>
           <v-col col="12">
             <v-row no-gutters>
@@ -116,7 +109,7 @@
           class="mt-1"
           :autoSearch="true"
           :headersVisibility="'Column'"
-          :selectionMode="3"
+          :selectionMode="0"
           :initialized="onInitializedUser"
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="usersData"

@@ -8,8 +8,8 @@ const moment = require('moment')
  */
  exports.connected = async function (param) {
     // 接続確認用URL
-    // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/futan?getkbn=0&rysid=' + param.rid;
-    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/futan?getkbn=0';
+    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/futan?getkbn=0&rysid=' + param.rid;
+    // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/futan?getkbn=0';
     config.setURL(url);
     config.setUniqID(param.uniqid);
     config.setTraceID(param.traceid);

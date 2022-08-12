@@ -46,10 +46,20 @@
           <UserListPrint
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
+            @childLeftArea="changeLeftArea"
           >
           </UserListPrint>
         </v-col>
-        <v-col class="center-area ml-1" cols="1*">
+        <v-col
+          :class="{
+            rightArea: marginDefault == true,
+            'center-area': mltype == true,
+            'ml-1': mltype == true,
+            moveLeft: moveLeft == true,
+            moveRight: moveRight == true,
+          }"
+          cols="1*"
+        >
           <v-row no-gutters>
             <v-card
               elevation="0"
@@ -128,7 +138,11 @@
               </v-card>
             </v-card>
           </v-row>
-          <v-row no-gutters class="center-area-input d-flex flex-row">
+          <v-row
+            no-gutters
+            id="CenterAreaInput"
+            class="center-area-input d-flex flex-row"
+          >
             <v-card
               elevation="0"
               id="mainArea"
@@ -136,8 +150,14 @@
               flat
               tile
             >
-              <div v-if="JyukyuSyogaiFukusiFlag">
-                <v-row no-gutters class="d-flex flex-row">
+              <v-row no-gutters class="d-flex flex-row">
+                <div
+                  v-if="
+                    JyukyuSyogaiFukusiFlag ||
+                    JyukyuSyogaiJiFlag ||
+                    JyukyuChiikiSoudanFlag
+                  "
+                >
                   <v-card
                     id="c-kihon"
                     elevation="5"
@@ -154,6 +174,8 @@
                     >
                     </JyukyuTourokuKihon>
                   </v-card>
+                </div>
+                <div v-if="JyukyuSyogaiFukusiFlag">
                   <v-card
                     id="c-syogaiKubun"
                     elevation="5"
@@ -171,9 +193,17 @@
                     >
                     </JyukyuTourokuSyogaiKubun>
                   </v-card>
-                </v-row>
-                <v-row no-gutters class="flex-row">
-                  <v-card id="c-sikyuryo" elevation="5" class="ma-2 pa-1">
+                </div>
+                <div v-if="JyukyuSyogaiFukusiFlag || JyukyuSyogaiJiFlag">
+                  <v-card
+                    id="c-sikyuryo"
+                    elevation="5"
+                    class="ma-2 pa-1"
+                    @mouseover="mouseover('c-sikyuryo')"
+                    @mouseleave="mouseleave('c-sikyuryo')"
+                    @mousedown="mousedown('c-sikyuryo')"
+                    @mouseup="mouseup('c-sikyuryo')"
+                  >
                     <JyukyuTourokuSikyuryo
                       ref="sikyuryo"
                       @setMode="setMode"
@@ -182,6 +212,14 @@
                     >
                     </JyukyuTourokuSikyuryo>
                   </v-card>
+                </div>
+                <div
+                  v-if="
+                    JyukyuSyogaiFukusiFlag ||
+                    JyukyuSyogaiJiFlag ||
+                    JyukyuChiikiSoudanFlag
+                  "
+                >
                   <v-card elevation="5" class="ma-2 pa-1">
                     <JyukyuTourokuKeikakuSoudan
                       ref="keikaku"
@@ -191,8 +229,8 @@
                     >
                     </JyukyuTourokuKeikakuSoudan>
                   </v-card>
-                </v-row>
-                <v-row no-gutters class="d-flex flex-row">
+                </div>
+                <div v-if="JyukyuSyogaiFukusiFlag || JyukyuSyogaiJiFlag">
                   <v-card elevation="5" class="ma-2 pa-1">
                     <JyukyuTourokuRiyosyaFutan
                       ref="futan"
@@ -202,70 +240,8 @@
                     >
                     </JyukyuTourokuRiyosyaFutan>
                   </v-card>
-                </v-row>
-              </div>
-              <div v-else-if="JyukyuSyogaiJiFlag">
-                <v-row no-gutters class="d-flex flex-row">
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuKihon
-                      ref="kihon"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                    >
-                    </JyukyuTourokuKihon>
-                  </v-card>
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuSikyuryo
-                      ref="sikyuryo"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                      :titleNum="this.titleNum[0]"
-                    >
-                    </JyukyuTourokuSikyuryo>
-                  </v-card>
-                </v-row>
-                <v-row no-gutters class="d-flex flex-row">
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuKeikakuSoudan
-                      ref="keikaku"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                      :titleNum="this.titleNum[1]"
-                    >
-                    </JyukyuTourokuKeikakuSoudan>
-                  </v-card>
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuRiyosyaFutan
-                      ref="futan"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                      :titleNum="this.titleNum[2]"
-                    >
-                    </JyukyuTourokuRiyosyaFutan>
-                  </v-card>
-                </v-row>
-              </div>
-              <div v-else-if="JyukyuChiikiSoudanFlag">
-                <v-row no-gutters class="d-flex flex-row">
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuKihon
-                      ref="kihon"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                    >
-                    </JyukyuTourokuKihon>
-                  </v-card>
-                  <v-card elevation="5" class="ma-2 pa-1">
-                    <JyukyuTourokuKeikakuSoudan
-                      ref="keikaku"
-                      @setMode="setMode"
-                      @setHojoMode="setHojoMode"
-                      :titleNum="this.titleNum[0]"
-                    >
-                    </JyukyuTourokuKeikakuSoudan>
-                  </v-card>
-                </v-row>
-              </div>
+                </div>
+              </v-row>
             </v-card>
           </v-row>
           <hr
@@ -330,6 +306,7 @@ const MOUSE_OVER_BACK = '#f6f6f6';
 const MOUSE_LEAVE_BACK = '#fff';
 const ID_KIHON = 'c-kihon';
 const ID_SYOGAIKUBN = 'c-syogaiKubun';
+const ID_SIKYURYO = 'c-sikyuryo';
 
 export default {
   data() {
@@ -384,7 +361,7 @@ export default {
       ],
       selectedMenuItem: null,
       titleTab: '',
-      titleNum: ['①', '②', '③', '④'],
+      titleNum: [],
       resetFlag: false,
       tabChanged: true,
 
@@ -392,6 +369,11 @@ export default {
         id: 'right',
         isOpen: false,
       },
+
+      marginDefault: true,
+      moveRight: false,
+      moveLeft: false,
+      mltype: true,
 
       //受給者証内部ID
       jyukyuid: 0,
@@ -434,6 +416,21 @@ export default {
   },
   computed: {},
   methods: {
+    /*******************************
+     * ユーザー一覧コンポーネントの開閉ボタンを押下
+     */
+    changeLeftArea() {
+      if (this.moveLeft == true) {
+        this.moveRight = true;
+        this.moveLeft = false;
+        document.getElementById('CenterAreaInput').style.width = '100%';
+      } else {
+        this.moveLeft = true;
+        this.moveRight = false;
+        document.getElementById('CenterAreaInput').style.width =
+          window.innerWidth - 45 + 'px';
+      }
+    },
     jyukyuTourokuDialogOpen(id, mode) {
       if (id == ID_KIHON) {
         if (this.kihonDataOrgFiltered.length > 0) {
@@ -449,6 +446,13 @@ export default {
             this.syogaiKubunDataOrgFiltered
           );
         }
+      } else if (id == ID_SIKYURYO) {
+        if (this.sikyuryoDataOrgFiltered.length > 0) {
+          this.$refs.jyukyu_touroku_dialog.open(
+            mode,
+            this.sikyuryoDataOrgFiltered
+          );
+        }
       }
     },
     mouseover(id) {
@@ -460,6 +464,8 @@ export default {
           'syogaikubunheader',
           MOUSE_OVER_OTHER
         );
+      } else if (id == ID_SIKYURYO) {
+        this.overCardColor(ID_SIKYURYO, 'sikyuryoheader', MOUSE_OVER_OTHER);
       }
     },
     mouseleave(id) {
@@ -474,6 +480,8 @@ export default {
           'syogaikubunheader',
           MOUSE_LEAVE_OTHER
         );
+      } else if (id == ID_SIKYURYO) {
+        this.leaveCardColor(ID_SIKYURYO, 'sikyuryoheader', MOUSE_LEAVE_OTHER);
       }
     },
     mousedown(id) {
@@ -482,6 +490,7 @@ export default {
         let elm = document.getElementById(ID_SYOGAIKUBN);
         elm.classList.add('ml-1');
       } else if (id == ID_SYOGAIKUBN) {
+      } else if (id == ID_SIKYURYO) {
       }
     },
     mouseup(id) {
@@ -494,6 +503,9 @@ export default {
       } else if (id == ID_SYOGAIKUBN) {
         this.setMode('modSyogaikubun');
         this.jyukyuTourokuDialogOpen(id, 'modSyogaikubun');
+      } else if (id == ID_SIKYURYO) {
+        this.setMode('modSikyuryo');
+        this.jyukyuTourokuDialogOpen(id, 'modSikyuryo');
       }
     },
     overCardColor(id1, id2, color) {
@@ -554,6 +566,12 @@ export default {
         ht = height - y - 20;
         this.mainHeight = 'height:' + ht + 'px;';
       }
+      if (this.moveLeft == false) {
+        document.getElementById('CenterAreaInput').style.width = '100%';
+      } else {
+        document.getElementById('CenterAreaInput').style.width =
+          window.innerWidth - 45 + 'px';
+      }
     },
     /**************
      * 子コンポーネントCommonTabMenuで選択した値を取得
@@ -571,12 +589,15 @@ export default {
       for (let i = 0; i < this.menuitems.length; i++) {
         if (this.JyukyuSyogaiFukusiFlag) {
           this.titleTab = this.tabmenus[0].text;
+          this.titleNum = ['①', '②', '③', '④'];
         } else if (this.JyukyuSyogaiJiFlag) {
           this.titleTab = this.tabmenus[1].text;
           this.tabChanged = false;
+          this.titleNum = ['', '①', '②', '③'];
         } else if (this.JyukyuChiikiSoudanFlag) {
           this.titleTab = this.tabmenus[2].text;
           this.tabChanged = false;
+          this.titleNum = ['', '', '①', ''];
         }
         if (!this.tabChanged) {
           this.goto_top();
@@ -605,17 +626,18 @@ export default {
         this.userListComponentDatas[row].jyukyuno;
       // データ取得・表示
       let rid = this.userListComponentDatas[row].riid;
-      if (rid == 55000) {
-        rid = 589;
-      } else if (rid == 55001) {
-        rid = 583;
-      } else if (rid == 550010) {
-        rid = 591;
-      } else if (rid == 550011) {
-        rid = 592;
-      } else if (rid == 550012) {
-        rid = 593;
-      }
+      // if (rid == 55000) {
+      //   rid = 589;
+      // } else if (rid == 55001) {
+      //   rid = 583;
+      // } else if (rid == 550010) {
+      //   rid = 591;
+      // } else if (rid == 550011) {
+      //   rid = 592;
+      // } else if (rid == 550012) {
+      //   rid = 593;
+      // }
+      console.log(rid);
       //基本情報
       this.getJyukyuTourokuKihonData(rid).then((value) => {
         this.kihonDataOrg = value;
@@ -785,8 +807,8 @@ export default {
     //履歴表示
     openRireki() {
       this.slideInRight.isOpen = true;
-      // this.$refs.rirekiArea.setKihonData(this.kihonDataOrgFiltered);
-      this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
+      this.$refs.rirekiArea.setKihonData(this.kihonDataOrgFiltered);
+      // this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.$refs.rirekiArea.setSyogaiKubunData(
           this.syogaiKubunDataOrgFiltered
@@ -992,12 +1014,37 @@ div#JyukyuTouroku2 {
     width: 8px;
   }
 
+  //利用者一覧スライド
+  .moveLeft {
+    animation: slideLeftArea $seconds forwards;
+  }
+  .moveRight {
+    animation: slideRightArea $seconds forwards;
+  }
+  @keyframes slideLeftArea {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-260px);
+    }
+  }
+  @keyframes slideRightArea {
+    from {
+      transform: translateX(-260px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   .container {
     padding: 4px;
     height: 100%;
   }
   .main-row {
     height: 100%;
+    flex-wrap: nowrap;
   }
 
   .left-area {
@@ -1007,7 +1054,6 @@ div#JyukyuTouroku2 {
   }
 
   .center-area {
-    max-width: none;
     height: 100%;
     .center-area-riyoname {
       background-color: #52646c;

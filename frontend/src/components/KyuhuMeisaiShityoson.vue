@@ -23,7 +23,7 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      jyoseijichitaiFlag: true,
+      jyoseijichitaiFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -41,23 +41,19 @@ export default {
      * セルの作成
      */
     createCell(flexGrid) {
-      let jyukyusyaGridRow;
-      if (this.jyoseijichitaiFlag === true) {
-        // 助成自治体表示フラグがTRUEの場合3行表示
-        jyukyusyaGridRow = 2;
-      } else {
-        // 助成自治体表示フラグがFALSEの場合2行表示
-        jyukyusyaGridRow = 1;
-      }
       // セルの作成
       while (flexGrid.columns.length < 6) {
         flexGrid.columns.push(new wjGrid.Column());
       }
-      while (flexGrid.rows.length < jyukyusyaGridRow) {
+      while (flexGrid.rows.length < 2) {
         flexGrid.rows.push(new wjGrid.Row());
       }
       flexGrid.rowHeaders.columns.defaultSize = 120;
       flexGrid.columns.defaultSize = 30;
+      // 助成自治体FragがFALSEの場合、助成自治体番号を非表示
+      if (this.jyoseijichitaiFlag === false) {
+        flexGrid.rows[1].visible = false;
+      } 
     },
     /**
      * セルのデザイン修正

@@ -1,4 +1,4 @@
-const Service = require('../../UserListPrint/Service')
+const Service = require('../../COMMON/UserListPrint/Service')
 const service = new Service();
 const config = require('../ApiRun');
 const moment = require('moment');

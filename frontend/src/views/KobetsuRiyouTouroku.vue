@@ -273,7 +273,6 @@ export default {
                   kbn: 1,
                   ngsymd: '20220806',
                 };
-                console.log(params);
                 _self.$refs.dialog_kikantuika.parentFromOpenDialog(
                   params,
                   'nyutaiin_add'
@@ -283,9 +282,9 @@ export default {
                 // 外泊
                 params = {
                   getkbn: 0,
-                  srcymd: '20220810',
-                  jkbn: 0,
-                  keiyakuid: 1,
+                  riid: _self.riid,
+                  kbn: 2,
+                  ngsymd: '20220806',
                 };
 
                 _self.$refs.dialog_kikantuika.parentFromOpenDialog(
