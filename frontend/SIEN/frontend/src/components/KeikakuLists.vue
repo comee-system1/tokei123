@@ -112,19 +112,201 @@
           :allowAddNew="false"
           :allowDelete="false"
           :allowPinning="false"
-          :allowMerging="'AllHeaders'"
           :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Row'"
           :isReadOnly="true"
-          :initialized="onInitializekeikakuIcrnGrid"
-          :itemsSource="viewdatakeikaku"
+          :initialized="onInitialize"
+          :itemsSource="viewdata"
         >
-          <wj-flex-grid-filter
-            :initialized="filterInitializedkeikakuIcrn"
-            :filterApplied="filterApplied"
-          />
+          <wj-flex-grid-filter :initialized="initialized"></wj-flex-grid-filter>
+          <wj-flex-grid-column
+            :binding="'riyocode'"
+            :header="' '"
+            align="center"
+            valign="middle"
+            :width="75"
+            format="g"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'name'"
+            align="center"
+            valign="middle"
+            :width="180"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'age'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'birth'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sityo'"
+            align="center"
+            valign="middle"
+            :width="120"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sakuseiku'"
+            align="center"
+            valign="middle"
+            :width="80"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'yotei'"
+            align="center"
+            valign="middle"
+            :width="120"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sakuseibi_an'"
+            align="center"
+            valign="middle"
+            :width="120"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'yousiki'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikakuan'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikakusyuan'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kihonjyoho'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'doui_an'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'teisyutu'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sikyukettei'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kaisaibi'"
+            align="center"
+            valign="middle"
+            :width="100"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kanryo'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sakuseibi'"
+            align="center"
+            valign="middle"
+            :width="120"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikaku'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikakusyukan'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'doui'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'monikeizoku'"
+            align="center"
+            valign="middle"
+            :width="30"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'tanto'"
+            align="center"
+            valign="middle"
+            :width="100"
+            :allowResizing="false"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
     </v-container>
@@ -165,22 +347,20 @@ import '@grapecity/wijmo.vue2.grid.grouppanel';
 import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.input';
-//import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjGrid from '@grapecity/wijmo.grid';
 //import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 //import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 
-const STYLE_NONE = 'none';
-// const STYLE_BG_PREBIRTH = '#ffcccc';
 export default {
   components: { AlphabetButton },
   data() {
     return {
       selDispIndex: 0,
 
-      viewdatakeikakuAll: [],
-      viewdatakeikaku: [],
+      viewdataAll: [],
+      viewdata: [],
       kikanYm: '',
       picker: '',
       datepicker_dialog: false,
@@ -219,8 +399,22 @@ export default {
       this.filterkeikakuIcrn = filter;
     },
 
-    onInitializekeikakuIcrnGrid(flexGrid) {
-      flexGrid.beginUpdate();
+    onInitialize(flexGrid) {
+      let array = [];
+      array.push({
+        riyocode: '10000010',
+        name: '東経ジロウ',
+        age: 32,
+      });
+      array.push({
+        riyocode: '10000011',
+        name: '東経ジロウ2',
+        age: 32,
+      });
+      this.viewdata = array;
+
+      this.createHeader(flexGrid);
+      //  this.createMerge(flexGrid);
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
@@ -231,29 +425,39 @@ export default {
         }
       });
     },
-
-    filterApplied(e) {
-      this.grdAutoSizeRow(e.grid);
+    createHeader(flexGrid) {
+      var panel = flexGrid.columnHeaders;
+      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
+      panel.setCellData(0, 0, 'コード');
     },
-    setNonFilterCol(col) {
-      var Nonefilter = this.filterkeikakuIcrn.getColumnFilter(col);
-      Nonefilter.filterType = STYLE_NONE;
+    createMerge(flexGrid) {
+      let headerRanges = [new wjGrid.CellRange(0, 0, 1, 0)];
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
     },
-
     onTantousyaClicked(s) {
       this.selTantousya = this.selectCmb(s);
     },
 
-    setViewData(isAll) {
-      this.screenFlag = true;
-      this.loading = true;
-      if (isAll) {
-        this.createdemodata();
-        this.userFilter();
-      } else {
-        this.userFilter();
-      }
-    },
+    // setViewData(isAll) {
+    //   this.screenFlag = true;
+    //   this.loading = true;
+    //   if (isAll) {
+    //     this.createdemodata();
+    //     this.userFilter();
+    //   } else {
+    //     this.userFilter();
+    //   }
+    // },
 
     onAlphabetical() {
       this.userFilter();
@@ -271,9 +475,9 @@ export default {
     },
     userFilter() {
       let tmpviewdata = [];
-      tmpviewdata = this.viewdatakeikakuAll.concat();
+      tmpviewdata = this.viewdataAll.concat();
       tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
-      this.viewdatakeikaku = tmpviewdata;
+      this.viewdata = tmpviewdata;
     },
     getYm() {
       if (!this.kikanYm) {
@@ -299,7 +503,7 @@ export default {
       if (kbn == 0) {
         this.datepicker_dialog = true;
       } else {
-        this.viewdatakeikaku = [];
+        this.viewdata = [];
       }
     },
     monthSelect() {
@@ -312,7 +516,7 @@ export default {
         minutes: 0,
         seconds: 0,
       });
-      this.viewdatakeikaku = [];
+      this.viewdata = [];
       this.datepicker_dialog = false;
     },
     touroku_dialog_close() {
@@ -335,6 +539,11 @@ div#keikakuLists {
   width: auto;
   .rowStyle {
     height: 25px;
+  }
+  .wj-right {
+    &.wj-elem-filter {
+      float: none;
+    }
   }
 
   #load_dialog {
