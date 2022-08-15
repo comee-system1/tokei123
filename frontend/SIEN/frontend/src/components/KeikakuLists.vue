@@ -95,12 +95,21 @@
         </v-btn-toggle>
       </v-row>
 
-      <v-row class="rowStyle mt-1" no-gutters v-if="selDispIndex == 0">
-        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
-        </alphabet-button>
-        <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-          <span class="miman mr-1" style="width: 80px">18歳未満</span>
-        </v-card>
+      <v-row class="mt-1" no-gutters>
+        <v-col cols="*" style="max-width: 330px">
+          <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+          </alphabet-button>
+        </v-col>
+        <v-col style="max-width: 130px">
+          <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
+            <span class="miman mr-1" style="width: 80px">18歳未満</span>
+          </v-card>
+        </v-col>
+        <v-col cols="3" style="text-align: right">
+          <v-btn x-small outlined @click="onClickJyukyusya"
+            >受給者証登録へ</v-btn
+          >
+        </v-col>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -113,7 +122,7 @@
           :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
-          :selectionMode="'Row'"
+          :selectionMode="'None'"
           :isReadOnly="true"
           :initialized="onInitialize"
           :itemsSource="viewdata"
@@ -347,15 +356,13 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 //import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
-//import sysConst from '@/utiles/const';
+import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 
 export default {
   components: { AlphabetButton },
   data() {
     return {
-      selDispIndex: 0,
-
       viewdataAll: [],
       viewdata: [],
       footerdata: [],
@@ -445,7 +452,13 @@ export default {
           window.innerHeight - this.headerheight + 'px';
       }
     },
-
+    /***************************
+     * 受給者証登録へボタン
+     */
+    onClickJyukyusya() {
+      alert('受給者証登録ボタンへ押下');
+      return false;
+    },
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
@@ -524,7 +537,19 @@ export default {
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         if (ht.panel == flexGrid.cells) {
+          // 作成日を押下
+          if (hPage.col === 7) {
+            if (
+              confirm(
+                'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
+              )
+            ) {
+              alert('ok');
+            }
+          }
+
           // let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
           // this.setDispdata(tmpitem);
           // this.tourokuScreenFlag = true;
@@ -551,6 +576,9 @@ export default {
 
           if (c == 2 || c == 3) {
             cell.style.textAlign = 'right';
+          }
+          if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
+            cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
         }
 
