@@ -23,7 +23,6 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      jyoseijichitaiFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -51,7 +50,7 @@ export default {
       flexGrid.rowHeaders.columns.defaultSize = 120;
       flexGrid.columns.defaultSize = 30;
       // 助成自治体FragがFALSEの場合、助成自治体番号を非表示
-      if (this.jyoseijichitaiFlag === false) {
+      if (this.$parent.displayFlagSetting[0].jyoseijichitaiFlag === false) {
         flexGrid.rows[1].visible = false;
       } 
     },
@@ -59,6 +58,7 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
+      let _self = this;
       
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
@@ -70,7 +70,7 @@ export default {
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
-            cell.innerHTML = '市町村番号';
+            cell.innerHTML = _self.$parent.displayFlagSetting[0].shityosonBango;
           }
           if ((r == 1) && (c == 0)) {
             cell.innerHTML = '助成自治体番号';

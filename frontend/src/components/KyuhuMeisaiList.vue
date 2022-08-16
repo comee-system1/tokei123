@@ -112,6 +112,13 @@ export default {
      */
     setEmptyMeisaiListData() {
       let meisaiListData = [];
+      // let emptyRoopLength = 0;
+      // if (this.$parent.displayFlagSetting[0].meisaiListLargeFlag) {
+      //   // 明細欄の表示項目増加Flagがtrueの場合
+      //   emptyRoopLength = 24;
+      // } else {
+      //   emptyRoopLength = 12;
+      // }
       // 初回空データ表示
       // 表示数12未満だった場合、空の行を追加
       for (let f = 0; meisaiListData.length < 12; f++) {

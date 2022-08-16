@@ -27,7 +27,9 @@
           Tab 4 Content
           <!-- <SoudanCountUtiwake></SoudanCountUtiwake> -->
         </v-tab-item>
-        <v-tab-item value="JissiIcrn"> Tab 5 Content </v-tab-item>
+        <v-tab-item value="MonitoringJissiIcrn">
+          <MonitoringJissiIcrn></MonitoringJissiIcrn>
+        </v-tab-item>
       </v-tabs-items>
     </v-container>
   </div>
@@ -35,13 +37,16 @@
 
 <script>
 import ls from '@/utiles/localStorage';
-import KeikakuIcrn from '../../components/KeikakuIcrn.vue';
+import KeikakuIcrn from '../../components/MonitoringYoteiIcrn.vue';
+import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
+
 export default {
   props: {
     selectedData: Object, // 検索条件等
   },
   components: {
-    KeikakuIcrn, //SoudanCount, SoudanCountUtiwake
+    KeikakuIcrn,
+    MonitoringJissiIcrn, //SoudanCount, SoudanCountUtiwake
   },
   data: function () {
     return {
@@ -65,8 +70,8 @@ export default {
         },
         {
           name: 'モニタリング実施一覧',
-          href: '#JissiIcrn',
-          hrefval: 'JissiIcrn',
+          href: '#MonitoringJissiIcrn',
+          hrefval: 'MonitoringJissiIcrn',
         },
       ],
     };

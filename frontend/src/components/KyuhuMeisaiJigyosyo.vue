@@ -23,7 +23,6 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      tourokuJgyosyoFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -89,11 +88,7 @@ export default {
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
-            if (_self.tourokuJgyosyoFlag === true) {
-              cell.innerHTML = '登録事業所番号';
-            } else {
-              cell.innerHTML = '指定事業所番号';
-            }
+              cell.innerHTML = _self.$parent.displayFlagSetting[0].jigyosyoBango;
           }
           if ((r == 1) && (c == 0)) {
             cell.innerHTML = '事業者名';

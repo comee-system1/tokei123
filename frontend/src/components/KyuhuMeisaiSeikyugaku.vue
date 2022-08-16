@@ -46,8 +46,7 @@
 export default {
   data() {
     return {
-      dispItemPtn:0,
-      syogaijiFrag:true,
+      dispItemPtn: this.$parent.displayFlagSetting[0].seikyugakuType,
       seikyugakuApiData:[],
       seikyugakuData:[],
       seikyugakuObj:[
@@ -153,11 +152,11 @@ export default {
      */
     settingGrid(flexGrid) {
       flexGrid.columns[0].width = 70;
-      flexGrid.columns[0].cssClass = 'wj-header';
+      flexGrid.columns[0].cssClass = 'create-header';
       flexGrid.columns[1].width = 130;
-      flexGrid.columns[1].cssClass = 'wj-header';
+      flexGrid.columns[1].cssClass = 'create-header';
       flexGrid.rows.insert(0, new wjGrid.Row());
-      flexGrid.rows[0].cssClass = 'wj-header';
+      flexGrid.rows[0].cssClass = 'create-header';
       flexGrid.columns.defaultSize = 30;
       // セルの非表示設定
       this.settingDisplyItem(flexGrid)
@@ -234,7 +233,6 @@ export default {
       } else {
         // APIデータが取得できていない場合は空データを設定
         this.columnLength = 20;
-        console.log(this.columnLength)
         for (let r = 0; r < this.seikyugakuObj.length; r++) {
           let objData = this.seikyugakuObj[r];
           row = {
@@ -247,7 +245,6 @@ export default {
           }
           seikyugakuData.push(row);
         }
-        console.log(row)
       }
       this.mainFlexGrid.itemsSource = seikyugakuData;
     },
@@ -406,6 +403,11 @@ export default {
       flexGrid.rows.defaultSize = 20;
       flexGrid.columns.defaultSize = 120;
       flexGrid.rows.height = 20;
+      flexGrid.rows[0].cssClass = 'create-header';
+      flexGrid.rows[1].cssClass = 'create-header';
+      flexGrid.rows[4].cssClass = 'create-header';
+      flexGrid.rows[6].cssClass = 'create-header';
+      flexGrid.rows[7].cssClass = 'create-header';
       flexGrid.setCellData(1, 0, '合計');
 
       // セルの非表示設定
@@ -447,10 +449,10 @@ export default {
             s.lineHeight = '40px';
             s.backgroundColor = sysConst.COLOR.selectedColor;
           }
-          if ((r == 0) || (r == 1) ||  (r == 4) || (r == 6) || (r == 7)) {
-            s.backgroundColor = sysConst.COLOR.selectedColor;
+          // if ((r == 0) || (r == 1) ||  (r == 4) || (r == 6) || (r == 7)) {
+          //   s.backgroundColor = sysConst.COLOR.selectedColor;
             
-          }
+          // }
         }
       }
     },
@@ -506,11 +508,17 @@ export default {
     .wj-cell {
       line-height: 19px;
     }
+    .create-header {
+      background-color: #eee!important;
+    }
   }
   #kyuhu-seikyugaku-total {
     width: auto;
     border-radius: 0 4px 4px 0;
     background: #ccc;
+    .create-header {
+      background-color: #eee!important;
+    }
   }
 }
 

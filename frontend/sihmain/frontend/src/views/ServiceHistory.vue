@@ -1,6 +1,6 @@
 <template>
   <div id="serviceHistory" class="mt-n1">
-    <v-container fluid class="container mt-0 user-info">
+    <v-container fluid class="container mt-0 user-info" style="styles">
       <riyousyadaityo-sort-menu
         @displaySort="displaySort($event)"
         @sorted="sorted($event)"
@@ -166,7 +166,7 @@ import sysConst from '@/utiles/const';
 import RiyousyadaityoSortMenu from '../components/RiyousyadaityoSortMenu.vue';
 import DialogServiceHistory from '../components/DialogServiceHistory.vue';
 
-import { ServiceHistory } from '@backend/api/ServiceHistory';
+import { getConnect } from '@connect/getConnect';
 
 export default {
   data() {
@@ -189,14 +189,35 @@ export default {
       isVisible1: false, // 初期選択状態
       isVisible2: true, // 初期選択状態
       selectKey: '', // ダイアログに渡すキー
+      headerheight: 200,
     };
   },
   components: {
     RiyousyadaityoSortMenu,
     DialogServiceHistory,
   },
-
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   methods: {
+    /*********************
+     * 画面リサイズの際の表示調整
+     */
+    calculateWindowHeight() {
+      if (document.getElementById('serviceHistoryGrid') != null) {
+        document.getElementById('serviceHistoryGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     /***************:
      * かな検索
      */
@@ -392,12 +413,21 @@ export default {
     },
     onInitialized(flexGrid) {
       this.mainFlexGrid = flexGrid;
-      this.getData().then((result) => {
-        this.historyData = result;
 
-        // 子コンポーネントにサービス事業を設定
-        this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
-        this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
+      let uniqid = 1; // 現在は1のみapiが実行する
+      let traceid = 123;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+      };
+
+      getConnect(this.$route.path, params).then((result) => {
+        this.getData(result).then((result) => {
+          this.historyData = result;
+          // 子コンポーネントにサービス事業を設定
+          this.$refs.childRiyousyadaityo.setServiceJigyoCombo(this.historyData);
+          this.$refs.childRiyousyadaityo.setServiceNaiyoCombo(this.historyData);
+        });
       });
 
       // ヘッダ情報の作成
@@ -420,16 +450,14 @@ export default {
         }
       });
     },
-    async getData() {
+    async getData(result) {
       let historyData = [];
 
-      return ServiceHistory().then((result) => {
-        historyData = result.icrn_inf;
-        // サービス順に並び替え
-        let returns = this.changeSortting(historyData);
-        this.allData = returns;
-        return returns;
-      });
+      historyData = result.icrn_inf;
+      // サービス順に並び替え
+      let returns = this.changeSortting(historyData);
+      this.allData = returns;
+      return returns;
     },
 
     /*********************
@@ -617,6 +645,7 @@ export default {
 @import '@/assets/scss/common.scss';
 div#serviceHistoryGrid {
   width: auto;
+  height: var(--height);
 }
 
 div#serviceHistory {

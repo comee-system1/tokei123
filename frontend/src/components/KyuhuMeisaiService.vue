@@ -13,7 +13,6 @@
         :allowPinning="false"
         :allowResizing="false"
         :allowSorting="false"
-        :itemsSource="viewdata"
       >
       <div class="servicessyubetu-title">
         サービス種別
@@ -30,7 +29,6 @@ export default {
       jyoseijichitaiFlag: true,
       mainFlexGrid:[],
       serviceData:[],
-      viewdata:[]
     };
   },
   methods: {
@@ -39,9 +37,9 @@ export default {
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // 初期表示の空配列を設定
-      this.setEnptyData();
+      this.setEnptyData(flexGrid);
       // セルのサイズ修正
-      this.createCell(flexGrid);
+      this.settingCell(flexGrid);
       // セルのマージ
       this.mergeCell(flexGrid);
       // セルのデザイン修正
@@ -50,36 +48,35 @@ export default {
     /**
      * セルの作成
      */
-    createCell(flexGrid) {
-      flexGrid.rowHeaders.columns.defaultSize = 170;
-    //   flexGrid.columns.defaultSize = 50;
+    settingCell(flexGrid) {
+      flexGrid.rowHeaders.columns.defaultSize = 200;
+      flexGrid.columns.defaultSize = 50;
       //  サービス種別(入力値)
-      // console.log(flexGrid.columns[0])
-      // flexGrid.columns[0].width = 50;
-      // //  開始年月日
-      // flexGrid.columns[1].width = 100;
-      // //  開始年月日(入力値)
-      // flexGrid.columns[2].width = 160;
-      // //  終了日年月日
-      // flexGrid.columns[3].width = 100;
-      // //  終了日年月日(入力値)
-      // flexGrid.columns[4].width = 160;
-      // //  利用日数
-      // flexGrid.columns[5].width = 100;
-      // //  利用日数(入力値)
-      // flexGrid.columns[6].width = 50;
-      // //  入院日数
-      // flexGrid.columns[7].width = 100;
-      // //  入院日数(入力値)
-      // flexGrid.columns[8].width = 50;
+      flexGrid.columns[0].width = 50;
+      //  開始年月日
+      flexGrid.columns[1].width = 100;
+      //  開始年月日(入力値)
+      flexGrid.columns[2].width = 145;
+      //  終了日年月日
+      flexGrid.columns[3].width = 100;
+      //  終了日年月日(入力値)
+      flexGrid.columns[4].width = 145;
+      //  利用日数
+      flexGrid.columns[5].width = 100;
+      //  利用日数(入力値)
+      flexGrid.columns[6].width = 50;
+      //  入院日数
+      flexGrid.columns[7].width = 100;
+      //  入院日数(入力値)
+      flexGrid.columns[8].width = 50;
     },
     /**
      * Grid配列の初期表示
      */
-    setEnptyData(){
-      this.viewdata = [];
+    setEnptyData(flexGrid){
+      let meisaiListData = [];
       for (let i = 0; i < 3; i++){
-        this.viewdata.push(
+        meisaiListData.push(
           {
             serviceNo:         '',
             sYmdTtl:           '開始年月日',
@@ -93,7 +90,7 @@ export default {
           }
         )
       }
-      console.log(this.viewdata )
+      flexGrid.itemsSource = meisaiListData;
     },
     /**
      * セルのマージ
@@ -101,10 +98,10 @@ export default {
     mergeCell(flexGrid) {
       let mm = new wjGrid.MergeManager();
       let dataLength; 
-      if(this.viewdata.length < 3) {
+      if(flexGrid.itemsSource.length < 3) {
         dataLength = 3;
       } else {
-        dataLength = this.viewdata.length;
+        dataLength = flexGrid.itemsSource.length;
       }
       // 結合するセルの範囲を指定
       let headerRanges = [
@@ -126,7 +123,6 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
-      let _self = this;
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
@@ -160,7 +156,7 @@ export default {
             cell.innerHTML = '<div class="riyouhutan-header">入院日数</div>';
           }
           // borderRadiusを修正
-          if (_self.viewdata.length < 4) {
+          if (flexGrid.itemsSource.length < 4) {
             if ((r == 2) && (c == 8)) {
               s.borderRadius = '0 0 4px 0';
             }
@@ -176,9 +172,10 @@ export default {
      * 親コンポーネントから受けとったデータを加工し表示
      */
     setServiceData(serviceData){
-      this.viewdata = [];
+      let meisaiListData = [];
+      
       for (let i = 0; i < serviceData.length; i++){
-        this.viewdata.push(
+        meisaiListData.push(
           {
             serviceNo:         serviceData[i]['serviceNo'],
             sYmdTtl:           '開始年月日',
@@ -192,8 +189,8 @@ export default {
           }
         )
       }
-      // データに基づいてセルを再修正
-      this.createCell(this.mainFlexGrid);
+      this.mainFlexGrid.itemsSource = meisaiListData;
+      this.settingCell(this.mainFlexGrid);
       this.mergeCell(this.mainFlexGrid);
     },
   }
@@ -216,7 +213,7 @@ export default {
   .servicessyubetu-title {
     position: absolute;
     top: 20px;
-    left: 40px;
+    left: 57px;
     z-index: 2;
     color: #333;
   }

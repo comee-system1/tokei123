@@ -444,6 +444,34 @@ export default {
         teikyoCode: 35,
         teikyoService: '35 自立生活援助',
       });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 51,
+        teikyoService: '51 計画相談支援(暫定)',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 52,
+        teikyoService: '52 計画相談支援',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 53,
+        teikyoService: '53 地域相談支援（地域移行支援）',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 54,
+        teikyoService: '54 地域相談支援（地域定着支援）',
+      });
 
       //事業所番号が次のデータと同じ場合に非表示用のフラグを立てる
       let j = -1;

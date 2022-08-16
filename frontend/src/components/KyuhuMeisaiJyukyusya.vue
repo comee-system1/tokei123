@@ -23,7 +23,6 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      syougaijiFlag: false,
       mainFlexGrid:[],
     };
   },
@@ -53,7 +52,7 @@ export default {
       flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
       // 障害児FragがFALSEの場合、障害児氏名項目を非表示
-      if (this.syougaijiFlag === false) {
+      if (this.$parent.displayFlagSetting[0].syougaijiFlag === false) {
         flexGrid.rows[2].visible = false;
       } 
     },
@@ -83,6 +82,7 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
+      let _self = this;
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
@@ -109,10 +109,25 @@ export default {
             s.textAlign = 'left';
             s.paddingLeft = '4px';
           }
-          // borderRadius修正
           if ((r == 0) && (c == 9)) {
             s.borderRadius = '0 4px 0 0';
           }
+          // borderRadius修正
+          if (_self.$parent.displayFlagSetting[0].syougaijiFlag === false) {
+            // 2行表示の場合
+            if ((r == 1) && (c == 0)) {
+              s.borderRadius = '0 0 4px 0';
+            }
+          } else {
+            // 3行表示の場合
+            if ((r == 2) && (c == 0)) {
+              s.borderRadius = '0 0 4px 0';
+              s.borderTop = 'none';
+            }
+          }
+          // if ((r == 0) && (c == 9)) {
+          //   s.borderRadius = '0 4px 0 0';
+          // }
         }
       };
     },

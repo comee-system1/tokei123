@@ -23,7 +23,6 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      kinroukeizokuFlag: true,
       mainFlexGrid:[],
     };
   },
@@ -43,18 +42,10 @@ export default {
      * セルの作成
      */
     createCell(flexGrid) {
-      let jyukyusyaGridRow;
-      if (this.kinroukeizokuFlag === true) {
-        // 就労継続支援表示フラグがTRUEの場合3行表示
-        jyukyusyaGridRow = 2;
-      } else {
-        // 就労継続支援表示フラグがFALSEの場合2行表示
-        jyukyusyaGridRow = 1;
-      }
       // セルの作成
       flexGrid.columns.push(new wjGrid.Column());
 
-      while (flexGrid.rows.length < jyukyusyaGridRow) {
+      while (flexGrid.rows.length < 2) {
         flexGrid.rows.push(new wjGrid.Row());
       }
       // ヘッダーを追加
@@ -63,6 +54,11 @@ export default {
       }
       flexGrid.rowHeaders.columns.defaultSize = 90;
       flexGrid.columns.defaultSize = 90;
+      console.log(this.$parent.displayFlagSetting[0].genmensotiFlag )
+      // 減免措置FragがFALSEの場合、就労継続支援A型事業者負担減免措置実施を非表示
+      if (this.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+        flexGrid.rows[1].visible = false;
+      } 
     },
     /**
      * セルのマージ
@@ -130,8 +126,8 @@ export default {
             s.borderTop = '1px solid rgba(0,0,0,.2)';
             s.borderRadius = '0 0 4px 0';
           }
-          if (_self.kinroukeizokuFlag === false) {
-            // 勤労継続支援フラグがfalseだった場合デザインを修正
+          if (_self.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+            // 減免措置Fragがfalseだった場合デザインを修正
             if (r == 0) {
               s.borderBottom = '1px solid rgba(0,0,0,.2)';
               s.borderRadius = '4px 0 0 4px';
@@ -149,8 +145,8 @@ export default {
           if (r == 1 && c == 0) {
             s.borderRadius = '0  0 4px 0';
           }
-          if (_self.kinroukeizokuFlag === false) {
-            // 勤労継続支援フラグがfalseだった場合デザインを修正
+          if (_self.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+            // 減免措置Fragがfalseだった場合デザインを修正
             if (r == 0) {
               s.borderBottom = '1px solid rgba(0,0,0,.2)';
               s.borderRadius = '0 4px 4px 0';
@@ -165,12 +161,13 @@ export default {
     setKubunData(kubunData){
       // API取得時修正
       // 地域区分
+      console.log(kubunData)
       this.mainFlexGrid.setCellData(0, 0, kubunData['tiikikubun']);
 
       
       // 就労継続支援
       // API取得時修正
-      if (this.kinroukeizokuFlag) {
+      if (this.$parent.displayFlagSetting[0].genmensotiFlag) {
         this.mainFlexGrid.setCellData(1, 0, kubunData['kinroukeizokushien']);
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <v-dialog v-model="dialog" width="980">
+    <v-dialog v-model="dialog" width="1200">
       <v-card elevation="2" class="pa-5">
         <v-toolbar-title class="text-subtitle-1"
           >サービス履歴　追加登録</v-toolbar-title
@@ -17,9 +17,9 @@
           color="secondary"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-        <v-row dense id="serviceArea" class="mt-5">
-          <v-col cols="2">利用者名</v-col>
-          <v-col class="ml-3">
+        <v-row no-gutters id="serviceArea" class="mt-5 user-info">
+          <v-col cols="3"><label>利用者名</label></v-col>
+          <v-col cols="*">
             <wj-combo-box
               class="input w100"
               readonly
@@ -55,202 +55,210 @@
             </v-btn>
           </v-col>
         </v-row>
-        <v-row dense class="mt-3">
-          <v-col cols="7">
+        <v-row no-gutters class="mt-3">
+          <v-col cols="12">
             <div height="30" id="serviceDialog">
               <v-btn-toggle v-model="toggle_tabs">
                 <v-btn small elevation="0">追加</v-btn>
                 <v-btn small elevation="0">修正</v-btn>
               </v-btn-toggle>
-              <div>
-                <v-card elevation="0" class="pl-2 pt-4">
-                  <v-row dense>
-                    <v-col class="mw100">サービス事業所</v-col>
-                    <v-col>
-                      <wj-combo-box
-                        class="input w60"
-                        :text="selectData.serviceTeikyoJigyosyoCode"
-                        v-model="selectData.serviceTeikyoJigyosyoCode"
-                        readonly
-                      ></wj-combo-box>
-                      <wj-combo-box
-                        class="input w300"
-                        :text="selectData.serviceTeikyoJigyosyo"
-                        readonly
-                      ></wj-combo-box>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col class="mw100">サービス名称</v-col>
-                    <v-col>
-                      <wj-combo-box
-                        class="input w40"
-                        :text="selectData.serviceCode"
-                        readonly
-                      ></wj-combo-box>
-                      <wj-combo-box
-                        class="input w220"
-                        :text="selectData.serviceMeisyo"
-                        readonly
-                      ></wj-combo-box>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col class="mw100">開始日</v-col>
-                    <v-col>
-                      <wj-combo-box
-                        class="input w100"
-                        :text="selectData.startDate"
-                        readonly
-                      ></wj-combo-box>
-                      <v-icon small @click="start_datepicker_dialog = true"
-                        >mdi-calendar-month</v-icon
+
+              <v-card elevation="0" class="pt-4">
+                <v-row no-gutters justify="space-between">
+                  <v-col cols="6">
+                    <v-row no-gutters class="user-info">
+                      <v-col cols="3"><label>サービス事業所</label></v-col>
+                      <v-col cols="*">
+                        <wj-combo-box
+                          class="input w60"
+                          :text="selectData.serviceTeikyoJigyosyoCode"
+                          v-model="selectData.serviceTeikyoJigyosyoCode"
+                          readonly
+                        ></wj-combo-box>
+                        <wj-combo-box
+                          class="input w300"
+                          :text="selectData.serviceTeikyoJigyosyo"
+                          readonly
+                        ></wj-combo-box>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="user-info">
+                      <v-col cols="3"><label>サービス名称</label></v-col>
+                      <v-col cols="*">
+                        <wj-combo-box
+                          class="input w40"
+                          :text="selectData.serviceCode"
+                          readonly
+                        ></wj-combo-box>
+                        <wj-combo-box
+                          class="input w220"
+                          :text="selectData.serviceMeisyo"
+                          readonly
+                        ></wj-combo-box>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="user-info">
+                      <v-col cols="3"><label>開始日</label></v-col>
+                      <v-col cols="*">
+                        <v-text-field
+                          dense
+                          outlined
+                          tile
+                          flat
+                          :value="selectData.startDate"
+                          @click="start_datepicker_dialog = true"
+                          class="pa-0 ma-0 text-input"
+                          hide-details="false"
+                          append-icon="mdi-calendar-month"
+                          readonly
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="user-info">
+                      <v-col cols="3"><label>終了日</label></v-col>
+                      <v-col cols="*">
+                        <v-text-field
+                          dense
+                          outlined
+                          tile
+                          flat
+                          :value="selectData.endDate"
+                          @click="end_datepicker_dialog = true"
+                          class="pa-0 ma-0 text-input"
+                          hide-details="false"
+                          append-icon="mdi-calendar-month"
+                          readonly
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters v-if="toggle_tabs == 1">
+                      <v-col class="mw100">利用種類</v-col>
+                      <v-col>
+                        <v-btn-toggle v-model="toggle_spice">
+                          <v-btn small elevation="0">通常</v-btn>
+                          <v-btn small elevation="0">体験</v-btn>
+                        </v-btn-toggle>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-5 mb-5">
+                      <v-col cols="2">
+                        <v-btn
+                          v-if="toggle_tabs == 0"
+                          tile
+                          small
+                          elevation="1"
+                          @click="gamenClear"
+                          >画面クリア</v-btn
+                        >
+                        <v-btn v-if="toggle_tabs == 1" tile small elevation="1"
+                          >削除</v-btn
+                        >
+                      </v-col>
+                      <v-col align="left" cols="*" class="pt-1">
+                        <v-card elevation="0" class="last_registrant">
+                          <v-card-text
+                            >最終登録者：2020/08/04 10:38
+                            明治　正雄</v-card-text
+                          >
+                        </v-card>
+                      </v-col>
+                      <v-col cols="3">
+                        <v-btn
+                          v-if="toggle_tabs == 0"
+                          tile
+                          small
+                          elevation="1"
+                          @click="addRegist"
+                          >追加登録</v-btn
+                        >
+                        <v-btn
+                          v-if="toggle_tabs == 1"
+                          tile
+                          small
+                          elevation="1"
+                          @click="editRegist"
+                          >修正登録</v-btn
+                        >
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                  <v-col cols="5" style="margin-top: -100px">
+                    <v-card class="pa-3" outlined>
+                      <p class="text-caption">サービス事業所一覧 選択</p>
+                      <v-btn-toggle
+                        v-model="display_service"
+                        @change="onDisplay_service"
+                        class="mt-n5"
                       >
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col class="mw100">終了日</v-col>
-                    <v-col>
-                      <wj-combo-box
-                        class="input w100"
-                        :text="selectData.endDate"
-                        readonly
-                      ></wj-combo-box>
-                      <v-icon small @click="end_datepicker_dialog = true"
-                        >mdi-calendar-month</v-icon
-                      >
-                    </v-col>
-                  </v-row>
-                  <v-row dense v-if="toggle_tabs == 1">
-                    <v-col class="mw100">利用種類</v-col>
-                    <v-col>
-                      <v-btn-toggle v-model="toggle_spice">
-                        <v-btn small elevation="0">通常</v-btn>
-                        <v-btn small elevation="0">体験</v-btn>
+                        <v-btn small> 全部 </v-btn>
+                        <v-btn small> 選択済 </v-btn>
+                        <v-btn small> 未選択 </v-btn>
                       </v-btn-toggle>
-                    </v-col>
-                  </v-row>
-                  <v-row dense class="mt-5 mb-5">
-                    <v-col cols="3">
-                      <v-btn
-                        v-if="toggle_tabs == 0"
-                        tile
-                        small
-                        elevation="0"
-                        outlined
-                        @click="gamenClear"
-                        >画面クリア</v-btn
+
+                      <v-row no-gutters class="mt-1">
+                        <v-col cols="12">
+                          <alphabet-button
+                            ref="alphabetButton"
+                            @onAlphabetical="onAlphabetical"
+                          ></alphabet-button>
+                        </v-col>
+                      </v-row>
+                      <wj-flex-grid
+                        :selectionMode="3"
+                        id="svListInitialize"
+                        :initialized="svListInitialize"
+                        :allowMerging="6"
+                        :headersVisibility="'Column'"
+                        :alternatingRowStep="0"
+                        :allowDragging="false"
+                        :allowResizing="false"
+                        :deferResizing="false"
+                        :allowSorting="false"
+                        :autoGenerateColumns="false"
+                        :itemsSource="serviceList"
+                        :itemsSourceChanged="onItemsSourceServiceList"
+                        class="mt-1 ht200"
                       >
-                      <v-btn
-                        v-if="toggle_tabs == 1"
-                        tile
-                        small
-                        elevation="0"
-                        outlined
-                        >削除</v-btn
-                      >
-                    </v-col>
-                    <v-col align="center">
-                      最終登録者：2020/08/04 10:38 明治　正雄
-                    </v-col>
-                    <v-col cols="3" align="right">
-                      <v-btn
-                        v-if="toggle_tabs == 0"
-                        tile
-                        small
-                        elevation="0"
-                        outlined
-                        @click="addRegist"
-                        >追加登録</v-btn
-                      >
-                      <v-btn
-                        v-if="toggle_tabs == 1"
-                        tile
-                        small
-                        elevation="0"
-                        outlined
-                        @click="editRegist"
-                        >修正登録</v-btn
-                      >
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </div>
+                        <wj-flex-grid-column
+                          :header="'コード'"
+                          :binding="'listCode'"
+                          align="center"
+                          valign="middle"
+                          :width="80"
+                          :isReadOnly="true"
+                        ></wj-flex-grid-column>
+                        <wj-flex-grid-column
+                          :header="'サービス事業所名'"
+                          :binding="'listJigyosyo'"
+                          align="left"
+                          valign="middle"
+                          width="2*"
+                          :isReadOnly="true"
+                        ></wj-flex-grid-column>
+                        <wj-flex-grid-column
+                          :header="'サービス名称'"
+                          :binding="'listKey'"
+                          align="center"
+                          valign="middle"
+                          :width="30"
+                          :isReadOnly="true"
+                        ></wj-flex-grid-column>
+                        <wj-flex-grid-column
+                          :binding="'listMeisyo'"
+                          align="left"
+                          valign="middle"
+                          width="2*"
+                          :isReadOnly="true"
+                        ></wj-flex-grid-column>
+                      </wj-flex-grid>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-card>
             </div>
           </v-col>
-          <v-col cols="5">
-            <v-row dense class="mt-n12">
-              <p class="text-caption">サービス事業所一覧 選択</p>
-              <v-col cols="12" class="mt-n3">
-                <v-btn-toggle
-                  v-model="display_service"
-                  @change="onDisplay_service"
-                >
-                  <v-btn small> 全部 </v-btn>
-                  <v-btn small> 選択済 </v-btn>
-                  <v-btn small> 未選択 </v-btn>
-                </v-btn-toggle>
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col cols="12">
-                <alphabet-button
-                  ref="alphabetButton"
-                  @onAlphabetical="onAlphabetical"
-                ></alphabet-button>
-              </v-col>
-            </v-row>
-            <wj-flex-grid
-              :selectionMode="3"
-              id="svListInitialize"
-              :initialized="svListInitialize"
-              :allowMerging="6"
-              :headersVisibility="'Column'"
-              :alternatingRowStep="0"
-              :allowDragging="false"
-              :allowResizing="false"
-              :deferResizing="false"
-              :allowSorting="false"
-              :autoGenerateColumns="false"
-              :itemsSource="serviceList"
-              :itemsSourceChanged="onItemsSourceServiceList"
-              class="mt-1 ht200"
-            >
-              <wj-flex-grid-column
-                :header="'コード'"
-                :binding="'listCode'"
-                align="center"
-                valign="middle"
-                :width="80"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                :header="'サービス事業所名'"
-                :binding="'listJigyosyo'"
-                align="left"
-                valign="middle"
-                width="2*"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                :header="'サービス名称'"
-                :binding="'listKey'"
-                align="center"
-                valign="middle"
-                :width="30"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                :binding="'listMeisyo'"
-                align="left"
-                valign="middle"
-                width="2*"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-            </wj-flex-grid>
-          </v-col>
         </v-row>
-        <v-row dense>
+        <v-row no-gutters>
           <v-col cols="12">
             <label class="text-caption mr-3">表示</label>
             <v-btn-toggle
@@ -262,7 +270,7 @@
               <v-btn small> 全履歴 </v-btn>
             </v-btn-toggle>
           </v-col>
-          <v-col cols="12">
+          <v-col cols="12" class="mt-2">
             <wj-flex-grid
               :selectionMode="3"
               id="svEditInitialize"
@@ -491,6 +499,7 @@ export default {
      */
     settingData() {
       let selectkey = this.selectKey; // 選択したデータ後程propsから取得する
+
       this.selectData = this.historyData[selectkey];
       if (this.selectData.startDate) {
         this.start_picker = moment(this.selectData.startDate).format(
@@ -580,16 +589,17 @@ export default {
       // 表示が最新履歴の時は終了日が空欄のデータのみ対象
       let serviceHistoryEdit = [];
       for (let i = 0; i < this.historyData.length; i++) {
-        if (this.historyData[i].code == this.historyData[this.selectKey].code) {
-          if (
-            (this.display_history === 0 &&
-              this.historyData[i].endDate.length == 0) ||
-            this.display_history === 1
-          ) {
-            serviceHistoryEdit.push(this.historyData[i]);
-          }
-        }
+        // if (this.historyData[i].code == this.historyData[this.selectKey].code) {
+        //   if (
+        //     (this.display_history === 0 &&
+        //       this.historyData[i].endDate.length == 0) ||
+        //     this.display_history === 1
+        //   ) {
+        serviceHistoryEdit.push(this.historyData[i]);
+        //}
+        //}
       }
+
       this.serviceHistoryEdit = serviceHistoryEdit;
     },
     onItemsSourceServiceEdit(flexGrid) {
@@ -798,6 +808,53 @@ div#serviceDialog {
   .mw100 {
     max-width: 100px !important;
   }
+  .text-input {
+    font-size: 12px;
+    width: 120px;
+    .v-input__append-inner {
+      position: absolute;
+
+      right: 14px;
+      top: 0;
+      width: 12px;
+      .v-input__icon {
+        height: 12px;
+        width: 12px;
+        i {
+          font-size: 12px;
+        }
+      }
+    }
+    .v-input__slot {
+      min-height: 24px;
+      padding: 0;
+      .v-text-field__slot {
+        width: 100%;
+        height: 24px;
+        position: absolute;
+      }
+      input {
+        padding-left: 4px;
+        display: block;
+        width: 100%;
+        height: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 10;
+      }
+    }
+    fieldset {
+      border: 1px solid $border_color;
+    }
+    div {
+      border-radius: 0;
+    }
+    input {
+      padding: 2px 0px;
+      max-height: 24px;
+    }
+  }
   .input {
     width: 100px;
     height: 20px;
@@ -824,8 +881,31 @@ div#serviceDialog {
       width: 500px;
     }
   }
-}
 
+  .user-info,
+  &.user-info {
+    label {
+      width: 90%;
+    }
+  }
+}
+.last_registrant {
+  display: flex;
+  align-items: flex-end;
+  width: 90%;
+  margin-left: 5%;
+  .v-card__text {
+    font-size: 12px;
+    color: #fff !important;
+    background-color: #ce3e47;
+    animation-name: fadeInAnime;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    padding: 0;
+    text-align: center;
+    border-radius: initial;
+  }
+}
 div#svListInitialize,
 div#svEditInitialize {
   font-size: 12px;
