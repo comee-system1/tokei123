@@ -4,6 +4,7 @@
       <v-row no-gutters class="keikakuSoudan-header-row">
         <v-card
           elevation="0"
+          id="keikakuSoudanheader"
           class="keikakuSoudan-header d-flex flex-row"
           flat
           tile
@@ -11,195 +12,165 @@
           <label class="keikakuSoudan-header-title"
             >{{ this.titleNum }}計画相談支援</label
           >
+        </v-card>
+      </v-row>
+      <div style="overflow-y: scroll; height: 290px" @scroll="onScroll()">
+        <v-row no-gutters class="keikakuSoudan-sienjigyosyo-row">
           <v-card
-            v-if="subGridSelected"
             elevation="0"
-            class="keikakuSoudan-header d-flex flex-row-reverse"
+            class="keikakuSoudan-title-length5 d-flex flex-row"
             flat
             tile
           >
-            <v-btn
-              id="modifyButtonKeikakuSoudan"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunModify"
-            >
-              修正</v-btn
-            >
-            <v-btn
-              id="addButtonKeikakuSoudan"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunAdd"
-            >
-              追加</v-btn
-            >
+            支援事業所
           </v-card>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="keikakuSoudan-sienjigyosyo-row">
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          支援事業所
-        </v-card>
-        <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-sienjigyosyo-input d-flex flex-row"
-        >
-          <wj-combo-box
-            class="keikakuSoudan-sienjigyosyo-input2"
-            :gotFocus="selectSienjigyosyo"
-            placeholder="事業所を選択"
-            :readonly="true"
-            :text="jigyosyoidname"
-          ></wj-combo-box>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="keikakuSoudan-sikyukikan-row">
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-title-length4 d-flex flex-row"
-          flat
-          tile
-        >
-          支給期間
-        </v-card>
-        <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-sikyukikan-picker d-flex flex-row"
-        >
-          <datepicker
-            :language="ja"
-            class="input_picker"
-            :format="DatePickerFormat"
-            :value="rksymd"
-            v-model="rksymd"
-            placeholder="開始日を選択"
-          ></datepicker>
-          &nbsp;～&nbsp;
-          <datepicker
-            :language="ja"
-            class="input_picker"
-            :format="DatePickerFormat"
-            :value="rkeymd"
-            v-model="rkeymd"
-            placeholder="終了日を選択"
-          ></datepicker>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="keikakuSoudan-monitoringkikan-row">
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-title-length6 d-flex flex-row"
-          style="padding-top: 30px"
-          flat
-          tile
-        >
-          モニタリング<br />期間
-        </v-card>
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-monitoringkikan-section"
-          flat
-          tile
+          <p class="required">*</p>
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-sienjigyosyo-input d-flex flex-row"
+          >
+            <wj-combo-box
+              class="keikakuSoudan-sienjigyosyo-input2"
+              :gotFocus="selectSienjigyosyo"
+              placeholder="事業所を選択"
+              :readonly="true"
+              :text="jigyosyoidname"
+            ></wj-combo-box>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="keikakuSoudan-sikyukikan-row">
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-title-length4 d-flex flex-row"
+            flat
+            tile
+          >
+            支給期間
+          </v-card>
+          <p class="required">*</p>
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-sikyukikan-picker d-flex flex-row"
+          >
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="rksymd"
+              v-model="rksymd"
+              placeholder="開始日を選択"
+            ></datepicker>
+            &nbsp;～&nbsp;
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="rkeymd"
+              v-model="rkeymd"
+              placeholder="終了日を選択"
+            ></datepicker>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="keikakuSoudan-monitoringkikan-row">
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-title-length6 d-flex flex-row"
+            style="padding-top: 30px"
+            flat
+            tile
+          >
+            モニタリング<br />期間
+          </v-card>
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-monitoringkikan-section"
+            flat
+            tile
+          >
+            <v-card
+              elevation="0"
+              class="d-flex flex-row"
+              style="height: 25px; margin-bottom: 4px"
+            >
+              <label class="keikakuSoudan-monitoringkikan-yoteituki"
+                >予定月</label
+              >
+              <wj-combo-box
+                class="keikakuSoudan-monitoringkikan-input"
+                :textChanged="onTextChanged"
+                v-model="monijiki"
+                :text="monijiki"
+              ></wj-combo-box>
+              <label style="padding-top: 2px">ヶ月</label>
+              <v-card elevation="0" class="pl-1 d-flex flex-row">
+                <v-btn
+                  class="monitoringkikan-setauto-button"
+                  @click="setMonitoring()"
+                >
+                  自動設定</v-btn
+                >
+              </v-card>
+            </v-card>
+            <v-card elevation="0" flat tile style="height: 250px">
+              <wj-flex-grid
+                v-for="item of monitoring"
+                :id="'gridMonitoringkikan' + item.id"
+                :key="item.id"
+                class="no-scrollbars"
+                :initialized="onInitializedMonitoringkikan"
+                :headersVisibility="'Column'"
+                :autoGenerateColumns="false"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowDragging="false"
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
+                :allowMerging="'AllHeaders'"
+                :isReadOnly="true"
+                :alternatingRowStep="0"
+                :selectionMode="'None'"
+                style="
+                  width: 397px;
+                  height: 73px;
+                  border-bottom: none;
+                  border-right: none;
+                  font-size: 12px;
+                  margin-left: 0px;
+                  border-radius: 2px;
+                "
+              >
+              </wj-flex-grid>
+            </v-card>
+          </v-card>
+        </v-row>
+        <v-row
+          no-gutters
+          class="keikakuSoudan-kasankoumoku-row d-flex flex-row"
         >
           <v-card
             elevation="0"
-            class="d-flex flex-row"
-            style="height: 25px; margin-bottom: 4px"
+            class="keikakuSoudan-title-length4 d-flex flex-row"
+            flat
+            tile
           >
-            <label class="keikakuSoudan-monitoringkikan-yoteituki"
-              >予定月</label
-            >
-            <wj-combo-box
-              class="keikakuSoudan-monitoringkikan-input"
-              :textChanged="onTextChanged"
-              v-model="monijiki"
-              :text="monijiki"
-            ></wj-combo-box>
-            <label style="padding-top: 2px">ヶ月</label>
-            <v-card elevation="0" class="pl-1 d-flex flex-row">
-              <v-btn
-                class="monitoringkikan-setauto-button"
-                @click="setMonitoring()"
-              >
-                自動設定</v-btn
-              >
-            </v-card>
+            加算項目
           </v-card>
-          <v-card elevation="0" flat tile style="height: 250px">
-            <wj-flex-grid
-              v-for="item of monitoring"
-              :id="'gridMonitoringkikan' + item.id"
-              :key="item.id"
-              class="no-scrollbars"
-              :initialized="onInitializedMonitoringkikan"
-              :headersVisibility="'Column'"
-              :autoGenerateColumns="false"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowDragging="false"
-              :allowPinning="false"
-              :allowResizing="false"
-              :allowSorting="false"
-              :allowMerging="'AllHeaders'"
-              :isReadOnly="true"
-              :alternatingRowStep="0"
-              :selectionMode="'None'"
-              style="
-                width: 397px;
-                height: 73px;
-                border-bottom: none;
-                border-right: none;
-                font-size: 12px;
-                margin-left: 0px;
-                border-radius: 2px;
-              "
+          <v-card
+            elevation="0"
+            class="keikakuSoudan-kasankoumoku-selection d-flex flex-row"
+            flat
+            tile
+          >
+            <v-checkbox
+              class="item-button"
+              label="特別地区加算"
+              v-model="tokuti"
             >
-            </wj-flex-grid>
+            </v-checkbox>
           </v-card>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="keikakuSoudan-kasankoumoku-row d-flex flex-row">
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-title-length4 d-flex flex-row"
-          flat
-          tile
-        >
-          加算項目
-        </v-card>
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-kasankoumoku-selection d-flex flex-row"
-          flat
-          tile
-        >
-          <v-checkbox class="item-button" label="特別地区加算" v-model="tokuti">
-          </v-checkbox>
-        </v-card>
-      </v-row>
-      <v-row
-        v-if="changeMode()"
-        no-gutters
-        class="keikakuSoudan-button-row mb-2"
-      >
-        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
-        <v-card
-          elevation="0"
-          class="keikakuSoudan-bottom-regist d-flex flex-row-reverse"
-          flat
-          tile
-        >
-          <v-btn class="regist-button"> 登 録</v-btn>
-        </v-card>
-      </v-row>
+        </v-row>
+      </div>
     </v-container>
   </div>
 </template>
@@ -810,6 +781,9 @@ export default {
     setSubGridSelectedFromParent(seleced) {
       this.subGridSelected = seleced;
     },
+    onScroll() {
+      this.$emit('onScroll', 'c-keikaku');
+    },
   },
 };
 </script>
@@ -820,6 +794,11 @@ div#JyukyuTourokuKeikakuSoudan2 {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;
+
+  ::-webkit-scrollbar {
+    width: 12px !important;
+  }
+
   .keikakuSoudan-container {
     padding: 0px !important;
   }

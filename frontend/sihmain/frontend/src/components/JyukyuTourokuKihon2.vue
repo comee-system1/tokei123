@@ -59,10 +59,15 @@
         <p class="required">*</p>
         <p class="ml-2 mb-0">{{ shichosonno + ' ' + shichosonname }}</p>
       </v-row>
-      <v-row no-gutters class="kihon-syogaisyubetu-row d-flex flex-row">
+      <v-row
+        no-gutters
+        class="kihon-syogaisyubetu-row d-flex flex-row"
+        style="height: 50px; width: 400px"
+      >
         <v-card
           elevation="0"
           class="kihon-title-length4 d-flex flex-row"
+          style="height: 50px; padding-top: 15px"
           flat
           tile
         >
@@ -70,19 +75,70 @@
         </v-card>
         <v-card
           elevation="0"
-          class="kihon-syogaisyubetu-selection d-flex flex-row"
+          class="kihon-syogaisyubetu-selection d-flex"
+          style="width: 250px; background-color: rgba(255, 255, 255, 0)"
           flat
           tile
         >
-          <v-checkbox
-            v-for="item of syogaisyubetu"
-            class="item-button"
-            :key="item.id"
-            :label="item.id + '.' + item.name"
-            v-model="syogaisyubetuValues[item.id - 1]"
-            disabled
+          <v-card
+            elevation="0"
+            flat
+            tile
+            style="background-color: rgba(255, 255, 255, 0)"
           >
-          </v-checkbox>
+            <v-card
+              elevation="0"
+              class="d-flex flex-row"
+              style="background-color: rgba(255, 255, 255, 0)"
+              flat
+              tile
+            >
+              <v-checkbox
+                class="item-button"
+                style="height: 25px; width: 150px; margin-left: -28px"
+                :key="syogaisyubetu[0].id"
+                :label="syogaisyubetu[0].id + '.' + syogaisyubetu[0].name"
+                v-model="syogaisyubetuValues[0]"
+                disabled
+              >
+              </v-checkbox>
+              <v-checkbox
+                class="item-button"
+                style="height: 25px; width: 150px"
+                :key="syogaisyubetu[1].id"
+                :label="syogaisyubetu[1].id + '.' + syogaisyubetu[1].name"
+                v-model="syogaisyubetuValues[1]"
+                disabled
+              >
+              </v-checkbox>
+            </v-card>
+            <v-card
+              elevation="0"
+              class="d-flex flex-row"
+              style="background-color: rgba(255, 255, 255, 0)"
+              flat
+              tile
+            >
+              <v-checkbox
+                class="item-button"
+                style="height: 25px; width: 150px; margin-left: -28px"
+                :key="syogaisyubetu[2].id"
+                :label="syogaisyubetu[2].id + '.' + syogaisyubetu[2].name"
+                v-model="syogaisyubetuValues[2]"
+                disabled
+              >
+              </v-checkbox>
+              <v-checkbox
+                class="item-button"
+                style="height: 25px; width: 150px"
+                :key="syogaisyubetu[3].id"
+                :label="syogaisyubetu[3].id + '.' + syogaisyubetu[3].name"
+                v-model="syogaisyubetuValues[3]"
+                disabled
+              >
+              </v-checkbox>
+            </v-card>
+          </v-card>
         </v-card>
       </v-row>
       <v-row no-gutters class="kihon-jyukyusyakubun-row">
@@ -97,6 +153,7 @@
         <v-card
           elevation="0"
           class="kihon-jyukyusyakubun-selection d-flex flex-row"
+          style="background-color: rgba(255, 255, 255, 0)"
         >
           <v-checkbox
             class="item-button"

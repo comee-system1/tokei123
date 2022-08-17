@@ -691,6 +691,12 @@ export default {
         let ht = flexGrid.hitTest(e);
         let hPage = flexGrid.hitTest(e.pageX, e.pageY);
         if (ht.cellType == wjGrid.CellType.Cell) {
+          // 選択押下
+          if (hPage.col == 12) {
+            console.log(_self.keiyakuHokokuData[hPage.row]);
+            _self.keiyakuHokokuData[hPage.row].selected = '〇';
+            return false;
+          }
           _self.KeiyakuHokokuDialog = true;
 
           // データの取得

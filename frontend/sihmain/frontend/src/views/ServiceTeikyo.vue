@@ -364,8 +364,10 @@ import sysConst from '@/utiles/const';
 import TabMenuBlue from '@/components/TabMenuBlue.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 
-import { ServiceTeikyo } from '@backend/api/ServiceTeikyo';
-import { ServiceTeikyoTaisei } from '@backend/api/ServiceTeikyoTaisei';
+import { getConnect } from '@connect/getConnect';
+
+// import { ServiceTeikyo } from '@backend/api/ServiceTeikyo';
+//import { ServiceTeikyoTaisei } from '@backend/api/ServiceTeikyoTaisei';
 
 export default {
   data() {
@@ -593,14 +595,25 @@ export default {
     },
     onInitialized(flexGrid) {
       this.flexGrid = flexGrid;
-      this.getData().then((result) => {
-        this.serviceDataMain = result;
-        this.allDataMain = result;
-        this.parent_tab_menu();
+      let uniqid = 1; // 現在は1のみapiが実行する
+      let traceid = 123;
+      let params = {
+        uniqid: uniqid,
+        traceid: traceid,
+      };
+
+      getConnect(this.$route.path, params).then((result) => {
+        this.getData(result).then((result) => {
+          this.serviceDataMain = result;
+          this.allDataMain = result;
+          this.parent_tab_menu();
+        });
       });
-      this.getDataTaisei().then((result) => {
-        this.serviceDataTaisei = result;
-        this.allDataTaisei = result;
+      getConnect(this.$route.path + 'Taisei', params).then((result) => {
+        this.getDataTaisei(result).then((result) => {
+          this.serviceDataTaisei = result;
+          this.allDataTaisei = result;
+        });
       });
 
       // ヘッダセル
@@ -877,23 +890,16 @@ export default {
       return merge;
     },
 
-    async getDataTaisei() {
+    async getDataTaisei(result) {
       let serviceDataTaisei = [];
-      return ServiceTeikyoTaisei().then((result) => {
-        serviceDataTaisei = result.seikyu_inf;
-
-        return serviceDataTaisei;
-      });
+      serviceDataTaisei = result.seikyu_inf;
+      return serviceDataTaisei;
     },
-    async getData() {
+    async getData(result) {
       let serviceData = [];
-
-      return ServiceTeikyo().then((result) => {
-        serviceData = result.seikyu_inf;
-        this.merge = [];
-
-        return serviceData;
-      });
+      serviceData = result.seikyu_inf;
+      this.merge = [];
+      return serviceData;
     },
   },
 };

@@ -12,732 +12,676 @@
           <label class="sikyuryo-header-title"
             >{{ this.titleNum }}支給決定内容</label
           >
-          <v-card
-            v-if="subGridSelected"
-            elevation="0"
-            class="sikyuryo-header d-flex flex-row-reverse"
-            flat
-            tile
-          >
-            <v-btn
-              id="modifyButtonSikyuryo"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunModify"
-            >
-              修正</v-btn
-            >
-            <v-btn
-              id="addButtonSikyuryo"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunAdd"
-            >
-              追加</v-btn
-            >
-          </v-card>
         </v-card>
       </v-row>
-      <!-- <v-card elevation="0" v-for="(item, index) in serviceSyubetu" :key="item.servicecode" flat tile> -->
-      <v-card
+      <div style="overflow-y: scroll; height: 200px" @scroll="onScroll()">
+        <v-card
+          elevation="0"
+          style="background-color: rgba(255, 255, 255, 0)"
+          v-for="(item, index) in serviceSyubetu"
+          :key="item.servicecode"
+          flat
+          tile
+        >
+          <!-- <v-card
         elevation="0"
+        style="background-color: trans"
         v-for="item in serviceSyubetu"
         :key="item.servicecode"
         flat
         tile
-      >
-        <v-row no-gutters class="sikyuryo-servicesyubetu-row">
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length6 d-flex flex-row"
-            flat
-            tile
-          >
-            サービス種別
-          </v-card>
-          <p class="required">*</p>
-          <v-card class="sikyuryo-servicesyubetu-disp" outlined>
-            {{ item.servicename }}
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyukikanDisp"
-          no-gutters
-          class="sikyuryo-sikyukikan-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            支給期間
-          </v-card>
-          <p class="required">*</p>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyukikan-picker d-flex flex-row"
-          >
-            <datepicker
-              :language="ja"
-              class="input_picker"
-              :format="DatePickerFormat"
-              :value="sienkubunymdStart"
-              v-model="sienkubunymdStart"
-              placeholder="開始日を選択"
-            ></datepicker>
-            &nbsp;～&nbsp;
-            <datepicker
-              :language="ja"
-              class="input_picker"
-              :format="DatePickerFormat"
-              :value="sienkubunymdEnd"
-              v-model="sienkubunymdEnd"
-              placeholder="終了日を選択"
-            ></datepicker>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            style="height: 50px; padding-top: 15px"
-            flat
-            tile
-          >
-            支給量等
-          </v-card>
-          <p class="required">*</p>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              v-model="sikyuryotou"
-              class="sikyuryo-sikyuryotou-group"
-              style="margin-top: -6px"
+      > -->
+          <v-row no-gutters class="sikyuryo-servicesyubetu-row">
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length6 d-flex flex-row"
+              flat
+              tile
             >
-              <v-card elevation="0" flat tile>
-                <v-card elevation="0" class="d-flex flex-row" flat tile>
-                  <v-radio
-                    label="当該月の日数より８日除いた日数"
-                    :key="1"
-                    :value="1"
-                  ></v-radio>
+              サービス種別
+            </v-card>
+            <p class="required">*</p>
+            <p class="ml-2 mb-0">{{ item.servicename }}</p>
+          </v-row>
+          <v-row
+            v-show="item.sikyukikanDisp"
+            no-gutters
+            class="sikyuryo-sikyukikan-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              支給期間
+            </v-card>
+            <p class="required">*</p>
+            <p class="ml-2 mb-0">{{ item.sienkubunymdDisp }}</p>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              style="height: 50px; padding-top: 15px"
+              flat
+              tile
+            >
+              支給量等
+            </v-card>
+            <p class="required">*</p>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                v-model="sikyuryotou"
+                class="sikyuryo-sikyuryotou-group"
+                style="margin-top: -6px"
+              >
+                <v-card elevation="0" flat tile>
+                  <v-card elevation="0" class="d-flex flex-row" flat tile>
+                    <v-radio
+                      label="当該月の日数より８日除いた日数"
+                      :key="1"
+                      :value="1"
+                    ></v-radio>
+                  </v-card>
+                  <v-card elevation="0" class="d-flex flex-row" flat tile>
+                    <v-radio
+                      style="margin-top: 6px"
+                      label=""
+                      :key="0"
+                      :value="0"
+                    ></v-radio>
+                    <wj-combo-box
+                      class="sikyuryo-sikyuryotou-input"
+                      :textChanged="onTextChanged"
+                    ></wj-combo-box>
+                    <label style="padding-top: 4px; padding-left: 4px"
+                      >日／月</label
+                    >
+                  </v-card>
                 </v-card>
-                <v-card elevation="0" class="d-flex flex-row" flat tile>
-                  <v-radio
-                    style="margin-top: 6px"
-                    label=""
-                    :key="0"
-                    :value="0"
-                  ></v-radio>
-                  <wj-combo-box
-                    class="sikyuryo-sikyuryotou-input"
-                    :textChanged="onTextChanged"
-                  ></wj-combo-box>
-                  <label style="padding-top: 4px; padding-left: 4px"
-                    >日／月</label
-                  >
-                </v-card>
-              </v-card>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <!-- <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            支給量等
-          </v-card>
-          <p class="required">*</p>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">回</label>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            支給量等
-          </v-card>
-          <p class="required">*</p>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">：</label>
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length5 d-flex flex-row"
-            flat
-            tile
-          >
-            一回当たり
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">：</label>
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            移動介護
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">：</label>
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            支給量等
-          </v-card>
-          <p class="required">*</p>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">単位</label>
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">日</label>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.sikyuryotouDisp"
-          no-gutters
-          class="sikyuryo-sikyuryotou-row2"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            受託居宅
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-sikyuryotou-input d-flex flex-row"
-          >
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-            <label style="padding-top: 4px; padding-left: 4px">：</label>
-            <wj-combo-box
-              class="sikyuryo-sikyuryotou-input2"
-              :textChanged="onTextChanged"
-            ></wj-combo-box>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length3 d-flex flex-row"
-            flat
-            tile
-          >
-            退所後
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="１年未満" :key="1" :value="1"></v-radio>
-              <v-radio label="１年以上" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row> -->
-        <v-row
-          v-show="item.kasankoumokuDisp"
-          no-gutters
-          class="sikyuryo-kasankoumoku-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            style="height: 50px; padding-top: 15px"
-            flat
-            tile
-          >
-            加算項目
-          </v-card>
-          <v-card elevation="0" flat tile>
-            <wj-flex-grid
-              id="gridKasankoumoku"
-              class="no-scrollbars"
-              :initialized="onInitializedKasankoumoku"
-              :itemsSource="item.sikyuryoKasankoumokuData"
-              :headersVisibility="'None'"
-              :autoGenerateColumns="false"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowDragging="false"
-              :allowPinning="false"
-              :allowResizing="false"
-              :allowSorting="false"
-              :isReadOnly="true"
-              :alternatingRowStep="0"
-              :selectionMode="'None'"
-              style="
-                width: 300px;
-                height: 51px;
-                border-bottom: none;
-                border-right: none;
-                font-size: 12px;
-                margin-left: 4px;
-                border-radius: 2px;
-              "
+              支給量等
+            </v-card>
+            <p class="required">*</p>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-              <wj-flex-grid-column
-                :binding="'value'"
-                :allowMerging="true"
-                width="*"
-              ></wj-flex-grid-column>
-            </wj-flex-grid>
-          </v-card>
-        </v-row>
-        <!-- <v-row no-gutters class="sikyuryo-syogaisyurui-row">
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">回</label>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            障害種類
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-syogaisyurui-combobox d-flex flex-row"
-          >
-            <wj-menu
-              id="comboSyogaisyurui"
-              class="customCombobox"
-              :initialized="initComboSyogaisyurui"
-              :isRequired="true"
-              :itemsSource="syogaisyuruiCombo"
-              :displayMemberPath="'text'"
-              selectedValuePath="'key'"
-              :itemClicked="onSelectedSyogaisyurui"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
             >
-            </wj-menu>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            共同生活
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+              支給量等
+            </v-card>
+            <p class="required">*</p>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-              <v-radio label="無し" :key="1" :value="1"></v-radio>
-              <v-radio label="有り" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">：</label>
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            雇用契約
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length5 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="無し" :key="1" :value="1"></v-radio>
-              <v-radio label="有り" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length6 d-flex flex-row"
-            flat
-            tile
-          >
-            障害年金１級
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+              一回当たり
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-              <v-radio label="無し" :key="1" :value="1"></v-radio>
-              <v-radio label="有り" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row> -->
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">：</label>
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            経過措置
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="非該当" :key="1" :value="1"></v-radio>
-              <v-radio label="該当" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <!-- <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            たん吸引
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+              移動介護
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-              <v-radio label="非該当" :key="1" :value="1"></v-radio>
-              <v-radio label="該当" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">：</label>
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            経過居宅
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="通常" :key="1" :value="1"></v-radio>
-              <v-radio label="経過" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            居宅利用
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+              支給量等
+            </v-card>
+            <p class="required">*</p>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-              <v-radio label="通常" :key="1" :value="1"></v-radio>
-              <v-radio label="特例" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">単位</label>
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">日</label>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.sikyuryotouDisp"
+            no-gutters
+            class="sikyuryo-sikyuryotou-row2"
           >
-            長期入院
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="非該当" :key="1" :value="1"></v-radio>
-              <v-radio label="該当" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-syokujinyuryoku-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length4 d-flex flex-row"
-            flat
-            tile
-          >
-            食事入力
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-syokujinyuryoku-selection d-flex flex-row"
-          >
-            <v-checkbox
-              class="item-button"
-              label="入所との併用時、入所側で入力"
+              受託居宅
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-sikyuryotou-input d-flex flex-row"
             >
-            </v-checkbox>
-          </v-card>
-        </v-row>
-        <v-row
-          v-show="item.keikasotiDisp"
-          no-gutters
-          class="sikyuryo-keikasoti-row"
-        >
-          <v-card
-            elevation="0"
-            class="sikyuryo-title-length5 d-flex flex-row"
-            flat
-            tile
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+              <label style="padding-top: 4px; padding-left: 4px">：</label>
+              <wj-combo-box
+                class="sikyuryo-sikyuryotou-input2"
+                :textChanged="onTextChanged"
+              ></wj-combo-box>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
           >
-            視覚障害者
-          </v-card>
-          <v-card
-            elevation="0"
-            class="sikyuryo-keikasoti-selection d-flex flex-row"
-            flat
-            tile
-          >
-            <v-radio-group
-              row
-              v-model="item.keikasoti"
-              class="sikyuryo-keikasoti-group"
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length3 d-flex flex-row"
+              flat
+              tile
             >
-              <v-radio label="非該当" :key="1" :value="1"></v-radio>
-              <v-radio label="該当" :key="0" :value="0"></v-radio>
-            </v-radio-group>
-          </v-card>
-        </v-row> -->
-        <!-- <v-divider color="#ce3e47" height="20px" style="margin: 4px;" v-show="serviceSyubetu.length-1!=index"></v-divider> -->
-        <v-divider
+              退所後
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="１年未満" :key="1" :value="1"></v-radio>
+                <v-radio label="１年以上" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.kasankoumokuDisp"
+            no-gutters
+            class="sikyuryo-kasankoumoku-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              style="height: 50px; padding-top: 15px"
+              flat
+              tile
+            >
+              加算項目
+            </v-card>
+            <v-card elevation="0" flat tile>
+              <wj-flex-grid
+                id="gridKasankoumoku"
+                class="no-scrollbars"
+                :initialized="onInitializedKasankoumoku"
+                :itemsSource="item.sikyuryoKasankoumokuData"
+                :headersVisibility="'None'"
+                :autoGenerateColumns="false"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowDragging="false"
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
+                :isReadOnly="true"
+                :alternatingRowStep="0"
+                :selectionMode="'None'"
+                style="
+                  width: 300px;
+                  height: 51px;
+                  border-bottom: none;
+                  border-right: none;
+                  font-size: 12px;
+                  margin-left: 4px;
+                  border-radius: 2px;
+                "
+              >
+                <wj-flex-grid-column
+                  :binding="'value'"
+                  :allowMerging="true"
+                  width="*"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="sikyuryo-syogaisyurui-row">
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              障害種類
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-syogaisyurui-combobox d-flex flex-row"
+            >
+              <wj-menu
+                id="comboSyogaisyurui"
+                class="customCombobox"
+                :initialized="initComboSyogaisyurui"
+                :isRequired="true"
+                :itemsSource="syogaisyuruiCombo"
+                :displayMemberPath="'text'"
+                selectedValuePath="'key'"
+                :itemClicked="onSelectedSyogaisyurui"
+              >
+              </wj-menu>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              共同生活
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="無し" :key="1" :value="1"></v-radio>
+                <v-radio label="有り" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              雇用契約
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="無し" :key="1" :value="1"></v-radio>
+                <v-radio label="有り" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length6 d-flex flex-row"
+              flat
+              tile
+            >
+              障害年金１級
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="無し" :key="1" :value="1"></v-radio>
+                <v-radio label="有り" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              経過措置
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="非該当" :key="1" :value="1"></v-radio>
+                <v-radio label="該当" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              たん吸引
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="非該当" :key="1" :value="1"></v-radio>
+                <v-radio label="該当" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              経過居宅
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="通常" :key="1" :value="1"></v-radio>
+                <v-radio label="経過" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              居宅利用
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="通常" :key="1" :value="1"></v-radio>
+                <v-radio label="特例" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              長期入院
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="非該当" :key="1" :value="1"></v-radio>
+                <v-radio label="該当" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-syokujinyuryoku-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length4 d-flex flex-row"
+              flat
+              tile
+            >
+              食事入力
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-syokujinyuryoku-selection d-flex flex-row"
+            >
+              <v-checkbox
+                class="item-button"
+                label="入所との併用時、入所側で入力"
+              >
+              </v-checkbox>
+            </v-card>
+          </v-row>
+          <v-row
+            v-show="item.keikasotiDisp"
+            no-gutters
+            class="sikyuryo-keikasoti-row"
+          >
+            <v-card
+              elevation="0"
+              class="sikyuryo-title-length5 d-flex flex-row"
+              flat
+              tile
+            >
+              視覚障害者
+            </v-card>
+            <v-card
+              elevation="0"
+              class="sikyuryo-keikasoti-selection d-flex flex-row"
+              flat
+              tile
+            >
+              <v-radio-group
+                row
+                v-model="item.keikasoti"
+                class="sikyuryo-keikasoti-group"
+              >
+                <v-radio label="非該当" :key="1" :value="1"></v-radio>
+                <v-radio label="該当" :key="0" :value="0"></v-radio>
+              </v-radio-group>
+            </v-card>
+          </v-row>
+          <v-divider
+            color="#ce3e47"
+            height="20px"
+            style="margin: 4px"
+            v-show="serviceSyubetu.length - 1 != index"
+          ></v-divider>
+          <!-- <v-divider
           color="#ce3e47"
           height="20px"
           style="margin: 4px"
-        ></v-divider>
-      </v-card>
-      <v-row no-gutters class="sikyuryo-addbutton-row mb-1">
-        <v-btn
-          class="sikyuryo-add-button"
-          style="height: 30px"
-          @click="addService"
-        >
-          サービス種別を追加</v-btn
-        >
-      </v-row>
-      <v-row
-        v-if="this.changeMode()"
-        no-gutters
-        class="sikyuryo-button-row mb-2"
-      >
-        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
-        <v-card
-          elevation="0"
-          class="sikyuryo-bottom-regist d-flex flex-row-reverse"
-          flat
-          tile
-        >
-          <v-btn class="regist-button"> 登 録</v-btn>
+        ></v-divider> -->
         </v-card>
-      </v-row>
+      </div>
     </v-container>
   </div>
 </template>
@@ -765,8 +709,7 @@ export default {
       sikyuryotou: -1,
       sienkubunymdStart: '',
       sienkubunymdEnd: '',
-      sienkubunymdStart: '',
-      sienkubunymdEnd: '',
+      sienkubunymdDisp: '',
     };
   },
   props: ['titleNum'],
@@ -808,7 +751,20 @@ export default {
       }
       this.$emit('setMode', 'new');
     },
-    setdata(data) {},
+    setdata(data) {
+      if (data == null) return;
+      if (data.sksymd.length > 0) {
+        this.syugaikubunymdStart = moment(data.sksymd).format('YYYY-M-D');
+        if (data.skeymd != '99991231') {
+          this.syugaikubunymdEnd = moment(data.skeymd).format('YYYY-M-D');
+        }
+        if (this.sienkubunymdStart.length > 0) {
+          this.sienkubunymdDisp =
+            this.sienkubunymdStart + ' ～ ' + this.sienkubunymdEnd;
+        }
+        this.isModify = true;
+      }
+    },
     clearData() {},
     addService() {
       this.serviceSyubetu.push({
@@ -825,35 +781,38 @@ export default {
     getServiceSyubetu() {
       let list = [];
       list.push(
-        // {
-        //   servicecode: '11',
-        //   servicename: 'ああああああ',
-        //   keikasoti: 1,
-        //   sikyuryotouDisp: false,
-        //   sikyukikanDisp: true,
-        //   kasankoumokuDisp: true,
-        //   keikasotiDisp: true,
-        //   sikyuryoKasankoumokuData: [
-        //     { value: '加算項目を選択' },
-        //     { value: '' },
-        //   ],
-        // },
-        // {
-        //   servicecode: '22',
-        //   servicename: '生活支援',
-        //   keikasoti: 0,
-        //   sikyuryotouDisp: false,
-        //   sikyukikanDisp: true,
-        //   kasankoumokuDisp: true,
-        //   keikasotiDisp: true,
-        //   sikyuryoKasankoumokuData: [
-        //     { value: '加算項目を選択' },
-        //     { value: '' },
-        //   ],
-        // },
+        {
+          servicecode: '11',
+          servicename: 'ああああああ',
+          sienkubunymdDisp: '2022-4-1 ～ 2023-3-31',
+          keikasoti: 1,
+          sikyuryotouDisp: false,
+          sikyukikanDisp: true,
+          kasankoumokuDisp: true,
+          keikasotiDisp: true,
+          sikyuryoKasankoumokuData: [
+            { value: '加算項目を選択' },
+            { value: '' },
+          ],
+        },
+        {
+          servicecode: '22',
+          servicename: '生活支援',
+          sienkubunymdDisp: '2022-4-1 ～ 2023-3-31',
+          keikasoti: 0,
+          sikyuryotouDisp: false,
+          sikyukikanDisp: true,
+          kasankoumokuDisp: true,
+          keikasotiDisp: true,
+          sikyuryoKasankoumokuData: [
+            { value: '加算項目を選択' },
+            { value: '' },
+          ],
+        },
         {
           servicecode: '32',
           servicename: '施設入所支援',
+          sienkubunymdDisp: '2022-4-1 ～ 2023-3-31',
           keikasoti: 0,
           sikyuryotouDisp: true,
           sikyukikanDisp: true,
@@ -939,6 +898,9 @@ export default {
     setSubGridSelectedFromParent(seleced) {
       this.subGridSelected = seleced;
     },
+    onScroll() {
+      this.$emit('onScroll', 'c-sikyuryo');
+    },
   },
 };
 </script>
@@ -955,6 +917,11 @@ div#JyukyuTourokuSikyuryo2 {
   font-size: 14px;
   font-family: 'メイリオ';
   width: 100%;
+
+  ::-webkit-scrollbar {
+    width: 12px !important;
+  }
+
   .sikyuryo-container {
     padding: 0px !important;
   }
@@ -1034,9 +1001,9 @@ div#JyukyuTourokuSikyuryo2 {
       height: 100%;
       margin-left: 4px;
       .sikyuryo-sikyuryotou-group {
-        width: 400px;
+        width: 350px;
         margin-top: -5px;
-        margin-left: -45px;
+        margin-left: -40px;
         padding-top: -50px;
         transform: scale(0.75);
       }

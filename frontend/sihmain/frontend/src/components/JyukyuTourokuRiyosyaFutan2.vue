@@ -4,6 +4,7 @@
       <v-row no-gutters class="riyosyafutan-header-row">
         <v-card
           elevation="0"
+          id="riyosyafutanheader"
           class="riyosyafutan-header d-flex flex-row"
           flat
           tile
@@ -11,30 +12,6 @@
           <label class="riyosyafutan-header-title"
             >{{ this.titleNum }}利用者負担</label
           >
-          <v-card
-            v-if="subGridSelected"
-            elevation="0"
-            class="riyosyafutan-header d-flex flex-row-reverse"
-            flat
-            tile
-          >
-            <v-btn
-              id="modifyButtonRiyosyafutan"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunModify"
-            >
-              修正</v-btn
-            >
-            <v-btn
-              id="addButtonRiyosyafutan"
-              class="modify-button"
-              style="height: 21px"
-              @click="setTrunAdd"
-            >
-              追加</v-btn
-            >
-          </v-card>
         </v-card>
       </v-row>
       <v-row no-gutters class="riyosyafutan-tekiyokikan-row">
@@ -295,21 +272,6 @@
               </v-card>
             </v-card>
           </v-radio-group>
-        </v-card>
-      </v-row>
-      <v-row
-        v-if="this.changeMode()"
-        no-gutters
-        class="riyosyafutan-button-row mb-2"
-      >
-        <v-btn class="cancel-button" @click="cancel"> キャンセル</v-btn>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-bottom-regist d-flex flex-row-reverse"
-          flat
-          tile
-        >
-          <v-btn class="regist-button"> 登 録</v-btn>
         </v-card>
       </v-row>
     </v-container>

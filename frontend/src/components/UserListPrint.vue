@@ -18,7 +18,11 @@
       no-gutters
       :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
     >
-      <v-col style="max-width: 94%">
+      <v-col
+        :style="{
+          maxWidth: leftAreaWidth,
+        }"
+      >
         <v-row no-gutters>
           <v-col col="12">
             <v-row no-gutters>
@@ -226,6 +230,7 @@ export default {
       textSearch: '',
       filterSearch: 1, // 全員・入居者・など
       headerheight: 280,
+      leftAreaWidth: '98%',
     };
   },
   mounted() {
@@ -252,11 +257,14 @@ export default {
       if (this.switchAreaRightFlag == true) {
         this.switchAreaRightFlag = false;
         this.switchAreaLeftFlag = true;
+        this.leftAreaWidth = '98%';
       } else {
         this.switchAreaRightFlag = true;
         this.switchAreaLeftFlag = false;
+        this.leftAreaWidth = '0%';
       }
-      this.$emit('childLeftArea', this.message);
+
+      this.$emit('child-left', this.switchAreaRightFlag);
     },
     /*************************
      * 絞り込みコンボボックス
@@ -542,6 +550,7 @@ export default {
             flexGrid.setCellData(ht.row, 2, mark);
             //  flexGrid.select(row, 0);
           } else if (e.target.innerText.length > 0) {
+            _self.switched();
             row = hPage._row;
             _self.$emit('child-select', row);
           }
@@ -561,7 +570,6 @@ div#comboFilters {
 }
 div#user-list-print_scrollbar {
   padding: 0;
-  width: 275px;
   #filterCombo {
     width: 100%;
   }
@@ -573,8 +581,8 @@ div#user-list-print_scrollbar {
     height: 97%;
     background-color: $black;
     position: fixed;
-    top: 0;
-    left: 266px;
+
+    left: 275px;
     z-index: 1;
     &.switchAreaRight {
       animation: switchAreaRightMove $seconds forwards;
@@ -602,7 +610,7 @@ div#user-list-print_scrollbar {
   }
   @keyframes switchAreaLeftMove {
     from {
-      transform: translateX(-260px);
+      transform: translateX(-275px);
     }
     to {
       transform: translateX(0);
@@ -613,7 +621,7 @@ div#user-list-print_scrollbar {
       transform: translateX(0px);
     }
     to {
-      transform: translateX(-260px);
+      transform: translateX(-275px);
     }
   }
   @keyframes rotate-right {

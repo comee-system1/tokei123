@@ -52,7 +52,6 @@
         </v-col>
         <v-col
           :class="{
-            rightArea: marginDefault == true,
             'center-area': mltype == true,
             'ml-1': mltype == true,
             moveLeft: moveLeft == true,
@@ -161,7 +160,7 @@
                   <v-card
                     id="c-kihon"
                     elevation="5"
-                    class="ma-2 pa-1"
+                    class="pa-1 my-2 ml-3 mr-3"
                     @mouseover="mouseover('c-kihon')"
                     @mouseleave="mouseleave('c-kihon')"
                     @mousedown="mousedown('c-kihon')"
@@ -179,7 +178,7 @@
                   <v-card
                     id="c-syogaiKubun"
                     elevation="5"
-                    class="ma-2 pa-1"
+                    class="pa-1 my-2 ml-3 mr-3"
                     @mouseover="mouseover('c-syogaiKubun')"
                     @mouseleave="mouseleave('c-syogaiKubun')"
                     @mousedown="mousedown('c-syogaiKubun')"
@@ -198,7 +197,7 @@
                   <v-card
                     id="c-sikyuryo"
                     elevation="5"
-                    class="ma-2 pa-1"
+                    class="pa-1 my-2 ml-3 mr-3"
                     @mouseover="mouseover('c-sikyuryo')"
                     @mouseleave="mouseleave('c-sikyuryo')"
                     @mousedown="mousedown('c-sikyuryo')"
@@ -208,6 +207,7 @@
                       ref="sikyuryo"
                       @setMode="setMode"
                       @setHojoMode="setHojoMode"
+                      @onScroll="onScroll"
                       :titleNum="this.titleNum[1]"
                     >
                     </JyukyuTourokuSikyuryo>
@@ -220,18 +220,35 @@
                     JyukyuChiikiSoudanFlag
                   "
                 >
-                  <v-card elevation="5" class="ma-2 pa-1">
+                  <v-card
+                    id="c-keikaku"
+                    elevation="5"
+                    class="pa-1 my-2 ml-3 mr-3"
+                    @mouseover="mouseover('c-keikaku')"
+                    @mouseleave="mouseleave('c-keikaku')"
+                    @mousedown="mousedown('c-keikaku')"
+                    @mouseup="mouseup('c-keikaku')"
+                  >
                     <JyukyuTourokuKeikakuSoudan
                       ref="keikaku"
                       @setMode="setMode"
                       @setHojoMode="setHojoMode"
+                      @onScroll="onScroll"
                       :titleNum="this.titleNum[2]"
                     >
                     </JyukyuTourokuKeikakuSoudan>
                   </v-card>
                 </div>
                 <div v-if="JyukyuSyogaiFukusiFlag || JyukyuSyogaiJiFlag">
-                  <v-card elevation="5" class="ma-2 pa-1">
+                  <v-card
+                    id="c-futan"
+                    elevation="5"
+                    class="pa-1 my-2 ml-3 mr-3"
+                    @mouseover="mouseover('c-futan')"
+                    @mouseleave="mouseleave('c-futan')"
+                    @mousedown="mousedown('c-futan')"
+                    @mouseup="mouseup('c-futan')"
+                  >
                     <JyukyuTourokuRiyosyaFutan
                       ref="futan"
                       @setMode="setMode"
@@ -244,7 +261,7 @@
               </v-row>
             </v-card>
           </v-row>
-          <hr
+          <!-- <hr
             v-if="mode === 'new' && !subGridSelected"
             size="2"
             color="#027eb0"
@@ -269,7 +286,7 @@
                 登 録</v-btn
               >
             </v-card>
-          </v-row>
+          </v-row> -->
         </v-col>
       </v-row>
       <jyukyu-touroku-dialog
@@ -280,7 +297,7 @@
 </template>
 <script>
 import moment from 'moment';
-import UserListPrint from '@sihs/frontend/src/components/UserListPrint.vue';
+import UserListPrint from '@sihs/frontend/src/components/UserListPrint2.vue';
 import CommonTabMenu from '@sihs/frontend/src/components/CommonTabMenu.vue';
 import JyukyuTourokuKihon from '../components/JyukyuTourokuKihon2.vue';
 import JyukyuTourokuSyogaiKubun from '../components/JyukyuTourokuSyogaiKubun2.vue';
@@ -307,6 +324,8 @@ const MOUSE_LEAVE_BACK = '#fff';
 const ID_KIHON = 'c-kihon';
 const ID_SYOGAIKUBN = 'c-syogaiKubun';
 const ID_SIKYURYO = 'c-sikyuryo';
+const ID_KEIKAKU = 'c-keikaku';
+const ID_FUTAN = 'c-futan';
 
 export default {
   data() {
@@ -370,10 +389,11 @@ export default {
         isOpen: false,
       },
 
-      marginDefault: true,
       moveRight: false,
       moveLeft: false,
       mltype: true,
+
+      OnScrllFlag: false,
 
       //受給者証内部ID
       jyukyuid: 0,
@@ -423,13 +443,11 @@ export default {
       if (this.moveLeft == true) {
         this.moveRight = true;
         this.moveLeft = false;
-        document.getElementById('CenterAreaInput').style.width = '100%';
       } else {
         this.moveLeft = true;
         this.moveRight = false;
-        document.getElementById('CenterAreaInput').style.width =
-          window.innerWidth - 45 + 'px';
       }
+      this.handleResize();
     },
     jyukyuTourokuDialogOpen(id, mode) {
       if (id == ID_KIHON) {
@@ -453,6 +471,20 @@ export default {
             this.sikyuryoDataOrgFiltered
           );
         }
+      } else if (id == ID_KEIKAKU) {
+        if (this.keikakuSoudanDataOrgFiltered.length > 0) {
+          this.$refs.jyukyu_touroku_dialog.open(
+            mode,
+            this.keikakuSoudanDataOrgFiltered
+          );
+        }
+      } else if (id == ID_FUTAN) {
+        if (this.riyosyaFutanDataOrgFiltered.length > 0) {
+          this.$refs.jyukyu_touroku_dialog.open(
+            mode,
+            this.riyosyaFutanDataOrgFiltered
+          );
+        }
       }
     },
     mouseover(id) {
@@ -466,13 +498,15 @@ export default {
         );
       } else if (id == ID_SIKYURYO) {
         this.overCardColor(ID_SIKYURYO, 'sikyuryoheader', MOUSE_OVER_OTHER);
+      } else if (id == ID_KEIKAKU) {
+        this.overCardColor(ID_KEIKAKU, 'keikakuSoudanheader', MOUSE_OVER_OTHER);
+      } else if (id == ID_FUTAN) {
+        this.overCardColor(ID_FUTAN, 'riyosyafutanheader', MOUSE_OVER_OTHER);
       }
     },
     mouseleave(id) {
       this.mouseupCard(id);
       if (id == ID_KIHON) {
-        let elm = document.getElementById(ID_SYOGAIKUBN);
-        elm.classList.remove('ml-1');
         this.leaveCardColor(ID_KIHON, 'kihonheader', MOUSE_LEAVE_KIHON);
       } else if (id == ID_SYOGAIKUBN) {
         this.leaveCardColor(
@@ -482,22 +516,24 @@ export default {
         );
       } else if (id == ID_SIKYURYO) {
         this.leaveCardColor(ID_SIKYURYO, 'sikyuryoheader', MOUSE_LEAVE_OTHER);
+      } else if (id == ID_KEIKAKU) {
+        this.leaveCardColor(
+          ID_KEIKAKU,
+          'keikakuSoudanheader',
+          MOUSE_LEAVE_OTHER
+        );
+      } else if (id == ID_FUTAN) {
+        this.leaveCardColor(ID_FUTAN, 'riyosyafutanheader', MOUSE_LEAVE_OTHER);
       }
     },
     mousedown(id) {
       this.mousedownCard(id);
-      if (id == ID_KIHON) {
-        let elm = document.getElementById(ID_SYOGAIKUBN);
-        elm.classList.add('ml-1');
-      } else if (id == ID_SYOGAIKUBN) {
-      } else if (id == ID_SIKYURYO) {
-      }
+      this.OnScrllFlag = false;
     },
     mouseup(id) {
       this.mouseupCard(id);
+      if (this.OnScrllFlag) return;
       if (id == ID_KIHON) {
-        let elm = document.getElementById(ID_SYOGAIKUBN);
-        elm.classList.remove('ml-1');
         this.setMode('modKihon');
         this.jyukyuTourokuDialogOpen(id, 'modKihon');
       } else if (id == ID_SYOGAIKUBN) {
@@ -506,7 +542,14 @@ export default {
       } else if (id == ID_SIKYURYO) {
         this.setMode('modSikyuryo');
         this.jyukyuTourokuDialogOpen(id, 'modSikyuryo');
+      } else if (id == ID_KEIKAKU) {
+        this.setMode('modKeikakuSoudan');
+        this.jyukyuTourokuDialogOpen(id, 'modKeikakuSoudan');
+      } else if (id == ID_FUTAN) {
+        this.setMode('modRiyosyafutan');
+        this.jyukyuTourokuDialogOpen(id, 'modRiyosyafutan');
       }
+      this.OnScrllFlag = false;
     },
     overCardColor(id1, id2, color) {
       let elmH = document.getElementById(id1);
@@ -524,13 +567,19 @@ export default {
       let elm = document.getElementById(id);
       elm.classList.remove('elevation-5');
       elm.classList.add('elevation-1');
-      elm.classList.add('ml-3');
+      elm.classList.remove('ml-3');
+      elm.classList.remove('mr-3');
+      elm.classList.add('ml-4');
+      elm.classList.add('mr-2');
     },
     mouseupCard(id) {
       let elm = document.getElementById(id);
       elm.classList.remove('elevation-1');
       elm.classList.add('elevation-5');
-      elm.classList.remove('ml-3');
+      elm.classList.remove('ml-4');
+      elm.classList.remove('mr-2');
+      elm.classList.add('ml-3');
+      elm.classList.add('mr-3');
     },
     setTrunNew() {
       this.setMode('new');
@@ -637,7 +686,6 @@ export default {
       // } else if (rid == 550012) {
       //   rid = 593;
       // }
-      console.log(rid);
       //基本情報
       this.getJyukyuTourokuKihonData(rid).then((value) => {
         this.kihonDataOrg = value;
@@ -807,8 +855,8 @@ export default {
     //履歴表示
     openRireki() {
       this.slideInRight.isOpen = true;
-      this.$refs.rirekiArea.setKihonData(this.kihonDataOrgFiltered);
-      // this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
+      // this.$refs.rirekiArea.setKihonData(this.kihonDataOrgFiltered);
+      this.$refs.rirekiArea.setKihonData(this.kihonDataOrg);
       if (this.JyukyuSyogaiFukusiFlag) {
         this.$refs.rirekiArea.setSyogaiKubunData(
           this.syogaiKubunDataOrgFiltered
@@ -971,6 +1019,10 @@ export default {
           break;
       }
     },
+    onScroll(id) {
+      this.mouseupCard(id);
+      this.OnScrllFlag = true;
+    },
   },
 };
 </script>
@@ -991,8 +1043,14 @@ div#JyukyuTouroku2 {
 
   #c-sikyuryo {
     cursor: pointer;
-    max-height: 385px !important;
-    overflow-y: scroll;
+  }
+
+  #c-keikaku {
+    cursor: pointer;
+  }
+
+  #c-futan {
+    cursor: pointer;
   }
 
   // スクロールバーの表示
@@ -1008,10 +1066,6 @@ div#JyukyuTouroku2 {
   ::-webkit-scrollbar-thumb {
     background: $brawn;
     border-radius: 0px;
-  }
-
-  #c-sikyuryo::-webkit-scrollbar {
-    width: 8px;
   }
 
   //利用者一覧スライド
@@ -1102,7 +1156,7 @@ div#JyukyuTouroku2 {
     }
     .center-area-input {
       width: 100%;
-      height: calc(100% - 136px);
+      height: calc(100% - 100px);
       // .center-area-input-menu {
       //   width: 65px;
       //   height: 100%;
@@ -1157,13 +1211,6 @@ div#JyukyuTouroku2 {
         }
       }
     }
-  }
-
-  .right-area {
-    min-width: 300px;
-    max-width: 300px;
-    width: 300px;
-    height: 100%;
   }
 }
 

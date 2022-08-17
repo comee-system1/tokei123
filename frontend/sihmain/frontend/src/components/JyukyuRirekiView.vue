@@ -1,115 +1,25 @@
 <template>
   <div id="JyukyuRirekiView">
-    <div v-if="this.kihonFlag">
-      <wj-flex-grid
-        id="grdKihon"
-        :itemsSource="allData"
-        :allowMerging="'ColumnHeaders'"
-        :selectionMode="3"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
-        :isReadOnly="true"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
-        :initialized="onInitialized"
-        :headersVisibility="'Column'"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :style="{ maxHeight: maxH }"
-      >
-      </wj-flex-grid>
-    </div>
-    <div v-else-if="this.syogaiFlag">
-      <wj-flex-grid
-        id="grdSyogaiKubun"
-        :itemsSource="allData"
-        :allowMerging="'ColumnHeaders'"
-        :selectionMode="3"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
-        :isReadOnly="true"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
-        :initialized="onInitialized"
-        :headersVisibility="'Column'"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :style="{ maxHeight: maxH }"
-      >
-      </wj-flex-grid>
-    </div>
-    <div v-else-if="this.ketteiFlag">
-      <wj-flex-grid
-        id="grdKettei"
-        :itemsSource="allData"
-        :allowMerging="'ColumnHeaders'"
-        :selectionMode="3"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
-        :isReadOnly="true"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
-        :initialized="onInitialized"
-        :headersVisibility="'Column'"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :style="{ maxHeight: maxH }"
-      >
-      </wj-flex-grid>
-    </div>
-    <div v-else-if="this.keikakuFlag">
-      <wj-flex-grid
-        id="grdKeikaku"
-        :itemsSource="allData"
-        :allowMerging="'ColumnHeaders'"
-        :selectionMode="3"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
-        :isReadOnly="true"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
-        :initialized="onInitialized"
-        :headersVisibility="'Column'"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :style="{ maxHeight: maxH }"
-      >
-      </wj-flex-grid>
-    </div>
-    <div v-else-if="this.futanFlag">
-      <wj-flex-grid
-        id="grdFutan"
-        :itemsSource="allData"
-        :allowMerging="'ColumnHeaders'"
-        :selectionMode="3"
-        :alternatingRowStep="0"
-        :autoGenerateColumns="false"
-        :isReadOnly="true"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
-        :initialized="onInitialized"
-        :headersVisibility="'Column'"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :style="{ maxHeight: maxH }"
-      >
-      </wj-flex-grid>
-    </div>
+    <wj-flex-grid
+      id="grd"
+      :itemsSource="allData"
+      :allowMerging="'ColumnHeaders'"
+      :selectionMode="3"
+      :alternatingRowStep="0"
+      :autoGenerateColumns="false"
+      :isReadOnly="true"
+      :allowAddNew="false"
+      :allowDelete="false"
+      :allowDragging="false"
+      :allowPinning="false"
+      :allowResizing="false"
+      :allowSorting="false"
+      :initialized="onInitialized"
+      :headersVisibility="'Column'"
+      :itemsSourceChanged="onItemsSourceChanged"
+      :style="{ maxHeight: maxH }"
+    >
+    </wj-flex-grid>
   </div>
 </template>
 <script>
@@ -225,22 +135,22 @@ export default {
     setEvents(flexGrid) {
       let _self = this;
       let code = '';
-      let g = null;
+      let g = wijmo.Control.getControl('#grd');
       if (_self.kihonFlag) {
         code = 'kihon';
-        g = wijmo.Control.getControl('#grdKihon');
+        // g = wijmo.Control.getControl('#grdKihon');
       } else if (_self.syogaiFlag) {
         code = 'syogai';
-        g = wijmo.Control.getControl('#grdSyogaiKubun');
+        // g = wijmo.Control.getControl('#grdSyogaiKubun');
       } else if (_self.ketteiFlag) {
         code = 'kettei';
-        g = wijmo.Control.getControl('#grdKettei');
+        // g = wijmo.Control.getControl('#grdKettei');
       } else if (_self.keikakuFlag) {
         code = 'keikaku';
-        g = wijmo.Control.getControl('#grdKeikaku');
+        // g = wijmo.Control.getControl('#grdKeikaku');
       } else if (_self.futanFlag) {
         code = 'futan';
-        g = wijmo.Control.getControl('#grdFutan');
+        // g = wijmo.Control.getControl('#grdFutan');
       }
       //セルをクリック
       flexGrid.hostElement.addEventListener('click', function (e) {
