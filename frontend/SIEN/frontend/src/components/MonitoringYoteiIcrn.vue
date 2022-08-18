@@ -785,10 +785,11 @@ export default {
 
         if (tmpitem.agebk < 18) {
           if (e.col == 1 && tmpitem.isfirst) {
-            e.cell.innerHTML =
-              '<div class="miman">' +
-              wjCore.escapeHtml(tmpitem.name) +
-              '</div>';
+            // e.cell.innerHTML =
+            //   '<div class="miman">' +
+            //   wjCore.escapeHtml(tmpitem.name) +
+            //   '</div>';
+            wjCore.addClass(e.cell, 'miman');
           }
           // if (tmpitem.agebk == 17 && 11 <= e.col && e.col <= 29) {
           //   let tmpym = this.dispYmList[e.col - 11];
@@ -1313,6 +1314,23 @@ div#monitoringYotei {
   .v-input--selection-controls .v-input__slot > .v-label {
     font-size: 14px;
   }
+  .miman {
+    padding: 0;
+    position: relative;
+    width: auto;
+    height: 20px;
+    background: $grid_background;
+  }
+  .miman::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 10px solid green;
+    border-left: 10px solid transparent;
+  }
 }
 
 .v-picker {
@@ -1348,23 +1366,7 @@ div#monitoringYotei {
     color: red;
   }
 }
-.miman {
-  padding: 0;
-  position: relative;
-  width: auto;
-  height: 20px;
-  background: $grid_background;
-}
-.miman::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-top: 10px solid green;
-  border-left: 10px solid transparent;
-}
+
 // .touroku_dialogs {
 //   min-width: 1070px;
 // }

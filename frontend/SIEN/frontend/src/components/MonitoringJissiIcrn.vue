@@ -82,7 +82,7 @@
             color="secondary"
             dark
             outlined
-            @click="yousikiClicked"
+            @click="yousikiClicked(n.val)"
           >
             {{ n.name }}
           </v-btn>
@@ -104,6 +104,9 @@
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
+        <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
+          <span class="miman mr-1" style="width: 80px">18歳未満</span>
+        </v-card>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -186,7 +189,7 @@ export default {
           title: 'コード',
           kbntitle: '基本情報',
           chutitl: '',
-          width: 100,
+          width: 70,
           align: 'center',
         },
         {
@@ -267,8 +270,8 @@ export default {
           title: '理由',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
-          width: 35,
-          align: 'center',
+          width: 100,
+          align: 'left',
         },
         {
           dataname: 'jikaiMonth',
@@ -430,7 +433,9 @@ export default {
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[3].height = sysConst.GRDROWHEIGHT.Header / 2;
-
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
+      // flexGrid.columnFooters.rows[0].allowMerging = true;
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.alternatingRowStep = 0;
       // ヘッダ文字列の設定
       for (
@@ -453,8 +458,10 @@ export default {
         } else {
           col.allowResizing = false;
         }
-        if (colIndex == 0) {
+        if (colIndex == 3 || colIndex == 11 || colIndex == 19) {
           col.format = sysConst.FORMAT.Ymd;
+        } else if (colIndex == 17) {
+          col.format = sysConst.FORMAT.Ym;
         }
 
         flexGrid.columnHeaders.setCellData(
@@ -478,6 +485,7 @@ export default {
         );
         flexGrid.columnHeaders.setCellData(3, colIndex, ' ');
       }
+      flexGrid.columnFooters.setCellData(0, 3, '合計');
       flexGrid.endUpdate();
     },
     onItemsSourceChanging(flexGrid) {
@@ -486,35 +494,98 @@ export default {
     },
 
     onItemsSourceChanged(flexGrid) {
-      console.log(flexGrid);
-      this.grdAutoSizeRow(flexGrid);
       this.screenFlag = false;
       this.loading = false;
-    },
-    grdAutoSizeRow(flexGrid) {
+      flexGrid.columnFooters.setCellData(
+        0,
+        6,
+        this.viewdatayoteisya.filter((x) => x.endMonth.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        7,
+        this.viewdatayoteisya.filter((x) => x.chusi.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        8,
+        this.viewdatayoteisya.filter((x) => x.enki.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        11,
+        this.viewdatayoteisya.filter((x) => String(x.jissiYmd).length > 0)
+          .length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        12,
+        this.viewdatayoteisya.filter((x) => x.jissi.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        13,
+        this.viewdatayoteisya.filter((x) => x.syukankeikaku.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        14,
+        this.viewdatayoteisya.filter((x) => x.doui.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        15,
+        this.viewdatayoteisya.filter((x) => x.henkou.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        16,
+        this.viewdatayoteisya.filter((x) => x.kousin.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        17,
+        this.viewdatayoteisya.filter((x) => String(x.nextMonth).length > 0)
+          .length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        18,
+        this.viewdatayoteisya.filter((x) => x.serviceend.length > 0).length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        19,
+        this.viewdatayoteisya.filter((x) => String(x.kaigiYmd).length > 0)
+          .length
+      );
+      flexGrid.columnFooters.setCellData(
+        0,
+        20,
+        this.viewdatayoteisya.filter((x) => x.kasan.length > 0).length
+      );
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-      // flexGrid.beginUpdate();
-      // flexGrid.autoSizeRows();
-      // flexGrid.endUpdate();
     },
     filterApplied(e) {
       console.log(e);
       // this.grdAutoSizeRow(e.grid);
     },
-    setNonFilterCol2(col) {
-      var Nonefilter = this.filteryoteisyaIcrn.getColumnFilter(col);
-      Nonefilter.filterType = 'None';
-    },
+
     onFormatItemyoteisyaIcrn(flexGrid, e) {
       e.cell.style.borderBottom = '';
+      e.cell.style.borderRight = '';
       if (
         e.panel == flexGrid.columnHeaders &&
         (e.row == 2 ||
           (e.row == 1 && e.col <= 4) ||
-          (e.row == 0 && e.col == 15) ||
+          (e.row == 0 && e.col == 13) ||
+          (e.row == 0 && e.col == 14) ||
           (e.row == 0 && e.col == 18) ||
-          (e.row == 0 && e.col == 22) ||
+          (e.row == 0 && e.col == 21) ||
+          (e.row == 1 && e.col == 5) ||
+          (e.row == 1 && e.col == 6) ||
+          (e.row == 1 && e.col == 15) ||
           (e.row == 1 && e.col == 16) ||
           (e.row == 1 && e.col == 17) ||
           (e.row == 1 && e.col == 19) ||
@@ -523,10 +594,68 @@ export default {
       ) {
         e.cell.style.borderBottom = 'None';
       }
+      if (
+        e.panel == flexGrid.columnHeaders &&
+        ((e.row == 0 && e.col == 0) ||
+          (e.row == 0 && e.col == 3) ||
+          (e.row == 0 && e.col == 5) ||
+          (e.row == 0 && e.col == 19) ||
+          (e.row >= 1 && e.col == 2) ||
+          (e.row >= 1 && e.col == 4) ||
+          (e.row >= 1 && e.col == 6) ||
+          (e.row == 1 && e.col == 7) ||
+          (e.row >= 2 && e.col == 10) ||
+          (e.row == 1 && e.col == 11) ||
+          (e.row >= 2 && e.col == 12) ||
+          (e.row >= 1 && e.col == 20) ||
+          e.col == 14 ||
+          e.col == 18)
+      ) {
+        e.cell.style.borderRight = '1px solid';
+      }
+
+      if (e.panel == flexGrid.columnFooters) {
+        if (e.col < 4) {
+          e.cell.style.borderRight = 'None';
+        }
+        if (
+          e.col == 4 ||
+          e.col == 6 ||
+          e.col == 10 ||
+          e.col == 12 ||
+          e.col == 14 ||
+          e.col == 18 ||
+          e.col == 20
+        ) {
+          e.cell.style.borderRight = '1px solid';
+        }
+      }
 
       if (e.panel == flexGrid.cells) {
+        if (
+          e.col == 2 ||
+          e.col == 4 ||
+          e.col == 6 ||
+          e.col == 10 ||
+          e.col == 12 ||
+          e.col == 14 ||
+          e.col == 18 ||
+          e.col == 20
+        ) {
+          e.cell.style.borderRight = '1px solid';
+        }
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
+        if (e.col == 1 && tmpitem.age < 18) {
+          // e.cell.innerHTML =
+          // '<div class="miman">' + wjCore.escapeHtml(tmpitem.name) + '</div>';
+          wjCore.addClass(e.cell, 'miman');
+        }
+        if (tmpitem.chusi == '○' || tmpitem.enki == '○') {
+          if (11 <= e.col && e.col <= 20) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
+          }
+        }
 
         if (e.col == 9) {
           e.cell.innerHTML =
@@ -544,9 +673,7 @@ export default {
     },
     searchClicked() {
       // 初期データ読込
-      if (this.selDispIndex == 0) {
-        this.setViewData(true);
-      }
+      this.setViewData(true);
     },
     setViewData(isAll) {
       this.screenFlag = true;
@@ -565,15 +692,7 @@ export default {
     },
     createdemodata() {
       let result = [];
-      let code;
-      let name;
-      let sichoson;
-      let age;
-      let birth;
       let ymd;
-      let kikan;
-      let yousiki;
-      let isfirst;
       for (let i = 1; i <= 100; i++) {
         let d = new Date('2022', Number('12') - 1, '01');
         if (i < 20 && i < 30) {
@@ -583,85 +702,71 @@ export default {
         } else {
           d = new Date('2022', Number('12') - 1, '31');
         }
-        if (i % 2 == 1) {
-          code = String(1000000 + i);
-          name = '東経 ' + i + '太郎';
-          sichoson = '新東経西市';
-          age = 100;
-          birth = 12;
-          ymd = d;
-          kikan = 'xxヶ月';
-          yousiki = '者';
-          if (i == 5) {
-            age = 17;
-          }
-          isfirst = true;
-        } else {
-          isfirst = false;
-        }
+        ymd = d;
+
         result.push({
-          codebk: code,
-          code: code,
-          name: name,
-          sichoson: sichoson,
-          age: age,
-          agebk: age,
-          birthMonth: birth,
-          birthMonthbk: birth,
-          sikyuSymd: ymd,
-          sikyuEymd: ymd,
-          sikyuSymdBk: ymd,
-          sikyuEymdBk: ymd,
-          kikan: kikan,
-          keikakuYmd: ymd,
-          yousiki: yousiki,
-          ym1: '',
-          ym2: '',
-          ym3: '',
-          ym4: '',
-          ym5: '',
-          ym6: '',
-          ym7: '',
-          ym8: '',
-          ym9: '',
-          ym10: '',
-          ym11: '',
-          ym12: '',
-          ym13: '',
-          ym14: '',
-          ym15: '',
-          ym16: '',
-          ym17: '',
-          ym18: '',
-          ym19: '',
-          yotei: '99',
-          jisseki: '99',
-          zanken: '99',
+          codebk: String(1000000 + i),
+          code: String(1000000 + i),
+          name: '東経 ' + i + '太郎',
+          sichoson: '新東経西市',
+          sakuseiymd: ymd,
+          yousiki: '者',
+          yoteiMonth: 'xx月',
+          endMonth: '○',
+          chusi: '',
+          enki: '',
+          riyu: '',
+          jikaiMonth: '',
+          jissiYmd: ymd,
+          jissi: '●',
+          syukankeikaku: '●',
+          doui: '●',
+          henkou: '●',
+          kousin: '●',
+          nextMonth: ymd,
+          serviceend: '○',
+          kaigiYmd: ymd,
+          kasan: '○',
           tantousya: '五文字太郎',
-          isfirst: isfirst,
+          age: 100,
         });
 
         if (i == 1) {
-          result[i - 1].ym10 = '●';
-          result[i - 1].ym13 = '✕';
-          result[i - 1].ym14 = '○';
-          result[i - 1].ym17 = '○';
+          result[i - 1].enki = '○';
+          result[i - 1].riyu = '自己都合';
+          result[i - 1].jikaiMonth = 'xx月';
+          result[i - 1].jissiYmd = '';
+          result[i - 1].jissi = '';
+          result[i - 1].syukankeikaku = '';
+          result[i - 1].doui = '';
+          result[i - 1].henkou = '';
+          result[i - 1].kousin = '';
+          result[i - 1].nextMonth = '';
+          result[i - 1].serviceend = '';
+          result[i - 1].kaigiYmd = '';
+          result[i - 1].kasan = '';
         }
         if (i == 2) {
-          result[i - 1].ym13 = '延';
-          result[i - 1].ym17 = '終';
+          result[i - 1].chusi = '○';
+          result[i - 1].riyu = '自己都合';
+          result[i - 1].jikaiMonth = '-';
+          result[i - 1].jissiYmd = '';
+          result[i - 1].jissi = '';
+          result[i - 1].syukankeikaku = '';
+          result[i - 1].doui = '';
+          result[i - 1].henkou = '';
+          result[i - 1].kousin = '';
+          result[i - 1].nextMonth = '';
+          result[i - 1].serviceend = '';
+          result[i - 1].kaigiYmd = '';
+          result[i - 1].kasan = '';
         }
         if (i == 3) {
-          result[i - 1].ym11 = '●';
-          result[i - 1].ym12 = '✕';
-          result[i - 1].ym13 = '●';
-          result[i - 1].ym16 = '○';
-        }
-        if (i == 4) {
-          result[i - 1].ym12 = '止';
+          result[i - 1].yousiki = '児';
+          result[i - 1].age = 17;
         }
       }
-      this.viewdatakeikakuAll = result;
+      this.viewdatayoteisyaAll = result;
     },
     onAlphabetical() {
       this.userFilter();
@@ -669,7 +774,8 @@ export default {
     siborikomiClicked() {
       this.userFilter();
     },
-    yousikiClicked() {
+    yousikiClicked(id) {
+      this.yousikiIndex = id;
       this.userFilter();
     },
     taisyousyaClicked(s) {
@@ -684,8 +790,14 @@ export default {
     },
     userFilter() {
       let tmpviewdata = [];
-      tmpviewdata = this.viewdatakeikakuAll.concat();
+      tmpviewdata = this.viewdatayoteisyaAll.concat();
       tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
+
+      if (this.yousikiIndex == 1) {
+        tmpviewdata = tmpviewdata.filter((x) => x.yousiki == '者');
+      } else if (this.yousikiIndex == 2) {
+        tmpviewdata = tmpviewdata.filter((x) => x.yousiki == '児');
+      }
       // //コード順でソート
       // if (this.sortSearch == 0) {
       //   tmpviewdata.sort((a, b) => {
@@ -729,7 +841,7 @@ export default {
       //     }
       //   });
       // }
-      this.viewdatakeikaku = tmpviewdata;
+      this.viewdatayoteisya = tmpviewdata;
     },
     getYm() {
       if (!this.kikanYm) {
@@ -755,7 +867,7 @@ export default {
       if (kbn == 0) {
         this.datepicker_dialog = true;
       } else {
-        this.viewdatakeikaku = [];
+        this.viewdatayoteisya = [];
       }
     },
     monthSelect() {
@@ -768,11 +880,11 @@ export default {
         minutes: 0,
         seconds: 0,
       });
-      this.viewdatakeikaku = [];
+      this.viewdatayoteisya = [];
       this.datepicker_dialog = false;
     },
     filterClrclick() {
-      this.filterkeikakuIcrn.clear();
+      this.filteryoteisyaIcrn.clear();
     },
   },
 };
@@ -913,7 +1025,7 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     width: auto;
     // min-width: 1250px;
-    height: 79vh;
+    height: 70vh;
     min-height: 500px;
   }
   .v-btn-toggle > .v-btn {
@@ -961,6 +1073,23 @@ div#monitoringJissiIcrn {
   }
   .v-input--selection-controls .v-input__slot > .v-label {
     font-size: 14px;
+  }
+  .miman {
+    padding: 0;
+    position: relative;
+    width: auto;
+    height: 20px;
+    background: $grid_background;
+  }
+  .miman::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 10px solid green;
+    border-left: 10px solid transparent;
   }
 }
 

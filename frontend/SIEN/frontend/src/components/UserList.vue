@@ -1,7 +1,28 @@
 <template>
-  <div id="user-list_scrollbar">
-    <v-row no-gutters>
-      <v-col col="12">
+  <div id="user-list_scrollbar" :style="styles">
+    <div
+      :class="{
+        switchArea: switchAreaFlag == true,
+        switchAreaRight: switchAreaRightFlag == true,
+        switchAreaLeft: switchAreaLeftFlag == true,
+      }"
+      @click="switched"
+    >
+      <v-icon
+        small
+        :class="{ anim_right: animtype == 1, anim_left: animtype == 2 }"
+        >{{ switchIcon }}</v-icon
+      >
+    </div>
+    <v-row
+      no-gutters
+      :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
+    >
+      <v-col
+        :style="{
+          maxWidth: leftAreaWidth,
+        }"
+      >
         <v-row no-gutters class="rowStyle mt-1 ml-1" v-if="dispAddDaicho">
           <v-col cols="*">
             <v-btn
@@ -115,54 +136,52 @@
             >
           </v-btn-toggle>
         </div>
+
+        <wj-flex-grid
+          id="userListGrid"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :selectionMode="3"
+          :initialized="onInitializedUser"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="usersViewData"
+          :allowResizing="false"
+          :allowDragging="false"
+          :allowSorting="false"
+          :formatItem="onFormatItem"
+        >
+          <wj-flex-grid-column
+            header="コード"
+            binding="riyocodeD"
+            width="2*"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+            v-if="riyocodeFlag"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="受給者番号"
+            binding="jyukyunoD"
+            width="2*"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+            v-if="jyukyunoFlag"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="利用者名"
+            binding="names"
+            width="3*"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
       </v-col>
     </v-row>
-
-    <div class="mt-0 mr-1" no-gutters>
-      <wj-flex-grid
-        id="userListGrid"
-        :autoSearch="true"
-        :headersVisibility="'Column'"
-        :selectionMode="3"
-        :initialized="onInitializedUser"
-        :itemsSourceChanged="onItemsSourceChanged"
-        :itemsSource="usersViewData"
-        :allowResizing="false"
-        :allowDragging="false"
-        :allowSorting="false"
-        :formatItem="onFormatItem"
-      >
-        <wj-flex-grid-column
-          header="コード"
-          binding="riyocodeD"
-          width="2*"
-          :word-wrap="false"
-          :allowResizing="true"
-          :isReadOnly="true"
-          align="center"
-          v-if="riyocodeFlag"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          header="受給者番号"
-          binding="jyukyunoD"
-          width="2*"
-          :word-wrap="false"
-          :allowResizing="true"
-          :isReadOnly="true"
-          align="center"
-          v-if="jyukyunoFlag"
-        ></wj-flex-grid-column>
-        <wj-flex-grid-column
-          header="利用者名"
-          binding="names"
-          width="3*"
-          :word-wrap="false"
-          :allowResizing="true"
-          :isReadOnly="true"
-          align="center"
-        ></wj-flex-grid-column>
-      </wj-flex-grid>
-    </div>
   </div>
 </template>
 
@@ -197,6 +216,11 @@ export default {
   // components: { Riyousya },
   data() {
     return {
+      switchIcon: 'mdi-chevron-left',
+      animtype: '0',
+      switchAreaFlag: true,
+      switchAreaRightFlag: false,
+      switchAreaLeftFlag: false,
       userDispList: [
         { val: 0, name: '台帳' },
         { val: 1, name: '本日予定者' },
@@ -236,6 +260,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
+      headerheight: 280,
     };
   },
   mounted() {
@@ -245,7 +270,30 @@ export default {
       this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
     });
   },
+  computed: {
+    // バインドするスタイルを生成
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   methods: {
+    switched() {
+      this.animtype = this.animtype == '1' ? '2' : '1';
+      if (this.switchAreaRightFlag == true) {
+        this.switchAreaRightFlag = false;
+        this.switchAreaLeftFlag = true;
+        this.leftAreaWidth = '100%';
+      } else {
+        this.switchAreaRightFlag = true;
+        this.switchAreaLeftFlag = false;
+        this.leftAreaWidth = '0%';
+      }
+
+      this.$emit('child-left', this.switchAreaRightFlag);
+    },
     initComboFilters(combo) {
       if (combo.hostElement.id == 'comboFilters1') {
         combo.header = combo.selectedItem.name;
@@ -586,6 +634,97 @@ div#user-list_scrollbar {
   }
   .wj-control .wj-input-group .wj-form-control {
     height: 25px;
+  }
+  #userGrid {
+    height: var(--height);
+  }
+  .switchArea {
+    width: 14px;
+    height: 97%;
+    background-color: $black;
+    position: fixed;
+
+    left: 275px;
+    z-index: 1;
+    &.switchAreaRight {
+      animation: switchAreaRightMove $seconds forwards;
+    }
+    &.switchAreaLeft {
+      animation: switchAreaLeftMove $seconds forwards;
+    }
+    i {
+      color: $white;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+      height: 3.2rem;
+
+      &.anim_right {
+        animation: rotate-right $seconds forwards;
+      }
+      &.anim_left {
+        animation: rotate-left $seconds forwards;
+      }
+    }
+  }
+  @keyframes switchAreaLeftMove {
+    from {
+      transform: translateX(-275px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes switchAreaRightMove {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-275px);
+    }
+  }
+  @keyframes rotate-right {
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+  @keyframes rotate-left {
+    0% {
+      transform: rotate(180deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  .v_enter_to {
+    animation: slide $seconds forwards;
+  }
+  .v_enter_from {
+    animation: slideUp $seconds forwards;
+  }
+
+  @keyframes slide {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-264px);
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateX(-264px);
+    }
+    to {
+      transform: translateX(0px);
+    }
   }
 }
 </style>

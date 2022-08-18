@@ -57,7 +57,7 @@
             </v-col>
           </v-row>
           <common-tab-menu
-            v-if="displayFlagSetting[0].seikyugakuTabFlag"
+            v-if="displaySetting[0].seikyugakuTabFlag"
             @parent_common_tab_menu="parent_common_tab_menu"
             :tabmenu="tabmenus"
           ></common-tab-menu>
@@ -66,18 +66,19 @@
               <kyuhu-meisai-riyouhutan
               ref="riyousyaHutanData"
               class="mt-1"
-              v-if="displayFlagSetting[0].riyousyaHutanGridFlag"
+              v-if="displaySetting[0].riyousyaHutanGridFlag"
               >
               </kyuhu-meisai-riyouhutan>
               <kyuhu-meisai-service
               ref="serviceData"
               class="mt-1"
-              v-if="displayFlagSetting[0].serviceGridFlag"
+              v-if="displaySetting[0].serviceGridFlag"
               >
               </kyuhu-meisai-service>
               <kyuhu-meisai-list
               ref="meisaiListData"
               class="mt-1"
+              v-if="reload[0].meisaiList"
               >
               </kyuhu-meisai-list>
               <!-- <kyuhu-meisairan ref="reloadMeisairan"></kyuhu-meisairan> -->
@@ -114,6 +115,7 @@ import KyuhuMeisaiList from '../components/KyuhuMeisaiList.vue';
 // import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
 import KyuhuMeisaiSeikyugaku from '../components/KyuhuMeisaiSeikyugaku.vue';
 // import sysConst from '@/utiles/const';
+import DispPtn from '../data/kyuhuMeisaiDisplayTerms.js';
 
 export default {
   components: {
@@ -145,41 +147,44 @@ export default {
         { href: '#ServiceMeisai', text: 'サービス明細欄' },
         { href: '#SeikyugakuSyukei', text: '請求額集計欄' },
       ],
-      // リロードのための変数
+      // リロード用
       reload:[
         {
           jyukyusya: true,
           Jigyosyo:  true,
           shityoson: true,
           kubun:     true,
+          meisaiList:true,
+          seikyugaku:true,
         }
       ],
-      // 表示条件Flag
-      displayFlagSetting:[
+      // 表示設定用
+      displaySetting:[
         {
-          // Gridの表示Flag
-          riyousyaHutanGridFlag:true,     // 利用者負担Grid表示Flag
-          serviceGridFlag:true,           // サービス種別Grid表示Flag
-          seikyugakuTabFlag:true,         // タブ表示フラグ
-          tokuteiSyogaiGrid:true,         // 特定障害者Grid表示Flag
+          // Gridの表示Flag ※リロードでも使用
+          riyousyaHutanGridFlag:false,      // 利用者負担Grid表示Flag
+          serviceGridFlag:false,            // サービス種別Grid表示Flag
+          seikyugakuTabFlag:false,          // タブ表示フラグ
+          tokuteiSyogaiGridFlag:false,      // 特定障害者Grid表示Flag
+        },
+        {
+          // Grid内の表示Flag
           // 受給者Grid
-          ketteiName:'支給決定障害者等氏名',
-          syougaijiFlag: false,           // 支給決定障害者等氏名表示Flag
-          syougaijiName:'',               // 支給決定障害者等氏名
+          ketteiName:          '',          // 支給決定障害者等氏名 or 給付決定保護者氏名 or 通所給付決定保護者氏名
+          syougaijiFlag:       false,       // 支給決定に係る障害児氏名表示Flag
+          shogaijiName:        '',          // 支給決定に係る障害児氏名
           // 事業所Grid
-          jigyosyoBango:'指定事業所番号',  // 事業所番号
+          tourokuJigyosyoFlag: true,        // 指定事業所番号 or 登録事業所番号
           // 市町村Grid
-          shityosonBango: '市町村番号',    // 市町村番号 or 都道府県等番号
-          jyoseijichitaiFlag:false,       // 助成自治体番号表示Flag
+          todofukenFlag:       false,       // 市町村番号 or 都道府県等番号
+          jyoseijichitaiFlag:  false,       // 助成自治体番号表示Flag
           // 区分Grid
-          genmensotiFlag:false,           // 就労継続支援A型事業者負担減免措置実施表示Flag
+          genmensotiFlag:      false,       // 就労継続支援A型事業者負担減免措置実施表示Flag
           // 利用者負担Grid
-          genmenTaisyosyaFlag:false,      // 就労継続支援A型減免対象者 or 障害支援区分表示Flag
-          genmenTaisyosya: '',             // 就労継続支援A型減免対象者 or 障害支援区分
-          // 給付費明細リストGrid
-          // meisaiListLargeFlag:false    // 給付費明細リストの表示数増加Flag
+          genmenTaisyosyaFlag: false,       // 就労継続支援A型減免対象者Flag
+          syogaiShienFlag:     false,       // 障害支援区分Flag
           // 給付費明細請求額Grid
-          seikyugakuType:0,           // 請求額Gridの表示タイプ
+          seikyugakuType:0,                // 請求額Gridの表示タイプ
         }
       ],
     };
@@ -227,7 +232,7 @@ export default {
           kanrikekkagaku:     '',               // 管理結果額
           jigyosyoname:       '',               // 事業所名
         };
-        if (this.displayFlagSetting[0].riyousyaHutanGridFlag) {
+        if (this.displaySetting[0].riyousyaHutanGridFlag) {
           this.$refs.riyousyaHutanData.setRiyousyaHutanData(riyousyaHutan);
         }
           // サービス種別 (仮データ)
@@ -267,7 +272,7 @@ export default {
             }
           )
         
-        if (this.displayFlagSetting[0].serviceGridFlag) {
+        if (this.displaySetting[0].serviceGridFlag) {
           this.$refs.serviceData.setServiceData(serviceData);
         }
         // 明細リストGrid
@@ -421,33 +426,31 @@ export default {
       console.log(this.selectedJigyosyo['jimusyoBango'])
       // ヘッダメニューの選択情報を取得
       // 初回か更新かを確認
-      if((!this.selectedJigyosyo['jimusyoBango']) ||
-        this.selectedJigyosyo['jimusyoBango'] === serviceArgument['jimusyoBango']) {
-        // 初回選択または選択項目の変更がない場合
+      if((this.selectedJigyosyo['jimusyoBango']) ||
+        this.selectedJigyosyo['jimusyoBango'] !== serviceArgument['jimusyoBango']) {
+        // 選択項目が変更されて更新した場合
+        // ヘッダーで選択された事業所情報を取得
         this.selectedJigyosyo['serviceJigyo'] = serviceArgument['serviceJigyo'];
         this.selectedJigyosyo['jimusyoBango'] = serviceArgument['jimusyoBango'];
         this.selectedJigyosyo['teikyoCode'] = serviceArgument['teikyoCode'];
-        console.log(1)
+        // 表示Flagを変更
+        console.log(1111)
         this.displayChange();
-      } else {
-        console.log(2)
-        this.selectedJigyosyo['serviceJigyo'] = serviceArgument['serviceJigyo'];
-        this.selectedJigyosyo['jimusyoBango'] = serviceArgument['jimusyoBango'];
-        this.selectedJigyosyo['teikyoCode'] = serviceArgument['teikyoCode'];
-        this.displayChange();
-        // 選択項目が変更されて更新した場合は各グリッドのリロードを行う
-        let re = this.reload[0];
-        re.jyukyusya = false;
-        this.$nextTick(() => (re.jyukyusya = true));
-        re.Jigyosyo = false;
-        this.$nextTick(() => (re.Jigyosyo = true));
-        re.shityoson = false;
-        this.$nextTick(() => (re.shityoson = true));
-        re.kubun = false;
-        this.$nextTick(() => (re.kubun = true));
+        // 各グリッドをリロード
+        // 非表示無しGrid
+        for (let i in this.reload[0]){
+          this.reload[0][i] = false;
+          this.$nextTick(() => (this.reload[0][i] = true));
+        }
+        // 非表示ありGrid
+        for (let i in this.displaySetting[0]){
+          if (this.displaySetting[0][i] === true) {
+            this.displaySetting[0][i] = false;
+            this.$nextTick(() => (this.displaySetting[0][i] = true));
+          }
+        }
       }
     },
-    
     /***************
      * 表示項目条件の変更
      */
@@ -455,54 +458,56 @@ export default {
       // タブをサービス明細欄に切り替え
       this.serviceMeisaiFlag =  true;
       this.seikyugakuSyukeiFlag = false;
-      // 各項目の表示切り替え
-      let dfs = this.displayFlagSetting[0];
-      if (this.selectedJigyosyo['teikyoCode'] === 52) {
-        // パターンC
-        dfs.riyousyaHutanGridFlag = false;
-        dfs.serviceGridFlag = false;
-        dfs.seikyugakuTabFlag = false;
-        dfs.syougaijiFlag = false;
-        dfs.jyoseijichitaiFlag = false;
-        dfs.genmensotiFlag = false;
-      } else if (this.selectedJigyosyo['teikyoCode'] === 51) {
-        // パターンC-2 ※※※ 条件は暫定 ※※※
-        dfs.riyousyaHutanGridFlag = false;
-        dfs.serviceGridFlag = false;
-        dfs.seikyugakuTabFlag = false;
-        dfs.syougaijiFlag = false;
-        dfs.jigyosyoBango = '登録事業所番号';
-        dfs.jyoseijichitaiFlag = false;
-        dfs.genmensotiFlag = false;
+      let ptn = '';
+      let getCode = this.selectedJigyosyo['teikyoCode'];
+      ///////  条件は仮  ///////
+      if (getCode === 1) {
+        // パターンa
+        ptn = DispPtn.kyuhumeisaiPtn[0][0]
+      } else if (getCode === 2) {
+        // パターンa-2
+        ptn = DispPtn.kyuhumeisaiPtn[0][1]
+      }  else if (getCode === 3) {
+        // パターンb
+        ptn = DispPtn.kyuhumeisaiPtn[0][2]
+      }  else if (getCode === 4) {
+        // パターンc
+        ptn = DispPtn.kyuhumeisaiPtn[0][3]
+      }  else if (getCode === 5) {
+        // パターンc-2
+        ptn = DispPtn.kyuhumeisaiPtn[0][4]
+      }  else if (getCode === 6) {
+        // パターンd
+        ptn = DispPtn.kyuhumeisaiPtn[0][5]
+      }  else if (getCode === 7) {
+        // パターンe
+        ptn = DispPtn.kyuhumeisaiPtn[0][6]
+      }  else if (getCode === 8) {
+        // パターンe-2
+        ptn = DispPtn.kyuhumeisaiPtn[0][7]
+      }  else if (getCode === 9) {
+        // パターンf
+        ptn = DispPtn.kyuhumeisaiPtn[0][8]
+      }  else if (getCode === 10) {
+        // パターンf-2
+        ptn = DispPtn.kyuhumeisaiPtn[0][9]
+      }  else {
+        
+        ptn = DispPtn.kyuhumeisaiPtn[0][10]
+      }
 
-      }  else if (this.selectedJigyosyo['teikyoCode'] === 53 ||
-                  this.selectedJigyosyo['teikyoCode'] === 54) 
-      {
-        // パターンD
-        dfs.riyousyaHutanGridFlag = false;
-        dfs.syougaijiFlag = true;
-        dfs.serviceGridFlag = true;
-        dfs.seikyugakuTabFlag = true;
-        dfs.syougaijiFlag = false;
-        dfs.jyoseijichitaiFlag = false;
-        dfs.genmensotiFlag = false;
-        dfs.seikyugakuType = 4;
-      } else {
-        // 全表示 ※ （仮）
-        dfs.riyousyaHutanGridFlag = true;
-        dfs.serviceGridFlag = true;
-        dfs.seikyugakuTabFlag = true;
-        dfs.tokuteiSyogaiGrid = true;
-
-        dfs.ketteiName = '支給決定障害者等氏名';
-        dfs.syougaijiFlag = true;
-        dfs.syougaijiName = '支給決定に係る障害児氏名';
-        dfs.jigyosyoBango = '指定事業所番号';
-        dfs.shityosonBango = '市町村番号';
-        dfs.jyoseijichitaiFlag = true;
-        dfs.genmensotiFlag = true;
-        dfs.seikyugakuType = 0;
-
+      let ds0 = this.displaySetting[0];
+      let ds1 = this.displaySetting[1];
+      let l = 0;
+      // パターンごとの値を取得して、this.displaySettingに挿入
+      for (let i in ptn) {
+        // 各項目の表示切り替え
+        if (l < 4) {
+          ds0[i] = ptn[i];
+        } else if (3 < l) {
+          ds1[i] = ptn[i];
+        }
+        l++;
       }
     },
     /**************

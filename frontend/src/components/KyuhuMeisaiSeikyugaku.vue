@@ -46,7 +46,7 @@
 export default {
   data() {
     return {
-      dispItemPtn: this.$parent.displayFlagSetting[0].seikyugakuType,
+      dispItemPtn: this.$parent.displaySetting[1].seikyugakuType,
       seikyugakuApiData:[],
       seikyugakuData:[],
       seikyugakuObj:[
@@ -153,12 +153,12 @@ export default {
     settingGrid(flexGrid) {
       flexGrid.columns[0].width = 70;
       flexGrid.columns[0].cssClass = 'create-header';
-      flexGrid.columns[1].width = 130;
+      flexGrid.columns[1].width = 150;
       flexGrid.columns[1].cssClass = 'create-header';
       flexGrid.rows.insert(0, new wjGrid.Row());
       flexGrid.rows[0].cssClass = 'create-header';
       flexGrid.columns.defaultSize = 30;
-      // セルの非表示設定
+      // 表示条件ごとのセルの非表示、書き換え設定
       this.settingDisplyItem(flexGrid)
     },
     /**************
@@ -351,16 +351,21 @@ export default {
     ////////////////////////////////// 合計額Gridと共通 //////////////////////////////////
 
     /**************
-     * セルの非表示設定
+     * セルの非表示、書き換え設定
      */
     settingDisplyItem(flexGrid) {
       if (this.dispItemPtn === 1) {
         // 様式A-1の場合、特別対策費を非表示
         flexGrid.rows[15].visible = false;
       } else if (this.dispItemPtn === 2) {
-        // 様式A-2,E-2の場合、A型減免を非表示
+        // 様式A-2の場合、A型減免を非表示、請求額特別対策費：高額障害福祉サービス費
         flexGrid.rows[9].visible = false;
         flexGrid.rows[10].visible = false;
+        if (2 < flexGrid.columns.length) {
+          // 請求額Gird特別費のヘッダー文字上書き
+          flexGrid.setCellData(15, 1, '高額障害福祉サービス費')
+        }
+        console.log(this.mainFlexGrid.itemsSource)
       } else if (this.dispItemPtn === 3) {
         // 様式B,Eの場合、特別対策費とA型減免を非表示
         flexGrid.rows[9].visible = false;
@@ -372,6 +377,14 @@ export default {
           if (i !== 14) {
             flexGrid.rows[i].visible = false;
           }
+        }
+      } else if (this.dispItemPtn === 5) {
+        // 様式E-2の場合、A型減免を非表示、特別費のヘッダー文字上書き
+        flexGrid.rows[9].visible = false;
+        flexGrid.rows[10].visible = false;
+        if (2 < flexGrid.columns.length) {
+          // 請求額Gird特別費のヘッダー文字上書き
+          flexGrid.setCellData(15, 1, '高額障害児通所給付日')
         }
       }
     },
@@ -495,7 +508,7 @@ export default {
   color: #333;
   #kyuhu-seikyugaku-grid {
     border-radius: 4px 0 0 4px;
-    max-width: calc(800px + 2px);
+    max-width: calc(820px + 2px);
     width: auto;
     position: relative;
     border-right: solid 1px $black;

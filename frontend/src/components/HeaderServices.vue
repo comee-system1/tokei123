@@ -444,35 +444,77 @@ export default {
         teikyoCode: 35,
         teikyoService: '35 自立生活援助',
       });
+      ////////////////////// 仮データ for 給付明細(簡易)////////////////////////////////////
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 51,
-        teikyoService: '51 計画相談支援(暫定)',
+        teikyoCode: 1,
+        teikyoService: 'A 介護給付費、訓練等給付費等明細書）',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 52,
-        teikyoService: '52 計画相談支援',
+        teikyoCode: 2,
+        teikyoService: 'A-2 特例介護給付費、特例訓練等給付費等明細書）',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 53,
-        teikyoService: '53 地域相談支援（地域移行支援）',
+        teikyoCode: 3,
+        teikyoService: ' B 特例訓練等給付費等明細書',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 54,
-        teikyoService: '54 地域相談支援（地域定着支援）',
+        teikyoCode: 4,
+        teikyoService: 'C 計画相談支援給付費明細書',
       });
-
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 5,
+        teikyoService: 'C-2 特例計画相談支援給付費明細書）',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 6,
+        teikyoService: 'D 地域相談支援給付費明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 7,
+        teikyoService: 'E 障害児通所給付費・入所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 8,
+        teikyoService: 'E-2 特例障害児通所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 9,
+        teikyoService: 'F 特例障害児通所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 10,
+        teikyoService: 'F-2 特例障害児通所給付費等明細書',
+      });
       //事業所番号が次のデータと同じ場合に非表示用のフラグを立てる
       let j = -1;
       for (let i = 0; i < data.length; i++) {

@@ -24,8 +24,8 @@ exports.registed = async function (param, input) {
  */
 exports.connected = async function (param) {
     // 接続確認用URL
-    var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/jyukyuh?getkbn=0&rysid=' + param.rid;
-    // let url = "http://192.168.30.32/syogai/daityo/v1/jyukyu/jyukyuh?getkbn=0";
+    // var url = config.getDomain() + '/syogai/daityo/v1/jyukyu/jyukyuh?getkbn=0&rysid=' + param.rid;
+    let url = "http://192.168.30.32/syogai/daityo/v1/jyukyu/jyukyuh?getkbn=0";
     config.setURL(url);
     config.setUniqID(param.uniqid);
     config.setTraceID(param.traceid);

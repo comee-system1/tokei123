@@ -54,9 +54,9 @@ export default {
       }
       flexGrid.rowHeaders.columns.defaultSize = 90;
       flexGrid.columns.defaultSize = 90;
-      console.log(this.$parent.displayFlagSetting[0].genmensotiFlag )
+      console.log(this.$parent.displaySetting[1].genmensotiFlag )
       // 減免措置FragがFALSEの場合、就労継続支援A型事業者負担減免措置実施を非表示
-      if (this.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+      if (this.$parent.displaySetting[1].genmensotiFlag === false) {
         flexGrid.rows[1].visible = false;
       } 
     },
@@ -126,7 +126,7 @@ export default {
             s.borderTop = '1px solid rgba(0,0,0,.2)';
             s.borderRadius = '0 0 4px 0';
           }
-          if (_self.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+          if (_self.$parent.displaySetting[1].genmensotiFlag === false) {
             // 減免措置Fragがfalseだった場合デザインを修正
             if (r == 0) {
               s.borderBottom = '1px solid rgba(0,0,0,.2)';
@@ -145,7 +145,7 @@ export default {
           if (r == 1 && c == 0) {
             s.borderRadius = '0  0 4px 0';
           }
-          if (_self.$parent.displayFlagSetting[0].genmensotiFlag === false) {
+          if (_self.$parent.displaySetting[1].genmensotiFlag === false) {
             // 減免措置Fragがfalseだった場合デザインを修正
             if (r == 0) {
               s.borderBottom = '1px solid rgba(0,0,0,.2)';
@@ -167,7 +167,7 @@ export default {
       
       // 就労継続支援
       // API取得時修正
-      if (this.$parent.displayFlagSetting[0].genmensotiFlag) {
+      if (this.$parent.displaySetting[1].genmensotiFlag) {
         this.mainFlexGrid.setCellData(1, 0, kubunData['kinroukeizokushien']);
       }
     },

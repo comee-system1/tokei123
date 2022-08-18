@@ -12,170 +12,172 @@
           <label class="kihon-header-title">受給者証基本情報</label>
         </v-card>
       </v-row>
-      <v-row no-gutters class="kihon-kofuymd-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          交付年月日
-        </v-card>
-        <p class="required">*</p>
-        <p class="ml-2 mb-0">{{ kofuymd }}</p>
-      </v-row>
-      <v-row no-gutters class="kihon-kubun-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length2 d-flex flex-row"
-          flat
-          tile
-        >
-          区分
-        </v-card>
-        <p class="ml-2 mb-0">{{ jyukyukubun }}</p>
-      </v-row>
-      <v-row no-gutters class="kihon-jyukyusyabangou-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          受給者番号
-        </v-card>
-        <p class="required">*</p>
-        <p class="ml-2 mb-0">{{ jyukyuno }}</p>
-      </v-row>
-      <v-row no-gutters class="kihon-shichosonbangou-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          市町村番号
-        </v-card>
-        <p class="required">*</p>
-        <p class="ml-2 mb-0">{{ shichosonno + ' ' + shichosonname }}</p>
-      </v-row>
-      <v-row
-        no-gutters
-        class="kihon-syogaisyubetu-row d-flex flex-row"
-        style="height: 50px; width: 400px"
-      >
-        <v-card
-          elevation="0"
-          class="kihon-title-length4 d-flex flex-row"
-          style="height: 50px; padding-top: 15px"
-          flat
-          tile
-        >
-          障害種別
-        </v-card>
-        <v-card
-          elevation="0"
-          class="kihon-syogaisyubetu-selection d-flex"
-          style="width: 250px; background-color: rgba(255, 255, 255, 0)"
-          flat
-          tile
+      <div style="height: 200px">
+        <v-row no-gutters class="kihon-kofuymd-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length5 d-flex flex-row"
+            flat
+            tile
+          >
+            交付年月日
+          </v-card>
+          <p class="required">*</p>
+          <p class="ml-2 mb-0">{{ kofuymd }}</p>
+        </v-row>
+        <v-row no-gutters class="kihon-kubun-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length2 d-flex flex-row"
+            flat
+            tile
+          >
+            区分
+          </v-card>
+          <p class="ml-2 mb-0">{{ jyukyukubun }}</p>
+        </v-row>
+        <v-row no-gutters class="kihon-jyukyusyabangou-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length5 d-flex flex-row"
+            flat
+            tile
+          >
+            受給者番号
+          </v-card>
+          <p class="required">*</p>
+          <p class="ml-2 mb-0">{{ jyukyuno }}</p>
+        </v-row>
+        <v-row no-gutters class="kihon-shichosonbangou-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length5 d-flex flex-row"
+            flat
+            tile
+          >
+            市町村番号
+          </v-card>
+          <p class="required">*</p>
+          <p class="ml-2 mb-0">{{ shichosonno + ' ' + shichosonname }}</p>
+        </v-row>
+        <v-row
+          no-gutters
+          class="kihon-syogaisyubetu-row d-flex flex-row"
+          style="height: 50px; width: 400px"
         >
           <v-card
             elevation="0"
+            class="kihon-title-length4 d-flex flex-row"
+            style="height: 50px; padding-top: 15px"
             flat
             tile
-            style="background-color: rgba(255, 255, 255, 0)"
+          >
+            障害種別
+          </v-card>
+          <v-card
+            elevation="0"
+            class="kihon-syogaisyubetu-selection d-flex"
+            style="width: 250px; background-color: rgba(255, 255, 255, 0)"
+            flat
+            tile
           >
             <v-card
               elevation="0"
-              class="d-flex flex-row"
-              style="background-color: rgba(255, 255, 255, 0)"
               flat
               tile
-            >
-              <v-checkbox
-                class="item-button"
-                style="height: 25px; width: 150px; margin-left: -28px"
-                :key="syogaisyubetu[0].id"
-                :label="syogaisyubetu[0].id + '.' + syogaisyubetu[0].name"
-                v-model="syogaisyubetuValues[0]"
-                disabled
-              >
-              </v-checkbox>
-              <v-checkbox
-                class="item-button"
-                style="height: 25px; width: 150px"
-                :key="syogaisyubetu[1].id"
-                :label="syogaisyubetu[1].id + '.' + syogaisyubetu[1].name"
-                v-model="syogaisyubetuValues[1]"
-                disabled
-              >
-              </v-checkbox>
-            </v-card>
-            <v-card
-              elevation="0"
-              class="d-flex flex-row"
               style="background-color: rgba(255, 255, 255, 0)"
-              flat
-              tile
             >
-              <v-checkbox
-                class="item-button"
-                style="height: 25px; width: 150px; margin-left: -28px"
-                :key="syogaisyubetu[2].id"
-                :label="syogaisyubetu[2].id + '.' + syogaisyubetu[2].name"
-                v-model="syogaisyubetuValues[2]"
-                disabled
+              <v-card
+                elevation="0"
+                class="d-flex flex-row"
+                style="background-color: rgba(255, 255, 255, 0)"
+                flat
+                tile
               >
-              </v-checkbox>
-              <v-checkbox
-                class="item-button"
-                style="height: 25px; width: 150px"
-                :key="syogaisyubetu[3].id"
-                :label="syogaisyubetu[3].id + '.' + syogaisyubetu[3].name"
-                v-model="syogaisyubetuValues[3]"
-                disabled
+                <v-checkbox
+                  class="item-button"
+                  style="height: 25px; width: 150px; margin-left: -28px"
+                  :key="syogaisyubetu[0].id"
+                  :label="syogaisyubetu[0].id + '.' + syogaisyubetu[0].name"
+                  v-model="syogaisyubetuValues[0]"
+                  disabled
+                >
+                </v-checkbox>
+                <v-checkbox
+                  class="item-button"
+                  style="height: 25px; width: 150px"
+                  :key="syogaisyubetu[1].id"
+                  :label="syogaisyubetu[1].id + '.' + syogaisyubetu[1].name"
+                  v-model="syogaisyubetuValues[1]"
+                  disabled
+                >
+                </v-checkbox>
+              </v-card>
+              <v-card
+                elevation="0"
+                class="d-flex flex-row"
+                style="background-color: rgba(255, 255, 255, 0)"
+                flat
+                tile
               >
-              </v-checkbox>
+                <v-checkbox
+                  class="item-button"
+                  style="height: 25px; width: 150px; margin-left: -28px"
+                  :key="syogaisyubetu[2].id"
+                  :label="syogaisyubetu[2].id + '.' + syogaisyubetu[2].name"
+                  v-model="syogaisyubetuValues[2]"
+                  disabled
+                >
+                </v-checkbox>
+                <v-checkbox
+                  class="item-button"
+                  style="height: 25px; width: 150px"
+                  :key="syogaisyubetu[3].id"
+                  :label="syogaisyubetu[3].id + '.' + syogaisyubetu[3].name"
+                  v-model="syogaisyubetuValues[3]"
+                  disabled
+                >
+                </v-checkbox>
+              </v-card>
             </v-card>
           </v-card>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="kihon-jyukyusyakubun-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          受給者区分
-        </v-card>
-        <v-card
-          elevation="0"
-          class="kihon-jyukyusyakubun-selection d-flex flex-row"
-          style="background-color: rgba(255, 255, 255, 0)"
-        >
-          <v-checkbox
-            class="item-button"
-            label="障害児"
-            v-model="syogaiji"
-            @change="ckbChanged"
-            disabled
+        </v-row>
+        <v-row no-gutters class="kihon-jyukyusyakubun-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length5 d-flex flex-row"
+            flat
+            tile
           >
-          </v-checkbox>
-        </v-card>
-      </v-row>
-      <v-row v-if="syogaiji" no-gutters class="kihon-sikyuketteisya-row">
-        <v-card
-          elevation="0"
-          class="kihon-title-length5 d-flex flex-row"
-          flat
-          tile
-        >
-          支給決定者
-        </v-card>
-        <p class="ml-2 mb-0">{{ sikyuketteisyano + ' ' + sikyuketteisya }}</p>
-      </v-row>
+            受給者区分
+          </v-card>
+          <v-card
+            elevation="0"
+            class="kihon-jyukyusyakubun-selection d-flex flex-row"
+            style="background-color: rgba(255, 255, 255, 0)"
+          >
+            <v-checkbox
+              class="item-button"
+              label="障害児"
+              v-model="syogaiji"
+              @change="ckbChanged"
+              disabled
+            >
+            </v-checkbox>
+          </v-card>
+        </v-row>
+        <v-row v-if="syogaiji" no-gutters class="kihon-sikyuketteisya-row">
+          <v-card
+            elevation="0"
+            class="kihon-title-length5 d-flex flex-row"
+            flat
+            tile
+          >
+            支給決定者
+          </v-card>
+          <p class="ml-2 mb-0">{{ sikyuketteisyano + ' ' + sikyuketteisya }}</p>
+        </v-row>
+      </div>
     </v-container>
   </div>
 </template>

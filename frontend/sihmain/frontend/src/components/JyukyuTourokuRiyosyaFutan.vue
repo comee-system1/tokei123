@@ -168,7 +168,7 @@
           </v-radio-group>
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-TajigyosyoRiyoService-row">
+      <!-- <v-row no-gutters class="riyosyafutan-TajigyosyoRiyoService-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length6 d-flex flex-row"
@@ -227,7 +227,7 @@
             ></wj-flex-grid-column>
           </wj-flex-grid>
         </v-card>
-      </v-row>
+      </v-row> -->
       <v-row no-gutters class="riyosyafutan-sykksn-row">
         <v-card
           elevation="0"

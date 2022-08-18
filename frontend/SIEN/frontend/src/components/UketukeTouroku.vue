@@ -1,6 +1,6 @@
 <template>
   <div id="uketukeTouroku">
-    <v-container no-gutters fluid class="container pa-0 ml-1">
+    <v-container no-gutters fluid class="container pa-0">
       <v-row no-gutters>
         <v-col class="centerArea">
           <v-container no-gutters fluid class="container pa-0 mt-1">

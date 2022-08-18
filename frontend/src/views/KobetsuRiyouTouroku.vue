@@ -9,23 +9,25 @@
     ></header-services>
     <v-container fluid class="container">
       <v-row no-gutters>
-        <v-col
-          :class="{
-            leftArea: leftAreaFlag == true,
-            leftAreaNoWidth: leftAreaFlag == false,
-          }"
-        >
+        <v-col class="leftArea">
           <user-list-print
             ref="user_list_print"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
-            @child-left="setLeftAreaFlag"
+            @childLeftArea="changeLeftArea"
           >
           </user-list-print>
         </v-col>
-        <v-col class="marginDefault ml-5">
+        <v-col
+          :class="{
+            rightArea: marginDefault == true,
+            'ml-1': mltype == true,
+            moveLeft: moveLeft == true,
+            moveRight: moveRight == true,
+          }"
+        >
           <v-row class="mt-0" no-gutters>
-            <v-col cols="5">
+            <v-col>
               <v-card class="d-flex flex-row" flat tile>
                 <v-card class="pr-2 text-center" elevation="0" :min-width="80">
                   <label class="greyLabel">利用者名</label>
@@ -45,7 +47,7 @@
                 </v-card>
               </v-card>
             </v-col>
-            <v-col cols="2">
+            <v-col class="text-end">
               生活支援変動情報:
               <v-btn x-small>
                 <v-icon x-small class="white mr-3 rounded-circle">
@@ -56,7 +58,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="mt-1">
-            <v-col cols="3">
+            <v-col md="4">
               <v-card elevation="0">
                 <div class="clearfix">
                   <a class="addButton" @click="openDialog_Term('nyutaiin_add')"
@@ -73,7 +75,7 @@
                 </div>
               </v-card>
             </v-col>
-            <v-col cols="4">
+            <v-col md="6" class="ml-auto">
               <v-card elevation="0">
                 <v-row no-gutters>
                   <v-col class="blue--text text-end"> 青文字 </v-col>
@@ -164,10 +166,12 @@ export default {
       viewdata: [],
       // hendoRow: 0, // 変動情報の行数
       num: 0,
+      marginDefault: true,
+      moveRight: false,
+      moveLeft: false,
       mltype: true,
       headerWidth: { 2: 40, 3: 90, 4: 34 },
       headerheight: 180,
-      leftAreaFlag: true,
       riid: '', // 利用者内部ID
     };
   },
@@ -198,6 +202,24 @@ export default {
       }
     },
 
+    /*******************************
+     * ユーザー一覧コンポーネントの開閉ボタンを押下
+     */
+    changeLeftArea() {
+      if (this.moveLeft == true) {
+        this.moveRight = true;
+        this.moveLeft = false;
+        this.headerWidth = { 2: 40, 3: 90, 4: 34 };
+      } else {
+        this.moveLeft = true;
+        this.moveRight = false;
+        this.headerWidth = { 2: 140, 3: 190, 4: 64 };
+      }
+
+      if (this.riid) {
+        this.createHeader(this.mainGrid);
+      }
+    },
     onInitialized(flexGrid) {
       this.mainGrid = flexGrid;
       this.methodCellFormatSetting(flexGrid);
@@ -210,13 +232,6 @@ export default {
       if (flexGrid.rows.length > 0) {
         flexGrid.rows[1].height = 30;
         flexGrid.rows[2].height = 30;
-      }
-    },
-    setLeftAreaFlag(delflag) {
-      if (delflag === true) {
-        this.leftAreaFlag = false;
-      } else {
-        this.leftAreaFlag = true;
       }
     },
     /**************
@@ -823,6 +838,29 @@ div#kobeturiyou {
   font-family: 'メイリオ';
   min-width: none;
 
+  .moveLeft {
+    animation: slideLeftArea $seconds forwards;
+  }
+  .moveRight {
+    animation: slideRightArea $seconds forwards;
+  }
+  @keyframes slideLeftArea {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-260px);
+    }
+  }
+  @keyframes slideRightArea {
+    from {
+      transform: translateX(-260px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
   .wj-cell {
     padding: 0 !important;
     &.wj-frozen-row {
@@ -858,22 +896,9 @@ div#kobeturiyou {
     overflow-y: auto;
   }
   .leftArea {
-    position: fixed;
-    z-index: 10;
-
-    left: 0;
-    height: 100%;
+    min-width: 275px;
+    max-width: 275px;
     width: 275px;
-    background-color: $white;
-  }
-  .leftAreaNoWidth {
-    position: fixed;
-    z-index: 10;
-
-    left: 0;
-    height: 100%;
-    width: 0px;
-    background-color: $white;
   }
   .rightArea {
     min-width: 1020px;

@@ -23,8 +23,8 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      genmenTaisyosyFlag:false,
-      syogaiShienFlag: false,
+      genmenTaisyosyFlag:this.$parent.displaySetting[1].genmenTaisyosyaFlag,
+      syogaiShienFlag: this.$parent.displaySetting[1].syogaiShienFlag,
       mainFlexGrid:[],
     };
   },
@@ -169,15 +169,15 @@ export default {
           if ((r == 1) && (c == 25)) {
             s.borderRadius = '0 4px 0 0';
           }
-          if(_self.genmenTaisyosyFlag) {
-            // 就労継続支援A型事業者負担減免措置実施のセルを（0, 7, 0, 16）表示時のデザイン
+          if(_self.genmenTaisyosyFlag || _self.syogaiShienFlag) {
+            // 就労継続支援A型...免措置実施または障害支援区分セル表示時のデザイン
             for (let i = 20; i < 28; i++) {
               if ((r == 0) && (c == i)) {
                 // 不要なセルを非表示
                 cell.style.display = 'none';
               }
             }
-            if ((r == 1) && (c == 25)) {
+            if ((r == 0) && (c == 17)) {
               s.borderRadius = '0 4px 0 0';
             }
             for (let i = 20; i < 28; i++) {
@@ -188,7 +188,7 @@ export default {
                 s.top = '18px';
               }
             }
-          } else{
+          } else {
             for (let i = 7; i < 28; i++) {
               if ((r == 0) && (c == i)) {
                 // 不要なセルを非表示（就労継続支援A型事業者負担減免措置実施が非表示時）

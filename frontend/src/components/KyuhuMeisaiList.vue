@@ -113,7 +113,7 @@ export default {
     setEmptyMeisaiListData() {
       let meisaiListData = [];
       // let emptyRoopLength = 0;
-      // if (this.$parent.displayFlagSetting[0].meisaiListLargeFlag) {
+      // if (this.$parent.displaySetting[1].meisaiListLargeFlag) {
       //   // 明細欄の表示項目増加Flagがtrueの場合
       //   emptyRoopLength = 24;
       // } else {

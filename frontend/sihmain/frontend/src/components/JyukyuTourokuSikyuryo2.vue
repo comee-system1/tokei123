@@ -14,7 +14,7 @@
           >
         </v-card>
       </v-row>
-      <div style="overflow-y: scroll; height: 200px" @scroll="onScroll()">
+      <div style="overflow-y: scroll; height: 205px" @scroll="onScroll()">
         <v-card
           elevation="0"
           style="background-color: rgba(255, 255, 255, 0)"

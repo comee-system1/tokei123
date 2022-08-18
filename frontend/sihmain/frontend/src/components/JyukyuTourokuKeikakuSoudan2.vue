@@ -1,5 +1,5 @@
 <template>
-  <div id="JyukyuTourokuKeikakuSoudan2">
+  <div id="JyukyuTourokuKeikakuSoudan2" style="width: 550px">
     <v-container fluid class="keikakuSoudan-container">
       <v-row no-gutters class="keikakuSoudan-header-row">
         <v-card
@@ -14,7 +14,7 @@
           >
         </v-card>
       </v-row>
-      <div style="overflow-y: scroll; height: 290px" @scroll="onScroll()">
+      <div style="overflow-y: scroll; height: 270px" @scroll="onScroll()">
         <v-row no-gutters class="keikakuSoudan-sienjigyosyo-row">
           <v-card
             elevation="0"

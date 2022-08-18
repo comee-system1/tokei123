@@ -14,30 +14,32 @@
           >
         </v-card>
       </v-row>
-      <v-row no-gutters class="syogaikubun-sienkubun-row">
-        <v-card
-          elevation="0"
-          class="syogaikubun-title-length6 d-flex flex-row"
-          flat
-          tile
-        >
-          障害支援区分
-        </v-card>
-        <p class="required">*</p>
-        <p class="ml-2 mb-0">{{ syogaiKubunDisp }}</p>
-      </v-row>
-      <v-row no-gutters class="syogaikubun-yukokikan-row">
-        <v-card
-          elevation="0"
-          class="syogaikubun-title-length4 d-flex flex-row"
-          flat
-          tile
-        >
-          有効期間
-        </v-card>
-        <p class="required">*</p>
-        <p class="ml-2 mb-0">{{ syugaikubunymdDisp }}</p>
-      </v-row>
+      <div style="height: 200px">
+        <v-row no-gutters class="syogaikubun-sienkubun-row">
+          <v-card
+            elevation="0"
+            class="syogaikubun-title-length6 d-flex flex-row"
+            flat
+            tile
+          >
+            障害支援区分
+          </v-card>
+          <p class="required">*</p>
+          <p class="ml-2 mb-0">{{ syogaiKubunDisp }}</p>
+        </v-row>
+        <v-row no-gutters class="syogaikubun-yukokikan-row">
+          <v-card
+            elevation="0"
+            class="syogaikubun-title-length4 d-flex flex-row"
+            flat
+            tile
+          >
+            有効期間
+          </v-card>
+          <p class="required">*</p>
+          <p class="ml-2 mb-0">{{ syugaikubunymdDisp }}</p>
+        </v-row>
+      </div>
     </v-container>
   </div>
 </template>

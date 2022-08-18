@@ -4,7 +4,7 @@ const config = require('./ApiRun');
 
 export async function Riyousya(symd, eymd) {
   // 接続確認用URL
-  var url = config.getDomain() + '/syogai/daityo/v1/riyosya/riyosya?getKbn=0&jkbn=0&sdnflg=0&symd=' + symd + '&eymd=' + eymd + '?entpriid=43';
+  var url = config.getDomain() + '/syogai/daityo/v1/riyosya/riyosya?getKbn=0&jkbn=0&dnflg=0&symd=' + symd + '&eymd=' + eymd + '&entpriid=43';
   var uniqid = 1;
   config.setURL(url);
   config.setUniqID(uniqid);

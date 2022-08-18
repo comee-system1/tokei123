@@ -1,5 +1,5 @@
 <template>
-  <div id="JyukyuTourokuRiyosyaFutan2">
+  <div id="JyukyuTourokuRiyosyaFutan2" style="width: 530px">
     <v-container fluid class="riyosyafutan-container">
       <v-row no-gutters class="riyosyafutan-header-row">
         <v-card
@@ -14,138 +14,139 @@
           >
         </v-card>
       </v-row>
-      <v-row no-gutters class="riyosyafutan-tekiyokikan-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length4 d-flex flex-row"
-          flat
-          tile
-        >
-          適用期間
-        </v-card>
-        <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-tekiyokikan-picker d-flex flex-row"
-        >
-          <datepicker
-            :language="ja"
-            class="input_picker"
-            :format="DatePickerFormat"
-            :value="tesymd"
-            v-model="tesymd"
-            placeholder="開始日を選択"
-          ></datepicker>
-          &nbsp;～&nbsp;
-          <datepicker
-            :language="ja"
-            class="input_picker"
-            :format="DatePickerFormat"
-            :value="teeymd"
-            v-model="teeymd"
-            placeholder="終了日を選択"
-          ></datepicker>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="riyosyafutan-futanjougengetugaku-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length6 d-flex flex-row"
-          flat
-          tile
-        >
-          負担上限月額
-        </v-card>
-        <p class="required">*</p>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-futanjougengetugaku-input d-flex flex-row"
-        >
-          <wj-combo-box
-            class="riyosyafutan-futanjougengetugaku-input2"
-            :textChanged="onTextChanged"
-            v-model="fjyogen"
-            :text="fjyogen"
-          ></wj-combo-box>
-          <label style="padding-top: 4px; padding-left: 4px">円</label>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="riyosyafutan-jgenkbn-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length6 d-flex flex-row"
-          flat
-          tile
-        >
-          上限管理対象
-        </v-card>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-jgenkbn-selection d-flex flex-row"
-          flat
-          tile
-        >
-          <v-radio-group
-            row
-            v-model="jgenkbn"
-            class="riyosyafutan-jgenkbn-group"
+      <div style="height: 265px">
+        <v-row no-gutters class="riyosyafutan-tekiyokikan-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length4 d-flex flex-row"
+            flat
+            tile
           >
-            <v-radio label="非該当" :key="1" :value="1"></v-radio>
-            <v-radio label="該当" :key="2" :value="2"></v-radio>
-          </v-radio-group>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="riyosyafutan-jgenknrikbn-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length4 d-flex flex-row"
-          style="padding-top: 5px"
-          flat
-          tile
-        >
-          上限管理<br />事業所
-        </v-card>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-jgenknrikbn-selection d-flex flex-row"
-          flat
-          tile
-        >
-          <v-radio-group
-            row
-            v-model="jgenknrikbn"
-            class="riyosyafutan-jgenknrikbn-group"
+            適用期間
+          </v-card>
+          <p class="required">*</p>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-tekiyokikan-picker d-flex flex-row"
           >
-            <v-card elevation="0" flat tile>
-              <v-card elevation="0" class="d-flex flex-row" flat tile>
-                <v-radio label="自施設事業所" :key="0" :value="0"></v-radio>
-                <v-radio label="他施設事業所" :key="1" :value="1"></v-radio>
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="tesymd"
+              v-model="tesymd"
+              placeholder="開始日を選択"
+            ></datepicker>
+            &nbsp;～&nbsp;
+            <datepicker
+              :language="ja"
+              class="input_picker"
+              :format="DatePickerFormat"
+              :value="teeymd"
+              v-model="teeymd"
+              placeholder="終了日を選択"
+            ></datepicker>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="riyosyafutan-futanjougengetugaku-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length6 d-flex flex-row"
+            flat
+            tile
+          >
+            負担上限月額
+          </v-card>
+          <p class="required">*</p>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-futanjougengetugaku-input d-flex flex-row"
+          >
+            <wj-combo-box
+              class="riyosyafutan-futanjougengetugaku-input2"
+              :textChanged="onTextChanged"
+              v-model="fjyogen"
+              :text="fjyogen"
+            ></wj-combo-box>
+            <label style="padding-top: 4px; padding-left: 4px">円</label>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="riyosyafutan-jgenkbn-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length6 d-flex flex-row"
+            flat
+            tile
+          >
+            上限管理対象
+          </v-card>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-jgenkbn-selection d-flex flex-row"
+            flat
+            tile
+          >
+            <v-radio-group
+              row
+              v-model="jgenkbn"
+              class="riyosyafutan-jgenkbn-group"
+            >
+              <v-radio label="非該当" :key="1" :value="1"></v-radio>
+              <v-radio label="該当" :key="2" :value="2"></v-radio>
+            </v-radio-group>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="riyosyafutan-jgenknrikbn-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length4 d-flex flex-row"
+            style="padding-top: 5px"
+            flat
+            tile
+          >
+            上限管理<br />事業所
+          </v-card>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-jgenknrikbn-selection d-flex flex-row"
+            flat
+            tile
+          >
+            <v-radio-group
+              row
+              v-model="jgenknrikbn"
+              class="riyosyafutan-jgenknrikbn-group"
+            >
+              <v-card elevation="0" flat tile>
+                <v-card elevation="0" class="d-flex flex-row" flat tile>
+                  <v-radio label="自施設事業所" :key="0" :value="0"></v-radio>
+                  <v-radio label="他施設事業所" :key="1" :value="1"></v-radio>
+                </v-card>
+                <v-card
+                  elevation="0"
+                  style="padding-top: 6px; padding-left: 4px"
+                  class="d-flex flex-row"
+                  flat
+                  tile
+                >
+                  <wj-combo-box
+                    class="riyosyafutan-jgenknrikbn-input"
+                    :textChanged="onTextChanged"
+                    v-model="jgenname"
+                    :text="jgenname"
+                  ></wj-combo-box>
+                  <wj-combo-box
+                    class="riyosyafutan-jgenknrikbn-input2"
+                    :textChanged="onTextChanged"
+                    v-model="jgenryaku"
+                    :text="jgenryaku"
+                  ></wj-combo-box>
+                </v-card>
               </v-card>
-              <v-card
-                elevation="0"
-                style="padding-top: 6px; padding-left: 4px"
-                class="d-flex flex-row"
-                flat
-                tile
-              >
-                <wj-combo-box
-                  class="riyosyafutan-jgenknrikbn-input"
-                  :textChanged="onTextChanged"
-                  v-model="jgenname"
-                  :text="jgenname"
-                ></wj-combo-box>
-                <wj-combo-box
-                  class="riyosyafutan-jgenknrikbn-input2"
-                  :textChanged="onTextChanged"
-                  v-model="jgenryaku"
-                  :text="jgenryaku"
-                ></wj-combo-box>
-              </v-card>
-            </v-card>
-          </v-radio-group>
-        </v-card>
-      </v-row>
-      <!-- <v-row no-gutters class="riyosyafutan-TajigyosyoRiyoService-row">
+            </v-radio-group>
+          </v-card>
+        </v-row>
+        <!-- <v-row no-gutters class="riyosyafutan-TajigyosyoRiyoService-row">
         <v-card
           elevation="0"
           class="riyosyafutan-title-length6 d-flex flex-row"
@@ -205,75 +206,80 @@
           </wj-flex-grid>
         </v-card>
       </v-row> -->
-      <v-row no-gutters class="riyosyafutan-sykksn-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length6 d-flex flex-row"
-          flat
-          tile
-        >
-          食事提供体制
-        </v-card>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-sykksn-selection d-flex flex-row"
-          flat
-          tile
-        >
-          <v-radio-group row v-model="sykksn" class="riyosyafutan-sykksn-group">
-            <v-radio label="非該当" :key="1" :value="1"></v-radio>
-            <v-radio label="該当" :key="2" :value="2"></v-radio>
-          </v-radio-group>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="riyosyafutan-tkkfhi-row">
-        <v-card
-          elevation="0"
-          class="riyosyafutan-title-length5 d-flex flex-row"
-          style="padding-top: 5px"
-          flat
-          tile
-        >
-          特定<br />特別給付費
-        </v-card>
-        <v-card
-          elevation="0"
-          class="riyosyafutan-tkkfhi-selection d-flex flex-row"
-          flat
-          tile
-        >
-          <v-radio-group
-            row
-            v-model="tkkfhiKbn"
-            class="riyosyafutan-tkkfhi-group"
+        <v-row no-gutters class="riyosyafutan-sykksn-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length6 d-flex flex-row"
+            flat
+            tile
           >
-            <v-card elevation="0" flat tile>
-              <v-card elevation="0" class="d-flex flex-row" flat tile>
-                <v-radio label="非当該" :key="0" :value="0"></v-radio>
-                <v-radio label="施設入所支援" :key="1" :value="1"></v-radio>
-                <v-radio label="共同生活援助" :key="2" :value="2"></v-radio>
-              </v-card>
-              <v-card
-                elevation="0"
-                style="padding-top: 6px; padding-left: 4px"
-                class="d-flex flex-row"
-                flat
-                tile
-              >
-                <wj-combo-box
-                  class="riyosyafutan-tkkfhi-input"
-                  :textChanged="onTextChanged"
-                  v-model="tkkfhiValue"
-                  :text="tkkfhiValue"
-                ></wj-combo-box>
-                <label style="padding-top: 4px; padding-left: 4px"
-                  >円／日</label
+            食事提供体制
+          </v-card>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-sykksn-selection d-flex flex-row"
+            flat
+            tile
+          >
+            <v-radio-group
+              row
+              v-model="sykksn"
+              class="riyosyafutan-sykksn-group"
+            >
+              <v-radio label="非該当" :key="1" :value="1"></v-radio>
+              <v-radio label="該当" :key="2" :value="2"></v-radio>
+            </v-radio-group>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="riyosyafutan-tkkfhi-row">
+          <v-card
+            elevation="0"
+            class="riyosyafutan-title-length5 d-flex flex-row"
+            style="padding-top: 5px"
+            flat
+            tile
+          >
+            特定<br />特別給付費
+          </v-card>
+          <v-card
+            elevation="0"
+            class="riyosyafutan-tkkfhi-selection d-flex flex-row"
+            flat
+            tile
+          >
+            <v-radio-group
+              row
+              v-model="tkkfhiKbn"
+              class="riyosyafutan-tkkfhi-group"
+            >
+              <v-card elevation="0" flat tile>
+                <v-card elevation="0" class="d-flex flex-row" flat tile>
+                  <v-radio label="非当該" :key="0" :value="0"></v-radio>
+                  <v-radio label="施設入所支援" :key="1" :value="1"></v-radio>
+                  <v-radio label="共同生活援助" :key="2" :value="2"></v-radio>
+                </v-card>
+                <v-card
+                  elevation="0"
+                  style="padding-top: 6px; padding-left: 4px"
+                  class="d-flex flex-row"
+                  flat
+                  tile
                 >
+                  <wj-combo-box
+                    class="riyosyafutan-tkkfhi-input"
+                    :textChanged="onTextChanged"
+                    v-model="tkkfhiValue"
+                    :text="tkkfhiValue"
+                  ></wj-combo-box>
+                  <label style="padding-top: 4px; padding-left: 4px"
+                    >円／日</label
+                  >
+                </v-card>
               </v-card>
-            </v-card>
-          </v-radio-group>
-        </v-card>
-      </v-row>
+            </v-radio-group>
+          </v-card>
+        </v-row>
+      </div>
     </v-container>
   </div>
 </template>

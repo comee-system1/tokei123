@@ -238,6 +238,7 @@
         <UketukeTouroku
           :dispTab="'Kihonsoudan'"
           :selectViewData="viewObj"
+          class="ml-1"
         ></UketukeTouroku>
       </v-card>
     </v-dialog>
@@ -488,6 +489,7 @@ export default {
           this.setDispdata(tmpitem);
         }
       });
+
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
@@ -509,12 +511,16 @@ export default {
         headerlist = this.uketukeKasanHeaderList;
       }
       flexGrid.columns.clear();
+      let filtercols = [];
       for (let colIndex = 0; colIndex < headerlist.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         col.binding = headerlist[colIndex].dataname;
         col.header = headerlist[colIndex].title;
+        if (colIndex > 1) {
+          filtercols.push(col.binding);
+        }
         col.width = headerlist[colIndex].width;
         col.align = headerlist[colIndex].align;
         col.allowMerging = true;
@@ -534,6 +540,7 @@ export default {
         );
         flexGrid.columnHeaders.setCellData(1, colIndex, ' ');
       }
+      this.filter.filterColumns = filtercols;
       flexGrid.endUpdate();
     },
     onItemsSourceChanged(flexGrid) {

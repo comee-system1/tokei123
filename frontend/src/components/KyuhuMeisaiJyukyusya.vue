@@ -52,7 +52,7 @@ export default {
       flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
       // 障害児FragがFALSEの場合、障害児氏名項目を非表示
-      if (this.$parent.displayFlagSetting[0].syougaijiFlag === false) {
+      if (this.$parent.displaySetting[1].syougaijiFlag === false) {
         flexGrid.rows[2].visible = false;
       } 
     },
@@ -96,10 +96,10 @@ export default {
             s.borderRadius = '4px 0 0 0';
           }
           if ((r == 1) && (c == 0)) {
-            cell.innerHTML = '支給決定障害者等氏名';
+            cell.innerHTML = _self.$parent.displaySetting[1].ketteiName;
           }
           if ((r == 2) && (c == 0)) {
-            cell.innerHTML = '支給決定に係る障害児氏名';
+            cell.innerHTML = _self.$parent.displaySetting[1].shogaijiName;
           }
         }
         // セルデザイン修正
@@ -113,7 +113,7 @@ export default {
             s.borderRadius = '0 4px 0 0';
           }
           // borderRadius修正
-          if (_self.$parent.displayFlagSetting[0].syougaijiFlag === false) {
+          if (_self.$parent.displaySetting[1].syougaijiFlag === false) {
             // 2行表示の場合
             if ((r == 1) && (c == 0)) {
               s.borderRadius = '0 0 4px 0';
