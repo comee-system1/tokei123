@@ -1,6 +1,6 @@
 <template>
   <div id="keikakuLists">
-    <v-container class="mt-1 ml-1 pa-0" fluid style="styles">
+    <v-container class="mt-1 ml-1 pa-0" :style="styles">
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card
@@ -108,6 +108,16 @@
         <v-col cols="3" style="text-align: right">
           <v-btn x-small @click="onClickJyukyusya">受給者証登録へ</v-btn>
         </v-col>
+        <v-col cols="3" style="text-align: right">
+          <v-btn-toggle v-model="fontsizeModel">
+            <v-btn
+              v-for="val in fontArray"
+              :key="val.key"
+              @change="onFontsize(val.key)"
+              >{{ val.val }}</v-btn
+            >
+          </v-btn-toggle>
+        </v-col>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -124,6 +134,7 @@
           :isReadOnly="true"
           :initialized="onInitialize"
           :itemsSource="viewdata"
+          :style="{ 'font-size': gridFontSize }"
         >
           <wj-flex-grid-filter></wj-flex-grid-filter>
           <wj-flex-grid-column
@@ -538,7 +549,13 @@ export default {
       datepicker_teisyutu_dialog: false,
       teisyutu_picker: '',
       select_teisyutu_key: 0,
-
+      fontsizeModel: 2,
+      fontArray: [
+        { key: 1, val: '大' },
+        { key: 2, val: '中' },
+        { key: 3, val: '小' },
+      ],
+      gridFontSize: '12px',
       viewdataAll: [],
       viewdata: [],
       footerdata: [],
@@ -611,7 +628,6 @@ export default {
   computed: {
     // バインドするスタイルを生成
     styles() {
-      alert('aaa');
       // ブラウザの高さ
       return {
         '--height': window.innerHeight - this.headerheight + 'px',
@@ -641,7 +657,6 @@ export default {
     filterInitializedkeikakuIcrn: function (filter) {
       this.filterkeikakuIcrn = filter;
     },
-
     onInitialize(flexGrid) {
       let array = [];
       for (let i = 0; i <= 100; i++) {
@@ -1049,26 +1064,24 @@ export default {
       this.teisyutu_dialog_input.riyosya = '100011 東経 わかめ';
       this.teisyutu_dialog_input.teisyutubi = moment().format('YYYY年MM月DD日');
     },
+
+    onFontsize(fontkey) {
+      alert(fontkey);
+      this.gridFontSize = '18px';
+    },
   },
 };
 </script>
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#keikakuListGrid {
-  width: 1280px;
-  height: var(--height);
-}
+
 div#keikakuListGrid,
 div#keikakuLists {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
-  // overflow-x: scroll;
-  // width: 1366px !important;
   min-width: 1266px !important;
-  max-width: 1920px;
-  width: auto;
   .rowStyle {
     height: 25px;
   }
@@ -1193,6 +1206,13 @@ div#keikakuLists {
     font-size: 14px;
   }
 }
+
+div#keikakuListGrid {
+  width: 100%;
+  height: var(--height);
+  background-color: #ccc;
+}
+
 .v-picker {
   z-index: 10;
 }
