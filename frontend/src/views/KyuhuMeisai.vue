@@ -92,6 +92,12 @@
               ref="seikyugakuData"
               >
               </kyuhu-meisai-seikyugaku>
+              <kyuhu-meisai-tokuteiSyogai
+              class="mt-1"
+              ref="tokuteiSyogaiData"
+              v-if="displaySetting[0].tokuteiSyogaiGridFlag"
+              >
+              </kyuhu-meisai-tokuteiSyogai>
             </v-col>
           </v-row>
         </v-col>
@@ -114,8 +120,9 @@ import KyuhuMeisaiService from '../components/KyuhuMeisaiService.vue';
 import KyuhuMeisaiList from '../components/KyuhuMeisaiList.vue';
 // import KyuhuSeikyugaku from '../components/KyuhuSeikyugaku.vue';
 import KyuhuMeisaiSeikyugaku from '../components/KyuhuMeisaiSeikyugaku.vue';
+import KyuhuMeisaiTokuteiSyogai from '../components/KyuhuMeisaiTokuteiSyogai.vue';
 // import sysConst from '@/utiles/const';
-import DispPtn from '../data/kyuhuMeisaiDisplayTerms.js';
+import DispPtn from '../data/kyuhuMeisaiDisplayPattern.js';
 
 export default {
   components: {
@@ -130,6 +137,7 @@ export default {
     KyuhuMeisaiService,
     KyuhuMeisaiList,
     KyuhuMeisaiSeikyugaku,
+    KyuhuMeisaiTokuteiSyogai,
     // KyuhuSeikyugaku,
   },
   data() {
@@ -185,6 +193,8 @@ export default {
           syogaiShienFlag:     false,       // 障害支援区分Flag
           // 給付費明細請求額Grid
           seikyugakuType:0,                // 請求額Gridの表示タイプ
+          // 特定障害Grid
+          tokuteiNissuFlag:    false,      // 算定日数、日数の表示Flag
         }
       ],
     };
@@ -278,7 +288,7 @@ export default {
         // 明細リストGrid
         this.$refs.meisaiListData.getMeisaiListData();
       }
-      if (this.seikyugakuSyukeiFlag == true) {
+      if (this.seikyugakuSyukeiFlag === true) {
         let seikyugakuApiData = [
           {
             teikyoService:  '施設入所支援',
@@ -416,6 +426,17 @@ export default {
         ];
         // 請求額集計欄リストGrid
         this.$refs.seikyugakuData.getSeikyugakuData(seikyugakuApiData);
+        // 特定障害Grid
+        if (this.displaySetting[0].tokuteiSyogaiGridFlag) {
+          let riyousyaHutan =
+          {
+            santeiNichigaku: '1234',           // 算定日額
+            nissu:           '12',          // 日数
+            kyuhuhiseikyu:   '12345',          // 給付費請求額
+            jippisanteigaku: '12345',     // 実費算定額
+          };
+          this.$refs.tokuteiSyogaiData.setTokuteiSyogaiData(riyousyaHutan);
+        }
       }
     },
     /***************
@@ -462,37 +483,38 @@ export default {
       let getCode = this.selectedJigyosyo['teikyoCode'];
       ///////  条件は仮  ///////
       if (getCode === 1) {
-        // パターンa
+        // A 介護給付費、訓練等給付費等明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][0]
       } else if (getCode === 2) {
-        // パターンa-2
+        
+        /// A-2 特例介護給付費、特例訓練等給付費等明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][1]
       }  else if (getCode === 3) {
-        // パターンb
+        // B 特例訓練等給付費等明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][2]
       }  else if (getCode === 4) {
-        // パターンc
+        // C 計画相談支援給付費明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][3]
       }  else if (getCode === 5) {
-        // パターンc-2
+        // C-2 特例計画相談支援給付費明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][4]
       }  else if (getCode === 6) {
-        // パターンd
+        // D 地域相談支援給付費明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][5]
       }  else if (getCode === 7) {
-        // パターンe
+        // E 障害児通所給付費・入所給付費等明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][6]
       }  else if (getCode === 8) {
-        // パターンe-2
+        // E-2 障害児通所給付費等明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][7]
       }  else if (getCode === 9) {
-        // パターンf
+        // F 障害児相談支援給付費明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][8]
       }  else if (getCode === 10) {
-        // パターンf-2
+        // F-2 特例障害児相談支援給付費明細書
         ptn = DispPtn.kyuhumeisaiPtn[0][9]
       }  else {
-        
+        // else 用Data
         ptn = DispPtn.kyuhumeisaiPtn[0][10]
       }
 

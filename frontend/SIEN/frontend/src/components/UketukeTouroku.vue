@@ -728,6 +728,7 @@
                   ref="user_list"
                   class="ml-1"
                   :dispAddDaicho="true"
+                  :dispHideBar="false"
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
                   style="height: 82vh"

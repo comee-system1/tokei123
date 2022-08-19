@@ -2,22 +2,32 @@
   <div id="monitoringHoukokusho">
     <v-container class="mt-1 ml-1 pa-0" fluid>
       <v-row no-gutters>
-        <v-col
-          :class="{
-            leftArea: leftAreaFlag == true,
-            leftAreaNoWidth: leftAreaFlag == false,
-          }"
-        >
+        <v-col class="leftArea">
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
+            :dispHideBar="true"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
-            @child-left="setLeftAreaFlag"
+            @childLeftArea="changeLeftArea"
           >
           </user-list>
         </v-col>
-        <v-col>
+        <v-col
+          :class="{
+            rightArea: marginDefault == true,
+            'ml-1': mltype == true,
+            moveLeft: moveLeft == true,
+            moveRight: moveRight == true,
+          }"
+          class="ml-1 pa-0"
+        >
+          <v-row no-gutters class="rowStyle mt-1">
+            <v-card class="koumokuTitle pa-1" outlined tile> 利用者名 </v-card>
+            <v-card class="koumokuData ml-1 pa-1" tile outlined>
+              {{ tantouData.code }} {{ tantouData.name }}
+            </v-card>
+          </v-row>
           <v-row no-gutters class="rowStyle mt-1">
             <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
             <v-card
@@ -368,7 +378,9 @@ export default {
         { val: 2, name: '障害児' },
       ],
       loading: false,
-      leftAreaFlag: true,
+      marginDefault: true,
+      moveRight: false,
+      moveLeft: false,
     };
   },
   mounted() {},
@@ -387,9 +399,9 @@ export default {
         this.headerWidth = { 2: 140, 3: 190, 4: 64 };
       }
 
-      if (this.riid) {
-        this.createHeader(this.mainGrid);
-      }
+      // if (this.riid) {
+      //   this.createHeader(this.mainGrid);
+      // }
     },
     searchClicked() {
       // 初期データ読込
@@ -587,13 +599,6 @@ export default {
     filterClrclick() {
       this.filteryoteisyaIcrn.clear();
     },
-    setLeftAreaFlag(delflag) {
-      if (delflag === true) {
-        this.leftAreaFlag = false;
-      } else {
-        this.leftAreaFlag = true;
-      }
-    },
   },
 };
 </script>
@@ -609,31 +614,18 @@ div#monitoringHoukokusho {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-  .rowStyle {
-    height: 25px;
-  }
 
   .leftArea {
-    position: fixed;
-    z-index: 10;
-
-    left: 0;
-    height: 100%;
-    width: 270px;
-    background-color: $white;
-  }
-  .leftAreaNoWidth {
-    position: fixed;
-    z-index: 10;
-
-    left: 0;
-    height: 100%;
-    width: 0px;
-    background-color: $white;
+    min-width: 285px;
+    max-width: 285px;
+    // height: 87vh;
   }
   .rightArea {
     min-width: 1020px;
     max-width: 1020px;
+    .rowStyle {
+      height: 20px;
+    }
   }
 
   #load_dialog {
@@ -671,6 +663,14 @@ div#monitoringHoukokusho {
     height: 100%;
     text-align: center;
     background: $view_Title_background;
+    border: none;
+  }
+  .koumokuData {
+    color: $font_color;
+    width: 350px;
+    height: 100%;
+    text-align: left;
+    background: $view_Data_Read_background;
     border: none;
   }
   .hosokuTitle {
@@ -761,12 +761,12 @@ div#monitoringHoukokusho {
   }
   .v-btn-toggle > .v-btn {
     // width: 150px;
-    height: 25px;
+    height: 20px;
   }
   div.customCombobox {
     position: relative;
     width: 125px !important;
-    height: 25px !important;
+    height: 20px !important;
     &.customCombobox {
       width: 160px !important;
       div {
@@ -799,11 +799,33 @@ div#monitoringHoukokusho {
       }
     }
     input {
-      height: 25px !important;
+      height: 20px !important;
     }
   }
   .v-input--selection-controls .v-input__slot > .v-label {
     font-size: 14px;
+  }
+  .moveLeft {
+    animation: slideLeftArea $seconds forwards;
+  }
+  .moveRight {
+    animation: slideRightArea $seconds forwards;
+  }
+  @keyframes slideLeftArea {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(-275px);
+    }
+  }
+  @keyframes slideRightArea {
+    from {
+      transform: translateX(-275px);
+    }
+    to {
+      transform: translateX(0);
+    }
   }
 }
 

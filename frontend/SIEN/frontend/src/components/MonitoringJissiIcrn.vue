@@ -453,11 +453,12 @@ export default {
         col.align = this.yoteisyaIcrnHeaderList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 2) {
-          col.allowResizing = true;
-        } else {
-          col.allowResizing = false;
-        }
+        col.allowResizing = true;
+        // if (colIndex == 2) {
+        //   col.allowResizing = true;
+        // } else {
+        //   col.allowResizing = false;
+        // }
         if (colIndex == 3 || colIndex == 11 || colIndex == 19) {
           col.format = sysConst.FORMAT.Ymd;
         } else if (colIndex == 17) {
@@ -720,7 +721,7 @@ export default {
           jissiYmd: ymd,
           jissi: '●',
           syukankeikaku: '●',
-          doui: '●',
+          doui: '☑',
           henkou: '●',
           kousin: '●',
           nextMonth: ymd,
@@ -902,7 +903,7 @@ div#monitoringJissiIcrn {
   max-width: 1920px;
   width: auto;
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
 
   #load_dialog {
@@ -968,6 +969,9 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: auto;
+    height: 75vh;
+    min-height: 450px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1022,20 +1026,20 @@ div#monitoringJissiIcrn {
     }
   }
 
-  #yoteisyaIcrnGrid {
-    width: auto;
-    // min-width: 1250px;
-    height: 70vh;
-    min-height: 500px;
-  }
+  // #yoteisyaIcrnGrid {
+  //   width: auto;
+  //   // min-width: 1250px;
+  //   height: 70vh;
+  //   min-height: 500px;
+  // }
   .v-btn-toggle > .v-btn {
     // width: 150px;
-    height: 25px;
+    height: 20px;
   }
   div.customCombobox {
     position: relative;
     width: 125px !important;
-    height: 25px !important;
+    height: 20px !important;
     &.customCombobox {
       width: 160px !important;
       div {
@@ -1055,7 +1059,7 @@ div#monitoringJissiIcrn {
       background-color: #fff;
     }
     div * {
-      height: 21px !important;
+      height: 17px !important;
       // padding: 0;
       span {
         // height: 21px !important;
@@ -1063,12 +1067,12 @@ div#monitoringJissiIcrn {
       }
       &.wj-form-control {
         position: absolute;
-        top: -3px;
+        top: -5px;
         width: 100%;
       }
     }
     input {
-      height: 25px !important;
+      height: 20px !important;
     }
   }
   .v-input--selection-controls .v-input__slot > .v-label {
@@ -1078,7 +1082,6 @@ div#monitoringJissiIcrn {
     padding: 0;
     position: relative;
     width: auto;
-    height: 20px;
     background: $grid_background;
   }
   .miman::after {

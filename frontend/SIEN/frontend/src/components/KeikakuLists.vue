@@ -1,6 +1,6 @@
 <template>
   <div id="keikakuLists">
-    <v-container class="mt-1 ml-1 pa-0" :style="styles">
+    <v-container class="mt-1 ml-1 pa-0" :style="styles" style="max-width: 100%">
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card
@@ -109,13 +109,8 @@
           <v-btn x-small @click="onClickJyukyusya">受給者証登録へ</v-btn>
         </v-col>
         <v-col cols="3" style="text-align: right">
-          <v-btn-toggle v-model="fontsizeModel">
-            <v-btn
-              v-for="val in fontArray"
-              :key="val.key"
-              @change="onFontsize(val.key)"
-              >{{ val.val }}</v-btn
-            >
+          <v-btn-toggle v-model="fontsizeModel" @change="onFontsize()">
+            <v-btn v-for="val in fontArray" :key="val.key">{{ val.val }}</v-btn>
           </v-btn-toggle>
         </v-col>
       </v-row>
@@ -133,6 +128,7 @@
           :selectionMode="'None'"
           :isReadOnly="true"
           :initialized="onInitialize"
+          :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="viewdata"
           :style="{ 'font-size': gridFontSize }"
         >
@@ -141,16 +137,15 @@
             :binding="'riyocode'"
             align="center"
             valign="middle"
-            :width="75"
             format="g"
-            :allowResizing="false"
+            width="3*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'name'"
             align="center"
             valign="middle"
-            :width="180"
+            width="4*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -158,7 +153,7 @@
             :binding="'age'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -166,7 +161,7 @@
             :binding="'birth'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -174,7 +169,7 @@
             :binding="'sityo'"
             align="center"
             valign="middle"
-            :width="100"
+            width="3*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -182,7 +177,7 @@
             :binding="'sakuseikubun'"
             align="center"
             valign="middle"
-            :width="40"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -190,7 +185,7 @@
             :binding="'yotei'"
             align="center"
             valign="middle"
-            :width="80"
+            width="2*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -198,7 +193,7 @@
             :binding="'sakuseibi_an'"
             align="center"
             valign="middle"
-            :width="120"
+            width="3*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -206,7 +201,7 @@
             :binding="'yousiki'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -214,7 +209,7 @@
             :binding="'keikakuan'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -222,7 +217,7 @@
             :binding="'keikakusyuan'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -230,7 +225,7 @@
             :binding="'kihonjyoho'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -238,7 +233,7 @@
             :binding="'doui_an'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -246,7 +241,7 @@
             :binding="'teisyutu'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -254,7 +249,7 @@
             :binding="'sikyukettei'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -262,7 +257,7 @@
             :binding="'kaisaibi'"
             align="center"
             valign="middle"
-            :width="100"
+            width="3*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -270,7 +265,7 @@
             :binding="'kanryo'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -278,7 +273,7 @@
             :binding="'sakuseibi'"
             align="center"
             valign="middle"
-            :width="120"
+            width="3*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -286,7 +281,7 @@
             :binding="'keikaku'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -294,7 +289,7 @@
             :binding="'keikakusyukan'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -302,7 +297,7 @@
             :binding="'doui'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -310,7 +305,7 @@
             :binding="'monikeizoku'"
             align="center"
             valign="middle"
-            :width="30"
+            width="1*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -318,7 +313,7 @@
             :binding="'tanto'"
             align="center"
             valign="middle"
-            :width="100"
+            width="3*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -535,6 +530,7 @@ export default {
   components: { AlphabetButton },
   data() {
     return {
+      mainGrid: [],
       // 計画案 利用者同意・署名ダイアログ用
       doui_dialog: false,
       datepicker_doui_dialog: false,
@@ -555,7 +551,13 @@ export default {
         { key: 2, val: '中' },
         { key: 3, val: '小' },
       ],
-      gridFontSize: '12px',
+      fontPixel: [
+        { key: 1, val: '17px' },
+        { key: 2, val: '15px' },
+        { key: 3, val: '13px' },
+      ],
+      gridFontSize: '13px',
+      headerRowHeight: 130,
       viewdataAll: [],
       viewdata: [],
       footerdata: [],
@@ -662,11 +664,11 @@ export default {
       for (let i = 0; i <= 100; i++) {
         array.push({
           riyocode: '1000001' + i,
-          name: '東経ジロウ',
+          name: '東経ジロウ１２３４',
           kana: 'ジロウトウケイ',
           age: 18,
           birth: 5,
-          sityo: '東経市',
+          sityo: '秋田県北秋田郡上小阿仁村大字沖田面字小蒲野下タ川原',
           sakuseikubun: '終更',
           yotei: '2022/04',
           sakuseibi_an: '',
@@ -721,6 +723,7 @@ export default {
       foot = [10, 10, '', 6, 6, 5, 4, 4, 4, 4, 2, 2, 1, 1, 1, 1];
       this.footerdata = foot;
       let _self = this;
+      this.mainGrid = flexGrid;
       this.createHeader(flexGrid);
       this.createFooter(flexGrid);
 
@@ -796,6 +799,9 @@ export default {
         }
       };
     },
+    onItemsSourceChanged(flexGrid) {
+      flexGrid.autoSizeRows(0, this.viewdata.length, false);
+    },
     createFooter(flexGrid) {
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       var panel = flexGrid.columnFooters;
@@ -811,8 +817,7 @@ export default {
       var panel = flexGrid.columnHeaders;
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows[1].height = 100;
-
+      flexGrid.columnHeaders.rows[1].height = 120;
       for (let i = 0; i < this.headerColumn1.length; i++) {
         let name = this.headerColumn1[i];
         panel.setCellData(0, i, name);
@@ -1065,9 +1070,16 @@ export default {
       this.teisyutu_dialog_input.teisyutubi = moment().format('YYYY年MM月DD日');
     },
 
-    onFontsize(fontkey) {
-      alert(fontkey);
-      this.gridFontSize = '18px';
+    onFontsize() {
+      this.mainGrid.beginUpdate();
+      if (this.fontsizeModel != undefined) {
+        this.gridFontSize = this.fontPixel[this.fontsizeModel].val;
+      }
+      this.mainGrid.autoSizeRows(0, this.viewdata.length, false);
+      this.mainGrid.autoRowHeights = true;
+      this.mainGrid.itemsSource = [];
+      this.mainGrid.itemsSource = this.viewdata;
+      this.mainGrid.endUpdate();
     },
   },
 };
@@ -1081,7 +1093,6 @@ div#keikakuLists {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
-  min-width: 1266px !important;
   .rowStyle {
     height: 25px;
   }
@@ -1210,7 +1221,6 @@ div#keikakuLists {
 div#keikakuListGrid {
   width: 100%;
   height: var(--height);
-  background-color: #ccc;
 }
 
 .v-picker {

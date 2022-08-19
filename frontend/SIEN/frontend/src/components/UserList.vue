@@ -7,6 +7,7 @@
         switchAreaLeft: switchAreaLeftFlag == true,
       }"
       @click="switched"
+      v-show="dispHideBar"
     >
       <v-icon
         small
@@ -18,11 +19,7 @@
       no-gutters
       :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
     >
-      <v-col
-        :style="{
-          maxWidth: leftAreaWidth,
-        }"
-      >
+      <v-col style="max-width: 94%">
         <v-row no-gutters class="rowStyle mt-1 ml-1" v-if="dispAddDaicho">
           <v-col cols="*">
             <v-btn
@@ -57,7 +54,7 @@
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
-          <v-col cols="*">
+          <v-col cols="*" style="height: 100%">
             <div align="right">
               <label class="mr-1">サービス歴</label>
               <wj-menu
@@ -70,7 +67,7 @@
                 displayMemberPath="name"
                 v-model="selSvcRireki"
                 :itemClicked="onSvcRirekiClicked"
-                style="width: 200px"
+                style="width: 150px"
               >
               </wj-menu>
             </div>
@@ -91,7 +88,7 @@
                 displayMemberPath="name"
                 v-model="selTantou"
                 :itemClicked="onTantouClicked"
-                style="width: 200px"
+                style="width: 150px"
               >
               </wj-menu>
             </div>
@@ -101,7 +98,7 @@
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <wj-combo-box
             :textChanged="onTextChangedUser"
-            style="width: 100%; height: 25px"
+            style="width: 100%; height: 20px"
             placeholder="カナ検索"
           ></wj-combo-box>
         </v-row>
@@ -115,8 +112,8 @@
               color="secondary"
               dark
               outlined
-              :height="25"
-              style="width: 90px"
+              :height="20"
+              style="font-size: 12px"
               @click="sortUser(n.val)"
             >
               {{ n.name }}
@@ -212,6 +209,7 @@ let alphabet = [
 export default {
   props: {
     dispAddDaicho: Boolean,
+    dispHideBar: Boolean,
   },
   // components: { Riyousya },
   data() {
@@ -275,7 +273,7 @@ export default {
     styles() {
       // ブラウザの高さ
       return {
-        '--height': window.innerHeight - this.headerheight + 'px',
+        '--height': window.innerHeight - 150 + 'px',
       };
     },
   },
@@ -285,14 +283,12 @@ export default {
       if (this.switchAreaRightFlag == true) {
         this.switchAreaRightFlag = false;
         this.switchAreaLeftFlag = true;
-        this.leftAreaWidth = '100%';
       } else {
         this.switchAreaRightFlag = true;
         this.switchAreaLeftFlag = false;
-        this.leftAreaWidth = '0%';
       }
 
-      this.$emit('child-left', this.switchAreaRightFlag);
+      this.$emit('childLeftArea', this.message);
     },
     initComboFilters(combo) {
       if (combo.hostElement.id == 'comboFilters1') {
@@ -491,9 +487,9 @@ export default {
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
       if (!this.dispAddDaicho) {
-        document.getElementById(flexGrid.hostElement.id).style.height = '70vh';
+        document.getElementById(flexGrid.hostElement.id).style.height = '68vh';
       } else {
-        document.getElementById(flexGrid.hostElement.id).style.height = '55vh';
+        document.getElementById(flexGrid.hostElement.id).style.height = '60vh';
       }
       Riyousya('20000101', '20221231').then((result) => {
         _self.usersData = result;
@@ -525,12 +521,15 @@ div#user-list_scrollbar {
   font-size: 12px;
   font-family: 'メイリオ';
   padding: 0;
-  width: 275px;
+  width: 285px;
 
   .rowStyle {
-    height: 25px;
+    height: 20px !important;
   }
-
+  .v-btn {
+    // width: 150px;
+    height: 20px !important;
+  }
   .wj-cell {
     padding: 2px;
     padding-top: 1px;
@@ -593,8 +592,8 @@ div#user-list_scrollbar {
 
   div.customCombobox {
     position: relative;
-    width: 200px !important;
-    height: 25px !important;
+    width: 150px !important;
+    height: 20px !important;
     &.customCombobox {
       // width: 160px !important;
       div {
@@ -602,7 +601,7 @@ div#user-list_scrollbar {
       }
     }
     &#comboFiltersKasan {
-      width: 250px !important;
+      width: 150px !important;
     }
     .wj-btn.wj-btn-default {
       border-left: none !important;
@@ -614,7 +613,7 @@ div#user-list_scrollbar {
       background-color: #fff;
     }
     div * {
-      height: 21px !important;
+      height: 17px !important;
       // padding: 0;
       span {
         // height: 21px !important;
@@ -624,20 +623,22 @@ div#user-list_scrollbar {
         position: absolute;
         // top: -3px;
         width: 100%;
-        padding: 4px;
-        padding-top: 6px;
+        padding: 2px;
+        padding-top: 4px;
       }
     }
     input {
-      height: 25px !important;
+      height: 20px !important;
     }
   }
   .wj-control .wj-input-group .wj-form-control {
-    height: 25px;
+    height: 20px !important;
   }
-  #userGrid {
-    height: var(--height);
+  .wj-control .wj-template,
+  .wj-control .wj-input {
+    height: 20px !important;
   }
+
   .switchArea {
     width: 14px;
     height: 97%;

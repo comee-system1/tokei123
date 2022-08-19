@@ -1,7 +1,7 @@
 <template>
-  <div id="MonitoringParent">
+  <div id="monitoringParent">
     <v-container no-gutters fluid class="ml-1 mr-1 mt-1 pa-0">
-      <v-tabs height="20" hide-slider v-model="tab">
+      <v-tabs height="30" hide-slider v-model="tab">
         <v-tab
           v-for="item in menuItem"
           :key="item.val"
@@ -53,7 +53,11 @@ export default {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
       menuItem: [
-        { name: '計画一覧', href: '#KeikakuIcrn', hrefval: 'KeikakuIcrn' },
+        {
+          name: 'モニタリング予定一覧',
+          href: '#KeikakuIcrn',
+          hrefval: 'KeikakuIcrn',
+        },
         {
           name: 'モニタリング報告書',
           href: '#Houkokusyo',
@@ -63,11 +67,6 @@ export default {
           name: '週間計画書',
           href: '#SyukanKeikaku',
           hrefval: 'SyukanKeikaku',
-        },
-        {
-          name: '担当者会議',
-          href: '#TantousyaKaigi',
-          hrefval: 'TantousyaKaigi',
         },
         {
           name: 'モニタリング実施一覧',
@@ -92,7 +91,7 @@ export default {
 
 <style  lang="scss">
 @import '@/assets/scss/common.scss';
-div#MonitoringParent {
+div#monitoringParent {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
@@ -107,7 +106,7 @@ div#MonitoringParent {
     margin-right: 4px;
     margin-bottom: -2px;
     border-color: $light-gray;
-    height: 25px;
+    height: 30px;
   }
   .v-tab--active {
     color: $white;
@@ -119,9 +118,9 @@ div#MonitoringParent {
     border-top: 2px solid;
     border-color: #1976d2;
   }
-  .wj-cell {
-    padding: 2px;
-    padding-top: 1px;
-  }
+  // .wj-cell {
+  //   padding: 2px;
+  //   padding-top: 1px;
+  // }
 }
 </style>

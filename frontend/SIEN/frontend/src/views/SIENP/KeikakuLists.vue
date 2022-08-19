@@ -1,5 +1,5 @@
 <template>
-  <div id="MonitoringParent">
+  <div id="keikakulists">
     <v-container no-gutters fluid class="ml-1 mr-1 mt-1 pa-0">
       <v-tabs height="20" hide-slider v-model="tab">
         <v-tab
@@ -86,14 +86,11 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#MonitoringParent {
+div#keikakulists {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
-  // overflow-x: scroll;
-  // width: 1366px !important;
   min-width: 1350px !important;
-  max-width: 1920px;
   width: auto;
 
   .parentTab {

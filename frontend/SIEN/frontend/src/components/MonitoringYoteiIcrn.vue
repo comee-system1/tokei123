@@ -166,7 +166,7 @@
           </v-btn-toggle>
         </div>
       </v-row>
-      <v-row class="ma-0 mt-1" no-gutters>
+      <v-layout class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
@@ -211,7 +211,7 @@
           :itemsSource="viewdatakeikaku"
         >
         </wj-flex-grid>
-      </v-row>
+      </v-layout>
     </v-container>
     <!-- ダイアログエリア -->
     <v-dialog
@@ -588,14 +588,15 @@ export default {
         col.align = this.keikakuIcrnHeaderList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 2) {
-          col.allowResizing = true;
-        } else {
-          col.allowResizing = false;
-        }
-        if (colIndex == 5 || colIndex == 6 || colIndex == 8) {
-          col.format = sysConst.FORMAT.Ymd;
-        }
+        col.allowResizing = true;
+        // if (colIndex == 2) {
+        //   col.allowResizing = true;
+        // } else {
+        //   col.allowResizing = false;
+        // }
+        // if (colIndex == 5 || colIndex == 6 || colIndex == 8) {
+        //   col.format = sysConst.FORMAT.Ymd;
+        // }
 
         flexGrid.columnHeaders.setCellData(
           0,
@@ -1125,7 +1126,7 @@ div#monitoringYotei {
   max-width: 1920px;
   width: auto;
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
 
   #load_dialog {
@@ -1270,12 +1271,12 @@ div#monitoringYotei {
 
   .v-btn-toggle > .v-btn {
     // width: 150px;
-    height: 25px;
+    height: 20px;
   }
   div.customCombobox {
     position: relative;
     width: 125px !important;
-    height: 25px !important;
+    height: 20px !important;
     &.customCombobox {
       width: 160px !important;
       div {
@@ -1295,20 +1296,20 @@ div#monitoringYotei {
       background-color: #fff;
     }
     div * {
-      height: 21px !important;
+      height: 17px !important;
       // padding: 0;
       span {
         // height: 21px !important;
-        margin-top: 8px;
+        margin-top: 5px;
       }
       &.wj-form-control {
         position: absolute;
-        top: -3px;
+        top: -5px;
         width: 100%;
       }
     }
     input {
-      height: 25px !important;
+      height: 20px !important;
     }
   }
   .v-input--selection-controls .v-input__slot > .v-label {
