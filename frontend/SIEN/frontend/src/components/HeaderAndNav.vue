@@ -151,8 +151,18 @@
       <v-spacer></v-spacer>
       <v-toolbar-title>【{{ jigyoName }}】</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-
+      <!-- <v-spacer></v-spacer> -->
+      <v-btn-toggle class="flex-wrap" mandatory>
+        <v-btn
+          v-for="n in zoomList"
+          :key="n.val"
+          small
+          color="indigo darken-4"
+          @click="zoomClicked(n.val)"
+        >
+          {{ n.name }}
+        </v-btn>
+      </v-btn-toggle>
       <div class="text-center">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -214,6 +224,11 @@ export default {
       jigyoName: '社会福祉法人東経会',
       loginName: '大正雅夫',
       pageTitle: this.$route.name,
+      zoomList: [
+        { val: 0, name: '標準' },
+        { val: 1, name: '大' },
+        { val: 2, name: '特大' },
+      ],
       items: [
         { title: '職員マスタ' },
         { title: 'パスワード変更' },
@@ -402,6 +417,15 @@ export default {
         document.exitFullscreen();
       }
     },
+    zoomClicked(val) {
+      if (val == 0) {
+        document.body.style.zoom = '100%';
+      } else if (val == 1) {
+        document.body.style.zoom = '125%';
+      } else {
+        document.body.style.zoom = '150%';
+      }
+    },
   },
 };
 </script>
@@ -483,6 +507,9 @@ div#headerAndNav {
     border-radius: 30px;
     font-size: 14px;
     font-family: 'メイリオ';
+  }
+  .v-btn-toggle > .v-btn {
+    height: 23px;
   }
 }
 // div#headerAndNav {

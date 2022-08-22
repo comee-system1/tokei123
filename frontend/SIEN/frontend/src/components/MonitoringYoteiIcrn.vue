@@ -166,7 +166,11 @@
           </v-btn-toggle>
         </div>
       </v-row>
-      <v-layout class="ma-0 mt-1" no-gutters>
+      <v-layout
+        class="ma-0 mt-1 mr-1 pa-2 haikei"
+        no-gutters
+        style="width: 99%"
+      >
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
@@ -270,77 +274,77 @@ export default {
           dataname: 'code',
           title: 'コード',
           kbntitle: '',
-          width: 60,
+          width: 80,
           align: 'center',
         },
         {
           dataname: 'name',
           title: '利用者名',
           kbntitle: '',
-          width: sysConst.GRD_COL_WIDTH.UserName,
+          width: '1*',
           align: 'left',
         },
         {
           dataname: 'age',
           title: '年\n齢',
           kbntitle: '',
-          width: 30,
+          width: 40,
           align: 'right',
         },
         {
           dataname: 'birthMonth',
           title: '誕\n生\n月',
           kbntitle: '',
-          width: 20,
+          width: 40,
           align: 'right',
         },
         {
           dataname: 'sichoson',
           title: '市区\n町村',
           kbntitle: '',
-          width: 70,
+          width: 90,
           align: 'left',
         },
         {
           dataname: 'keikakuYmd',
           title: '作成日',
           kbntitle: 'サービス等利用計画作成',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
           align: 'center',
         },
         {
           dataname: 'yousiki',
           title: '様\n式',
           kbntitle: 'サービス等利用計画作成',
-          width: 20,
+          width: 40,
           align: 'center',
         },
         {
           dataname: 'tantousya',
           title: '担当者',
           kbntitle: 'サービス等利用計画作成',
-          width: sysConst.GRD_COL_WIDTH.Tantousya,
+          width: sysConst.GRD_COL_WIDTH.Tantousya + 20,
           align: 'left',
         },
         {
           dataname: 'sikyuSymd',
           title: '開始日',
           kbntitle: 'モニタリング期間',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
           align: 'center',
         },
         {
           dataname: 'sikyuEymd',
           title: '終了日',
           kbntitle: 'モニタリング期間',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
           align: 'center',
         },
         {
           dataname: 'kikan',
           title: '期間',
           kbntitle: 'モニタリング期間',
-          width: 50,
+          width: 70,
           align: 'right',
         },
       ],
@@ -1189,6 +1193,10 @@ div#monitoringYotei {
     width: 75px;
   }
 
+  .haikei {
+    background-repeat: repeat;
+  }
+
   #monitoringYoteiGrid,
   #monitoringYoteiGridYm {
     color: $font_color;
@@ -1250,7 +1258,7 @@ div#monitoringYotei {
   div#monitoringYoteiGrid {
     overflow-y: none;
     -ms-overflow-style: none;
-    width: auto;
+    width: 98%;
     // min-width: 1250px;
     height: 70vh;
     min-height: 400px;

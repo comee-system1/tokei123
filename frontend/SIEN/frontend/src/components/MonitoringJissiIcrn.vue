@@ -48,10 +48,10 @@
         </v-btn>
         <v-btn
           class="itemBtn ml-1"
-          style="width: 125px"
+          style="width: 25px"
           @click="filterClrclick()"
         >
-          フィルタクリア
+          <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
@@ -108,7 +108,11 @@
           <span class="miman mr-1" style="width: 80px">18歳未満</span>
         </v-card>
       </v-row>
-      <v-row class="ma-0 mt-1" no-gutters>
+      <v-row
+        class="ma-0 mt-1 pa-1"
+        no-gutters
+        style="background-color: #d7eeff; width: 100%"
+      >
         <wj-flex-grid
           id="yoteisyaIcrnGrid"
           :headersVisibility="'Column'"
@@ -189,7 +193,7 @@ export default {
           title: 'コード',
           kbntitle: '基本情報',
           chutitl: '',
-          width: 70,
+          width: '2*',
           align: 'center',
         },
         {
@@ -197,7 +201,7 @@ export default {
           title: '利用者名',
           kbntitle: '基本情報',
           chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.UserName,
+          width: '4*',
           align: 'left',
         },
         {
@@ -205,7 +209,7 @@ export default {
           title: '市区\n町村',
           kbntitle: '基本情報',
           chutitl: '',
-          width: 70,
+          width: '2*',
           align: 'left',
         },
         {
@@ -213,7 +217,7 @@ export default {
           title: '作成日',
           kbntitle: 'サービス等利用計画',
           chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '3*',
           align: 'center',
         },
         {
@@ -221,7 +225,7 @@ export default {
           title: '様\n式',
           kbntitle: 'サービス等利用計画',
           chutitl: '',
-          width: 35,
+          width: '1*',
           align: 'center',
         },
         {
@@ -229,7 +233,7 @@ export default {
           title: '予定\n月',
           kbntitle: 'モニタリング報告書',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -237,24 +241,15 @@ export default {
           title: '終\n期\n月',
           kbntitle: 'モニタリング報告書',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
-
-        // {
-        //   dataname: 'yoteigai',
-        //   title: '予\n外',
-        //   kbntitle: 'モニタリング報告書',
-        //   chutitl: '区分',
-        //   width: 40,
-        //   align: 'center',
-        // },
         {
           dataname: 'chusi',
           title: '中\n止',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -262,7 +257,7 @@ export default {
           title: '延\n期',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -270,7 +265,7 @@ export default {
           title: '理由',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
-          width: 100,
+          width: '2*',
           align: 'left',
         },
         {
@@ -278,7 +273,7 @@ export default {
           title: '次回\n予定月',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
-          width: 60,
+          width: '2*',
           align: 'center',
         },
 
@@ -287,7 +282,7 @@ export default {
           title: '実施日',
           kbntitle: 'モニタリング報告書',
           chutitl: 'モニタリング実施',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '3*',
           align: 'center',
         },
         {
@@ -295,7 +290,7 @@ export default {
           title: '実\n施',
           kbntitle: 'モニタリング報告書',
           chutitl: 'モニタリング実施',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -303,7 +298,7 @@ export default {
           title: '週\n間\n計\n画',
           kbntitle: '',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -311,7 +306,7 @@ export default {
           title: '同\n意',
           kbntitle: '',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -319,7 +314,7 @@ export default {
           title: '変\n更',
           kbntitle: '計画案',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -327,7 +322,7 @@ export default {
           title: '更\n新',
           kbntitle: '計画案',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -335,7 +330,7 @@ export default {
           title: '次回\n作成月',
           kbntitle: '計画案',
           chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '2*',
           align: 'center',
         },
         {
@@ -343,7 +338,7 @@ export default {
           title: 'サ\n|\nビ\nス終\n了',
           kbntitle: '',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -351,7 +346,7 @@ export default {
           title: '実施日',
           kbntitle: '担当者会議',
           chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '3*',
           align: 'center',
         },
         {
@@ -359,7 +354,7 @@ export default {
           title: '加\n算',
           kbntitle: '担当者会議',
           chutitl: '',
-          width: 25,
+          width: '1*',
           align: 'center',
         },
         {
@@ -367,7 +362,7 @@ export default {
           title: '担当者',
           kbntitle: '',
           chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Tantousya,
+          width: '2*',
           align: 'left',
         },
       ],
@@ -409,7 +404,7 @@ export default {
       this.filteryoteisyaIcrn = filter;
     },
     onInitializeyoteisyaIcrnGrid(flexGrid) {
-      flexGrid.beginUpdate();
+      // flexGrid.beginUpdate();
       // クリックイベント
       // flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
       //   let ht = flexGrid.hitTest(e);
@@ -428,11 +423,13 @@ export default {
       flexGrid.columnHeaders.rows[2].allowMerging = true;
       flexGrid.columnHeaders.rows[3].allowMerging = false;
 
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 5;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[3].height = sysConst.GRDROWHEIGHT.Header / 2;
+      // flexGrid.columnHeaders.hostElement.style.fontSize = '16px';
+      console.log(flexGrid.columnHeaders.hostElement.style);
       flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
       // flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
@@ -454,11 +451,6 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
         col.allowResizing = true;
-        // if (colIndex == 2) {
-        //   col.allowResizing = true;
-        // } else {
-        //   col.allowResizing = false;
-        // }
         if (colIndex == 3 || colIndex == 11 || colIndex == 19) {
           col.format = sysConst.FORMAT.Ymd;
         } else if (colIndex == 17) {
@@ -487,7 +479,7 @@ export default {
         flexGrid.columnHeaders.setCellData(3, colIndex, ' ');
       }
       flexGrid.columnFooters.setCellData(0, 3, '合計');
-      flexGrid.endUpdate();
+      // flexGrid.endUpdate();
     },
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
@@ -777,6 +769,13 @@ export default {
     },
     yousikiClicked(id) {
       this.yousikiIndex = id;
+      if (id == 0) {
+        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '16px';
+      } else if (id == 1) {
+        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '14px';
+      } else {
+        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '12px';
+      }
       this.userFilter();
     },
     taisyousyaClicked(s) {
@@ -886,6 +885,8 @@ export default {
     },
     filterClrclick() {
       this.filteryoteisyaIcrn.clear();
+
+      console.log(document.getElementById('yoteisyaIcrnGrid').style);
     },
   },
 };
@@ -969,8 +970,8 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: auto;
-    height: 75vh;
+    width: 98%;
+    height: 73vh;
     min-height: 450px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ

@@ -1,17 +1,38 @@
 <template>
   <div id="keikakulists">
-    <v-container no-gutters fluid class="ml-1 mr-1 mt-1 pa-0">
-      <v-tabs height="20" hide-slider v-model="tab">
-        <v-tab
-          v-for="item in menuItem"
-          :key="item.val"
-          class="parentTab"
-          :href="item.href"
-          @change="tabsChange(item.hrefval)"
-        >
-          {{ item.name }}
-        </v-tab>
-      </v-tabs>
+    <v-container no-gutters fluid class="pa-0">
+      <v-row no-gutters class="mt-2">
+        <v-col>
+          <v-tabs height="20" hide-slider v-model="tab">
+            <v-tab
+              v-for="item in menuItem"
+              :key="item.val"
+              class="parentTab"
+              :href="item.href"
+              @change="tabsChange(item.hrefval)"
+            >
+              {{ item.name }}
+            </v-tab>
+          </v-tabs>
+        </v-col>
+        <v-col v-if="tab == 'idea'">
+          <v-row class="yosikiMenu" no-gutters>
+            <v-col cols="1">
+              <label> 様式 </label>
+            </v-col>
+            <v-col cols="10" class="ml-1">
+              <v-tabs height="20">
+                <v-tab
+                  v-for="yosikiValue in yosikiMenu"
+                  :key="yosikiValue.key"
+                  @change="tabsYosikiChange(yosikiValue.key)"
+                  >{{ yosikiValue.name }}</v-tab
+                >
+              </v-tabs>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-container>
     <v-container no-gutters fluid class="ma-0 pa-0">
       <v-tabs-items class="v-tabCont" v-model="tab">
@@ -22,10 +43,12 @@
           <!-- <SoudanCount></SoudanCount> -->
           Tab 2 Content assessment
         </v-tab-item>
-        <v-tab-item value="basic"> Tab 3 Content </v-tab-item>
+        <v-tab-item value="basic"> Tab 3 Content assessment </v-tab-item>
         <v-tab-item value="idea" eager>
-          Tab 4 Content
-          <!-- <SoudanCountUtiwake></SoudanCountUtiwake> -->
+          <div v-if="tab == 'idea'">
+            <KeikakuIdea v-show="ideaFlag == 'create'"></KeikakuIdea>
+            <div v-show="ideaFlag == 'plan'">ddd</div>
+          </div>
         </v-tab-item>
         <v-tab-item value="plan"> Tab 5 Content </v-tab-item>
       </v-tabs-items>
@@ -36,16 +59,29 @@
 <script>
 import ls from '@/utiles/localStorage';
 import KeikakuIcrn from '../../components/KeikakuLists.vue';
+import KeikakuIdea from '../../components/KeikakuIdea.vue';
 export default {
   props: {
     selectedData: Object, // 検索条件等
   },
   components: {
     KeikakuIcrn, //SoudanCount, SoudanCountUtiwake
+    KeikakuIdea,
   },
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
+      ideaFlag: 'create',
+      yosikiMenu: [
+        {
+          key: 'create',
+          name: '計画案作成',
+        },
+        {
+          key: 'plan',
+          name: '週間計画表',
+        },
+      ],
       menuItem: [
         { name: '計画一覧', href: '#KeikakuIcrn', hrefval: 'KeikakuIcrn' },
         {
@@ -80,6 +116,10 @@ export default {
     tabsChange(hrefval) {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
     },
+    tabsYosikiChange(value) {
+      console.log(value);
+      this.ideaFlag = value;
+    },
   },
 };
 </script>
@@ -113,6 +153,26 @@ div#keikakulists {
   .wj-cell {
     padding: 2px;
     padding-top: 1px;
+  }
+
+  .yosikiMenu {
+    div {
+      &.v-tab {
+        background-color: $grid_selected_background;
+        color: canvastext;
+        &--active {
+          color: blue;
+        }
+      }
+      label {
+        background-color: $deepgreen;
+        width: 100%;
+        display: block;
+        color: $white;
+        text-align: center;
+        height: 20px;
+      }
+    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div id="user-list_scrollbar" :style="styles">
+  <div id="user-list_scrollbar" :style="styles" class="pr-5">
     <div
       :class="{
         switchArea: switchAreaFlag == true,
@@ -19,8 +19,8 @@
       no-gutters
       :class="{ v_enter_to: animtype == 1, v_enter_from: animtype == 2 }"
     >
-      <v-col style="max-width: 94%">
-        <v-row no-gutters class="rowStyle mt-1 ml-1" v-if="dispAddDaicho">
+      <v-col>
+        <v-row no-gutters class="rowStyle ml-1" v-if="dispAddDaicho">
           <v-col cols="*">
             <v-btn
               style="width: 100px; height: 25px; font-size: 12px"
@@ -214,6 +214,7 @@ export default {
   // components: { Riyousya },
   data() {
     return {
+      userListWidth: '280px',
       switchIcon: 'mdi-chevron-left',
       animtype: '0',
       switchAreaFlag: true,
@@ -258,7 +259,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 280,
+      headerheight: 160,
     };
   },
   mounted() {
@@ -267,25 +268,37 @@ export default {
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
       this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
     });
+
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
   computed: {
     // バインドするスタイルを生成
     styles() {
       // ブラウザの高さ
       return {
-        '--height': window.innerHeight - 150 + 'px',
+        '--height': window.innerHeight - this.headerheight + 'px',
+        '--width': this.userListWidth,
       };
     },
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('user-list_scrollbar') != null) {
+        document.getElementById('user-list_scrollbar').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     switched() {
       this.animtype = this.animtype == '1' ? '2' : '1';
+
       if (this.switchAreaRightFlag == true) {
         this.switchAreaRightFlag = false;
         this.switchAreaLeftFlag = true;
+        this.userListWidth = '280px';
       } else {
         this.switchAreaRightFlag = true;
         this.switchAreaLeftFlag = false;
+        this.userListWidth = '0px';
       }
 
       this.$emit('childLeftArea', this.message);
@@ -486,11 +499,11 @@ export default {
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
-      if (!this.dispAddDaicho) {
-        document.getElementById(flexGrid.hostElement.id).style.height = '68vh';
-      } else {
-        document.getElementById(flexGrid.hostElement.id).style.height = '60vh';
-      }
+      // if (!this.dispAddDaicho) {
+      //   document.getElementById(flexGrid.hostElement.id).style.height = '68vh';
+      // } else {
+      //   document.getElementById(flexGrid.hostElement.id).style.height = '60vh';
+      // }
       Riyousya('20000101', '20221231').then((result) => {
         _self.usersData = result;
         this.userFilter();
@@ -514,15 +527,17 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
 div#user-list_scrollbar {
   font-size: 12px;
   font-family: 'メイリオ';
   padding: 0;
-  width: 285px;
-
+  width: var(--width);
+  #userListGrid {
+    height: var(--height);
+  }
   .rowStyle {
     height: 20px !important;
   }
@@ -641,11 +656,10 @@ div#user-list_scrollbar {
 
   .switchArea {
     width: 14px;
-    height: 97%;
+    height: 100%;
     background-color: $black;
-    position: fixed;
-
-    left: 275px;
+    position: absolute;
+    left: 265px;
     z-index: 1;
     &.switchAreaRight {
       animation: switchAreaRightMove $seconds forwards;
@@ -673,7 +687,7 @@ div#user-list_scrollbar {
   }
   @keyframes switchAreaLeftMove {
     from {
-      transform: translateX(-275px);
+      transform: translateX(-265px);
     }
     to {
       transform: translateX(0);
@@ -684,7 +698,7 @@ div#user-list_scrollbar {
       transform: translateX(0px);
     }
     to {
-      transform: translateX(-275px);
+      transform: translateX(-265px);
     }
   }
   @keyframes rotate-right {
@@ -716,12 +730,12 @@ div#user-list_scrollbar {
       transform: translateX(0px);
     }
     to {
-      transform: translateX(-264px);
+      transform: translateX(-254px);
     }
   }
   @keyframes slideUp {
     from {
-      transform: translateX(-264px);
+      transform: translateX(-254px);
     }
     to {
       transform: translateX(0px);
