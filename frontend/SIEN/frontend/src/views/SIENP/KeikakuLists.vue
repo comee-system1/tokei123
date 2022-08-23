@@ -47,7 +47,7 @@
         <v-tab-item value="idea" eager>
           <div v-if="tab == 'idea'">
             <KeikakuIdea v-show="ideaFlag == 'create'"></KeikakuIdea>
-            <div v-show="ideaFlag == 'plan'">ddd</div>
+            <KeikakuWeek v-show="ideaFlag == 'weekplan'"></KeikakuWeek>
           </div>
         </v-tab-item>
         <v-tab-item value="plan"> Tab 5 Content </v-tab-item>
@@ -60,6 +60,7 @@
 import ls from '@/utiles/localStorage';
 import KeikakuIcrn from '../../components/KeikakuLists.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
+import KeikakuWeek from '../../components/KeikakuWeek.vue';
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -67,18 +68,19 @@ export default {
   components: {
     KeikakuIcrn, //SoudanCount, SoudanCountUtiwake
     KeikakuIdea,
+    KeikakuWeek,
   },
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
-      ideaFlag: 'create',
+      ideaFlag: 'weekplan', //create:計画案作成 weekplan:週間計画表
       yosikiMenu: [
         {
           key: 'create',
           name: '計画案作成',
         },
         {
-          key: 'plan',
+          key: 'weekplan',
           name: '週間計画表',
         },
       ],

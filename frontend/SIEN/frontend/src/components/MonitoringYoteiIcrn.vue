@@ -48,15 +48,15 @@
         </v-btn>
         <v-btn
           class="itemBtn ml-1"
-          style="width: 125px"
+          style="width: 25px"
           @click="filterClrclick()"
         >
-          フィルタクリア
+          <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
-        <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
+        <!-- <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           ○：予定 ☆：予定外 ●★：報告書完了 延：延期 止：中止 終：終期月
           中：中途月更新 廃：ｻｰﾋﾞｽ廃止
-        </v-card>
+        </v-card> -->
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle pa-1" outlined tile> 担当者 </v-card>

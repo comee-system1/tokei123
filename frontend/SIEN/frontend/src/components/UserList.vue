@@ -259,7 +259,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 160,
+      headerheight: 100,
     };
   },
   mounted() {
@@ -487,6 +487,7 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onInitializedUser(flexGrid) {
+      _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {

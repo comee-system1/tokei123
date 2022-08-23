@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringHoukokusho">
-    <v-container class="mt-1 ml-1 pa-0" fluid>
+    <v-container class="ml-1 pa-0" fluid>
       <v-row no-gutters>
         <v-col class="leftArea">
           <user-list
@@ -22,16 +22,70 @@
           }"
           class="ml-1 pa-0"
         >
-          <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1" outlined tile> 利用者名 </v-card>
-            <v-card class="koumokuData ml-1 pa-1" tile outlined>
-              {{ tantouData.code }} {{ tantouData.name }}
-            </v-card>
+          <v-row
+            no-gutters
+            class="mt-1 pa-1"
+            style="height: 28px; background: #d7eeff"
+          >
+            <v-row no-gutters class="rowStyle">
+              <v-card class="koumokuTitle pa-1" outlined tile>
+                利用者名
+              </v-card>
+              <v-card class="koumokuData ml-1" tile outlined>
+                {{ userData.riyocodeD }} {{ userData.names }}
+              </v-card>
+              <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+                計画作成日
+              </v-card>
+              <v-card
+                class="koumokuData ml-1"
+                style="width: 125px; text-align: center"
+                tile
+                outlined
+              >
+                {{ keikakuYmd }}
+              </v-card>
+              <v-layout class="right">
+                <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+                  同意署名欄
+                </v-card>
+                <v-card
+                  class="koumokuData pa-1 ml-1"
+                  style="width: 25px"
+                  outlined
+                  tile
+                >
+                </v-card>
+                <v-card
+                  class="koumokuData pa-1 ml-1"
+                  style="width: 125px"
+                  outlined
+                  tile
+                >
+                </v-card>
+              </v-layout>
+            </v-row>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力 </v-card>
+            <v-btn-toggle class="flex-wrap mr-1" mandatory>
+              <v-btn
+                v-for="n in inputList"
+                :key="n.val"
+                small
+                color="secondary"
+                dark
+                outlined
+                @click="inputClicked(n.val)"
+              >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              実施日
+            </v-card>
             <v-card
-              class="ml-1"
+              class="mr-1"
               color="transparent"
               height="100%"
               style="border: none"
@@ -42,16 +96,17 @@
                 @click="inputCalendarClick(0)"
                 tile
                 outlined
-                width="125px"
+                width="150px"
                 height="100%"
-                >{{ getYm() }}
+                class="pa-0 mr-1"
+                >{{ getYmd() }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-btn>
               <v-btn
                 elevation="0"
-                class="pa-0 ml-1"
+                class="pa-0 mr-1"
                 height="100%"
                 x-small
                 tile
@@ -61,7 +116,7 @@
               </v-btn>
               <v-btn
                 elevation="0"
-                class="pa-0 ml-1"
+                class="pa-0"
                 height="100%"
                 x-small
                 tile
@@ -70,47 +125,148 @@
                 <v-icon>mdi-arrow-right-bold</v-icon>
               </v-btn>
             </v-card>
-            <v-btn
-              class="itemBtn ml-1"
-              :loading="loading"
-              @click="searchClicked()"
-            >
-              検索
-            </v-btn>
-            <v-btn
-              class="itemBtn ml-1"
-              style="width: 125px"
-              @click="filterClrclick()"
-            >
-              フィルタクリア
-            </v-btn>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              担当者
+            </v-card>
+            <v-card class="koumokuData" tile style="width: 125px" outlined>
+              担当者名
+            </v-card>
+            <v-layout class="right">
+              <v-btn
+                class="itemBtn mr-1"
+                :loading="loading"
+                @click="searchClicked()"
+              >
+                前回コピー
+              </v-btn>
+              <v-btn
+                class="itemBtn"
+                :loading="loading"
+                @click="searchClicked()"
+              >
+                履歴参照
+              </v-btn>
+            </v-layout>
           </v-row>
-          <v-row class="rowStyle mt-1" no-gutters> </v-row>
+          <v-row no-gutters class="mt-1">
+            <div style="width: 50%; height: 100px">
+              <v-card class="koumokuTitle_c pa-1" outlined tile>
+                総合的な援助の方針
+              </v-card>
+              <v-card class="koumokuData2 pa-1" outlined tile>
+                総合的な援助の方針
+              </v-card>
+            </div>
+            <div style="width: 50%; height: 100px">
+              <v-card class="koumokuTitle_c pa-1" outlined tile>
+                全体の状況
+              </v-card>
+              <v-card class="koumokuData2 pa-1" outlined tile>
+                総合的な援助の方針
+              </v-card>
+            </div>
+          </v-row>
+
           <v-row class="ma-0 mt-1" no-gutters>
-            <!-- <wj-flex-grid
-          id="yoteisyaIcrnGrid"
-          :headersVisibility="'Column'"
-          :autoGenerateColumns="false"
-          :allowAddNew="false"
-          :allowDelete="false"
-          :allowPinning="false"
-          :allowMerging="'AllHeaders'"
-          :allowResizing="true"
-          :allowSorting="false"
-          :allowDragging="false"
-          :selectionMode="'Row'"
-          :isReadOnly="true"
-          :initialized="onInitializeyoteisyaIcrnGrid"
-          :formatItem="onFormatItemyoteisyaIcrn"
-          :itemsSourceChanging="onItemsSourceChanging"
-          :itemsSourceChanged="onItemsSourceChanged"
-          :itemsSource="viewdatayoteisya"
-        >
-          <wj-flex-grid-filter
-            :initialized="filterInitializedyoteisyaIcrn"
-            :filterApplied="filterApplied"
-          />
-        </wj-flex-grid> -->
+            <wj-flex-grid
+              id="icrnGrid"
+              :headersVisibility="'Column'"
+              :autoGenerateColumns="false"
+              :allowAddNew="false"
+              :allowDelete="false"
+              :allowPinning="false"
+              :allowMerging="'AllHeaders'"
+              :allowResizing="true"
+              :allowSorting="false"
+              :allowDragging="false"
+              :selectionMode="'Row'"
+              :isReadOnly="true"
+              :initialized="onInitializeIcrnGrid"
+              :formatItem="onFormatItemyaIcrn"
+              :itemsSourceChanging="onItemsSourceChanging"
+              :itemsSourceChanged="onItemsSourceChanged"
+              :itemsSource="viewdata"
+            >
+            </wj-flex-grid>
+          </v-row>
+          <v-row no-gutters class="rowStyle mt-1">
+            <v-spacer></v-spacer>
+            <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
+              結果
+            </v-card>
+            <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
+              <v-btn
+                v-for="n in kekkaList"
+                :key="n.val"
+                small
+                color="secondary"
+                dark
+                outlined
+                @click="kekkaClicked(n.val)"
+              >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+            <v-layout class="rowStyle" v-if="kekkaIndex == 3">
+              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+                ｻｰﾋﾞｽ終了日
+              </v-card>
+              <v-btn
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                width="150px"
+                height="100%"
+                class="pa-0 mr-1"
+                >{{ getYmd() }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-layout>
+            <v-layout class="rowStyle" v-else>
+              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+                次回案作成月
+              </v-card>
+              <v-btn
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                width="150px"
+                height="100%"
+                class="pa-0 mr-1"
+                >{{ getYmd() }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-layout>
+            <v-layout class="right">
+              <v-card class="koumokuTitleShort pa-1 ml-1" outlined tile>
+                完了
+              </v-card>
+              <v-card
+                class="koumokuData pa-1 ml-1"
+                style="width: 25px"
+                outlined
+                tile
+              >
+              </v-card>
+              <v-card
+                class="koumokuData pa-1 ml-1"
+                style="width: 100px"
+                outlined
+                tile
+              >
+              </v-card>
+              <v-btn
+                class="itemBtn mr-1"
+                :loading="loading"
+                @click="searchClicked()"
+              >
+                登録
+              </v-btn>
+            </v-layout>
           </v-row>
         </v-col>
       </v-row>
@@ -123,11 +279,11 @@
     >
       <v-date-picker
         id="monitoringHoukokushoDatepicker"
-        type="month"
+        type="date"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
-        @change="monthSelect"
+        @change="daySelect"
       >
       </v-date-picker>
     </v-dialog>
@@ -152,7 +308,7 @@ import '@grapecity/wijmo.vue2.grid.grouppanel';
 import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.input';
-// import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
@@ -163,224 +319,133 @@ export default {
   components: { UserList },
   data() {
     return {
-      yoteisyaIcrnHeaderList: [
-        {
-          dataname: 'code',
-          title: 'コード',
-          kbntitle: '基本情報',
-          chutitl: '',
-          width: 70,
-          align: 'center',
-        },
-        {
-          dataname: 'name',
-          title: '利用者名',
-          kbntitle: '基本情報',
-          chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.UserName,
-          align: 'left',
-        },
-        {
-          dataname: 'sichoson',
-          title: '市区\n町村',
-          kbntitle: '基本情報',
-          chutitl: '',
-          width: 70,
-          align: 'left',
-        },
-        {
-          dataname: 'sakuseiymd',
-          title: '作成日',
-          kbntitle: 'サービス等利用計画',
-          chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
-          align: 'center',
-        },
-        {
-          dataname: 'yousiki',
-          title: '様\n式',
-          kbntitle: 'サービス等利用計画',
-          chutitl: '',
-          width: 35,
-          align: 'center',
-        },
-        {
-          dataname: 'yoteiMonth',
-          title: '予定\n月',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'endMonth',
-          title: '終\n期\n月',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '',
-          width: 25,
-          align: 'center',
-        },
-
-        // {
-        //   dataname: 'yoteigai',
-        //   title: '予\n外',
-        //   kbntitle: 'モニタリング報告書',
-        //   chutitl: '区分',
-        //   width: 40,
-        //   align: 'center',
-        // },
-        {
-          dataname: 'chusi',
-          title: '中\n止',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '中止・延期',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'enki',
-          title: '延\n期',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '中止・延期',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'riyu',
-          title: '理由',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '中止・延期',
-          width: 100,
-          align: 'left',
-        },
-        {
-          dataname: 'jikaiMonth',
-          title: '次回\n予定月',
-          kbntitle: 'モニタリング報告書',
-          chutitl: '中止・延期',
-          width: 60,
-          align: 'center',
-        },
-
-        {
-          dataname: 'jissiYmd',
-          title: '実施日',
-          kbntitle: 'モニタリング報告書',
-          chutitl: 'モニタリング実施',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
-          align: 'center',
-        },
+      userData: {},
+      keikakuYmd: '',
+      headerList: [
         {
           dataname: 'jissi',
-          title: '実\n施',
-          kbntitle: 'モニタリング報告書',
-          chutitl: 'モニタリング実施',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'syukankeikaku',
-          title: '週\n間\n計\n画',
+          title: '実施',
           kbntitle: '',
-          chutitl: '',
-          width: 25,
+          width: '2*',
           align: 'center',
         },
         {
-          dataname: 'doui',
-          title: '同\n意',
+          dataname: 'mokuhyo',
+          title: '支援目標',
           kbntitle: '',
-          chutitl: '',
-          width: 25,
-          align: 'center',
+          width: '10*',
+          align: 'left',
         },
         {
-          dataname: 'henkou',
-          title: '変\n更',
-          kbntitle: '計画案',
-          chutitl: '',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'kousin',
-          title: '更\n新',
-          kbntitle: '計画案',
-          chutitl: '',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'nextMonth',
-          title: '次回\n作成月',
-          kbntitle: '計画案',
-          chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
-          align: 'center',
-        },
-        {
-          dataname: 'serviceend',
-          title: 'サ\n|\nビ\nス終\n了',
+          dataname: 'jiki',
+          title: '達成時期',
           kbntitle: '',
-          chutitl: '',
-          width: 25,
-          align: 'center',
+          width: '4*',
+          align: 'left',
         },
         {
-          dataname: 'kaigiYmd',
-          title: '実施日',
-          kbntitle: '担当者会議',
-          chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
-          align: 'center',
-        },
-        {
-          dataname: 'kasan',
-          title: '加\n算',
-          kbntitle: '担当者会議',
-          chutitl: '',
-          width: 25,
-          align: 'center',
-        },
-        {
-          dataname: 'tantousya',
-          title: '担当者',
+          dataname: 'jyoukyou',
+          title: 'サービス提供状況\n(事業所からの聞取り)',
           kbntitle: '',
-          chutitl: '',
-          width: sysConst.GRD_COL_WIDTH.Tantousya,
+          width: '10*',
+          align: 'left',
+        },
+        {
+          dataname: 'manzokudo',
+          title: '本人の感想・満足度',
+          kbntitle: '',
+          width: '10*',
+          align: 'left',
+        },
+        {
+          dataname: 'tasseikan',
+          title: '支援目標の達成感\n(ニーズの充足度)',
+          kbntitle: '',
+          width: '10*',
+          align: 'left',
+        },
+        {
+          dataname: 'kaiketuhouhou',
+          title: '今後の課題・解決方法',
+          kbntitle: '',
+          width: '10*',
+          align: 'left',
+        },
+        {
+          dataname: 'kind1',
+          kbntitle: '計画変更の必要性',
+          title: '種類',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'kind2',
+          kbntitle: '計画変更の必要性',
+          title: '種類',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'ryou1',
+          kbntitle: '計画変更の必要性',
+          title: '量',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'ryou2',
+          kbntitle: '計画変更の必要性',
+          title: '量',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'syukan1',
+          kbntitle: '計画変更の必要性',
+          title: '週間',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'syukan2',
+          kbntitle: '計画変更の必要性',
+          title: '週間',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'その他',
+          title: 'その他の留意事項',
+          kbntitle: '',
+          width: '10*',
           align: 'left',
         },
       ],
-      viewdatayoteisyaAll: [],
-      viewdatayoteisya: [],
-      kikanYm: '',
+      viewdataAll: [],
+      viewdata: [],
+      kikanYmd: '',
       picker: '',
       datepicker_dialog: false,
       screenFlag: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
       selTantousya: 0,
-      tantousyaList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '担当者A' },
-        { val: 2, name: '担当者B' },
-        { val: 3, name: '担当者C' },
+      inputList: [
+        { val: 0, name: '新規' },
+        { val: 1, name: '修正' },
       ],
-      siborikomiIndex: 0,
-      siborikomiList: [
-        { val: 0, name: '予定月' },
-        { val: 1, name: '実施月' },
-      ],
-      yousikiIndex: 0,
-      yousikiList: [
-        { val: 0, name: '全部' },
-        { val: 1, name: '障害者' },
-        { val: 2, name: '障害児' },
+      kekkaIndex: 0,
+      kekkaList: [
+        { val: 0, name: '継続' },
+        { val: 1, name: '中途月変更' },
+        { val: 2, name: '終期月更新' },
+        { val: 3, name: 'サービス終了' },
       ],
       loading: false,
       marginDefault: true,
       moveRight: false,
       moveLeft: false,
+      mltype: '',
     };
   },
   mounted() {},
@@ -402,6 +467,75 @@ export default {
       // if (this.riid) {
       //   this.createHeader(this.mainGrid);
       // }
+    },
+    onInitializeIcrnGrid(flexGrid) {
+      // flexGrid.beginUpdate();
+      // クリックイベント
+      // flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+      //   let ht = flexGrid.hitTest(e);
+      //   if (ht.panel == flexGrid.cells) {
+      //     // let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+      //     // this.setDispdata(tmpitem);
+      //     // this.tourokuScreenFlag = true;
+      //   }
+      // });
+      // ヘッダの追加と設定
+      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      flexGrid.columnHeaders.rows[0].allowMerging = true;
+      flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 5;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.alternatingRowStep = 0;
+      // ヘッダ文字列の設定
+      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
+        let col = flexGrid.columns[colIndex];
+        col.wordWrap = true;
+        col.binding = this.headerList[colIndex].dataname;
+        col.name = this.headerList[colIndex].dataname;
+        col.header = this.headerList[colIndex].title;
+        col.width = this.headerList[colIndex].width;
+        col.align = this.headerList[colIndex].align;
+        col.allowMerging = true;
+        col.multiLine = true;
+        col.allowResizing = true;
+        // if (colIndex == 3 || colIndex == 11 || colIndex == 19) {
+        //   col.format = sysConst.FORMAT.Ymd;
+        // } else if (colIndex == 17) {
+        //   col.format = sysConst.FORMAT.Ym;
+        // }
+
+        flexGrid.columnHeaders.setCellData(
+          0,
+          colIndex,
+          !this.headerList[colIndex].kbntitle
+            ? this.headerList[colIndex].title
+            : this.headerList[colIndex].kbntitle
+        );
+        flexGrid.columnHeaders.setCellData(
+          1,
+          colIndex,
+          this.headerList[colIndex].title
+        );
+      }
+      // flexGrid.endUpdate();
+    },
+    onItemsSourceChanging(flexGrid) {
+      flexGrid.beginUpdate();
+      flexGrid.endUpdate();
+    },
+
+    onItemsSourceChanged(flexGrid) {
+      this.screenFlag = false;
+      this.loading = false;
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
+
+    onFormatItem(flexGrid, e) {
+      console.log(flexGrid);
+      console.log(e);
     },
     searchClicked() {
       // 初期データ読込
@@ -500,7 +634,6 @@ export default {
       }
       this.viewdatayoteisyaAll = result;
     },
-
     userFilter() {
       let tmpviewdata = [];
       tmpviewdata = this.viewdatayoteisyaAll.concat();
@@ -556,39 +689,49 @@ export default {
       // }
       this.viewdatayoteisya = tmpviewdata;
     },
-    getYm() {
-      if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
-        this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
+    getYmd() {
+      if (!this.kikanYmd) {
+        this.kikanYmd = moment();
+        this.picker =
+          this.kikanYmd.year() +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
       }
       return (
-        this.kikanYm.format('YYYY') + '年' + this.kikanYm.format('MM') + '月'
+        this.kikanYmd.format('YYYY') +
+        '年' +
+        this.kikanYmd.format('MM') +
+        '月' +
+        this.kikanYmd.format('DD') +
+        '日'
       );
     },
     inputCalendarClick(kbn) {
       if (kbn == 1) {
-        this.kikanYm = this.kikanYm.subtract(1, 'months');
+        this.kikanYmd = this.kikanYmd.subtract(1, 'days');
       } else if (kbn == 2) {
-        this.kikanYm = this.kikanYm.add(1, 'months');
+        this.kikanYmd = this.kikanYmd.add(1, 'days');
       }
       this.picker =
-        this.kikanYm.format('YYYY') +
+        this.kikanYmd.format('YYYY') +
         '-' +
-        this.kikanYm.format('MM') +
+        this.kikanYmd.format('MM') +
         '-' +
-        this.kikanYm.format('DD');
+        this.kikanYmd.format('DD');
       if (kbn == 0) {
         this.datepicker_dialog = true;
       } else {
         this.viewdatayoteisya = [];
       }
     },
-    monthSelect() {
+    daySelect() {
       let split = this.picker.split('-');
-      this.kikanYm = moment({
+      this.kikanYmd = moment({
         years: split[0],
         months: Number(split[1]) - 1,
-        days: 1,
+        days: Number(split[2]),
         hours: 0,
         minutes: 0,
         seconds: 0,
@@ -598,6 +741,38 @@ export default {
     },
     filterClrclick() {
       this.filteryoteisyaIcrn.clear();
+    },
+    setUserSelectPoint(row) {
+      // ユーザ選択処理はここで行う
+      console.log(row);
+      this.userData = row;
+      this.keikakuYmd = '2022年12月12日';
+      // this.userInfo = row;
+      // if (this.userInfo.riid == 0) {
+      //   this.dispUserName = '';
+      // } else {
+      //   this.dispUserName =
+      //     String(this.userInfo.riyocode).padStart(7, '0') +
+      //     ' ' +
+      //     this.userInfo.names +
+      //     ' (' +
+      //     this.userInfo.age +
+      //     '歳）';
+      // }
+      // this.rirekiSearchClicked(
+      //   this.kikanSymd.format('YYYYMMDD'),
+      //   this.kikanEymd.format('YYYYMMDD'),
+      //   this.userInfo.riid
+      // );
+    },
+    getSelectUserChildComponent(data) {
+      console.log(data);
+    },
+    inputClicked(kbn) {
+      console.log(kbn);
+    },
+    kekkaClicked(index) {
+      this.kekkaIndex = index;
     },
   },
 };
@@ -616,13 +791,14 @@ div#monitoringHoukokusho {
   width: auto;
 
   .leftArea {
-    min-width: 285px;
-    max-width: 285px;
+    min-width: 275px;
+    max-width: 275px;
     // height: 87vh;
   }
   .rightArea {
-    min-width: 1020px;
-    max-width: 1020px;
+    min-width: 1050px;
+    max-width: 1050px;
+    // width: 1020px;
     .rowStyle {
       height: 20px;
     }
@@ -665,13 +841,49 @@ div#monitoringHoukokusho {
     background: $view_Title_background;
     border: none;
   }
+  .koumokuTitleShort {
+    color: $font_color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    min-width: 50px;
+    max-width: 100px;
+    height: 100%;
+    text-align: center;
+    background: $view_Title_background;
+    border: none;
+  }
   .koumokuData {
     color: $font_color;
-    width: 350px;
+    width: 200px;
     height: 100%;
     text-align: left;
     background: $view_Data_Read_background;
     border: none;
+  }
+  .koumokuTitle_c {
+    color: $font_color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: 300px;
+    height: 20px;
+    text-align: center;
+    background: $view_Title_background;
+  }
+  .koumokuData2 {
+    color: $font_color;
+    width: 100%;
+    height: 80px;
+    text-align: left;
+    background: $white;
+  }
+  .right {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
   }
   .hosokuTitle {
     color: $font_color;
@@ -696,9 +908,13 @@ div#monitoringHoukokusho {
     width: 75px;
   }
 
-  #yoteisyaIcrnGrid {
+  #icrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: auto;
+    // min-width: 1250px;
+    height: 55vh;
+    // min-height: 300px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -753,12 +969,6 @@ div#monitoringHoukokusho {
     }
   }
 
-  #yoteisyaIcrnGrid {
-    width: auto;
-    // min-width: 1250px;
-    height: 70vh;
-    min-height: 500px;
-  }
   .v-btn-toggle > .v-btn {
     // width: 150px;
     height: 20px;
@@ -816,12 +1026,12 @@ div#monitoringHoukokusho {
       transform: translateX(0px);
     }
     to {
-      transform: translateX(-275px);
+      transform: translateX(-270px);
     }
   }
   @keyframes slideRightArea {
     from {
-      transform: translateX(-275px);
+      transform: translateX(-270px);
     }
     to {
       transform: translateX(0);
@@ -839,8 +1049,8 @@ div#monitoringHoukokusho {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 70px;
+  top: 120px;
+  left: 500px;
   width: 300px;
   max-width: 300px;
 

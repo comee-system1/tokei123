@@ -89,12 +89,14 @@
       </div>
 
       <v-card
-        class="ml-10 mt-1 d-flex flex-row"
+        class="ml-5 mt-1 d-flex flex-row"
         color="transparent"
         elevation="0"
         height="100%"
       >
-        <label style="padding-top: 2px; width: 40px">日付</label>
+        <label style="padding-top: 2px; width: 40px; min-width: 40px"
+          >日付</label
+        >
         <v-btn
           @click="inputCalendarClick()"
           tile
@@ -152,12 +154,12 @@
       <v-toolbar-title>【{{ jigyoName }}】</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- <v-spacer></v-spacer> -->
-      <v-btn-toggle class="flex-wrap" mandatory>
+      <v-btn-toggle class="flex-wrap" style="min-width: 90px" mandatory>
         <v-btn
           v-for="n in zoomList"
           :key="n.val"
-          small
           color="indigo darken-4"
+          :min-width="30"
           @click="zoomClicked(n.val)"
         >
           {{ n.name }}
@@ -419,12 +421,13 @@ export default {
     },
     zoomClicked(val) {
       if (val == 0) {
-        document.body.style.zoom = '100%';
+        document.body.style.zoom = 1.0;
       } else if (val == 1) {
-        document.body.style.zoom = '125%';
+        document.body.style.zoom = 1.25;
       } else {
-        document.body.style.zoom = '150%';
+        document.body.style.zoom = 1.5;
       }
+      alert(document.body.style.zoom);
     },
   },
 };
@@ -510,6 +513,8 @@ div#headerAndNav {
   }
   .v-btn-toggle > .v-btn {
     height: 23px;
+    width: 30px;
+    font-size: 12px;
   }
 }
 // div#headerAndNav {
