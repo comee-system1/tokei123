@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuIdea">
+  <div id="keikakuWeek">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -12,17 +12,147 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="mt-1 borderBottom pb-2">
-            <v-row no-gutters>
-              <v-col cols="1" class="mw200">
-                <v-card class="pr-2 text-center" elevation="0" tile>
-                  <label class="greyLabel">利用者名</label>
-                </v-card>
-              </v-col>
-              <v-col cols="3">
-                <v-card class="pl-1" elevation="0" outlined tile> aaa </v-card>
-              </v-col>
-            </v-row>
+          <v-row dense class="mt-1 borderBottom pb-2">
+            <v-col cols="1" class="mw200">
+              <v-card class="text-center" elevation="0" tile>
+                <label class="greyLabel">利用者名</label>
+              </v-card>
+            </v-col>
+            <v-col cols="3">
+              <v-card elevation="0" outlined tile> aaa </v-card>
+            </v-col>
+            <v-col cols="1" class="mw200">
+              <v-card class="text-center" elevation="0" tile>
+                <label class="greyLabel">作成日</label>
+              </v-card>
+            </v-col>
+            <v-col cols="2" class="text-center">
+              <v-card elevation="0" outlined tile> 2022年4月22日 </v-card>
+            </v-col>
+          </v-row>
+          <v-row dense class="mt-1 borderBottom">
+            <v-col class="mw160">
+              <v-card class="text-center" elevation="0" tile>
+                <label class="greyLabel w160">週間計画開始年月</label>
+              </v-card>
+            </v-col>
+            <v-col class="mw160 ml-1">
+              <v-btn
+                x-small
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                width="140px"
+                height="24px"
+                style="font-size: 12px"
+                >{{ getYm }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-col>
+            <v-col cols="4" align="center">
+              <v-card class="text-center" elevation="0" tile>
+                <label class="greyLabel">入力案内</label>
+                <v-btn x-small class="ml-1">週間予定</v-btn>
+                <v-btn x-small class="ml-1">主な日常生活等</v-btn>
+              </v-card>
+            </v-col>
+            <v-col cols="4" align="right">
+              <v-btn x-small class="ml-1">前回コピー</v-btn>
+              <v-btn x-small class="ml-1">履歴参照</v-btn>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="11">
+              <wj-flex-grid
+                id="keikakuListGrid"
+                :headersVisibility="'Column'"
+                :autoGenerateColumns="false"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowPinning="false"
+                :allowResizing="true"
+                :allowSorting="false"
+                :allowDragging="false"
+                :selectionMode="'None'"
+                :isReadOnly="true"
+                :initialized="onInitialize"
+                :itemsSourceChanged="onItemsSourceChanged"
+                :itemsSource="viewdata"
+              >
+                <wj-flex-grid-column
+                  align="center"
+                  valign="middle"
+                  :width="100"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'月'"
+                  :binding="'monday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'火'"
+                  :binding="'thuseday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'水'"
+                  :binding="'wednesday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'木'"
+                  :binding="'thursday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'金'"
+                  :binding="'friday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'土'"
+                  :binding="'saturday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  :header="'日'"
+                  :binding="'sunday'"
+                  align="center"
+                  valign="middle"
+                  format="g"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+            </v-col>
+            <v-col cols="1">vv</v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -35,11 +165,11 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="keikakuIcrnDatepicker"
+        id="keikakuWeekDatepicker"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
-        @change="monthSelect"
+        @change="monthSelectWeek"
       >
       </v-date-picker>
     </v-dialog>
@@ -60,18 +190,6 @@ export default {
   },
   data() {
     return {
-      inputTypeModel: 0, // 0:意向・方針 1:課題・支援
-      inputType: [
-        {
-          key: 0,
-          value: '意向・方針',
-        },
-        {
-          key: 1,
-          value: '課題・支援',
-        },
-      ],
-
       leftWidth: '20%',
       rightWidth: '80%',
       moveLeft: true,
@@ -114,12 +232,6 @@ export default {
       console.log(row);
       alert('test');
     },
-    /******************************
-     * 入力内容切替ボタンを押下
-     */
-    inputTypePage(type) {
-      this.inputTypeModel = type;
-    },
 
     changeLeftArea() {
       if (this.moveLeft == true) {
@@ -141,14 +253,10 @@ export default {
         moment().format('DD');
       this.datepicker_dialog = true;
     },
-    monthSelect() {
+    monthSelectWeek() {
       this.getYm = moment(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
-    },
-
-    onkeikakuKubun(s) {
-      s.header = this.keikakuKubun[s.selectedIndex].name;
     },
   },
 };
@@ -157,108 +265,43 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#keikakuIdea {
+div#keikakuWeek {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
+
   label.greyLabel {
     background-color: $selected_color;
     display: inline-block;
     width: 100px;
-    &.w90 {
-      width: 90px;
-    }
-    &.w120 {
-      width: 120px;
-    }
-    &.w140 {
-      width: 140px;
-    }
-    &.w200 {
-      width: 200px;
+    &.w160 {
+      width: 160px;
     }
   }
-  .input-text {
-    font-size: 12px;
-    min-width: 200px;
-    div {
-      height: 24px;
-      min-height: 24px;
-    }
-  }
-  .mw240 {
-    max-width: 240px;
-  }
-  .mw200 {
-    max-width: 200px;
-  }
-  .mw180 {
-    max-width: 180px;
-  }
-  .mw160 {
-    max-width: 160px;
-  }
-  .mw140 {
-    max-width: 140px;
-  }
-  .mw120 {
-    max-width: 120px;
-  }
-  .mw100 {
-    max-width: 100px;
-  }
-  .mw90 {
-    max-width: 90px;
-  }
-  .mw30 {
-    max-width: 30px;
-  }
-  .h140 {
-    height: 140px;
-    overflow: auto;
-  }
-  .editarea {
-    &:hover {
-      border: 1px solid $selected_color;
-      background-color: $view_Title_background;
-    }
-  }
+
   .borderBottom {
     border-bottom: 1px solid $deepgreen;
   }
   .lightYellow {
     background-color: $view_Data_Read_background;
   }
-  .valign {
-    display: table;
-    div {
-      &:first-child {
-        display: table-cell;
-        vertical-align: middle;
-      }
-    }
+  .mw160 {
+    max-width: 160px;
   }
-}
-.editTextarea {
-  textarea {
-    height: 80vh !important;
+  .mw200 {
+    max-width: 200px;
   }
 }
 
-#keikakuIcrnDatepicker {
+#keikakuWeekDatepicker {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
   top: 100px;
-  left: 50%;
+  left: 20%;
   width: 300px;
   max-width: 300px;
 }
