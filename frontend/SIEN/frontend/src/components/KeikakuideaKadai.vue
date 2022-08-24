@@ -110,10 +110,15 @@
                 <v-row>
                   <v-col>
                     <v-card class="d-flex justify-end" flat tile>
-                      <v-btn-toggle class="mt-1">
-                        <v-btn small>行追加</v-btn>
-                        <v-btn small>行削除</v-btn>
-                      </v-btn-toggle>
+                      <div>
+                        <v-btn-toggle class="mt-1">
+                          <v-btn small>行追加</v-btn>
+                          <v-btn small>行削除</v-btn>
+                        </v-btn-toggle>
+                      </div>
+                      <div class="ml-3">
+                        <v-btn small>設定</v-btn>
+                      </div>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -249,6 +254,7 @@ export default {
       headerheight: 240,
       editTextDialog: false,
       serviceData: [],
+      serviceDataLength: 0,
     };
   },
   created() {},
@@ -275,6 +281,34 @@ export default {
      */
     onInitializedService(flexGrid) {
       this.createHeaderService(flexGrid);
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        alert(e.target.value);
+        // 区分を押下
+        // if (ht.col == 0 && e.target.value) {
+
+        // }
+        // 並び替え
+        if (ht.col == 0 && e.target.value) {
+          flexGrid.beginUpdate();
+          let index = e.target.value.split('-')[1];
+          let mode = e.target.value.split('-')[0];
+
+          let array = _self.serviceData;
+          if (mode === 'ue') {
+            array.splice(index - 2, 2, array[index - 1], array[index - 2]);
+          } else {
+            array.splice(index - 1, 2, array[index], array[index - 1]);
+          }
+
+          _self.serviceData = [];
+          _self.serviceData = array;
+          flexGrid.itemsSource = [];
+          flexGrid.itemsSource = array;
+          flexGrid.endUpdate();
+        }
+      });
 
       flexGrid.formatItem.addHandler(function (s, e) {
         e.cell.style.textAlign = 'center';
@@ -286,6 +320,54 @@ export default {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
+          }
+
+          if (e.col == 0) {
+            let text = e.cell.innerText;
+            let ue = '';
+            if (e.row) {
+              ue =
+                '<button class="arrow" value="ue-' +
+                parseInt(e.row + 1) +
+                '">▲</button>';
+            } else {
+              ue = '<button class="arrow" disabled >▲</button>';
+            }
+            let sita = '';
+            if (e.row == _self.serviceDataLength - 1) {
+              sita = '<button class="arrow" disabled >▼</button>';
+            } else {
+              sita =
+                '<button class="arrow" value="sita-' +
+                parseInt(e.row + 1) +
+                '">▼</button>';
+            }
+            e.cell.innerHTML = text + ue + sita;
+          } else if (e.col == 3) {
+            let text = e.cell.innerText;
+            let weekbtn = '';
+            let monthbtn = '';
+            let act1 = '';
+            let act2 = '';
+            if (text == 1) {
+              act1 = 'act';
+            }
+            if (text == 2) {
+              act2 = 'act';
+            }
+            weekbtn =
+              "<button class='arrow " +
+              act1 +
+              "' value='week-" +
+              e.row +
+              "'>週</button>";
+            monthbtn =
+              "<button class='arrow " +
+              act2 +
+              "' value='month-" +
+              e.row +
+              "'>月</button>";
+            e.cell.innerHTML = weekbtn + monthbtn;
           }
         }
       });
@@ -330,6 +412,10 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
+
+    /*******************************
+     * 一覧
+     */
     onInitialized(flexGrid) {
       this.createData();
       this.createHeader(flexGrid);
@@ -370,28 +456,32 @@ export default {
     openDialog(row) {
       this.editTextDialog = true;
       console.log(this.viewData[row]);
-      this.serviceData.push({
-        no: 1,
-        service: '就労継続支援A型',
-        detail: '',
-        kubun: 1,
-        start: '10:00',
-        end: '15:00',
-        one: '5.0',
-        mon: '',
-        tue: '',
-        wed: '〇',
-        thr: '',
-        fri: '',
-        sat: '',
-        count_week: 1,
-        count_month: 1,
-        total_week: 1,
-        total_month: 1,
-        jigyosyo: 'はなまる就労支援センター\n03-1234-1234',
-        tanto: '',
-        edit: false,
-      });
+      this.serviceData = [];
+      for (let i = 0; i < 3; i++) {
+        this.serviceData.push({
+          no: i + 1,
+          service: i + '就労継続支援A型',
+          detail: '',
+          kubun: 1,
+          start: '10:00',
+          end: '15:00',
+          one: '5.0',
+          mon: '',
+          tue: '',
+          wed: '〇',
+          thr: '',
+          fri: '',
+          sat: '',
+          count_week: 1,
+          count_month: 1,
+          total_week: '5.0',
+          total_month: '22.5',
+          jigyosyo: 'はなまる就労支援センター\n03-1234-1234',
+          tanto: '',
+          edit: false,
+        });
+      }
+      this.serviceDataLength = this.serviceData.length;
     },
     /******************************
      *  ダイアログの編集内容取得
@@ -472,10 +562,19 @@ export default {
     text-align: left !important;
   }
 }
+#serviceGrid {
+  .wj-cell {
+    &:nth-child(4).wj-state-selected {
+      background: transparent;
+      color: initial;
+    }
+  }
+}
 button.arrow {
   border: 1px solid $light-gray;
   margin: 0px 1px;
   border-radius: 3px;
+  width: 20px;
   &:hover {
     background-color: $light-gray;
     color: $black;
@@ -484,6 +583,9 @@ button.arrow {
     background-color: $light-white;
     color: $light-white;
     opacity: 0.2;
+  }
+  &.act {
+    background-color: $light-gray;
   }
 }
 </style>
