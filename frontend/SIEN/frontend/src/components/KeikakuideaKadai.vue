@@ -107,12 +107,23 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
+                <v-row>
+                  <v-col>
+                    <v-card class="d-flex justify-end" flat tile>
+                      <v-btn-toggle class="mt-1">
+                        <v-btn small>行追加</v-btn>
+                        <v-btn small>行削除</v-btn>
+                      </v-btn-toggle>
+                    </v-card>
+                  </v-col>
+                </v-row>
                 <wj-flex-grid
                   id="serviceGrid"
                   :headersVisibility="'Column'"
                   :autoRowHeights="true"
                   :itemsSource="serviceData"
                   :initialized="onInitializedService"
+                  class="mt-1"
                 >
                   <wj-flex-grid-column
                     binding="no"
@@ -122,7 +133,6 @@
                   <wj-flex-grid-column
                     binding="service"
                     width="2*"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     binding="detail"
@@ -214,7 +224,7 @@
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     binding="edit"
-                    :width="24"
+                    :width="30"
                   ></wj-flex-grid-column>
                 </wj-flex-grid>
               </v-list-item-subtitle>
@@ -288,6 +298,12 @@ export default {
       headerpanel.setCellData(0, 2, 'サービス詳細');
       headerpanel.setCellData(0, 3, '区分');
       headerpanel.setCellData(0, 4, '時間');
+      headerpanel.setCellData(0, 7, '週間予定');
+      headerpanel.setCellData(0, 14, '回数');
+      headerpanel.setCellData(0, 16, '計');
+      headerpanel.setCellData(0, 18, '事業所');
+      headerpanel.setCellData(0, 19, '担当者');
+      headerpanel.setCellData(0, 20, '削除');
 
       let headerRanges = [
         new wjGrid.CellRange(0, 0, 1, 0),
@@ -295,6 +311,12 @@ export default {
         new wjGrid.CellRange(0, 2, 1, 2),
         new wjGrid.CellRange(0, 3, 1, 3),
         new wjGrid.CellRange(0, 4, 0, 6),
+        new wjGrid.CellRange(0, 7, 0, 13),
+        new wjGrid.CellRange(0, 14, 0, 15),
+        new wjGrid.CellRange(0, 16, 0, 17),
+        new wjGrid.CellRange(0, 18, 1, 18),
+        new wjGrid.CellRange(0, 19, 1, 19),
+        new wjGrid.CellRange(0, 20, 1, 20),
       ];
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
