@@ -66,8 +66,8 @@
           <v-row dense>
             <v-col cols="11">
               <wj-flex-grid
-                id="keikakuListGrid"
-                :headersVisibility="'Column'"
+                id="keikakuWeekGrid"
+                :headersVisibility="3"
                 :autoGenerateColumns="false"
                 :allowAddNew="false"
                 :allowDelete="false"
@@ -78,72 +78,13 @@
                 :selectionMode="'None'"
                 :isReadOnly="true"
                 :initialized="onInitialize"
-                :itemsSourceChanged="onItemsSourceChanged"
                 :itemsSource="viewdata"
               >
                 <wj-flex-grid-column
-                  align="center"
-                  valign="middle"
-                  :width="100"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'月'"
-                  :binding="'monday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'火'"
-                  :binding="'thuseday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'水'"
-                  :binding="'wednesday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'木'"
-                  :binding="'thursday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'金'"
-                  :binding="'friday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'土'"
-                  :binding="'saturday'"
-                  align="center"
-                  valign="middle"
-                  format="g"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  :header="'日'"
-                  :binding="'sunday'"
+                  v-for="val in weekarray"
+                  :key="val.header"
+                  :header="val.header"
+                  :binding="val.binding"
                   align="center"
                   valign="middle"
                   format="g"
@@ -190,7 +131,7 @@ export default {
   },
   data() {
     return {
-      leftWidth: '20%',
+      leftWidth: '280px',
       rightWidth: '80%',
       moveLeft: true,
       datepicker_dialog: false,
@@ -207,6 +148,44 @@ export default {
         { id: 1, name: 'サービス等利用計画2' },
       ],
       keikakuKubunModel: '',
+      viewdata: [],
+      weekarray: [
+        {
+          key: 1,
+          header: '月',
+          binding: 'monday',
+        },
+        {
+          key: 2,
+          header: '火',
+          binding: 'thuseday',
+        },
+        {
+          key: 3,
+          header: '水',
+          binding: 'wednesday',
+        },
+        {
+          key: 4,
+          header: '木',
+          binding: 'thursday',
+        },
+        {
+          key: 5,
+          header: '金',
+          binding: 'friday',
+        },
+        {
+          key: 6,
+          header: '土',
+          binding: 'saturday',
+        },
+        {
+          key: 0,
+          header: '日',
+          binding: 'sunday',
+        },
+      ],
     };
   },
   created() {},
@@ -232,7 +211,19 @@ export default {
       console.log(row);
       alert('test');
     },
+    createData() {
+      let array = [];
 
+      array.push({
+        monday: '',
+      });
+
+      this.viewdata = array;
+    },
+    onInitialize(flexGrid) {
+      console.log(flexGrid);
+      this.createData();
+    },
     changeLeftArea() {
       if (this.moveLeft == true) {
         this.moveLeft = false;
@@ -240,7 +231,7 @@ export default {
         this.rightWidth = '99%';
       } else {
         this.moveLeft = true;
-        this.leftWidth = '20%';
+        this.leftWidth = '280px';
         this.rightWidth = '80%';
       }
     },
@@ -301,7 +292,7 @@ div#keikakuWeek {
   margin-top: 20px;
   position: fixed !important;
   top: 100px;
-  left: 20%;
+  left: 280px;
   width: 300px;
   max-width: 300px;
 }

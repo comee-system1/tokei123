@@ -13,175 +13,204 @@
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
           <v-row no-gutters class="mt-1 borderBottom pb-2">
-            <v-row no-gutters>
-              <v-col cols="1" class="mw200">
-                <v-card class="pr-2 text-center" elevation="0" tile>
-                  <label class="greyLabel">利用者名</label>
+            <v-col cols="3">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card outlined tile width="100" class="text-center">
+                  利用者名
                 </v-card>
-              </v-col>
-              <v-col cols="3">
-                <v-card class="pl-1" elevation="0" outlined tile> aaa </v-card>
-              </v-col>
-              <v-col cols="7">
-                <v-row no-gutters class="justify-end">
-                  <v-col cols="2" align="center"
-                    ><label class="greyLabel">同意署名欄</label></v-col
-                  >
-                  <v-col cols="1" style="max-width: 25px" class="mt-1">
-                    <input type="checkbox" />
-                  </v-col>
-                  <v-col cols="3">
-                    <v-text-field
-                      outlined
-                      value=""
-                      hide-details="false"
-                      height="24"
-                      class="input-text lightYellow"
-                      readonly
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-row>
-          <v-row no-gutters class="mt-2 borderBottom pb-2">
-            <v-col class="mw100">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel">入力</label>
+                <v-card width="200" class="ml-3" elevation="0" outlined tile>
+                  aaa
+                </v-card>
               </v-card>
             </v-col>
-            <v-col class="ml-2 mw100">
+            <v-col class="ml-auto" cols="3">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  class="text-center"
+                  v-if="inputTypemodel == 'tab-0'"
+                  >同意署名欄
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  class="text-center"
+                  v-if="inputTypemodel == 'tab-1'"
+                  >完了
+                </v-card>
+                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
+                  竹下道子
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+
+          <v-row no-gutters class="mt-1">
+            <v-col cols="3">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card outlined tile width="100" class="text-center">
+                  作成日
+                </v-card>
+                <v-card
+                  width="200"
+                  class="text-center"
+                  style="box-shadow: none !important"
+                >
+                  <v-btn
+                    outlined
+                    tile
+                    x-small
+                    @click="inputCalendarClick(0)"
+                    width="180px"
+                    height="24px"
+                    style="font-size: 12px"
+                    >{{ getYm }}
+                    <div class="float-right">
+                      <v-icon small>mdi-calendar-month</v-icon>
+                    </div>
+                  </v-btn>
+                </v-card>
+              </v-card>
+            </v-col>
+            <v-col cols="3">
+              <v-card class="d-flex justify-start" flat tile>
+                <v-card outlined tile width="100" class="text-center"
+                  >計画区分
+                </v-card>
+
+                <wj-menu
+                  class="customCombobox ml-1"
+                  :itemsSource="keikakuKubun"
+                  selectedValuePath="val"
+                  displayMemberPath="name"
+                  v-model="keikakuKubunModel"
+                  :itemClicked="onkeikakuKubun"
+                  style="border-radius: 4px !important"
+                >
+                </wj-menu>
+              </v-card>
+            </v-col>
+
+            <v-col class="ml-auto" cols="3">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card outlined tile width="100" class="text-center"
+                  >作成者
+                </v-card>
+                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
+                  竹下道子
+                </v-card>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mt-1 pb-2 borderBottom">
+            <v-col cols="6">
               <v-btn-toggle>
-                <v-btn x-small>新規</v-btn>
-                <v-btn x-small>修正</v-btn>
+                <v-btn small>新規入力</v-btn>
+                <v-btn small>内容更新</v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col class="mw90">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel">作成日</label>
-              </v-card>
+            <v-col cols="6" align="right">
+              <v-btn-toggle>
+                <v-btn small>前回コピー</v-btn>
+                <v-btn small>履歴参照</v-btn>
+              </v-btn-toggle>
             </v-col>
-            <v-col class="mw160 ml-4">
-              <v-btn
-                x-small
-                @click="inputCalendarClick(0)"
-                tile
+          </v-row>
+          <v-row
+            no-gutters
+            class="mt-1 pb-1 borderBottom"
+            v-if="inputTypemodel == 'tab-0'"
+          >
+            <v-card class="d-flex justify-start" flat tile>
+              <v-card outlined tile width="140" class="text-center">
+                障害者支援区分
+              </v-card>
+              <v-card
+                class="lightYellow text-center ml-1"
+                width="80"
                 outlined
-                width="140px"
-                height="24px"
-                style="font-size: 12px"
-                >{{ getYm }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-            </v-col>
-            <v-col class="mw100 ml-n4">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel">計画区分</label>
-              </v-card>
-            </v-col>
-            <v-col class="mw180 ml-1">
-              <wj-menu
-                class="customCombobox"
-                :itemsSource="keikakuKubun"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="keikakuKubunModel"
-                :itemClicked="onkeikakuKubun"
-                style="width: 150px"
+                tile
               >
-              </wj-menu>
-            </v-col>
-            <v-col class="mw90 ml-n4">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel">作成者</label>
-              </v-card>
-            </v-col>
-            <v-col class="ml-3 mw90">
-              <v-card class="pl-1 mw90" elevation="0" outlined>
-                竹下 道子
-              </v-card>
-            </v-col>
-            <v-col class="mw160">
-              <v-btn-toggle>
-                <v-btn x-small>前回コピー</v-btn>
-                <v-btn x-small>履歴参照</v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mt-2">
-            <v-col class="mw120">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w120">障害者支援区分</label>
-              </v-card>
-            </v-col>
-            <v-col class="mw90 ml-2">
-              <v-card class="pr-2 text-center lightYellow" elevation="0" tile>
                 区分5
               </v-card>
-            </v-col>
-            <v-col class="mw200 ml-2">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w200">障害福祉サービス受給者番号</label>
+              <v-card outlined tile width="240" class="text-center ml-1">
+                障害福祉サービス受給者番号
               </v-card>
-            </v-col>
-            <v-col class="mw120 ml-2">
-              <v-card class="pr-2 text-center lightYellow" elevation="0" tile>
+              <v-card
+                class="lightYellow text-center ml-1"
+                width="140"
+                outlined
+                tile
+              >
                 11000011120
               </v-card>
-            </v-col>
-            <v-col class="mw200 ml-2">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w200">地域相談支援受給者番号</label>
+              <v-card outlined tile width="240" class="text-center ml-1">
+                地域相談支援受給者番号
               </v-card>
-            </v-col>
-            <v-col class="mw160 ml-2">
-              <v-card class="pr-2 text-center lightYellow" elevation="0" tile>
-                &nbsp;
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mt-1 borderBottom pb-2">
-            <v-col class="mw120">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w120">通所受給者番号</label>
-              </v-card>
-            </v-col>
-            <v-col class="mw140 ml-2">
-              <v-card class="pr-2 text-center lightYellow" elevation="0" tile>
-                &nbsp;
-              </v-card>
-            </v-col>
-            <v-col class="mw120 ml-2">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w120">モニタリング期間</label>
-              </v-card>
-            </v-col>
-            <v-col class="mw240 ml-2">
-              <v-card elevation="0" outlined tile
-                >毎月(当初3ヶ月)その後3ヶ月毎</v-card
+              <v-card
+                class="lightYellow text-center ml-1"
+                width="140"
+                outlined
+                tile
               >
-            </v-col>
-            <v-col class="mw90 ml-2 ml-auto">
-              <v-card class="pr-2 text-center" elevation="0" tile>
-                <label class="greyLabel w90">入力内容</label>
               </v-card>
-            </v-col>
-            <v-col class="mw140 ml-2 mr-auto">
-              <v-btn-toggle v-model="inputTypeModel" mandatory>
-                <v-btn
-                  x-small
+            </v-card>
+            <v-card class="d-flex justify-start mt-1" flat tile>
+              <v-card outlined tile width="140" class="text-center">
+                通所受給者番号
+              </v-card>
+              <v-card
+                class="lightYellow text-center ml-1"
+                width="140"
+                outlined
+                tile
+              >
+              </v-card>
+              <v-card outlined tile width="140" class="ml-1 text-center">
+                モニタリング期間
+              </v-card>
+              <v-text-field
+                class="pa-0 ma-0 ml-1 input-text"
+                hide-details="false"
+                outlined
+                dense
+                :value="'毎月(当初3ヶ月)その後3ヶ月毎'"
+              >
+              </v-text-field>
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="mt-1">
+            <v-col cols="6">
+              <v-tabs height="25" light v-model="inputTypemodel">
+                <v-tab
+                  class="pa-1"
                   v-for="value in inputType"
                   :key="value.key"
-                  @click="inputTypePage(value.key)"
-                  >{{ value.value }}</v-btn
+                  style="height: 25px"
+                  :href="'#tab-' + value.key"
                 >
+                  {{ value.value }}</v-tab
+                >
+              </v-tabs>
+            </v-col>
+            <v-col cols="6" align="right" v-if="inputTypemodel == 'tab-1'">
+              <v-btn-toggle class="mt-1">
+                <v-btn small>行追加</v-btn>
+                <v-btn small>行削除</v-btn>
               </v-btn-toggle>
             </v-col>
           </v-row>
-          <keikakuideaIkou v-if="inputTypeModel === 0"></keikakuideaIkou>
-          <keikakuideaKadai v-if="inputTypeModel === 1"></keikakuideaKadai>
+          <v-tabs-items v-model="inputTypemodel">
+            <v-tab-item value="tab-0">
+              <keikakuideaIkou></keikakuideaIkou>
+            </v-tab-item>
+            <v-tab-item value="tab-1">
+              <keikakuideaKadai></keikakuideaKadai>
+            </v-tab-item>
+          </v-tabs-items>
         </v-col>
       </v-row>
     </v-container>
@@ -221,7 +250,7 @@ export default {
   },
   data() {
     return {
-      inputTypeModel: 0, // 0:意向・方針 1:課題・支援
+      inputTypemodel: 'tab-1', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
         {
           key: 0,
@@ -233,8 +262,8 @@ export default {
         },
       ],
 
-      leftWidth: '20%',
-      rightWidth: '80%',
+      leftWidth: '280px',
+      rightWidth: '79%',
       moveLeft: true,
       datepicker_dialog: false,
       picker: '',
@@ -275,12 +304,6 @@ export default {
       console.log(row);
       alert('test');
     },
-    /******************************
-     * 入力内容切替ボタンを押下
-     */
-    inputTypePage(type) {
-      this.inputTypeModel = type;
-    },
 
     changeLeftArea() {
       if (this.moveLeft == true) {
@@ -289,8 +312,8 @@ export default {
         this.rightWidth = '99%';
       } else {
         this.moveLeft = true;
-        this.leftWidth = '20%';
-        this.rightWidth = '80%';
+        this.leftWidth = '280px';
+        this.rightWidth = '79%';
       }
     },
     inputCalendarClick() {
@@ -330,26 +353,11 @@ div#keikakuIdea {
     min-width: 150px;
     display: block;
   }
-  label.greyLabel {
-    background-color: $selected_color;
-    display: inline-block;
-    width: 100px;
-    &.w90 {
-      width: 90px;
-    }
-    &.w120 {
-      width: 120px;
-    }
-    &.w140 {
-      width: 140px;
-    }
-    &.w200 {
-      width: 200px;
-    }
-  }
+
   .input-text {
     font-size: 12px;
     min-width: 200px;
+    border-radius: 4px !important;
     div {
       height: 24px;
       min-height: 24px;

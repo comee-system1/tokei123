@@ -1,8 +1,8 @@
 <template>
   <div id="monitoringHoukokusho">
-    <v-container class="ml-1 pa-0" fluid>
+    <v-container class="ml-1 pa-0" style="max-width: 100%" fluid>
       <v-row no-gutters>
-        <v-col class="leftArea">
+        <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
@@ -13,15 +13,7 @@
           >
           </user-list>
         </v-col>
-        <v-col
-          :class="{
-            rightArea: marginDefault == true,
-            'ml-1': mltype == true,
-            moveLeft: moveLeft == true,
-            moveRight: moveRight == true,
-          }"
-          class="ml-1 pa-0"
-        >
+        <v-col class="rightArea pa-0">
           <v-row
             no-gutters
             class="mt-1 pa-1"
@@ -31,7 +23,7 @@
               <v-card class="koumokuTitle pa-1" outlined tile>
                 利用者名
               </v-card>
-              <v-card class="koumokuData ml-1" tile outlined>
+              <v-card class="koumokuData ml-1 pl-1" tile outlined>
                 {{ userData.riyocodeD }} {{ userData.names }}
               </v-card>
               <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
@@ -132,37 +124,39 @@
               担当者名
             </v-card>
             <v-layout class="right">
-              <v-btn
-                class="itemBtn mr-1"
-                :loading="loading"
-                @click="searchClicked()"
-              >
+              <v-btn class="itemBtn mr-1" @click="copyClicked()">
                 前回コピー
               </v-btn>
-              <v-btn
-                class="itemBtn"
-                :loading="loading"
-                @click="searchClicked()"
-              >
-                履歴参照
-              </v-btn>
+              <v-btn class="itemBtn" @click="rirekiClicked()"> 履歴参照 </v-btn>
             </v-layout>
           </v-row>
           <v-row no-gutters class="mt-1">
-            <div style="width: 50%; height: 100px">
+            <div style="width: 50%">
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 総合的な援助の方針
               </v-card>
-              <v-card class="koumokuData2 pa-1" outlined tile>
-                総合的な援助の方針
+              <v-card
+                class="koumokuData2 pa-1"
+                outlined
+                tile
+                :ripple="false"
+                @click="inputClicked(0)"
+              >
+                {{ getHousin }}
               </v-card>
             </div>
-            <div style="width: 50%; height: 100px">
+            <div style="width: 50%">
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 全体の状況
               </v-card>
-              <v-card class="koumokuData2 pa-1" outlined tile>
-                総合的な援助の方針
+              <v-card
+                class="koumokuData2 pa-1"
+                outlined
+                tile
+                :ripple="false"
+                @click="inputClicked(1)"
+              >
+                {{ getJyoukyou }}
               </v-card>
             </div>
           </v-row>
@@ -179,69 +173,73 @@
               :allowResizing="true"
               :allowSorting="false"
               :allowDragging="false"
-              :selectionMode="'Row'"
-              :isReadOnly="true"
               :initialized="onInitializeIcrnGrid"
-              :formatItem="onFormatItemyaIcrn"
+              :formatItem="onFormatItem"
               :itemsSourceChanging="onItemsSourceChanging"
               :itemsSourceChanged="onItemsSourceChanged"
-              :itemsSource="viewdata"
+              :itemsSource="viewdataAll.viewdata"
             >
             </wj-flex-grid>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-spacer></v-spacer>
-            <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
-              結果
-            </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
-              <v-btn
-                v-for="n in kekkaList"
-                :key="n.val"
-                small
-                color="secondary"
-                dark
-                outlined
-                @click="kekkaClicked(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-            <v-layout class="rowStyle" v-if="kekkaIndex == 3">
-              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-                ｻｰﾋﾞｽ終了日
-              </v-card>
-              <v-btn
-                @click="inputCalendarClick(0)"
-                tile
-                outlined
-                width="150px"
-                height="100%"
-                class="pa-0 mr-1"
-                >{{ getYmd() }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-            </v-layout>
-            <v-layout class="rowStyle" v-else>
-              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-                次回案作成月
-              </v-card>
-              <v-btn
-                @click="inputCalendarClick(0)"
-                tile
-                outlined
-                width="150px"
-                height="100%"
-                class="pa-0 mr-1"
-                >{{ getYmd() }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-            </v-layout>
             <v-layout class="right">
+              <v-spacer></v-spacer>
+              <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
+                結果
+              </v-card>
+              <v-btn-toggle
+                class="flex-wrap mr-1"
+                v-model="kekkaIndex"
+                mandatory
+              >
+                <v-btn
+                  v-for="n in kekkaList"
+                  :key="n.val"
+                  small
+                  color="secondary"
+                  dark
+                  outlined
+                  @click="kekkaClicked(n.val)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
+              <v-layout class="rowStyle" v-if="kekkaIndex == 3">
+                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+                  ｻｰﾋﾞｽ終了日
+                </v-card>
+                <v-btn
+                  @click="inputCalendarClick(8)"
+                  tile
+                  outlined
+                  width="150px"
+                  height="100%"
+                  class="pa-0 mr-1"
+                  >{{ getKanryouYmd(0) }}
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-btn>
+              </v-layout>
+              <v-layout class="rowStyle" v-else>
+                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+                  次回案作成月
+                </v-card>
+                <v-btn
+                  @click="inputCalendarClick(9)"
+                  tile
+                  outlined
+                  width="125px"
+                  height="100%"
+                  class="pa-0 mr-1"
+                  :disabled="kekkaIndex == 0"
+                  >{{ getKanryouYmd(1) }}
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-btn>
+              </v-layout>
+
               <v-card class="koumokuTitleShort pa-1 ml-1" outlined tile>
                 完了
               </v-card>
@@ -253,7 +251,7 @@
               >
               </v-card>
               <v-card
-                class="koumokuData pa-1 ml-1"
+                class="koumokuData pa-1 pr-1 ml-1"
                 style="width: 100px"
                 outlined
                 tile
@@ -283,9 +281,105 @@
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
-        @change="daySelect"
+        @change="daySelect(0)"
       >
       </v-date-picker>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerKanryouYm_dialog"
+      width="200"
+      class="datepicker_dialogs"
+    >
+      <v-date-picker
+        id="monitoringHoukokushoDatepicker"
+        type="month"
+        v-model="pickerKanryou"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="monthSelect"
+      >
+      </v-date-picker>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerKanryouYmd_dialog"
+      width="200"
+      class="datepicker_dialogs"
+    >
+      <v-date-picker
+        id="monitoringHoukokushoDatepicker"
+        type="date"
+        v-model="pickerKanryou"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="daySelect(1)"
+      >
+      </v-date-picker>
+    </v-dialog>
+    <v-dialog v-model="housinInputflg" width="500" class="inputDialog">
+      <v-card
+        class="koumokuTitle_c pa-1"
+        style="background: lightgray"
+        outlined
+        tile
+      >
+        総合的な援助の方針
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close(0)"
+          class="closeButton"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+      </v-card>
+      <v-textarea
+        class="ma-0 pa-0"
+        no-resize
+        v-model="viewdataAll.housin"
+        height="500"
+        hide-details
+        solo
+        flat
+        dense
+        outlined
+      ></v-textarea>
+    </v-dialog>
+    <v-dialog v-model="jyoukyouInputflg" width="500" class="inputDialog">
+      <v-card
+        class="koumokuTitle_c pa-1"
+        style="background: lightgray"
+        outlined
+        tile
+      >
+        全体の状況
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close(1)"
+          class="closeButton"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+      </v-card>
+      <v-textarea
+        class="ma-0 pa-0"
+        no-resize
+        v-model="viewdataAll.jyoukyou"
+        height="500"
+        hide-details
+        solo
+        flat
+        dense
+        outlined
+      ></v-textarea>
     </v-dialog>
     <v-overlay class="text-center" id="load_dialog" v-show="screenFlag">
       <v-progress-circular
@@ -309,7 +403,7 @@ import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
-// import * as wjCore from '@grapecity/wijmo';
+import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 // import MdSelect from '../components/MdSelect.vue';
@@ -319,6 +413,7 @@ export default {
   components: { UserList },
   data() {
     return {
+      userList: [],
       userData: {},
       keikakuYmd: '',
       headerList: [
@@ -340,7 +435,7 @@ export default {
           dataname: 'jiki',
           title: '達成時期',
           kbntitle: '',
-          width: '4*',
+          width: '5*',
           align: 'left',
         },
         {
@@ -414,19 +509,24 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'その他',
+          dataname: 'other',
           title: 'その他の留意事項',
           kbntitle: '',
           width: '10*',
           align: 'left',
         },
       ],
-      viewdataAll: [],
-      viewdata: [],
+      viewdataAll: { housin: '', jyoukyou: '', viewdata: [] },
       kikanYmd: '',
       picker: '',
+      kikanKanryou: '',
+      pickerKanryou: '',
       datepicker_dialog: false,
+      datepickerKanryouYm_dialog: false,
+      datepickerKanryouYmd_dialog: false,
       screenFlag: false,
+      housinInputflg: false,
+      jyoukyouInputflg: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
       selTantousya: 0,
@@ -443,42 +543,70 @@ export default {
       ],
       loading: false,
       marginDefault: true,
-      moveRight: false,
-      moveLeft: false,
-      mltype: '',
+      leftWidth: '280px',
     };
   },
   mounted() {},
+  computed: {
+    getHousin() {
+      return wjCore.escapeHtml(this.viewdataAll.housin);
+    },
+    getJyoukyou() {
+      return wjCore.escapeHtml(this.viewdataAll.jyoukyou);
+    },
+  },
   methods: {
     /*******************************
      * ユーザー一覧コンポーネントの開閉ボタンを押下
      */
     changeLeftArea() {
+      let doc = document.getElementsByClassName('rightArea')[0];
       if (this.moveLeft == true) {
-        this.moveRight = true;
         this.moveLeft = false;
-        this.headerWidth = { 2: 40, 3: 90, 4: 34 };
+        doc.style.minWidth = '1050px';
+        doc.style.maxWidth = '1050px';
+        this.leftWidth = '280px';
       } else {
         this.moveLeft = true;
-        this.moveRight = false;
-        this.headerWidth = { 2: 140, 3: 190, 4: 64 };
+        doc.style.minWidth = '97%';
+        doc.style.maxWidth = '97%';
+        this.leftWidth = '14px';
       }
-
-      // if (this.riid) {
-      //   this.createHeader(this.mainGrid);
-      // }
     },
     onInitializeIcrnGrid(flexGrid) {
       // flexGrid.beginUpdate();
       // クリックイベント
-      // flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-      //   let ht = flexGrid.hitTest(e);
-      //   if (ht.panel == flexGrid.cells) {
-      //     // let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
-      //     // this.setDispdata(tmpitem);
-      //     // this.tourokuScreenFlag = true;
-      //   }
-      // });
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          if (ht.col == 7 || ht.col == 8) {
+            if (ht.col == 7 && tmpitem.kind == 0) {
+              tmpitem.kind = 1;
+            } else if (ht.col == 8 && tmpitem.kind == 1) {
+              tmpitem.kind = 0;
+            }
+            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 7, ht.row, 8));
+          }
+          if (ht.col == 9 || ht.col == 10) {
+            if (ht.col == 9 && tmpitem.ryou == 0) {
+              tmpitem.ryou = 1;
+            } else if (ht.col == 10 && tmpitem.ryou == 1) {
+              tmpitem.ryou = 0;
+            }
+            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 9, ht.row, 10));
+          }
+          if (ht.col == 11 || ht.col == 12) {
+            if (ht.col == 11 && tmpitem.syukan == 0) {
+              tmpitem.syukan = 1;
+            } else if (ht.col == 12 && tmpitem.syukan == 1) {
+              tmpitem.syukan = 0;
+            }
+            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 11, ht.row, 12));
+          }
+        }
+      });
+
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
@@ -501,12 +629,12 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
         col.allowResizing = true;
-        // if (colIndex == 3 || colIndex == 11 || colIndex == 19) {
-        //   col.format = sysConst.FORMAT.Ymd;
-        // } else if (colIndex == 17) {
-        //   col.format = sysConst.FORMAT.Ym;
-        // }
-
+        if (colIndex == 0) {
+          col.dataType = 'Boolean';
+        }
+        if (7 <= colIndex && colIndex <= 12) {
+          col.isReadOnly = true;
+        }
         flexGrid.columnHeaders.setCellData(
           0,
           colIndex,
@@ -526,16 +654,40 @@ export default {
       flexGrid.beginUpdate();
       flexGrid.endUpdate();
     },
-
     onItemsSourceChanged(flexGrid) {
       this.screenFlag = false;
       this.loading = false;
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      flexGrid.beginUpdate();
+      flexGrid.autoSizeRows();
+      flexGrid.endUpdate();
     },
-
     onFormatItem(flexGrid, e) {
-      console.log(flexGrid);
-      console.log(e);
+      if (e.panel == flexGrid.cells) {
+        e.cell.style.backgroundColor = '';
+        let tmpitem = e.panel.rows[e.row].dataItem;
+        if (e.col == 7 || e.col == 8) {
+          if (tmpitem.kind == 1 && e.col == 7) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          } else if (tmpitem.kind == 0 && e.col == 8) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          }
+        }
+        if (e.col == 9 || e.col == 10) {
+          if (tmpitem.ryou == 1 && e.col == 9) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          } else if (tmpitem.ryou == 0 && e.col == 10) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          }
+        }
+        if (e.col == 11 || e.col == 12) {
+          if (tmpitem.syukan == 1 && e.col == 11) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          } else if (tmpitem.syukan == 0 && e.col == 12) {
+            e.cell.style.backgroundColor = 'mistyrose';
+          }
+        }
+      }
     },
     searchClicked() {
       // 初期データ読込
@@ -550,144 +702,53 @@ export default {
         //   this.userFilter();
         //   this.screenFlag = false;
         // });
-        this.createdemodata();
-        this.userFilter();
-      } else {
-        this.userFilter();
       }
+      this.createdemodata();
     },
     createdemodata() {
-      let result = [];
-      let ymd;
-      for (let i = 1; i <= 100; i++) {
-        let d = new Date('2022', Number('12') - 1, '01');
-        if (i < 20 && i < 30) {
-          d = new Date('2022', Number('12') - 1, '11');
-        } else if (i < 30 && i < 40) {
-          d = new Date('2022', Number('12') - 1, '21');
-        } else {
-          d = new Date('2022', Number('12') - 1, '31');
-        }
-        ymd = d;
-
-        result.push({
-          codebk: String(1000000 + i),
-          code: String(1000000 + i),
-          name: '東経 ' + i + '太郎',
-          sichoson: '新東経西市',
-          sakuseiymd: ymd,
-          yousiki: '者',
-          yoteiMonth: 'xx月',
-          endMonth: '○',
-          chusi: '',
-          enki: '',
-          riyu: '',
-          jikaiMonth: '',
-          jissiYmd: ymd,
-          jissi: '●',
-          syukankeikaku: '●',
-          doui: '●',
-          henkou: '●',
-          kousin: '●',
-          nextMonth: ymd,
-          serviceend: '○',
-          kaigiYmd: ymd,
-          kasan: '○',
-          tantousya: '五文字太郎',
-          age: 100,
+      let result = {};
+      result.housin =
+        '本人の希望する生活の実現と安心した地域での生活を構築する';
+      result.jyoukyou =
+        '公的なサービス導入により生活が安定。一人で買い物に行くようになるなどの生活意欲が向上してきている。事務所や近隣住民、商店などとの関係も良好で、買い物に行くと転院がお財布から必要な金額を取りレシートを入れてくれるようになり、銀行でも本人が行くと職員が来てくれるようになったので、一人での外出が増えている';
+      result.viewdata = [];
+      for (let i = 0; i < 5; i++) {
+        result.viewdata.push({
+          jissi: true,
+          mokuhyo: '',
+          jiki: '6か月',
+          jyoukyou: 'たちつてと',
+          manzokudo: 'なにぬねの',
+          tasseikan: 'はひふへほ',
+          kaiketuhouhou: 'まみむめも',
+          kind: i % 2,
+          kind1: '有',
+          kind2: '無',
+          ryou: i % 2,
+          ryou1: '有',
+          ryou2: '無',
+          syukan: i % 2,
+          syukan1: '有',
+          syukan2: '無',
+          other: 'らりるれろ',
         });
-
+        if (i == 0) {
+          result.viewdata[i].mokuhyo =
+            '体制を整えることで、緊急事態に対応できるようにする';
+          result.viewdata[i].jyoukyou =
+            '月に1～2回は電話があるが、電話で話せば落ち着くことが多い。実際に訪問するのは月1回あるかどうか。';
+        }
         if (i == 1) {
-          result[i - 1].enki = '○';
-          result[i - 1].riyu = '自己都合';
-          result[i - 1].jikaiMonth = 'xx月';
-          result[i - 1].jissiYmd = '';
-          result[i - 1].jissi = '';
-          result[i - 1].syukankeikaku = '';
-          result[i - 1].doui = '';
-          result[i - 1].henkou = '';
-          result[i - 1].kousin = '';
-          result[i - 1].nextMonth = '';
-          result[i - 1].serviceend = '';
-          result[i - 1].kaigiYmd = '';
-          result[i - 1].kasan = '';
+          result.viewdata[i].mokuhyo =
+            '食事や入浴を安心してきちんと行えるようになる';
         }
         if (i == 2) {
-          result[i - 1].chusi = '○';
-          result[i - 1].riyu = '自己都合';
-          result[i - 1].jikaiMonth = '-';
-          result[i - 1].jissiYmd = '';
-          result[i - 1].jissi = '';
-          result[i - 1].syukankeikaku = '';
-          result[i - 1].doui = '';
-          result[i - 1].henkou = '';
-          result[i - 1].kousin = '';
-          result[i - 1].nextMonth = '';
-          result[i - 1].serviceend = '';
-          result[i - 1].kaigiYmd = '';
-          result[i - 1].kasan = '';
-        }
-        if (i == 3) {
-          result[i - 1].yousiki = '児';
-          result[i - 1].age = 17;
+          result.viewdata[i].mokuhyo =
+            '地域のルールに従ったゴミの出し方を覚える';
         }
       }
-      this.viewdatayoteisyaAll = result;
-    },
-    userFilter() {
-      let tmpviewdata = [];
-      tmpviewdata = this.viewdatayoteisyaAll.concat();
-      tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
 
-      if (this.yousikiIndex == 1) {
-        tmpviewdata = tmpviewdata.filter((x) => x.yousiki == '者');
-      } else if (this.yousikiIndex == 2) {
-        tmpviewdata = tmpviewdata.filter((x) => x.yousiki == '児');
-      }
-      // //コード順でソート
-      // if (this.sortSearch == 0) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.id < b.id) {
-      //       return -1;
-      //     }
-      //     if (a.id > b.id) {
-      //       return 1;
-      //     }
-      //     // 二次キーは交付日
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
-      // //利用者名でソート
-      // if (this.sortSearch == 1) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.kana < b.kana) {
-      //       return -1;
-      //     }
-      //     if (a.kana > b.kana) {
-      //       return 1;
-      //     }
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
-      // //受給者番号でソート
-      // if (this.sortSearch == 2) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.nobk < b.nobk) {
-      //       return -1;
-      //     }
-      //     if (a.nobk > b.nobk) {
-      //       return 1;
-      //     }
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
-      this.viewdatayoteisya = tmpviewdata;
+      this.viewdataAll = result;
     },
     getYmd() {
       if (!this.kikanYmd) {
@@ -708,45 +769,109 @@ export default {
         '日'
       );
     },
-    inputCalendarClick(kbn) {
-      if (kbn == 1) {
-        this.kikanYmd = this.kikanYmd.subtract(1, 'days');
-      } else if (kbn == 2) {
-        this.kikanYmd = this.kikanYmd.add(1, 'days');
+    getKanryouYmd(kbn) {
+      if (!this.kikanKanryou) {
+        this.kikanKanryou = moment();
+        this.pickerKanryou =
+          this.kikanKanryou.year() +
+          '-' +
+          this.kikanKanryou.format('MM') +
+          '-' +
+          this.kikanKanryou.format('DD');
       }
-      this.picker =
-        this.kikanYmd.format('YYYY') +
-        '-' +
-        this.kikanYmd.format('MM') +
-        '-' +
-        this.kikanYmd.format('DD');
       if (kbn == 0) {
-        this.datepicker_dialog = true;
+        return (
+          this.kikanKanryou.format('YYYY') +
+          '年' +
+          this.kikanKanryou.format('MM') +
+          '月' +
+          this.kikanKanryou.format('DD') +
+          '日'
+        );
       } else {
-        this.viewdatayoteisya = [];
+        return (
+          this.kikanKanryou.format('YYYY') +
+          '年' +
+          this.kikanKanryou.format('MM') +
+          '月'
+        );
       }
     },
-    daySelect() {
-      let split = this.picker.split('-');
-      this.kikanYmd = moment({
+    inputCalendarClick(kbn) {
+      if (kbn == 8 || kbn == 9) {
+        this.pickerKanryou =
+          this.kikanKanryou.format('YYYY') +
+          '-' +
+          this.kikanKanryou.format('MM') +
+          '-' +
+          this.kikanKanryou.format('DD');
+
+        if (kbn == 8) {
+          this.datepickerKanryouYmd_dialog = true;
+        } else {
+          this.datepickerKanryouYm_dialog = true;
+        }
+      } else {
+        if (kbn == 1) {
+          this.kikanYmd = this.kikanYmd.subtract(1, 'days');
+        } else if (kbn == 2) {
+          this.kikanYmd = this.kikanYmd.add(1, 'days');
+        }
+        this.picker =
+          this.kikanYmd.format('YYYY') +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
+        if (kbn == 0) {
+          this.datepicker_dialog = true;
+        }
+      }
+    },
+    daySelect(kbn) {
+      if (kbn == 0) {
+        let split = this.picker.split('-');
+        this.kikanYmd = moment({
+          years: split[0],
+          months: Number(split[1]) - 1,
+          days: Number(split[2]),
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        this.viewdatayoteisya = [];
+        this.datepicker_dialog = false;
+      } else {
+        let split = this.pickerKanryou.split('-');
+        this.kikanKanryou = moment({
+          years: split[0],
+          months: Number(split[1]) - 1,
+          days: split[2],
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        this.datepickerKanryouYmd_dialog = false;
+      }
+    },
+    monthSelect() {
+      let split = this.pickerKanryou.split('-');
+      this.kikanKanryou = moment({
         years: split[0],
         months: Number(split[1]) - 1,
-        days: Number(split[2]),
+        days: 1,
         hours: 0,
         minutes: 0,
         seconds: 0,
       });
-      this.viewdatayoteisya = [];
-      this.datepicker_dialog = false;
-    },
-    filterClrclick() {
-      this.filteryoteisyaIcrn.clear();
+      // this.viewdatakeikaku = [];
+      this.datepickerKanryouYm_dialog = false;
     },
     setUserSelectPoint(row) {
       // ユーザ選択処理はここで行う
-      console.log(row);
       this.userData = row;
       this.keikakuYmd = '2022年12月12日';
+      this.setViewData(true);
       // this.userInfo = row;
       // if (this.userInfo.riid == 0) {
       //   this.dispUserName = '';
@@ -766,10 +891,30 @@ export default {
       // );
     },
     getSelectUserChildComponent(data) {
-      console.log(data);
+      this.userList = data;
+    },
+    copyClicked(kbn) {
+      console.log(kbn);
+    },
+    rirekiClicked(kbn) {
+      console.log(kbn);
     },
     inputClicked(kbn) {
-      console.log(kbn);
+      if (!this.userData.names) {
+        return;
+      }
+      if (kbn == 0) {
+        this.housinInputflg = true;
+      } else {
+        this.jyoukyouInputflg = true;
+      }
+    },
+    header_dialog_close(kbn) {
+      if (kbn == 0) {
+        this.housinInputflg = false;
+      } else {
+        this.jyoukyouInputflg = false;
+      }
     },
     kekkaClicked(index) {
       this.kekkaIndex = index;
@@ -789,18 +934,12 @@ div#monitoringHoukokusho {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-
-  .leftArea {
-    min-width: 275px;
-    max-width: 275px;
-    // height: 87vh;
-  }
   .rightArea {
     min-width: 1050px;
     max-width: 1050px;
     // width: 1020px;
     .rowStyle {
-      height: 20px;
+      height: 22px;
     }
   }
 
@@ -876,26 +1015,17 @@ div#monitoringHoukokusho {
   .koumokuData2 {
     color: $font_color;
     width: 100%;
-    height: 80px;
     text-align: left;
     background: $white;
+    white-space: pre-line;
+    overflow: auto;
+    height: 130px;
   }
+
   .right {
     height: 100%;
     display: flex;
     justify-content: flex-end;
-  }
-  .hosokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    text-align: center;
-    border: none;
-    > .premonth {
-      background: #ffcccc;
-    }
   }
 
   .itemBtn {
@@ -911,9 +1041,9 @@ div#monitoringHoukokusho {
   #icrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: auto;
+    // width: auto;
     // min-width: 1250px;
-    height: 55vh;
+    height: 48vh;
     // min-height: 300px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -926,22 +1056,18 @@ div#monitoringHoukokusho {
       font-weight: normal;
       line-height: 110%;
     }
-    .wj-cell-maker {
-      width: 15px;
-      height: 15px;
-    }
-    .wj-cell {
-      padding: 2px;
-    }
+    // .wj-cell {
+    //   padding: 2px;
+    // }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }
-    .wj-cells
-      .wj-row:hover
-      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
-      transition: all 0s;
-      background: $grid_hover_background;
-    }
+    // .wj-cells
+    //   .wj-row:hover
+    //   .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    //   transition: all 0s;
+    //   background: $grid_hover_background;
+    // }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
       background: $grid_selected_background;
@@ -973,72 +1099,36 @@ div#monitoringHoukokusho {
     // width: 150px;
     height: 20px;
   }
-  div.customCombobox {
-    position: relative;
-    width: 125px !important;
-    height: 20px !important;
-    &.customCombobox {
-      width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 21px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 8px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -3px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
-  .v-input--selection-controls .v-input__slot > .v-label {
-    font-size: 14px;
-  }
-  .moveLeft {
-    animation: slideLeftArea $seconds forwards;
-  }
-  .moveRight {
-    animation: slideRightArea $seconds forwards;
-  }
-  @keyframes slideLeftArea {
-    from {
-      transform: translateX(0px);
-    }
-    to {
-      transform: translateX(-270px);
-    }
-  }
-  @keyframes slideRightArea {
-    from {
-      transform: translateX(-270px);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
+  // .v-input--selection-controls .v-input__slot > .v-label {
+  //   font-size: 14px;
+  // }
+  // .moveLeft {
+  //   animation: slideLeftArea $seconds forwards;
+  // }
+  // .moveRight {
+  //   animation: slideRightArea $seconds forwards;
+  // }
+  // @keyframes slideLeftArea {
+  //   from {
+  //     transform: translateX(0px);
+  //   }
+  //   to {
+  //     transform: translateX(-265px);
+  //   }
+  // }
+  // @keyframes slideRightArea {
+  //   from {
+  //     transform: translateX(-265px);
+  //   }
+  //   to {
+  //     transform: translateX(0);
+  //   }
+  // }
 }
-
+.inputDialog {
+  width: 300px;
+  height: 300px;
+}
 .v-picker {
   z-index: 10;
 }

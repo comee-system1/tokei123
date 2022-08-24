@@ -73,7 +73,7 @@ export default {
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
-      ideaFlag: 'weekplan', //create:計画案作成 weekplan:週間計画表
+      ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
       yosikiMenu: [
         {
           key: 'create',

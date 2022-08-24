@@ -20,28 +20,22 @@
     </v-row>
 
     <v-row dense class="ma-2" justify="space-between">
-      <v-col md="4">
+      <v-col cols="4">
         <v-btn small>削除</v-btn>
       </v-col>
-      <v-col md="4">
-        <v-row no-gutters>
-          <v-col class="mw100" align="center"
-            ><label class="greyLabel">完了</label></v-col
-          >
-          <v-col class="mw30 text-center mt-1">
+      <v-col cols="7">
+        <v-card class="d-flex justify-end" flat tile>
+          <v-card outlined tile width="100" class="text-center pt-1"
+            >完了
+          </v-card>
+          <v-card elevation="0" width="30" class="text-center mt-1">
             <input type="checkbox" />
-          </v-col>
-          <v-col class="mw100">
-            <v-text-field
-              outlined
-              value=""
-              hide-details="false"
-              height="24"
-              class="input-text lightYellow"
-              readonly
-            ></v-text-field>
-          </v-col>
-        </v-row>
+          </v-card>
+          <v-card class="lightYellow pl-1 pt-1 ml-1" width="140" outlined tile>
+            竹下道子
+          </v-card>
+          <v-btn small class="ml-3">登録</v-btn>
+        </v-card>
       </v-col>
     </v-row>
     <v-dialog

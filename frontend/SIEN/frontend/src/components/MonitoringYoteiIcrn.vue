@@ -166,11 +166,7 @@
           </v-btn-toggle>
         </div>
       </v-row>
-      <v-layout
-        class="ma-0 mt-1 mr-1 pa-2 haikei"
-        no-gutters
-        style="width: 99%"
-      >
+      <v-layout class="ma-0 mt-1 mr-1" no-gutters style="width: 98%">
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
