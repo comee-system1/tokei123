@@ -5,107 +5,192 @@
         <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
-            :dispHideBar="true"
+            :dispHideBar="false"
             @childLeftArea="changeLeftArea"
             @child-select="setUserSelectPoint"
           >
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="mt-1 borderBottom pb-2">
-            <v-col cols="3">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card outlined tile width="100" class="text-center">
-                  利用者名
-                </v-card>
-                <v-card width="200" class="ml-3" elevation="0" outlined tile>
-                  aaa
-                </v-card>
-              </v-card>
-            </v-col>
-            <v-col class="ml-auto" cols="3">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card
-                  outlined
-                  tile
-                  width="100"
-                  class="text-center"
-                  v-if="inputTypemodel == 'tab-0'"
-                  >同意署名欄
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  width="100"
-                  class="text-center"
-                  v-if="inputTypemodel == 'tab-1'"
-                  >完了
-                </v-card>
-                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
-                  竹下道子
-                </v-card>
-              </v-card>
-            </v-col>
-          </v-row>
-
           <v-row no-gutters class="mt-1">
-            <v-col cols="3">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card outlined tile width="100" class="text-center">
-                  作成日
+            <v-card class="d-flex justify-start" flat tile>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="text-center label text-caption"
+              >
+                利用者名
+              </v-card>
+              <v-card
+                width="100"
+                class="ml-1 text-caption"
+                elevation="0"
+                outlined
+                tile
+              >
+                aaa
+              </v-card>
+            </v-card>
+
+            <v-card class="d-flex justify-end" flat tile>
+              <v-card
+                outlined
+                tile
+                width="80"
+                class="text-center ml-1 label text-caption"
+                v-if="inputTypemodel == 'tab-0'"
+                >同意署名欄
+              </v-card>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="text-center text-caption label ml-1"
+                v-if="inputTypemodel == 'tab-1'"
+                >完了
+              </v-card>
+              <v-card
+                class="lightYellow pl-1 ml-1 text-caption"
+                width="120"
+                outlined
+                tile
+              >
+                竹下道子
+              </v-card>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="text-center ml-1 label text-caption"
+                >作成日
+              </v-card>
+              <v-card
+                class="pl-1 ml-1 text-caption"
+                width="120"
+                outlined
+                tile
+                @click="inputCalendarClick(0)"
+              >
+                {{ getYm }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-card>
+              <v-card
+                outlined
+                tile
+                width="70"
+                class="text-center ml-1 label text-caption"
+                >計画区分
+              </v-card>
+              <wj-menu
+                class="customCombobox ml-1 text-caption"
+                :itemsSource="keikakuKubun"
+                selectedValuePath="val"
+                displayMemberPath="name"
+                v-model="keikakuKubunModel"
+                :itemClicked="onkeikakuKubun"
+                style="border-radius: 0px !important"
+              >
+              </wj-menu>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="text-center ml-1 label text-caption"
+                >作成者
+              </v-card>
+              <v-card
+                class="lightYellow pl-1 ml-1 text-caption"
+                width="120"
+                outlined
+                tile
+              >
+                竹下道子
+              </v-card>
+            </v-card>
+            <div v-if="inputTypemodel == 'tab-0'">
+              <v-card class="d-flex justify-start mt-1" flat tile>
+                <v-card
+                  outlined
+                  tile
+                  class="text-center label text-caption text-no-wrap"
+                >
+                  障害者支援区分
                 </v-card>
                 <v-card
-                  width="200"
-                  class="text-center"
-                  style="box-shadow: none !important"
+                  class="lightYellow text-center ml-1 text-caption"
+                  width="50"
+                  outlined
+                  tile
                 >
-                  <v-btn
-                    outlined
-                    tile
-                    x-small
-                    @click="inputCalendarClick(0)"
-                    width="180px"
-                    height="24px"
-                    style="font-size: 12px"
-                    >{{ getYm }}
-                    <div class="float-right">
-                      <v-icon small>mdi-calendar-month</v-icon>
-                    </div>
-                  </v-btn>
+                  区分5
                 </v-card>
-              </v-card>
-            </v-col>
-            <v-col cols="3">
-              <v-card class="d-flex justify-start" flat tile>
-                <v-card outlined tile width="100" class="text-center"
-                  >計画区分
-                </v-card>
-
-                <wj-menu
-                  class="customCombobox ml-1"
-                  :itemsSource="keikakuKubun"
-                  selectedValuePath="val"
-                  displayMemberPath="name"
-                  v-model="keikakuKubunModel"
-                  :itemClicked="onkeikakuKubun"
-                  style="border-radius: 4px !important"
+                <v-card
+                  outlined
+                  tile
+                  class="text-center ml-1 label text-caption text-no-wrap"
                 >
-                </wj-menu>
-              </v-card>
-            </v-col>
-
-            <v-col class="ml-auto" cols="3">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card outlined tile width="100" class="text-center"
-                  >作成者
+                  障害福祉ｻｰﾋﾞｽ受給者番号
                 </v-card>
-                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
-                  竹下道子
+                <v-card
+                  class="lightYellow text-center ml-1 text-caption"
+                  width="100"
+                  outlined
+                  tile
+                >
+                  11000011120
                 </v-card>
+                <v-card
+                  outlined
+                  tile
+                  class="text-center ml-1 label text-caption text-no-wrap"
+                >
+                  地域相談支援受給者番号
+                </v-card>
+                <v-card
+                  class="lightYellow text-center ml-1 text-caption"
+                  width="100"
+                  outlined
+                  tile
+                >
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  class="text-center ml-1 label text-caption text-no-wrap"
+                >
+                  通所受給者番号
+                </v-card>
+                <v-card
+                  class="lightYellow text-center ml-1 text-caption"
+                  width="100"
+                  outlined
+                  tile
+                >
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  class="text-center ml-1 label text-caption text-no-wrap"
+                >
+                  ﾓﾆﾀﾘﾝｸﾞ期間
+                </v-card>
+                <v-text-field
+                  class="pa-0 ma-0 ml-1 input-text text-caption"
+                  hide-details="false"
+                  outlined
+                  dense
+                  :full-width="true"
+                  :value="' '"
+                >
+                </v-text-field>
               </v-card>
-            </v-col>
+            </div>
           </v-row>
-          <v-row no-gutters class="mt-1 pb-2 borderBottom">
+
+          <v-row no-gutters class="mt-1 pb-2">
             <v-col cols="6">
               <v-btn-toggle>
                 <v-btn small>新規入力</v-btn>
@@ -119,90 +204,26 @@
               </v-btn-toggle>
             </v-col>
           </v-row>
-          <v-row
-            no-gutters
-            class="mt-1 pb-1 borderBottom"
-            v-if="inputTypemodel == 'tab-0'"
-          >
-            <v-card class="d-flex justify-start" flat tile>
-              <v-card outlined tile width="140" class="text-center">
-                障害者支援区分
-              </v-card>
-              <v-card
-                class="lightYellow text-center ml-1"
-                width="80"
-                outlined
-                tile
+
+          <v-card class="d-flex justify-start" flat tile>
+            <v-tabs height="25" v-model="inputTypemodel">
+              <v-tab
+                class="text-caption"
+                v-for="value in inputType"
+                :key="value.key"
+                style="height: 25px"
+                :href="'#tab-' + value.key"
               >
-                区分5
-              </v-card>
-              <v-card outlined tile width="240" class="text-center ml-1">
-                障害福祉サービス受給者番号
-              </v-card>
-              <v-card
-                class="lightYellow text-center ml-1"
-                width="140"
-                outlined
-                tile
+                {{ value.value }}</v-tab
               >
-                11000011120
-              </v-card>
-              <v-card outlined tile width="240" class="text-center ml-1">
-                地域相談支援受給者番号
-              </v-card>
-              <v-card
-                class="lightYellow text-center ml-1"
-                width="140"
-                outlined
-                tile
-              >
-              </v-card>
-            </v-card>
-            <v-card class="d-flex justify-start mt-1" flat tile>
-              <v-card outlined tile width="140" class="text-center">
-                通所受給者番号
-              </v-card>
-              <v-card
-                class="lightYellow text-center ml-1"
-                width="140"
-                outlined
-                tile
-              >
-              </v-card>
-              <v-card outlined tile width="140" class="ml-1 text-center">
-                モニタリング期間
-              </v-card>
-              <v-text-field
-                class="pa-0 ma-0 ml-1 input-text"
-                hide-details="false"
-                outlined
-                dense
-                :value="'毎月(当初3ヶ月)その後3ヶ月毎'"
-              >
-              </v-text-field>
-            </v-card>
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <v-col cols="6">
-              <v-tabs height="25" light v-model="inputTypemodel">
-                <v-tab
-                  class="pa-1"
-                  v-for="value in inputType"
-                  :key="value.key"
-                  style="height: 25px"
-                  :href="'#tab-' + value.key"
-                >
-                  {{ value.value }}</v-tab
-                >
-              </v-tabs>
-            </v-col>
-            <v-col cols="6" align="right" v-if="inputTypemodel == 'tab-1'">
-              <v-btn-toggle class="mt-1">
-                <v-btn small>行追加</v-btn>
-                <v-btn small>行削除</v-btn>
-              </v-btn-toggle>
-            </v-col>
-          </v-row>
+            </v-tabs>
+
+            <v-btn-toggle tile v-if="inputTypemodel == 'tab-1'">
+              <v-btn small>行追加</v-btn>
+              <v-btn small>行削除</v-btn>
+            </v-btn-toggle>
+          </v-card>
+
           <v-tabs-items v-model="inputTypemodel">
             <v-tab-item value="tab-0">
               <keikakuideaIkou></keikakuideaIkou>
@@ -211,6 +232,34 @@
               <keikakuideaKadai></keikakuideaKadai>
             </v-tab-item>
           </v-tabs-items>
+          <v-row dense class="ma-2" justify="space-between">
+            <v-col cols="4">
+              <v-btn small>削除</v-btn>
+            </v-col>
+            <v-col cols="7">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  class="text-center text-caption label pt-1"
+                  >完了
+                </v-card>
+                <v-card elevation="0" width="30" class="text-center mt-1">
+                  <input type="checkbox" />
+                </v-card>
+                <v-card
+                  class="lightYellow pl-1 pt-1 ml-1"
+                  width="140"
+                  outlined
+                  tile
+                >
+                  竹下道子
+                </v-card>
+                <v-btn small class="ml-3">登録</v-btn>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -250,7 +299,7 @@ export default {
   },
   data() {
     return {
-      inputTypemodel: 'tab-1', // tab-0:意向・方針 tab-1:課題・支援
+      inputTypemodel: 'tab-0', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
         {
           key: 0,
@@ -263,7 +312,7 @@ export default {
       ],
 
       leftWidth: '280px',
-      rightWidth: '79%',
+      rightWidth: '78.5%',
       moveLeft: true,
       datepicker_dialog: false,
       picker: '',
@@ -313,7 +362,7 @@ export default {
       } else {
         this.moveLeft = true;
         this.leftWidth = '280px';
-        this.rightWidth = '79%';
+        this.rightWidth = '78.5%';
       }
     },
     inputCalendarClick() {
@@ -353,10 +402,11 @@ div#keikakuIdea {
     min-width: 150px;
     display: block;
   }
-
+  div.label {
+    background-color: $light-gray;
+  }
   .input-text {
     font-size: 12px;
-    min-width: 200px;
     border-radius: 4px !important;
     div {
       height: 24px;
@@ -399,9 +449,6 @@ div#keikakuIdea {
       border: 1px solid $selected_color;
       background-color: $view_Title_background;
     }
-  }
-  .borderBottom {
-    border-bottom: 1px solid $deepgreen;
   }
   .lightYellow {
     background-color: $view_Data_Read_background;

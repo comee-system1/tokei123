@@ -2,7 +2,7 @@
   <div id="monitoringHoukokusho">
     <v-container class="ml-1 pa-0" style="max-width: 100%" fluid>
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
+        <v-col :style="{ 'max-width': leftWidth }" style="height: 70vh">
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
@@ -16,8 +16,8 @@
         <v-col class="rightArea pa-0">
           <v-row
             no-gutters
-            class="mt-1 pa-1"
-            style="height: 28px; background: #d7eeff"
+            class="pa-1"
+            style="height: 30px; background: #d7eeff"
           >
             <v-row no-gutters class="rowStyle">
               <v-card class="koumokuTitle pa-1" outlined tile>
@@ -38,22 +38,22 @@
                 {{ keikakuYmd }}
               </v-card>
               <v-layout class="right">
-                <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
                   同意署名欄
                 </v-card>
+                <input
+                  type="checkbox"
+                  class="mr-1"
+                  v-model="viewdataAll.doui"
+                  @change="douiCheck()"
+                />
                 <v-card
-                  class="koumokuData pa-1 ml-1"
-                  style="width: 25px"
-                  outlined
-                  tile
-                >
-                </v-card>
-                <v-card
-                  class="koumokuData pa-1 ml-1"
+                  class="koumokuData pa-1"
                   style="width: 125px"
                   outlined
                   tile
                 >
+                  {{ getDouisya }}
                 </v-card>
               </v-layout>
             </v-row>
@@ -166,6 +166,7 @@
               id="icrnGrid"
               :headersVisibility="'Column'"
               :autoGenerateColumns="false"
+              :imeEnabled="true"
               :allowAddNew="false"
               :allowDelete="false"
               :allowPinning="false"
@@ -173,6 +174,7 @@
               :allowResizing="true"
               :allowSorting="false"
               :allowDragging="false"
+              :selectionMode="'Cell'"
               :initialized="onInitializeIcrnGrid"
               :formatItem="onFormatItem"
               :itemsSourceChanging="onItemsSourceChanging"
@@ -229,7 +231,7 @@
                   @click="inputCalendarClick(9)"
                   tile
                   outlined
-                  width="125px"
+                  width="150px"
                   height="100%"
                   class="pa-0 mr-1"
                   :disabled="kekkaIndex == 0"
@@ -240,25 +242,24 @@
                 </v-btn>
               </v-layout>
 
-              <v-card class="koumokuTitleShort pa-1 ml-1" outlined tile>
+              <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
                 完了
               </v-card>
+              <input
+                type="checkbox"
+                class="mr-1"
+                v-model="viewdataAll.kanryou"
+                @change="douiCheck()"
+              />
               <v-card
-                class="koumokuData pa-1 ml-1"
-                style="width: 25px"
-                outlined
-                tile
-              >
-              </v-card>
-              <v-card
-                class="koumokuData pa-1 pr-1 ml-1"
+                class="koumokuData pa-1 pr-1 mr-1"
                 style="width: 100px"
                 outlined
                 tile
               >
               </v-card>
               <v-btn
-                class="itemBtn mr-1"
+                class="itemBtn"
                 :loading="loading"
                 @click="searchClicked()"
               >
@@ -381,6 +382,97 @@
         outlined
       ></v-textarea>
     </v-dialog>
+    <v-dialog v-model="douiInputflg" width="350" class="inputDialog">
+      <v-card
+        class="koumokuTitle_c pa-1"
+        style="background: lightgray"
+        outlined
+        tile
+      >
+        モニタリング 利用者同意・署名
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close(2)"
+          class="closeButton"
+          color="secondary"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+      </v-card>
+      <div style="background: white" class="pa-1">
+        <v-row no-gutters class="inputDialogRowStyle mb-1">
+          <v-card class="koumokuTitle pa-1" outlined tile> 利用者名 </v-card>
+          <v-card class="koumokuData ml-1 pl-1" tile outlined>
+            {{ userData.riyocodeD }} {{ userData.names }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="inputDialogRowStyle mb-1">
+          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 同意日 </v-card>
+          <v-btn
+            @click="inputCalendarClick(7)"
+            tile
+            outlined
+            width="150px"
+            height="100%"
+            class="pa-0 mr-1"
+            >{{ getDouiYmd() }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+        </v-row>
+        <v-row no-gutters class="inputDialogRowStyle mb-1">
+          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 様式 </v-card>
+          <v-btn-toggle
+            class="flex-wrap mr-1"
+            v-model="viewdataAll.douiKbnIndex"
+            mandatory
+          >
+            <v-btn
+              v-for="n in douiKbnList"
+              :key="n.val"
+              small
+              color="secondary"
+              dark
+              outlined
+            >
+              {{ n.name }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-row>
+        <v-row no-gutters class="inputDialogRowStyle mb-1">
+          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 署名 </v-card>
+          <input class="pl-1" type="text" v-model="viewdataAll.douiSyomei" />
+        </v-row>
+        <v-row no-gutters class="inputDialogRowStyle">
+          <v-layout class="left">
+            <v-btn class="itemBtn mr-1" @click="copyClicked()"> 削除 </v-btn>
+          </v-layout>
+          <v-layout class="right">
+            <v-btn class="itemBtn mr-1" @click="copyClicked()"> 登録 </v-btn>
+          </v-layout>
+        </v-row>
+      </div>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerDouiYmd_dialog"
+      width="200"
+      class="datepicker_dialogs"
+    >
+      <v-date-picker
+        id="monitoringHoukokushoDatepicker"
+        type="date"
+        v-model="pickerDoui"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="daySelect(2)"
+      >
+      </v-date-picker>
+    </v-dialog>
     <v-overlay class="text-center" id="load_dialog" v-show="screenFlag">
       <v-progress-circular
         v-show="screenFlag"
@@ -406,8 +498,6 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
-// import MdSelect from '../components/MdSelect.vue';
-// const STYLE_BG_PREBIRTH = '#ffcccc';
 import UserList from '../components/UserList.vue';
 export default {
   components: { UserList },
@@ -518,18 +608,27 @@ export default {
       ],
       viewdataAll: { housin: '', jyoukyou: '', viewdata: [] },
       kikanYmd: '',
+      douiYmd: '',
       picker: '',
       kikanKanryou: '',
       pickerKanryou: '',
+      pickerDoui: '',
       datepicker_dialog: false,
       datepickerKanryouYm_dialog: false,
       datepickerKanryouYmd_dialog: false,
+      datepickerDouiYmd_dialog: false,
       screenFlag: false,
+      douiInputflg: false,
       housinInputflg: false,
       jyoukyouInputflg: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
       selTantousya: 0,
+      douiKbnIndex: 0,
+      douiKbnList: [
+        { val: 0, name: '本人' },
+        { val: 1, name: '代理人' },
+      ],
       inputList: [
         { val: 0, name: '新規' },
         { val: 1, name: '修正' },
@@ -548,6 +647,9 @@ export default {
   },
   mounted() {},
   computed: {
+    getDouisya() {
+      return wjCore.escapeHtml(this.viewdataAll.douiName);
+    },
     getHousin() {
       return wjCore.escapeHtml(this.viewdataAll.housin);
     },
@@ -563,8 +665,8 @@ export default {
       let doc = document.getElementsByClassName('rightArea')[0];
       if (this.moveLeft == true) {
         this.moveLeft = false;
-        doc.style.minWidth = '1050px';
-        doc.style.maxWidth = '1050px';
+        doc.style.minWidth = '78%';
+        doc.style.maxWidth = '78%';
         this.leftWidth = '280px';
       } else {
         this.moveLeft = true;
@@ -580,31 +682,57 @@ export default {
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
           let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
-          if (ht.col == 7 || ht.col == 8) {
-            if (ht.col == 7 && tmpitem.kind == 0) {
-              tmpitem.kind = 1;
-            } else if (ht.col == 8 && tmpitem.kind == 1) {
-              tmpitem.kind = 0;
-            }
-            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 7, ht.row, 8));
+          if (ht.col == 0) {
+            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 3, ht.row, 13));
           }
-          if (ht.col == 9 || ht.col == 10) {
-            if (ht.col == 9 && tmpitem.ryou == 0) {
-              tmpitem.ryou = 1;
-            } else if (ht.col == 10 && tmpitem.ryou == 1) {
-              tmpitem.ryou = 0;
+          if (tmpitem.jissi) {
+            if (ht.col == 7 || ht.col == 8) {
+              if (ht.col == 7 && tmpitem.kind == 0) {
+                tmpitem.kind = 1;
+              } else if (ht.col == 8 && tmpitem.kind == 1) {
+                tmpitem.kind = 0;
+              }
+              flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 7, ht.row, 8));
             }
-            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 9, ht.row, 10));
-          }
-          if (ht.col == 11 || ht.col == 12) {
-            if (ht.col == 11 && tmpitem.syukan == 0) {
-              tmpitem.syukan = 1;
-            } else if (ht.col == 12 && tmpitem.syukan == 1) {
-              tmpitem.syukan = 0;
+            if (ht.col == 9 || ht.col == 10) {
+              if (ht.col == 9 && tmpitem.ryou == 0) {
+                tmpitem.ryou = 1;
+              } else if (ht.col == 10 && tmpitem.ryou == 1) {
+                tmpitem.ryou = 0;
+              }
+              flexGrid.refreshRange(
+                new wjGrid.CellRange(ht.row, 9, ht.row, 10)
+              );
             }
-            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 11, ht.row, 12));
+            if (ht.col == 11 || ht.col == 12) {
+              if (ht.col == 11 && tmpitem.syukan == 0) {
+                tmpitem.syukan = 1;
+              } else if (ht.col == 12 && tmpitem.syukan == 1) {
+                tmpitem.syukan = 0;
+              }
+              flexGrid.refreshRange(
+                new wjGrid.CellRange(ht.row, 11, ht.row, 12)
+              );
+            }
           }
         }
+      });
+
+      flexGrid.beginningEdit.addHandler((s, e) => {
+        if (e.col == 1 || e.col == 2) {
+          e.cancel = true;
+          return;
+        }
+        let tmpitem = flexGrid.cells.rows[e.row].dataItem;
+        if (!tmpitem.jissi && e.col != 0) {
+          e.cancel = true;
+          return;
+        }
+      });
+      flexGrid.cellEditEnded.addHandler((flexGrid) => {
+        flexGrid.beginUpdate();
+        flexGrid.autoSizeRows();
+        flexGrid.endUpdate();
       });
 
       // ヘッダの追加と設定
@@ -665,26 +793,60 @@ export default {
     onFormatItem(flexGrid, e) {
       if (e.panel == flexGrid.cells) {
         e.cell.style.backgroundColor = '';
+        if (e.col == 0) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+        }
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (e.col == 7 || e.col == 8) {
-          if (tmpitem.kind == 1 && e.col == 7) {
-            e.cell.style.backgroundColor = 'mistyrose';
-          } else if (tmpitem.kind == 0 && e.col == 8) {
-            e.cell.style.backgroundColor = 'mistyrose';
+
+        if (tmpitem.jissi) {
+          if (e.col == 7 || e.col == 8) {
+            // チェック済み側
+            if (tmpitem.kind == 1 && e.col == 7) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            } else if (tmpitem.kind == 0 && e.col == 8) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            }
+            // 未チェック側
+            if (tmpitem.kind == 0 && e.col == 7) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            } else if (tmpitem.kind == 1 && e.col == 8) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            }
           }
-        }
-        if (e.col == 9 || e.col == 10) {
-          if (tmpitem.ryou == 1 && e.col == 9) {
-            e.cell.style.backgroundColor = 'mistyrose';
-          } else if (tmpitem.ryou == 0 && e.col == 10) {
-            e.cell.style.backgroundColor = 'mistyrose';
+          if (e.col == 9 || e.col == 10) {
+            // チェック済み側
+            if (tmpitem.ryou == 1 && e.col == 9) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            } else if (tmpitem.ryou == 0 && e.col == 10) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            }
+            // 未チェック側
+            if (tmpitem.ryou == 0 && e.col == 9) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            } else if (tmpitem.ryou == 1 && e.col == 10) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            }
           }
-        }
-        if (e.col == 11 || e.col == 12) {
-          if (tmpitem.syukan == 1 && e.col == 11) {
-            e.cell.style.backgroundColor = 'mistyrose';
-          } else if (tmpitem.syukan == 0 && e.col == 12) {
-            e.cell.style.backgroundColor = 'mistyrose';
+          if (e.col == 11 || e.col == 12) {
+            // チェック済み側
+            if (tmpitem.syukan == 1 && e.col == 11) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            } else if (tmpitem.syukan == 0 && e.col == 12) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+            }
+            // 未チェック側
+            if (tmpitem.syukan == 0 && e.col == 11) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            } else if (tmpitem.syukan == 1 && e.col == 12) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            }
+          }
+          if ((3 <= e.col && e.col <= 6) || e.col == 13) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+          }
+        } else {
+          if (3 <= e.col) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
       }
@@ -707,10 +869,16 @@ export default {
     },
     createdemodata() {
       let result = {};
+      result.doui = false;
+      result.douiName = '';
+      result.douiKbnIndex = 1;
+      result.douiSyomei = '';
       result.housin =
         '本人の希望する生活の実現と安心した地域での生活を構築する';
       result.jyoukyou =
         '公的なサービス導入により生活が安定。一人で買い物に行くようになるなどの生活意欲が向上してきている。事務所や近隣住民、商店などとの関係も良好で、買い物に行くと転院がお財布から必要な金額を取りレシートを入れてくれるようになり、銀行でも本人が行くと職員が来てくれるようになったので、一人での外出が増えている';
+
+      result.kanryou = false;
       result.viewdata = [];
       for (let i = 0; i < 5; i++) {
         result.viewdata.push({
@@ -797,8 +965,35 @@ export default {
         );
       }
     },
+    getDouiYmd() {
+      if (!this.douiYmd) {
+        this.douiYmd = moment();
+        this.pickerDoui =
+          this.douiYmd.year() +
+          '-' +
+          this.douiYmd.format('MM') +
+          '-' +
+          this.douiYmd.format('DD');
+      }
+      return (
+        this.douiYmd.format('YYYY') +
+        '年' +
+        this.douiYmd.format('MM') +
+        '月' +
+        this.douiYmd.format('DD') +
+        '日'
+      );
+    },
     inputCalendarClick(kbn) {
-      if (kbn == 8 || kbn == 9) {
+      if (kbn == 7) {
+        this.pickerDoui =
+          this.douiYmd.format('YYYY') +
+          '-' +
+          this.douiYmd.format('MM') +
+          '-' +
+          this.douiYmd.format('DD');
+        this.datepickerDouiYmd_dialog = true;
+      } else if (kbn == 8 || kbn == 9) {
         this.pickerKanryou =
           this.kikanKanryou.format('YYYY') +
           '-' +
@@ -841,7 +1036,7 @@ export default {
         });
         this.viewdatayoteisya = [];
         this.datepicker_dialog = false;
-      } else {
+      } else if (kbn == 1) {
         let split = this.pickerKanryou.split('-');
         this.kikanKanryou = moment({
           years: split[0],
@@ -852,6 +1047,17 @@ export default {
           seconds: 0,
         });
         this.datepickerKanryouYmd_dialog = false;
+      } else if (kbn == 2) {
+        let split = this.pickerDoui.split('-');
+        this.douiYmd = moment({
+          years: split[0],
+          months: Number(split[1]) - 1,
+          days: split[2],
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        this.datepickerDouiYmd_dialog = false;
       }
     },
     monthSelect() {
@@ -905,15 +1111,22 @@ export default {
       }
       if (kbn == 0) {
         this.housinInputflg = true;
-      } else {
+      } else if (kbn == 1) {
         this.jyoukyouInputflg = true;
+      }
+    },
+    douiCheck() {
+      if (this.viewdataAll.doui) {
+        this.douiInputflg = true;
       }
     },
     header_dialog_close(kbn) {
       if (kbn == 0) {
         this.housinInputflg = false;
-      } else {
+      } else if (kbn == 1) {
         this.jyoukyouInputflg = false;
+      } else if (kbn == 2) {
+        this.douiInputflg = false;
       }
     },
     kekkaClicked(index) {
@@ -935,8 +1148,8 @@ div#monitoringHoukokusho {
   max-width: 1920px;
   width: auto;
   .rightArea {
-    min-width: 1050px;
-    max-width: 1050px;
+    min-width: 78%;
+    max-width: 78%;
     // width: 1020px;
     .rowStyle {
       height: 22px;
@@ -1017,11 +1230,15 @@ div#monitoringHoukokusho {
     width: 100%;
     text-align: left;
     background: $white;
-    white-space: pre-line;
+    white-space: pre-line; // 改行を反映させる
     overflow: auto;
     height: 130px;
   }
-
+  .left {
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
   .right {
     height: 100%;
     display: flex;
@@ -1096,38 +1313,68 @@ div#monitoringHoukokusho {
   }
 
   .v-btn-toggle > .v-btn {
-    // width: 150px;
     height: 20px;
   }
-  // .v-input--selection-controls .v-input__slot > .v-label {
-  //   font-size: 14px;
-  // }
-  // .moveLeft {
-  //   animation: slideLeftArea $seconds forwards;
-  // }
-  // .moveRight {
-  //   animation: slideRightArea $seconds forwards;
-  // }
-  // @keyframes slideLeftArea {
-  //   from {
-  //     transform: translateX(0px);
-  //   }
-  //   to {
-  //     transform: translateX(-265px);
-  //   }
-  // }
-  // @keyframes slideRightArea {
-  //   from {
-  //     transform: translateX(-265px);
-  //   }
-  //   to {
-  //     transform: translateX(0);
-  //   }
-  // }
 }
 .inputDialog {
   width: 300px;
   height: 300px;
+}
+.inputDialogRowStyle {
+  height: 22px;
+  color: $font_color;
+  font-size: 14px;
+  font-family: 'メイリオ';
+  .koumokuData {
+    color: $font_color;
+    width: 200px;
+    height: 100%;
+    text-align: left;
+    background: $view_Data_Read_background;
+    border: none;
+  }
+  .koumokuTitle {
+    color: $font_color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 100%;
+    text-align: center;
+    background: $view_Title_background;
+    border: none;
+  }
+  .v-btn-toggle > .v-btn {
+    height: 20px;
+  }
+  input[type='text'] {
+    width: 200px;
+    height: 100%;
+    text-align: left;
+    border: 1px solid lightgray;
+  }
+
+  input:focus {
+    border: 1px solid #ff9900;
+    outline: 0;
+  }
+  .right {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .itemBtn {
+    font-size: 14px;
+    background: $btn_background;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 100% !important;
+    width: 75px;
+  }
 }
 .v-picker {
   z-index: 10;

@@ -1,17 +1,24 @@
 <template>
-  <div class="mt-2">
+  <div class="mt-2" id="listsArea" :style="styles">
     <v-row dense v-for="value in note" :key="value.key">
-      <v-col cols="1" class="text-center valign">
-        <v-card class="pa-1 h140 lightYellow" elevation="0" outlined tile>
-          {{ value.title }}
-        </v-card>
-      </v-col>
-      <v-col class="mr-4">
+      <v-col cols="2" class="text-center valign text-caption">
         <v-card
-          class="pa-1 h140 editarea"
+          class="pa-1 lightYellow"
           elevation="0"
           outlined
           tile
+          height="120"
+        >
+          {{ value.title }}
+        </v-card>
+      </v-col>
+      <v-col class="mr-0 text-caption">
+        <v-card
+          class="pa-1 editarea"
+          elevation="0"
+          outlined
+          tile
+          height="120"
           @click="editText(value.key)"
         >
           {{ value.value }}
@@ -19,31 +26,7 @@
       </v-col>
     </v-row>
 
-    <v-row dense class="ma-2" justify="space-between">
-      <v-col cols="4">
-        <v-btn small>削除</v-btn>
-      </v-col>
-      <v-col cols="7">
-        <v-card class="d-flex justify-end" flat tile>
-          <v-card outlined tile width="100" class="text-center pt-1"
-            >完了
-          </v-card>
-          <v-card elevation="0" width="30" class="text-center mt-1">
-            <input type="checkbox" />
-          </v-card>
-          <v-card class="lightYellow pl-1 pt-1 ml-1" width="140" outlined tile>
-            竹下道子
-          </v-card>
-          <v-btn small class="ml-3">登録</v-btn>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-dialog
-      v-model="editTextDialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
+    <v-dialog v-model="editTextDialog" max-width="1150">
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="editTextDialog = false">
@@ -56,19 +39,13 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-list three-line subheader>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                <v-textarea
-                  outlined
-                  :value="note[notekey].value"
-                  :style="textstyles"
-                  class="editTextarea"
-                  hide-details="false"
-                ></v-textarea>
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+          <v-textarea
+            outlined
+            :value="note[notekey].value"
+            :style="textstyles"
+            class="editTextarea"
+            hide-details="false"
+          ></v-textarea>
         </v-list>
       </v-card>
     </v-dialog>
@@ -93,7 +70,7 @@ export default {
           key: 1,
           title: '総合方針',
           value:
-            'セロはおっかさんのおじぎめいめいげに扉が啼く月たう。こうしてこれから変じなって扉ました。だめますですんないもだするとあとの勝手屋のうちへはとうとう丈夫たらまして、わたしまで仲間をちがうせんうた。云わすぎおまえは音に物凄いたて夜のあとの外国弾を云い第六譜屋の病気をいうてくださいでた。セロは午前あるてはじめた。ゴーシュは一すわり遁のようがはいっていまし。',
+            '０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９',
         },
         {
           key: 2,
@@ -111,18 +88,33 @@ export default {
 
       keikakuKubunModel: '',
       editTextDialog: false,
+      headerheight: 260,
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
   computed: {
     textstyles() {
       return {
         minHeight: '100vh',
       };
     },
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('listsArea') != null) {
+        document.getElementById('listsArea').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     /******************************
      * 入力内容切替ボタンを押下
      */
@@ -147,3 +139,11 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+@import '@/assets/scss/common.scss';
+#listsArea {
+  height: var(--height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+</style>

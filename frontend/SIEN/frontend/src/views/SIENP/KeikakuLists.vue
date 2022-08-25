@@ -133,6 +133,7 @@ div#keikakulists {
   font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
+  max-width: 1350px !important;
   width: auto;
 
   .parentTab {

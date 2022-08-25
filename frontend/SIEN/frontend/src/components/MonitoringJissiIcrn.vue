@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringJissiIcrn">
-    <v-container class="mt-1 ml-1 pa-0" fluid>
+    <v-container class="mt-1 ml-1 pa-0" style="max-width: 100%" fluid>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card

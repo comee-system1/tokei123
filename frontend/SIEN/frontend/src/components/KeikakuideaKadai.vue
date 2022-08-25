@@ -2,9 +2,11 @@
   <div class="mt-2">
     <wj-flex-grid
       id="kadaiGrid"
-      :headersVisibility="'Column'"
       :initialized="onInitialized"
       :itemsSource="viewData"
+      :allowDragging="'Both'"
+      :draggingRow="handleDraggingRow"
+      :draggedRow="handleDraggedRow"
       :autoRowHeights="true"
       :style="styles"
     >
@@ -116,18 +118,17 @@
                           <v-btn small>行削除</v-btn>
                         </v-btn-toggle>
                       </div>
-                      <div class="ml-3">
-                        <v-btn small>設定</v-btn>
-                      </div>
                     </v-card>
                   </v-col>
                 </v-row>
                 <wj-flex-grid
                   id="serviceGrid"
-                  :headersVisibility="'Column'"
                   :autoRowHeights="true"
                   :itemsSource="serviceData"
                   :initialized="onInitializedService"
+                  :draggingRow="handleDraggingRow"
+                  :draggedRow="handleDraggedRow"
+                  :allowDragging="'Both'"
                   class="mt-1"
                 >
                   <wj-flex-grid-column
@@ -284,11 +285,21 @@ export default {
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
-        alert(e.target.value);
         // 区分を押下
-        // if (ht.col == 0 && e.target.value) {
+        if (ht.col == 3 && e.target.value) {
+          flexGrid.beginUpdate();
+          let index = e.target.value.split('-')[1];
+          let mode = e.target.value.split('-')[0];
+          let array = _self.serviceData;
+          array[index].kubun = mode === 'week' ? 1 : 2;
 
-        // }
+          _self.serviceData = [];
+          _self.serviceData = array;
+          flexGrid.itemsSource = [];
+          flexGrid.itemsSource = array;
+
+          flexGrid.endUpdate();
+        }
         // 並び替え
         if (ht.col == 0 && e.target.value) {
           flexGrid.beginUpdate();
@@ -322,28 +333,7 @@ export default {
             e.cell.style.alignItems = 'left';
           }
 
-          if (e.col == 0) {
-            let text = e.cell.innerText;
-            let ue = '';
-            if (e.row) {
-              ue =
-                '<button class="arrow" value="ue-' +
-                parseInt(e.row + 1) +
-                '">▲</button>';
-            } else {
-              ue = '<button class="arrow" disabled >▲</button>';
-            }
-            let sita = '';
-            if (e.row == _self.serviceDataLength - 1) {
-              sita = '<button class="arrow" disabled >▼</button>';
-            } else {
-              sita =
-                '<button class="arrow" value="sita-' +
-                parseInt(e.row + 1) +
-                '">▼</button>';
-            }
-            e.cell.innerHTML = text + ue + sita;
-          } else if (e.col == 3) {
+          if (e.col == 3) {
             let text = e.cell.innerText;
             let weekbtn = '';
             let monthbtn = '';
@@ -412,7 +402,24 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-
+    /*********************
+     * ドラッグで並び替え
+     */
+    handleDraggingRow(s, e) {
+      this.dragIndex = e.row;
+      s.collectionView.moveCurrentToPosition(this.dragIndex);
+    },
+    handleDraggedRow(s, e) {
+      let dropIndex = e.row,
+        arr = s.collectionView.sourceCollection;
+      s.collectionView.deferUpdate(() => {
+        let item = arr[this.dragIndex];
+        arr.splice(this.dragIndex, 1);
+        arr.splice(dropIndex, 0, item);
+        s.collectionView.moveCurrentToPosition(dropIndex);
+        console.log(this.viewData);
+      });
+    },
     /*******************************
      * 一覧
      */
@@ -428,25 +435,6 @@ export default {
         // ダイアログ表示
         if (ht.col == 4) {
           _self.openDialog(ht.row);
-        }
-        // 並び替え
-        if (ht.col == 0 && e.target.value) {
-          flexGrid.beginUpdate();
-          let index = e.target.value.split('-')[1];
-          let mode = e.target.value.split('-')[0];
-
-          let array = _self.viewData;
-          if (mode === 'ue') {
-            array.splice(index - 2, 2, array[index - 1], array[index - 2]);
-          } else {
-            array.splice(index - 1, 2, array[index], array[index - 1]);
-          }
-
-          _self.viewData = [];
-          _self.viewData = array;
-          flexGrid.itemsSource = [];
-          flexGrid.itemsSource = array;
-          flexGrid.endUpdate();
         }
       });
     },
@@ -486,7 +474,9 @@ export default {
     /******************************
      *  ダイアログの編集内容取得
      */
-    editTextSave() {},
+    editTextSave() {
+      this.editTextDialog = false;
+    },
     createData() {
       let array = [];
       for (let i = 0; i < 30; i++) {
@@ -509,35 +499,10 @@ export default {
       flexGrid.columnHeaders.rows[0].height = 50;
     },
     createFormat(flexGrid) {
-      let _self = this;
       flexGrid.formatItem.addHandler(function (s, e) {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
-        if (e.panel.cellType == wjGrid.CellType.Cell) {
-          if (e.col == 0) {
-            let text = e.cell.innerText;
-            let ue = '';
-            if (e.row) {
-              ue =
-                '<button class="arrow" value="ue-' +
-                parseInt(e.row + 1) +
-                '">▲</button>';
-            } else {
-              ue = '<button class="arrow" disabled >▲</button>';
-            }
-            let sita = '';
-            if (e.row == _self.viewDataLength - 1) {
-              sita = '<button class="arrow" disabled >▼</button>';
-            } else {
-              sita =
-                '<button class="arrow" value="sita-' +
-                parseInt(e.row + 1) +
-                '">▼</button>';
-            }
-            e.cell.innerHTML = text + ue + sita;
-          }
-        }
       });
     },
   },

@@ -1,5 +1,9 @@
 <template>
-  <div id="user-list_scrollbar" :style="styles" class="pr-5">
+  <div
+    id="user-list_scrollbar"
+    :style="styles"
+    :class="{ 'pr-5': dispHideBar === true, 'pr-2': dispHideBar === false }"
+  >
     <div
       :class="{
         switchArea: switchAreaFlag == true,
@@ -487,7 +491,7 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onInitializedUser(flexGrid) {
-      _self = this;
+      let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
@@ -496,7 +500,6 @@ export default {
         }
       });
       this.userGrid = flexGrid;
-      let _self = this;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;

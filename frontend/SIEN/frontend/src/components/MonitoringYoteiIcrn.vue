@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringYotei">
-    <v-container class="mt-1 ml-1 pa-0" fluid>
+    <v-container class="mt-1 ml-1 pa-0" style="max-width: 100%" fluid>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card
@@ -141,6 +141,28 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
+        <v-layout class="right">
+          <v-tooltip bottom color="primary" min-width="100" style="z-index: 10">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="itemBtn ml-1"
+                v-bind="attrs"
+                v-on="on"
+                :ripple="false"
+              >
+                記号説明
+              </v-btn>
+            </template>
+            <span v-for="hanrei in hanreiList" :key="hanrei.val">
+              {{ hanrei.name }}
+              <br />
+            </span>
+            <span>
+              <span style="background: pink">&emsp;</span>
+              :未実施
+            </span>
+          </v-tooltip>
+        </v-layout>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
@@ -148,9 +170,10 @@
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           <span class="miman mr-1" style="width: 80px">18歳未満</span>
         </v-card>
-        <div
+        <!-- <div
           style="height: 100%; display: flex; position: relative; left: 340px"
-        >
+        > -->
+        <v-layout class="right">
           <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 入力 </v-card>
           <v-btn-toggle class="flex-wrap ml-1" color="primary">
             <v-btn
@@ -164,7 +187,7 @@
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
-        </div>
+        </v-layout>
       </v-row>
       <v-layout class="ma-0 mt-1 mr-1" no-gutters style="width: 98%">
         <wj-flex-grid
@@ -532,6 +555,16 @@ export default {
       addStatus: false,
       mainFlexGrid: [],
       subFlexGrid: [],
+      hanreiList: [
+        { val: 0, name: '○：予定' },
+        { val: 1, name: '☆：予定外' },
+        { val: 2, name: '●★：報告書完了' },
+        { val: 3, name: '延：延期' },
+        { val: 4, name: '止：中止' },
+        { val: 5, name: '更：終期月更新' },
+        { val: 6, name: '変：サービス終了' },
+        { val: 7, name: '―：予定なし' },
+      ],
     };
   },
   mounted() {
@@ -1335,6 +1368,12 @@ div#monitoringYotei {
     height: 0;
     border-top: 10px solid green;
     border-left: 10px solid transparent;
+  }
+  .right {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 40px;
   }
 }
 

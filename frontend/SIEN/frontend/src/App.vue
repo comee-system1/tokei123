@@ -40,7 +40,7 @@ export default {
 <style>
 html {
   overflow-x: auto;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   overscroll-behavior-y: none;
   overscroll-behavior-x: none;
 }
