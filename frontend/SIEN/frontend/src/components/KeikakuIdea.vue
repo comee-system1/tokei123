@@ -299,7 +299,7 @@ export default {
   },
   data() {
     return {
-      inputTypemodel: 'tab-0', // tab-0:意向・方針 tab-1:課題・支援
+      inputTypemodel: 'tab-1', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
         {
           key: 0,

@@ -479,7 +479,7 @@ export default {
     },
     createData() {
       let array = [];
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 5; i++) {
         array.push({
           sort: i + 1,
           resolve: i + '現在の生活を考え直し特に母親との関係をよくしたい',
