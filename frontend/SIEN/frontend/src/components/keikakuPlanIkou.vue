@@ -1,31 +1,56 @@
 <template>
-  <div id="listsArea" :style="styles">
-    <v-row dense v-for="value in note" :key="value.key">
-      <v-col cols="2" class="text-center valign text-caption">
-        <v-card
-          class="pa-1 lightYellow"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-        >
+  <div class="mt-2">
+    <v-flex v-for="value in note" :key="value.key" class="d-flex mb-1">
+      <v-card outlined tile elevation="0" dense class="caption-left mr-1">
+        {{ value.title }}
+        <!-- <v-card class="pa-1 caption" elevation="0" outlined tile height="100">
           {{ value.title }}
-        </v-card>
-      </v-col>
-      <v-col class="mr-0 text-caption">
-        <v-card
-          class="pa-1 editarea"
+        </v-card> -->
+      </v-card>
+      <v-card
+        outlined
+        tile
+        elevation="0"
+        class="caption-right"
+        @click="editText(value.key)"
+      >
+        <!-- <v-card
+          class="pa-1"
           elevation="0"
           outlined
           tile
-          height="90"
+          height="100"
           @click="editText(value.key)"
         >
           {{ value.value }}
+        </v-card> -->
+        {{ value.value }}
+      </v-card>
+    </v-flex>
+
+    <v-row dense class="ma-2" justify="space-between">
+      <v-col cols="4">
+        <v-btn small>画面クリア</v-btn>
+      </v-col>
+      <v-col cols="7">
+        <v-card class="d-flex justify-end" flat tile>
+          <v-card
+            outlined
+            tile
+            width="100"
+            class="text-center text-caption label pt-1"
+            >完了
+          </v-card>
+          <v-card elevation="0" width="30" class="text-center mt-1">
+            <input type="checkbox" />
+          </v-card>
+          <v-card class="lightYellow pl-1 pt-1 ml-1" width="140" outlined tile>
+            竹下道子
+          </v-card>
+          <v-btn small class="ml-3">登録</v-btn>
         </v-card>
       </v-col>
     </v-row>
-
     <v-dialog v-model="editTextDialog" max-width="1150">
       <v-card>
         <v-toolbar dark color="primary">
@@ -88,33 +113,19 @@ export default {
 
       keikakuKubunModel: '',
       editTextDialog: false,
-      headerheight: 260,
     };
   },
   created() {},
-  mounted() {
-    window.addEventListener('resize', this.calculateWindowHeight);
-  },
+  mounted() {},
   computed: {
     textstyles() {
       return {
         minHeight: '100vh',
-      };
-    },
-    styles() {
-      // ブラウザの高さ
-      return {
-        '--height': window.innerHeight - this.headerheight + 'px',
+        borderRadius: '0',
       };
     },
   },
   methods: {
-    calculateWindowHeight() {
-      if (document.getElementById('listsArea') != null) {
-        document.getElementById('listsArea').style.height =
-          window.innerHeight - this.headerheight + 'px';
-      }
-    },
     /******************************
      * 入力内容切替ボタンを押下
      */
@@ -139,19 +150,3 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-@import '@/assets/scss/common.scss';
-#listsArea {
-  height: var(--height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  .editarea {
-    overflow: hidden;
-  }
-}
-</style>

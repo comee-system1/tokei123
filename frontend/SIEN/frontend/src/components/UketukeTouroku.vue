@@ -1208,6 +1208,8 @@ export default {
   },
   mounted() {
     window.addEventListener('resize', this.handleResize);
+    // 空データ作成
+    this.setKihonInfo();
   },
   beforeDestroy: function () {
     window.removeEventListener('resize', this.handleResize);
@@ -2341,8 +2343,6 @@ export default {
       }
     },
     setTaiouData() {
-      console.log('aaaaaaaaaaaaa');
-      console.log(this.rirekiDataSelect);
       this.taiouYmd = moment(this.rirekiDataSelect.taiouYmdf);
     },
     getNewuketuke() {

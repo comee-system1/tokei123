@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuIdea">
+  <div id="keikakuPlan">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -29,7 +29,6 @@
                 outlined
                 tile
               >
-                aaa
               </v-card>
             </v-card>
 
@@ -198,20 +197,20 @@
               </v-btn-toggle>
             </v-col>
             <v-col cols="6" align="right">
-              <v-btn-toggle tile>
-                <v-btn small>前回コピー</v-btn>
+              <v-btn-toggle>
+                <v-btn small>計画案コピー</v-btn>
                 <v-btn small>履歴参照</v-btn>
               </v-btn-toggle>
             </v-col>
           </v-row>
 
-          <v-card class="d-flex justify-start" flat tile height="23">
-            <v-tabs v-model="inputTypemodel">
+          <v-card class="d-flex justify-start" flat tile>
+            <v-tabs height="25" v-model="inputTypemodel">
               <v-tab
                 class="text-caption"
                 v-for="value in inputType"
                 :key="value.key"
-                style="height: 24px"
+                style="height: 25px"
                 :href="'#tab-' + value.key"
               >
                 {{ value.value }}</v-tab
@@ -219,49 +218,19 @@
             </v-tabs>
 
             <v-btn-toggle tile v-if="inputTypemodel == 'tab-1'">
-              <v-btn small @click="rowAdd('view')">行追加</v-btn>
-              <v-btn small @click="rowDelete('view')">行削除</v-btn>
+              <v-btn small>行追加</v-btn>
+              <v-btn small>行削除</v-btn>
             </v-btn-toggle>
           </v-card>
 
           <v-tabs-items v-model="inputTypemodel">
             <v-tab-item value="tab-0">
-              <keikakuideaIkou ref="childikou"></keikakuideaIkou>
+              <keikakuPlanIkou></keikakuPlanIkou>
             </v-tab-item>
             <v-tab-item value="tab-1">
-              <keikakuideaKadai ref="childkadai"></keikakuideaKadai>
+              <keikakuPlanKadai></keikakuPlanKadai>
             </v-tab-item>
           </v-tabs-items>
-          <v-row dense class="ma-2" justify="space-between">
-            <v-col cols="4">
-              <v-btn small>削除</v-btn>
-            </v-col>
-            <v-col cols="7">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card
-                  outlined
-                  tile
-                  width="100"
-                  class="text-center text-caption label pt-1"
-                  >完了
-                </v-card>
-                <v-card elevation="0" width="30" class="text-center mt-1">
-                  <input type="checkbox" />
-                </v-card>
-                <v-card
-                  class="lightYellow pl-1 pt-1 ml-1"
-                  width="140"
-                  outlined
-                  tile
-                >
-                  竹下道子
-                </v-card>
-                <v-btn small class="ml-3" @click="ideaIkouKadaiRegist"
-                  >登録</v-btn
-                >
-              </v-card>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -288,16 +257,16 @@
 import moment from 'moment';
 
 import UserList from './UserList.vue';
-import keikakuideaIkou from './KeikakuIdeaIkou.vue';
-import keikakuideaKadai from './KeikakuideaKadai.vue';
+import keikakuPlanIkou from './keikakuPlanIkou.vue';
+import keikakuPlanKadai from './keikakuPlanKadai.vue';
 export default {
   props: {
     dispHideBar: Boolean,
   },
   components: {
     UserList,
-    keikakuideaIkou,
-    keikakuideaKadai,
+    keikakuPlanIkou,
+    keikakuPlanKadai,
   },
   data() {
     return {
@@ -348,13 +317,6 @@ export default {
     },
   },
   methods: {
-    /**********************
-     * 登録ボタン
-     */
-    ideaIkouKadaiRegist() {
-      // 意向・方針と課題・支援の両方の登録処理の実行
-      this.$refs.childkadai.registButton();
-    },
     /****************
      * ユーザー一覧を押下
      */
@@ -392,13 +354,6 @@ export default {
     onkeikakuKubun(s) {
       s.header = this.keikakuKubun[s.selectedIndex].name;
     },
-
-    rowAdd(type) {
-      this.$refs.childkadai.rowAdd(type);
-    },
-    rowDelete(type) {
-      this.$refs.childkadai.rowDelete(type);
-    },
   },
 };
 </script>
@@ -406,9 +361,9 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#keikakuIdea {
+div#keikakuPlan {
   color: $font_color;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1920px;
@@ -429,36 +384,26 @@ div#keikakuIdea {
       min-height: 24px;
     }
   }
-  .mw240 {
-    max-width: 240px;
+  .caption-left {
+    background-color: $view_Data_Read_background;
+    width: 185px;
+    height: 83px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    text-align: center;
   }
-  .mw200 {
-    max-width: 200px;
-  }
-  .mw180 {
-    max-width: 180px;
-  }
-  .mw160 {
-    max-width: 160px;
-  }
-  .mw140 {
-    max-width: 140px;
-  }
-  .mw120 {
-    max-width: 120px;
-  }
-  .mw100 {
-    max-width: 100px;
-  }
-  .mw90 {
-    max-width: 90px;
-  }
-  .mw30 {
-    max-width: 30px;
-  }
-  .h140 {
-    height: 140px;
-    overflow: auto;
+  .caption-right {
+    width: calc(100% - 189px);
+    padding: 4px;
+    height: 83px;
+    line-height: 25px;
+    overflow-y: scroll;
+    &:hover {
+      border: 1px solid $selected_color;
+      background-color: $view_Title_background;
+    }
   }
   .editarea {
     &:hover {

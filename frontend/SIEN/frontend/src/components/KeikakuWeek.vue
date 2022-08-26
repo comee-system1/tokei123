@@ -5,38 +5,58 @@
         <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
-            :dispHideBar="true"
+            :dispHideBar="false"
             @childLeftArea="changeLeftArea"
             @child-select="setUserSelectPoint"
           >
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row dense class="mt-1 borderBottom pb-2">
-            <v-col cols="1" class="mw200">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel">利用者名</label>
+          <v-row no-gutters class="mt-1">
+            <v-card class="d-flex justify-start" flat tile>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="text-center label text-caption"
+              >
+                利用者名
               </v-card>
-            </v-col>
-            <v-col cols="3">
-              <v-card elevation="0" outlined tile> aaa </v-card>
-            </v-col>
-            <v-col cols="1" class="mw200">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel">作成日</label>
+              <v-card
+                width="200"
+                class="ml-1 text-caption lightYellow"
+                elevation="0"
+                outlined
+                tile
+              >
+                aaa
               </v-card>
-            </v-col>
-            <v-col cols="2" class="text-center">
-              <v-card elevation="0" outlined tile> 2022年4月22日 </v-card>
-            </v-col>
-          </v-row>
-          <v-row dense class="mt-1 borderBottom">
-            <v-col class="mw160">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel w160">週間計画開始年月</label>
+              <v-card
+                outlined
+                tile
+                width="60"
+                class="ml-1 text-center label text-caption"
+              >
+                作成日
               </v-card>
-            </v-col>
-            <v-col class="mw160 ml-1">
+              <v-card
+                width="100"
+                class="ml-1 text-center text-caption lightYellow"
+                elevation="0"
+                outlined
+                tile
+              >
+                2022年4月22日
+              </v-card>
+
+              <v-card
+                outlined
+                tile
+                width="120"
+                class="ml-1 text-center label text-caption"
+              >
+                週間計画開始年月
+              </v-card>
               <v-btn
                 x-small
                 @click="inputCalendarClick(0)"
@@ -44,27 +64,37 @@
                 outlined
                 width="140px"
                 height="24px"
-                style="font-size: 12px"
+                class="text-caption ml-1"
                 >{{ getYm }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-btn>
+            </v-card>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="6">
+              <v-tabs height="25" v-model="inputTypemodel" class="mt-2">
+                <v-tab
+                  class="text-caption"
+                  v-for="value in inputType"
+                  :key="value.key"
+                  style="height: 25px"
+                  :href="'#inputs-' + value.key"
+                >
+                  {{ value.value }}</v-tab
+                >
+              </v-tabs>
             </v-col>
-            <v-col cols="4" align="center">
-              <v-card class="text-center" elevation="0" tile>
-                <label class="greyLabel">入力案内</label>
-                <v-btn x-small class="ml-1">週間予定</v-btn>
-                <v-btn x-small class="ml-1">主な日常生活等</v-btn>
-              </v-card>
-            </v-col>
-            <v-col cols="4" align="right">
-              <v-btn x-small class="ml-1">前回コピー</v-btn>
-              <v-btn x-small class="ml-1">履歴参照</v-btn>
+            <v-col cols="6" class="text-end pr-1">
+              <v-btn-toggle tile>
+                <v-btn small>前回コピー</v-btn>
+                <v-btn small>履歴参照</v-btn>
+              </v-btn-toggle>
             </v-col>
           </v-row>
-          <v-row dense>
-            <v-col cols="11">
+          <v-row no-gutters class="mt-0">
+            <v-col cols="10">
               <wj-flex-grid
                 id="keikakuWeekGrid"
                 :headersVisibility="3"
@@ -93,7 +123,7 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
-            <v-col cols="1">vv</v-col>
+            <v-col cols="2">vv</v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -147,6 +177,17 @@ export default {
         { id: 0, name: 'サービス等利用計画' },
         { id: 1, name: 'サービス等利用計画2' },
       ],
+      inputType: [
+        {
+          key: 1,
+          value: '週間予定',
+        },
+        {
+          key: 2,
+          value: '主な日常生活等',
+        },
+      ],
+      inputTypemodel: 0,
       keikakuKubunModel: '',
       viewdata: [],
       weekarray: [
@@ -264,13 +305,8 @@ div#keikakuWeek {
   max-width: 1920px;
   width: auto;
 
-  label.greyLabel {
-    background-color: $selected_color;
-    display: inline-block;
-    width: 100px;
-    &.w160 {
-      width: 160px;
-    }
+  div.label {
+    background-color: $light-gray;
   }
 
   .borderBottom {

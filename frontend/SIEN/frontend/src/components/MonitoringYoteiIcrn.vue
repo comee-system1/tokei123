@@ -293,77 +293,77 @@ export default {
           dataname: 'code',
           title: 'コード',
           kbntitle: '',
-          width: 80,
+          width: '2*',
           align: 'center',
         },
         {
           dataname: 'name',
           title: '利用者名',
           kbntitle: '',
-          width: '1*',
+          width: '3*',
           align: 'left',
         },
         {
           dataname: 'age',
           title: '年\n齢',
           kbntitle: '',
-          width: 40,
+          width: '1*',
           align: 'right',
         },
         {
           dataname: 'birthMonth',
           title: '誕\n生\n月',
           kbntitle: '',
-          width: 40,
+          width: '1*',
           align: 'right',
         },
         {
           dataname: 'sichoson',
           title: '市区\n町村',
           kbntitle: '',
-          width: 90,
+          width: '2*',
           align: 'left',
         },
         {
           dataname: 'keikakuYmd',
           title: '作成日',
           kbntitle: 'サービス等利用計画作成',
-          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
+          width: '2*',
           align: 'center',
         },
         {
           dataname: 'yousiki',
-          title: '様\n式',
+          title: '様式',
           kbntitle: 'サービス等利用計画作成',
-          width: 40,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'tantousya',
           title: '担当者',
           kbntitle: 'サービス等利用計画作成',
-          width: sysConst.GRD_COL_WIDTH.Tantousya + 20,
+          width: '2*',
           align: 'left',
         },
         {
           dataname: 'sikyuSymd',
           title: '開始日',
           kbntitle: 'モニタリング期間',
-          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
+          width: '2*',
           align: 'center',
         },
         {
           dataname: 'sikyuEymd',
           title: '終了日',
           kbntitle: 'モニタリング期間',
-          width: sysConst.GRD_COL_WIDTH.Ymd + 20,
+          width: '2*',
           align: 'center',
         },
         {
           dataname: 'kikan',
           title: '期間',
           kbntitle: 'モニタリング期間',
-          width: 70,
+          width: '1.5*',
           align: 'right',
         },
       ],
@@ -1299,7 +1299,7 @@ div#monitoringYotei {
   }
 
   #monitoringYoteiGridYm {
-    width: 480px;
+    width: 760px;
     // min-width: 1250px;
     height: 70vh;
     min-height: 400px;

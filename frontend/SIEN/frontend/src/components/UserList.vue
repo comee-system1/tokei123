@@ -57,7 +57,7 @@
           </v-col>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters>
+        <v-row class="rowStyle mt-1 mr-1" no-gutters v-show="dispSvcReki">
           <v-col cols="*" style="height: 100%">
             <div align="right">
               <label class="mr-1">サービス歴</label>
@@ -74,6 +74,45 @@
                 style="width: 150px"
               >
               </wj-menu>
+            </div>
+          </v-col>
+        </v-row>
+
+        <v-row class="rowStyle mt-1 mr-1" no-gutters v-show="dispYoteiYm">
+          <v-col cols="*" style="height: 100%">
+            <div align="right">
+              <label class="mr-1">予定月</label>
+              <v-btn
+                @click="inputCalendarClick()"
+                tile
+                outlined
+                width="115px"
+                height="100%"
+                class="pa-0 mr-1"
+                >{{ getYoteiYm() }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+              <v-btn-toggle
+                class="flex-wrap ma-0"
+                v-model="selDispYoteisya"
+                mandatory
+              >
+                <v-btn
+                  v-for="n in dispYoteisyaList"
+                  :key="n.val"
+                  small
+                  color="secondary"
+                  dark
+                  :height="25"
+                  :width="25"
+                  outlined
+                  @click="siborikomiYoteisya(n.val)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
             </div>
           </v-col>
         </v-row>
@@ -183,10 +222,26 @@
         </wj-flex-grid>
       </v-col>
     </v-row>
+    <v-dialog
+      v-model="datepickerYoteiYm_dialog"
+      width="200"
+      class="datepicker_dialogs"
+    >
+      <v-date-picker
+        id="user-list_scrollbar_Datepicker"
+        type="month"
+        v-model="pickerYoteiYm"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="monthSelect"
+      >
+      </v-date-picker>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
@@ -214,6 +269,8 @@ export default {
   props: {
     dispAddDaicho: Boolean,
     dispHideBar: Boolean,
+    dispSvcReki: Boolean,
+    dispYoteiYm: Boolean,
   },
   // components: { Riyousya },
   data() {
@@ -244,6 +301,11 @@ export default {
         { id: 0, name: '全部' },
         { id: 1, name: '登録済み' },
       ],
+      selDispYoteisya: 0,
+      dispYoteisyaList: [
+        { id: 0, name: '予定者' },
+        { id: 1, name: '全員' },
+      ],
       selTantou: 0,
       tantouList: [
         { id: 0, name: '指定なし' },
@@ -264,6 +326,10 @@ export default {
         cssClass: 'hdr-tip',
       }),
       headerheight: 100,
+      // 予定月用プロパティ
+      pickerYoteiYm: '',
+      yoteiYm: '',
+      datepickerYoteiYm_dialog: false,
     };
   },
   mounted() {
@@ -330,6 +396,10 @@ export default {
     },
     siborikomiUser(siborikomiType) {
       this.selDispKbn = siborikomiType;
+      this.userFilter();
+    },
+    siborikomiYoteisya(type) {
+      this.selDispYoteisya = type;
       this.userFilter();
     },
     sortUser(sortType) {
@@ -432,6 +502,11 @@ export default {
         data = get;
       }
 
+      if (this.dispYoteiYm && this.selDispYoteisya) {
+        // TODO 予定ありのデータを表示する
+        //data = data.filter((x) => x.yousiki == '者');
+      }
+
       // if (this.selDispKbn == 0) {
       //   data = data.filter((x) => x.isDaicho);
       // } else {
@@ -527,6 +602,41 @@ export default {
       // mijissou
       window.open('https://www.yahoo.co.jp/');
     },
+    getYoteiYm() {
+      if (!this.yoteiYm) {
+        this.yoteiYm = moment();
+        this.pickerYoteiYm =
+          this.yoteiYm.year() +
+          '-' +
+          this.yoteiYm.format('MM') +
+          '-' +
+          this.yoteiYm.format('DD');
+      }
+      return (
+        this.yoteiYm.format('YYYY') + '年' + this.yoteiYm.format('MM') + '月'
+      );
+    },
+    inputCalendarClick() {
+      this.pickerYoteiYm =
+        this.yoteiYm.format('YYYY') +
+        '-' +
+        this.yoteiYm.format('MM') +
+        '-' +
+        this.yoteiYm.format('DD');
+      this.datepickerYoteiYm_dialog = true;
+    },
+    monthSelect() {
+      let split = this.pickerYoteiYm.split('-');
+      this.yoteiYm = moment({
+        years: split[0],
+        months: Number(split[1]) - 1,
+        days: 1,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      });
+      this.datepickerYoteiYm_dialog = false;
+    },
   },
 };
 </script>
@@ -611,7 +721,7 @@ div#user-list_scrollbar {
 
   div.customCombobox {
     position: relative;
-    width: 150px !important;
+    width: 200px !important;
     height: 20px !important;
     &.customCombobox {
       // width: 160px !important;
@@ -745,5 +855,14 @@ div#user-list_scrollbar {
       transform: translateX(0px);
     }
   }
+}
+#user-list_scrollbar_Datepicker {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 120px;
+  left: 50px;
+  width: 300px;
+  max-width: 300px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="mt-2">
     <wj-flex-grid
-      id="kadaiGrid"
+      id="planKadaiGrid"
       :initialized="onInitialized"
       :itemsSource="viewData"
       :allowDragging="'Both'"
@@ -13,7 +13,7 @@
       <wj-flex-grid-column
         header="順位"
         binding="sort"
-        :width="40"
+        :width="80"
         :isReadOnly="true"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -102,7 +102,7 @@
           >
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark text @click="editTextSave"> 仮設定 </v-btn>
+            <v-btn dark text @click="editTextSave"> 保存 </v-btn>
           </v-toolbar-items>
         </v-toolbar>
         <v-list three-line subheader>
@@ -113,22 +113,20 @@
                   <v-col>
                     <v-card class="d-flex justify-end" flat tile>
                       <div>
-                        <v-btn small @click="rowAdd('service')">行追加</v-btn>
-                        <v-btn small @click="rowDelete('service')" class="ml-2"
-                          >行削除</v-btn
-                        >
+                        <v-btn-toggle class="mt-1">
+                          <v-btn small>行追加</v-btn>
+                          <v-btn small>行削除</v-btn>
+                        </v-btn-toggle>
                       </div>
                     </v-card>
                   </v-col>
                 </v-row>
                 <wj-flex-grid
                   id="serviceGrid"
+                  :headersVisibility="'Column'"
                   :autoRowHeights="true"
                   :itemsSource="serviceData"
                   :initialized="onInitializedService"
-                  :draggingRow="handleDraggingRow"
-                  :draggedRow="handleDraggedRow"
-                  :allowDragging="'Both'"
                   class="mt-1"
                 >
                   <wj-flex-grid-column
@@ -138,8 +136,7 @@
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     binding="service"
-                    :width="200"
-                    :dataMap="servicesMap"
+                    width="2*"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     binding="detail"
@@ -168,67 +165,56 @@
                     header="月"
                     binding="mon"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="火"
                     binding="tue"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="水"
                     binding="wed"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="木"
                     binding="thr"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="金"
                     binding="fri"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="土"
                     binding="sat"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="日"
                     binding="sun"
                     :width="24"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="週"
                     binding="count_week"
                     :width="30"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="月"
                     binding="count_month"
                     :width="30"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="週"
                     binding="total_week"
                     :width="30"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     header="月"
                     binding="total_month"
                     :width="30"
-                    :isReadOnly="true"
                   ></wj-flex-grid-column>
                   <wj-flex-grid-column
                     binding="jigyosyo"
@@ -256,7 +242,6 @@
 
 <script>
 import * as wjGrid from '@grapecity/wijmo.grid';
-import sysConst from '@/utiles/const';
 
 export default {
   props: {},
@@ -269,18 +254,6 @@ export default {
       editTextDialog: false,
       serviceData: [],
       serviceDataLength: 0,
-      servicesMap: [
-        '経済的生活介護',
-        '経済的施設入所支援',
-        '居宅介護 身体介護',
-        '居宅介護 家事援助',
-        '居宅介護 通院等乗降介助',
-        '居宅介護 通院介助(身体介護を伴わない)',
-        '居宅介護 通院介助(身体介護を伴う)',
-        '重度訪問介護',
-        '行動援護',
-        '重度障害者等包括支援',
-      ],
     };
   },
   created() {},
@@ -297,42 +270,10 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('kadaiGrid') != null) {
-        document.getElementById('kadaiGrid').style.height =
+      if (document.getElementById('planKadaiGrid') != null) {
+        document.getElementById('planKadaiGrid').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
-    },
-    /************************
-     * 行追加
-     */
-    rowAdd(type) {
-      // 福祉サービスダイアログの配列に追加
-      if (type == 'service') {
-        this.createServiceData(this.serviceData.length + 1);
-      }
-      // 課題支援配列に追加
-      if (type == 'view') {
-        this.createData(this.viewData.length + 1);
-      }
-    },
-    /************************
-     * 行削除
-     */
-    rowDelete(type) {
-      if (type == 'service') {
-        this.serviceData = this.delcheck(this.serviceData).filter(Boolean);
-      }
-      if (type == 'view') {
-        this.viewData = this.delcheck(this.viewData).filter(Boolean);
-      }
-    },
-    delcheck(array) {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i].edit === true) {
-          delete array[i];
-        }
-      }
-      return array;
     },
     /*******************************
      * 福祉サービス等のダイアログ
@@ -342,79 +283,38 @@ export default {
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
-
-        // 週間予定を押下
-        if (ht.col >= 7 && ht.col <= 13) {
-          // weeklyKey
-          let weeklyKey = [];
-          weeklyKey.push(
-            { key: 7, type: 'mon' },
-            { key: 8, type: 'tue' },
-            { key: 9, type: 'wed' },
-            { key: 10, type: 'thr' },
-            { key: 11, type: 'fri' },
-            { key: 12, type: 'sat' },
-            { key: 13, type: 'sun' }
-          );
-
-          var idx = weeklyKey.findIndex(({ key }) => key === ht.col);
-          let type = weeklyKey[idx].type;
-          let icon = '';
-          if (_self.serviceData[ht.row][type] === '〇') {
-            icon = '';
-          } else {
-            icon = '〇';
-          }
-          flexGrid.setCellData(ht.row, ht.col, icon);
-          _self.serviceData[ht.row][type] = icon;
-
-          // 回数の計算
-          let count_week = 0;
-          for (let i = 0; i < weeklyKey.length; i++) {
-            let w = weeklyKey[i].type;
-            if (_self.serviceData[ht.row][w] == '〇') {
-              count_week++;
-            }
-          }
-          // 週の回数
-          _self.serviceData[ht.row].count_week = count_week;
-          // 月の回数
-          _self.serviceData[ht.row].count_month = count_week * 4;
-          // 合計
-          let one = _self.serviceData[ht.row].one;
-          _self.serviceData[ht.row].total_week = count_week * one;
-          _self.serviceData[ht.row].total_month = count_week * one * 4;
-        }
         // 区分を押下
         if (ht.col == 3 && e.target.value) {
           flexGrid.beginUpdate();
-
           let index = e.target.value.split('-')[1];
           let mode = e.target.value.split('-')[0];
           let array = _self.serviceData;
+          array[index].kubun = mode === 'week' ? 1 : 2;
 
-          if (array[index].kubun == 1) {
-            // 週のみ選択状態
-            // mode:weekの時0 / monthの時3 に変更
-            array[index].kubun = mode === 'week' ? 0 : mode === 'month' ? 3 : 0;
-          } else if (array[index].kubun == 2) {
-            // 月のみ選択状態
-            // mode:weekの時3 / monthの時0 に変更
-            array[index].kubun = mode === 'week' ? 3 : mode === 'month' ? 0 : 0;
-          } else if (array[index].kubun == 3) {
-            // 週月選択状態
-            // mode:weekの時2 / monthの時1 に変更
-            array[index].kubun = mode === 'week' ? 2 : mode === 'month' ? 1 : 0;
-          } else if (array[index].kubun == 0) {
-            // 未状態
-            // mode:weekの時1 / monthの時2 に変更
-            array[index].kubun = mode === 'week' ? 1 : mode === 'month' ? 2 : 0;
-          }
           _self.serviceData = [];
           _self.serviceData = array;
           flexGrid.itemsSource = [];
           flexGrid.itemsSource = array;
 
+          flexGrid.endUpdate();
+        }
+        // 並び替え
+        if (ht.col == 0 && e.target.value) {
+          flexGrid.beginUpdate();
+          let index = e.target.value.split('-')[1];
+          let mode = e.target.value.split('-')[0];
+
+          let array = _self.serviceData;
+          if (mode === 'ue') {
+            array.splice(index - 2, 2, array[index - 1], array[index - 2]);
+          } else {
+            array.splice(index - 1, 2, array[index], array[index - 1]);
+          }
+
+          _self.serviceData = [];
+          _self.serviceData = array;
+          flexGrid.itemsSource = [];
+          flexGrid.itemsSource = array;
           flexGrid.endUpdate();
         }
       });
@@ -423,7 +323,7 @@ export default {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
-        let tmpitem = e.panel.rows[e.row].dataItem;
+
         if (e.panel.cellType == wjGrid.CellType.Cell) {
           if (e.col == 1 || e.col == 2 || e.col == 18) {
             e.cell.style.textAlign = 'left';
@@ -431,32 +331,28 @@ export default {
             e.cell.style.alignItems = 'left';
           }
 
-          // 回数の設定
-          if (e.col == 14) {
-            if (tmpitem.kubun == 1 || tmpitem.kubun == 3) {
-              e.cell.style.backgroundColor = sysConst.COLOR.white;
-              e.cell.style.color = sysConst.COLOR.fontColor;
+          if (e.col == 0) {
+            let text = e.cell.innerText;
+            let ue = '';
+            if (e.row) {
+              ue =
+                '<button class="arrow" value="ue-' +
+                parseInt(e.row + 1) +
+                '">▲</button>';
             } else {
-              e.cell.style.backgroundColor = sysConst.COLOR.lightGray;
-              e.cell.style.color = sysConst.COLOR.lightGray;
+              ue = '<button class="arrow" disabled >▲</button>';
             }
-          }
-
-          if (e.col == 15) {
-            if (tmpitem.kubun == 2 || tmpitem.kubun == 3) {
-              e.cell.style.backgroundColor = sysConst.COLOR.white;
-              e.cell.style.color = sysConst.COLOR.fontColor;
+            let sita = '';
+            if (e.row == _self.serviceDataLength - 1) {
+              sita = '<button class="arrow" disabled >▼</button>';
             } else {
-              e.cell.style.backgroundColor = sysConst.COLOR.lightGray;
-              e.cell.style.color = sysConst.COLOR.lightGray;
+              sita =
+                '<button class="arrow" value="sita-' +
+                parseInt(e.row + 1) +
+                '">▼</button>';
             }
-          }
-          if (e.col == 16 || e.col == 17) {
-            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          }
-
-          // 区分の設定
-          if (e.col == 3) {
+            e.cell.innerHTML = text + ue + sita;
+          } else if (e.col == 3) {
             let text = e.cell.innerText;
             let weekbtn = '';
             let monthbtn = '';
@@ -466,10 +362,6 @@ export default {
               act1 = 'act';
             }
             if (text == 2) {
-              act2 = 'act';
-            }
-            if (text == 3) {
-              act1 = 'act';
               act2 = 'act';
             }
             weekbtn =
@@ -533,10 +425,12 @@ export default {
      * ドラッグで並び替え
      */
     handleDraggingRow(s, e) {
+      // ドラッグでセルが移動開始時に動作
       this.dragIndex = e.row;
       s.collectionView.moveCurrentToPosition(this.dragIndex);
     },
     handleDraggedRow(s, e) {
+      // ドラッグでセルが移動後動作
       let dropIndex = e.row,
         arr = s.collectionView.sourceCollection;
       s.collectionView.deferUpdate(() => {
@@ -562,39 +456,8 @@ export default {
         // ダイアログ表示
         if (ht.col == 4) {
           _self.openDialog(ht.row);
-          _self.createServiceData();
         }
       });
-    },
-
-    createServiceData(cnt = 3) {
-      this.serviceData = [];
-      for (let i = 0; i < cnt; i++) {
-        this.serviceData.push({
-          no: i + 1,
-          service: '就労継続支援A型',
-          detail: '',
-          kubun: i + 1,
-          start: '10:00',
-          end: '15:00',
-          one: 5,
-          mon: '',
-          tue: '',
-          wed: '〇',
-          thr: '',
-          fri: '',
-          sat: '',
-          sun: '',
-          count_week: 1,
-          count_month: 1,
-          total_week: 5,
-          total_month: 20,
-          jigyosyo: 'はなまる就労支援センター\n03-1234-1234',
-          tanto: '',
-          edit: false,
-        });
-      }
-      this.serviceDataLength = this.serviceData.length;
     },
     /******************
      * 入力フォームダイアログ表示
@@ -602,16 +465,40 @@ export default {
     openDialog(row) {
       this.editTextDialog = true;
       console.log(this.viewData[row]);
+      this.serviceData = [];
+      for (let i = 0; i < 3; i++) {
+        this.serviceData.push({
+          no: i + 1,
+          service: i + '就労継続支援A型',
+          detail: '',
+          kubun: 1,
+          start: '10:00',
+          end: '15:00',
+          one: '5.0',
+          mon: '',
+          tue: '',
+          wed: '〇',
+          thr: '',
+          fri: '',
+          sat: '',
+          count_week: 1,
+          count_month: 1,
+          total_week: '5.0',
+          total_month: '22.5',
+          jigyosyo: 'はなまる就労支援センター\n03-1234-1234',
+          tanto: '',
+          edit: false,
+        });
+      }
+      this.serviceDataLength = this.serviceData.length;
     },
     /******************************
      *  ダイアログの編集内容取得
      */
-    editTextSave() {
-      this.editTextDialog = false;
-    },
-    createData(cnt = 5) {
+    editTextSave() {},
+    createData() {
       let array = [];
-      for (let i = 0; i < cnt; i++) {
+      for (let i = 0; i < 30; i++) {
         array.push({
           sort: i + 1,
           resolve: i + '現在の生活を考え直し特に母親との関係をよくしたい',
@@ -637,13 +524,6 @@ export default {
         e.cell.style.alignItems = 'center';
       });
     },
-
-    /****************************
-     * 登録ボタンを押下
-     */
-    registButton() {
-      console.log(this.viewData);
-    },
   },
 };
 </script>
@@ -651,7 +531,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 #serviceGrid,
-#kadaiGrid {
+#planKadaiGrid {
   font-size: 12px;
   height: var(--height);
   .wj-cell {
@@ -663,24 +543,11 @@ export default {
       background: transparent;
       color: initial;
     }
-
     text-align: left !important;
-  }
-}
-.v-dialog--fullscreen {
-  .wj-listbox {
-    width: 300px;
-    font-size: 12px;
   }
 }
 #serviceGrid {
   .wj-cell {
-    &:nth-child(2) {
-      &:not(.wj-header) {
-        display: block;
-      }
-    }
-
     &:nth-child(4).wj-state-selected {
       background: transparent;
       color: initial;

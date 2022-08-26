@@ -971,7 +971,7 @@ div#monitoringJissiIcrn {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 98%;
-    height: 73vh;
+    height: 72vh;
     min-height: 450px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ

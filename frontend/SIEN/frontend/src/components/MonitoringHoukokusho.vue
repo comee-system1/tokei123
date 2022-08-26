@@ -6,7 +6,9 @@
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
-            :dispHideBar="true"
+            :dispHideBar="false"
+            :dispSvcReki="false"
+            :dispYoteiYm="true"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
             @childLeftArea="changeLeftArea"
@@ -127,20 +129,81 @@
               <v-btn class="itemBtn mr-1" @click="copyClicked()">
                 前回コピー
               </v-btn>
-              <v-btn class="itemBtn" @click="rirekiClicked()"> 履歴参照 </v-btn>
+              <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
+                履歴参照
+              </v-btn>
+              <v-navigation-drawer
+                v-model="drawer"
+                absolute
+                temporary
+                right
+                :width="400"
+                :min-width="400"
+              >
+                <v-list class="pa-0 ma-0" dense>
+                  <!-- <v-list-item
+                    class="pa-0 ma-0"
+                    dense
+                    style="background: lightgray"
+                  >
+                    <v-list-item-content class="pa-0 pl-2 ma-0">
+                      履歴参照
+                    </v-list-item-content>
+                  </v-list-item> -->
+                  <v-card
+                    class="koumokuTitle_c pa-1"
+                    style="background: lightgray"
+                    outlined
+                    tile
+                    :height="30"
+                  >
+                    履歴参照
+                    <v-btn
+                      elevation="2"
+                      icon
+                      small
+                      absolute
+                      top
+                      right
+                      v-on:click.stop="drawer = !drawer"
+                      class="closeButton mr-3"
+                      color="secondary"
+                      ><v-icon dark small> mdi-close </v-icon></v-btn
+                    >
+                  </v-card>
+                  <template v-for="item in rirekiList">
+                    <v-list-item
+                      class="pa-0 ma-0"
+                      dense
+                      :key="`first-${item.index}`"
+                      @click="rirekiClicked()"
+                    >
+                      <v-list-item-content class="pa-0 pl-2 ma-0">
+                        {{ item.no }}
+                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
+                        {{ item.day }}
+                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
+                        {{ item.kanryou }}
+                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
+                        {{ item.tantou }}
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-divider :key="`second-${item.index}`" />
+                  </template>
+                </v-list>
+              </v-navigation-drawer>
             </v-layout>
           </v-row>
           <v-row no-gutters class="mt-1">
-            <div style="width: 50%">
+            <div style="width: 50%; height: 20vh">
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 総合的な援助の方針
               </v-card>
               <v-card
-                class="koumokuData2 pa-1"
+                class="koumokuData2Read pa-1"
                 outlined
                 tile
                 :ripple="false"
-                @click="inputClicked(0)"
               >
                 {{ getHousin }}
               </v-card>
@@ -150,11 +213,11 @@
                 全体の状況
               </v-card>
               <v-card
-                class="koumokuData2 pa-1"
+                class="koumokuData2 always-show-scrollbar pa-1"
                 outlined
                 tile
                 :ripple="false"
-                @click="inputClicked(1)"
+                @click="textClicked()"
               >
                 {{ getJyoukyou }}
               </v-card>
@@ -316,40 +379,11 @@
       >
       </v-date-picker>
     </v-dialog>
-    <v-dialog v-model="housinInputflg" width="500" class="inputDialog">
-      <v-card
-        class="koumokuTitle_c pa-1"
-        style="background: lightgray"
-        outlined
-        tile
-      >
-        総合的な援助の方針
-        <v-btn
-          elevation="2"
-          icon
-          small
-          absolute
-          top
-          right
-          @click="header_dialog_close(0)"
-          class="closeButton"
-          color="secondary"
-          ><v-icon dark small> mdi-close </v-icon></v-btn
-        >
-      </v-card>
-      <v-textarea
-        class="ma-0 pa-0"
-        no-resize
-        v-model="viewdataAll.housin"
-        height="500"
-        hide-details
-        solo
-        flat
-        dense
-        outlined
-      ></v-textarea>
-    </v-dialog>
-    <v-dialog v-model="jyoukyouInputflg" width="500" class="inputDialog">
+    <v-dialog
+      v-model="jyoukyouInputflg"
+      :width="jyoukyouwidth"
+      class="inputDialog"
+    >
       <v-card
         class="koumokuTitle_c pa-1"
         style="background: lightgray"
@@ -373,14 +407,33 @@
       <v-textarea
         class="ma-0 pa-0"
         no-resize
-        v-model="viewdataAll.jyoukyou"
+        v-model="inputjyoukyou"
         height="500"
         hide-details
         solo
         flat
         dense
         outlined
+        style="font-size: 14px"
       ></v-textarea>
+      <v-card
+        class="koumokuTitle_c pa-1"
+        style="background: lightgray; height: 30px"
+        outlined
+        tile
+      >
+        <v-btn
+          elevation="2"
+          small
+          absolute
+          top
+          right
+          @click="header_dialog_close(2)"
+          class="closeButton"
+          color="secondary"
+          >設定</v-btn
+        >
+      </v-card>
     </v-dialog>
     <v-dialog v-model="douiInputflg" width="350" class="inputDialog">
       <v-card
@@ -397,7 +450,7 @@
           absolute
           top
           right
-          @click="header_dialog_close(2)"
+          @click="header_dialog_close(3)"
           class="closeButton"
           color="secondary"
           ><v-icon dark small> mdi-close </v-icon></v-btn
@@ -503,6 +556,7 @@ export default {
   components: { UserList },
   data() {
     return {
+      jyoukyouwidth: 500,
       userList: [],
       userData: {},
       keikakuYmd: '',
@@ -532,7 +586,7 @@ export default {
           dataname: 'jyoukyou',
           title: 'サービス提供状況\n(事業所からの聞取り)',
           kbntitle: '',
-          width: '10*',
+          width: '12*',
           align: 'left',
         },
         {
@@ -551,51 +605,30 @@ export default {
         },
         {
           dataname: 'kaiketuhouhou',
-          title: '今後の課題・解決方法',
+          title: '今後の課題\n・解決方法',
           kbntitle: '',
           width: '10*',
           align: 'left',
         },
         {
-          dataname: 'kind1',
+          dataname: 'kinddisp',
           kbntitle: '計画変更の必要性',
           title: '種類',
-          width: '2*',
+          width: '4.5*',
           align: 'center',
         },
         {
-          dataname: 'kind2',
-          kbntitle: '計画変更の必要性',
-          title: '種類',
-          width: '2*',
-          align: 'center',
-        },
-        {
-          dataname: 'ryou1',
+          dataname: 'ryoudisp',
           kbntitle: '計画変更の必要性',
           title: '量',
-          width: '2*',
+          width: '4.5*',
           align: 'center',
         },
         {
-          dataname: 'ryou2',
-          kbntitle: '計画変更の必要性',
-          title: '量',
-          width: '2*',
-          align: 'center',
-        },
-        {
-          dataname: 'syukan1',
+          dataname: 'syukandisp',
           kbntitle: '計画変更の必要性',
           title: '週間',
-          width: '2*',
-          align: 'center',
-        },
-        {
-          dataname: 'syukan2',
-          kbntitle: '計画変更の必要性',
-          title: '週間',
-          width: '2*',
+          width: '4.5*',
           align: 'center',
         },
         {
@@ -607,6 +640,7 @@ export default {
         },
       ],
       viewdataAll: { housin: '', jyoukyou: '', viewdata: [] },
+      inputjyoukyou: '',
       kikanYmd: '',
       douiYmd: '',
       picker: '',
@@ -619,7 +653,6 @@ export default {
       datepickerDouiYmd_dialog: false,
       screenFlag: false,
       douiInputflg: false,
-      housinInputflg: false,
       jyoukyouInputflg: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
@@ -642,7 +675,31 @@ export default {
       ],
       loading: false,
       marginDefault: true,
-      leftWidth: '280px',
+      leftWidth: '275px',
+      rirekiList: [
+        {
+          index: 0,
+          no: 3,
+          day: '2020/01/01',
+          kanryou: '完了済み',
+          tantou: '担当太郎',
+        },
+        {
+          index: 1,
+          no: 2,
+          day: '2019/01/01',
+          kanryou: '完了済み',
+          tantou: '担当次郎',
+        },
+        {
+          index: 2,
+          no: 1,
+          day: '2018/01/01',
+          kanryou: '完了済み',
+          tantou: '担当三郎',
+        },
+      ],
+      drawer: false,
     };
   },
   mounted() {},
@@ -662,58 +719,42 @@ export default {
      * ユーザー一覧コンポーネントの開閉ボタンを押下
      */
     changeLeftArea() {
-      let doc = document.getElementsByClassName('rightArea')[0];
-      if (this.moveLeft == true) {
-        this.moveLeft = false;
-        doc.style.minWidth = '78%';
-        doc.style.maxWidth = '78%';
-        this.leftWidth = '280px';
-      } else {
-        this.moveLeft = true;
-        doc.style.minWidth = '97%';
-        doc.style.maxWidth = '97%';
-        this.leftWidth = '14px';
-      }
+      // let doc = document.getElementsByClassName('rightArea')[0];
+      // if (this.moveLeft == true) {
+      //   this.moveLeft = false;
+      //   // doc.style.minWidth = '78%';
+      //   // doc.style.maxWidth = '78%';
+      //   this.leftWidth = '280px';
+      // } else {
+      //   this.moveLeft = true;
+      //   // doc.style.minWidth = '97%';
+      //   // doc.style.maxWidth = '97%';
+      //   this.leftWidth = '14px';
+      // }
     },
     onInitializeIcrnGrid(flexGrid) {
-      // flexGrid.beginUpdate();
+      flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
           let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
           if (ht.col == 0) {
-            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 3, ht.row, 13));
+            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 3, ht.row, 10));
           }
-          if (tmpitem.jissi) {
-            if (ht.col == 7 || ht.col == 8) {
-              if (ht.col == 7 && tmpitem.kind == 0) {
-                tmpitem.kind = 1;
-              } else if (ht.col == 8 && tmpitem.kind == 1) {
-                tmpitem.kind = 0;
-              }
-              flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 7, ht.row, 8));
+          if (tmpitem.jissi && e.target.tagName == 'BUTTON') {
+            if (ht.col == 7) {
+              tmpitem.kind = e.target.value;
             }
-            if (ht.col == 9 || ht.col == 10) {
-              if (ht.col == 9 && tmpitem.ryou == 0) {
-                tmpitem.ryou = 1;
-              } else if (ht.col == 10 && tmpitem.ryou == 1) {
-                tmpitem.ryou = 0;
-              }
-              flexGrid.refreshRange(
-                new wjGrid.CellRange(ht.row, 9, ht.row, 10)
-              );
+            if (ht.col == 8) {
+              tmpitem.ryou = e.target.value;
             }
-            if (ht.col == 11 || ht.col == 12) {
-              if (ht.col == 11 && tmpitem.syukan == 0) {
-                tmpitem.syukan = 1;
-              } else if (ht.col == 12 && tmpitem.syukan == 1) {
-                tmpitem.syukan = 0;
-              }
-              flexGrid.refreshRange(
-                new wjGrid.CellRange(ht.row, 11, ht.row, 12)
-              );
+            if (ht.col == 9) {
+              tmpitem.syukan = e.target.value;
             }
+            flexGrid.refreshRange(
+              new wjGrid.CellRange(ht.row, ht.col, ht.row, ht.col)
+            );
           }
         }
       });
@@ -760,7 +801,7 @@ export default {
         if (colIndex == 0) {
           col.dataType = 'Boolean';
         }
-        if (7 <= colIndex && colIndex <= 12) {
+        if (7 <= colIndex && colIndex <= 9) {
           col.isReadOnly = true;
         }
         flexGrid.columnHeaders.setCellData(
@@ -776,7 +817,7 @@ export default {
           this.headerList[colIndex].title
         );
       }
-      // flexGrid.endUpdate();
+      flexGrid.endUpdate();
     },
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
@@ -799,49 +840,30 @@ export default {
         let tmpitem = e.panel.rows[e.row].dataItem;
 
         if (tmpitem.jissi) {
-          if (e.col == 7 || e.col == 8) {
-            // チェック済み側
-            if (tmpitem.kind == 1 && e.col == 7) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
-            } else if (tmpitem.kind == 0 && e.col == 8) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
+          if (7 <= e.col && e.col <= 9) {
+            let chkval = 0;
+            if (e.col == 7) {
+              chkval = tmpitem.kind;
+            } else if (e.col == 8) {
+              chkval = tmpitem.ryou;
+            } else if (e.col == 9) {
+              chkval = tmpitem.syukan;
             }
-            // 未チェック側
-            if (tmpitem.kind == 0 && e.col == 7) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
-            } else if (tmpitem.kind == 1 && e.col == 8) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
-            }
-          }
-          if (e.col == 9 || e.col == 10) {
-            // チェック済み側
-            if (tmpitem.ryou == 1 && e.col == 9) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
-            } else if (tmpitem.ryou == 0 && e.col == 10) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
-            }
-            // 未チェック側
-            if (tmpitem.ryou == 0 && e.col == 9) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
-            } else if (tmpitem.ryou == 1 && e.col == 10) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+
+            if (chkval == 0) {
+              e.cell.innerHTML =
+                "<button class='grdbtn' value='0' style='background:" +
+                sysConst.COLOR.gridErrBackground +
+                "'>無</button><button class='grdbtn' value='1'>有</button>";
+            } else {
+              e.cell.innerHTML =
+                "<button class='grdbtn' value='0' >無</button><button class='grdbtn' value='1' style='background:" +
+                sysConst.COLOR.gridErrBackground +
+                "'>有</button>";
             }
           }
-          if (e.col == 11 || e.col == 12) {
-            // チェック済み側
-            if (tmpitem.syukan == 1 && e.col == 11) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
-            } else if (tmpitem.syukan == 0 && e.col == 12) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridErrBackground;
-            }
-            // 未チェック側
-            if (tmpitem.syukan == 0 && e.col == 11) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
-            } else if (tmpitem.syukan == 1 && e.col == 12) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
-            }
-          }
-          if ((3 <= e.col && e.col <= 6) || e.col == 13) {
+
+          if (3 <= e.col && e.col <= 10) {
             e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
           }
         } else {
@@ -853,21 +875,15 @@ export default {
     },
     searchClicked() {
       // 初期データ読込
-      this.setViewData(true);
+      this.setViewData();
     },
-    setViewData(isAll) {
+    setViewData() {
       this.screenFlag = true;
       this.loading = true;
-      if (isAll) {
-        // uketukeIcrn(this.targetYmd).then((result) => {
-        //   this.viewdataAll = result;
-        //   this.userFilter();
-        //   this.screenFlag = false;
-        // });
-      }
       this.createdemodata();
     },
     createdemodata() {
+      this.keikakuYmd = '2022年12月12日';
       let result = {};
       result.doui = false;
       result.douiName = '';
@@ -1076,25 +1092,8 @@ export default {
     setUserSelectPoint(row) {
       // ユーザ選択処理はここで行う
       this.userData = row;
-      this.keikakuYmd = '2022年12月12日';
-      this.setViewData(true);
-      // this.userInfo = row;
-      // if (this.userInfo.riid == 0) {
-      //   this.dispUserName = '';
-      // } else {
-      //   this.dispUserName =
-      //     String(this.userInfo.riyocode).padStart(7, '0') +
-      //     ' ' +
-      //     this.userInfo.names +
-      //     ' (' +
-      //     this.userInfo.age +
-      //     '歳）';
-      // }
-      // this.rirekiSearchClicked(
-      //   this.kikanSymd.format('YYYYMMDD'),
-      //   this.kikanEymd.format('YYYYMMDD'),
-      //   this.userInfo.riid
-      // );
+
+      this.setViewData();
     },
     getSelectUserChildComponent(data) {
       this.userList = data;
@@ -1104,28 +1103,34 @@ export default {
     },
     rirekiClicked(kbn) {
       console.log(kbn);
+      this.drawer = !this.drawer;
     },
     inputClicked(kbn) {
+      console.log(kbn);
+    },
+    textClicked() {
       if (!this.userData.names) {
         return;
       }
-      if (kbn == 0) {
-        this.housinInputflg = true;
-      } else if (kbn == 1) {
-        this.jyoukyouInputflg = true;
-      }
+      this.jyoukyouwidth = 525;
+      this.inputjyoukyou = this.viewdataAll.jyoukyou;
+      this.jyoukyouInputflg = true;
     },
     douiCheck() {
+      if (!this.userData.names) {
+        return;
+      }
       if (this.viewdataAll.doui) {
         this.douiInputflg = true;
       }
     },
     header_dialog_close(kbn) {
-      if (kbn == 0) {
-        this.housinInputflg = false;
-      } else if (kbn == 1) {
+      if (kbn == 1) {
         this.jyoukyouInputflg = false;
       } else if (kbn == 2) {
+        this.viewdataAll.jyoukyou = this.inputjyoukyou;
+        this.jyoukyouInputflg = false;
+      } else if (kbn == 3) {
         this.douiInputflg = false;
       }
     },
@@ -1148,8 +1153,8 @@ div#monitoringHoukokusho {
   max-width: 1920px;
   width: auto;
   .rightArea {
-    min-width: 78%;
-    max-width: 78%;
+    min-width: 1050px;
+    max-width: 1050px;
     // width: 1020px;
     .rowStyle {
       height: 22px;
@@ -1232,7 +1237,19 @@ div#monitoringHoukokusho {
     background: $white;
     white-space: pre-line; // 改行を反映させる
     overflow: auto;
-    height: 130px;
+    min-height: 130px;
+    height: 18vh;
+  }
+  .koumokuData2Read {
+    color: $font_color;
+    width: 100%;
+    text-align: left;
+    background: $white;
+    white-space: pre-line; // 改行を反映させる
+    overflow: auto;
+    min-height: 130px;
+    height: 18vh;
+    background: $view_Data_Read_background;
   }
   .left {
     height: 100%;
@@ -1315,23 +1332,46 @@ div#monitoringHoukokusho {
   .v-btn-toggle > .v-btn {
     height: 20px;
   }
+  button.grdbtn {
+    border: 1px solid $light-gray;
+    margin: 0px 1px;
+    border-radius: 3px;
+    width: 20px;
+    color: $black !important;
+    &:hover {
+      background-color: $light-gray;
+    }
+    &:disabled {
+      background-color: $light-white;
+      color: $light-white;
+      opacity: 0.2;
+    }
+
+    &.act {
+      background-color: $light-gray;
+    }
+  }
 }
+
 .inputDialog {
   width: 300px;
   height: 300px;
-}
-.inputDialogRowStyle {
-  height: 22px;
-  color: $font_color;
-  font-size: 14px;
-  font-family: 'メイリオ';
-  .koumokuData {
+  font-size: 14px !important;
+  // .v-application--is-ltr
+  //   .v-textarea.v-text-field--enclosed
+  //   .v-text-field__slot
+  //   textarea {
+  //   font-size: 14px;
+  // }
+
+  .koumokuData2 {
     color: $font_color;
-    width: 200px;
-    height: 100%;
+    width: 100%;
     text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
+    background: $white;
+    white-space: pre-line; // 改行を反映させる
+    overflow: auto;
+    height: 130px;
   }
   .koumokuTitle {
     color: $font_color;
@@ -1346,6 +1386,49 @@ div#monitoringHoukokusho {
     background: $view_Title_background;
     border: none;
   }
+  .v-application--is-ltr .v-list-item__action:first-child,
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 4px;
+  }
+}
+.v-application--is-ltr
+  .v-textarea.v-text-field--enclosed
+  .v-text-field__slot
+  textarea {
+  padding-right: 0px;
+  overflow-y: scroll !important;
+}
+.always-show-scrollbar {
+  overflow-y: scroll !important;
+}
+.inputDialogRowStyle {
+  height: 22px;
+  color: $font_color;
+  font-size: 14px !important;
+  font-family: 'メイリオ';
+  .koumokuData {
+    color: $font_color;
+    width: 200px;
+    height: 100%;
+    text-align: left;
+    background: $view_Data_Read_background;
+    border: none;
+  }
+
+  .koumokuTitle {
+    color: $font_color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 100%;
+    text-align: center;
+    background: $view_Title_background;
+    border: none;
+  }
+
   .v-btn-toggle > .v-btn {
     height: 20px;
   }
