@@ -41,7 +41,7 @@
         <v-list three-line subheader>
           <v-textarea
             outlined
-            :value="note[notekey].value"
+            v-model="inputs"
             :style="textstyles"
             class="editTextarea"
             hide-details="false"
@@ -58,6 +58,7 @@ export default {
   components: {},
   data() {
     return {
+      inputs: [],
       notekey: 0,
       note: [
         {
@@ -126,10 +127,11 @@ export default {
      */
     editText(type) {
       this.notekey = type;
+      this.inputs = this.note[type].value;
       this.editTextDialog = true;
     },
     editTextSave() {
-      console.log(this.notekey);
+      this.note[this.notekey].value = this.inputs;
       this.editTextDialog = false;
     },
 
