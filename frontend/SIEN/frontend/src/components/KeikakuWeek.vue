@@ -73,13 +73,17 @@
           </v-row>
           <v-row no-gutters>
             <v-col cols="6">
-              <v-tabs height="25" v-model="inputTypemodel" class="mt-2">
+              <v-tabs
+                height="25"
+                v-model="inputTypemodel"
+                class="mt-2"
+                @change="inputTypeChange"
+              >
                 <v-tab
                   class="text-caption"
                   v-for="value in inputType"
                   :key="value.key"
                   style="height: 25px"
-                  :href="'#inputs-' + value.key"
                 >
                   {{ value.value }}</v-tab
                 >
@@ -92,11 +96,11 @@
               </v-btn-toggle>
             </v-col>
           </v-row>
-          <v-row no-gutters class="mt-1">
-            <v-col cols="9">
+          <v-row no-gutters>
+            <v-col :cols="gridMain">
               <wj-flex-grid
                 id="keikakuWeekGrid"
-                :selectionMode="'1'"
+                :selectionMode="'4'"
                 :headersVisibility="1"
                 :alternatingRowStep="0"
                 :autoGenerateColumns="false"
@@ -106,7 +110,9 @@
                 :isReadOnly="true"
                 :showBandedRows="false"
                 :initialized="onInitialize"
+                :itemsSourceChanged="onInitializeItemChanged"
                 :itemsSource="viewdata"
+                :style="styles"
               >
                 <wj-flex-grid-column
                   :header="' '"
@@ -131,29 +137,118 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </v-col>
-            <v-col cols="3" class="pl-1">
-              <wj-flex-grid
-                id="keikakuItemGrid"
-                :selectionMode="'1'"
-                :headersVisibility="1"
-                :alternatingRowStep="0"
-                :autoGenerateColumns="false"
-                :allowDragging="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :isReadOnly="true"
-                :showBandedRows="false"
-                :initialized="onInitializeItem"
-                :itemsSource="itemdata"
-              >
-                <wj-flex-grid-column
-                  :header="'日常生活'"
-                  binding="every"
-                  align="center"
-                  width="*"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
+            <v-col :cols="gridSub" class="pl-1">
+              <div v-if="inputTypemodel == 1">
+                <v-card
+                  outlined
+                  tile
+                  :style="{ height: textareaHeight }"
+                  class="ohidden"
+                >
+                  <v-toolbar
+                    flat
+                    color="primary"
+                    dark
+                    elevation="0"
+                    height="20"
+                    tile
+                  >
+                    <v-toolbar-title class="text-caption"
+                      >主な日常生活の活動</v-toolbar-title
+                    >
+                  </v-toolbar>
+                  <div class="pa-1 textarea">{{ mainActiveText }}</div>
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  class="mt-1 ohidden"
+                  :style="{ height: textareaHeight }"
+                >
+                  <v-toolbar
+                    flat
+                    color="primary"
+                    dark
+                    elevation="0"
+                    height="20"
+                    tile
+                  >
+                    <v-toolbar-title class="text-center text-caption"
+                      >週単位以外のサービス</v-toolbar-title
+                    >
+                  </v-toolbar>
+                  <div class="pa-1 textarea">{{ weekActiveText }}</div>
+                </v-card>
+              </div>
+              <div v-if="inputTypemodel == 0">
+                <wj-flex-grid
+                  id="keikakuItemGrid"
+                  :selectionMode="3"
+                  :headersVisibility="1"
+                  :alternatingRowStep="0"
+                  :autoGenerateColumns="false"
+                  :allowResizing="false"
+                  :allowDragging="false"
+                  :allowSorting="false"
+                  :showBandedRows="false"
+                  :initialized="onInitializeItem"
+                  :itemsSourceChanged="onInitializeItemChanged"
+                  :itemsSource="itemdata"
+                >
+                  <wj-flex-grid-column
+                    :header="'日常生活'"
+                    binding="every"
+                    align="center"
+                    :isReadOnly="true"
+                    width="*"
+                  ></wj-flex-grid-column>
+                </wj-flex-grid>
+                <wj-flex-grid
+                  id="keikakuServiceGrid"
+                  :selectionMode="3"
+                  :headersVisibility="1"
+                  :alternatingRowStep="0"
+                  :autoGenerateColumns="false"
+                  :allowResizing="false"
+                  :allowDragging="false"
+                  :allowSorting="false"
+                  :showBandedRows="false"
+                  :initialized="onInitializeServiceItem"
+                  :itemsSourceChanged="onInitializeItemChanged"
+                  :itemsSource="servicedata"
+                >
+                  <wj-flex-grid-column
+                    :header="'福祉サービス'"
+                    binding="service"
+                    align="center"
+                    :isReadOnly="true"
+                    width="*"
+                  ></wj-flex-grid-column>
+                </wj-flex-grid>
+              </div>
             </v-col>
+            <div v-if="inputTypemodel == 1" style="width: 100%">
+              <v-card class="d-flex justify-start" flat tile>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  height="100"
+                  class="text-center label text-caption"
+                >
+                  {{ weekActiveServiceTitle }}
+                </v-card>
+                <v-card
+                  width="100%"
+                  class="ml-1 text-caption"
+                  elevation="0"
+                  outlined
+                  tile
+                >
+                  {{ weekActiveServiceText }}
+                </v-card>
+              </v-card>
+            </div>
           </v-row>
         </v-col>
       </v-row>
@@ -192,9 +287,13 @@ export default {
   data() {
     return {
       onflexGrid: '',
+      onItemGrid: '',
+      onServiceGrid: '',
       rowCount: 0,
       leftWidth: '280px',
       rightWidth: '80%',
+      gridMain: 10,
+      gridSub: 2,
       moveLeft: true,
       datepicker_dialog: false,
       picker: '',
@@ -219,7 +318,7 @@ export default {
           value: '主な日常生活等',
         },
       ],
-      inputTypemodel: 0,
+      inputTypemodel: 0, // 0: 週間予定 1: 主な日常生活
       keikakuKubunModel: '',
       viewdata: [],
 
@@ -261,13 +360,33 @@ export default {
           binding: 'sunday',
         },
       ],
+      everySelected: 0,
       itemdata: [],
+      servicedata: [],
       ranges: [],
+      headerheight: 180,
+      textareaHeight: '',
+      draggedFlag: false, // gridをクリックしてdragしている情報を保持する
+      position: [],
+      mainActiveText: '', // 主な日常生活の活動データ
+      weekActiveText: '', // 週単位以外のサービス
+      weekActiveServiceTitle: '',
+      weekActiveServiceText: '',
     };
   },
   created() {},
   mounted() {
     this._makeDragSource(this.onflexGrid);
+    window.addEventListener('resize', this.calculateWindowHeight);
+
+    // 主な日常生活の活動データ
+    this.mainActiveText =
+      '私はじっと話のものがお発表もするといるですんななけれて、一一の衣食にさっそく這入っうとして使用ますが、実はこの人心の他人が立つれると、ここかをあなたの時代の話からするでいです事なけれんと話云って安心なる来ませた。自分とまた大森さんをそうしてまだ挙げないんんなけれた。ネルソンさんはなぜ人々にやりているなものならますなく。（それでも人を濁しためたでますばたいは間違っですうて、）こう怠けだろ周囲で、文部省の警視総監くらいしゃべっとなさるという、お茶の尊重も結果のうちだってし見るので弱らでて記憶方あって行くありという小自力ないのない。';
+    this.weekActiveText = '相談支援事業所とサークルや教室を見学予定';
+
+    this.weekActiveServiceTitle = 'サービス提供によって実現する生活の全体像';
+    this.weekActiveServiceText =
+      '・本人の描いている「テレビドラマの主人公のような強くて明るい生活」をそのまま支援';
   },
   computed: {
     styles() {
@@ -283,17 +402,47 @@ export default {
     },
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('keikakuWeekGrid') != null) {
+        document.getElementById('keikakuWeekGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
+
+        let ht = document.getElementById('keikakuWeekGrid').style.height;
+        this.textareaHeight = parseInt(ht.replace(/[^0-9]/g, '') / 2) + 'px';
+      }
+    },
+    /*************************
+     * 週間予定・主な日常生活等切替タブ
+     */
+    inputTypeChange() {
+      if (this.inputTypemodel == 0) {
+        this.gridMain = 10;
+        this.gridSub = 2;
+        this.headerheight = 180;
+        this.textareaHeight = '';
+      }
+      if (this.inputTypemodel == 1) {
+        this.gridMain = 9;
+        this.gridSub = 3;
+        this.headerheight = 300;
+      }
+      this.calculateWindowHeight();
+    },
+    /******************************
+     * グリッドのドラックドロップ
+     */
     _makeDragSource(s) {
       console.log('drag');
       s.addEventListener(
         s.hostElement,
         'mousedown',
         (e) => {
-          console.log('mousedown');
-          console.log(e);
-          //   if (s.hitTest(e).cellType == wjcGrid.CellType.RowHeader) {
-
-          //   }
+          // 右側の日常生活を押下時のみ有効
+          if (this.everySelected != 0) {
+            let ht = this.onflexGrid.hitTest(e);
+            this.draggedFlag = true;
+            this.position.down = { col: ht.col, row: ht.row };
+          }
         },
         true
       );
@@ -301,15 +450,34 @@ export default {
         s.hostElement,
         'mouseup',
         (e) => {
-          console.log('mouseup');
-          console.log(e);
-          //this.weekcount = 6;
-          this.createRanges();
-          // マージする配列の追加
-          //console.log(this.ranges);
-          //   if (s.hitTest(e).cellType == wjcGrid.CellType.RowHeader) {
+          if (this.everySelected != 0) {
+            let ht = this.onflexGrid.hitTest(e);
+            this.position.up = { col: ht.col, row: ht.row };
+            let downcol = this.position.down.col;
+            let downrow = this.position.down.row;
+            let upcol = this.position.up.col;
+            let uprow = this.position.up.row;
+            if (upcol < downcol) {
+              downcol = this.position.up.col;
+              upcol = this.position.down.col;
+            }
+            if (uprow < downrow) {
+              downrow = this.position.up.row;
+              uprow = this.position.down.row;
+            }
 
-          //   }
+            for (let c = downcol; c <= upcol; c++) {
+              let bind = this.weekarray[c - 1].binding;
+              for (let r = downrow; r <= uprow; r++) {
+                this.viewdata[r][bind] = this.everySelected;
+              }
+            }
+            let view = this.viewdata.slice();
+            this.viewdata = view;
+            this.createRanges();
+            this.createMerge(this.onflexGrid);
+            this.draggedFlag = false;
+          }
         },
         true
       );
@@ -325,6 +493,7 @@ export default {
     createData() {
       let setting = [];
       setting.push({
+        times: '04:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -334,6 +503,7 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '04:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -343,6 +513,7 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '05:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -352,6 +523,37 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '05:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '06:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '06:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '07:00',
         monday: '起床',
         thuseday: '起床',
         wednesday: '起床',
@@ -361,6 +563,17 @@ export default {
         sunday: '起床',
       });
       setting.push({
+        times: '07:00',
+        monday: '起床',
+        thuseday: '起床',
+        wednesday: '起床',
+        thursday: '起床',
+        friday: '起床',
+        saturday: '起床',
+        sunday: '起床',
+      });
+      setting.push({
+        times: '08:00',
         monday: 'TVドラマ・朝食',
         thuseday: 'TVドラマ・朝食',
         wednesday: 'TVドラマ・朝食',
@@ -370,33 +583,77 @@ export default {
         sunday: '朝食',
       });
       setting.push({
+        times: '08:00',
+        monday: 'TVドラマ・朝食',
+        thuseday: 'TVドラマ・朝食',
+        wednesday: 'TVドラマ・朝食',
+        thursday: 'TVドラマ・朝食',
+        friday: 'TVドラマ・朝食',
+        saturday: 'TVドラマ・朝食',
+        sunday: '朝食',
+      });
+      setting.push({
+        times: '09:00',
         monday: 'ゴミ収集',
         thuseday: '',
         wednesday: '',
-        thursday: '外出(買い物・銀行・クリーニング等)',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
         friday: '',
         saturday: '',
-        sunday: '外出(買い物・銀行・クリーニング等)',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
+        times: '09:00',
+        monday: 'ゴミ収集',
+        thuseday: '',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
+      });
+      setting.push({
+        times: '10:00',
         monday: '',
         thuseday: 'ヘルパー(家事)',
         wednesday: '',
-        thursday: '外出(買い物・銀行・クリーニング等)',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
         friday: '',
         saturday: '',
-        sunday: '外出(買い物・銀行・クリーニング等)',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
+        times: '10:00',
         monday: '',
         thuseday: 'ヘルパー(家事)',
         wednesday: '',
-        thursday: '外出(買い物・銀行・クリーニング等)',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
         friday: '',
         saturday: '',
-        sunday: '外出(買い物・銀行・クリーニング等)',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
+        times: '11:00',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
+      });
+      setting.push({
+        times: '11:00',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
+      });
+      setting.push({
+        times: '12:00',
         monday: 'TVドラマ・昼食',
         thuseday: 'TVドラマ・昼食',
         wednesday: 'TVドラマ・昼食',
@@ -406,9 +663,30 @@ export default {
         sunday: '昼食',
       });
       setting.push({
+        times: '12:00',
+        monday: 'TVドラマ・昼食',
+        thuseday: 'TVドラマ・昼食',
+        wednesday: 'TVドラマ・昼食',
+        thursday: 'TVドラマ・昼食',
+        friday: 'TVドラマ・昼食',
+        saturday: 'TVドラマ・昼食',
+        sunday: '昼食',
+      });
+      setting.push({
+        times: '13:00',
         monday: '',
         thuseday: '',
-        wednesday: '通院同行\n(内科・歯科)',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '13:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
         thursday: '',
         friday: '',
         saturday: '',
@@ -416,6 +694,7 @@ export default {
       });
 
       setting.push({
+        times: '14:00',
         monday: '',
         thuseday: '',
         wednesday: '通院同行\n(内科・歯科)',
@@ -425,6 +704,37 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '14:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '15:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '15:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '16:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -434,6 +744,7 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '16:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -443,6 +754,7 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '17:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -452,6 +764,17 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '17:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '18:00',
         monday: '夕食',
         thuseday: '夕食',
         wednesday: '夕食',
@@ -461,6 +784,17 @@ export default {
         sunday: '夕食',
       });
       setting.push({
+        times: '18:00',
+        monday: '夕食',
+        thuseday: '夕食',
+        wednesday: '夕食',
+        thursday: '夕食',
+        friday: '夕食',
+        saturday: '夕食',
+        sunday: '夕食',
+      });
+      setting.push({
+        times: '19:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -470,6 +804,27 @@ export default {
         sunday: '',
       });
       setting.push({
+        times: '19:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '20:00',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
+      });
+      setting.push({
+        times: '20:00',
         monday: '',
         thuseday: '',
         wednesday: '',
@@ -519,11 +874,63 @@ export default {
           every: 'テレビを観る',
         }
       );
-
       this.itemdata = item;
+
+      let servicedata = [];
+      servicedata.push(
+        {
+          id: 1,
+          service: 'ヘルパー',
+        },
+        {
+          id: 2,
+          service: '生活サポート',
+        },
+        {
+          id: 3,
+          service: '地域活動支援センター',
+        },
+        {
+          id: 4,
+          service: '生活介護',
+        },
+        {
+          id: 5,
+          service: '就労移行支援',
+        }
+      );
+      this.servicedata = servicedata;
     },
+    /********************
+     * 日常生活
+     *************/
     onInitializeItem(flexGrid) {
-      console.log(flexGrid);
+      let _self = this;
+      this.onItemGrid = flexGrid;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          _self.everySelected = _self.itemdata[ht.row].every;
+          _self.onServiceGrid.select(-1, -1);
+        }
+      });
+    },
+    /********************
+     * 福祉サービス
+     *************/
+    onInitializeServiceItem(flexGrid) {
+      let _self = this;
+      this.onServiceGrid = flexGrid;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          _self.everySelected = _self.servicedata[ht.row].service;
+          _self.onItemGrid.select(-1, -1);
+        }
+      });
+    },
+    onInitializeItemChanged(flexGrid) {
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     onInitialize(flexGrid) {
       this.onflexGrid = flexGrid;
@@ -533,7 +940,7 @@ export default {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
-        flexGrid.cells.rows.defaultSize = 22;
+        flexGrid.cells.rows.defaultSize = 20;
       });
       this.createRanges();
       this.createMerge(flexGrid);
@@ -561,6 +968,10 @@ export default {
         }
         row++;
       }
+      if (start.length > last.length) {
+        let diff = start.slice(-1)[0] - last.slice(-1)[0] + start.slice(-1)[0];
+        last.push(diff);
+      }
       let returns = {
         start: start,
         last: last,
@@ -569,12 +980,23 @@ export default {
       return returns;
     },
     createRanges() {
-      let ranges = [new wjGrid.CellRange(0, 0, this.viewdata.length - 1, 0)];
+      let ranges = [];
       let mergeGroup = [];
       let start = [];
       let last = [];
       let text = [];
 
+      // 時間軸のグループ化
+      mergeGroup = this.groupBy(this.viewdata, 'times');
+      start = mergeGroup.start;
+      last = mergeGroup.last;
+      text = mergeGroup.text;
+      for (let i = 0; i < start.length; i++) {
+        if (text[i]) {
+          ranges.push(new wjGrid.CellRange(start[i], 0, last[i], 0));
+        }
+      }
+      // 週間のグループ化
       for (let wk = 0; wk < this.weekarray.length; wk++) {
         mergeGroup = this.groupBy(this.viewdata, this.weekarray[wk].binding);
         start = mergeGroup.start;
@@ -638,11 +1060,14 @@ div#keikakuWeek {
   min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
+  height: var(--height);
 
   div.label {
     background-color: $light-gray;
   }
-
+  .wj-align-center {
+    display: flex;
+  }
   .borderBottom {
     border-bottom: 1px solid $deepgreen;
   }
@@ -657,6 +1082,15 @@ div#keikakuWeek {
   }
   .wj-frozen {
     background-color: $selected_color;
+  }
+  .ohidden {
+    overflow: hidden;
+  }
+  .textarea {
+    &:hover {
+      background-color: $light-white;
+      cursor: pointer;
+    }
   }
 }
 
