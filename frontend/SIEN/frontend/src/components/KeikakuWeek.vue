@@ -153,11 +153,13 @@
                     height="20"
                     tile
                   >
-                    <v-toolbar-title class="text-caption"
-                      >主な日常生活の活動</v-toolbar-title
-                    >
+                    <v-toolbar-title class="text-caption">{{
+                      mainActiveTitle
+                    }}</v-toolbar-title>
                   </v-toolbar>
-                  <div class="pa-1 textarea">{{ mainActiveText }}</div>
+                  <div class="pa-1 textarea" @click="onEditTextDialog(1)">
+                    {{ mainActiveText }}
+                  </div>
                 </v-card>
                 <v-card
                   outlined
@@ -173,11 +175,13 @@
                     height="20"
                     tile
                   >
-                    <v-toolbar-title class="text-center text-caption"
-                      >週単位以外のサービス</v-toolbar-title
-                    >
+                    <v-toolbar-title class="text-center text-caption">
+                      {{ weekActiveTitle }}
+                    </v-toolbar-title>
                   </v-toolbar>
-                  <div class="pa-1 textarea">{{ weekActiveText }}</div>
+                  <div class="pa-1 textarea" @click="onEditTextDialog(2)">
+                    {{ weekActiveText }}
+                  </div>
                 </v-card>
               </div>
               <div v-if="inputTypemodel == 0">
@@ -233,22 +237,57 @@
                   outlined
                   tile
                   width="100"
-                  height="100"
-                  class="text-center label text-caption"
+                  height="80"
+                  class="text-center label text-caption textarea"
+                  color="primary"
+                  dark
                 >
                   {{ weekActiveServiceTitle }}
                 </v-card>
                 <v-card
                   width="100%"
-                  class="ml-1 text-caption"
+                  height="80"
+                  class="ml-1 text-caption textarea"
                   elevation="0"
                   outlined
                   tile
+                  @click="onEditTextDialog(3)"
                 >
                   {{ weekActiveServiceText }}
                 </v-card>
               </v-card>
             </div>
+
+            <v-row dense class="ma-2" justify="space-between">
+              <v-col cols="4">
+                <v-btn small>削除</v-btn>
+              </v-col>
+              <v-col cols="7">
+                <v-card class="d-flex justify-end" flat tile>
+                  <v-card
+                    outlined
+                    tile
+                    width="60"
+                    class="text-center text-caption label pt-1"
+                    >完了
+                  </v-card>
+                  <v-card elevation="0" width="30" class="text-center mt-1">
+                    <input type="checkbox" />
+                  </v-card>
+                  <v-card
+                    class="lightYellow pl-1 pt-1 ml-1"
+                    width="140"
+                    outlined
+                    tile
+                  >
+                    竹下道子
+                  </v-card>
+                  <v-btn small class="ml-3" @click="ideaIkouKadaiRegist"
+                    >登録</v-btn
+                  >
+                </v-card>
+              </v-col>
+            </v-row>
           </v-row>
         </v-col>
       </v-row>
@@ -269,6 +308,34 @@
       >
       </v-date-picker>
     </v-dialog>
+
+    <v-dialog
+      v-model="editTextDialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="editTextDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>{{ dialogTitle }}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="editTextSave"> 仮設定 </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-textarea
+          outlined
+          v-model="dialogText"
+          :style="textstyles"
+          class="editTextarea"
+          hide-details="false"
+        >
+        </v-textarea>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -286,6 +353,10 @@ export default {
   },
   data() {
     return {
+      dialogTitle: '',
+      dialogText: '',
+      notekey: 0,
+      editTextDialog: false,
       onflexGrid: '',
       onItemGrid: '',
       onServiceGrid: '',
@@ -368,7 +439,9 @@ export default {
       textareaHeight: '',
       draggedFlag: false, // gridをクリックしてdragしている情報を保持する
       position: [],
+      mainActiveTitle: '',
       mainActiveText: '', // 主な日常生活の活動データ
+      weekActiveTitle: '',
       weekActiveText: '', // 週単位以外のサービス
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
@@ -379,14 +452,16 @@ export default {
     this._makeDragSource(this.onflexGrid);
     window.addEventListener('resize', this.calculateWindowHeight);
 
+    this.mainActiveTitle = '主な日常生活の活動';
     // 主な日常生活の活動データ
     this.mainActiveText =
       '私はじっと話のものがお発表もするといるですんななけれて、一一の衣食にさっそく這入っうとして使用ますが、実はこの人心の他人が立つれると、ここかをあなたの時代の話からするでいです事なけれんと話云って安心なる来ませた。自分とまた大森さんをそうしてまだ挙げないんんなけれた。ネルソンさんはなぜ人々にやりているなものならますなく。（それでも人を濁しためたでますばたいは間違っですうて、）こう怠けだろ周囲で、文部省の警視総監くらいしゃべっとなさるという、お茶の尊重も結果のうちだってし見るので弱らでて記憶方あって行くありという小自力ないのない。';
+    this.weekActiveTitle = '週単位以外のサービス';
     this.weekActiveText = '相談支援事業所とサークルや教室を見学予定';
 
     this.weekActiveServiceTitle = 'サービス提供によって実現する生活の全体像';
     this.weekActiveServiceText =
-      '・本人の描いている「テレビドラマの主人公のような強くて明るい生活」をそのまま支援';
+      '・本人の描いている「テレビドラマの主人公のような強くて明るい生活」をそのまま支援目標としたことで、本人の生活意欲や本人の望む生活の具体的内容を共有していく\n・本人の生活(行動範囲)の広がりがみられてきており、編み物等の趣味への意欲につながってきている。半面、加齢による体力的な低下も現れているため、定期的なモニタリングが必要';
   },
   computed: {
     styles() {
@@ -410,6 +485,35 @@ export default {
         let ht = document.getElementById('keikakuWeekGrid').style.height;
         this.textareaHeight = parseInt(ht.replace(/[^0-9]/g, '') / 2) + 'px';
       }
+    },
+    editTextSave() {
+      if (this.notekey == 1) {
+        this.mainActiveText = this.dialogText;
+      }
+      if (this.notekey == 2) {
+        this.weekActiveText = this.dialogText;
+      }
+      if (this.notekey == 3) {
+        this.weekActiveServiceText = this.dialogText;
+      }
+      this.editTextDialog = false;
+    },
+    onEditTextDialog(type) {
+      this.notekey = type;
+      if (type == 1) {
+        this.dialogTitle = this.mainActiveTitle;
+        this.dialogText = this.mainActiveText;
+      }
+      if (type == 2) {
+        this.dialogTitle = this.weekActiveTitle;
+        this.dialogText = this.weekActiveText;
+      }
+      if (type == 3) {
+        this.dialogTitle = this.weekActiveServiceTitle;
+        this.dialogText = this.weekActiveServiceText;
+      }
+
+      this.editTextDialog = true;
     },
     /*************************
      * 週間予定・主な日常生活等切替タブ
@@ -1087,6 +1191,7 @@ div#keikakuWeek {
     overflow: hidden;
   }
   .textarea {
+    height: 100%;
     &:hover {
       background-color: $light-white;
       cursor: pointer;
