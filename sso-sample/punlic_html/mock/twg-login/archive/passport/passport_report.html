@@ -1,0 +1,497 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Laravel Passportによる認可サーバー構築</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}body{color:black;background:white;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #f2f2f2;margin-bottom:12px}h1,h2,h3,h4,h5{color:black;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:#428bca;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(0,0,0,0) 20%, rgba(0,0,0,0.2) 51.4%, rgba(255,255,255,0.2) 51.4%, rgba(255,255,255,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(0,0,0,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #e8e8e8}blockquote p:last-child{margin-bottom:0}pre{background-color:#f5f5f5;padding:12px;border:1px solid #cfcfcf;border-radius:6px;overflow:auto}pre code{color:black;background-color:transparent;padding:0;border:none}code{color:#444;background-color:#f5f5f5;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #cfcfcf;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#fafafa}table th,table td{padding:6px 12px;border:1px solid #e6e6e6}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:black;background-color:#f0f6fb;border-left:4px solid #428bca}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#428bca}.warning{color:black;background-color:#fbf1f0;border-left:4px solid #c9302c}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#c9302c}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:black;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(0,0,0,0.7);padding:8px 12px;border-top:1px solid #d9d9d9;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#000;background-color:#f2f2f2;border-radius:10px;margin:-2px 0}.badge.get{color:#70bbe1;background-color:#d9edf7}.badge.head{color:#70bbe1;background-color:#d9edf7}.badge.options{color:#70bbe1;background-color:#d9edf7}.badge.put{color:#f0db70;background-color:#fcf8e3}.badge.patch{color:#f0db70;background-color:#fcf8e3}.badge.post{color:#93cd7c;background-color:#dff0d8}.badge.delete{color:#ce8383;background-color:#f2dede}.collapse-button{float:right}.collapse-button .close{display:none;color:#428bca;cursor:pointer}.collapse-button .open{color:#428bca;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#428bca}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:white}.right pre{background-color:#1d1f21;border:1px solid #1d1f21}.right pre code{color:#c5c8c6}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e8ab8}.definition .method.head{color:#2e8ab8}.definition .method.options{color:#2e8ab8}.definition .method.post{color:#56b82e}.definition .method.put{color:#b8a22e}.definition .method.patch{color:#b8a22e}.definition .method.delete{color:#b82e2e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:black;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#444}.right .example-names .tab-button{color:white;border:1px solid #666;border-radius:6px}.right .example-names .tab-button.active{background-color:#5e5e5e}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#fbfbfb;border-right:1px solid #f0f0f0;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#333;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(0,0,0,0.5);background-color:#f2f2f2;text-decoration:none !important;border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:white;border:1px solid #d9d9d9;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#f2f2f2;border-bottom:1px solid #d9d9d9;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #d9d9d9}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#337ab7}.action h4.action-heading .method.head{color:#fff;background-color:#337ab7}.action h4.action-heading .method.options{color:#fff;background-color:#337ab7}.action h4.action-heading .method.put{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.patch{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.post{color:#fff;background-color:#5cb85c}.action h4.action-heading .method.delete{color:#fff;background-color:#d9534f}.action h4.action-heading code{color:#444;background-color:#f5f5f5;border-color:#cfcfcf;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid white;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#bce8f1}.action.get h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.head{border-color:#bce8f1}.action.head h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.options{border-color:#bce8f1}.action.options h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.post{border-color:#d6e9c6}.action.post h4.action-heading{color:#5cb85c;background:#dff0d8;border-bottom-color:#d6e9c6}.action.put{border-color:#faebcc}.action.put h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.patch{border-color:#faebcc}.action.patch h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.delete{border-color:#ebccd1}.action.delete h4.action-heading{color:#d9534f;background:#f2dede;border-bottom-color:#ebccd1}</style></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#top">Overview</a></div><div class="collapse-content"><ul><li><a href="#header-目的">目的</a></li><li><a href="#header-仕様（全体）">仕様（全体）</a></li><li><a href="#header-認可・リソースサーバーで満たすべき要件">認可・リソースサーバーで満たすべき要件</a></li><li><a href="#header-passportで可能なアクセストークン発行方法">Passportで可能なアクセストークン発行方法</a></li><li><a href="#header-認可サーバーの実装">認可サーバーの実装</a></li><li><a href="#header-認証サーバー（twg様ログインサイト）とのユーザーidの紐づけ方法">認証サーバー（TWG様ログインサイト）とのユーザーIDの紐づけ方法</a></li><li><a href="#header-環境構築">環境構築</a></li><li><a href="#header-プログラム修正">プログラム修正</a></li><li><a href="#header-リクエスト・レスポンス確認">リクエスト・レスポンス確認</a></li><li><a href="#header-リソースサーバーの実装">リソースサーバーの実装</a></li><li><a href="#header-環境構築-1">環境構築</a></li><li><a href="#header-プログラム修正-1">プログラム修正</a></li><li><a href="#header-11月13日時点でのpassport調査結果まとめ">11月13日時点でのPassport調査結果まとめ</a></li><li><a href="#header-今後の課題">今後の課題</a></li></ul></div></div></nav><div class="content"><header><h1 id="top">Laravel Passportによる認可サーバー構築</h1></header><h2 id="header-目的">目的 <a class="permalink" href="#header-目的" aria-hidden="true">¶</a></h2>
+<p>既存サイトにソーシャルログイン形式のSSOを実装するため、Laravel-Passportを使用して認可サーバーおよびリソースサーバーを構築する。</p>
+<p>Passportで今回の要件を満たす認可サーバーの構築が可能か調査する。</p>
+<h2 id="header-仕様（全体）">仕様（全体） <a class="permalink" href="#header-仕様（全体）" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p><strong><font color="Red">認可サーバー（新規）</font></strong> … ユーザー毎、連携サイト毎のアクセストークンを発行するサーバー</p>
+</li>
+<li>
+<p><strong><font color="Red">リソースサーバー（新規）</font></strong>  … アクセストークンを解析し、TWG様既存サイトのアカウント情報を提供するサーバー</p>
+</li>
+<li>
+<p><strong>認証サーバー（既存）</strong>… ユーザーがログインし、認証を行うサーバー（TWG様既存サイト）</p>
+</li>
+<li>
+<p><strong>外部サーバー（既存）</strong>… TWG様既存サイトのアカウント情報を使用したSSOを実装するサーバー</p>
+</li>
+</ul>
+<p><img src="http://twg-login.se-sendai.co.jp/archive/passport/img/diagram.png" alt="全体図"></p>
+<h2 id="header-認可・リソースサーバーで満たすべき要件">認可・リソースサーバーで満たすべき要件 <a class="permalink" href="#header-認可・リソースサーバーで満たすべき要件" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p>ユーザー認証（ログイン）は別サーバーで行うため、別サーバーのユーザーIDと紐づけたアクセストークンの発行が可能であること（セキュアにIDを受け渡せる機能が実装されていることが理想）</p>
+</li>
+<li>
+<p>ネイティブアプリへのトークン発行機能（<a href="https://tools.ietf.org/html/rfc7636">RFC7636</a>）が実装されていること</p>
+</li>
+<li>
+<p>リソースサーバー（ユーザー情報を提供するAPI）は認可サーバーと別に構築が可能であること</p>
+</li>
+</ul>
+<h3 id="header-passportで可能なアクセストークン発行方法">Passportで可能なアクセストークン発行方法 <a class="permalink" href="#header-passportで可能なアクセストークン発行方法" aria-hidden="true">¶</a></h3>
+<ul>
+<li>
+<p><strong>OAuth2 with authorization codes (Auth Code)</strong></p>
+<p>ユーザー認証後、アクセストークン取得を許可する認可コードを発行し、アクセストークンを発行する。SNS認証でよく使用される発行方法であり、OAuth推奨。連携同意確認画面あり。</p>
+  <br>
+  <font color="Red">
+  **→ 今回実現したいトークン発行方法。ただし、Passportは認可サーバー上でユーザー認証（ログイン）することを前提としたつくりになっているため、認証を別サーバーに構築可能か検証する。**
+  </font>
+  <br>
+  <br>
+</li>
+<li>
+<p><strong>Implicit Grant Token</strong></p>
+<p>上記 authorization codesの認可コード発行なしバージョン。ダイレクトにアクセストークンを返す（リダイレクトURLにフラグメントとして付加する形式）<a href="%E4%BE%8B%EF%BC%9Ahttp://outer.com/sso-login/callback#access_token=kfmndfasdyhkj%E3%83%BB%E3%83%BB%E3%83%BB">1</a>。クライアントシークレットキーを使用しないクライアント認証。</p>
+  <br>
+<p><strong>→ authorization codesよりセキュリティが弱く、OAuthでも推奨されていないため、今回の調査対象から除外する。</strong>
+<br></p>
+</li>
+<li>
+<p><strong>Password Grant Token</strong></p>
+<p>上記 authorization codesやImplicit Grant Tokenのようにユーザー認証後にアクセストークンを要求するのではなく、アクセストークン要求時に同時にユーザー認証を行う。認可コードを発行せず、ダイレクトにアクセストークンを返す。連携確認画面なし。
+<br></p>
+<p><strong>→ 今回の要件にはそぐわないため調査対象外とする。</strong>
+<br></p>
+</li>
+<li>
+<p><strong>Client Credentials Grant Token</strong></p>
+<p>ユーザー認証を行わず、クライアント認証のみでアクセストークンを発行する。マシン間通信向け。認可コード発行なし。連携確認画面なし。リフレッシュトークンなし。
+<br></p>
+<p><strong>→ 別サーバーでユーザー認証後に、ユーザーIDを渡してこの手順を実行することで要件を満たせる可能性があるが、認可コード・連携確認画面・リフレッシュトークンがなく、改修に時間を要するため現段階では調査対象外とする。</strong>
+<br></p>
+</li>
+<li>
+<p><strong>Personal Access Token</strong></p>
+<p>通常のトークン発行フローを使用せずに、ログインしたユーザーがアプリケーションのUIを介して自分自身にアクセストークンを発行する。開発段階等でよく使用される。
+<br></p>
+<p><strong>→ 今回の要件にはそぐわないため調査対象外とする。。</strong></p>
+</li>
+</ul>
+<h2 id="header-認可サーバーの実装">認可サーバーの実装 <a class="permalink" href="#header-認可サーバーの実装" aria-hidden="true">¶</a></h2>
+<h3 id="header-認証サーバー（twg様ログインサイト）とのユーザーidの紐づけ方法">認証サーバー（TWG様ログインサイト）とのユーザーIDの紐づけ方法 <a class="permalink" href="#header-認証サーバー（twg様ログインサイト）とのユーザーidの紐づけ方法" aria-hidden="true">¶</a></h3>
+<ol>
+<li>
+<p>認証サーバーDBに登録済みのユーザーIDをCSV出力し、認可サーバーDBに登録する。</p>
+</li>
+<li>
+<p>以降認証サーバーでユーザー新規登録された場合は、認可サーバーDBにもユーザーIDを登録する。</p>
+</li>
+<li>
+<p>認証サーバーから認可コードリクエストを送る際には、URLパラメーターにユーザーIDを付加し、どのユーザーからの連携リクエストか特定する。</p>
+ <font color="red">
+ ※ 現段階では一連の動作検証を行えれば良いため、上記の仕様で実装。今後、セキュアなユーザーIDの受け渡し方法の調査が必要。
+ </font>
+</li>
+</ol>
+<p><img src="http://twg-login.se-sendai.co.jp/archive/passport/img/passport_authorization.png" alt="フロー"></p>
+<h3 id="header-環境構築">環境構築 <a class="permalink" href="#header-環境構築" aria-hidden="true">¶</a></h3>
+<p>下記参照</p>
+<p><a href="http://twg-login.se-sendai.co.jp/archive/passport/environment_authorization.html">http://twg-login.se-sendai.co.jp/archive/passport/environment_authorization.html</a></p>
+<ul>
+<li>
+<p>検証用：認証サーバー（TWG様既存ログインサイト）</p>
+<p>動作検証のためLaravelで別プロジェクトを作成し、ログイン機能を実装したサイトを用意。</p>
+</li>
+</ul>
+<h3 id="header-プログラム修正">プログラム修正 <a class="permalink" href="#header-プログラム修正" aria-hidden="true">¶</a></h3>
+<p><strong>認可サーバー</strong></p>
+<ul>
+<li>
+<p>認可コードリクエスト受信時、未ログインの場合は認証サーバーのログインページ(<a href="http://passport-login.comee.ml/login">http://passport-login.comee.ml/login</a>)へリダイレクトする。
+<br></p>
+  <font color="blue">
+  **→実装済み**
+  </font>
+  <br>
+</li>
+<li>
+<p>認証サーバーでログイン後、再度送られてくる認可コードリクエストのURLパラメータからuser_idを取得する。
+<br></p>
+  <font color="blue">
+  **→実装済み**
+  </font>
+  <br>
+</li>
+<li>
+<p>取得した認証サーバーのユーザーIDと、自サーバーDBのユーザーIDはすでに紐づけられているため、自サーバーでも強制的にログイン状態（ユーザーIDをセッションに保存）にする。
+※Passportが自サーバーでのログインを前提とした作りになっているため、強制的にログイン状態にすることで修正範囲が最小限に抑えられる。認証自体は別サーバーでユーザー自身にID,パスワードを入力してもらっているため、認可サーバーではIDのみの強制ログインで問題なし。
+<br></p>
+  <font color="blue">
+  **→実装済み**
+  </font>
+  <br>
+</li>
+</ul>
+<p><strong>認証サーバー</strong></p>
+<ul>
+<li>
+<p>ユーザー新規登録後、認可サーバーDBに接続してユーザーIDをusersテーブルに登録する。</p>
+  <font color="red">
+  **→未実装**
+  </font>
+  <br>
+</li>
+<li>
+<p>ユーザー認証リクエスト（ログインページアクセス）受信時、URLパラメーターを確認し、通常ログインか外部連携ログイン要求かを判定する。</p>
+  <br>
+  <font color="blue">
+  **→実装済み**
+  </font>
+  <br>
+</li>
+<li>
+<p>外部連携ログイン要求の場合、ログイン完了後、認可サーバーに認可コードリクエスト（<code>http://passport-authorization.comee.ml/oauth/authorize?client_id={clientID}&amp;response_type=code&amp;scope=*&amp;user_id={userID}&amp;redirect_uri=http://passport-outer.comee.ml/sso-login/callback</code>）を送信する。</p>
+  <font color="blue">
+  **→実装済み**
+  </font>
+  <br>
+</li>
+</ul>
+<h3 id="header-リクエスト・レスポンス確認">リクエスト・レスポンス確認 <a class="permalink" href="#header-リクエスト・レスポンス確認" aria-hidden="true">¶</a></h3>
+<ul>
+<li>
+<p><strong>外部連携ログイン要求</strong></p>
+<ul>
+<li>
+<p><font color="Gray"><em>Request</em></font></p>
+<p>外部サイトから「餃子サークル会員でログイン」ボタンをクリックして下記URLへアクセスする。</p>
+<p><a href="http://passport-authorization.comee.ml/oauth/authorize?client_id=2&amp;response_type=code&amp;scope=*&amp;redirect_uri=http://passport-outer.comee.ml/sso-login/callback">http://passport-authorization.comee.ml/oauth/authorize?client_id=2&amp;response_type=code&amp;scope=*&amp;redirect_uri=http://passport-outer.comee.ml/sso-login/callback</a></p>
+</li>
+<li>
+<p><font color="Gray"><em>Response</em></font></p>
+<p>認証サーバー（TWG様既存ログインサイト）のログイン画面が表示される。</p>
+<p><img src="http://twg-login.se-sendai.co.jp/archive/passport/img/login.PNG" alt="ログイン画面"></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>認可コードリクエスト</strong></p>
+<p>認証サーバーでログイン後、ユーザーIDを付加して下記URLへリダイレクトする。</p>
+<ul>
+<li>
+<p><font color="Gray"><em>Request</em></font></p>
+<p><a href="http://passport-authorization.comee.ml/oauth/authorize?client_id=2&amp;response_type=code&amp;scope=*&amp;redirect_uri=http://passport-outer.comee.ml/sso-login/callback&amp;user_id=1">http://passport-authorization.comee.ml/oauth/authorize?client_id=2&amp;response_type=code&amp;scope=*&amp;redirect_uri=http://passport-outer.comee.ml/sso-login/callback&amp;user_id=1</a></p>
+</li>
+<li>
+<p><font color="Gray"><em>Response</em></font></p>
+<p>認可サーバーの連携同意画面が表示される。</p>
+<p><img src="http://twg-login.se-sendai.co.jp/archive/passport/img/agree.PNG" alt="連携同意画面"></p>
+<p>同意後↓</p>
+<ul>
+<li>
+<p>成功時</p>
+<p>URLパラメータに認可コードを付加した状態で、外部連携サイトにリダイレクトされる。</p>
+<p><code>http://passport-outer.comee.ml/sso-login/callback?code=def50200df26447a5d80d051e7c737d58824386b44513c0dac9787c66922a9288c03c9fad34608080a74fc2dbd81f1599267b53a35f9bdebaff4286a35a495f2cd94784c695c43c3a8386085c87ca7ad7d6a9ab4997b923d9e549b7b26063d7abc2aade1e77dd41bfe6cabc12361285468f4d5e854fdc35fabfc362c92a43f4b8078a08c6d520f1ce9df346c241bd68882c15853d44e0dd23c2443f8cf212dc430267dc7dc3a31d13dadc5a60b4a7f36807660639c030505ddfe86d5276b741f2dd2368ef6313a347384d4024a344257fef2b1723eb1732a0365b28cc54f4e6a9f63a9f5704ff81ab251f5b3ebb16939ce84664316fba4393fd1a65950e9a3ce4c51da2923cab650a70a4ba1ab8f79281c7e1e706b9b497849af14f7465051b5a1b4f591b46af91a4dd60bab69e46977dae37dc18443e99fb4e22015f29b21093dbde577b15840c0d9bf2a8b7df2df0f782cf79a5047e10fc8172eb9d48f01a03b679d44ff87066241e2b10913bd2c9a44c42f6392</code></p>
+</li>
+<li>
+<p>失敗時</p>
+<p>認可サーバー上にエラー内容が出力される。</p>
+<p><img src="http://twg-login.se-sendai.co.jp/archive/passport/img/code_error.PNG" alt="認証エラー11"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>アクセストークンリクエスト</strong></p>
+<ul>
+<li>
+<p><font color="Gray"><em>Request</em></font></p>
+<p>認可コードを受け取った外部連携サイトが、下記を実行してアクセストークンを取得する。</p>
+<pre><code>curl http://passport-authorization.comee.ml/oauth/token ^
+    -d grant_type=authorization_code ^
+    -d client_id=2 ^
+    -d client_secret=749WEYjBzx5MxDFqqNeWX94vX3qGB2xSpzJSqBch ^
+    -d redirect_uri=http://passport-outer.comee.ml/sso-login/callback ^
+    -d code=def50200df<span class="hljs-number">26447a5d80</span>d<span class="hljs-number">051e7c73</span><span class="hljs-number">7d58824386</span>b<span class="hljs-number">44513c0</span>dac<span class="hljs-number">9787c66922</span>a<span class="hljs-number">9288c03c9</span>fad<span class="hljs-number">34608080a74</span>fc2dbd<span class="hljs-number">81f1599267</span>b53a35f9bdebaff<span class="hljs-number">4286a35a49</span>5f2cd<span class="hljs-number">94784c695</span>c<span class="hljs-number">43c3a83860</span>85c87ca7ad7d6a9ab<span class="hljs-number">4997b923</span>d<span class="hljs-number">9e549b7</span>b<span class="hljs-number">26063d7</span>abc2aade1e77dd41bfe6cabc<span class="hljs-number">12361285468</span>f<span class="hljs-number">4d5e854</span>fdc35fabfc<span class="hljs-number">362c92a43</span>f<span class="hljs-number">4b8078a08</span>c<span class="hljs-number">6d520f1</span>ce9df<span class="hljs-number">346c241</span>bd<span class="hljs-number">68882c15853</span>d44e0dd<span class="hljs-number">23c2443f8</span>cf212dc430267dc7dc3a31d13dadc<span class="hljs-number">5a60b4a7</span>f<span class="hljs-number">36807660639</span>c030505ddfe<span class="hljs-number">86d5276b74</span>1f2dd2368ef<span class="hljs-number">6313a34738</span><span class="hljs-number">4d4024a34</span>4257fef2b1723eb<span class="hljs-number">1732a0365</span>b28cc<span class="hljs-number">54f4e6a9</span>f<span class="hljs-number">63a9f5704</span>ff81ab<span class="hljs-number">251f5b3</span>ebb16939ce<span class="hljs-number">84664316</span>fba4393fd<span class="hljs-number">1a65950e9</span>a3ce4c51da2923cab<span class="hljs-number">650a70a4</span>ba1ab<span class="hljs-number">8f79281c7</span>e<span class="hljs-number">1e706b9</span>b497849af<span class="hljs-number">14f7465051</span>b<span class="hljs-number">5a1b4f59</span>1b46af91a4dd60bab<span class="hljs-number">69e46977</span>dae37dc<span class="hljs-number">18443e99</span>fb<span class="hljs-number">4e22015f29</span>b21093dbde<span class="hljs-number">577b15840</span>c0d9bf2a8b7df2df0f782cf<span class="hljs-number">79a5047e10</span>fc8172eb<span class="hljs-number">9d48f01a03</span>b679d44ff<span class="hljs-number">87066241e2</span>b10913bd<span class="hljs-number">2c9a44c42</span>f6392</code></pre>
+</li>
+<li>
+<p><font color="Gray"><em>Response</em></font></p>
+<pre><code>{
+    "token_type":"Bearer",
+    "expires_in":<span class="hljs-number">31536000</span>,
+    "access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiOTczY2RjZjdiYjNhMzEyNjY0MWExMjVkNTMyNGEzNzFlMWQzM2FkOTNjMmQ1MmE5NzE3ZWIyZDhhYWIxNDgxYzJmNzI4MmYyYzU2ZmRmYjEiLCJpYXQiOjE2MDUxNzY3NzksIm5iZiI6MTYwNTE3Njc3OSwiZXhwIjoxNjM2NzEyNzc5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.RbCv5G6SbGhEPcDezw2gVyNySCg7zMNRLXsSFYq9rV0JsjSghMbI-Bsiv4kUAC2uRQ6eUlE6-PT7zTQkdpJNDbhwxHLuItTeWgKJHRaNrGrlkSQQYU-tA2Q6n13oHGDxlkC9NMSXwAPjaLURS28YkPjLj88DuQUCn0EJUU-SNBPqbGxHeam55-M6wTTpldc8Xxy3PgThH8wk6bCgrZRWsW8cOu5fzt9eMJE6PzMSVXdphYtCjyzRkbFfZgX89Og0HqnHO2hI1vDvy6CSoU6xAVpHG_VQpB0yoJt_swOEteq4oeZ0JMpC9soAJRuF_Wre4xLKs_cHOo-TB3fv9kFuChbn-WhnJguDW0slYZmLU45r8-WxSP88Y15mXRQJ7JYPbMP_PSkNnRfHVwKDe8S74Iuc3pajg0MdfnRJjd1jb3Mt9g5fTUig8hDvPAHxPH2rj_mOvMzjeFZV<span class="hljs-number">7P0P8K08</span>iq7YX1f2sxoYpfwfQzwjHce71OT_Vnm9MfNiZMjTw-57LYV0w4cEmzxBZw_h-o-skbYZvHPJOVxFnnmhcpCkhp-zsxzeId<span class="hljs-number">4Q44A6Z2</span>qh8dxE7zkTRxL0ShJaXIAwSRt3TIalrbR35Uv3C4m0fwv0mGDigwa3L75JltVLBpENs0hMw-Uca9wDkiZtpsWsu2bRgeKKh7LM4XI3aSw1ivsJ6rE",
+    "refresh_token":"def50200dbc28fcf<span class="hljs-number">856258b9</span>e<span class="hljs-number">34e1779d93</span>907cc7ef7eeefbfa<span class="hljs-number">152b5923a3</span>dcf<span class="hljs-number">47d2012864</span>c<span class="hljs-number">915393b98</span>4cebf<span class="hljs-number">6e9f8f70</span>636147cbaa4c3cd<span class="hljs-number">4e24a896</span>a<span class="hljs-number">64f61f311</span>beaab<span class="hljs-number">0090b845</span>e54262bdb062a77ea212e6fdfe75ffcfe14f16b6ebe<span class="hljs-number">5d297e01</span>73b86bb18fd<span class="hljs-number">3966f38a41</span><span class="hljs-number">0c5d99993</span>6cc0b7072ee<span class="hljs-number">41406e81d219</span>1fc<span class="hljs-number">468787b58</span>ba1fc<span class="hljs-number">0a179a3b35</span>345877aa<span class="hljs-number">240568928b59</span>405c8da<span class="hljs-number">317869d1</span>bc<span class="hljs-number">4236f111a6</span>c157ebbed<span class="hljs-number">82a5864f53</span>61557ba129e57ce11af<span class="hljs-number">5c70303b3</span>b<span class="hljs-number">88800397</span>effa<span class="hljs-number">6d7f233b4</span>b<span class="hljs-number">3125f58c33</span><span class="hljs-number">461182b61927</span>5d59c9be<span class="hljs-number">1449364d90</span>65dc<span class="hljs-number">0362491</span>ac9696eb3a4558ddcf3a4c5be4bc<span class="hljs-number">5206787b95</span><span class="hljs-number">6a8205b180</span>5f1d1add<span class="hljs-number">957b414</span>bb<span class="hljs-number">7b5c5d51</span>060ace<span class="hljs-number">6246e6e08</span>9da2369bfe<span class="hljs-number">79e97e436</span>c02cedc5ea<span class="hljs-number">1b1232a08</span>e46cc2666ba7cbcc<span class="hljs-number">37d9c9a46</span>dccdd3c787fe2053af3c9019cb<span class="hljs-number">913c3629</span>b<span class="hljs-number">914a93098</span><span class="hljs-number">6227a100d42</span>be6de2eaf35af1f397ceeb3ba<span class="hljs-number">3a75a59647</span>c3c9161aeb3be72bcfb4777"}</code></pre>
+<p>※ 取得したアクセストークンを<a href="https://jwt.io/">トークン解析Webアプリ</a> を使用して確認したところ、ユーザーIDに紐づいたアクセストークンが発行されていることが確認できた。</p>
+<pre><code>{
+    "<span class="hljs-attribute">aud</span>": <span class="hljs-value"><span class="hljs-string">"2"</span></span>,
+    "<span class="hljs-attribute">jti</span>": <span class="hljs-value"><span class="hljs-string">"973cdcf7bb3a3126641a125d5324a371e1d33ad93c2d52a9717eb2d8aab1481c2f7282f2c56fdfb1"</span></span>,
+    "<span class="hljs-attribute">iat</span>": <span class="hljs-value"><span class="hljs-number">1605176779</span></span>,
+    "<span class="hljs-attribute">nbf</span>": <span class="hljs-value"><span class="hljs-number">1605176779</span></span>,
+    "<span class="hljs-attribute">exp</span>": <span class="hljs-value"><span class="hljs-number">1636712779</span></span>,
+    "<span class="hljs-attribute">sub</span>": <span class="hljs-value"><span class="hljs-string">"1"</span></span>,
+    "<span class="hljs-attribute">scopes</span>": <span class="hljs-value">[]
+</span>}</code></pre>
+<p>※ sub = user id (OAuth仕様)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="header-リソースサーバーの実装">リソースサーバーの実装 <a class="permalink" href="#header-リソースサーバーの実装" aria-hidden="true">¶</a></h2>
+<p>認可サーバーとは別のLaravelプロジェクトを作成して別サーバーとして構築する。</p>
+<p>データベースは認証サーバー（TWG様既存ログインサイト）に接続する。</p>
+<h3 id="header-環境構築-1">環境構築 <a class="permalink" href="#header-環境構築-1" aria-hidden="true">¶</a></h3>
+<p>調査中。</p>
+<p>認可サーバーと同じように環境構築すると、アクセストークンを管理する認可サーバーとして機能してしまう。（データベース構造も認可サーバー仕様になる）</p>
+<p>リソースサーバー用のパッケージはPassportでは提供されていない？（Laravel Authleteでは認可サーバー用とリソースサーバー用のパッケージを別でインストールできたが、Passportは認証、認可、リソースがすべて1つになっている）</p>
+<h3 id="header-プログラム修正-1">プログラム修正 <a class="permalink" href="#header-プログラム修正-1" aria-hidden="true">¶</a></h3>
+<p>調査中。</p>
+<h2 id="header-11月13日時点でのpassport調査結果まとめ">11月13日時点でのPassport調査結果まとめ <a class="permalink" href="#header-11月13日時点でのpassport調査結果まとめ" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p>Laravel Passportは自サーバー内でログイン認証することを前提としているため、別サーバーでのログインに対応させるには想定以上に改修が必要そうな印象。</p>
+</li>
+<li>
+<p>Passportを使用する・しないに関わらず、現在のサーバー構成（認可サーバーと認証サーバーが別）では、ログイン後、認可サーバーにユーザーIDを安全に渡す実装が必要。</p>
+</li>
+</ul>
+<h2 id="header-今後の課題">今後の課題 <a class="permalink" href="#header-今後の課題" aria-hidden="true">¶</a></h2>
+<p><strong>優先度：高</strong></p>
+<ul>
+<li>
+<p>要件を再度確認する。</p>
+<p>→ 認証（ログイン）サーバーと認可サーバーを分ける必要があるかどうか。</p>
+<p><strong>既存ログインサイトのサーバー上（同一ドメイン上）に、ディレクトリで分けて認可サーバーを構築してよいのであれば、別サーバーにセキュアにユーザーIDを渡す実装が不要になるため、サーバーを分けるより構築しやすい。（ディレクトリで分けるため既存のプログラムに影響はない）</strong></p>
+</li>
+<li>
+<p>認可と認証（ログイン）サーバーを別で構築しやすいオープンソースがないか調査。</p>
+<p>→ PassportよりはKeycloakの方が今回のサーバー構成に合っている可能性がある。</p>
+</li>
+</ul>
+<p><strong>優先度：低</strong></p>
+<ul>
+<li>
+<p>Yahoo!やGithub等、ソーシャルログインプロバイダーのサーバー構成を確認。</p>
+<p>認可とリソースサーバーを分けていないのでは？（アクセストークンリクエストとユーザー情報リクエスト先のドメインが同じ）</p>
+<p>PassportやAuthleteで認可サーバーを構築したところ、ユーザーエンドポイント（ユーザー情報を返すAPI）が一緒に実装されていたため。認可サーバーとリソースサーバーを分ける明確な理由がないのであれば、１つのサーバー（データベースは分けるが、プログラムは１つ）で提供した方がメンテナンスしやすいのでは？</p>
+</li>
+<li>
+<p>アクセストークンの有効期限が切れた場合のフローの確認。（外部連携サイト側で対応が必要？）</p>
+</li>
+</ul>
+</div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 16 Nov 2020</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>

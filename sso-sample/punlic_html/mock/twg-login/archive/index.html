@@ -1,0 +1,767 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>シングルサインオンサンプル</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}body{color:black;background:white;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #f2f2f2;margin-bottom:12px}h1,h2,h3,h4,h5{color:black;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:#428bca;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(0,0,0,0) 20%, rgba(0,0,0,0.2) 51.4%, rgba(255,255,255,0.2) 51.4%, rgba(255,255,255,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(0,0,0,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #e8e8e8}blockquote p:last-child{margin-bottom:0}pre{background-color:#f5f5f5;padding:12px;border:1px solid #cfcfcf;border-radius:6px;overflow:auto}pre code{color:black;background-color:transparent;padding:0;border:none}code{color:#444;background-color:#f5f5f5;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #cfcfcf;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#fafafa}table th,table td{padding:6px 12px;border:1px solid #e6e6e6}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:black;background-color:#f0f6fb;border-left:4px solid #428bca}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#428bca}.warning{color:black;background-color:#fbf1f0;border-left:4px solid #c9302c}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#c9302c}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:black;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(0,0,0,0.7);padding:8px 12px;border-top:1px solid #d9d9d9;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#000;background-color:#f2f2f2;border-radius:10px;margin:-2px 0}.badge.get{color:#70bbe1;background-color:#d9edf7}.badge.head{color:#70bbe1;background-color:#d9edf7}.badge.options{color:#70bbe1;background-color:#d9edf7}.badge.put{color:#f0db70;background-color:#fcf8e3}.badge.patch{color:#f0db70;background-color:#fcf8e3}.badge.post{color:#93cd7c;background-color:#dff0d8}.badge.delete{color:#ce8383;background-color:#f2dede}.collapse-button{float:right}.collapse-button .close{display:none;color:#428bca;cursor:pointer}.collapse-button .open{color:#428bca;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#428bca}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:white}.right pre{background-color:#1d1f21;border:1px solid #1d1f21}.right pre code{color:#c5c8c6}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e8ab8}.definition .method.head{color:#2e8ab8}.definition .method.options{color:#2e8ab8}.definition .method.post{color:#56b82e}.definition .method.put{color:#b8a22e}.definition .method.patch{color:#b8a22e}.definition .method.delete{color:#b82e2e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:black;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#444}.right .example-names .tab-button{color:white;border:1px solid #666;border-radius:6px}.right .example-names .tab-button.active{background-color:#5e5e5e}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#fbfbfb;border-right:1px solid #f0f0f0;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#333;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(0,0,0,0.5);background-color:#f2f2f2;text-decoration:none !important;border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:white;border:1px solid #d9d9d9;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#f2f2f2;border-bottom:1px solid #d9d9d9;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #d9d9d9}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#337ab7}.action h4.action-heading .method.head{color:#fff;background-color:#337ab7}.action h4.action-heading .method.options{color:#fff;background-color:#337ab7}.action h4.action-heading .method.put{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.patch{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.post{color:#fff;background-color:#5cb85c}.action h4.action-heading .method.delete{color:#fff;background-color:#d9534f}.action h4.action-heading code{color:#444;background-color:#f5f5f5;border-color:#cfcfcf;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid white;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#bce8f1}.action.get h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.head{border-color:#bce8f1}.action.head h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.options{border-color:#bce8f1}.action.options h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.post{border-color:#d6e9c6}.action.post h4.action-heading{color:#5cb85c;background:#dff0d8;border-bottom-color:#d6e9c6}.action.put{border-color:#faebcc}.action.put h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.patch{border-color:#faebcc}.action.patch h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.delete{border-color:#ebccd1}.action.delete h4.action-heading{color:#d9534f;background:#f2dede;border-bottom-color:#ebccd1}</style></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#top">Overview</a></div><div class="collapse-content"><ul><li><a href="#header-初期処理">初期処理</a></li><li><a href="#header-クライアントページ">クライアントページ</a></li><li><a href="#header-サンプルurl">サンプルURL</a></li><li><a href="#header-画面イメージ">画面イメージ</a></li><li><a href="#header-ファイル">ファイル</a></li><li><a href="#header-機能">機能</a></li><li><a href="#header-twg用ログインページ">TWG用ログインページ</a></li><li><a href="#header-サンプルurl-1">サンプルURL</a></li><li><a href="#header-画面イメージ-1">画面イメージ</a></li><li><a href="#header-ファイル-1">ファイル</a></li><li><a href="#header-機能-1">機能</a></li><li><a href="#header-認可サーバー">認可サーバー</a></li><li><a href="#header-サンプルurl-2">サンプルURL</a></li><li><a href="#header-ファイル-2">ファイル</a></li><li><a href="#header-機能-2">機能</a></li><li><a href="#header-リソースサーバー">リソースサーバー</a></li><li><a href="#header-サンプルurl-3">サンプルURL</a></li><li><a href="#header-ファイル-3">ファイル</a></li><li><a href="#header-機能-3">機能</a></li><li><a href="#header-全体イメージ">全体イメージ</a></li><li><a href="#header-確認事項">確認事項</a></li><li><a href="#header-db">DB</a></li><li><a href="#header-クライアントサーバー">クライアントサーバー</a></li><li><a href="#header-twg用サーバー">TWG用サーバー</a></li><li><a href="#header-認証用サーバー">認証用サーバー</a></li></ul></div></div></nav><div class="content"><header><h1 id="top">シングルサインオンサンプル</h1></header><h2 id="header-初期処理">初期処理 <a class="permalink" href="#header-初期処理" aria-hidden="true">¶</a></h2>
+<p>*最初にapplicationsテーブルにデータを登録しておく</p>
+<ul>
+<li>対象クライアントの有効性の確認</li>
+</ul>
+<h2 id="header-クライアントページ">クライアントページ <a class="permalink" href="#header-クライアントページ" aria-hidden="true">¶</a></h2>
+<h2 id="header-サンプルurl">サンプルURL <a class="permalink" href="#header-サンプルurl" aria-hidden="true">¶</a></h2>
+<p><code><a href="http://twg-outer.se-sendai.co.jp">http://twg-outer.se-sendai.co.jp</a></code></p>
+<h2 id="header-画面イメージ">画面イメージ <a class="permalink" href="#header-画面イメージ" aria-hidden="true">¶</a></h2>
+<img src="/archive/img/login.png" width="240">
+<h2 id="header-ファイル">ファイル <a class="permalink" href="#header-ファイル" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p>.htaccess</p>
+<ul>
+<li>設定ファイル
+<ul>
+<li>ファイルもしくはフォルダがない場合はindex.phpを読み込む</li>
+<li>ctpファイルをphpとして扱う</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>index.php</p>
+<ul>
+<li>インデックスページ
+<ul>
+<li>パラメータがない場合はログインページを表示</li>
+<li>ユーザー情報登録処理</li>
+<li>ログイン処理</li>
+<li>認証情報受け取り処理</li>
+<li>登録情報表示</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>/php/list.php</p>
+<ul>
+<li>登録情報表示</li>
+</ul>
+</li>
+<li>
+<p>/lib/lib_common.php</p>
+<ul>
+<li>関数群</li>
+</ul>
+</li>
+<li>
+<p>/view/login.ctp</p>
+<ul>
+<li>ログインテンプレート</li>
+</ul>
+</li>
+<li>
+<p>/view/regist.ctp</p>
+<ul>
+<li>ユーザー情報登録テンプレート</li>
+</ul>
+</li>
+<li>
+<p>/view/list.ctp</p>
+<ul>
+<li>ユーザー情報一覧テンプレート</li>
+</ul>
+</li>
+</ul>
+<h2 id="header-機能">機能 <a class="permalink" href="#header-機能" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p><strong>① ログインページ</strong></p>
+<ol>
+<li>ログイン前後で表示の切り替えを行う</li>
+<li>シングルサインオンログインリンクの設置
+<ul>
+<li>「クライアントID」 「リダイレクトurl」 を付与して、認可サーバーにリダイレクトする
+<ul>
+<li>必要な情報をパラメータに接続する
+<ul>
+<li>例) scope=open_id+email</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>⑦ 認証情報取得処理</strong></p>
+<ul>
+<li>TWGログインページからログイン認証後、実行(リダイレクト処理で認可コードを受け取る)</li>
+</ul>
+</li>
+<li>
+<p><strong>⑧ 認可コードを元にアクセストークンの取得(curl)</strong></p>
+<ul>
+<li>認可サーバーからアクセストークンの取得を行う</li>
+</ul>
+</li>
+<li>
+<p><strong>⑪ アクセストークンを元にユーザー情報を取得(curl)</strong></p>
+<ul>
+<li>リソースサーバーへアクセストークンを元にユーザーIDの取得を行う</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="header-twg用ログインページ">TWG用ログインページ <a class="permalink" href="#header-twg用ログインページ" aria-hidden="true">¶</a></h1>
+<h2 id="header-サンプルurl-1">サンプルURL <a class="permalink" href="#header-サンプルurl-1" aria-hidden="true">¶</a></h2>
+<p><code><a href="http://twg-login.se-sendai.co.jp">http://twg-login.se-sendai.co.jp</a></code></p>
+<h2 id="header-画面イメージ-1">画面イメージ <a class="permalink" href="#header-画面イメージ-1" aria-hidden="true">¶</a></h2>
+<img src="/archive/img/twglogin.JPG" width="240">
+<h2 id="header-ファイル-1">ファイル <a class="permalink" href="#header-ファイル-1" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p>.htaccess</p>
+<ul>
+<li>設定ファイル
+<ul>
+<li>ファイルもしくはフォルダがない場合はindex.phpを読み込む</li>
+<li>ctpファイルをphpとして扱う</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>index.php</p>
+<ul>
+<li>インデックスページ
+<ul>
+<li>パラメータがない場合はログインページを表示</li>
+<li>ユーザー情報登録処理</li>
+<li>ログイン処理</li>
+<li>認証情報受け取り処理</li>
+<li>登録情報表示</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>/lib/lib_common.php</p>
+<ul>
+<li>関数群</li>
+</ul>
+</li>
+<li>
+<p>/view/login.ctp</p>
+<ul>
+<li>ログインテンプレート</li>
+</ul>
+</li>
+<li>
+<p>/view/regist.ctp</p>
+<ul>
+<li>ユーザー情報登録テンプレート</li>
+</ul>
+</li>
+<li>
+<p>/view/list.ctp</p>
+<ul>
+<li>ユーザー情報一覧テンプレート</li>
+</ul>
+</li>
+</ul>
+<h2 id="header-機能-1">機能 <a class="permalink" href="#header-機能-1" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p><strong>⑤ログインの実施</strong></p>
+<ul>
+<li>
+<p>ログイン状態の確認を行う(sessionより確認)</p>
+</li>
+<li>
+<p>未ログイン状態の時</p>
+<ul>
+<li>
+<p>ログイン画面の表示</p>
+<ul>
+<li>ログインの実施</li>
+</ul>
+</li>
+<li>
+<p>認証同意画面に繊維</p>
+</li>
+</ul>
+</li>
+<li>
+<p>ログイン状態の時</p>
+<ul>
+<li>同意状況のチェック
+<ul>
+<li>未同意
+<ul>
+<li>認証同意画面に遷移</li>
+</ul>
+</li>
+<li>同意済
+<ul>
+<li>認証同意処理</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>⑥認証同意処理</strong></p>
+<ul>
+<li>認可サーバーへ下記パラメータを保持し、アクセストークン発行・認証コードの要求
+<ul>
+<li>ユーザーID</li>
+<li>クライアントID</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>⑮ユーザー情報の取得</strong></p>
+<ul>
+<li>ユーザーIDを元にユーザー情報の取得を行う</li>
+<li>ユーザ情報取得カラムを元に必要カラムの取得を行う</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="header-認可サーバー">認可サーバー <a class="permalink" href="#header-認可サーバー" aria-hidden="true">¶</a></h1>
+<h2 id="header-サンプルurl-2">サンプルURL <a class="permalink" href="#header-サンプルurl-2" aria-hidden="true">¶</a></h2>
+<p><code><a href="http://twg-login.se-sendai.co.jp">http://twg-login.se-sendai.co.jp</a></code></p>
+<h2 id="header-ファイル-2">ファイル <a class="permalink" href="#header-ファイル-2" aria-hidden="true">¶</a></h2>
+<ul>
+<li>index.php
+– 認証処理
+– 認可情報登録</li>
+</ul>
+<h2 id="header-機能-2">機能 <a class="permalink" href="#header-機能-2" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p><strong>②クライアント認証確認</strong></p>
+<ul>
+<li>下記パラメータを元に認証機能の利用確認を行う。
+<ul>
+<li>クライアントID</li>
+<li>リダイレクトURL</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>③クライアント認証不可</strong></p>
+<ul>
+<li>クライアントサーバーにリダイレクト
+<ul>
+<li>処理の終了</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>④ クライアント認証可</strong></p>
+<ul>
+<li>TWGサーバーにリダイレクト(下記パラメータを保持)
+<ul>
+<li>クライアントID</li>
+<li>リダイレクトurl</li>
+<li>その他必要な情報をパラメータに付与</li>
+</ul>
+<ul>
+<li>例) scope=open_id+email</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>⑦ 認証コード・アクセストークンの発行要求</strong></p>
+<ul>
+<li>TWG用ログインページにより、ログインの実施後に下記実行
+<ul>
+<li>下記内容をテーブルに保存
+<ul>
+<li>アクセストークンの発行</li>
+<li>認可コード発行</li>
+<li>user_id</li>
+<li>client_id</li>
+<li>取得カラム</li>
+<li>連携許可時間 現在時間から半年後の時間</li>
+<li>アクセストークンの要求時間 現在時間から 5分後</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>⑧ 認可コードをクライアントサーバーに送るGET</strong></p>
+</li>
+<li>
+<p><strong>⑩ 認可コードを元にアクセストークンを取得</strong></p>
+<ul>
+<li>取得した認証コードを元に、テーブルからアクセストークンの取得を行う</li>
+</ul>
+</li>
+<li>
+<p><strong>⑬ アクセストークンを元にデータ取得</strong></p>
+<ul>
+<li>取得したアクセストークンを元に「ユーザーID」「取得カラム」の取得を行う</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="header-リソースサーバー">リソースサーバー <a class="permalink" href="#header-リソースサーバー" aria-hidden="true">¶</a></h1>
+<h2 id="header-サンプルurl-3">サンプルURL <a class="permalink" href="#header-サンプルurl-3" aria-hidden="true">¶</a></h2>
+<p><code><a href="http://twg-login.se-sendai.co.jp">http://twg-login.se-sendai.co.jp</a></code></p>
+<h2 id="header-ファイル-3">ファイル <a class="permalink" href="#header-ファイル-3" aria-hidden="true">¶</a></h2>
+<ul>
+<li>index.php
+– 登録ユーザー情報の取得</li>
+</ul>
+<h2 id="header-機能-3">機能 <a class="permalink" href="#header-機能-3" aria-hidden="true">¶</a></h2>
+<ul>
+<li>
+<p><strong>⑫ 「ユーザーID」「ユーザ情報取得カラム」の取得を行う(curl)</strong></p>
+<ul>
+<li>取得したアクセストークンを元に、認可サーバーへ「ユーザーID」「ユーザ情報取得カラム」の取得を行う。(curl)</li>
+</ul>
+</li>
+<li>
+<p><strong>⑫ ユーザーIDを元にユーザー情報の取得(curl)</strong></p>
+<ul>
+<li>TWGサーバーにユーザーIDを渡す</li>
+</ul>
+</li>
+<li>
+<p><strong>⑭ 「ユーザーID」「ユーザー情報取得カラム」を元にユーザー情報の取得(curl)</strong></p>
+</li>
+<li>
+<p>TWGサーバーへ下記パラメータを保持し、必要なユーザー情報の取得を行う</p>
+<ul>
+<li>ユーザーID</li>
+<li>ユーザー情報取得カラム</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="header-全体イメージ">全体イメージ <a class="permalink" href="#header-全体イメージ" aria-hidden="true">¶</a></h1>
+<p><a href="/archive/img/sso.jpg" target=_blank><img src="/archive/img/sso.jpg" style="width:100%;"></a></p>
+<hr>
+<h1 id="header-確認事項">確認事項 <a class="permalink" href="#header-確認事項" aria-hidden="true">¶</a></h1>
+<ul>
+<li>
+<p>リソースサーバーからTWGサーバーのテーブルにアクセスを行うこと</p>
+</li>
+<li>
+<p>リソースサーバーの利用について、openID connectに準拠しているが、リソースサーバーを利用していないサービスも存在しているため確認(認可サーバーにまとめることが可能)</p>
+</li>
+<li>
+<p>aglioを利用しての情報共有方法</p>
+</li>
+<li>
+<p>notionの利用を検討</p>
+</li>
+</ul>
+<hr>
+<h1 id="header-db">DB <a class="permalink" href="#header-db" aria-hidden="true">¶</a></h1>
+<h3 id="header-クライアントサーバー">クライアントサーバー <a class="permalink" href="#header-クライアントサーバー" aria-hidden="true">¶</a></h3>
+<p>user_client</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">カラム</th>
+<th style="text-align:left">型</th>
+<th style="text-align:left">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">id</td>
+<td style="text-align:left">int(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">email</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">password</td>
+<td style="text-align:left">varchar(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">regist_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">update_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left">DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<h3 id="header-twg用サーバー">TWG用サーバー <a class="permalink" href="#header-twg用サーバー" aria-hidden="true">¶</a></h3>
+<p>twg_client</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">カラム</th>
+<th style="text-align:left">型</th>
+<th style="text-align:left">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">id</td>
+<td style="text-align:left">int(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">email</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">password</td>
+<td style="text-align:left">varchar(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">regist_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">update_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left">DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<h3 id="header-認証用サーバー">認証用サーバー <a class="permalink" href="#header-認証用サーバー" aria-hidden="true">¶</a></h3>
+<p>applications</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">カラム</th>
+<th style="text-align:left">型</th>
+<th style="text-align:left">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">id</td>
+<td style="text-align:left">int(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">client_id</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">redirect_url</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">regist_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">update_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left">DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p>approvals</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">カラム</th>
+<th style="text-align:left">型</th>
+<th style="text-align:left">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">id</td>
+<td style="text-align:left">int(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">applicate_code</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left">認証コード</td>
+</tr>
+<tr>
+<td style="text-align:left">access_token</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left">アクセストークン</td>
+</tr>
+<tr>
+<td style="text-align:left">user_id</td>
+<td style="text-align:left">int(11)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">client_id</td>
+<td style="text-align:left">varchar(128)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">get_culum</td>
+<td style="text-align:left">text</td>
+<td style="text-align:left">ユーザ情報を取得する際に取得データのカラムを指定する。カンマ区切りで保持</td>
+</tr>
+<tr>
+<td style="text-align:left">possible_time</td>
+<td style="text-align:left">datetime</td>
+<td style="text-align:left">連携許可時間 登録時間+半年</td>
+</tr>
+<tr>
+<td style="text-align:left">token_time</td>
+<td style="text-align:left">datetime</td>
+<td style="text-align:left">アクセストークン要求時間+5分</td>
+</tr>
+<tr>
+<td style="text-align:left">regist_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">update_ts</td>
+<td style="text-align:left">timestamp</td>
+<td style="text-align:left">DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+</div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 23 Oct 2020</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>

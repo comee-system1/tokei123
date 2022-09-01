@@ -1,0 +1,379 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>餃子サークル連携ログインWebAPIドキュメント</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}.hljs-comment,.hljs-quote{color:#9e8f9e}.hljs-attribute,.hljs-link,.hljs-name,.hljs-regexp,.hljs-selector-class,.hljs-selector-id,.hljs-tag,.hljs-template-variable,.hljs-variable{color:#ca402b}.hljs-built_in,.hljs-literal,.hljs-meta,.hljs-number,.hljs-params,.hljs-type{color:#a65926}.hljs-bullet,.hljs-string,.hljs-symbol{color:#918b3b}.hljs-section,.hljs-title{color:#516aec}.hljs-keyword,.hljs-selector-tag{color:#7b59c0}.hljs{display:block;overflow-x:auto;background:#1b181b;color:#ab9bab;padding:.5em}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}.right .hljs-comment,.right .hljs-quote{color:#776977}.right .hljs-attribute,.right .hljs-link,.right .hljs-name,.right .hljs-regexp,.right .hljs-selector-class,.right .hljs-selector-id,.right .hljs-tag,.right .hljs-template-variable,.right .hljs-variable{color:#ca402b}.right .hljs-built_in,.right .hljs-literal,.right .hljs-meta,.right .hljs-number,.right .hljs-params,.right .hljs-type{color:#a65926}.right .hljs-bullet,.right .hljs-string,.right .hljs-symbol{color:#918b3b}.right .hljs-section,.right .hljs-title{color:#516aec}.right .hljs-keyword,.right .hljs-selector-tag{color:#7b59c0}.right .hljs{display:block;overflow-x:auto;background:#f7f3f7;color:#695d69;padding:.5em}.right .hljs-emphasis{font-style:italic}.right .hljs-strong{font-weight:700}body{color:#c8c8c8;background:#272b30;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #373d44;margin-bottom:12px}h1,h2,h3,h4,h5{color:#c8c8c8;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:white;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(200,200,200,0) 20%, rgba(200,200,200,0.2) 51.4%, rgba(39,43,48,0.2) 51.4%, rgba(39,43,48,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(200,200,200,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #2b3237}blockquote p:last-child{margin-bottom:0}pre{background-color:#202529;padding:12px;border:1px solid #424c54;border-radius:6px;overflow:auto}pre code{color:#c8c8c8;background-color:transparent;padding:0;border:none}code{color:#ddd;background-color:#373b40;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #424c54;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#22262a}table th,table td{padding:6px 12px;border:1px solid #101214}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:#c8c8c8;background-color:#2b373e;border-left:4px solid #5bc0de}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#5bc0de}.warning{color:#c8c8c8;background-color:#352b30;border-left:4px solid #e9322d}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#e9322d}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:#c8c8c8;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid #c8c8c8}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(200,200,200,0.7);padding:8px 12px;border-top:1px solid #202020;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid #c8c8c8}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#fff;background-color:#373d44;border-radius:10px;margin:-2px 0}.badge.get{color:white;background-color:#5bc0de}.badge.head{color:white;background-color:#5bc0de}.badge.options{color:white;background-color:#5bc0de}.badge.put{color:white;background-color:#f89406}.badge.patch{color:white;background-color:#f89406}.badge.post{color:white;background-color:#62c462}.badge.delete{color:white;background-color:#ee5f5b}.collapse-button{float:right}.collapse-button .close{display:none;color:white;cursor:pointer}.collapse-button .open{color:white;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#666}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:#272b30}.right pre{background-color:#f7f6f5;border:1px solid #f7f6f5}.right pre code{color:#333}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e98b8}.definition .method.head{color:#2e98b8}.definition .method.options{color:#2e98b8}.definition .method.post{color:#2eb82e}.definition .method.put{color:#b87f2e}.definition .method.patch{color:#b87f2e}.definition .method.delete{color:#b8322e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:#c8c8c8;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#adaaa6}.right .example-names .tab-button{color:#272b30;border:1px solid #d8d4cf;border-radius:6px}.right .example-names .tab-button.active{background-color:#95918b}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#272b30;border-right:1px solid #272b30;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#d8d4cf;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(200,200,200,0.5);background-color:#373d44;text-decoration:none !important;border-top:1px solid #202020;border-left:1px solid #202020;border-right:1px solid #202020;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:#272b30;border:1px solid #202020;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#373d44;border-bottom:1px solid #202020;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #202020}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#2390b0}.action h4.action-heading .method.head{color:#fff;background-color:#2390b0}.action h4.action-heading .method.options{color:#fff;background-color:#2390b0}.action h4.action-heading .method.put{color:#fff;background-color:#945904}.action h4.action-heading .method.patch{color:#fff;background-color:#945904}.action h4.action-heading .method.post{color:#fff;background-color:#348c34}.action h4.action-heading .method.delete{color:#fff;background-color:#ce1a15}.action h4.action-heading code{color:black;background-color:rgba(255,255,255,0.7);border-color:transparent;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid #272b30;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#202020}.action.get h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.head{border-color:#202020}.action.head h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.options{border-color:#202020}.action.options h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.post{border-color:#202020}.action.post h4.action-heading{color:#348c34;background:#62c462;border-bottom-color:#202020}.action.put{border-color:#202020}.action.put h4.action-heading{color:#945904;background:#f89406;border-bottom-color:#202020}.action.patch{border-color:#202020}.action.patch h4.action-heading{color:#945904;background:#f89406;border-bottom-color:#202020}.action.delete{border-color:#202020}.action.delete h4.action-heading{color:#ce1a15;background:#ee5f5b;border-bottom-color:#202020}</style></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#">Resource Group</a></div><div class="collapse-content"><ul><li><a href="#認可エンドポイント-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>認可コードの取得</a></li><li><a href="#トークンエンドポイント-post"><span class="badge post"><i class="fa fa-plus"></i></span>トークンの取得</a></li><li><a href="#ユーザーエンドポイント-post"><span class="badge post"><i class="fa fa-plus"></i></span>ユーザー情報取得</a></li></ul></div></div></nav><div class="content"><header><h1 id="top">餃子サークル連携ログインWebAPIドキュメント</h1></header><section id="" class="resource-group"><h2 class="group-heading">Resource Group <a href="#" class="permalink">&para;</a></h2><div id="認可エンドポイント" class="resource"><h3 class="resource-heading">認可エンドポイント <a href="#認可エンドポイント" class="permalink">&nbsp;&para;</a></h3><p>アクセストークンを取得するための認可コードをURLパラメーターで返します。</p>
+<div id="認可エンドポイント-get" class="action get"><h4 class="action-heading"><div class="name">認可コードの取得</div><a href="#認可エンドポイント-get" class="method get">GET</a><code class="uri">/oauth/authorize{?client_id,response_type,scope}</code></h4><h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname"></span>/oauth/authorize?<span class="hljs-attribute">client_id=</span><span class="hljs-literal">57297408867</span>&<span class="hljs-attribute">response_type=</span><span class="hljs-literal">code</span>&<span class="hljs-attribute">scope=</span><span class="hljs-literal">*</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>client_id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>57297408867</span></span><p>発行されたクライアントID</p>
+</dd><dt>response_type</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>code</span></span><p>トークン発行方法（<code>code</code>を指定します。）</p>
+</dd><dt>scope</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>*</span></span><p>取得したいユーザー情報</p>
+</dd><dt>redirect_uri: `https://your-site.com/social_login/callback`</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>クライアント作成時に指定したリダイレクトURL</p>
+</dd></dl></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><p>餃子サークルサイトのログイン、連携同意画面が表示されます。</p>
+<p>ユーザーがログイン後、指定したリダイレクトURLにパラメータで結果を返します。</p>
+<ul>
+<li>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>code:</strong>     認可コード</li>
+</ul>
+<hr>
+<ul>
+<li><strong>error:</strong>    エラータイトル</li>
+<li><strong>error_description</strong> エラー内容</li>
+<li><strong>hint</strong>  エラーを解消するためのヒント</li>
+<li><strong>message</strong>   エラーメッセージ</li>
+</ul>
+</li>
+<li>
+<p><strong>Example:</strong></p>
+</li>
+</ul>
+<pre><code>https://your-site.com/social_login/callback?code=def<span class="hljs-number">50200389c45</span>c<span class="hljs-number">040c387</span>a<span class="hljs-number">5314b9063</span>d46ea<span class="hljs-number">612f5a20</span>e<span class="hljs-number">2932d44e96</span>93b6cf<span class="hljs-number">56c105681</span>bb<span class="hljs-number">80a148279d5</span>eff<span class="hljs-number">0f93009f6</span>ad05e0bb<span class="hljs-number">6c7d665</span>cd<span class="hljs-number">51015c04746</span><span class="hljs-number">06e25734749</span>a15c1ff7e589efd662daa1fd9cb4456be08ead32cef<span class="hljs-number">7a34862735</span><span class="hljs-number">6222c44d65</span>090739bdf1d9af50cd40bf<span class="hljs-number">2c7d4612</span>df<span class="hljs-number">6051530196c43</span>dfa0ad21bd7ba0ce2a6594fdb90f9bff283c54ed3b4ba59d25acb<span class="hljs-number">284e5f9</span>bfb600ee<span class="hljs-number">9d98553</span>da<span class="hljs-number">0c728a0</span>e11bf9f117ed<span class="hljs-number">177d2589696</span>d3253ba<span class="hljs-number">445a553</span>d5703cf<span class="hljs-number">74c90230087</span>4f6ff7e5fc<span class="hljs-number">70153e858</span>d91ca512d7dad<span class="hljs-number">9e3102f33</span><span class="hljs-number">7438918d69</span><span class="hljs-number">39f5e5e09</span>1feaf<span class="hljs-number">91951e629</span>f4b4bf<span class="hljs-number">7851647c100</span><span class="hljs-number">7b92863</span>dee61c1bde3e202fbb73973cf<span class="hljs-number">504904a2</span>fdc245ff<span class="hljs-number">80f09b4b74</span>afd<span class="hljs-number">5117c5e1</span>d<span class="hljs-number">52083284e68</span><span class="hljs-number">8d744c97</span>2ee7160d3bbeb91093bcb<span class="hljs-number">2a1c88595</span>411faefafea<span class="hljs-number">6c101399</span>aaf5281bc<span class="hljs-number">59f50669</span>dda<span class="hljs-number">604e220a7</span>b<span class="hljs-number">52e2b69d91</span>36a6afd34c6bd6c689ea1bfbede<span class="hljs-number">902e64126</span><span class="hljs-number">57b9a35f82</span>b86db<span class="hljs-number">9b1a810</span>f2f2db1c5dbd646cd8cf4df<span class="hljs-number">5c691b90</span>8a8d</code></pre>
+</div><h5>Body</h5><pre><code>・クライアント認証に成功した場合
+
+{
+    <span class="hljs-string">"code"</span>:<span class="hljs-string">"def50200389c45c040c387a5314b9063d46ea612f5a20e2932d44e9693b6cf56c105681bb80a148279d5eff0f93009f6ad05e0bb6c7d665cd51015c0474606e25734749a15c1ff7e589efd662daa1fd9cb4456be08ead32cef7a348627356222c44d65090739bdf1d9af50cd40bf2c7d4612df6051530196c43dfa0ad21bd7ba0ce2a6594fdb90f9bff283c54ed3b4ba59d25acb284e5f9bfb600ee9d98553da0c728a0e11bf9f117ed177d2589696d3253ba445a553d5703cf74c902300874f6ff7e5fc70153e858d91ca512d7dad9e3102f337438918d6939f5e5e091feaf91951e629f4b4bf7851647c1007b92863dee61c1bde3e202fbb73973cf504904a2fdc245ff80f09b4b74afd5117c5e1d52083284e688d744c972ee7160d3bbeb91093bcb2a1c88595411faefafea6c101399aaf5281bc59f50669dda604e220a7b52e2b69d9136a6afd34c6bd6c689ea1bfbede902e6412657b9a35f82b86db9b1a810f2f2db1c5dbd646cd8cf4df5c691b908a8d"</span>
+}
+
+・許可されていないスコープ（取得するユーザー情報の項目一覧）を指定された場合
+
+{
+    <span class="hljs-string">"error"</span>:<span class="hljs-string">"invalid_scope"</span>, 
+    <span class="hljs-string">"error_description"</span>:<span class="hljs-string">"The requested scope is invalid, unknown, or malformed"</span>,
+    <span class="hljs-string">"hint"</span>:<span class="hljs-string">"Check the `email` scope"</span>,
+    <span class="hljs-string">"message"</span>:<span class="hljs-string">"The requested scope is invalid, unknown, or malformed"</span>
+}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>400</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><p>ユーザーがログイン後、クライアント認証にエラーがあった場合は、餃子サークル認可サイトにエラー内容が出力されます。</p>
+<ul>
+<li>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>error:</strong>    エラータイトル</p>
+</li>
+<li>
+<p><strong>error_description:</strong>    エラー内容</p>
+</li>
+<li>
+<p><strong>message:</strong>  エラーメッセージ</p>
+</li>
+</ul>
+</li>
+</ul>
+</div><h5>Body</h5><pre><code>・クライアントID、またはリダイレクトURIが登録されている情報と異なる場合
+
+{
+    <span class="hljs-string">"error"</span>:<span class="hljs-string">"invalid_client"</span>,
+    <span class="hljs-string">"error_description"</span>:<span class="hljs-string">"Client authentication failed"</span>,
+    <span class="hljs-string">"message"</span>:<span class="hljs-string">"Client authentication failed"</span>
+}
+
+・許可されていないレスポンスタイプが指定された場合
+
+{
+    <span class="hljs-string">"error"</span>:<span class="hljs-string">"unsupported_grant_type"</span>,
+    <span class="hljs-string">"error_description"</span>:<span class="hljs-string">"The authorization grant type is not supported by the authorization server."</span>,
+    <span class="hljs-string">"hint"</span>:<span class="hljs-string">"Check that all required parameters have been provided"</span>,
+    <span class="hljs-string">"message"</span>:<span class="hljs-string">"The authorization grant type is not supported by the authorization server."</span>
+}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="トークンエンドポイント" class="resource"><h3 class="resource-heading">トークンエンドポイント <a href="#トークンエンドポイント" class="permalink">&nbsp;&para;</a></h3><p>ユーザー情報にアクセスするためのアクセストークンをJSON形式で返します。</p>
+<div id="トークンエンドポイント-post" class="action post"><h4 class="action-heading"><div class="name">トークンの取得</div><a href="#トークンエンドポイント-post" class="method post">POST</a><code class="uri">/oauth/token</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname"></span>/oauth/token</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Parameters</strong>
+<ul>
+<li><strong>client_id</strong>:    発行されたクライアントID</li>
+<li><strong>client_secret</strong>:    発行方法クライアントシークレットキー</li>
+<li><strong>grant_type</strong>:   認証方式（<code>authorization_code</code> を指定します。）</li>
+<li><strong>redirect_uri</strong>: クライアント作成時に指定したリダイレクトURL</li>
+<li><strong>code</strong>:     取得した認可コード</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">client_id</span>": <span class="hljs-value"><span class="hljs-number">57297408867</span></span>,
+    "<span class="hljs-attribute">client_secret</span>": <span class="hljs-value"><span class="hljs-string">"92APPFrBgfb3p24yZiWiDtAf9neoz8M7iB4ZrGWd"</span></span>,
+    "<span class="hljs-attribute">grant_type</span>": <span class="hljs-value"><span class="hljs-string">"authorization_code"</span></span>,
+    "<span class="hljs-attribute">redirect_uri</span>": <span class="hljs-value"><span class="hljs-string">"https://your-site.com/social_login/callback"</span>:</span>,
+    "<span class="hljs-attribute">code</span>": <span class="hljs-value"><span class="hljs-string">"def50200389c45c040c387a5314b9063d46ea612f5a20e2932d44e9693b6cf56c105681bb80a148279d5eff0f93009f6ad05e0bb6c7d665cd51015c0474606e25734749a15c1ff7e589efd662daa1fd9cb4456be08ead32cef7a348627356222c44d65090739bdf1d9af50cd40bf2c7d4612df6051530196c43dfa0ad21bd7ba0ce2a6594fdb90f9bff283c54ed3b4ba59d25acb284e5f9bfb600ee9d98553da0c728a0e11bf9f117ed177d2589696d3253ba445a553d5703cf74c902300874f6ff7e5fc70153e858d91ca512d7dad9e3102f337438918d6939f5e5e091feaf91951e629f4b4bf7851647c1007b92863dee61c1bde3e202fbb73973cf504904a2fdc245ff80f09b4b74afd5117c5e1d52083284e688d744c972ee7160d3bbeb91093bcb2a1c88595411faefafea6c101399aaf5281bc59f50669dda604e220a7b52e2b69d9136a6afd34c6bd6c689ea1bfbede902e6412657b9a35f82b86db9b1a810f2f2db1c5dbd646cd8cf4df5c691b908a8d"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Parameters</strong>
+<ul>
+<li><strong>token_type:</strong> アクセストークンの種類</li>
+<li><strong>expires_in:</strong> アクセストークンの有効期限</li>
+<li><strong>access_token:</strong>   アクセストークン</li>
+<li><strong>refresh_token:</strong>  アクセストークン再発行時に使用するリフレッシュトークン</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">token_type</span>": <span class="hljs-value"><span class="hljs-string">"Bearer"</span></span>,
+  "<span class="hljs-attribute">expires_in</span>": <span class="hljs-value"><span class="hljs-number">31536000</span></span>,
+  "<span class="hljs-attribute">access_token: `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiOTczY2RjZjdiYjNhMzEyNjY0MWExMjVkNTMyNGEzNzFlMWQzM2FkOTNjMmQ1MmE5NzE3ZWIyZDhhYWIxNDgxYzJmNzI4MmYyYzU2ZmRmYjEiLCJpYXQiOjE2MDUxNzY3NzksIm5iZiI6MTYwNTE3Njc3OSwiZXhwIjoxNjM2NzEyNzc5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.RbCv5G6SbGhEPcDezw2gVyNySCg7zMNRLXsSFYq9rV0JsjSghMbI-Bsiv4kUAC2uRQ6eUlE6-PT7zTQkdpJNDbhwxHLuItTeWgKJHRaNrGrlkSQQYU-tA2Q6n13oHGDxlkC9NMSXwAPjaLURS28YkPjLj88DuQUCn0EJUU-SNBPqbGxHeam55-M6wTTpldc8Xxy3PgThH8wk6bCgrZRWsW8cOu5fzt9eMJE6PzMSVXdphYtCjyzRkbFfZgX89Og0HqnHO2hI1vDvy6CSoU6xAVpHG_VQpB0yoJt_swOEteq4oeZ0JMpC9soAJRuF_Wre4xLKs_cHOo-TB3fv9kFuChbn-WhnJguDW0slYZmLU45r8-WxSP88Y15mXRQJ7JYPbMP_PSkNnRfHVwKDe8S74Iuc3pajg0MdfnRJjd1jb3Mt9g5fTUig8hDvPAHxPH2rj_mOvMzjeFZV7P0P8K08iq7YX1f2sxoYpfwfQzwjHce71OT_Vnm9MfNiZMjTw</span>": <span class="hljs-value"><span class="hljs-string">"Hello, world!"</span></span>,
+  "<span class="hljs-attribute">refresh_token</span>": <span class="hljs-value"><span class="hljs-string">"def50200dbc28fcf856258b9e34e1779d93907cc7ef7eeefbfa152b5923a3dcf47d2012864c915393b984cebf6e9f8f70636147cbaa4c3cd4e24a896a64f61f311beaab0090b845e54262bdb062a77ea212e6fdfe75ffcfe14f16b6ebe5d297e0173b86bb18fd3966f38a410c5d999936cc0b7072ee41406e81d2191fc468787b58ba1fc0a179a3b35345877aa240568928b59405c8da317869d1bc4236f111a6c157ebbed82a5864f5361557ba129e57ce11af5c70303b3b88800397effa6d7f233b4b3125f58c33461182b619275d59c9be1449364d9065dc0362491ac9696eb3a4558ddcf3a4c5be4bc5206787b956a8205b1805f1d1add957b414bb7b5c5d51060ace6246e6e089da2369bfe79e97e436c02cedc5ea1b1232a08e46cc2666ba7cbcc37d9c9a46dccdd3c787fe2053af3c9019cb913c3629b914a930986227a100d42be6de2eaf35af1f397ceeb3ba3a75a59647c3c9161aeb3be72bcfb4777"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>400</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Parameters</strong>
+<ul>
+<li><strong>error:</strong>  エラータイプ</li>
+<li><strong>error_description:</strong>  エラー内容</li>
+<li><strong>message:</strong>    エラーメッセージ</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>・クライアントID、クライアントシークレットキー、またはリダイレクトURLが登録されている情報と異なる場合
+{
+    <span class="hljs-string">"error"</span>: <span class="hljs-string">"invalid_client"</span>,
+    <span class="hljs-string">"error_description"</span>: <span class="hljs-string">"92APPFrBgfb3p24yZiWiDtAf9neoz8M7iB4ZrGWd"</span>,
+    <span class="hljs-string">"message"</span>: <span class="hljs-string">"Client authentication failed"</span>
+}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="ユーザーエンドポイント" class="resource"><h3 class="resource-heading">ユーザーエンドポイント <a href="#ユーザーエンドポイント" class="permalink">&nbsp;&para;</a></h3><p>餃子サークル会員サイトで持つユーザー情報をJSON形式で返します。</p>
+<div id="ユーザーエンドポイント-post" class="action post"><h4 class="action-heading"><div class="name">ユーザー情報取得</div><a href="#ユーザーエンドポイント-post" class="method post">POST</a><code class="uri">/api/user</code></h4><h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname"></span>/api/user</span></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Hader Parameters</strong>
+<ul>
+<li><strong>Authorization:</strong> 認証方式 アクセストークン（認証方式は<code>Bearer</code> を指定します。）</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">accept</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiOTczY2RjZjdiYjNhMzEyNjY0MWExMjVkNTMyNGEzNzFlMWQzM2FkOTNjMmQ1MmE5NzE3ZWIyZDhhYWIxNDgxYzJmNzI4MmYyYzU2ZmRmYjEiLCJpYXQiOjE2MDUxNzY3NzksIm5iZiI6MTYwNTE3Njc3OSwiZXhwIjoxNjM2NzEyNzc5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.RbCv5G6SbGhEPcDezw2gVyNySCg7zMNRLXsSFYq9rV0JsjSghMbI-Bsiv4kUAC2uRQ6eUlE6-PT7zTQkdpJNDbhwxHLuItTeWgKJHRaNrGrlkSQQYU-tA2Q6n13oHGDxlkC9NMSXwAPjaLURS28YkPjLj88DuQUCn0EJUU-SNBPqbGxHeam55-M6wTTpldc8Xxy3PgThH8wk6bCgrZRWsW8cOu5fzt9eMJE6PzMSVXdphYtCjyzRkbFfZgX89Og0HqnHO2hI1vDvy6CSoU6xAVpHG_VQpB0yoJt_swOEteq4oeZ0JMpC9soAJRuF_Wre4xLKs_cHOo-TB3fv9kFuChbn-WhnJguDW0slYZmLU45r8-WxSP88Y15mXRQJ7JYPbMP_PSkNnRfHVwKDe8S74Iuc3pajg0MdfnRJjd1jb3Mt9g5fTUig8hDvPAHxPH2rj_mOvMzjeFZV7P0P8K08iq7YX1f2sxoYpfwfQzwjHce71OT_Vnm9MfNiZMjTw-57LYV0w4cEmzxBZw_h-o-skbYZvHPJOVxFnnmhcpCkhp-zsxzeId4Q44A6Z2qh8dxE7zkTRxL0ShJaXIAwSRt3TIalrbR35Uv3C4m0fwv0mGDigwa3L75JltVLBpENs0hMw-Uca9wDkiZtpsWsu2bRgeKKh7LM4XI3aSw1ivsJ6rE</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Parameters</strong>
+<ul>
+<li><strong>id:</strong>   ユーザーID</li>
+<li><strong>name:</strong> ユーザー名</li>
+<li><strong>email:</strong>    メールアドレス</li>
+<li><strong>email_verified_at:</strong>    メールアドレス確認日時</li>
+<li><strong>created_at:</strong>   ユーザー登録日時</li>
+<li><strong>updated_at:</strong>   ユーザー情報更新日時</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">355</span></span>,
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"鈴木 太郎"</span></span>,
+  "<span class="hljs-attribute">email</span>": <span class="hljs-value"><span class="hljs-string">"taro@suzuki.com"</span></span>,
+  "<span class="hljs-attribute">email_verified_at</span>": <span class="hljs-value"><span class="hljs-string">"null"</span></span>,
+  "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"2020-11-18T00:31:07.000000Z"</span></span>,
+  "<span class="hljs-attribute">updated_at</span>": <span class="hljs-value"><span class="hljs-string">"2020-11-18T00:31:07.000000Z"</span>
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>400</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><div class="description"><ul>
+<li><strong>Parameters</strong>
+<ul>
+<li><strong>message:</strong>  エラーメッセージ</li>
+</ul>
+</li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>・アクセストークンの認証に失敗した場合
+ {
+    <span class="hljs-string">"message"</span>:<span class="hljs-string">"Unauthenticated."</span>
+}</code></pre><div style="height: 1px;"></div></div></div></div></div></section></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 02 Dec 2020</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>
