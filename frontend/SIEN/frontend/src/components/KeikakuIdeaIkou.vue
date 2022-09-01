@@ -38,12 +38,12 @@
             <v-btn dark text @click="editTextSave"> 保存 </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-list three-line subheader>
+        <v-list three-line subheader class="pa-2">
           <v-textarea
             outlined
             v-model="inputs"
             :style="textstyles"
-            class="editTextarea"
+            class="keikakuideaTextarea mt-0"
             hide-details="false"
           ></v-textarea>
         </v-list>
@@ -138,12 +138,21 @@ export default {
     onkeikakuKubun(s) {
       s.header = this.keikakuKubun[s.selectedIndex].name;
     },
+    /****************************
+     * 登録ボタンを押下
+     */
+    registButton() {
+      alert('意向登録ボタン');
+    },
   },
 };
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 #listsArea {
+  color: $font_color;
+  font-size: 12px;
+  font-family: 'メイリオ';
   height: var(--height);
   overflow-y: auto;
   overflow-x: hidden;
@@ -153,7 +162,17 @@ export default {
     display: none;
   }
   .editarea {
-    overflow: hidden;
+    overflow-y: scroll;
+  }
+}
+.keikakuideaTextarea {
+  fieldset {
+    border: none;
+  }
+  textarea {
+    height: 80vh !important;
+    margin-top: 0px !important;
+    margin-right: 10px;
   }
 }
 </style>

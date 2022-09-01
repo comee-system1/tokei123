@@ -316,19 +316,12 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-const MOMENT_CON_CHAR = '-';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
 export default {
@@ -795,7 +788,7 @@ export default {
     getYmd(outputkbn) {
       if (outputkbn == 0) {
         if (!this.startymd) {
-          this.startymd = moment().startOf('months');
+          this.startymd = dayjs().startOf('months');
         }
         return (
           this.startymd.format('YYYY') +
@@ -807,7 +800,7 @@ export default {
         );
       } else {
         if (!this.endymd) {
-          this.endymd = moment().endOf('months');
+          this.endymd = dayjs().endOf('months');
         }
         return (
           this.endymd.format('YYYY') +
@@ -838,7 +831,7 @@ export default {
         this.datepicker_dialog_eym = true;
       } else if (kbn == 2) {
         if (!this.month) {
-          this.month = moment().startOf('months');
+          this.month = dayjs().startOf('months');
         }
         this.pickermonth =
           this.month.format('YYYY') +
@@ -851,39 +844,15 @@ export default {
     },
     calenderSelect(kbn) {
       if (kbn == 0) {
-        let split = this.pickersym.split(MOMENT_CON_CHAR);
-        this.startymd = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: split[2],
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        this.startymd = dayjs(this.pickersym);
         this.datepicker_dialog_sym = false;
       } else if (kbn == 1) {
-        let split = this.pickereym.split(MOMENT_CON_CHAR);
-        this.endymd = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: split[2],
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        this.endymd = dayjs(this.pickereym);
         this.datepicker_dialog_eym = false;
       } else if (kbn == 2) {
-        let split = this.pickermonth.split(MOMENT_CON_CHAR);
-        let tmp = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: 1,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
-        this.startymd = moment(tmp);
-        this.endymd = moment(tmp.endOf('months'));
+        let tmp = dayjs(this.pickermonth);
+        this.startymd = dayjs(tmp);
+        this.endymd = dayjs(tmp.endOf('months'));
         this.datepicker_dialog_month = false;
       }
     },

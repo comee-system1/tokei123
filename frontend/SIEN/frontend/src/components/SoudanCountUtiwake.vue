@@ -185,13 +185,8 @@
 </template>
 
 <script>
-import moment from 'moment';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.core';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
@@ -207,7 +202,7 @@ const ALI_LEFT = 'left';
 const ALI_CENTER = 'center';
 const V_ALI_TOP = 'top';
 const DISPLAY_TC = 'table-cell';
-const MOMENT_CON_CHAR = '-';
+const DAYJS_CON_CHAR = '-';
 const FIX_CON_CHAR = '-';
 const STYLE_BLOCK = 'block';
 const STYLE_NONE = 'none';
@@ -979,9 +974,9 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().set('date', 1);
+        this.kikanYm = dayjs().set('date', 1);
         this.picker =
-          this.kikanYm.year() + MOMENT_CON_CHAR + this.kikanYm.format('MM');
+          this.kikanYm.year() + DAYJS_CON_CHAR + this.kikanYm.format('MM');
       }
       return (
         this.kikanYm.format('YYYY') + '年' + this.kikanYm.format('MM') + '月'
@@ -995,9 +990,9 @@ export default {
       }
       this.picker =
         this.kikanYm.format('YYYY') +
-        MOMENT_CON_CHAR +
+        DAYJS_CON_CHAR +
         this.kikanYm.format('MM') +
-        MOMENT_CON_CHAR +
+        DAYJS_CON_CHAR +
         this.kikanYm.format('DD');
       if (kbn == 0) {
         this.datepicker_dialog = true;
@@ -1010,15 +1005,7 @@ export default {
       this.$refs.mdselect.setYm(this.picker);
     },
     monthSelect() {
-      let split = this.picker.split(MOMENT_CON_CHAR);
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(this.picker);
       this.selectedYmd = null;
       this.soudanCountUtiwakeViewData = [];
       this.sienNaiyouViewData = [];

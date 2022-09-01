@@ -67,6 +67,7 @@ import KeikakuIcrn from '../../components/KeikakuLists.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
 import KeikakuPlan from '../../components/KeikakuPlan.vue';
 import KeikakuWeek from '../../components/KeikakuWeek.vue';
+
 export default {
   // props: {
   //   selectedData: Object, // 検索条件等
@@ -80,7 +81,7 @@ export default {
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
-      ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
+      ideaFlag: 'weekplan', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
       yosikiMenu: [
         {
@@ -127,7 +128,6 @@ export default {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
     },
     tabsYosikiChange(value) {
-      console.log(value);
       this.ideaFlag = value;
     },
   },

@@ -17,52 +17,52 @@ function alphabetFilter(array, select, search = "") {
         get.push(value);
         break;
       case 1:
-        if (value[search].match(/^[ア-オ]/)) {
+        if (value[search].match(/^[ｱ-ｵ]/)) {
           get.push(value);
         }
         break;
       case 2:
-        if (value[search].match(/^[カ-コ]/)) {
+        if (value[search].match(/^[ｶ-ｺ]/)) {
           get.push(value);
         }
         break;
       case 3:
-        if (value[search].match(/^[サ-ソ]/)) {
+        if (value[search].match(/^[ｻ-ｿ]/)) {
           get.push(value);
         }
         break;
       case 4:
-        if (value[search].match(/^[タ-ト]/)) {
+        if (value[search].match(/^[ﾀ-ﾄ]/)) {
           get.push(value);
         }
         break;
       case 5:
-        if (value[search].match(/^[ナ-ノ]/)) {
+        if (value[search].match(/^[ﾅ-ﾉ]/)) {
           get.push(value);
         }
         break;
       case 6:
-        if (value[search].match(/^[ハ-ホ]/)) {
+        if (value[search].match(/^[ﾊ-ﾎ]/)) {
           get.push(value);
         }
         break;
       case 7:
-        if (value[search].match(/^[マ-モ]/)) {
+        if (value[search].match(/^[ﾏ-ﾓ]/)) {
           get.push(value);
         }
         break;
       case 8:
-        if (value[search].match(/^[ヤ-ヨ]/)) {
+        if (value[search].match(/^[ﾔ-ﾖ]/)) {
           get.push(value);
         }
         break;
       case 9:
-        if (value[search].match(/^[ラ-ロ]/)) {
+        if (value[search].match(/^[ﾗ-ﾛ]/)) {
           get.push(value);
         }
         break;
       case 10:
-        if (value[search].match(/^[ワ-ン]/)) {
+        if (value[search].match(/^[ﾜ-ﾝ]/)) {
           get.push(value);
         }
         break;

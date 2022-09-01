@@ -108,11 +108,13 @@
         <v-col cols="3" style="text-align: right">
           <v-btn x-small @click="onClickJyukyusya">受給者証登録へ</v-btn>
         </v-col>
+        <!--
         <v-col cols="3" style="text-align: right">
           <v-btn-toggle v-model="fontsizeModel" @change="onFontsize()">
             <v-btn v-for="val in fontArray" :key="val.key">{{ val.val }}</v-btn>
           </v-btn-toggle>
         </v-col>
+        -->
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -172,6 +174,7 @@
             width="3*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'sakuseikubun'"
@@ -180,6 +183,7 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'yotei'"
@@ -196,14 +200,16 @@
             width="3*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'yousiki'"
+            :binding="'yoshiki_text'"
             align="center"
             valign="middle"
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'keikakuan'"
@@ -212,78 +218,7 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'keikakusyuan'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'kihonjyoho'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'doui_an'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'teisyutu'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'sikyukettei'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'kaisaibi'"
-            align="center"
-            valign="middle"
-            width="3*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'kanryo'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'sakuseibi'"
-            align="center"
-            valign="middle"
-            width="3*"
-            :allowResizing="false"
-            :isReadOnly="true"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'keikaku'"
-            align="center"
-            valign="middle"
-            width="1*"
-            :allowResizing="false"
-            :isReadOnly="true"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'keikakusyukan'"
@@ -292,6 +227,88 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Cnt"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kihonjyoho'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Cnt"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'doui_an'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'teisyutu'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sikyukettei'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kaisaibi'"
+            align="center"
+            valign="middle"
+            width="3*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Cnt"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'kanryo'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'sakuseibi'"
+            align="center"
+            valign="middle"
+            width="3*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Cnt"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikaku'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keikakusyukan'"
+            align="center"
+            valign="middle"
+            width="1*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'doui'"
@@ -300,6 +317,7 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'monikeizoku'"
@@ -308,6 +326,7 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'tanto'"
@@ -525,6 +544,7 @@ import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import { getConnect } from '@connect/getConnect';
 
 export default {
   components: { AlphabetButton },
@@ -601,7 +621,7 @@ export default {
         '作成日',
         '様\n式',
         '計\n画\n案',
-        '計\n画\n週\n刊',
+        '計\n画\n週\n間',
         '基\n本\n情\n報',
         '同\n意',
       ],
@@ -661,157 +681,124 @@ export default {
     },
     onInitialize(flexGrid) {
       let array = [];
-      for (let i = 0; i <= 100; i++) {
-        array.push({
-          riyocode: '1000001' + i,
-          name: '東経ジロウ１２３４',
-          kana: 'ジロウトウケイ',
-          age: 18,
-          birth: 5,
-          sityo: '秋田県北秋田郡上小阿仁村大字沖田面字小蒲野下タ川原',
-          sakuseikubun: '終更',
-          yotei: '2022/04',
-          sakuseibi_an: '',
-          yousiki: '',
-          keikakuan: '',
-          keikakusyuan: '',
-          kihonjyoho: '',
-          doui_an: '□',
-          teisyutu: '□',
-          sikyukettei: '□',
-          kaisaibi: '',
-          kanryo: '',
-          sakuseibi: '',
-          keikaku: '',
-          keikakusyukan: '',
-          doui: '□',
-          monikeizoku: '',
-          tanto: '鈴木',
-          taisyosya: 1,
-        });
-        array.push({
-          riyocode: i + '000001',
-          name: '東経タロウ',
-          kana: 'タロウトウケイ',
-          age: 32,
-          birth: 6,
-          sityo: '北経市',
-          sakuseikubun: '変更',
-          yotei: '2022/03',
-          sakuseibi_an: '2022/04/05',
-          yousiki: '者',
-          keikakuan: '●',
-          keikakusyuan: '●',
-          kihonjyoho: '●',
-          doui_an: '☑',
-          teisyutu: '☑',
-          sikyukettei: '☑',
-          kaisaibi: '2022/04/12',
-          kanryo: '●',
-          sakuseibi: '2022/01/01',
-          keikaku: '●',
-          keikakusyukan: '●',
-          doui: '☑',
-          monikeizoku: '',
-          tanto: '佐々木',
-          taisyosya: 1,
-        });
-      }
-      this.viewdata = array;
-      this.viewdataAll = array;
-      let foot = [];
-      foot = [10, 10, '', 6, 6, 5, 4, 4, 4, 4, 2, 2, 1, 1, 1, 1];
-      this.footerdata = foot;
-      let _self = this;
-      this.mainGrid = flexGrid;
-      this.createHeader(flexGrid);
-      this.createFooter(flexGrid);
 
-      this.createMerge(flexGrid);
-      // クリックイベント
-      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        let ht = flexGrid.hitTest(e);
-        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
-        if (ht.panel == flexGrid.cells) {
-          // 作成日を押下
-          if (hPage.col === 7) {
-            if (
-              confirm(
-                'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
-              )
-            ) {
-              alert('ok');
-            }
-          }
-          // 同意を押下
-          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
-          if (hPage.col === 12) {
-            _self.select_doui_key = tmpitem.riyocode;
-            _self.doui_dialog = true;
-            _self.settingDouidialog();
-          }
-          // 提出を押下
-          if (hPage.col === 13) {
-            _self.select_teisyutu_key = tmpitem.riyocode;
-            _self.teisyutu_dialog = true;
-            _self.settingTeisyutudialog();
-          }
-        }
-      });
-
-      flexGrid.itemFormatter = function (panel, r, c, cell) {
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          if (r <= 1) {
-            cell.style.borderBottom = 0;
-          }
-        }
-        if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-          if (c > 1) {
-            cell.style.textAlign = 'right';
-            cell.style.justifyContent = 'right';
-            cell.style.alignItems = 'right';
-          }
-        }
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          let tmpitem = panel.rows[r].dataItem;
-          if (tmpitem.age <= 18) {
-            if (c == 1) {
-              wjCore.addClass(cell, 'miman');
-            }
-          }
-          if (c == 1 || c == 4 || c == 22) {
-            cell.style.textAlign = 'left';
-          }
-
-          if (c == 2 || c == 3) {
-            cell.style.textAlign = 'right';
-          }
-          if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
-            cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-          }
-        }
-
-        if (c == _self.headerPlus1234) {
-          cell.style.borderLeftStyle = 'double';
-        }
-        if (c == _self.headerPlus12345) {
-          cell.style.borderLeftStyle = 'double';
-        }
+      let params = {
+        uniqid: 1,
+        traceid: 1,
+        pJigyoid: 43,
+        pSym: 201901,
       };
+      return getConnect(this.$route.path + 'View', params).then((result) => {
+        array = result;
+        this.viewdata = array;
+        this.viewdataAll = array;
+        let foot = [];
+        foot = [
+          this.viewdata.length,
+          10,
+          '',
+          36,
+          6,
+          5,
+          4,
+          4,
+          4,
+          4,
+          2,
+          2,
+          1,
+          14,
+          12,
+          14,
+        ];
+        this.footerdata = foot;
+        let _self = this;
+        this.mainGrid = flexGrid;
+        this.createHeader(flexGrid);
+        this.createFooter(flexGrid);
+
+        this.createMerge(flexGrid);
+        // クリックイベント
+        flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+          let ht = flexGrid.hitTest(e);
+          let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+          if (ht.panel == flexGrid.cells) {
+            // 作成日を押下
+            if (hPage.col === 7) {
+              if (
+                confirm(
+                  'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
+                )
+              ) {
+                alert('ok');
+              }
+            }
+            // 同意を押下
+            let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+            if (hPage.col === 12) {
+              _self.select_doui_key = tmpitem.riyocode;
+              _self.doui_dialog = true;
+              _self.settingDouidialog();
+            }
+            // 提出を押下
+            if (hPage.col === 13) {
+              _self.select_teisyutu_key = tmpitem.riyocode;
+              _self.teisyutu_dialog = true;
+              _self.settingTeisyutudialog();
+            }
+          }
+        });
+
+        flexGrid.itemFormatter = function (panel, r, c, cell) {
+          if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+            if (r <= 1) {
+              cell.style.borderBottom = 0;
+            }
+          }
+          if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+            if (c > 1) {
+              cell.style.textAlign = 'right';
+              cell.style.justifyContent = 'right';
+              cell.style.alignItems = 'right';
+            }
+          }
+          if (panel.cellType == wjGrid.CellType.Cell) {
+            let tmpitem = panel.rows[r].dataItem;
+            if (tmpitem.age <= 18) {
+              if (c == 1) {
+                wjCore.addClass(cell, 'miman');
+              }
+            }
+            if (c == 1 || c == 4 || c == 22) {
+              cell.style.textAlign = 'left';
+            }
+
+            if (c == 2 || c == 3) {
+              cell.style.textAlign = 'right';
+            }
+            if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
+              cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            }
+          }
+
+          if (c == _self.headerPlus1234) {
+            cell.style.borderLeftStyle = 'double';
+          }
+          if (c == _self.headerPlus12345) {
+            cell.style.borderLeftStyle = 'double';
+          }
+        };
+      });
     },
     onItemsSourceChanged(flexGrid) {
+      flexGrid.beginUpdate();
       flexGrid.autoSizeRows(0, this.viewdata.length, false);
+      flexGrid.endUpdate();
     },
     createFooter(flexGrid) {
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       var panel = flexGrid.columnFooters;
       panel.setCellData(0, 0, '合計件数');
-      let num = 4;
-      for (let i = 0; i < this.footerdata.length; i++) {
-        panel.setCellData(0, num, this.footerdata[i]);
-        num++;
-      }
-      panel.setCellData(0, 4, 10);
     },
     createHeader(flexGrid) {
       var panel = flexGrid.columnHeaders;

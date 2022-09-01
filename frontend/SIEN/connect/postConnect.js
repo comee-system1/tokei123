@@ -1,12 +1,24 @@
 import axios from 'axios';
 import common from './Common';
-
-export async function postConnect(type, params) {
+/**********************
+ * 第一引数:実行ファイルのパス名
+ * 第二引数：json形式
+ * 第三引数：backendフォルダでの読み先のフォルダ名
+ */
+export async function postConnect(type, params, folderName = "") {
     // console.log("connect ok");
     // console.log("type=>" + type);
     let str = type.slice(1);
     let data = JSON.stringify(params);
-    return await axios.post(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + str + "/" + common.FOLDER, {
+    let folder = "";
+    if (folderName == "") {
+        folder = common.selectFolder(str);
+    } else {
+        folder = folderName;
+    }
+
+
+    return await axios.post(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + str + "/" + folder, {
         data
     }).then(function (response) {
         return response.data.response;

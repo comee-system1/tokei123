@@ -192,7 +192,7 @@
         >
           <wj-flex-grid-column
             header="コード"
-            binding="riyocodeD"
+            binding="riyocode"
             width="2*"
             :word-wrap="false"
             :allowResizing="true"
@@ -202,7 +202,7 @@
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="受給者番号"
-            binding="jyukyunoD"
+            binding="jyukyuno"
             width="2*"
             :word-wrap="false"
             :allowResizing="true"
@@ -246,12 +246,14 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { Riyousya } from '@backend/api/Riyousya';
+import { getConnect } from '@connect/getConnect';
+
+let uniqid = 2; // 現在は1のみapiが実行する
+let traceid = 123;
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
-// let userDataSelect = [];
-let textSearch = '';
+
 let alphabet = [
   '全',
   'ア',
@@ -272,7 +274,6 @@ export default {
     dispSvcReki: Boolean,
     dispYoteiYm: Boolean,
   },
-  // components: { Riyousya },
   data() {
     return {
       userListWidth: '280px',
@@ -285,6 +286,8 @@ export default {
         { val: 0, name: '台帳' },
         { val: 1, name: '本日予定者' },
       ],
+      textSearch: '',
+      userDataSelect: [],
       usersData: [],
       usersViewData: [],
       isDroppedDown: false,
@@ -325,7 +328,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 100,
+      headerheight: 200,
       // 予定月用プロパティ
       pickerYoteiYm: '',
       yoteiYm: '',
@@ -414,7 +417,7 @@ export default {
       this.userFilter();
     },
     onTextChangedUser(s) {
-      textSearch = s.text;
+      this.textSearch = s.text;
       this.userFilter();
     },
     onSvcRirekiIndexChanged() {
@@ -425,21 +428,21 @@ export default {
     },
     userFilter(s) {
       let data = [];
-
-      // userDataSelect['riyo_inf'].forEach(function (value) {
-      //   if (value.names.indexOf(textSearch) != -1) {
-      //     data.push(value);
-      //   }
-      // });
-
-      if (textSearch.length > 0) {
-        data = this.usersData.slice();
-      } else {
-        this.usersData.forEach(function (value) {
-          if (value.names.indexOf(textSearch) != -1) {
-            data.push(value);
+      this.userDataSelect.icrn_inf.forEach(function (value) {
+        // if (value.names.indexOf(this.textSearch) != -1) {
+        data.push(value);
+        // }
+      });
+      if (this.textSearch.length) {
+        let array = [];
+        let param = this.textSearch;
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].names.match(param) || data[i].kana.match(param)) {
+            array.push(data[i]);
           }
-        });
+        }
+        data = [];
+        data = array;
       }
 
       let alpval = this.alphaSearch;
@@ -448,52 +451,52 @@ export default {
         data.forEach(function (value) {
           switch (alpval) {
             case 1:
-              if (value.kana.match(/^[ア-オ]/)) {
+              if (value.kana.match(/^[ｱ-ｵ]/)) {
                 get.push(value);
               }
               break;
             case 2:
-              if (value.kana.match(/^[カ-コ]/)) {
+              if (value.kana.match(/^[ｶ-ｺ]/)) {
                 get.push(value);
               }
               break;
             case 3:
-              if (value.kana.match(/^[サ-ソ]/)) {
+              if (value.kana.match(/^[ｻ-ｿ]/)) {
                 get.push(value);
               }
               break;
             case 4:
-              if (value.kana.match(/^[タ-ト]/)) {
+              if (value.kana.match(/^[ﾀ-ﾄ]/)) {
                 get.push(value);
               }
               break;
             case 5:
-              if (value.kana.match(/^[ナ-ノ]/)) {
+              if (value.kana.match(/^[ﾅ-ﾉ]/)) {
                 get.push(value);
               }
               break;
             case 6:
-              if (value.kana.match(/^[ハ-ホ]/)) {
+              if (value.kana.match(/^[ﾊ-ﾎ]/)) {
                 get.push(value);
               }
               break;
             case 7:
-              if (value.kana.match(/^[マ-モ]/)) {
+              if (value.kana.match(/^[ﾏ-ﾓ]/)) {
                 get.push(value);
               }
               break;
             case 8:
-              if (value.kana.match(/^[ヤ-ヨ]/)) {
+              if (value.kana.match(/^[ﾔ-ﾖ]/)) {
                 get.push(value);
               }
               break;
             case 9:
-              if (value.kana.match(/^[ラ-ロ]/)) {
+              if (value.kana.match(/^[ﾗ-ﾛ]/)) {
                 get.push(value);
               }
               break;
             case 10:
-              if (value.kana.match(/^[ワ-ン]/)) {
+              if (value.kana.match(/^[ﾜ-ﾝ]/)) {
                 get.push(value);
               }
               break;
@@ -506,12 +509,6 @@ export default {
         // TODO 予定ありのデータを表示する
         //data = data.filter((x) => x.yousiki == '者');
       }
-
-      // if (this.selDispKbn == 0) {
-      //   data = data.filter((x) => x.isDaicho);
-      // } else {
-      //   data = data.filter((x) => x.isToday);
-      // }
       //コード順でソート
       if (this.sortSearch == 0) {
         data.sort((a, b) => {
@@ -552,6 +549,7 @@ export default {
         s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
       }
       this.usersViewData = data.concat();
+
       this.$emit('child-user', this.usersViewData);
       if (this.sortSearch == 2) {
         this.riyocodeFlag = false;
@@ -578,13 +576,22 @@ export default {
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
-      // if (!this.dispAddDaicho) {
-      //   document.getElementById(flexGrid.hostElement.id).style.height = '68vh';
-      // } else {
-      //   document.getElementById(flexGrid.hostElement.id).style.height = '60vh';
-      // }
-      Riyousya('20000101', '20221231').then((result) => {
-        _self.usersData = result;
+
+      let params = [];
+
+      params = {
+        uniqid: uniqid,
+        traceid: traceid,
+        getkbn: 0,
+        jkbn: 0,
+        sdnflg: 0,
+        symd: '20220801',
+        eymd: '20220901',
+      };
+
+      return getConnect('/userListPrint', params).then((result) => {
+        _self.usersData = result.icrn_inf;
+        _self.userDataSelect = result;
         this.userFilter();
       });
     },

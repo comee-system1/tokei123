@@ -166,23 +166,12 @@
 </template>
 
 <script>
-import moment from 'moment';
-// import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
-// import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-// import MdSelect from '../components/MdSelect.vue';
-// const STYLE_BG_PREBIRTH = '#ffcccc';
 export default {
   components: { AlphabetButton },
   data() {
@@ -640,8 +629,6 @@ export default {
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (e.col == 1 && tmpitem.age < 18) {
-          // e.cell.innerHTML =
-          // '<div class="miman">' + wjCore.escapeHtml(tmpitem.name) + '</div>';
           wjCore.addClass(e.cell, 'miman');
         }
         if (tmpitem.chusi == '○' || tmpitem.enki == '○') {
@@ -769,13 +756,6 @@ export default {
     },
     yousikiClicked(id) {
       this.yousikiIndex = id;
-      if (id == 0) {
-        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '16px';
-      } else if (id == 1) {
-        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '14px';
-      } else {
-        document.getElementById('yoteisyaIcrnGrid').style.fontSize = '12px';
-      }
       this.userFilter();
     },
     taisyousyaClicked(s) {
@@ -845,7 +825,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (
@@ -871,15 +851,7 @@ export default {
       }
     },
     monthSelect() {
-      let split = this.picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(this.picker);
       this.viewdatayoteisya = [];
       this.datepicker_dialog = false;
     },

@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuWeek">
+  <div id="monitoringSyukanKeikaku">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -28,7 +28,7 @@
                 outlined
                 tile
               >
-                {{ userName }}
+                aaa
               </v-card>
               <v-card
                 outlined
@@ -99,7 +99,7 @@
           <v-row no-gutters>
             <v-col :cols="gridMain">
               <wj-flex-grid
-                id="keikakuWeekGrid"
+                id="monitoringSyukanKeikakuGrid"
                 :selectionMode="'4'"
                 :headersVisibility="1"
                 :alternatingRowStep="0"
@@ -300,7 +300,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="keikakuWeekDatepicker"
+        id="monitoringSyukanKeikakuDatepicker"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
@@ -340,10 +340,11 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from './UserList.vue';
-import * as wjcCore from '@grapecity/wijmo';
+
 export default {
   props: {
     dispHideBar: Boolean,
@@ -369,11 +370,11 @@ export default {
       datepicker_dialog: false,
       picker: '',
       getYm:
-        moment().format('YYYY') +
+        dayjs().format('YYYY') +
         '年' +
-        moment().format('MM') +
+        dayjs().format('MM') +
         '月' +
-        moment().format('DD') +
+        dayjs().format('DD') +
         '日',
       keikakuKubun: [
         { id: 0, name: 'サービス等利用計画' },
@@ -393,77 +394,49 @@ export default {
       keikakuKubunModel: '',
       viewdata: [],
 
+      weekcount: 7,
       weekarray: [
         {
           key: 1,
           header: '月',
-          binding: 'monday1',
-        },
-        {
-          key: 1,
-          binding: 'monday2',
+          binding: 'monday',
         },
         {
           key: 2,
           header: '火',
-          binding: 'thuseday1',
-        },
-        {
-          key: 2,
-          binding: 'thuseday2',
+          binding: 'thuseday',
         },
         {
           key: 3,
           header: '水',
-          binding: 'wednesday1',
-        },
-        {
-          key: 3,
-          binding: 'wednesday2',
+          binding: 'wednesday',
         },
         {
           key: 4,
           header: '木',
-          binding: 'thursday1',
-        },
-        {
-          key: 4,
-          binding: 'thursday2',
+          binding: 'thursday',
         },
         {
           key: 5,
           header: '金',
-          binding: 'friday1',
-        },
-        {
-          key: 5,
-          binding: 'friday2',
+          binding: 'friday',
         },
         {
           key: 6,
           header: '土',
-          binding: 'saturday1',
-        },
-        {
-          key: 6,
-          binding: 'saturday2',
+          binding: 'saturday',
         },
         {
           key: 7,
           header: '日・祝',
-          binding: 'sunday1',
-        },
-        {
-          key: 7,
-          binding: 'sunday2',
+          binding: 'sunday',
         },
       ],
       everySelected: 0,
       itemdata: [],
       servicedata: [],
       ranges: [],
-      headerRanges: [],
-      headerheight: 240,
+      headerheight: 180,
       textareaHeight: '',
       draggedFlag: false, // gridをクリックしてdragしている情報を保持する
       position: [],
@@ -473,7 +446,6 @@ export default {
       weekActiveText: '', // 週単位以外のサービス
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
-      userName: '',
     };
   },
   created() {},
@@ -507,11 +479,12 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('keikakuWeekGrid') != null) {
-        document.getElementById('keikakuWeekGrid').style.height =
+      if (document.getElementById('monitoringSyukanKeikakuGrid') != null) {
+        document.getElementById('monitoringSyukanKeikakuGrid').style.height =
           window.innerHeight - this.headerheight + 'px';
 
-        let ht = document.getElementById('keikakuWeekGrid').style.height;
+        let ht = document.getElementById('monitoringSyukanKeikakuGrid').style
+          .height;
         this.textareaHeight = parseInt(ht.replace(/[^0-9]/g, '') / 2) + 'px';
       }
     },
@@ -571,6 +544,7 @@ export default {
      * グリッドのドラックドロップ
      */
     _makeDragSource(s) {
+      console.log('drag');
       s.addEventListener(
         s.hostElement,
         'mousedown',
@@ -625,588 +599,351 @@ export default {
      * ユーザー一覧を押下
      */
     setUserSelectPoint(row) {
-      this.userName = row.names;
+      console.log(row);
+      alert('test');
     },
     createData() {
       let setting = [];
       setting.push({
         times: ' ',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: ' ',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '06:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '06:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '06:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '06:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '08:00',
-        monday1: '起床',
-        monday2: '起床',
-        thuseday1: '起床',
-        thuseday2: '起床',
-        wednesday1: '起床',
-        wednesday2: '起床',
-        thursday1: '起床',
-        thursday2: '起床',
-        friday1: '起床',
-        friday2: '起床',
-        saturday1: '起床',
-        saturday2: '起床',
-        sunday1: '起床',
-        sunday2: '起床',
+        monday: '起床',
+        thuseday: '起床',
+        wednesday: '起床',
+        thursday: '起床',
+        friday: '起床',
+        saturday: '起床',
+        sunday: '起床',
       });
       setting.push({
         times: '08:00',
-        monday1: '起床',
-        monday2: '起床',
-        thuseday1: '起床',
-        thuseday2: '起床',
-        wednesday1: '起床',
-        wednesday2: '起床',
-        thursday1: '起床',
-        thursday2: '起床',
-        friday1: '起床',
-        friday2: '起床',
-        saturday1: '起床',
-        saturday2: '起床',
-        sunday1: '起床',
-        sunday2: '起床',
+        monday: '起床',
+        thuseday: '起床',
+        wednesday: '起床',
+        thursday: '起床',
+        friday: '起床',
+        saturday: '起床',
+        sunday: '起床',
       });
       setting.push({
         times: '08:00',
-        monday1: 'TVドラマ・朝食',
-        monday2: 'TVドラマ・朝食',
-        thuseday1: 'TVドラマ・朝食',
-        thuseday2: 'TVドラマ・朝食',
-        wednesday1: 'TVドラマ・朝食',
-        wednesday2: 'TVドラマ・朝食',
-        thursday1: 'TVドラマ・朝食',
-        thursday2: 'TVドラマ・朝食',
-        friday1: 'TVドラマ・朝食',
-        friday2: 'TVドラマ・朝食',
-        saturday1: 'TVドラマ・朝食',
-        saturday2: 'TVドラマ・朝食',
-        sunday1: '朝食',
-        sunday2: '朝食',
+        monday: 'TVドラマ・朝食',
+        thuseday: 'TVドラマ・朝食',
+        wednesday: 'TVドラマ・朝食',
+        thursday: 'TVドラマ・朝食',
+        friday: 'TVドラマ・朝食',
+        saturday: 'TVドラマ・朝食',
+        sunday: '朝食',
       });
       setting.push({
         times: '08:00',
-        monday1: 'TVドラマ・朝食',
-        monday2: 'TVドラマ・朝食',
-        thuseday1: 'TVドラマ・朝食',
-        thuseday2: 'TVドラマ・朝食',
-        wednesday1: 'TVドラマ・朝食',
-        wednesday2: 'TVドラマ・朝食',
-        thursday1: 'TVドラマ・朝食',
-        thursday2: 'TVドラマ・朝食',
-        friday1: 'TVドラマ・朝食',
-        friday2: 'TVドラマ・朝食',
-        saturday1: 'TVドラマ・朝食',
-        saturday2: 'TVドラマ・朝食',
-        sunday1: '朝食',
-        sunday2: '朝食',
+        monday: 'TVドラマ・朝食',
+        thuseday: 'TVドラマ・朝食',
+        wednesday: 'TVドラマ・朝食',
+        thursday: 'TVドラマ・朝食',
+        friday: 'TVドラマ・朝食',
+        saturday: 'TVドラマ・朝食',
+        sunday: '朝食',
       });
       setting.push({
         times: '10:00',
-        monday1: 'ゴミ収集',
-        monday2: 'ゴミ収集',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: 'ゴミ収集',
+        thuseday: '',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '10:00',
-        monday1: 'ゴミ収集',
-        monday2: 'ゴミ収集',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: 'ゴミ収集',
+        thuseday: '',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '10:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: 'ヘルパー(家事)',
-        thuseday2: 'ヘルパー(家事)',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '10:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: 'ヘルパー(家事)',
-        thuseday2: 'ヘルパー(家事)',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '12:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: 'ヘルパー(家事)',
-        thuseday2: 'ヘルパー(家事)',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '12:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: 'ヘルパー(家事)',
-        thuseday2: 'ヘルパー(家事)',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '外出\n(買い物・銀行・クリーニング等)',
-        thursday2: '外出\n(買い物・銀行・クリーニング等)',
-        friday1: '',
-        friday2: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '外出\n(買い物・銀行・クリーニング等)',
-        sunday2: '外出\n(買い物・銀行・クリーニング等)',
+        monday: '',
+        thuseday: 'ヘルパー(家事)',
+        wednesday: '',
+        thursday: '外出\n(買い物・銀行・クリーニング等)',
+        friday: '',
+        saturday: '',
+        sunday: '外出\n(買い物・銀行・クリーニング等)',
       });
       setting.push({
         times: '12:00',
-        monday1: 'TVドラマ・昼食',
-        monday2: 'TVドラマ・昼食',
-        thuseday1: 'TVドラマ・昼食',
-        thuseday2: 'TVドラマ・昼食',
-        wednesday1: 'TVドラマ・昼食',
-        wednesday2: 'TVドラマ・昼食',
-        thursday1: 'TVドラマ・昼食',
-        thursday2: 'TVドラマ・昼食',
-        friday1: 'TVドラマ・昼食',
-        friday2: 'TVドラマ・昼食',
-        saturday1: 'TVドラマ・昼食',
-        saturday2: 'TVドラマ・昼食',
-        sunday1: '昼食',
-        sunday2: '昼食',
+        monday: 'TVドラマ・昼食',
+        thuseday: 'TVドラマ・昼食',
+        wednesday: 'TVドラマ・昼食',
+        thursday: 'TVドラマ・昼食',
+        friday: 'TVドラマ・昼食',
+        saturday: 'TVドラマ・昼食',
+        sunday: '昼食',
       });
       setting.push({
         times: '12:00',
-        monday1: 'TVドラマ・昼食',
-        monday2: 'TVドラマ・昼食',
-        thuseday1: 'TVドラマ・昼食',
-        thuseday2: 'TVドラマ・昼食',
-        wednesday1: 'TVドラマ・昼食',
-        wednesday2: 'TVドラマ・昼食',
-        thursday1: 'TVドラマ・昼食',
-        thursday2: 'TVドラマ・昼食',
-        friday1: 'TVドラマ・昼食',
-        friday2: 'TVドラマ・昼食',
-        saturday1: 'TVドラマ・昼食',
-        saturday2: 'TVドラマ・昼食',
-        sunday1: '昼食',
-        sunday2: '昼食',
+        monday: 'TVドラマ・昼食',
+        thuseday: 'TVドラマ・昼食',
+        wednesday: 'TVドラマ・昼食',
+        thursday: 'TVドラマ・昼食',
+        friday: 'TVドラマ・昼食',
+        saturday: 'TVドラマ・昼食',
+        sunday: '昼食',
       });
       setting.push({
         times: '14:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '14:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
 
       setting.push({
         times: '14:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '通院同行\n(内科・歯科)',
-        wednesday2: '通院同行\n(内科・歯科)',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '14:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '通院同行\n(内科・歯科)',
-        wednesday2: '通院同行\n(内科・歯科)',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '16:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '通院同行\n(内科・歯科)',
-        wednesday2: '通院同行\n(内科・歯科)',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '16:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '通院同行\n(内科・歯科)',
-        wednesday2: '通院同行\n(内科・歯科)',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '通院同行\n(内科・歯科)',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '16:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '16:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '18:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '18:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '18:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '夕食',
+        thuseday: '夕食',
+        wednesday: '夕食',
+        thursday: '夕食',
+        friday: '夕食',
+        saturday: '夕食',
+        sunday: '夕食',
       });
       setting.push({
         times: '18:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '夕食',
+        thuseday: '夕食',
+        wednesday: '夕食',
+        thursday: '夕食',
+        friday: '夕食',
+        saturday: '夕食',
+        sunday: '夕食',
       });
       setting.push({
         times: '20:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '20:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '20:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
       setting.push({
         times: '20:00',
-        monday1: '',
-        monday2: '',
-        thuseday1: '',
-        thuseday2: '',
-        wednesday1: '',
-        wednesday2: '',
-        thursday1: '',
-        thursday2: '',
-        friday1: '',
-        friday3: '',
-        saturday1: '',
-        saturday2: '',
-        sunday1: '',
-        sunday2: '',
+        monday: '',
+        thuseday: '',
+        wednesday: '',
+        thursday: '',
+        friday: '',
+        saturday: '',
+        sunday: '',
       });
 
       this.viewdata = setting;
@@ -1307,29 +1044,17 @@ export default {
     },
     onInitializeItemChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-      let tooltip = new wjcCore.Tooltip();
-      let _self = this;
-      let bind = '';
-      flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel == flexGrid.cells) {
-          if (_self.weekarray[e.col - 1]) {
-            bind =
-              e.panel.rows[e.row].dataItem[_self.weekarray[e.col - 1].binding];
-          }
-          tooltip.setTooltip(e.cell, bind);
-        }
-      });
     },
     onInitialize(flexGrid) {
       this.onflexGrid = flexGrid;
       flexGrid.frozenColumns = 1;
       this.createData();
-
+      flexGrid.columnHeaders.rows[0].height = 13;
       flexGrid.formatItem.addHandler(function (s, e) {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
-        flexGrid.cells.rows.defaultSize = 14.5;
+        flexGrid.cells.rows.defaultSize = 13;
       });
       this.createRanges();
       this.createMerge(flexGrid);
@@ -1350,18 +1075,14 @@ export default {
             i = i - 1;
           }
           start.push(i);
-          start.push(i);
-          text.push(xs[i][key]);
           text.push(xs[i][key]);
         } else if (xs[i][key] != xs[i2][key]) {
-          last.push(i - 1);
           last.push(i - 1);
           row = 0;
           continue;
         }
         row++;
       }
-      last.push(xs.length - 1);
       last.push(xs.length - 1);
 
       let returns = {
@@ -1372,7 +1093,6 @@ export default {
       return returns;
     },
     createRanges() {
-      let headerRanges = [];
       let ranges = [];
       let mergeGroup = [];
       let start = [];
@@ -1383,29 +1103,18 @@ export default {
       mergeGroup = this.groupBy(this.viewdata, 'times');
       start = mergeGroup.start;
       last = mergeGroup.last;
-      // text = mergeGroup.text;
+      text = mergeGroup.text;
       for (let i = 0; i < start.length; i++) {
-        // if (text[i]) {
-        ranges.push(new wjGrid.CellRange(start[i], 0, last[i], 0));
-        // }
+        if (text[i]) {
+          ranges.push(new wjGrid.CellRange(start[i], 0, last[i], 0));
+        }
       }
-      // 曜日軸のグループ化
-      for (let i = 1; i <= 7; i++) {
-        headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
-      }
-      this.headerRanges = headerRanges;
       // 週間のグループ化
-      console.log(this.weekarray.length);
       for (let wk = 0; wk < this.weekarray.length; wk++) {
         mergeGroup = this.groupBy(this.viewdata, this.weekarray[wk].binding);
         start = mergeGroup.start;
         last = mergeGroup.last;
         text = mergeGroup.text;
-
-        console.log(start);
-        console.log(last);
-        console.log(text);
-
         for (let i = 0; i < start.length; i++) {
           if (text[i]) {
             ranges.push(
@@ -1419,11 +1128,11 @@ export default {
           }
         }
       }
+
       this.ranges = ranges;
     },
     createMerge(flexGrid) {
       let ranges = this.ranges;
-      let headerRanges = this.headerRanges;
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.Cell) {
@@ -1433,27 +1142,20 @@ export default {
             }
           }
         }
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
-            }
-          }
-        }
       };
       flexGrid.mergeManager = mm;
     },
     inputCalendarClick() {
       this.picker =
-        moment().format('YYYY') +
+        dayjs().format('YYYY') +
         '-' +
-        moment().format('MM') +
+        dayjs().format('MM') +
         '-' +
-        moment().format('DD');
+        dayjs().format('DD');
       this.datepicker_dialog = true;
     },
     monthSelectWeek() {
-      this.getYm = moment(this.picker).format('YYYY年MM月DD日');
+      this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -1464,7 +1166,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#keikakuWeek {
+div#monitoringSyukanKeikaku {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
@@ -1506,7 +1208,7 @@ div#keikakuWeek {
   }
 }
 
-#keikakuWeekDatepicker {
+#monitoringSyukanKeikakuDatepicker {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;

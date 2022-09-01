@@ -246,14 +246,9 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.core';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
@@ -715,7 +710,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (
@@ -742,15 +737,7 @@ export default {
       this.$refs.mdselect.setYm(this.picker);
     },
     monthSelect() {
-      let split = this.picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(this.picker);
       this.$refs.mdselect.setYm(this.picker);
       this.viewdata = [];
       this.datepicker_dialog = false;

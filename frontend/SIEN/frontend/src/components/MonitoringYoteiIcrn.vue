@@ -142,7 +142,7 @@
           </v-btn>
         </v-btn-toggle>
         <v-layout class="right">
-          <v-tooltip bottom color="primary" min-width="100" style="z-index: 10">
+          <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 class="itemBtn ml-1"
@@ -153,14 +153,13 @@
                 記号説明
               </v-btn>
             </template>
-            <span v-for="hanrei in hanreiList" :key="hanrei.val">
+            <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
               {{ hanrei.name }}
-              <br />
-            </span>
-            <span>
+            </v-layout>
+            <v-layout>
               <span style="background: pink">&emsp;</span>
-              :未実施
-            </span>
+              ：未実施
+            </v-layout>
           </v-tooltip>
         </v-layout>
       </v-row>
@@ -189,7 +188,7 @@
           </v-btn-toggle>
         </v-layout>
       </v-row>
-      <v-layout class="ma-0 mt-1 mr-1" no-gutters style="width: 98%">
+      <v-layout class="ma-0 mt-1 mr-1" no-gutters style="width: 100%">
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
@@ -201,7 +200,7 @@
           :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
-          :selectionMode="'Row'"
+          :selectionMode="'Cell'"
           :isReadOnly="true"
           :initialized="onInitializekeikakuIcrnGrid"
           :formatItem="onFormatItemkeikakuIcrn"
@@ -209,30 +208,7 @@
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="viewdatakeikaku"
         >
-          <wj-flex-grid-filter
-            :initialized="filterInitializedkeikakuIcrn"
-            :filterApplied="filterApplied"
-          />
-        </wj-flex-grid>
-        <wj-flex-grid
-          id="monitoringYoteiGridYm"
-          :headersVisibility="'Column'"
-          :autoGenerateColumns="false"
-          :allowAddNew="false"
-          :allowDelete="false"
-          :allowPinning="false"
-          :allowMerging="'AllHeaders'"
-          :allowResizing="false"
-          :allowSorting="false"
-          :allowDragging="false"
-          :selectionMode="'Row'"
-          :isReadOnly="true"
-          :initialized="onInitializekeikakuIcrnYmGrid"
-          :formatItem="onFormatItemkeikakuIcrnYm"
-          :itemsSourceChanging="onItemsSourceChanging"
-          :itemsSourceChanged="onItemsSourceChanged"
-          :itemsSource="viewdatakeikaku"
-        >
+          <wj-flex-grid-filter :initialized="filterInitializedkeikakuIcrn" />
         </wj-flex-grid>
       </v-layout>
     </v-container>
@@ -263,93 +239,94 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import moment from 'moment';
-// import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-// import MdSelect from '../components/MdSelect.vue';
+import { getConnect } from '@connect/getConnect';
 const GRID_ID = {
   Keikaku: 'monitoringYoteiGrid',
-  KeikakuYm: 'monitoringYoteiGridYm',
 };
-// const STYLE_BG_PREBIRTH = '#ffcccc';
 export default {
   components: { AlphabetButton },
   data() {
     return {
       keikakuIcrnHeaderList: [
         {
-          dataname: 'code',
+          dataname: 'rcodeD',
           title: 'コード',
           kbntitle: '',
-          width: '2*',
+          width: '3*',
+          minwidth: 50,
           align: 'center',
         },
         {
-          dataname: 'name',
+          dataname: 'rname',
           title: '利用者名',
           kbntitle: '',
-          width: '3*',
+          width: '5*',
+          minwidth: 150,
           align: 'left',
         },
         {
           dataname: 'age',
           title: '年\n齢',
           kbntitle: '',
-          width: '1*',
+          width: '2*',
+          minwidth: 20,
           align: 'right',
         },
         {
           dataname: 'birthMonth',
           title: '誕\n生\n月',
           kbntitle: '',
-          width: '1*',
+          width: '2*',
+          minwidth: 20,
           align: 'right',
         },
         {
-          dataname: 'sichoson',
+          dataname: 'shichoName',
           title: '市区\n町村',
           kbntitle: '',
           width: '2*',
+          minwidth: 80,
           align: 'left',
         },
         {
-          dataname: 'keikakuYmd',
+          dataname: 'keikakuYmdFmt',
           title: '作成日',
           kbntitle: 'サービス等利用計画作成',
           width: '2*',
+          minwidth: 80,
           align: 'center',
         },
         {
           dataname: 'yousiki',
           title: '様式',
           kbntitle: 'サービス等利用計画作成',
-          width: '1*',
+          width: '2*',
+          minwidth: 20,
           align: 'center',
         },
         {
-          dataname: 'tantousya',
+          dataname: 'keikakuSinm',
           title: '担当者',
           kbntitle: 'サービス等利用計画作成',
           width: '2*',
+          minwidth: 100,
           align: 'left',
         },
         {
-          dataname: 'sikyuSymd',
+          dataname: 'mymdFmt',
           title: '開始日',
           kbntitle: 'モニタリング期間',
           width: '2*',
+          minwidth: 80,
           align: 'center',
         },
         {
@@ -357,22 +334,23 @@ export default {
           title: '終了日',
           kbntitle: 'モニタリング期間',
           width: '2*',
+          minwidth: 80,
           align: 'center',
         },
         {
-          dataname: 'kikan',
+          dataname: 'moniKikan',
           title: '期間',
           kbntitle: 'モニタリング期間',
           width: '1.5*',
+          minwidth: 50,
           align: 'right',
         },
-      ],
-      keikakuIcrnYmHeaderList: [
         {
           dataname: 'ym1',
           title: '1',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -380,6 +358,7 @@ export default {
           title: '2',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -387,6 +366,7 @@ export default {
           title: '3',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -394,6 +374,7 @@ export default {
           title: '4',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -401,6 +382,7 @@ export default {
           title: '5',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -408,6 +390,7 @@ export default {
           title: '6',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -415,6 +398,7 @@ export default {
           title: '7',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -422,6 +406,7 @@ export default {
           title: '8',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -429,6 +414,7 @@ export default {
           title: '9',
           kbntitle: '1年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -436,6 +422,7 @@ export default {
           title: '10',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -443,6 +430,7 @@ export default {
           title: '11',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -450,6 +438,7 @@ export default {
           title: '12',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -457,6 +446,7 @@ export default {
           title: '13',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -464,6 +454,7 @@ export default {
           title: '14',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -471,6 +462,7 @@ export default {
           title: '15',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -478,6 +470,7 @@ export default {
           title: '16',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -485,6 +478,7 @@ export default {
           title: '17',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -492,6 +486,7 @@ export default {
           title: '18',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
         {
@@ -499,6 +494,7 @@ export default {
           title: '19',
           kbntitle: '2年月',
           width: 40,
+          minwidth: 40,
           align: 'center',
         },
       ],
@@ -572,13 +568,8 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (
-        document.getElementById(GRID_ID.Keikaku) != null &&
-        document.getElementById(GRID_ID.KeikakuYm) != null
-      ) {
+      if (document.getElementById(GRID_ID.Keikaku) != null) {
         document.getElementById(GRID_ID.Keikaku).style.height =
-          window.innerHeight - 220 + 'px';
-        document.getElementById(GRID_ID.KeikakuYm).style.height =
           window.innerHeight - 220 + 'px';
       }
     },
@@ -587,6 +578,11 @@ export default {
     },
     filterInitializedkeikakuIcrn: function (filter) {
       this.filterkeikakuIcrn = filter;
+      let fil = [];
+      for (let colIndex = 0; colIndex < 11; colIndex++) {
+        fil.push(this.keikakuIcrnHeaderList[colIndex].dataname);
+      }
+      filter.filterColumns = fil;
     },
     onInitializekeikakuIcrnGrid(flexGrid) {
       this.mainFlexGrid = flexGrid;
@@ -605,6 +601,7 @@ export default {
       flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.alternatingRowStep = 0;
+      flexGrid.frozenColumns = 11;
       // ヘッダ文字列の設定
       for (
         let colIndex = 0;
@@ -618,6 +615,7 @@ export default {
         col.name = this.keikakuIcrnHeaderList[colIndex].dataname;
         col.header = this.keikakuIcrnHeaderList[colIndex].title;
         col.width = this.keikakuIcrnHeaderList[colIndex].width;
+        col.minWidth = this.keikakuIcrnHeaderList[colIndex].minwidth;
         col.align = this.keikakuIcrnHeaderList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
@@ -653,90 +651,18 @@ export default {
         flexGrid.columnHeaders.setCellData(2, colIndex, ' ');
       }
       this.setKeikakuYm(flexGrid);
-      // スクロールバー同期
-      let _self = this;
-      flexGrid.scrollPositionChanged.addHandler(function () {
-        _self.subFlexGrid.scrollPosition = new wjCore.Point(
-          _self.subFlexGrid.scrollPosition.x,
-          flexGrid.scrollPosition.y
-        );
-      });
       flexGrid.endUpdate();
     },
-    onInitializekeikakuIcrnYmGrid(flexGrid) {
-      flexGrid.beginUpdate();
-      this.subFlexGrid = flexGrid;
-      // クリックイベント
-      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        let ht = flexGrid.hitTest(e);
-        if (ht.panel == flexGrid.cells) {
-          // let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
-          // this.setDispdata(tmpitem);
-          // this.tourokuScreenFlag = true;
-        }
-      });
-      // ヘッダの追加と設定
-      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows[0].allowMerging = true;
-      flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
-      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.columnHeaders.rows[1].height =
-        sysConst.GRDROWHEIGHT.Header + sysConst.GRDROWHEIGHT.Header / 2;
-      // flexGrid.columnFooters.rows[0].allowMerging = true;
-      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.alternatingRowStep = 0;
-      // ヘッダ文字列の設定
-      for (
-        let colIndex = 0;
-        colIndex < this.keikakuIcrnYmHeaderList.length;
-        colIndex++
-      ) {
-        flexGrid.columns.insert(colIndex, new wjGrid.Column());
-        let col = flexGrid.columns[colIndex];
-        col.wordWrap = true;
-        col.binding = this.keikakuIcrnYmHeaderList[colIndex].dataname;
-        col.name = this.keikakuIcrnYmHeaderList[colIndex].dataname;
-        col.header = this.keikakuIcrnYmHeaderList[colIndex].title;
-        col.width = this.keikakuIcrnYmHeaderList[colIndex].width;
-        col.align = this.keikakuIcrnYmHeaderList[colIndex].align;
-        col.allowMerging = true;
-        col.multiLine = true;
 
-        flexGrid.columnHeaders.setCellData(
-          0,
-          colIndex,
-          !this.keikakuIcrnYmHeaderList[colIndex].kbntitle
-            ? this.keikakuIcrnYmHeaderList[colIndex].title
-            : this.keikakuIcrnYmHeaderList[colIndex].kbntitle
-        );
-        flexGrid.columnHeaders.setCellData(
-          1,
-          colIndex,
-          this.keikakuIcrnYmHeaderList[colIndex].title
-        );
-      }
-      this.setKeikakuYm(flexGrid);
-      // スクロールバー同期
-      let _self = this;
-      flexGrid.scrollPositionChanged.addHandler(function () {
-        _self.mainFlexGrid.scrollPosition = flexGrid.scrollPosition;
-      });
-      flexGrid.endUpdate();
-    },
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
       this.setKeikakuYm(flexGrid);
       flexGrid.endUpdate();
     },
     setKeikakuYm(flexGrid) {
-      if (
-        flexGrid.hostElement.id == GRID_ID.KeikakuYm &&
-        flexGrid.columnHeaders.columns.length > 0
-      ) {
+      if (flexGrid.columnHeaders.columns.length > 0) {
         if (this.kikanYm) {
-          let tmpmom = new moment(
+          let tmpmom = new dayjs(
             this.kikanYm.format('YYYY') +
               '-' +
               this.kikanYm.format('MM') +
@@ -752,7 +678,7 @@ export default {
           this.dispYmList = [];
           let index = 0;
           for (
-            let colIndex = 0;
+            let colIndex = 11;
             colIndex < flexGrid.columns.length;
             colIndex++
           ) {
@@ -775,54 +701,56 @@ export default {
       }
     },
     onItemsSourceChanged(flexGrid) {
-      console.log(flexGrid);
-      this.grdAutoSizeRow(flexGrid);
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       this.screenFlag = false;
       this.loading = false;
-    },
-    grdAutoSizeRow(flexGrid) {
-      // 初期選択を解除
-      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-      // flexGrid.beginUpdate();
-      // flexGrid.autoSizeRows();
-      // flexGrid.endUpdate();
-    },
-    filterApplied(e) {
-      console.log(e);
-      // this.grdAutoSizeRow(e.grid);
     },
     setNonFilterCol(col) {
       var Nonefilter = this.filterkeikakuIcrn.getColumnFilter(col);
       Nonefilter.filterType = 'None';
     },
     onFormatItemkeikakuIcrn(flexGrid, e) {
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        (e.col <= 1 || (10 <= e.col && e.col <= 30))
-      ) {
-        this.setNonFilterCol(e.col);
-      }
       e.cell.style.borderTop = '';
       e.cell.style.borderBottom = '';
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        (e.row == 1 || (e.row == 0 && e.col <= 4))
-      ) {
-        e.cell.style.borderBottom = 'None';
-      }
-
-      // e.cell.style.backgroundColor = '';
-      // e.cell.style.borderRight = '';
+      e.cell.style.borderRight = '';
       e.cell.style.color = '';
+      e.cell.style.backgroundColor = '';
+
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.row == 1 || (e.row == 0 && e.col <= 4)) {
+          e.cell.style.borderBottom = 'None';
+        }
+        if (e.row == 0 && e.col == 8) {
+          e.cell.style.borderRight = '1px solid';
+        }
+        if (e.row >= 1 && e.col == 10) {
+          e.cell.style.borderRight = '1px solid';
+        }
+        if (e.row == 0 && e.col >= 11) {
+          e.cell.style.borderRight = '1px solid';
+        }
+        // 12月の次の右線を太くする
+        if (e.col > 11 && e.row >= 1) {
+          let tmpym = this.dispYmList[e.col - 11];
+          if (Number(tmpym.substring(4, 6)) == 12) {
+            e.cell.style.borderRight = '1px solid';
+          }
+          if (e.panel == flexGrid.cells) {
+            let tmpitem = e.panel.rows[e.row].dataItem;
+            let ymdval =
+              tmpitem.sikyuEymdBk.getFullYear() +
+              (tmpitem.sikyuEymdBk.getMonth() + 1).toString().padStart(2, '0');
+            if (Number(tmpym) > Number(ymdval)) {
+              e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
+            }
+          }
+        }
+      }
       if (e.panel == flexGrid.cells) {
         let tmpitem = e.panel.rows[e.row].dataItem;
 
         if (tmpitem.agebk < 18) {
           if (e.col == 1 && tmpitem.isfirst) {
-            // e.cell.innerHTML =
-            //   '<div class="miman">' +
-            //   wjCore.escapeHtml(tmpitem.name) +
-            //   '</div>';
             wjCore.addClass(e.cell, 'miman');
           }
           // if (tmpitem.agebk == 17 && 11 <= e.col && e.col <= 29) {
@@ -834,16 +762,18 @@ export default {
         }
 
         // 下の行と同じ利用者の場合は下線を非表示化
-        if (e.row < flexGrid.rows.length - 1) {
+        if (e.row < flexGrid.rows.length - 1 && e.col < 11) {
           let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
-          if (tmpitem.codebk == tmpNextitem.codebk) {
+          if (tmpitem.intcode == tmpNextitem.intcode) {
             e.cell.style.borderBottom = 0;
           }
         }
         if (e.row > 0) {
           let pretmpitem = e.panel.rows[e.row - 1].dataItem;
-          if (tmpitem.codebk == pretmpitem.codebk) {
-            e.cell.style.color = 'transparent';
+          if (tmpitem.intcode == pretmpitem.intcode) {
+            if (e.col < 11) {
+              e.cell.style.color = 'transparent';
+            }
             e.cell.style.borderRight = '';
             e.cell.style.borderBottom = 0;
           } else {
@@ -852,56 +782,16 @@ export default {
         }
       } else if (e.panel == flexGrid.columnFooters) {
         e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
-        e.cell.style.borderBottom = 0;
+        // e.cell.style.borderBottom = 0;
       }
-    },
-    onFormatItemkeikakuIcrnYm(flexGrid, e) {
-      e.cell.style.borderBottom = '';
-      // if (
-      //   e.panel == flexGrid.columnHeaders &&
-      //   (e.row == 1 ||
-      //     (e.row == 0 && e.col <= 4) ||
-      //     (e.row == 0 && 7 <= e.col && e.col <= 9) ||
-      //     (e.row == 0 && e.col == 31))
-      // ) {
-      //   e.cell.style.borderBottom = 'None';
-      // }
-
-      // e.cell.style.backgroundColor = '';
-      e.cell.style.borderRight = '';
-      e.cell.style.color = '';
-      if (e.panel == flexGrid.columnHeaders && e.row == 0) {
-        e.cell.style.borderRight = '1px solid';
-      }
-      // 12月の次の右線を太くする
-      if (
-        (e.panel == flexGrid.columnHeaders && e.row >= 1) ||
-        e.panel == flexGrid.cells ||
-        e.panel == flexGrid.columnFooters
-      ) {
-        let tmpym = this.dispYmList[e.col];
-        if (Number(tmpym.substring(4, 6)) == 12) {
-          e.cell.style.borderRight = '1px solid';
+      if (e.panel != flexGrid.columnHeaders) {
+        if (e.col == 10) {
+          e.cell.style.borderRight = '1px solid black ';
         }
-        if (e.panel == flexGrid.cells) {
-          let tmpitem = e.panel.rows[e.row].dataItem;
-          let ymdval =
-            tmpitem.sikyuEymdBk.getFullYear() +
-            (tmpitem.sikyuEymdBk.getMonth() + 1).toString().padStart(2, '0');
-          if (Number(tmpym) > Number(ymdval)) {
-            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
-          }
-        }
-      }
-      if (e.panel == flexGrid.cells) {
-        e.cell.style.borderTop = '';
-        let tmpitem = e.panel.rows[e.row].dataItem;
-        if (e.row > 0) {
-          let pretmpitem = e.panel.rows[e.row - 1].dataItem;
-          if (tmpitem.codebk == pretmpitem.codebk) {
-            e.cell.style.borderBottom = 0;
-          } else {
-            e.cell.style.borderTop = '1px solid';
+        if (e.col > 10) {
+          let tmpym = this.dispYmList[e.col - 11];
+          if (Number(tmpym.substring(4, 6)) == 12) {
+            e.cell.style.borderRight = '1px solid';
           }
         }
       }
@@ -912,122 +802,69 @@ export default {
     searchClicked() {
       // 初期データ読込
       this.setViewData(true);
-      this.subFlexGrid.scrollIntoView(0, 18);
+      let rc = this.mainFlexGrid.columnHeaders.getCellBoundingRect(
+        0,
+        this.mainFlexGrid.columns.length - 1,
+        true
+      );
+      this.mainFlexGrid.scrollPosition = new wjCore.Point(-rc.right, 0);
     },
     setViewData(isAll) {
       this.screenFlag = true;
       this.loading = true;
       if (isAll) {
-        // uketukeIcrn(this.targetYmd).then((result) => {
-        //   this.viewdataAll = result;
-        //   this.userFilter();
-        //   this.screenFlag = false;
-        // });
-        this.createdemodata();
-        this.userFilter();
+        let params = {
+          uniqid: 1,
+          traceid: 123,
+          pJigyoid: 43,
+          pSym: this.kikanYm.format('YYYYMM'),
+        };
+        getConnect('/moniYoteiView', params).then((result) => {
+          this.viewdatakeikakuAll = this.createViewData(result);
+          this.userFilter();
+        });
       } else {
         this.userFilter();
       }
     },
-    createdemodata() {
+    createViewData(apires) {
       let result = [];
-      let code;
-      let name;
-      let sichoson;
-      let age;
-      let birth;
-      let ymd;
-      let kikan;
-      let yousiki;
-      let isfirst;
-      for (let i = 1; i <= 100; i++) {
-        let d = new Date('2022', Number('12') - 1, '01');
-        if (i < 20 && i < 30) {
-          d = new Date('2022', Number('12') - 1, '11');
-        } else if (i < 30 && i < 40) {
-          d = new Date('2022', Number('12') - 1, '21');
-        } else {
-          d = new Date('2022', Number('12') - 1, '31');
-        }
-        if (i % 2 == 1) {
-          code = String(1000000 + i);
-          name = '東経 ' + i + '太郎';
-          sichoson = '新東経西市';
-          age = 100;
-          birth = 12;
-          ymd = d;
-          kikan = 'xxヶ月';
-          yousiki = '者';
-          if (i == 5) {
-            age = 17;
-          }
-          isfirst = true;
-        } else {
-          isfirst = false;
-        }
-        result.push({
-          codebk: code,
-          code: code,
-          name: name,
-          sichoson: sichoson,
-          age: age,
-          agebk: age,
-          birthMonth: birth,
-          birthMonthbk: birth,
-          sikyuSymd: ymd,
-          sikyuEymd: ymd,
-          sikyuSymdBk: ymd,
-          sikyuEymdBk: ymd,
-          kikan: kikan,
-          keikakuYmd: ymd,
-          yousiki: yousiki,
-          ym1: '',
-          ym2: '',
-          ym3: '',
-          ym4: '',
-          ym5: '',
-          ym6: '',
-          ym7: '',
-          ym8: '',
-          ym9: '',
-          ym10: '',
-          ym11: '',
-          ym12: '',
-          ym13: '',
-          ym14: '',
-          ym15: '',
-          ym16: '',
-          ym17: '',
-          ym18: '',
-          ym19: '',
-          yotei: '99',
-          jisseki: '99',
-          zanken: '99',
-          tantousya: '五文字太郎',
-          isfirst: isfirst,
-        });
+      apires.forEach((el) => {
+        let obj1 = Vue.util.extend({}, el);
+        obj1.rcode = String(el.rcode);
+        obj1.rcodeD = obj1.rcode.padStart(7, '0');
+        obj1.birthMonth = el.birth.substring(4, 6);
+        obj1.mymdFmt = this.getFmtDate(el.mymd);
+        obj1.keikakuYmdFmt = this.getFmtDate(el.keikakuYmd);
+        let obj2 = Vue.util.extend({}, obj1);
 
-        if (i == 1) {
-          result[i - 1].ym10 = '●';
-          result[i - 1].ym13 = '✕';
-          result[i - 1].ym14 = '○';
-          result[i - 1].ym17 = '○';
-        }
-        if (i == 2) {
-          result[i - 1].ym13 = '延';
-          result[i - 1].ym17 = '終';
-        }
-        if (i == 3) {
-          result[i - 1].ym11 = '●';
-          result[i - 1].ym12 = '✕';
-          result[i - 1].ym13 = '●';
-          result[i - 1].ym16 = '○';
-        }
-        if (i == 4) {
-          result[i - 1].ym12 = '止';
-        }
+        let index = 1;
+        this.dispYmList.forEach((el) => {
+          let tmpym = obj1.moniYoteiList.filter(function (yotei) {
+            return yotei.ym == el;
+          });
+
+          if (tmpym.length > 0) {
+            obj1['ym' + index] = tmpym[0].kigo;
+            obj2['ym' + index] = tmpym[0].kigo2;
+          }
+          index++;
+        });
+        result.push(obj1);
+        result.push(obj2);
+      });
+      return result;
+    },
+    getFmtDate(ymd) {
+      if (ymd.trim().length > 0) {
+        return new Date(
+          ymd.substring(0, 4),
+          Number(ymd.substring(4, 6)) - 1,
+          ymd.substring(6, 8)
+        );
+      } else {
+        return '';
       }
-      this.viewdatakeikakuAll = result;
     },
     onAlphabetical() {
       this.userFilter();
@@ -1099,7 +936,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (
@@ -1125,15 +962,7 @@ export default {
       }
     },
     monthSelect() {
-      let split = this.picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = moment(this.picker);
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -1226,8 +1055,7 @@ div#monitoringYotei {
     background-repeat: repeat;
   }
 
-  #monitoringYoteiGrid,
-  #monitoringYoteiGridYm {
+  #monitoringYoteiGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     .wj-header {
@@ -1285,27 +1113,12 @@ div#monitoringYotei {
   }
 
   div#monitoringYoteiGrid {
-    overflow-y: none;
-    -ms-overflow-style: none;
     width: 98%;
     // min-width: 1250px;
     height: 70vh;
     min-height: 400px;
-    z-index: 10;
-    &.wj-flexgrid [wj-part='root'] {
-      overflow-y: hidden !important;
-      overflow-x: scroll !important;
-    }
+    z-index: 2;
   }
-
-  #monitoringYoteiGridYm {
-    width: 760px;
-    // min-width: 1250px;
-    height: 70vh;
-    min-height: 400px;
-    z-index: 10;
-  }
-
   .v-btn-toggle > .v-btn {
     // width: 150px;
     height: 20px;

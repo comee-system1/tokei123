@@ -21,10 +21,8 @@
         <v-tab-item value="Houkokusyo">
           <MonitoringHoukokusho></MonitoringHoukokusho>
         </v-tab-item>
-        <v-tab-item value="SyukanKeikaku"> Tab 3 Content </v-tab-item>
-        <v-tab-item value="TantousyaKaigi" eager>
-          Tab 4 Content
-          <!-- <SoudanCountUtiwake></SoudanCountUtiwake> -->
+        <v-tab-item value="SyukanKeikaku">
+          <MonitoringSyukanKeikaku></MonitoringSyukanKeikaku>
         </v-tab-item>
         <v-tab-item value="MonitoringJissiIcrn">
           <MonitoringJissiIcrn></MonitoringJissiIcrn>
@@ -39,6 +37,7 @@ import ls from '@/utiles/localStorage';
 import KeikakuIcrn from '../../components/MonitoringYoteiIcrn.vue';
 import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
 import MonitoringHoukokusho from '../../components/MonitoringHoukokusho.vue';
+import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
 
 export default {
   props: {
@@ -47,7 +46,8 @@ export default {
   components: {
     KeikakuIcrn,
     MonitoringJissiIcrn,
-    MonitoringHoukokusho, //SoudanCount, SoudanCountUtiwake
+    MonitoringHoukokusho,
+    MonitoringSyukanKeikaku,
   },
   data: function () {
     return {
@@ -118,9 +118,5 @@ div#monitoringParent {
     border-top: 2px solid;
     border-color: #1976d2;
   }
-  // .wj-cell {
-  //   padding: 2px;
-  //   padding-top: 1px;
-  // }
 }
 </style>

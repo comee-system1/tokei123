@@ -1,11 +1,8 @@
 <template>
   <div class="mt-2">
-    <v-flex v-for="value in note" :key="value.key" class="d-flex mb-1">
-      <v-card outlined tile elevation="0" dense class="caption-left mr-1">
+    <v-flex v-for="value in note" :key="value.key" class="d-flex mb-2">
+      <v-card outlined tile elevation="0" dense class="caption-left mr-2">
         {{ value.title }}
-        <!-- <v-card class="pa-1 caption" elevation="0" outlined tile height="100">
-          {{ value.title }}
-        </v-card> -->
       </v-card>
       <v-card
         outlined
@@ -14,16 +11,6 @@
         class="caption-right"
         @click="editText(value.key)"
       >
-        <!-- <v-card
-          class="pa-1"
-          elevation="0"
-          outlined
-          tile
-          height="100"
-          @click="editText(value.key)"
-        >
-          {{ value.value }}
-        </v-card> -->
         {{ value.value }}
       </v-card>
     </v-flex>
@@ -37,7 +24,7 @@
           <v-card
             outlined
             tile
-            width="100"
+            width="60"
             class="text-center text-caption label pt-1"
             >完了
           </v-card>
@@ -66,10 +53,10 @@
         <v-list three-line subheader>
           <v-textarea
             outlined
-            :value="note[notekey].value"
             :style="textstyles"
             class="editTextarea"
             hide-details="false"
+            v-model="inputText"
           ></v-textarea>
         </v-list>
       </v-card>
@@ -110,7 +97,7 @@ export default {
             'セロはおっかさんのおじぎめいめいげに扉が啼く月たう。こうしてこれから変じなって扉ました。だめますですんないもだするとあとの勝手屋のうちへはとうとう丈夫たらまして、わたしまで仲間をちがうせんうた。云わすぎおまえは音に物凄いたて夜のあとの外国弾を云い第六譜屋の病気をいうてくださいでた。セロは午前あるてはじめた。ゴーシュは一すわり遁のようがはいっていまし。',
         },
       ],
-
+      inputText: '',
       keikakuKubunModel: '',
       editTextDialog: false,
     };
@@ -137,10 +124,12 @@ export default {
      */
     editText(type) {
       this.notekey = type;
+      this.inputText = this.note[this.notekey].value;
       this.editTextDialog = true;
     },
     editTextSave() {
       console.log(this.notekey);
+      this.note[this.notekey].value = this.inputText;
       this.editTextDialog = false;
     },
 

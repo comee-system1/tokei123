@@ -157,7 +157,7 @@
               <!-- CP -->
               <v-tabs-items v-model="kbnTab">
                 <!-- transition="false" -->
-                <v-tab-item value="Kihonsoudan" eager>
+                <v-tab-item value="Kihonsoudan">
                   <v-container
                     no-gutters
                     fluid
@@ -982,17 +982,11 @@
 </template>
 
 <script>
-import moment from 'moment';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import * as wjCore from '@grapecity/wijmo';
-// import * as wjGrid from '@grapecity/wijmo.grid';
 import { mstHouhou } from '@backend/api/MstHouhou';
 import { mstKankei } from '@backend/api/MstKankei';
 import { mstSodantaiou } from '@backend/api/MstSodantaiou';
@@ -1764,40 +1758,30 @@ export default {
      * 月の選択 ダイアログの日付を押下
      */
     dateSelect() {
-      let split = this.picker.split('-');
-      this.taiouYmd = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: split[2],
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.taiouYmd = dayjs(this.picker);
       this.datepicker_dialog = false;
     },
     //カレンダーボタンの日付遷移
     calendarClick(type) {
       let tmpdate;
       if (type == 0) {
-        tmpdate = new moment();
+        tmpdate = new dayjs();
       } else if (type == 1) {
-        tmpdate = moment({
-          years: this.taiouYmd.format('YYYY'),
-          months: this.taiouYmd.format('MM') - 1,
-          days: this.taiouYmd.format('DD'),
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        }).add(-1, 'days');
+        tmpdate = dayjs(
+          this.taiouYmd.format('YYYY') +
+            '-' +
+            this.taiouYmd.format('MM') +
+            '-' +
+            this.taiouYmd.format('DD')
+        ).add(-1, 'days');
       } else if (type == 2) {
-        tmpdate = moment({
-          years: this.taiouYmd.format('YYYY'),
-          months: this.taiouYmd.format('MM') - 1,
-          days: this.taiouYmd.format('DD'),
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        }).add(1, 'days');
+        tmpdate = dayjs(
+          this.taiouYmd.format('YYYY') +
+            '-' +
+            this.taiouYmd.format('MM') +
+            '-' +
+            this.taiouYmd.format('DD')
+        ).add(1, 'days');
       }
       this.taiouYmd = tmpdate;
     },
@@ -1805,13 +1789,13 @@ export default {
       if (type == 0) {
         this.rirekiDataSelect.sTime = '';
       } else {
-        let mom = new moment();
+        let mom = new dayjs();
         this.rirekiDataSelect.sTime = mom.format('HH') + ':' + mom.format('mm');
       }
     },
     getYmd() {
       if (!this.taiouYmd) {
-        this.taiouYmd = moment();
+        this.taiouYmd = dayjs();
       }
       return (
         this.taiouYmd.format('YYYY') +
@@ -2208,7 +2192,7 @@ export default {
     },
     getSYm() {
       if (!this.kikanSymd) {
-        this.kikanSymd = moment()
+        this.kikanSymd = dayjs()
           .subtract(1, 'year')
           .add(1, 'months')
           .set('date', 1);
@@ -2224,7 +2208,7 @@ export default {
     },
     getEYm() {
       if (!this.kikanEymd) {
-        this.kikanEymd = moment().set('date', moment().daysInMonth());
+        this.kikanEymd = dayjs().set('date', dayjs().daysInMonth());
         this.pickereym =
           this.kikanEymd.year() + '-' + this.kikanEymd.format('MM');
       }
@@ -2237,28 +2221,10 @@ export default {
     },
     monthSelect(kbn) {
       if (kbn == 0) {
-        let split = this.pickersym.split('-');
-        this.kikanSymd = moment({
-          year: split[0],
-          month: Number(split[1]) - 1,
-          day: 1,
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millsecond: 0,
-        });
+        this.kikanSymd = dayjs(this.pickersym);
         this.datepicker_dialog_sym = false;
       } else {
-        let split = this.pickereym.split('-');
-        this.kikanEymd = moment({
-          year: split[0],
-          month: Number(split[1]) - 1,
-          day: 1,
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millsecond: 0,
-        });
+        this.kikanEymd = dayjs(this.pickereym);
         this.datepicker_dialog_eym = false;
       }
     },
@@ -2343,7 +2309,7 @@ export default {
       }
     },
     setTaiouData() {
-      this.taiouYmd = moment(this.rirekiDataSelect.taiouYmdf);
+      this.taiouYmd = dayjs(this.rirekiDataSelect.taiouYmdf);
     },
     getNewuketuke() {
       let obj = {
@@ -2390,7 +2356,7 @@ export default {
 };
 </script>
 
-<style  lang="scss">
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 div#uketukeTouroku {
   background: $white;

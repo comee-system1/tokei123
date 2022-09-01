@@ -24,11 +24,12 @@
               </v-card>
               <v-card
                 width="100"
-                class="ml-1 text-caption"
+                class="ml-1 pl-1 text-caption"
                 elevation="0"
                 outlined
                 tile
               >
+                {{ selectName }}
               </v-card>
             </v-card>
 
@@ -259,6 +260,7 @@ import moment from 'moment';
 import UserList from './UserList.vue';
 import keikakuPlanIkou from './keikakuPlanIkou.vue';
 import keikakuPlanKadai from './keikakuPlanKadai.vue';
+// import { keikaku } from '@backend/api/Keikaku';
 export default {
   props: {
     dispHideBar: Boolean,
@@ -270,6 +272,8 @@ export default {
   },
   data() {
     return {
+      keikakuPlanData: [],
+      selectName: '',
       inputTypemodel: 'tab-0', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
         {
@@ -321,8 +325,11 @@ export default {
      * ユーザー一覧を押下
      */
     setUserSelectPoint(row) {
-      console.log(row);
-      alert('test');
+      this.selectName = row.names;
+      // keikaku().then((result) => {
+      //   //データ取得
+      //   this.keikakuPlanData = result;
+      // });
     },
 
     changeLeftArea() {
@@ -395,11 +402,14 @@ div#keikakuPlan {
     text-align: center;
   }
   .caption-right {
-    width: calc(100% - 189px);
-    padding: 4px;
+    width: calc(100% - 193px);
+    padding: 4px 0 4px 4px;
     height: 83px;
     line-height: 25px;
     overflow-y: scroll;
+    .v-card--link:before {
+      background: $white;
+    }
     &:hover {
       border: 1px solid $selected_color;
       background-color: $view_Title_background;

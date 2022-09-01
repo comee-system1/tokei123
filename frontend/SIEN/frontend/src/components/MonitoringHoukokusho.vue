@@ -141,15 +141,6 @@
                 :min-width="400"
               >
                 <v-list class="pa-0 ma-0" dense>
-                  <!-- <v-list-item
-                    class="pa-0 ma-0"
-                    dense
-                    style="background: lightgray"
-                  >
-                    <v-list-item-content class="pa-0 pl-2 ma-0">
-                      履歴参照
-                    </v-list-item-content>
-                  </v-list-item> -->
                   <v-card
                     class="koumokuTitle_c pa-1"
                     style="background: lightgray"
@@ -176,16 +167,17 @@
                       class="pa-0 ma-0"
                       dense
                       :key="`first-${item.index}`"
-                      @click="rirekiClicked()"
+                      @click="rirekiClicked(item)"
                     >
                       <v-list-item-content class="pa-0 pl-2 ma-0">
-                        {{ item.no }}
-                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
-                        {{ item.day }}
-                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
-                        {{ item.kanryou }}
-                        <v-divider class="mx-3 pa-0 ma-0" vertical></v-divider>
-                        {{ item.tantou }}
+                        <table>
+                          <tr>
+                            <td width="10%" align="center">{{ item.no }}</td>
+                            <td width="30%" align="center">{{ item.day }}</td>
+                            <td width="20%" align="left">{{ item.kanryou }}</td>
+                            <td width="40%" align="left">{{ item.tantou }}</td>
+                          </tr>
+                        </table>
                       </v-list-item-content>
                     </v-list-item>
                     <v-divider :key="`second-${item.index}`" />
@@ -537,19 +529,10 @@
 </template>
 
 <script>
-import moment from 'moment';
-// import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
-// import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import UserList from '../components/UserList.vue';
 export default {
@@ -681,8 +664,8 @@ export default {
           index: 0,
           no: 3,
           day: '2020/01/01',
-          kanryou: '完了済み',
-          tantou: '担当太郎',
+          kanryou: '未完了',
+          tantou: '担当小五郎',
         },
         {
           index: 1,
@@ -740,7 +723,14 @@ export default {
         if (ht.panel == flexGrid.cells) {
           let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
           if (ht.col == 0) {
-            flexGrid.refreshRange(new wjGrid.CellRange(ht.row, 3, ht.row, 10));
+            flexGrid.refreshRange(
+              new wjGrid.CellRange(
+                ht.row,
+                3,
+                ht.row,
+                flexGrid.columns.length - 1
+              )
+            );
           }
           if (tmpitem.jissi && e.target.tagName == 'BUTTON') {
             if (ht.col == 7) {
@@ -798,9 +788,6 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
         col.allowResizing = true;
-        if (colIndex == 0) {
-          col.dataType = 'Boolean';
-        }
         if (7 <= colIndex && colIndex <= 9) {
           col.isReadOnly = true;
         }
@@ -936,7 +923,7 @@ export default {
     },
     getYmd() {
       if (!this.kikanYmd) {
-        this.kikanYmd = moment();
+        this.kikanYmd = dayjs();
         this.picker =
           this.kikanYmd.year() +
           '-' +
@@ -955,7 +942,7 @@ export default {
     },
     getKanryouYmd(kbn) {
       if (!this.kikanKanryou) {
-        this.kikanKanryou = moment();
+        this.kikanKanryou = dayjs();
         this.pickerKanryou =
           this.kikanKanryou.year() +
           '-' +
@@ -983,7 +970,7 @@ export default {
     },
     getDouiYmd() {
       if (!this.douiYmd) {
-        this.douiYmd = moment();
+        this.douiYmd = dayjs();
         this.pickerDoui =
           this.douiYmd.year() +
           '-' +
@@ -1041,51 +1028,19 @@ export default {
     },
     daySelect(kbn) {
       if (kbn == 0) {
-        let split = this.picker.split('-');
-        this.kikanYmd = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: Number(split[2]),
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        this.kikanYmd = dayjs(this.picker);
         this.viewdatayoteisya = [];
         this.datepicker_dialog = false;
       } else if (kbn == 1) {
-        let split = this.pickerKanryou.split('-');
-        this.kikanKanryou = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: split[2],
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        this.kikanKanryou = dayjs(this.pickerKanryou);
         this.datepickerKanryouYmd_dialog = false;
       } else if (kbn == 2) {
-        let split = this.pickerDoui.split('-');
-        this.douiYmd = moment({
-          years: split[0],
-          months: Number(split[1]) - 1,
-          days: split[2],
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        this.douiYmd = dayjs(this.pickerDoui);
         this.datepickerDouiYmd_dialog = false;
       }
     },
     monthSelect() {
-      let split = this.pickerKanryou.split('-');
-      this.kikanKanryou = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanKanryou = dayjs(this.pickerKanryou);
       // this.viewdatakeikaku = [];
       this.datepickerKanryouYm_dialog = false;
     },
@@ -1101,8 +1056,8 @@ export default {
     copyClicked(kbn) {
       console.log(kbn);
     },
-    rirekiClicked(kbn) {
-      console.log(kbn);
+    rirekiClicked(rirekiObj) {
+      console.log(rirekiObj);
       this.drawer = !this.drawer;
     },
     inputClicked(kbn) {

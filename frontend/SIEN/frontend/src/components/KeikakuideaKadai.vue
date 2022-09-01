@@ -302,6 +302,12 @@ export default {
           window.innerHeight - this.headerheight + 'px';
       }
     },
+    /****************************
+     * 登録ボタンを押下
+     */
+    registButton() {
+      alert('課題登録ボタン');
+    },
     /************************
      * 行追加
      */
@@ -637,13 +643,6 @@ export default {
         e.cell.style.alignItems = 'center';
       });
     },
-
-    /****************************
-     * 登録ボタンを押下
-     */
-    registButton() {
-      console.log(this.viewData);
-    },
   },
 };
 </script>
@@ -654,6 +653,8 @@ export default {
 #kadaiGrid {
   font-size: 12px;
   height: var(--height);
+  color: $font_color;
+  font-family: 'メイリオ';
   .wj-cell {
     display: flex;
     &.wj-header {

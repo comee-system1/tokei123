@@ -1,4 +1,6 @@
-const { defineConfig } = require('@vue/cli-service')
+const {
+  defineConfig
+} = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: [
     'vuetify'
@@ -6,7 +8,8 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       alias: {
-        '@backend': '../../../backend/',  
+        '@backend': '../../../backend/',
+        '@connect': '../../../connect/',
       }
     }
   },

@@ -26,7 +26,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import '@grapecity/wijmo.styles/wijmo.css';
 import '@grapecity/wijmo.vue2.grid';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
@@ -130,12 +131,12 @@ export default {
       }
     },
     loadDateData() {
-      let tmpMoment = this.kikanYm.clone();
+      let tmpDays = this.kikanYm.clone();
       let tmpsoudanCountViewData = [];
-      let daycnt = tmpMoment.daysInMonth();
+      let daycnt = tmpDays.daysInMonth();
       let youbi = '';
       for (let i = 1; i <= daycnt; i++) {
-        switch (tmpMoment.day()) {
+        switch (tmpDays.day()) {
           case 0:
             youbi = '日';
             break;
@@ -162,21 +163,13 @@ export default {
           day: i,
           youbi: youbi,
         });
-        tmpMoment.add(1, 'd');
+        tmpDays = tmpDays.add(1, 'd');
       }
 
       return tmpsoudanCountViewData;
     },
     setYm(picker) {
-      let split = picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(picker);
       this.dateData = this.loadDateData();
     },
   },

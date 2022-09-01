@@ -29,7 +29,7 @@
                 outlined
                 tile
               >
-                aaa
+                {{ userName }}
               </v-card>
             </v-card>
 
@@ -225,10 +225,10 @@
           </v-card>
 
           <v-tabs-items v-model="inputTypemodel">
-            <v-tab-item value="tab-0">
+            <v-tab-item value="tab-0" :eager="true">
               <keikakuideaIkou ref="childikou"></keikakuideaIkou>
             </v-tab-item>
-            <v-tab-item value="tab-1">
+            <v-tab-item value="tab-1" :eager="true">
               <keikakuideaKadai ref="childkadai"></keikakuideaKadai>
             </v-tab-item>
           </v-tabs-items>
@@ -241,7 +241,7 @@
                 <v-card
                   outlined
                   tile
-                  width="100"
+                  width="60"
                   class="text-center text-caption label pt-1"
                   >完了
                 </v-card>
@@ -330,6 +330,7 @@ export default {
         { id: 1, name: 'サービス等利用計画2' },
       ],
       keikakuKubunModel: '',
+      userName: '',
     };
   },
   created() {},
@@ -348,19 +349,11 @@ export default {
     },
   },
   methods: {
-    /**********************
-     * 登録ボタン
-     */
-    ideaIkouKadaiRegist() {
-      // 意向・方針と課題・支援の両方の登録処理の実行
-      this.$refs.childkadai.registButton();
-    },
     /****************
      * ユーザー一覧を押下
      */
     setUserSelectPoint(row) {
-      console.log(row);
-      alert('test');
+      this.userName = row.names;
     },
 
     changeLeftArea() {
@@ -398,6 +391,12 @@ export default {
     },
     rowDelete(type) {
       this.$refs.childkadai.rowDelete(type);
+    },
+
+    ideaIkouKadaiRegist() {
+      // 意向・方針と課題・支援の両方の登録処理の実行
+      this.$refs.childkadai.registButton();
+      this.$refs.childikou.registButton();
     },
   },
 };
