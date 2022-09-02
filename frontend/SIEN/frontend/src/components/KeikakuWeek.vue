@@ -654,18 +654,13 @@ export default {
         week: 0,
         data: 1,
       });
-      setting.push({
-        uniq: 2,
-        stime: 400,
-        etime: 600,
-        week: 0,
-        data: 2,
-      });
-
-      // データにマージ用の値を登録
-      setting = this.settingMargePoint(setting);
-      console.log(setting);
-      this.settingData = setting;
+      // setting.push({
+      //   uniq: 2,
+      //   stime: 700,
+      //   etime: 800,
+      //   week: 0,
+      //   data: 2,
+      // });
 
       let timeline = [];
       let minute = [0, 30];
@@ -683,11 +678,17 @@ export default {
       let rowTime = [];
       for (let r = 0; r < this.timeline.length; r++) {
         rowTime.push({
-          time: this.timeline[r],
+          time: parseInt(this.timeline[r]),
           r: r,
         });
       }
       this.rowTime = rowTime;
+
+      // データにマージ用の値を登録
+      setting = this.settingMargePoint(setting);
+      console.log(setting);
+      this.settingData = setting;
+
       let item = [];
       item.push(
         {
@@ -759,8 +760,6 @@ export default {
       return ('0' + number).slice(-2);
     },
     settingMargePoint(data) {
-      console.log('merge');
-      console.log(data);
       let array = [];
       let wpos = [];
       wpos.push(
@@ -807,28 +806,32 @@ export default {
           right: 14,
         }
       );
+      let rowTime = this.rowTime;
+      console.log('rowTime');
+      console.log(rowTime);
       for (let i = 0; i < data.length; i++) {
-        array[i] = data[i];
-        array[i]['strow'] = 0;
-        array[i]['stcol'] = wpos[data[i].week].left;
-        array[i]['edrow'] = 3;
-        let right = true;
-        for (let j = i + 1; j < data.length; j++) {
-          if (data[j]) {
-            array[i] = data[i];
-            array[i]['strow'] = 0;
-            array[i]['stcol'] = wpos[data[i].week].right;
-            array[i]['edrow'] = 3;
-            array[i]['edcol'] = wpos[data[i].week].right;
-            right = false;
+        let sr = 0;
+        let er = 0;
+        // 時間ごとに表示行の調整
+        /*
+        for (let t = 0; t < rowTime.length; t++) {
+          if (this.settingData[i].stime == rowTime[t].time) {
+            sr = rowTime[t].r;
+          }
+          if (this.settingData[i].etime == rowTime[t].time) {
+            er = rowTime[t].r;
           }
         }
+*/
+        array[i] = data[i];
+        array[i]['strow'] = sr;
+        array[i]['edrow'] = er;
 
-        array[i]['edcol'] = right
-          ? wpos[data[i].week].right
-          : wpos[data[i].week].left;
+        array[i]['stcol'] = wpos[data[i].week].left;
+        array[i]['edcol'] = wpos[data[i].week].left;
       }
 
+      console.log(array);
       return array;
     },
     /********************
@@ -964,16 +967,12 @@ export default {
         this.onflexGrid.cells.setCellData(r, 0, this.timeline[r]);
       }
 
-      let rowTime = this.rowTime;
       for (let i = 0; i < this.settingData.length; i++) {
-        let r = 0;
-        // 時間ごとに表示行の調整
-        for (let t = 0; t < rowTime.length; t++) {
-          if (this.settingData[i].stime == rowTime[t].time) {
-            r = rowTime[t].r;
-          }
-        }
-        this.onflexGrid.cells.setCellData(r, i + 1, this.settingData[i].data);
+        this.onflexGrid.cells.setCellData(
+          this.settingData[i].strow,
+          this.settingData[i].stcol,
+          this.settingData[i].data
+        );
 
         ranges.push(
           new wjGrid.CellRange(
