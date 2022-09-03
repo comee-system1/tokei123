@@ -120,7 +120,7 @@
                   binding="times"
                   align="center"
                   valign="middle"
-                  width="1.3*"
+                  :width="80"
                   :isReadOnly="true"
                 ></wj-flex-grid-column>
                 <wj-flex-grid-column
@@ -492,6 +492,50 @@ export default {
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
       userName: '',
+      wpos: [
+        // 月曜日
+        {
+          key: 0,
+          left: 1,
+          right: 2,
+        },
+        // 火曜日
+        {
+          key: 1,
+          left: 3,
+          right: 4,
+        },
+        // 水曜日
+        {
+          key: 2,
+          left: 5,
+          right: 6,
+        },
+        // 木曜日
+        {
+          key: 3,
+          left: 7,
+          right: 8,
+        },
+        // 金曜日
+        {
+          key: 4,
+          left: 9,
+          right: 10,
+        },
+        // 土曜日
+        {
+          key: 5,
+          left: 11,
+          right: 12,
+        },
+        // 日曜日
+        {
+          key: 6,
+          left: 13,
+          right: 14,
+        },
+      ],
     };
   },
   created() {},
@@ -622,16 +666,63 @@ export default {
               uprow = this.position.down.row;
             }
 
-            for (let c = downcol; c <= upcol; c++) {
-              let bind = this.weekarray[c - 1].binding;
+            let setting = [];
+            // データを全部登録
+            setting = this.settingData.slice();
+            let stime = '';
+            let etime = '';
+            // ドラッグが無しのとき
+            let target = '';
+            if (uprow == downrow && upcol == downcol) {
+              // クリックしたweek
+              target = this.wpos.find(
+                (v) => v.left === upcol || v.right === upcol
+              );
+              stime = this.rowTime[uprow].time;
+              // 30分のときは次の時刻
+              etime =
+                stime.toString().slice(-2) == '30'
+                  ? stime - 30 + 100
+                  : stime + 30;
+              setting.push({
+                uniq: setting.length + 1,
+                stime: stime,
+                etime: etime,
+                week: target.key,
+                data: this.everySelected,
+              });
+            }
+
+            if (uprow != downrow || upcol != downcol) {
+              //alert(downrow);
+              //alert(uprow);
               for (let r = downrow; r <= uprow; r++) {
-                this.viewdata[r][bind] = this.everySelected;
+                for (let c = downcol; c <= upcol; c++) {
+                  target = this.wpos.find((v) => v.left === c || v.right === c);
+                  //console.log(i);
+                  stime = this.rowTime[r].time;
+                  // 30分のときは次の時刻
+                  etime =
+                    stime.toString().slice(-2) == '30'
+                      ? stime - 30 + 100
+                      : stime + 30;
+                  setting.push({
+                    uniq: setting.length + r,
+                    stime: stime,
+                    etime: etime,
+                    week: target.key,
+                    data: this.everySelected,
+                  });
+                }
               }
             }
-            let view = this.viewdata.slice();
-            this.viewdata = view;
+
+            this.settingData = this.sameDataAbbr(setting);
+
+            this.createData();
             this.createRanges();
             this.createMerge(this.onflexGrid);
+
             this.draggedFlag = false;
           }
         },
@@ -645,7 +736,7 @@ export default {
     setUserSelectPoint(row) {
       this.userName = row.names;
     },
-    createData() {
+    dataSetted() {
       let setting = [];
       setting.push({
         uniq: 1,
@@ -654,40 +745,108 @@ export default {
         week: 0,
         data: 1,
       });
-      // setting.push({
-      //   uniq: 2,
-      //   stime: 700,
-      //   etime: 800,
-      //   week: 0,
-      //   data: 2,
-      // });
+      setting.push({
+        uniq: 2,
+        stime: 400,
+        etime: 600,
+        week: 0,
+        data: 1,
+      });
 
-      let timeline = [];
-      let minute = [0, 30];
-      for (let t = 4; t <= 22; t++) {
-        for (let m = 0; m <= 1; m++) {
-          let time =
-            this.getdoubleDigestNumer(t).toString() +
-            this.getdoubleDigestNumer(minute[m]).toString();
-          timeline.push(time);
-        }
-      }
-      this.timeline = timeline;
+      setting.push({
+        uniq: 3,
+        stime: 1700,
+        etime: 2000,
+        week: 0,
+        data: 5,
+      });
+      setting.push({
+        uniq: 4,
+        stime: 500,
+        etime: 600,
+        week: 1,
+        data: 5,
+      });
+      setting.push({
+        uniq: 5,
+        stime: 500,
+        etime: 600,
+        week: 1,
+        data: 5,
+      });
+      setting.push({
+        uniq: 6,
+        stime: 700,
+        etime: 800,
+        week: 0,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 7,
+        stime: 700,
+        etime: 800,
+        week: 1,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 8,
+        stime: 700,
+        etime: 800,
+        week: 2,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 9,
+        stime: 700,
+        etime: 800,
+        week: 3,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 10,
+        stime: 700,
+        etime: 800,
+        week: 4,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 11,
+        stime: 700,
+        etime: 800,
+        week: 5,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 12,
+        stime: 700,
+        etime: 800,
+        week: 6,
+        data: '起床',
+      });
+      setting.push({
+        uniq: 13,
+        stime: 800,
+        etime: 900,
+        week: 0,
+        data: 'TVドラマ・朝食',
+      });
 
-      // 時間別のrow表示位置
-      let rowTime = [];
-      for (let r = 0; r < this.timeline.length; r++) {
-        rowTime.push({
-          time: parseInt(this.timeline[r]),
-          r: r,
-        });
-      }
-      this.rowTime = rowTime;
+      setting.push({
+        uniq: 14,
+        stime: 430,
+        etime: 530,
+        week: 4,
+        data: 'q',
+      });
+      setting.push({
+        uniq: 15,
+        stime: 500,
+        etime: 630,
+        week: 4,
+        data: 'q',
+      });
 
-      // データにマージ用の値を登録
-      setting = this.settingMargePoint(setting);
-      console.log(setting);
-      this.settingData = setting;
+      this.settingData = this.sameDataAbbr(setting);
 
       let item = [];
       item.push(
@@ -755,83 +914,139 @@ export default {
       );
       this.servicedata = servicedata;
     },
+    /******************
+     * 同じデータを省略
+     * 重複データを削除、削除データの重複をまとめて、表示用配列に加える
+     *******************/
+    sameDataAbbr(data) {
+      let same = [];
+      let deletekey = [];
+      let checkData = data.slice();
+      // 同じデータの確認
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < checkData.length; j++) {
+          if (
+            data[i].uniq != checkData[j].uniq &&
+            data[i].stime == checkData[j].stime &&
+            data[i].etime == checkData[j].etime &&
+            data[i].week == checkData[j].week &&
+            data[i].data == checkData[j].data
+          ) {
+            // 共通のデータ
+            same.push(data[i]);
+            // データ削除用のキー
+            deletekey.push(i);
+          }
+        }
+      }
+      for (let d = 0; d < deletekey.length; d++) {
+        data[deletekey[d]] = '';
+      }
+      data = data.filter(Boolean);
+
+      // 重複データを一つにまとめる
+      let dataFiltered = same.filter(
+        (element, index, self) =>
+          self.findIndex(
+            (dataElement) =>
+              dataElement.stime === element.stime &&
+              dataElement.etime === element.etime &&
+              dataElement.week === element.week &&
+              dataElement.data === element.data
+          ) === index
+      );
+      let concat = dataFiltered.concat(data);
+
+      return concat;
+    },
+    createData() {
+      let setting = this.settingData;
+      let timeline = [];
+      let minute = [0, 30];
+      for (let t = 4; t <= 22; t++) {
+        for (let m = 0; m <= 1; m++) {
+          let time =
+            this.getdoubleDigestNumer(t).toString() +
+            this.getdoubleDigestNumer(minute[m]).toString();
+          timeline.push(time);
+        }
+      }
+      this.timeline = timeline;
+
+      // 指定の時間内の件数をカウント
+      // cnt:1→left
+      // cnt:2→right
+      // cnt:0→both
+      let cnt = 0;
+      for (let i = 0; i < setting.length; i++) {
+        let stime = setting[i].stime;
+        let etime = setting[i].etime;
+        let week = setting[i].week;
+        let uniq = setting[i].uniq;
+
+        for (let j = 0; j < setting.length; j++) {
+          if (uniq != setting[j].uniq && week == setting[j].week) {
+            if (!(stime >= setting[j].etime || etime <= setting[j].stime)) {
+              cnt++;
+            }
+          }
+        }
+        setting[i].cnt = cnt;
+        if (cnt == 2) {
+          cnt = 0;
+        }
+      }
+
+      // 時間別のrow表示位置
+      let rowTime = [];
+      for (let r = 0; r < this.timeline.length; r++) {
+        rowTime.push({
+          time: parseInt(this.timeline[r]),
+          r: r,
+        });
+      }
+      this.rowTime = rowTime;
+
+      // データにマージ用の値を登録
+      setting = this.settingMargePoint(setting);
+      this.settingData = setting;
+    },
     // 数値2桁
     getdoubleDigestNumer(number) {
       return ('0' + number).slice(-2);
     },
     settingMargePoint(data) {
       let array = [];
-      let wpos = [];
-      wpos.push(
-        // 月曜日
-        {
-          key: 0,
-          left: 1,
-          right: 2,
-        },
-        // 火曜日
-        {
-          key: 1,
-          left: 3,
-          right: 4,
-        },
-        // 水曜日
-        {
-          key: 2,
-          left: 5,
-          right: 6,
-        },
-        // 木曜日
-        {
-          key: 3,
-          left: 7,
-          right: 8,
-        },
-        // 金曜日
-        {
-          key: 4,
-          left: 9,
-          right: 10,
-        },
-        // 土曜日
-        {
-          key: 5,
-          left: 11,
-          right: 12,
-        },
-        // 日曜日
-        {
-          key: 6,
-          left: 13,
-          right: 14,
-        }
-      );
       let rowTime = this.rowTime;
-      console.log('rowTime');
-      console.log(rowTime);
       for (let i = 0; i < data.length; i++) {
         let sr = 0;
         let er = 0;
         // 時間ごとに表示行の調整
-        /*
         for (let t = 0; t < rowTime.length; t++) {
-          if (this.settingData[i].stime == rowTime[t].time) {
+          if (data[i] && data[i].stime == rowTime[t].time) {
             sr = rowTime[t].r;
           }
-          if (this.settingData[i].etime == rowTime[t].time) {
-            er = rowTime[t].r;
+          if (data[i] && data[i].etime == rowTime[t].time) {
+            er = rowTime[t].r - 1;
           }
         }
-*/
         array[i] = data[i];
         array[i]['strow'] = sr;
         array[i]['edrow'] = er;
-
-        array[i]['stcol'] = wpos[data[i].week].left;
-        array[i]['edcol'] = wpos[data[i].week].left;
+        if (data[i].cnt == 1) {
+          // 左側
+          array[i]['stcol'] = this.wpos[data[i].week].left;
+          array[i]['edcol'] = this.wpos[data[i].week].left;
+        } else if (data[i].cnt == 2) {
+          // 右側
+          array[i]['stcol'] = this.wpos[data[i].week].right;
+          array[i]['edcol'] = this.wpos[data[i].week].right;
+        } else {
+          // 両方
+          array[i]['stcol'] = this.wpos[data[i].week].left;
+          array[i]['edcol'] = this.wpos[data[i].week].right;
+        }
       }
-
-      console.log(array);
       return array;
     },
     /********************
@@ -883,89 +1098,34 @@ export default {
     onInitialize(flexGrid) {
       this.onflexGrid = flexGrid;
       flexGrid.frozenColumns = 1;
+
+      this.dataSetted();
       this.createData();
-      //      let _self = this;
-      //     console.log(_self.weekarray);
+      this.createRanges(true);
+      this.createMerge(flexGrid);
+
       flexGrid.cells.rows.defaultSize = 18;
       flexGrid.formatItem.addHandler(function (s, e) {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
       });
-
-      this.createRanges();
-      this.createMerge(flexGrid);
     },
-    groupBy(xs, key) {
-      let row = 0;
-      let i2 = 0;
-      let start = [];
-      let last = [];
-      let text = [];
-      //  let week = key.replace(/[0-9]/g, '');
-      let num = key.replace(/[^0-9]/g, '');
-
-      // console.log(key);
-      //  console.log(week);
-      //console.log(num);
-      for (let i = 0; i < xs.length; i++) {
-        // 時間軸の時
-        if (key == 'times') {
-          i2 = i - 1;
-          if (row == 0) {
-            if (i - 1 < 0) {
-              i = 0;
-            } else {
-              i = i - 1;
-            }
-            start.push(i);
-            start.push(i);
-            text.push(xs[i][key]);
-            text.push(xs[i][key]);
-          } else if (xs[i][key] != xs[i2][key]) {
-            last.push(i - 1);
-            last.push(i - 1);
-            row = 0;
-            continue;
-          }
-          row++;
-        } else {
-          // 左の列
-          if (num == '1') {
-            start.push(i);
-          }
-          // 右の列
-          if (num == '2') {
-            last.push(i);
-          }
+    createRanges(defaultFlag) {
+      let headerRanges = [];
+      // 曜日軸のグループ化
+      for (let i = 1; i <= 7; i++) {
+        headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
+      }
+      this.headerRanges = headerRanges;
+      if (defaultFlag) {
+        for (let r = 0; r < this.timeline.length; r++) {
+          this.onflexGrid.cells.rows.insert(r, new wjGrid.Row());
+          // this.onflexGrid.cells.setCellData(r, 0, this.timeline[r]);
         }
       }
 
-      if (key == 'times') {
-        last.push(xs.length - 1);
-        last.push(xs.length - 1);
-      }
-
-      let returns = {
-        start: start,
-        last: last,
-        text: text,
-      };
-      return returns;
-    },
-    createRanges() {
-      let headerRanges = [];
       let ranges = [];
-      // 曜日軸のグループ化
-      for (let i = 1; i <= 7; i++) {
-        //      headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
-      }
-      this.headerRanges = headerRanges;
-
-      for (let r = 0; r < this.timeline.length; r++) {
-        this.onflexGrid.cells.rows.insert(r, new wjGrid.Row());
-        this.onflexGrid.cells.setCellData(r, 0, this.timeline[r]);
-      }
 
       for (let i = 0; i < this.settingData.length; i++) {
         this.onflexGrid.cells.setCellData(
@@ -984,57 +1144,40 @@ export default {
         );
       }
 
-      this.ranges = ranges;
-
-      /*
-      let headerRanges = [];
-      let ranges = [];
-      let mergeGroup = [];
-      let start = [];
-      let last = [];
-      let text = [];
-
-      // 時間軸のグループ化
-      mergeGroup = this.groupBy(this.viewdata, 'times');
-      start = mergeGroup.start;
-      last = mergeGroup.last;
-      // text = mergeGroup.text;
-      for (let i = 0; i < start.length; i++) {
-        // if (text[i]) {
-        ranges.push(new wjGrid.CellRange(start[i], 0, last[i], 0));
-        // }
-      }
-      // 曜日軸のグループ化
-      for (let i = 1; i <= 7; i++) {
-        headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
-      }
-      this.headerRanges = headerRanges;
-      // 週間のグループ化
-      for (let wk = 0; wk < this.weekarray.length; wk++) {
-        mergeGroup = this.groupBy(this.viewdata, this.weekarray[wk].binding);
-        start = mergeGroup.start;
-        last = mergeGroup.last;
-        text = mergeGroup.text;
-
-        console.log(start);
-        console.log(last);
-        console.log(text);
-
-        for (let i = 0; i < start.length; i++) {
-          if (text[i]) {
-            ranges.push(
-              new wjGrid.CellRange(
-                start[i],
-                this.weekarray[wk].key,
-                last[i],
-                this.weekarray[wk].key + 1
-              )
-            );
+      // 空欄部分をマージ
+      for (let r = 0; r < this.timeline.length; r++) {
+        for (let w = 0; w < this.weekarray.length; w++) {
+          let dataLeft = this.onflexGrid.cells.getCellData(r, w);
+          let dataRight = this.onflexGrid.cells.getCellData(r, w + 1);
+          if (!dataLeft && !dataRight && w % 2 == 1) {
+            ranges.push(new wjGrid.CellRange(r, w, r, w));
           }
         }
       }
+
+      // 時間軸をマージ
+      ranges.push(new wjGrid.CellRange(0, 0, 1, 0));
+      this.onflexGrid.cells.setCellData(0, 0, ' ');
+      ranges.push(new wjGrid.CellRange(2, 0, 5, 0));
+      this.onflexGrid.cells.setCellData(2, 0, '06:00');
+      ranges.push(new wjGrid.CellRange(6, 0, 9, 0));
+      this.onflexGrid.cells.setCellData(6, 0, '08:00');
+      ranges.push(new wjGrid.CellRange(10, 0, 13, 0));
+      this.onflexGrid.cells.setCellData(10, 0, '10:00');
+      ranges.push(new wjGrid.CellRange(14, 0, 17, 0));
+      this.onflexGrid.cells.setCellData(14, 0, '12:00');
+      ranges.push(new wjGrid.CellRange(18, 0, 21, 0));
+      this.onflexGrid.cells.setCellData(18, 0, '14:00');
+      ranges.push(new wjGrid.CellRange(22, 0, 25, 0));
+      this.onflexGrid.cells.setCellData(22, 0, '16:00');
+      ranges.push(new wjGrid.CellRange(26, 0, 29, 0));
+      this.onflexGrid.cells.setCellData(26, 0, '18:00');
+      ranges.push(new wjGrid.CellRange(30, 0, 33, 0));
+      this.onflexGrid.cells.setCellData(30, 0, '20:00');
+      ranges.push(new wjGrid.CellRange(34, 0, 37, 0));
+      this.onflexGrid.cells.setCellData(34, 0, '22:00');
+
       this.ranges = ranges;
-      */
     },
     createMerge(flexGrid) {
       let ranges = this.ranges;
