@@ -2,11 +2,10 @@
   <div>
     <wj-flex-grid
       id="kadaiGrid"
+      :headersVisibility="'Column'"
       :initialized="onInitialized"
       :itemsSource="viewData"
       :allowDragging="'Both'"
-      :draggingRow="handleDraggingRow"
-      :draggedRow="handleDraggedRow"
       :autoRowHeights="true"
       :style="styles"
     >
@@ -113,6 +112,7 @@
                   <v-col>
                     <v-card class="d-flex justify-end" flat tile>
                       <div>
+                        <v-btn small @click="rowSort('service')">順変更</v-btn>
                         <v-btn small @click="rowAdd('service')">行追加</v-btn>
                         <v-btn small @click="rowDelete('service')" class="ml-2"
                           >行削除</v-btn
@@ -124,10 +124,9 @@
                 <wj-flex-grid
                   id="serviceGrid"
                   :autoRowHeights="true"
+                  :headersVisibility="'Column'"
                   :itemsSource="serviceData"
                   :initialized="onInitializedService"
-                  :draggingRow="handleDraggingRow"
-                  :draggedRow="handleDraggedRow"
                   :allowDragging="'Both'"
                   class="mt-1"
                 >
@@ -264,6 +263,7 @@ export default {
   data() {
     return {
       viewData: [],
+      onflexGrid: [],
       viewDataLength: 0,
       headerheight: 240,
       editTextDialog: false,
@@ -281,6 +281,7 @@ export default {
         '行動援護',
         '重度障害者等包括支援',
       ],
+      sortEditFlag: false,
     };
   },
   created() {},
@@ -307,6 +308,24 @@ export default {
      */
     registButton() {
       alert('課題登録ボタン');
+    },
+    /************************
+     * 順変更
+     */
+    rowSort(type) {
+      // 福祉サービスダイアログの配列に追加
+      if (type == 'service') {
+        this.createServiceData(this.serviceData.length + 1);
+      }
+      // 課題支援配列に追加
+      if (type == 'view') {
+        // 並び順を変更するフラグ
+        this.sortEditFlag = true;
+        for (let i = 0; i < this.viewData.length; i++) {
+          this.viewData[i].sort = '';
+        }
+        this.onflexGrid.refresh();
+      }
     },
     /************************
      * 行追加
@@ -535,28 +554,12 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-    /*********************
-     * ドラッグで並び替え
-     */
-    handleDraggingRow(s, e) {
-      this.dragIndex = e.row;
-      s.collectionView.moveCurrentToPosition(this.dragIndex);
-    },
-    handleDraggedRow(s, e) {
-      let dropIndex = e.row,
-        arr = s.collectionView.sourceCollection;
-      s.collectionView.deferUpdate(() => {
-        let item = arr[this.dragIndex];
-        arr.splice(this.dragIndex, 1);
-        arr.splice(dropIndex, 0, item);
-        s.collectionView.moveCurrentToPosition(dropIndex);
-        console.log(this.viewData);
-      });
-    },
+
     /*******************************
      * 一覧
      */
     onInitialized(flexGrid) {
+      this.onflexGrid = flexGrid;
       this.createData();
       this.createHeader(flexGrid);
       this.createFormat(flexGrid);
@@ -569,6 +572,21 @@ export default {
         if (ht.col == 4) {
           _self.openDialog(ht.row);
           _self.createServiceData();
+        }
+        // 並び順変更
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          if (_self.sortEditFlag == true) {
+            if (ht.col == 0) {
+              let sorts = _self.viewData.map(function (value) {
+                return value.sort;
+              });
+              let max = sorts.reduce(function (a, b) {
+                return Math.max(a, b);
+              });
+              _self.viewData[ht.row].sort = max + 1;
+              _self.onflexGrid.refresh();
+            }
+          }
         }
       });
     },

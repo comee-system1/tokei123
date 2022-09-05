@@ -427,7 +427,6 @@ export default {
       } else {
         document.body.style.zoom = 1.5;
       }
-      alert(document.body.style.zoom);
     },
   },
 };

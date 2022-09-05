@@ -172,13 +172,14 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import { getConnect } from '@connect/getConnect';
 export default {
   components: { AlphabetButton },
   data() {
     return {
       yoteisyaIcrnHeaderList: [
         {
-          dataname: 'code',
+          dataname: 'rcodeD',
           title: 'コード',
           kbntitle: '基本情報',
           chutitl: '',
@@ -186,7 +187,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'name',
+          dataname: 'rname',
           title: '利用者名',
           kbntitle: '基本情報',
           chutitl: '',
@@ -194,7 +195,7 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'sichoson',
+          dataname: 'shichoName',
           title: '市区\n町村',
           kbntitle: '基本情報',
           chutitl: '',
@@ -218,15 +219,15 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'yoteiMonth',
+          dataname: 'yoteiM',
           title: '予定\n月',
           kbntitle: 'モニタリング報告書',
           chutitl: '',
           width: '1*',
-          align: 'center',
+          align: 'right',
         },
         {
-          dataname: 'endMonth',
+          dataname: 'shukiD',
           title: '終\n期\n月',
           kbntitle: 'モニタリング報告書',
           chutitl: '',
@@ -234,7 +235,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'chusi',
+          dataname: 'chusiD',
           title: '中\n止',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
@@ -242,7 +243,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'enki',
+          dataname: 'enkiD',
           title: '延\n期',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
@@ -258,7 +259,7 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'jikaiMonth',
+          dataname: 'nextYoteiM',
           title: '次回\n予定月',
           kbntitle: 'モニタリング報告書',
           chutitl: '中止・延期',
@@ -267,7 +268,7 @@ export default {
         },
 
         {
-          dataname: 'jissiYmd',
+          dataname: 'mymdD',
           title: '実施日',
           kbntitle: 'モニタリング報告書',
           chutitl: 'モニタリング実施',
@@ -406,17 +407,14 @@ export default {
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(3, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
-      flexGrid.columnHeaders.rows[3].allowMerging = false;
 
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 5;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
-      flexGrid.columnHeaders.rows[3].height = sysConst.GRDROWHEIGHT.Header / 2;
       // flexGrid.columnHeaders.hostElement.style.fontSize = '16px';
       console.log(flexGrid.columnHeaders.hostElement.style);
       flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
@@ -465,7 +463,6 @@ export default {
           colIndex,
           this.yoteisyaIcrnHeaderList[colIndex].title
         );
-        flexGrid.columnHeaders.setCellData(3, colIndex, ' ');
       }
       flexGrid.columnFooters.setCellData(0, 3, '合計');
       // flexGrid.endUpdate();
@@ -476,22 +473,24 @@ export default {
     },
 
     onItemsSourceChanged(flexGrid) {
+      // 初期選択を解除
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       this.screenFlag = false;
       this.loading = false;
       flexGrid.columnFooters.setCellData(
         0,
         6,
-        this.viewdatayoteisya.filter((x) => x.endMonth.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.shukiD.length > 0).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         7,
-        this.viewdatayoteisya.filter((x) => x.chusi.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.chusiD.length > 0).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         8,
-        this.viewdatayoteisya.filter((x) => x.enki.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.enkiD.length > 0).length
       );
       flexGrid.columnFooters.setCellData(
         0,
@@ -546,8 +545,6 @@ export default {
         20,
         this.viewdatayoteisya.filter((x) => x.kasan.length > 0).length
       );
-      // 初期選択を解除
-      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
     filterApplied(e) {
       console.log(e);
@@ -559,25 +556,6 @@ export default {
       e.cell.style.borderRight = '';
       if (
         e.panel == flexGrid.columnHeaders &&
-        (e.row == 2 ||
-          (e.row == 1 && e.col <= 4) ||
-          (e.row == 0 && e.col == 13) ||
-          (e.row == 0 && e.col == 14) ||
-          (e.row == 0 && e.col == 18) ||
-          (e.row == 0 && e.col == 21) ||
-          (e.row == 1 && e.col == 5) ||
-          (e.row == 1 && e.col == 6) ||
-          (e.row == 1 && e.col == 15) ||
-          (e.row == 1 && e.col == 16) ||
-          (e.row == 1 && e.col == 17) ||
-          (e.row == 1 && e.col == 19) ||
-          (e.row == 1 && e.col == 20) ||
-          (e.row == 1 && e.col == 21))
-      ) {
-        e.cell.style.borderBottom = 'None';
-      }
-      if (
-        e.panel == flexGrid.columnHeaders &&
         ((e.row == 0 && e.col == 0) ||
           (e.row == 0 && e.col == 3) ||
           (e.row == 0 && e.col == 5) ||
@@ -586,9 +564,9 @@ export default {
           (e.row >= 1 && e.col == 4) ||
           (e.row >= 1 && e.col == 6) ||
           (e.row == 1 && e.col == 7) ||
-          (e.row >= 2 && e.col == 10) ||
+          (e.row == 2 && e.col == 10) ||
           (e.row == 1 && e.col == 11) ||
-          (e.row >= 2 && e.col == 12) ||
+          (e.row == 2 && e.col == 12) ||
           (e.row >= 1 && e.col == 20) ||
           e.col == 14 ||
           e.col == 18)
@@ -664,8 +642,22 @@ export default {
         //   this.userFilter();
         //   this.screenFlag = false;
         // });
-        this.createdemodata();
-        this.userFilter();
+        let params = {
+          uniqid: 1,
+          traceid: 123,
+          pJigyoid: 43,
+          pSym: this.kikanYm.format('YYYYMM'),
+          pEym: this.kikanYm.format('YYYYMM'),
+        };
+        console.log(params);
+        getConnect('/moniJissiView', params).then((result) => {
+          console.log(12345);
+          console.log(result);
+          this.viewdatayoteisyaAll = result;
+          this.userFilter();
+        });
+        // this.createdemodata();
+        // this.userFilter();
       } else {
         this.userFilter();
       }

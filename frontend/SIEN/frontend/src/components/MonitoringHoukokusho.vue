@@ -137,13 +137,15 @@
                 absolute
                 temporary
                 right
-                :width="400"
-                :min-width="400"
+                hide-overlay
+                :width="200"
+                :min-width="200"
+                style="font-size: 12px"
               >
                 <v-list class="pa-0 ma-0" dense>
                   <v-card
                     class="koumokuTitle_c pa-1"
-                    style="background: lightgray"
+                    style="background: lightgray; min-width: 200px"
                     outlined
                     tile
                     :height="30"
@@ -173,8 +175,8 @@
                         <table>
                           <tr>
                             <td width="10%" align="center">{{ item.no }}</td>
-                            <td width="30%" align="center">{{ item.day }}</td>
-                            <td width="20%" align="left">{{ item.kanryou }}</td>
+                            <td width="40%" align="center">{{ item.day }}</td>
+                            <td width="10%" align="left">{{ item.kanryou }}</td>
                             <td width="40%" align="left">{{ item.tantou }}</td>
                           </tr>
                         </table>
@@ -191,20 +193,33 @@
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 総合的な援助の方針
               </v-card>
-              <v-card
+              <!-- <v-card
                 class="koumokuData2Read pa-1"
                 outlined
                 tile
                 :ripple="false"
               >
                 {{ getHousin }}
-              </v-card>
+              </v-card> -->
+              <v-textarea
+                class="ma-0 pa-0"
+                no-resize
+                v-model="viewdataAll.housin"
+                auto-grow
+                hide-details
+                readonly
+                solo
+                flat
+                dense
+                outlined
+                style="font-size: 14px; height: auto; pointer-events: none"
+              ></v-textarea>
             </div>
             <div style="width: 50%">
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 全体の状況
               </v-card>
-              <v-card
+              <!-- <v-card
                 class="koumokuData2 always-show-scrollbar pa-1"
                 outlined
                 tile
@@ -212,7 +227,19 @@
                 @click="textClicked()"
               >
                 {{ getJyoukyou }}
-              </v-card>
+              </v-card> -->
+              <v-textarea
+                class="ma-0 pa-0"
+                no-resize
+                v-model="viewdataAll.jyoukyou"
+                auto-grow
+                hide-details
+                solo
+                flat
+                dense
+                outlined
+                style="font-size: 14px; height: auto"
+              ></v-textarea>
             </div>
           </v-row>
 
@@ -664,22 +691,22 @@ export default {
           index: 0,
           no: 3,
           day: '2020/01/01',
-          kanryou: '未完了',
-          tantou: '担当小五郎',
+          kanryou: '□',
+          tantou: '担当小',
         },
         {
           index: 1,
           no: 2,
           day: '2019/01/01',
-          kanryou: '完了済み',
-          tantou: '担当次郎',
+          kanryou: '☑',
+          tantou: '担当次',
         },
         {
           index: 2,
           no: 1,
           day: '2018/01/01',
-          kanryou: '完了済み',
-          tantou: '担当三郎',
+          kanryou: '☑',
+          tantou: '担当三',
         },
       ],
       drawer: false,
@@ -839,13 +866,11 @@ export default {
 
             if (chkval == 0) {
               e.cell.innerHTML =
-                "<button class='grdbtn' value='0' style='background:" +
-                sysConst.COLOR.gridErrBackground +
+                "<button class='grdbtn' value='0' style='border-color:red" +
                 "'>無</button><button class='grdbtn' value='1'>有</button>";
             } else {
               e.cell.innerHTML =
-                "<button class='grdbtn' value='0' >無</button><button class='grdbtn' value='1' style='background:" +
-                sysConst.COLOR.gridErrBackground +
+                "<button class='grdbtn' value='0' >無</button><button class='grdbtn' value='1' style='border-color:red" +
                 "'>有</button>";
             }
           }
@@ -888,7 +913,7 @@ export default {
           jissi: true,
           mokuhyo: '',
           jiki: '6か月',
-          jyoukyou: 'たちつてと',
+          jyoukyou: 'たち<br>つてと',
           manzokudo: 'なにぬねの',
           tasseikan: 'はひふへほ',
           kaiketuhouhou: 'まみむめも',
@@ -1058,7 +1083,7 @@ export default {
     },
     rirekiClicked(rirekiObj) {
       console.log(rirekiObj);
-      this.drawer = !this.drawer;
+      // this.drawer = !this.drawer;
     },
     inputClicked(kbn) {
       console.log(kbn);
@@ -1290,7 +1315,8 @@ div#monitoringHoukokusho {
   button.grdbtn {
     border: 1px solid $light-gray;
     margin: 0px 1px;
-    border-radius: 3px;
+    border-radius: 50%;
+    border-color: transparent;
     width: 20px;
     color: $black !important;
     &:hover {
@@ -1351,7 +1377,7 @@ div#monitoringHoukokusho {
   .v-text-field__slot
   textarea {
   padding-right: 0px;
-  overflow-y: scroll !important;
+  // overflow-y: scroll !important;
 }
 .always-show-scrollbar {
   overflow-y: scroll !important;

@@ -15,16 +15,16 @@
     </v-container>
     <v-container no-gutters fluid class="ma-0 pa-0">
       <v-tabs-items class="v-tabCont" v-model="tab">
-        <v-tab-item value="KeikakuIcrn">
+        <v-tab-item value="KeikakuIcrn" transition="none">
           <KeikakuIcrn></KeikakuIcrn>
         </v-tab-item>
-        <v-tab-item value="Houkokusyo">
+        <v-tab-item value="Houkokusyo" transition="none">
           <MonitoringHoukokusho></MonitoringHoukokusho>
         </v-tab-item>
-        <v-tab-item value="SyukanKeikaku">
+        <v-tab-item value="SyukanKeikaku" transition="none">
           <MonitoringSyukanKeikaku></MonitoringSyukanKeikaku>
         </v-tab-item>
-        <v-tab-item value="MonitoringJissiIcrn">
+        <v-tab-item value="MonitoringJissiIcrn" transition="none">
           <MonitoringJissiIcrn></MonitoringJissiIcrn>
         </v-tab-item>
       </v-tabs-items>

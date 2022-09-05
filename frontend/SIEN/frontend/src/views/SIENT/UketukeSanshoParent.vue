@@ -15,14 +15,18 @@
     </v-container>
     <v-container no-gutters fluid class="ma-0 pa-0">
       <v-tabs-items class="v-tabCont" v-model="tab">
-        <v-tab-item value="Sansyo"> <UketukeIcrn></UketukeIcrn> </v-tab-item>
-        <v-tab-item value="SoudanCount">
+        <v-tab-item value="Sansyo" transition="none">
+          <UketukeIcrn></UketukeIcrn>
+        </v-tab-item>
+        <v-tab-item value="SoudanCount" transition="none">
           <SoudanCount></SoudanCount>
         </v-tab-item>
-        <v-tab-item value="SoudanCountUtiwake" eager>
+        <v-tab-item value="SoudanCountUtiwake" eager transition="none">
           <SoudanCountUtiwake></SoudanCountUtiwake>
         </v-tab-item>
-        <v-tab-item value="RiyouCheck"> Tab 5 Content </v-tab-item>
+        <v-tab-item value="RiyouCheck" transition="none">
+          Tab 5 Content
+        </v-tab-item>
       </v-tabs-items>
     </v-container>
   </div>

@@ -219,6 +219,7 @@
             </v-tabs>
 
             <v-btn-toggle tile v-if="inputTypemodel == 'tab-1'">
+              <v-btn small @click="rowSort('view')">順変更</v-btn>
               <v-btn small @click="rowAdd('view')">行追加</v-btn>
               <v-btn small @click="rowDelete('view')">行削除</v-btn>
             </v-btn-toggle>
@@ -386,6 +387,9 @@ export default {
       s.header = this.keikakuKubun[s.selectedIndex].name;
     },
 
+    rowSort(type) {
+      this.$refs.childkadai.rowSort(type);
+    },
     rowAdd(type) {
       this.$refs.childkadai.rowAdd(type);
     },

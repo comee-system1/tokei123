@@ -1,5 +1,5 @@
 <template>
-  <div id="monitoringSyukanKeikaku">
+  <div id="keikakuWeek">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -28,7 +28,7 @@
                 outlined
                 tile
               >
-                aaa
+                {{ userName }}
               </v-card>
               <v-card
                 outlined
@@ -99,7 +99,7 @@
           <v-row no-gutters>
             <v-col :cols="gridMain">
               <wj-flex-grid
-                id="monitoringSyukanKeikakuGrid"
+                id="keikakuWeekGrid"
                 :selectionMode="'4'"
                 :headersVisibility="1"
                 :alternatingRowStep="0"
@@ -300,7 +300,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="monitoringSyukanKeikakuDatepicker"
+        id="keikakuWeekDatepicker"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
@@ -340,11 +340,10 @@
 </template>
 
 <script>
-import dayjs from 'dayjs';
-import 'dayjs/locale/ja';
+import moment from 'moment';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from './UserList.vue';
-
+import * as wjcCore from '@grapecity/wijmo';
 export default {
   props: {
     dispHideBar: Boolean,
@@ -370,11 +369,11 @@ export default {
       datepicker_dialog: false,
       picker: '',
       getYm:
-        dayjs().format('YYYY') +
+        moment().format('YYYY') +
         '年' +
-        dayjs().format('MM') +
+        moment().format('MM') +
         '月' +
-        dayjs().format('DD') +
+        moment().format('DD') +
         '日',
       keikakuKubun: [
         { id: 0, name: 'サービス等利用計画' },
@@ -436,7 +435,7 @@ export default {
       itemdata: [],
       servicedata: [],
       ranges: [],
-      headerheight: 180,
+      headerheight: 240,
       textareaHeight: '',
       draggedFlag: false, // gridをクリックしてdragしている情報を保持する
       position: [],
@@ -446,6 +445,7 @@ export default {
       weekActiveText: '', // 週単位以外のサービス
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
+      userName: '',
     };
   },
   created() {},
@@ -479,12 +479,11 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('monitoringSyukanKeikakuGrid') != null) {
-        document.getElementById('monitoringSyukanKeikakuGrid').style.height =
+      if (document.getElementById('keikakuWeekGrid') != null) {
+        document.getElementById('keikakuWeekGrid').style.height =
           window.innerHeight - this.headerheight + 'px';
 
-        let ht = document.getElementById('monitoringSyukanKeikakuGrid').style
-          .height;
+        let ht = document.getElementById('keikakuWeekGrid').style.height;
         this.textareaHeight = parseInt(ht.replace(/[^0-9]/g, '') / 2) + 'px';
       }
     },
@@ -544,7 +543,6 @@ export default {
      * グリッドのドラックドロップ
      */
     _makeDragSource(s) {
-      console.log('drag');
       s.addEventListener(
         s.hostElement,
         'mousedown',
@@ -599,8 +597,7 @@ export default {
      * ユーザー一覧を押下
      */
     setUserSelectPoint(row) {
-      console.log(row);
-      alert('test');
+      this.userName = row.names;
     },
     createData() {
       let setting = [];
@@ -1044,17 +1041,29 @@ export default {
     },
     onInitializeItemChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      let tooltip = new wjcCore.Tooltip();
+      let _self = this;
+      let bind = '';
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel == flexGrid.cells) {
+          if (_self.weekarray[e.col - 1]) {
+            bind =
+              e.panel.rows[e.row].dataItem[_self.weekarray[e.col - 1].binding];
+          }
+          tooltip.setTooltip(e.cell, bind);
+        }
+      });
     },
     onInitialize(flexGrid) {
       this.onflexGrid = flexGrid;
       flexGrid.frozenColumns = 1;
       this.createData();
-      flexGrid.columnHeaders.rows[0].height = 13;
+
       flexGrid.formatItem.addHandler(function (s, e) {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
-        flexGrid.cells.rows.defaultSize = 13;
+        flexGrid.cells.rows.defaultSize = 14.5;
       });
       this.createRanges();
       this.createMerge(flexGrid);
@@ -1147,15 +1156,15 @@ export default {
     },
     inputCalendarClick() {
       this.picker =
-        dayjs().format('YYYY') +
+        moment().format('YYYY') +
         '-' +
-        dayjs().format('MM') +
+        moment().format('MM') +
         '-' +
-        dayjs().format('DD');
+        moment().format('DD');
       this.datepicker_dialog = true;
     },
     monthSelectWeek() {
-      this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
+      this.getYm = moment(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -1166,7 +1175,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#monitoringSyukanKeikaku {
+div#keikakuWeek {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
@@ -1208,7 +1217,7 @@ div#monitoringSyukanKeikaku {
   }
 }
 
-#monitoringSyukanKeikakuDatepicker {
+#keikakuWeekDatepicker {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;

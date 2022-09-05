@@ -342,6 +342,8 @@
 
 <script>
 import moment from 'moment';
+import dayjs from 'dayjs';
+
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from './UserList.vue';
 //import * as wjcCore from '@grapecity/wijmo';
@@ -738,116 +740,32 @@ export default {
     },
     dataSetted() {
       let setting = [];
+      let uniq = 1;
       setting.push({
-        uniq: 1,
-        stime: 400,
-        etime: 600,
-        week: 0,
-        data: 1,
-      });
-      setting.push({
-        uniq: 2,
-        stime: 400,
-        etime: 600,
+        Intcode: uniq++,
+        stime: '0500',
+        etime: '0600',
         week: 0,
         data: 1,
       });
 
       setting.push({
-        uniq: 3,
-        stime: 1700,
-        etime: 2000,
-        week: 0,
-        data: 5,
-      });
-      setting.push({
-        uniq: 4,
-        stime: 500,
-        etime: 600,
-        week: 1,
-        data: 5,
-      });
-      setting.push({
-        uniq: 5,
-        stime: 500,
-        etime: 600,
-        week: 1,
-        data: 5,
-      });
-      setting.push({
-        uniq: 6,
-        stime: 700,
-        etime: 800,
+        Intcode: uniq++,
+        stime: '0630',
+        etime: '0800',
         week: 0,
         data: '起床',
       });
-      setting.push({
-        uniq: 7,
-        stime: 700,
-        etime: 800,
-        week: 1,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 8,
-        stime: 700,
-        etime: 800,
-        week: 2,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 9,
-        stime: 700,
-        etime: 800,
-        week: 3,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 10,
-        stime: 700,
-        etime: 800,
-        week: 4,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 11,
-        stime: 700,
-        etime: 800,
-        week: 5,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 12,
-        stime: 700,
-        etime: 800,
-        week: 6,
-        data: '起床',
-      });
-      setting.push({
-        uniq: 13,
-        stime: 800,
-        etime: 900,
-        week: 0,
-        data: 'TVドラマ・朝食',
-      });
+      // setting.push({
+      //   Intcode: uniq++,
+      //   stime: '0830',
+      //   etime: '0900',
+      //   week: 0,
+      //   data: '起床',
+      // });
 
-      setting.push({
-        uniq: 14,
-        stime: 430,
-        etime: 530,
-        week: 4,
-        data: 'q',
-      });
-      setting.push({
-        uniq: 15,
-        stime: 500,
-        etime: 630,
-        week: 4,
-        data: 'q',
-      });
-
-      this.settingData = this.sameDataAbbr(setting);
-
+      this.settingData = this.separateData(setting);
+      //this.settingData = this.sameDataAbbr(setting);
       let item = [];
       item.push(
         {
@@ -913,6 +831,33 @@ export default {
         }
       );
       this.servicedata = servicedata;
+    },
+    /*******************
+     * データを30分ごとに分割
+     ****************/
+    separateData(data) {
+      let array = [];
+      let now = dayjs().format('YYYY-MM-DD');
+      for (let i = 0; i < data.length; i++) {
+        let calc = parseInt((data[i].etime - data[i].stime) / 50);
+        for (let j = 0; j < calc; j++) {
+          let stime = dayjs(now + ' ' + data[i].stime)
+            .add(30 * j, 'minutes')
+            .format('hmm');
+          let sobj = dayjs(now + ' ' + data[i].stime).add(30 * j, 'minutes');
+          let etime = dayjs(sobj).add(30, 'minutes').format('hmm');
+          array.push({
+            Intcode: data[i].Intcode,
+            stime: stime,
+            etime: etime,
+            week: data[i].week,
+            data: data[i].data,
+          });
+        }
+      }
+      // console.log(data);
+      // console.log(array);
+      return array;
     },
     /******************
      * 同じデータを省略
@@ -982,10 +927,10 @@ export default {
         let stime = setting[i].stime;
         let etime = setting[i].etime;
         let week = setting[i].week;
-        let uniq = setting[i].uniq;
+        let Intcode = setting[i].Intcode;
 
         for (let j = 0; j < setting.length; j++) {
-          if (uniq != setting[j].uniq && week == setting[j].week) {
+          if (Intcode != setting[j].Intcode && week == setting[j].week) {
             if (!(stime >= setting[j].etime || etime <= setting[j].stime)) {
               cnt++;
             }
@@ -996,7 +941,7 @@ export default {
           cnt = 0;
         }
       }
-
+      console.log(setting);
       // 時間別のrow表示位置
       let rowTime = [];
       for (let r = 0; r < this.timeline.length; r++) {

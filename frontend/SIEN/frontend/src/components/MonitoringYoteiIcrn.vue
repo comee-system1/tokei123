@@ -53,10 +53,6 @@
         >
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
-        <!-- <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-          ○：予定 ☆：予定外 ●★：報告書完了 延：延期 止：中止 終：終期月
-          中：中途月更新 廃：ｻｰﾋﾞｽ廃止
-        </v-card> -->
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle pa-1" outlined tile> 担当者 </v-card>
@@ -144,14 +140,15 @@
         <v-layout class="right">
           <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                class="itemBtn ml-1"
+              <v-card
                 v-bind="attrs"
                 v-on="on"
-                :ripple="false"
+                class="koumokuTitle pa-1 ml-1"
+                outlined
+                tile
               >
                 記号説明
-              </v-btn>
+              </v-card>
             </template>
             <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
               {{ hanrei.name }}
@@ -169,9 +166,6 @@
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           <span class="miman mr-1" style="width: 80px">18歳未満</span>
         </v-card>
-        <!-- <div
-          style="height: 100%; display: flex; position: relative; left: 340px"
-        > -->
         <v-layout class="right">
           <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 入力 </v-card>
           <v-btn-toggle class="flex-wrap ml-1" color="primary">
@@ -196,7 +190,7 @@
           :allowAddNew="false"
           :allowDelete="false"
           :allowPinning="false"
-          :allowMerging="'AllHeaders'"
+          :allowMerging="'None'"
           :allowResizing="true"
           :allowSorting="false"
           :allowDragging="false"
@@ -552,14 +546,17 @@ export default {
       mainFlexGrid: [],
       subFlexGrid: [],
       hanreiList: [
-        { val: 0, name: '○：予定' },
-        { val: 1, name: '☆：予定外' },
-        { val: 2, name: '●★：報告書完了' },
-        { val: 3, name: '延：延期' },
-        { val: 4, name: '止：中止' },
-        { val: 5, name: '更：終期月更新' },
-        { val: 6, name: '変：サービス終了' },
-        { val: 7, name: '―：予定なし' },
+        { val: 0, name: '（上段）' },
+        { val: 1, name: '○：予定' },
+        { val: 2, name: '☆：予定外' },
+        { val: 3, name: '●★：報告書完了' },
+        { val: 4, name: '✕：実施無し' },
+        { val: 5, name: '（下段）' },
+        { val: 6, name: '延：延期' },
+        { val: 7, name: '止：中止' },
+        { val: 8, name: '更：終期月更新' },
+        { val: 9, name: '変：サービス終了' },
+        { val: 10, name: '―：予定なし' },
       ],
     };
   },
@@ -589,15 +586,12 @@ export default {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[2].allowMerging = false;
       flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header / 2;
       flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.alternatingRowStep = 0;
@@ -617,18 +611,9 @@ export default {
         col.width = this.keikakuIcrnHeaderList[colIndex].width;
         col.minWidth = this.keikakuIcrnHeaderList[colIndex].minwidth;
         col.align = this.keikakuIcrnHeaderList[colIndex].align;
-        col.allowMerging = true;
         col.multiLine = true;
         col.allowResizing = true;
-        // if (colIndex == 2) {
-        //   col.allowResizing = true;
-        // } else {
-        //   col.allowResizing = false;
-        // }
-        // if (colIndex == 5 || colIndex == 6 || colIndex == 8) {
-        //   col.format = sysConst.FORMAT.Ymd;
-        // }
-
+        col.aggregate = 'Cnt';
         flexGrid.columnHeaders.setCellData(
           0,
           colIndex,
@@ -648,16 +633,21 @@ export default {
             'モニタリング予定件数'
           );
         }
+
         flexGrid.columnHeaders.setCellData(2, colIndex, ' ');
       }
       this.setKeikakuYm(flexGrid);
+      this.setMerge(flexGrid);
       flexGrid.endUpdate();
     },
 
     onItemsSourceChanging(flexGrid) {
-      flexGrid.beginUpdate();
-      this.setKeikakuYm(flexGrid);
-      flexGrid.endUpdate();
+      if (flexGrid.columns.length > 0) {
+        flexGrid.beginUpdate();
+        this.setKeikakuYm(flexGrid);
+        this.setMerge(flexGrid);
+        flexGrid.endUpdate();
+      }
     },
     setKeikakuYm(flexGrid) {
       if (flexGrid.columnHeaders.columns.length > 0) {
@@ -700,6 +690,53 @@ export default {
         }
       }
     },
+    setMerge(flexGrid) {
+      if (this.dispYmList.length == 0) {
+        return;
+      }
+      let mm = new wjGrid.MergeManager();
+      let ranges = [];
+      ranges = [
+        new wjGrid.CellRange(0, 0, 1, 0),
+        new wjGrid.CellRange(0, 1, 1, 1),
+        new wjGrid.CellRange(0, 2, 1, 2),
+        new wjGrid.CellRange(0, 3, 1, 3),
+        new wjGrid.CellRange(0, 4, 1, 4),
+        new wjGrid.CellRange(0, 5, 0, 7),
+        new wjGrid.CellRange(0, 8, 0, 10),
+      ];
+      let startc = 11;
+      let endc = 11;
+      let tmpym = this.dispYmList[0].slice(0, 4);
+      this.dispYmList.forEach((el) => {
+        let tmpy = el.slice(0, 4);
+        if (tmpym != tmpy) {
+          ranges.push(new wjGrid.CellRange(0, startc, 0, endc - 1));
+          startc = endc;
+          tmpym = tmpy;
+        }
+        endc++;
+      });
+      ranges.push(new wjGrid.CellRange(0, startc, 0, endc - 1));
+      let rangesFoot = [new wjGrid.CellRange(0, 0, 0, 10)];
+      // getMergedRangeメソッドをオーバーライドする
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < ranges.length; h++) {
+            if (ranges[h].contains(r, c)) {
+              return ranges[h];
+            }
+          }
+        } else if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+          for (let h = 0; h < rangesFoot.length; h++) {
+            if (rangesFoot[h].contains(r, c)) {
+              return rangesFoot[h];
+            }
+          }
+        }
+      };
+      flexGrid.mergeManager = mm;
+    },
     onItemsSourceChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       this.screenFlag = false;
@@ -713,13 +750,11 @@ export default {
       e.cell.style.borderTop = '';
       e.cell.style.borderBottom = '';
       e.cell.style.borderRight = '';
+      e.cell.style.borderLeft = '';
       e.cell.style.color = '';
       e.cell.style.backgroundColor = '';
 
       if (e.panel == flexGrid.columnHeaders) {
-        if (e.row == 1 || (e.row == 0 && e.col <= 4)) {
-          e.cell.style.borderBottom = 'None';
-        }
         if (e.row == 0 && e.col == 8) {
           e.cell.style.borderRight = '1px solid';
         }
@@ -732,7 +767,7 @@ export default {
         // 12月の次の右線を太くする
         if (e.col > 11 && e.row >= 1) {
           let tmpym = this.dispYmList[e.col - 11];
-          if (Number(tmpym.substring(4, 6)) == 12) {
+          if (Number(tmpym.slice(4, 6)) == 12) {
             e.cell.style.borderRight = '1px solid';
           }
           if (e.panel == flexGrid.cells) {
@@ -742,6 +777,16 @@ export default {
               (tmpitem.sikyuEymdBk.getMonth() + 1).toString().padStart(2, '0');
             if (Number(tmpym) > Number(ymdval)) {
               e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
+            }
+          }
+        }
+        if (e.col > 11) {
+          let tmpym = this.dispYmList[e.col - 11];
+          if (tmpym == this.kikanYm.format('YYYYMM')) {
+            if (e.row == 1) {
+              e.cell.style.borderRight = '1px solid blue';
+              e.cell.style.borderLeft = '1px solid blue';
+              e.cell.style.borderTop = '1px solid blue';
             }
           }
         }
@@ -780,9 +825,19 @@ export default {
             e.cell.style.borderTop = '1px solid';
           }
         }
+        let tmpym = this.dispYmList[e.col - 11];
+        if (tmpym == this.kikanYm.format('YYYYMM')) {
+          e.cell.style.borderRight = '1px solid blue';
+          e.cell.style.borderLeft = '1px solid blue';
+        }
       } else if (e.panel == flexGrid.columnFooters) {
         e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
-        // e.cell.style.borderBottom = 0;
+        let tmpym = this.dispYmList[e.col - 11];
+        if (tmpym == this.kikanYm.format('YYYYMM')) {
+          e.cell.style.borderRight = '1px solid blue';
+          e.cell.style.borderLeft = '1px solid blue';
+          e.cell.style.borderBottom = '1px solid blue';
+        }
       }
       if (e.panel != flexGrid.columnHeaders) {
         if (e.col == 10) {
@@ -790,7 +845,7 @@ export default {
         }
         if (e.col > 10) {
           let tmpym = this.dispYmList[e.col - 11];
-          if (Number(tmpym.substring(4, 6)) == 12) {
+          if (Number(tmpym.slice(4, 6)) == 12) {
             e.cell.style.borderRight = '1px solid';
           }
         }
