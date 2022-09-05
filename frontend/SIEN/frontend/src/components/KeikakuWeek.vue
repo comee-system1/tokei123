@@ -671,10 +671,14 @@ export default {
             let setting = [];
             // データを全部登録
             setting = this.settingData.slice();
+            this.settingData = this.separateData(setting);
+            console.log(this.settingData);
+            /*
             let stime = '';
             let etime = '';
             // ドラッグが無しのとき
             let target = '';
+
             if (uprow == downrow && upcol == downcol) {
               // クリックしたweek
               target = this.wpos.find(
@@ -695,9 +699,8 @@ export default {
               });
             }
 
+            
             if (uprow != downrow || upcol != downcol) {
-              //alert(downrow);
-              //alert(uprow);
               for (let r = downrow; r <= uprow; r++) {
                 for (let c = downcol; c <= upcol; c++) {
                   target = this.wpos.find((v) => v.left === c || v.right === c);
@@ -718,8 +721,8 @@ export default {
                 }
               }
             }
-
-            this.settingData = this.sameDataAbbr(setting);
+*/
+            //this.settingData = this.sameDataAbbr(setting);
 
             this.createData();
             this.createRanges();
@@ -748,7 +751,6 @@ export default {
         week: 0,
         data: 1,
       });
-
       setting.push({
         Intcode: uniq++,
         stime: '0630',
@@ -756,14 +758,20 @@ export default {
         week: 0,
         data: '起床',
       });
-      // setting.push({
-      //   Intcode: uniq++,
-      //   stime: '0830',
-      //   etime: '0900',
-      //   week: 0,
-      //   data: '起床',
-      // });
-
+      setting.push({
+        Intcode: uniq++,
+        stime: '0830',
+        etime: '0900',
+        week: 0,
+        data: '起床123',
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
+        etime: '0900',
+        week: 1,
+        data: '起床123',
+      });
       this.settingData = this.separateData(setting);
       //this.settingData = this.sameDataAbbr(setting);
       let item = [];
