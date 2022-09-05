@@ -112,7 +112,6 @@
                 :showBandedRows="false"
                 :initialized="onInitialize"
                 :itemsSourceChanged="onInitializeItemChanged"
-                :itemsSource="viewdata"
                 :style="styles"
               >
                 <wj-flex-grid-column
@@ -670,10 +669,19 @@ export default {
 
             let setting = [];
             // データを全部登録
-            setting = this.settingData.slice();
-            this.settingData = this.separateData(setting);
-            console.log(this.settingData);
+            setting = this.viewdata.slice();
+
             /*
+            setting.push({
+              Intcode: setting.length + 1,
+              stime: '1730',
+              etime: '1930',
+              week: 4,
+              data: '起床2232',
+            });
+            */
+            // console.log(setting);
+
             let stime = '';
             let etime = '';
             // ドラッグが無しのとき
@@ -690,16 +698,19 @@ export default {
                 stime.toString().slice(-2) == '30'
                   ? stime - 30 + 100
                   : stime + 30;
+
+              stime = ('0' + stime.toString()).slice(-4).toString();
+              etime = ('0' + etime.toString()).slice(-4).toString();
               setting.push({
                 uniq: setting.length + 1,
-                stime: stime,
-                etime: etime,
+                stime: stime.toString(),
+                etime: etime.toString(),
                 week: target.key,
                 data: this.everySelected,
               });
             }
 
-            
+            /*
             if (uprow != downrow || upcol != downcol) {
               for (let r = downrow; r <= uprow; r++) {
                 for (let c = downcol; c <= upcol; c++) {
@@ -722,6 +733,7 @@ export default {
               }
             }
 */
+            this.settingData = this.separateData(setting);
             //this.settingData = this.sameDataAbbr(setting);
 
             this.createData();
@@ -749,11 +761,18 @@ export default {
         stime: '0500',
         etime: '0600',
         week: 0,
-        data: 1,
+        data: 'sample1',
       });
       setting.push({
         Intcode: uniq++,
-        stime: '0630',
+        stime: '0500',
+        etime: '0630',
+        week: 0,
+        data: 'sample2',
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
         etime: '0800',
         week: 0,
         data: '起床',
@@ -772,6 +791,29 @@ export default {
         week: 1,
         data: '起床123',
       });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
+        etime: '0800',
+        week: 1,
+        data: '553',
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
+        etime: '0900',
+        week: 2,
+        data: '起床123',
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
+        etime: '0930',
+        week: 2,
+        data: '起床2232',
+      });
+
+      this.viewdata = setting;
       this.settingData = this.separateData(setting);
       //this.settingData = this.sameDataAbbr(setting);
       let item = [];
@@ -847,13 +889,15 @@ export default {
       let array = [];
       let now = dayjs().format('YYYY-MM-DD');
       for (let i = 0; i < data.length; i++) {
-        let calc = parseInt((data[i].etime - data[i].stime) / 50);
+        let calc = Math.ceil(
+          (parseInt(data[i].etime) - parseInt(data[i].stime)) / 50
+        );
         for (let j = 0; j < calc; j++) {
           let stime = dayjs(now + ' ' + data[i].stime)
             .add(30 * j, 'minutes')
-            .format('hmm');
+            .format('Hmm');
           let sobj = dayjs(now + ' ' + data[i].stime).add(30 * j, 'minutes');
-          let etime = dayjs(sobj).add(30, 'minutes').format('hmm');
+          let etime = dayjs(sobj).add(30, 'minutes').format('Hmm');
           array.push({
             Intcode: data[i].Intcode,
             stime: stime,
@@ -863,8 +907,6 @@ export default {
           });
         }
       }
-      // console.log(data);
-      // console.log(array);
       return array;
     },
     /******************
@@ -930,26 +972,25 @@ export default {
       // cnt:1→left
       // cnt:2→right
       // cnt:0→both
-      let cnt = 0;
       for (let i = 0; i < setting.length; i++) {
+        let cnt = 0;
         let stime = setting[i].stime;
         let etime = setting[i].etime;
         let week = setting[i].week;
         let Intcode = setting[i].Intcode;
-
         for (let j = 0; j < setting.length; j++) {
           if (Intcode != setting[j].Intcode && week == setting[j].week) {
             if (!(stime >= setting[j].etime || etime <= setting[j].stime)) {
               cnt++;
+              if (setting[j].cnt > 0) {
+                cnt++;
+              }
             }
           }
         }
         setting[i].cnt = cnt;
-        if (cnt == 2) {
-          cnt = 0;
-        }
       }
-      console.log(setting);
+
       // 時間別のrow表示位置
       let rowTime = [];
       for (let r = 0; r < this.timeline.length; r++) {
