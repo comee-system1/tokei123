@@ -702,7 +702,7 @@ export default {
               stime = ('0' + stime.toString()).slice(-4).toString();
               etime = ('0' + etime.toString()).slice(-4).toString();
               setting.push({
-                uniq: setting.length + 1,
+                Intcode: parseInt(setting.length) + 1,
                 stime: stime.toString(),
                 etime: etime.toString(),
                 week: target.key,
@@ -733,6 +733,9 @@ export default {
               }
             }
 */
+
+            console.log(setting);
+            this.viewdata = setting;
             this.settingData = this.separateData(setting);
             //this.settingData = this.sameDataAbbr(setting);
 
@@ -755,6 +758,8 @@ export default {
     },
     dataSetted() {
       let setting = [];
+
+      /*
       let uniq = 1;
       setting.push({
         Intcode: uniq++,
@@ -812,7 +817,7 @@ export default {
         week: 2,
         data: '起床2232',
       });
-
+*/
       this.viewdata = setting;
       this.settingData = this.separateData(setting);
       //this.settingData = this.sameDataAbbr(setting);
@@ -889,9 +894,15 @@ export default {
       let array = [];
       let now = dayjs().format('YYYY-MM-DD');
       for (let i = 0; i < data.length; i++) {
-        let calc = Math.ceil(
+        let calc = Math.floor(
           (parseInt(data[i].etime) - parseInt(data[i].stime)) / 50
         );
+        if (calc < 1) calc = 1;
+
+        // console.log(parseInt(data[i].etime));
+        // console.log(parseInt(data[i].stime));
+        // console.log((parseInt(data[i].etime) - parseInt(data[i].stime)) / 30);
+        // console.log(calc);
         for (let j = 0; j < calc; j++) {
           let stime = dayjs(now + ' ' + data[i].stime)
             .add(30 * j, 'minutes')
@@ -972,6 +983,7 @@ export default {
       // cnt:1→left
       // cnt:2→right
       // cnt:0→both
+      console.log(setting);
       for (let i = 0; i < setting.length; i++) {
         let cnt = 0;
         let stime = setting[i].stime;

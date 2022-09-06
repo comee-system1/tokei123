@@ -101,12 +101,13 @@
               <wj-flex-grid
                 id="keikakuWeekGrid"
                 :selectionMode="'4'"
-                :headersVisibility="1"
+                :headersVisibility="'Column'"
                 :alternatingRowStep="0"
                 :autoGenerateColumns="false"
                 :allowDragging="false"
                 :allowResizing="false"
                 :allowSorting="false"
+                :allowMerging="'None'"
                 :isReadOnly="true"
                 :showBandedRows="false"
                 :initialized="onInitialize"
@@ -119,7 +120,7 @@
                   binding="times"
                   align="center"
                   valign="middle"
-                  width="1.3*"
+                  :width="80"
                   :isReadOnly="true"
                 ></wj-flex-grid-column>
                 <wj-flex-grid-column
@@ -341,9 +342,11 @@
 
 <script>
 import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from './UserList.vue';
-import * as wjcCore from '@grapecity/wijmo';
+//import * as wjcCore from '@grapecity/wijmo';
 export default {
   props: {
     dispHideBar: Boolean,
@@ -392,45 +395,89 @@ export default {
       inputTypemodel: 0, // 0: 週間予定 1: 主な日常生活
       keikakuKubunModel: '',
       viewdata: [],
+      settingData: [],
 
-      weekcount: 7,
       weekarray: [
         {
           key: 1,
           header: '月',
-          binding: 'monday',
+          binding: 'monday1',
+          groupKey: 0,
         },
         {
           key: 2,
-          header: '火',
-          binding: 'thuseday',
+          binding: 'monday2',
+          groupKey: 0,
         },
         {
           key: 3,
-          header: '水',
-          binding: 'wednesday',
+          header: '火',
+          binding: 'thuseday1',
+          groupKey: 1,
         },
         {
           key: 4,
-          header: '木',
-          binding: 'thursday',
+          binding: 'thuseday2',
+          groupKey: 1,
         },
         {
           key: 5,
-          header: '金',
-          binding: 'friday',
+          header: '水',
+          binding: 'wednesday1',
+          groupKey: 2,
         },
         {
           key: 6,
-          header: '土',
-          binding: 'saturday',
+          binding: 'wednesday2',
+          groupKey: 2,
         },
         {
           key: 7,
+          header: '木',
+          binding: 'thursday1',
+          groupKey: 3,
+        },
+        {
+          key: 8,
+          binding: 'thursday2',
+          groupKey: 3,
+        },
+        {
+          key: 9,
+          header: '金',
+          binding: 'friday1',
+          groupKey: 4,
+        },
+        {
+          key: 10,
+          binding: 'friday2',
+          groupKey: 4,
+        },
+        {
+          key: 11,
+          header: '土',
+          binding: 'saturday1',
+          groupKey: 5,
+        },
+        {
+          key: 12,
+          binding: 'saturday2',
+          groupKey: 5,
+        },
+        {
+          key: 13,
           header: '日・祝',
-          binding: 'sunday',
+          binding: 'sunday1',
+          groupKey: 6,
+        },
+        {
+          key: 14,
+          binding: 'sunday2',
+          groupKey: 6,
         },
       ],
+      rowTime: [],
+      timeline: [],
       everySelected: 0,
       itemdata: [],
       servicedata: [],
@@ -446,11 +493,65 @@ export default {
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
       userName: '',
+      wpos: [
+        // 月曜日
+        {
+          key: 0,
+          left: 1,
+          right: 2,
+        },
+        // 火曜日
+        {
+          key: 1,
+          left: 3,
+          right: 4,
+        },
+        // 水曜日
+        {
+          key: 2,
+          left: 5,
+          right: 6,
+        },
+        // 木曜日
+        {
+          key: 3,
+          left: 7,
+          right: 8,
+        },
+        // 金曜日
+        {
+          key: 4,
+          left: 9,
+          right: 10,
+        },
+        // 土曜日
+        {
+          key: 5,
+          left: 11,
+          right: 12,
+        },
+        // 日曜日
+        {
+          key: 6,
+          left: 13,
+          right: 14,
+        },
+      ],
+      newIntcode: 0,
+      headerRanges: [
+        new wjGrid.CellRange(0, 1, 0, 2),
+        new wjGrid.CellRange(0, 3, 0, 4),
+        new wjGrid.CellRange(0, 5, 0, 6),
+        new wjGrid.CellRange(0, 7, 0, 8),
+        new wjGrid.CellRange(0, 9, 0, 10),
+        new wjGrid.CellRange(0, 11, 0, 12),
+        new wjGrid.CellRange(0, 13, 0, 14),
+      ],
     };
   },
   created() {},
   mounted() {
-    this._makeDragSource(this.onflexGrid);
+    // this._makeDragSource(this.onflexGrid);
     window.addEventListener('resize', this.calculateWindowHeight);
 
     this.mainActiveTitle = '主な日常生活の活動';
@@ -576,16 +677,63 @@ export default {
               uprow = this.position.down.row;
             }
 
-            for (let c = downcol; c <= upcol; c++) {
-              let bind = this.weekarray[c - 1].binding;
+            let setting = [];
+            // データを全部登録
+            setting = this.settingData.slice();
+            let stime = '';
+            let etime = '';
+            // ドラッグが無しのとき
+            let target = '';
+            if (uprow == downrow && upcol == downcol) {
+              // クリックしたweek
+              target = this.wpos.find(
+                (v) => v.left === upcol || v.right === upcol
+              );
+              stime = this.rowTime[uprow].time;
+              // 30分のときは次の時刻
+              etime =
+                stime.toString().slice(-2) == '30'
+                  ? stime - 30 + 100
+                  : stime + 30;
+              setting.push({
+                uniq: setting.length + 1,
+                stime: stime,
+                etime: etime,
+                week: target.key,
+                data: this.everySelected,
+              });
+            }
+
+            if (uprow != downrow || upcol != downcol) {
+              //alert(downrow);
+              //alert(uprow);
               for (let r = downrow; r <= uprow; r++) {
-                this.viewdata[r][bind] = this.everySelected;
+                for (let c = downcol; c <= upcol; c++) {
+                  target = this.wpos.find((v) => v.left === c || v.right === c);
+                  //console.log(i);
+                  stime = this.rowTime[r].time;
+                  // 30分のときは次の時刻
+                  etime =
+                    stime.toString().slice(-2) == '30'
+                      ? stime - 30 + 100
+                      : stime + 30;
+                  setting.push({
+                    uniq: setting.length + r,
+                    stime: stime,
+                    etime: etime,
+                    week: target.key,
+                    data: this.everySelected,
+                  });
+                }
               }
             }
-            let view = this.viewdata.slice();
-            this.viewdata = view;
+
+            this.settingData = this.sameDataAbbr(setting);
+
+            this.createData();
             this.createRanges();
             this.createMerge(this.onflexGrid);
+
             this.draggedFlag = false;
           }
         },
@@ -599,352 +747,7 @@ export default {
     setUserSelectPoint(row) {
       this.userName = row.names;
     },
-    createData() {
-      let setting = [];
-      setting.push({
-        times: ' ',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: ' ',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '06:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '06:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '06:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '06:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '08:00',
-        monday: '起床',
-        thuseday: '起床',
-        wednesday: '起床',
-        thursday: '起床',
-        friday: '起床',
-        saturday: '起床',
-        sunday: '起床',
-      });
-      setting.push({
-        times: '08:00',
-        monday: '起床',
-        thuseday: '起床',
-        wednesday: '起床',
-        thursday: '起床',
-        friday: '起床',
-        saturday: '起床',
-        sunday: '起床',
-      });
-      setting.push({
-        times: '08:00',
-        monday: 'TVドラマ・朝食',
-        thuseday: 'TVドラマ・朝食',
-        wednesday: 'TVドラマ・朝食',
-        thursday: 'TVドラマ・朝食',
-        friday: 'TVドラマ・朝食',
-        saturday: 'TVドラマ・朝食',
-        sunday: '朝食',
-      });
-      setting.push({
-        times: '08:00',
-        monday: 'TVドラマ・朝食',
-        thuseday: 'TVドラマ・朝食',
-        wednesday: 'TVドラマ・朝食',
-        thursday: 'TVドラマ・朝食',
-        friday: 'TVドラマ・朝食',
-        saturday: 'TVドラマ・朝食',
-        sunday: '朝食',
-      });
-      setting.push({
-        times: '10:00',
-        monday: 'ゴミ収集',
-        thuseday: '',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '10:00',
-        monday: 'ゴミ収集',
-        thuseday: '',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '10:00',
-        monday: '',
-        thuseday: 'ヘルパー(家事)',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '10:00',
-        monday: '',
-        thuseday: 'ヘルパー(家事)',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '12:00',
-        monday: '',
-        thuseday: 'ヘルパー(家事)',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '12:00',
-        monday: '',
-        thuseday: 'ヘルパー(家事)',
-        wednesday: '',
-        thursday: '外出\n(買い物・銀行・クリーニング等)',
-        friday: '',
-        saturday: '',
-        sunday: '外出\n(買い物・銀行・クリーニング等)',
-      });
-      setting.push({
-        times: '12:00',
-        monday: 'TVドラマ・昼食',
-        thuseday: 'TVドラマ・昼食',
-        wednesday: 'TVドラマ・昼食',
-        thursday: 'TVドラマ・昼食',
-        friday: 'TVドラマ・昼食',
-        saturday: 'TVドラマ・昼食',
-        sunday: '昼食',
-      });
-      setting.push({
-        times: '12:00',
-        monday: 'TVドラマ・昼食',
-        thuseday: 'TVドラマ・昼食',
-        wednesday: 'TVドラマ・昼食',
-        thursday: 'TVドラマ・昼食',
-        friday: 'TVドラマ・昼食',
-        saturday: 'TVドラマ・昼食',
-        sunday: '昼食',
-      });
-      setting.push({
-        times: '14:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '14:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-
-      setting.push({
-        times: '14:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '通院同行\n(内科・歯科)',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '14:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '通院同行\n(内科・歯科)',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '16:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '通院同行\n(内科・歯科)',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '16:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '通院同行\n(内科・歯科)',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '16:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '16:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '18:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '18:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '18:00',
-        monday: '夕食',
-        thuseday: '夕食',
-        wednesday: '夕食',
-        thursday: '夕食',
-        friday: '夕食',
-        saturday: '夕食',
-        sunday: '夕食',
-      });
-      setting.push({
-        times: '18:00',
-        monday: '夕食',
-        thuseday: '夕食',
-        wednesday: '夕食',
-        thursday: '夕食',
-        friday: '夕食',
-        saturday: '夕食',
-        sunday: '夕食',
-      });
-      setting.push({
-        times: '20:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '20:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '20:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-      setting.push({
-        times: '20:00',
-        monday: '',
-        thuseday: '',
-        wednesday: '',
-        thursday: '',
-        friday: '',
-        saturday: '',
-        sunday: '',
-      });
-
-      this.viewdata = setting;
-
+    dataSetted() {
       let item = [];
       item.push(
         {
@@ -1011,6 +814,141 @@ export default {
       );
       this.servicedata = servicedata;
     },
+    /******************
+     * 同じデータを省略
+     * 重複データを削除、削除データの重複をまとめて、表示用配列に加える
+     *******************/
+    sameDataAbbr(data) {
+      let same = [];
+      let deletekey = [];
+      let checkData = data.slice();
+      // 同じデータの確認
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < checkData.length; j++) {
+          if (
+            data[i].uniq != checkData[j].uniq &&
+            data[i].stime == checkData[j].stime &&
+            data[i].etime == checkData[j].etime &&
+            data[i].week == checkData[j].week &&
+            data[i].data == checkData[j].data
+          ) {
+            // 共通のデータ
+            same.push(data[i]);
+            // データ削除用のキー
+            deletekey.push(i);
+          }
+        }
+      }
+      for (let d = 0; d < deletekey.length; d++) {
+        data[deletekey[d]] = '';
+      }
+      data = data.filter(Boolean);
+
+      // 重複データを一つにまとめる
+      let dataFiltered = same.filter(
+        (element, index, self) =>
+          self.findIndex(
+            (dataElement) =>
+              dataElement.stime === element.stime &&
+              dataElement.etime === element.etime &&
+              dataElement.week === element.week &&
+              dataElement.data === element.data
+          ) === index
+      );
+      let concat = dataFiltered.concat(data);
+
+      return concat;
+    },
+    createData() {
+      let setting = this.settingData;
+      let timeline = [];
+      let minute = [0, 30];
+      for (let t = 4; t <= 22; t++) {
+        for (let m = 0; m <= 1; m++) {
+          let time =
+            this.getdoubleDigestNumer(t).toString() +
+            this.getdoubleDigestNumer(minute[m]).toString();
+          timeline.push(time);
+        }
+      }
+      this.timeline = timeline;
+
+      // 指定の時間内の件数をカウント
+      // cnt:1→left
+      // cnt:2→right
+      // cnt:0→both
+      let cnt = 0;
+      for (let i = 0; i < setting.length; i++) {
+        let stime = setting[i].stime;
+        let etime = setting[i].etime;
+        let week = setting[i].week;
+        let uniq = setting[i].uniq;
+
+        for (let j = 0; j < setting.length; j++) {
+          if (uniq != setting[j].uniq && week == setting[j].week) {
+            if (!(stime >= setting[j].etime || etime <= setting[j].stime)) {
+              cnt++;
+            }
+          }
+        }
+        setting[i].cnt = cnt;
+        if (cnt == 2) {
+          cnt = 0;
+        }
+      }
+
+      // 時間別のrow表示位置
+      let rowTime = [];
+      for (let r = 0; r < this.timeline.length; r++) {
+        rowTime.push({
+          time: parseInt(this.timeline[r]),
+          r: r,
+        });
+      }
+      this.rowTime = rowTime;
+
+      // データにマージ用の値を登録
+      setting = this.settingMargePoint(setting);
+      this.settingData = setting;
+    },
+    // 数値2桁
+    getdoubleDigestNumer(number) {
+      return ('0' + number).slice(-2);
+    },
+    settingMargePoint(data) {
+      let array = [];
+      let rowTime = this.rowTime;
+      for (let i = 0; i < data.length; i++) {
+        let sr = 0;
+        let er = 0;
+        // 時間ごとに表示行の調整
+        for (let t = 0; t < rowTime.length; t++) {
+          if (data[i] && data[i].stime == rowTime[t].time) {
+            sr = rowTime[t].r;
+          }
+          if (data[i] && data[i].etime == rowTime[t].time) {
+            er = rowTime[t].r - 1;
+          }
+        }
+        array[i] = data[i];
+        array[i]['strow'] = sr;
+        array[i]['edrow'] = er;
+        if (data[i].cnt == 1) {
+          // 左側
+          array[i]['stcol'] = this.wpos[data[i].week].left;
+          array[i]['edcol'] = this.wpos[data[i].week].left;
+        } else if (data[i].cnt == 2) {
+          // 右側
+          array[i]['stcol'] = this.wpos[data[i].week].right;
+          array[i]['edcol'] = this.wpos[data[i].week].right;
+        } else {
+          // 両方
+          array[i]['stcol'] = this.wpos[data[i].week].left;
+          array[i]['edcol'] = this.wpos[data[i].week].right;
+        }
+      }
+      return array;
+    },
     /********************
      * 日常生活
      *************/
@@ -1020,7 +958,7 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
-          _self.everySelected = _self.itemdata[ht.row].every;
+          _self.everySelected = _self.itemdata[ht.row];
           _self.onServiceGrid.select(-1, -1);
         }
       });
@@ -1034,16 +972,18 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
-          _self.everySelected = _self.servicedata[ht.row].service;
+          _self.everySelected = _self.servicedata[ht.row];
           _self.onItemGrid.select(-1, -1);
         }
       });
     },
     onInitializeItemChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      /*
       let tooltip = new wjcCore.Tooltip();
       let _self = this;
       let bind = '';
+
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == flexGrid.cells) {
           if (_self.weekarray[e.col - 1]) {
@@ -1053,101 +993,539 @@ export default {
           tooltip.setTooltip(e.cell, bind);
         }
       });
-    },
-    onInitialize(flexGrid) {
-      this.onflexGrid = flexGrid;
-      flexGrid.frozenColumns = 1;
-      this.createData();
+      */
+      if (flexGrid.hostElement.id == 'keikakuWeekGrid') {
+        //
+        // マージ処理
+        //
+        let mm = new wjGrid.MergeManager();
+        let ranges = [
+          new wjGrid.CellRange(0, 0, 1, 0),
+          new wjGrid.CellRange(2, 0, 5, 0),
+          new wjGrid.CellRange(6, 0, 9, 0),
+          new wjGrid.CellRange(10, 0, 13, 0),
+          new wjGrid.CellRange(14, 0, 17, 0),
+          new wjGrid.CellRange(18, 0, 21, 0),
+          new wjGrid.CellRange(22, 0, 25, 0),
+          new wjGrid.CellRange(26, 0, 29, 0),
+          new wjGrid.CellRange(30, 0, 33, 0),
+          new wjGrid.CellRange(34, 0, 37, 0),
+        ];
+        let rowitem;
 
-      flexGrid.formatItem.addHandler(function (s, e) {
-        e.cell.style.textAlign = 'center';
-        e.cell.style.justifyContent = 'center';
-        e.cell.style.alignItems = 'center';
-        flexGrid.cells.rows.defaultSize = 14.5;
-      });
-      this.createRanges();
-      this.createMerge(flexGrid);
-    },
-    groupBy(xs, key) {
-      let row = 0;
-      let i2 = 0;
-      let start = [];
-      let last = [];
-      let text = [];
-      for (let i = 0; i < xs.length; i++) {
-        i2 = i - 1;
+        for (let col = 1; col < flexGrid.cells.columns.length; col = col + 2) {
+          let startrow = -1;
+          let tmpIntcode = 0;
+          for (let row = 0; row < flexGrid.cells.rows.length; row++) {
+            rowitem = flexGrid.itemsSource[row];
+            //マージのパターン
+            //１：左右どちらも空白
+            //２：左右のintcodeが同じ
+            //３：２＋下の行の左右のintcodeが同じ
+            if (startrow >= 0) {
+              // パターン３
+              if (
+                (col == 1 && rowitem.mondayObj1 == null) ||
+                (col == 3 && rowitem.thusedayObj1 == null) ||
+                (col == 5 && rowitem.wednesdayObj1 == null) ||
+                (col == 7 && rowitem.thursdayObj1 == null) ||
+                (col == 9 && rowitem.fridayObj1 == null) ||
+                (col == 11 && rowitem.saturdayObj1 == null) ||
+                (col == 13 && rowitem.sundayObj1 == null) ||
+                (col == 1 &&
+                  rowitem.mondayObj1 != null &&
+                  (rowitem.mondayObj1.Intcode != rowitem.mondayObj2.Intcode ||
+                    rowitem.mondayObj1.Intcode != tmpIntcode)) ||
+                (col == 3 &&
+                  rowitem.thusedayObj1 != null &&
+                  (rowitem.thusedayObj1.Intcode !=
+                    rowitem.thusedayObj1.Intcode ||
+                    rowitem.thusedayObj1.Intcode != tmpIntcode)) ||
+                (col == 5 &&
+                  rowitem.wednesdayObj1 != null &&
+                  (rowitem.wednesdayObj1.Intcode !=
+                    rowitem.wednesdayObj2.Intcode ||
+                    rowitem.wednesdayObj1.Intcode != tmpIntcode)) ||
+                (col == 7 &&
+                  rowitem.thursdayObj1 != null &&
+                  (rowitem.thursdayObj1.Intcode !=
+                    rowitem.thursdayObj2.Intcode ||
+                    rowitem.thursdayObj1.Intcode != tmpIntcode)) ||
+                (col == 9 &&
+                  rowitem.fridayObj1 != null &&
+                  (rowitem.fridayObj1.Intcode != rowitem.fridayObj2.Intcode ||
+                    rowitem.fridayObj1.Intcode != tmpIntcode)) ||
+                (col == 11 &&
+                  rowitem.saturdayObj1 != null &&
+                  (rowitem.saturdayObj1.Intcode !=
+                    rowitem.saturdayObj2.Intcode ||
+                    rowitem.saturdayObj1.Intcode != tmpIntcode)) ||
+                (col == 13 &&
+                  rowitem.sundayObj1 != null &&
+                  (rowitem.sundayObj1.Intcode != rowitem.sundayObj2.Intcode ||
+                    rowitem.sundayObj1.Intcode != tmpIntcode))
+              ) {
+                ranges.push(
+                  new wjGrid.CellRange(startrow, col, row - 1, col + 1)
+                );
+                startrow = -1;
+              }
+            }
 
-        if (row == 0) {
-          if (i - 1 < 0) {
-            i = 0;
-          } else {
-            i = i - 1;
+            // 空の場合は曜日の２列目とマージ（パターン１）
+            if (
+              (col == 1 && rowitem.monday1 == '') ||
+              (col == 3 && rowitem.thuseday1 == '') ||
+              (col == 5 && rowitem.wednesday1 == '') ||
+              (col == 7 && rowitem.thursday1 == '') ||
+              (col == 9 && rowitem.friday1 == '') ||
+              (col == 11 && rowitem.saturday1 == '') ||
+              (col == 13 && rowitem.sunday1 == '')
+            ) {
+              ranges.push(new wjGrid.CellRange(row, col, row, col + 1));
+              continue;
+            } else if (
+              // ↓パターン２
+              col == 1 &&
+              rowitem.mondayObj1.Intcode != tmpIntcode &&
+              rowitem.mondayObj1.Intcode == rowitem.mondayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.mondayObj1.Intcode;
+            } else if (
+              col == 3 &&
+              rowitem.thusedayObj1.Intcode != tmpIntcode &&
+              rowitem.thusedayObj1.Intcode == rowitem.thusedayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.thusedayObj1.Intcode;
+            } else if (
+              col == 5 &&
+              rowitem.wednesdayObj1.Intcode != tmpIntcode &&
+              rowitem.wednesdayObj1.Intcode == rowitem.wednesdayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.wednesdayObj1.Intcode;
+            } else if (
+              col == 7 &&
+              rowitem.thursdayObj1.Intcode != tmpIntcode &&
+              rowitem.thursdayObj1.Intcode == rowitem.thursdayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.thursdayObj1.Intcode;
+            } else if (
+              col == 9 &&
+              rowitem.fridayObj1.Intcode != tmpIntcode &&
+              rowitem.fridayObj1.Intcode == rowitem.fridayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.fridayObj1.Intcode;
+            } else if (
+              col == 11 &&
+              rowitem.saturdayObj1.Intcode != tmpIntcode &&
+              rowitem.saturdayObj1.Intcode == rowitem.saturdayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.saturdayObj1.Intcode;
+            } else if (
+              col == 13 &&
+              rowitem.sundayObj1.Intcode != tmpIntcode &&
+              rowitem.sundayObj1.Intcode == rowitem.sundayObj2.Intcode
+            ) {
+              startrow = row;
+              tmpIntcode = rowitem.sundayObj1.Intcode;
+            }
           }
-          start.push(i);
-          text.push(xs[i][key]);
-        } else if (xs[i][key] != xs[i2][key]) {
-          last.push(i - 1);
-          row = 0;
-          continue;
-        }
-        row++;
-      }
-      last.push(xs.length - 1);
-
-      let returns = {
-        start: start,
-        last: last,
-        text: text,
-      };
-      return returns;
-    },
-    createRanges() {
-      let ranges = [];
-      let mergeGroup = [];
-      let start = [];
-      let last = [];
-      let text = [];
-
-      // 時間軸のグループ化
-      mergeGroup = this.groupBy(this.viewdata, 'times');
-      start = mergeGroup.start;
-      last = mergeGroup.last;
-      text = mergeGroup.text;
-      for (let i = 0; i < start.length; i++) {
-        if (text[i]) {
-          ranges.push(new wjGrid.CellRange(start[i], 0, last[i], 0));
-        }
-      }
-      // 週間のグループ化
-      for (let wk = 0; wk < this.weekarray.length; wk++) {
-        mergeGroup = this.groupBy(this.viewdata, this.weekarray[wk].binding);
-        start = mergeGroup.start;
-        last = mergeGroup.last;
-        text = mergeGroup.text;
-        for (let i = 0; i < start.length; i++) {
-          if (text[i]) {
+          if (startrow >= 0) {
             ranges.push(
               new wjGrid.CellRange(
-                start[i],
-                this.weekarray[wk].key,
-                last[i],
-                this.weekarray[wk].key
+                startrow,
+                col,
+                flexGrid.cells.rows.length - 1,
+                col + 1
               )
             );
           }
         }
+        console.log(ranges);
+        // ranges.push(new wjGrid.CellRange(0, startc, 0, endc - 1));
+        // getMergedRangeメソッドをオーバーライドする;
+        let hr = this.headerRanges.slice();
+        mm.getMergedRange = function (panel, r, c) {
+          if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+            for (let h = 0; h < hr.length; h++) {
+              if (hr[h].contains(r, c)) {
+                return hr[h];
+              }
+            }
+          }
+          if (panel.cellType == wjGrid.CellType.Cell) {
+            for (let h = 0; h < ranges.length; h++) {
+              if (ranges[h].contains(r, c)) {
+                return ranges[h];
+              }
+            }
+          }
+        };
+        flexGrid.mergeManager = mm;
       }
+    },
+    onInitialize(flexGrid) {
+      this.onflexGrid = flexGrid;
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let cr = flexGrid.selectedRanges[0];
+          if (cr.col == 0 && cr.col2 == 0) {
+            // 行ヘッダのみの場合は何もしない
+            return;
+          }
+
+          // 選択範囲の整理
+          let col1 = cr.col == 0 ? 1 : cr.col;
+          let col2 = cr.col2 == 0 ? 1 : cr.col2;
+          let row1 = cr.row;
+          let row2 = cr.row2;
+          if (col1 > col2) {
+            col1 = cr.col2;
+            col2 = cr.col;
+          }
+          if (row1 > row2) {
+            row1 = cr.row2;
+            row2 = cr.row;
+          }
+
+          let viewitem;
+          let inputitem = this.everySelected;
+          console.log(this.everySelected);
+          let tmpViewddata = this.viewdata.slice();
+          let stime = flexGrid.itemsSource[row1].realtimesStartFmt;
+          let etime = flexGrid.itemsSource[row2].realtimesEndFmt;
+
+          console.log(111111);
+          console.log(flexGrid.itemsSource[row1].realtimesStart);
+          console.log(
+            tmpViewddata.filter(
+              (x) =>
+                (Number(x.realtimesStart) <=
+                  Number(flexGrid.itemsSource[row1].realtimesStart) ||
+                  Number(flexGrid.itemsSource[row1].realtimesStart)) <=
+                Number(x.realtimesEnd)
+            )
+          );
+
+          this.newIntcode++;
+          for (let rowindex = row1; rowindex <= row2; rowindex++) {
+            viewitem = tmpViewddata[rowindex];
+            for (let colindex = col1; colindex <= col2; colindex++) {
+              this.setViewData(viewitem, colindex, inputitem, stime, etime);
+            }
+          }
+          // flexGrid.refreshRange(
+          //   new wjGrid.CellRange(row1, col1 - 1, row2, col2 + 1)
+          // );
+          // console.log(flexGrid.itemsSource);
+          this.viewdata = tmpViewddata;
+          flexGrid.refresh();
+        }
+      });
+      flexGrid.frozenColumns = 1;
+
+      this.dataSetted();
+      this.createViewData();
+      // this.createData();
+      // this.createRanges(true);
+      // this.createMerge(flexGrid);
+
+      flexGrid.cells.rows.defaultSize = 18;
+      flexGrid.formatItem.addHandler(function (s, e) {
+        e.cell.style.textAlign = 'center';
+        e.cell.style.justifyContent = 'center';
+        e.cell.style.alignItems = 'center';
+      });
+    },
+    setViewData(viewitem, c, inputitem, stime, etime) {
+      switch (c) {
+        case 1:
+          viewitem.monday1 = inputitem.every;
+          viewitem.mondayObj1 = this.createDayObj(inputitem, 0, stime, etime);
+          if (viewitem.monday2.length == 0) {
+            viewitem.monday2 = inputitem.every;
+            viewitem.mondayObj2 = viewitem.mondayObj1;
+          }
+          break;
+        case 2:
+          viewitem.monday2 = inputitem.every;
+          viewitem.mondayObj2 = this.createDayObj(inputitem, 0, stime, etime);
+          if (viewitem.monday1.length == 0) {
+            viewitem.monday1 = inputitem.every;
+            viewitem.mondayObj1 = viewitem.mondayObj2;
+          }
+          break;
+        case 3:
+          viewitem.thuseday1 = inputitem.every;
+          viewitem.thusedayObj1 = this.createDayObj(inputitem, 1, stime, etime);
+          if (viewitem.thuseday2.length == 0) {
+            viewitem.thuseday2 = inputitem.every;
+            viewitem.thusedayObj2 = viewitem.thusedayObj1;
+          }
+          break;
+        case 4:
+          viewitem.thuseday2 = inputitem.every;
+          viewitem.thusedayObj2 = this.createDayObj(inputitem, 1, stime, etime);
+          if (viewitem.thuseday1.length == 0) {
+            viewitem.thuseday1 = inputitem.every;
+            viewitem.thusedayObj1 = viewitem.thusedayObj2;
+          }
+          break;
+        case 5:
+          viewitem.wednesday1 = inputitem.every;
+          viewitem.wednesdayObj1 = this.createDayObj(
+            inputitem,
+            2,
+            stime,
+            etime
+          );
+          if (viewitem.wednesday2.length == 0) {
+            viewitem.wednesday2 = inputitem.every;
+            viewitem.wednesdayObj2 = viewitem.wednesdayObj1;
+          }
+          break;
+        case 6:
+          viewitem.wednesday2 = inputitem.every;
+          viewitem.wednesdayObj2 = this.createDayObj(
+            inputitem,
+            2,
+            stime,
+            etime
+          );
+          if (viewitem.wednesday1.length == 0) {
+            viewitem.wednesday1 = inputitem.every;
+            viewitem.wednesdayObj1 = viewitem.wednesdayObj2;
+          }
+          break;
+        case 7:
+          viewitem.thursday1 = inputitem.every;
+          viewitem.thursdayObj1 = this.createDayObj(inputitem, 3, stime, etime);
+          if (viewitem.thursday2.length == 0) {
+            viewitem.thursday2 = inputitem.every;
+            viewitem.thursdayObj2 = viewitem.thursdayObj1;
+          }
+          break;
+        case 8:
+          viewitem.thursday2 = inputitem.every;
+          viewitem.thursdayObj2 = this.createDayObj(inputitem, 3, stime, etime);
+          if (viewitem.thursday1.length == 0) {
+            viewitem.thursday1 = inputitem.every;
+            viewitem.thursdayObj1 = viewitem.thursdayObj2;
+          }
+          break;
+        case 9:
+          viewitem.friday1 = inputitem.every;
+          viewitem.fridayObj1 = this.createDayObj(inputitem, 4, stime, etime);
+          if (viewitem.friday2.length == 0) {
+            viewitem.friday2 = inputitem.every;
+            viewitem.fridayObj2 = viewitem.fridayObj1;
+          }
+          break;
+        case 10:
+          viewitem.friday2 = inputitem.every;
+          viewitem.fridayObj2 = this.createDayObj(inputitem, 4, stime, etime);
+          if (viewitem.friday1.length == 0) {
+            viewitem.friday1 = inputitem.every;
+            viewitem.fridayObj1 = viewitem.fridayObj2;
+          }
+          break;
+        case 11:
+          viewitem.saturday1 = inputitem.every;
+          viewitem.saturdayObj1 = this.createDayObj(inputitem, 5, stime, etime);
+          if (viewitem.saturday2.length == 0) {
+            viewitem.saturday2 = inputitem.every;
+            viewitem.saturdayObj2 = viewitem.saturdayObj1;
+          }
+          break;
+        case 12:
+          viewitem.saturday2 = inputitem.every;
+          viewitem.saturdayObj2 = this.createDayObj(inputitem, 5, stime, etime);
+          if (viewitem.saturday1.length == 0) {
+            viewitem.saturday1 = inputitem.every;
+            viewitem.saturdayObj1 = viewitem.saturdayObj2;
+          }
+          break;
+        case 13:
+          viewitem.sunday1 = inputitem.every;
+          viewitem.sundayObj1 = this.createDayObj(inputitem, 6, stime, etime);
+          if (viewitem.sunday2.length == 0) {
+            viewitem.sunday2 = inputitem.every;
+            viewitem.sundayObj2 = viewitem.sundayObj1;
+          }
+          break;
+        case 14:
+          viewitem.sunday2 = inputitem.every;
+          viewitem.sundayObj2 = this.createDayObj(inputitem, 6, stime, etime);
+          if (viewitem.sunday1.length == 0) {
+            viewitem.sunday1 = inputitem.every;
+            viewitem.sundayObj1 = viewitem.sundayObj2;
+          }
+          break;
+
+        default:
+          break;
+      }
+    },
+    createDayObj(mst, yobi, stiem, etime) {
+      return {
+        Intcode: this.newIntcode,
+        Kmkdaicode: 0,
+        Kmkchucode: 0,
+        Kmkname: mst.every,
+        Yobi: yobi,
+        Stime: stiem,
+        Etime: etime,
+      };
+    },
+    createViewData() {
+      let basetime = 6;
+      let kugirirow = 2;
+      let result = [];
+      let startrealtime = dayjs().hour(3).minute(30);
+      for (let index = 0; index < 38; index++) {
+        let hourrow = {};
+        // ヘッダ列の時間設定
+        if (index > 5 && index == kugirirow + 4) {
+          basetime = basetime + 2;
+          kugirirow = kugirirow + 4;
+        }
+        if (index > 1) {
+          hourrow.times = String(basetime).padStart(2, '0') + ':00';
+        }
+        startrealtime = startrealtime.add(30, 'm');
+        hourrow.realtimesStart = startrealtime.format('hhmm');
+        hourrow.realtimesStartFmt = startrealtime.format('hh:mm');
+        let endrealtime = startrealtime.add(30, 'm');
+        hourrow.realtimesEnd = endrealtime.format('hhmm');
+        hourrow.realtimesEndFmt = endrealtime.format('hh:mm');
+
+        hourrow.monday1 = '';
+        hourrow.monday2 = '';
+        hourrow.thuseday1 = '';
+        hourrow.thuseday2 = '';
+        hourrow.wednesday1 = '';
+        hourrow.wednesday2 = '';
+        hourrow.thursday1 = '';
+        hourrow.thursday2 = '';
+        hourrow.friday1 = '';
+        hourrow.friday2 = '';
+        hourrow.saturday1 = '';
+        hourrow.saturday2 = '';
+        hourrow.sunday1 = '';
+        hourrow.sunday2 = '';
+
+        hourrow.mondayObj1 = null;
+        hourrow.mondayObj2 = null;
+        hourrow.thusedayObj1 = null;
+        hourrow.thusedayObj2 = null;
+        hourrow.wednesdayObj1 = null;
+        hourrow.wednesdayObj2 = null;
+        hourrow.thursdayObj1 = null;
+        hourrow.thursdayObj2 = null;
+        hourrow.fridayObj1 = null;
+        hourrow.fridayObj2 = null;
+        hourrow.saturdayObj1 = null;
+        hourrow.saturdayObj2 = null;
+        hourrow.sundayObj1 = null;
+        hourrow.sundayObj2 = null;
+
+        result.push(hourrow);
+      }
+      console.log(result);
+      this.viewdata = result;
+    },
+    createRanges(defaultFlag) {
+      let headerRanges = [];
+      // 曜日軸のグループ化
+      for (let i = 1; i <= 7; i++) {
+        headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
+      }
+      this.headerRanges = headerRanges;
+      if (defaultFlag) {
+        for (let r = 0; r < this.timeline.length; r++) {
+          this.onflexGrid.cells.rows.insert(r, new wjGrid.Row());
+          // this.onflexGrid.cells.setCellData(r, 0, this.timeline[r]);
+        }
+      }
+
+      let ranges = [];
+
+      for (let i = 0; i < this.settingData.length; i++) {
+        this.onflexGrid.cells.setCellData(
+          this.settingData[i].strow,
+          this.settingData[i].stcol,
+          this.settingData[i].data
+        );
+
+        ranges.push(
+          new wjGrid.CellRange(
+            this.settingData[i].strow,
+            this.settingData[i].stcol,
+            this.settingData[i].edrow,
+            this.settingData[i].edcol
+          )
+        );
+      }
+
+      // 空欄部分をマージ
+      for (let r = 0; r < this.timeline.length; r++) {
+        for (let w = 0; w < this.weekarray.length; w++) {
+          let dataLeft = this.onflexGrid.cells.getCellData(r, w);
+          let dataRight = this.onflexGrid.cells.getCellData(r, w + 1);
+          if (!dataLeft && !dataRight && w % 2 == 1) {
+            ranges.push(new wjGrid.CellRange(r, w, r, w));
+          }
+        }
+      }
+
+      // 時間軸をマージ
+      ranges.push(new wjGrid.CellRange(0, 0, 1, 0));
+      this.onflexGrid.cells.setCellData(0, 0, ' ');
+      ranges.push(new wjGrid.CellRange(2, 0, 5, 0));
+      this.onflexGrid.cells.setCellData(2, 0, '06:00');
+      ranges.push(new wjGrid.CellRange(6, 0, 9, 0));
+      this.onflexGrid.cells.setCellData(6, 0, '08:00');
+      ranges.push(new wjGrid.CellRange(10, 0, 13, 0));
+      this.onflexGrid.cells.setCellData(10, 0, '10:00');
+      ranges.push(new wjGrid.CellRange(14, 0, 17, 0));
+      this.onflexGrid.cells.setCellData(14, 0, '12:00');
+      ranges.push(new wjGrid.CellRange(18, 0, 21, 0));
+      this.onflexGrid.cells.setCellData(18, 0, '14:00');
+      ranges.push(new wjGrid.CellRange(22, 0, 25, 0));
+      this.onflexGrid.cells.setCellData(22, 0, '16:00');
+      ranges.push(new wjGrid.CellRange(26, 0, 29, 0));
+      this.onflexGrid.cells.setCellData(26, 0, '18:00');
+      ranges.push(new wjGrid.CellRange(30, 0, 33, 0));
+      this.onflexGrid.cells.setCellData(30, 0, '20:00');
+      ranges.push(new wjGrid.CellRange(34, 0, 37, 0));
+      this.onflexGrid.cells.setCellData(34, 0, '22:00');
 
       this.ranges = ranges;
     },
     createMerge(flexGrid) {
       let ranges = this.ranges;
+      let headerRanges = this.headerRanges;
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.Cell) {
           for (let h = 0; h < ranges.length; h++) {
             if (ranges[h].contains(r, c)) {
               return ranges[h];
+            }
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
             }
           }
         }
