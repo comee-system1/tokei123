@@ -1001,7 +1001,6 @@ export default {
       let setting = this.settingData;
       let counter = [];
       // 指定の時間軸のデータ件数の確認
-      console.log(setting);
       for (let w = 0; w < this.wpos.length; w++) {
         for (let t = 0; t < this.timeline.length; t++) {
           let st = this.timeline[t];
@@ -1013,6 +1012,7 @@ export default {
               }
             }
           }
+
           counter.push({
             [w]: {
               [st]: cnt,
@@ -1021,7 +1021,33 @@ export default {
           });
         }
       }
+      // 指定の時間内の件数をカウント
+      // cnt:1→left
+      // cnt:2→right
+      // cnt:0→both
+      //console.log(setting);
+      for (let i = 0; i < setting.length; i++) {
+        let w = setting[i].week;
+        let stime = setting[i].stime;
+        for (let c = 0; c < counter.length; c++) {
+          // console.log(setting[i].stime);
+          if (counter[c][w] && counter[c][w][stime]) {
+            console.log(counter[c][w][stime]);
+          }
+          /*
+          if (setting[i].stime == counter[c][w]) {
+            console.log(counter[c]);
+          }
+          */
+        }
+      }
+      /*
       console.log(counter);
+      for (let i = 0; i < counter.length; i++) {
+
+
+      }
+      */
       // let timeline = [];
       // let minute = [0, 30];
       // for (let t = 4; t <= 22; t++) {
