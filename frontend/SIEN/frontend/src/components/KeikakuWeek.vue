@@ -107,7 +107,7 @@
                 :allowDragging="false"
                 :allowResizing="false"
                 :allowSorting="false"
-                :allowMerging="'All'"
+                :allowMerging="'Cells'"
                 :isReadOnly="true"
                 :showBandedRows="false"
                 :initialized="onInitialize"
@@ -131,6 +131,7 @@
                   valign="middle"
                   format="g"
                   width="2*"
+                  :allowMerging="true"
                   :wordWrap="true"
                   :isReadOnly="true"
                   :multiLine="true"
@@ -671,22 +672,11 @@ export default {
             // データを全部登録
             setting = this.viewdata.slice();
 
-            /*
-            setting.push({
-              Intcode: setting.length + 1,
-              stime: '1730',
-              etime: '1930',
-              week: 4,
-              data: '起床2232',
-            });
-            */
-            // console.log(setting);
-
             let stime = '';
             let etime = '';
             // ドラッグが無しのとき
             let target = '';
-
+            let length = parseInt(setting.length) + 1;
             if (uprow == downrow && upcol == downcol) {
               // クリックしたweek
               target = this.wpos.find(
@@ -702,7 +692,7 @@ export default {
               stime = ('0' + stime.toString()).slice(-4).toString();
               etime = ('0' + etime.toString()).slice(-4).toString();
               setting.push({
-                Intcode: parseInt(setting.length) + 1,
+                Intcode: length + 1,
                 stime: stime.toString(),
                 etime: etime.toString(),
                 week: target.key,
@@ -710,20 +700,20 @@ export default {
               });
             }
 
-            /*
             if (uprow != downrow || upcol != downcol) {
               for (let r = downrow; r <= uprow; r++) {
                 for (let c = downcol; c <= upcol; c++) {
                   target = this.wpos.find((v) => v.left === c || v.right === c);
-                  //console.log(i);
                   stime = this.rowTime[r].time;
                   // 30分のときは次の時刻
                   etime =
                     stime.toString().slice(-2) == '30'
                       ? stime - 30 + 100
                       : stime + 30;
+                  stime = ('0' + stime.toString()).slice(-4).toString();
+                  etime = ('0' + etime.toString()).slice(-4).toString();
                   setting.push({
-                    uniq: setting.length + r,
+                    Intcode: length,
                     stime: stime,
                     etime: etime,
                     week: target.key,
@@ -732,12 +722,9 @@ export default {
                 }
               }
             }
-*/
 
-            console.log(setting);
             this.viewdata = setting;
             this.settingData = this.separateData(setting);
-            //this.settingData = this.sameDataAbbr(setting);
 
             this.createData();
             this.createRanges();
@@ -759,15 +746,15 @@ export default {
     dataSetted() {
       let setting = [];
 
-      /*
       let uniq = 1;
       setting.push({
         Intcode: uniq++,
-        stime: '0500',
-        etime: '0600',
+        stime: '0400',
+        etime: '500',
         week: 0,
         data: 'sample1',
       });
+
       setting.push({
         Intcode: uniq++,
         stime: '0500',
@@ -775,6 +762,7 @@ export default {
         week: 0,
         data: 'sample2',
       });
+      /*
       setting.push({
         Intcode: uniq++,
         stime: '0700',
@@ -782,20 +770,46 @@ export default {
         week: 0,
         data: '起床',
       });
+
       setting.push({
         Intcode: uniq++,
-        stime: '0830',
-        etime: '0900',
+        stime: '0630',
+        etime: '0730',
+        week: 1,
+        data: 'sample2',
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '0700',
+        etime: '0830',
+        week: 1,
+        data: 'sample3',
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '1100',
+        etime: '1200',
         week: 0,
         data: '起床123',
       });
       setting.push({
         Intcode: uniq++,
-        stime: '0700',
-        etime: '0900',
+        stime: '1130',
+        etime: '1200',
         week: 1,
-        data: '起床123',
+        data: '起床a123',
       });
+*/
+      // setting.push({
+      //   Intcode: uniq++,
+      //   stime: '0800',
+      //   etime: '0830',
+      //   week: 1,
+      //   data: 'aaa',
+      // });
+      /*
       setting.push({
         Intcode: uniq++,
         stime: '0700',
@@ -805,22 +819,44 @@ export default {
       });
       setting.push({
         Intcode: uniq++,
-        stime: '0700',
-        etime: '0900',
+        stime: '0730',
+        etime: '1030',
         week: 2,
         data: '起床123',
       });
       setting.push({
         Intcode: uniq++,
-        stime: '0700',
-        etime: '0930',
+        stime: '0830',
+        etime: '0900',
         week: 2,
-        data: '起床2232',
+        data: 'おやつ',
       });
-*/
+      */
+
+      let timeline = [];
+      let minute = [0, 30];
+      for (let t = 4; t <= 22; t++) {
+        for (let m = 0; m <= 1; m++) {
+          let time =
+            this.getdoubleDigestNumer(t).toString() +
+            this.getdoubleDigestNumer(minute[m]).toString();
+          timeline.push(time);
+        }
+      }
+      this.timeline = timeline;
+      // 時間別のrow表示位置
+      let rowTime = [];
+      for (let r = 0; r < this.timeline.length; r++) {
+        rowTime.push({
+          time: parseInt(this.timeline[r]),
+          r: r,
+        });
+      }
+      this.rowTime = rowTime;
+
       this.viewdata = setting;
-      this.settingData = this.separateData(setting);
-      //this.settingData = this.sameDataAbbr(setting);
+      // this.settingData = this.separateData(setting);
+      this.settingData = this.settingMargePoint(setting);
       let item = [];
       item.push(
         {
@@ -894,15 +930,13 @@ export default {
       let array = [];
       let now = dayjs().format('YYYY-MM-DD');
       for (let i = 0; i < data.length; i++) {
-        let calc = Math.floor(
-          (parseInt(data[i].etime) - parseInt(data[i].stime)) / 50
-        );
+        let diff = parseInt(data[i].etime) - parseInt(data[i].stime);
+        // 70の時は700-630等のセル計算になるので、50とする
+        if (diff == 70) {
+          diff = 50;
+        }
+        let calc = Math.ceil(diff / 50);
         if (calc < 1) calc = 1;
-
-        // console.log(parseInt(data[i].etime));
-        // console.log(parseInt(data[i].stime));
-        // console.log((parseInt(data[i].etime) - parseInt(data[i].stime)) / 30);
-        // console.log(calc);
         for (let j = 0; j < calc; j++) {
           let stime = dayjs(now + ' ' + data[i].stime)
             .add(30 * j, 'minutes')
@@ -918,6 +952,7 @@ export default {
           });
         }
       }
+      array = this.sameDataAbbr(array);
       return array;
     },
     /******************
@@ -925,96 +960,106 @@ export default {
      * 重複データを削除、削除データの重複をまとめて、表示用配列に加える
      *******************/
     sameDataAbbr(data) {
-      let same = [];
-      let deletekey = [];
-      let checkData = data.slice();
-      // 同じデータの確認
+      let array = [];
+      let last = [];
+      // 配列の最後
       for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < checkData.length; j++) {
-          if (
-            data[i].uniq != checkData[j].uniq &&
-            data[i].stime == checkData[j].stime &&
-            data[i].etime == checkData[j].etime &&
-            data[i].week == checkData[j].week &&
-            data[i].data == checkData[j].data
-          ) {
-            // 共通のデータ
-            same.push(data[i]);
-            // データ削除用のキー
-            deletekey.push(i);
+        if (data[i + 1] || i == data.length - 1) {
+          if (i == data.length - 1 || data[i].Intcode != data[i + 1].Intcode) {
+            last.push(data[i]);
           }
         }
       }
-      for (let d = 0; d < deletekey.length; d++) {
-        data[deletekey[d]] = '';
+      let no = 0;
+      for (let i = 0; i < data.length; i++) {
+        if (!data[i - 1] || data[i].Intcode != data[i - 1].Intcode) {
+          if (last[no]) {
+            data[i]['lastStime'] = last[no].stime;
+            data[i]['lastEtime'] = last[no].etime;
+            no++;
+          }
+        }
+        array.push(data[i]);
       }
-      data = data.filter(Boolean);
 
-      // 重複データを一つにまとめる
-      let dataFiltered = same.filter(
-        (element, index, self) =>
-          self.findIndex(
-            (dataElement) =>
-              dataElement.stime === element.stime &&
-              dataElement.etime === element.etime &&
-              dataElement.week === element.week &&
-              dataElement.data === element.data
-          ) === index
-      );
-      let concat = dataFiltered.concat(data);
-
-      return concat;
+      return array;
+    },
+    groupBy(xs, key) {
+      return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+      }, {});
     },
     createData() {
       let setting = this.settingData;
-      let timeline = [];
-      let minute = [0, 30];
-      for (let t = 4; t <= 22; t++) {
-        for (let m = 0; m <= 1; m++) {
-          let time =
-            this.getdoubleDigestNumer(t).toString() +
-            this.getdoubleDigestNumer(minute[m]).toString();
-          timeline.push(time);
+      console.log(setting);
+      let counter = [];
+      // 指定の時間軸のデータ件数の確認
+      for (let w = 0; w < this.wpos.length; w++) {
+        for (let t = 0; t < this.timeline.length; t++) {
+          let st = this.timeline[t];
+          let cnt = 0;
+          for (let c = 0; c < setting.length; c++) {
+            if (setting[c].stime == st) {
+              cnt++;
+            }
+            counter.push({
+              [w]: {
+                [st]: cnt,
+              },
+            });
+          }
         }
       }
-      this.timeline = timeline;
+      console.log(counter);
+      // let timeline = [];
+      // let minute = [0, 30];
+      // for (let t = 4; t <= 22; t++) {
+      //   for (let m = 0; m <= 1; m++) {
+      //     let time =
+      //       this.getdoubleDigestNumer(t).toString() +
+      //       this.getdoubleDigestNumer(minute[m]).toString();
+      //     timeline.push(time);
+      //   }
+      // }
+      // this.timeline = timeline;
 
       // 指定の時間内の件数をカウント
       // cnt:1→left
       // cnt:2→right
       // cnt:0→both
-      console.log(setting);
+
+      /*
       for (let i = 0; i < setting.length; i++) {
         let cnt = 0;
         let stime = setting[i].stime;
-        let etime = setting[i].etime;
+        //let etime = setting[i].etime;
+        let etime = setting[i].lastEtime;
         let week = setting[i].week;
         let Intcode = setting[i].Intcode;
         for (let j = 0; j < setting.length; j++) {
           if (Intcode != setting[j].Intcode && week == setting[j].week) {
-            if (!(stime >= setting[j].etime || etime <= setting[j].stime)) {
-              cnt++;
+            if (
+              parseInt(stime) >= parseInt(setting[j].lastEtime) ||
+              parseInt(etime) <= parseInt(setting[j].stime)
+            ) {
+              if (cnt == 0) {
+                cnt = 0;
+              }
+            } else {
+              cnt = 1;
               if (setting[j].cnt > 0) {
-                cnt++;
+                cnt = 2;
               }
             }
           }
         }
         setting[i].cnt = cnt;
       }
-
-      // 時間別のrow表示位置
-      let rowTime = [];
-      for (let r = 0; r < this.timeline.length; r++) {
-        rowTime.push({
-          time: parseInt(this.timeline[r]),
-          r: r,
-        });
-      }
-      this.rowTime = rowTime;
+*/
 
       // データにマージ用の値を登録
-      setting = this.settingMargePoint(setting);
+      //setting = this.settingMargePoint(setting);
       this.settingData = setting;
     },
     // 数値2桁
@@ -1127,19 +1172,16 @@ export default {
       if (defaultFlag) {
         for (let r = 0; r < this.timeline.length; r++) {
           this.onflexGrid.cells.rows.insert(r, new wjGrid.Row());
-          // this.onflexGrid.cells.setCellData(r, 0, this.timeline[r]);
         }
       }
 
       let ranges = [];
-
       for (let i = 0; i < this.settingData.length; i++) {
         this.onflexGrid.cells.setCellData(
           this.settingData[i].strow,
           this.settingData[i].stcol,
           this.settingData[i].data
         );
-
         ranges.push(
           new wjGrid.CellRange(
             this.settingData[i].strow,
@@ -1153,10 +1195,12 @@ export default {
       // 空欄部分をマージ
       for (let r = 0; r < this.timeline.length; r++) {
         for (let w = 0; w < this.weekarray.length; w++) {
-          let dataLeft = this.onflexGrid.cells.getCellData(r, w);
-          let dataRight = this.onflexGrid.cells.getCellData(r, w + 1);
-          if (!dataLeft && !dataRight && w % 2 == 1) {
-            ranges.push(new wjGrid.CellRange(r, w, r, w));
+          if (w % 2 == 1) {
+            let dataLeft = this.onflexGrid.cells.getCellData(r, w);
+            let dataRight = this.onflexGrid.cells.getCellData(r, w + 1);
+            if (!dataLeft && !dataRight) {
+              ranges.push(new wjGrid.CellRange(r, w, r, w + 1));
+            }
           }
         }
       }
