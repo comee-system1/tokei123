@@ -750,9 +750,16 @@ export default {
       setting.push({
         Intcode: uniq++,
         stime: '0400',
-        etime: '500',
+        etime: '0500',
         week: 0,
         data: 'sample1',
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0400',
+        etime: '0500',
+        week: 0,
+        data: 'sample11',
       });
 
       setting.push({
@@ -992,23 +999,26 @@ export default {
     },
     createData() {
       let setting = this.settingData;
-      console.log(setting);
       let counter = [];
       // 指定の時間軸のデータ件数の確認
+      console.log(setting);
       for (let w = 0; w < this.wpos.length; w++) {
         for (let t = 0; t < this.timeline.length; t++) {
           let st = this.timeline[t];
           let cnt = 0;
           for (let c = 0; c < setting.length; c++) {
-            if (setting[c].stime == st) {
-              cnt++;
+            if (setting[c].week == w) {
+              if (setting[c].stime == st) {
+                cnt++;
+              }
             }
-            counter.push({
-              [w]: {
-                [st]: cnt,
-              },
-            });
           }
+          counter.push({
+            [w]: {
+              [st]: cnt,
+              [w]: this.wpos[w].key,
+            },
+          });
         }
       }
       console.log(counter);
