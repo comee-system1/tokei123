@@ -707,6 +707,9 @@ export default {
 
             target = [];
             if (uprow != downrow || upcol != downcol) {
+              let st = [];
+              let et = [];
+              let wt = [];
               for (let r = downrow; r <= uprow; r++) {
                 for (let c = downcol; c <= upcol; c++) {
                   target.push(
@@ -721,8 +724,7 @@ export default {
                         e.left === element.left && e.right === element.right
                     ) === index
                 );
-                console.log(mix);
-                //  let k = 0;
+
                 for (let c = 0; c < mix.length; c++) {
                   stime = this.rowTime[r].time;
                   etime = this.rowTime[uprow].time;
@@ -733,38 +735,27 @@ export default {
                       : stime + 30;
                   stime = ('0' + stime.toString()).slice(-4).toString();
                   etime = ('0' + etime.toString()).slice(-4).toString();
-                  console.log(stime);
-                  console.log(etime);
-                  /*
-                  setting.push({
-                    Intcode: length + k,
-                    stime: stime.toString(),
-                    etime: etime.toString(),
-                    week: mix.key,
-                    data: this.everySelected,
-                    cnt: 0,
-                  });
-*/
-                  //  k++;
+                  st.push(stime);
+                  et.push(etime);
+                  wt.push(mix[c].key);
                 }
               }
-              /*
-              stime = this.rowTime[downrow].time;
-              etime = this.rowTime[uprow + 1].time;
-              stime = ('0' + stime.toString()).slice(-4).toString();
-              etime = ('0' + etime.toString()).slice(-4).toString();
-              target = this.wpos.find(
-                (v) => v.left === downcol || v.right === upcol
-              );
-              setting.push({
-                Intcode: length + 1,
-                stime: stime.toString(),
-                etime: etime.toString(),
-                week: target.key,
-                data: this.everySelected,
-                cnt: 0,
-              });
-              */
+              let min = Math.min(...st);
+              let max = Math.max(...et);
+              min = ('0' + min.toString()).slice(-4).toString();
+              max = ('0' + max.toString()).slice(-4).toString();
+
+              let intcode = length + 1;
+              for (let i = 0; i < wt.length; i++) {
+                setting.push({
+                  Intcode: intcode,
+                  stime: min.toString(),
+                  etime: max.toString(),
+                  week: wt[i],
+                  data: this.everySelected,
+                  cnt: 0,
+                });
+              }
             }
 
             this.viewdata = setting;
