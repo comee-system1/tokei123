@@ -109,11 +109,12 @@
         </v-card>
       </v-row>
       <v-row
-        class="ma-0 mt-1 pa-1"
+        class="ma-0 mt-1"
         no-gutters
-        style="background-color: #d7eeff; width: 100%"
+        style="background-color: #d7eeff; width: 98%"
       >
         <wj-flex-grid
+          class="ma-1"
           id="yoteisyaIcrnGrid"
           :headersVisibility="'Column'"
           :autoGenerateColumns="false"
@@ -276,7 +277,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'jissi',
+          dataname: 'jisshiD',
           title: '実\n施',
           kbntitle: 'モニタリング報告書',
           chutitl: 'モニタリング実施',
@@ -292,7 +293,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'doui',
+          dataname: 'douiD',
           title: '同\n意',
           kbntitle: '',
           chutitl: '',
@@ -300,7 +301,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'henkou',
+          dataname: 'henkoShuD',
           title: '変\n更',
           kbntitle: '計画案',
           chutitl: '',
@@ -308,7 +309,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'kousin',
+          dataname: 'chutoD',
           title: '更\n新',
           kbntitle: '計画案',
           chutitl: '',
@@ -332,7 +333,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'kaigiYmd',
+          dataname: 'tanYmdD',
           title: '実施日',
           kbntitle: '担当者会議',
           chutitl: '',
@@ -340,7 +341,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'kasan',
+          dataname: 'kasanD',
           title: '加\n算',
           kbntitle: '担当者会議',
           chutitl: '',
@@ -348,7 +349,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'tantousya',
+          dataname: 'sname',
           title: '担当者',
           kbntitle: '',
           chutitl: '',
@@ -477,51 +478,52 @@ export default {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       this.screenFlag = false;
       this.loading = false;
+      console.log(111);
+      console.log(this.viewdatayoteisya);
       flexGrid.columnFooters.setCellData(
         0,
         6,
-        this.viewdatayoteisya.filter((x) => x.shukiD.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.shuki == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         7,
-        this.viewdatayoteisya.filter((x) => x.chusiD.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.chusi == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         8,
-        this.viewdatayoteisya.filter((x) => x.enkiD.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.enki == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         11,
-        this.viewdatayoteisya.filter((x) => String(x.jissiYmd).length > 0)
-          .length
+        this.viewdatayoteisya.filter((x) => x.jisshi == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         12,
-        this.viewdatayoteisya.filter((x) => x.jissi.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.jisshi == 1).length
       );
-      flexGrid.columnFooters.setCellData(
-        0,
-        13,
-        this.viewdatayoteisya.filter((x) => x.syukankeikaku.length > 0).length
-      );
+      // flexGrid.columnFooters.setCellData(
+      //   0,
+      //   13,
+      //   this.viewdatayoteisya.filter((x) => x.syukankeikaku.length > 0).length
+      // );
       flexGrid.columnFooters.setCellData(
         0,
         14,
-        this.viewdatayoteisya.filter((x) => x.doui.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.doui == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         15,
-        this.viewdatayoteisya.filter((x) => x.henkou.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.henkoShu == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
         16,
-        this.viewdatayoteisya.filter((x) => x.kousin.length > 0).length
+        this.viewdatayoteisya.filter((x) => x.chuto == 1).length
       );
       flexGrid.columnFooters.setCellData(
         0,
@@ -529,16 +531,15 @@ export default {
         this.viewdatayoteisya.filter((x) => String(x.nextMonth).length > 0)
           .length
       );
-      flexGrid.columnFooters.setCellData(
-        0,
-        18,
-        this.viewdatayoteisya.filter((x) => x.serviceend.length > 0).length
-      );
+      // flexGrid.columnFooters.setCellData(
+      //   0,
+      //   18,
+      //   this.viewdatayoteisya.filter((x) => x.serviceend.length > 0).length
+      // );
       flexGrid.columnFooters.setCellData(
         0,
         19,
-        this.viewdatayoteisya.filter((x) => String(x.kaigiYmd).length > 0)
-          .length
+        this.viewdatayoteisya.filter((x) => String(x.tanYmd).length > 0).length
       );
       flexGrid.columnFooters.setCellData(
         0,
@@ -637,11 +638,6 @@ export default {
       this.screenFlag = true;
       this.loading = true;
       if (isAll) {
-        // uketukeIcrn(this.targetYmd).then((result) => {
-        //   this.viewdataAll = result;
-        //   this.userFilter();
-        //   this.screenFlag = false;
-        // });
         let params = {
           uniqid: 1,
           traceid: 123,
@@ -656,8 +652,6 @@ export default {
           this.viewdatayoteisyaAll = result;
           this.userFilter();
         });
-        // this.createdemodata();
-        // this.userFilter();
       } else {
         this.userFilter();
       }
@@ -934,7 +928,7 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98%;
+    width: 100%;
     height: 72vh;
     min-height: 450px;
     .wj-header {

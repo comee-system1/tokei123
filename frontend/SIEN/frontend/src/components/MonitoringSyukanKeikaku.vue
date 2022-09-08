@@ -395,6 +395,7 @@ export default {
       inputTypemodel: 0, // 0: 週間予定 1: 主な日常生活
       keikakuKubunModel: '',
       viewdata: [],
+      viewdataAll: [],
       settingData: [],
 
       weekarray: [
@@ -537,7 +538,7 @@ export default {
           right: 14,
         },
       ],
-      newIntcode: 0,
+      newIntcode: 1,
       headerRanges: [
         new wjGrid.CellRange(0, 1, 0, 2),
         new wjGrid.CellRange(0, 3, 0, 4),
@@ -547,6 +548,7 @@ export default {
         new wjGrid.CellRange(0, 11, 0, 12),
         new wjGrid.CellRange(0, 13, 0, 14),
       ],
+      columnYoubiMap: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
     };
   },
   created() {},
@@ -1025,13 +1027,27 @@ export default {
             if (startrow >= 0) {
               // パターン３
               if (
-                (col == 1 && rowitem.mondayObj1 == null) ||
-                (col == 3 && rowitem.thusedayObj1 == null) ||
-                (col == 5 && rowitem.wednesdayObj1 == null) ||
-                (col == 7 && rowitem.thursdayObj1 == null) ||
-                (col == 9 && rowitem.fridayObj1 == null) ||
-                (col == 11 && rowitem.saturdayObj1 == null) ||
-                (col == 13 && rowitem.sundayObj1 == null) ||
+                (col == 1 &&
+                  rowitem.mondayObj1 == null &&
+                  rowitem.mondayObj2 == null) ||
+                (col == 3 &&
+                  rowitem.thusedayObj1 == null &&
+                  rowitem.thusedayObj2 == null) ||
+                (col == 5 &&
+                  rowitem.wednesdayObj1 == null &&
+                  rowitem.wednesdayObj2 == null) ||
+                (col == 7 &&
+                  rowitem.thursdayObj1 == null &&
+                  rowitem.thursdayObj2 == null) ||
+                (col == 9 &&
+                  rowitem.fridayObj1 == null &&
+                  rowitem.fridayObj2 == null) ||
+                (col == 11 &&
+                  rowitem.saturdayObj1 == null &&
+                  rowitem.saturdayObj2 == null) ||
+                (col == 13 &&
+                  rowitem.sundayObj1 == null &&
+                  rowitem.sundayObj2 == null) ||
                 (col == 1 &&
                   rowitem.mondayObj1 != null &&
                   (rowitem.mondayObj1.Intcode != rowitem.mondayObj2.Intcode ||
@@ -1074,13 +1090,21 @@ export default {
 
             // 空の場合は曜日の２列目とマージ（パターン１）
             if (
-              (col == 1 && rowitem.monday1 == '') ||
-              (col == 3 && rowitem.thuseday1 == '') ||
-              (col == 5 && rowitem.wednesday1 == '') ||
-              (col == 7 && rowitem.thursday1 == '') ||
-              (col == 9 && rowitem.friday1 == '') ||
-              (col == 11 && rowitem.saturday1 == '') ||
-              (col == 13 && rowitem.sunday1 == '')
+              (col == 1 && rowitem.monday1 == '' && rowitem.monday2 == '') ||
+              (col == 3 &&
+                rowitem.thuseday1 == '' &&
+                rowitem.thuseday2 == '') ||
+              (col == 5 &&
+                rowitem.wednesday1 == '' &&
+                rowitem.wednesday2 == '') ||
+              (col == 7 &&
+                rowitem.thursday1 == '' &&
+                rowitem.thursday2 == '') ||
+              (col == 9 && rowitem.friday1 == '' && rowitem.friday2 == '') ||
+              (col == 11 &&
+                rowitem.saturday1 == '' &&
+                rowitem.saturday2 == '') ||
+              (col == 13 && rowitem.sunday1 == '' && rowitem.sunday2 == '')
             ) {
               ranges.push(new wjGrid.CellRange(row, col, row, col + 1));
               continue;
@@ -1088,6 +1112,7 @@ export default {
               // ↓パターン２
               col == 1 &&
               rowitem.mondayObj1.Intcode != tmpIntcode &&
+              rowitem.mondayObj2 != null &&
               rowitem.mondayObj1.Intcode == rowitem.mondayObj2.Intcode
             ) {
               startrow = row;
@@ -1095,6 +1120,7 @@ export default {
             } else if (
               col == 3 &&
               rowitem.thusedayObj1.Intcode != tmpIntcode &&
+              rowitem.thusedayObj2 != null &&
               rowitem.thusedayObj1.Intcode == rowitem.thusedayObj2.Intcode
             ) {
               startrow = row;
@@ -1102,6 +1128,7 @@ export default {
             } else if (
               col == 5 &&
               rowitem.wednesdayObj1.Intcode != tmpIntcode &&
+              rowitem.wednesdayObj2 != null &&
               rowitem.wednesdayObj1.Intcode == rowitem.wednesdayObj2.Intcode
             ) {
               startrow = row;
@@ -1109,6 +1136,7 @@ export default {
             } else if (
               col == 7 &&
               rowitem.thursdayObj1.Intcode != tmpIntcode &&
+              rowitem.thursdayObj2 != null &&
               rowitem.thursdayObj1.Intcode == rowitem.thursdayObj2.Intcode
             ) {
               startrow = row;
@@ -1116,6 +1144,7 @@ export default {
             } else if (
               col == 9 &&
               rowitem.fridayObj1.Intcode != tmpIntcode &&
+              rowitem.fridayObj2 != null &&
               rowitem.fridayObj1.Intcode == rowitem.fridayObj2.Intcode
             ) {
               startrow = row;
@@ -1123,6 +1152,7 @@ export default {
             } else if (
               col == 11 &&
               rowitem.saturdayObj1.Intcode != tmpIntcode &&
+              rowitem.saturdayObj2 != null &&
               rowitem.saturdayObj1.Intcode == rowitem.saturdayObj2.Intcode
             ) {
               startrow = row;
@@ -1130,24 +1160,24 @@ export default {
             } else if (
               col == 13 &&
               rowitem.sundayObj1.Intcode != tmpIntcode &&
+              rowitem.sundayObj2 != null &&
               rowitem.sundayObj1.Intcode == rowitem.sundayObj2.Intcode
             ) {
               startrow = row;
               tmpIntcode = rowitem.sundayObj1.Intcode;
             }
           }
-          if (startrow >= 0) {
-            ranges.push(
-              new wjGrid.CellRange(
-                startrow,
-                col,
-                flexGrid.cells.rows.length - 1,
-                col + 1
-              )
-            );
-          }
+          // if (startrow >= 0) {
+          //   ranges.push(
+          //     new wjGrid.CellRange(
+          //       startrow,
+          //       col,
+          //       flexGrid.cells.rows.length - 1,
+          //       col + 1
+          //     )
+          //   );
+          // }
         }
-        console.log(ranges);
         // ranges.push(new wjGrid.CellRange(0, startc, 0, endc - 1));
         // getMergedRangeメソッドをオーバーライドする;
         let hr = this.headerRanges.slice();
@@ -1191,6 +1221,12 @@ export default {
             col1 = cr.col2;
             col2 = cr.col;
           }
+          if (col1 % 2 == 0) {
+            col1 = col1 - 1;
+          }
+          if (col2 % 2 == 1) {
+            col2 = col2 + 1;
+          }
           if (row1 > row2) {
             row1 = cr.row2;
             row2 = cr.row;
@@ -1198,34 +1234,108 @@ export default {
 
           let viewitem;
           let inputitem = this.everySelected;
-          console.log(this.everySelected);
           let tmpViewddata = this.viewdata.slice();
           let stime = flexGrid.itemsSource[row1].realtimesStartFmt;
           let etime = flexGrid.itemsSource[row2].realtimesEndFmt;
+          let stimeNum = Number(flexGrid.itemsSource[row1].realtimesStart);
+          let etimeNum = Number(flexGrid.itemsSource[row2].realtimesEnd);
 
-          console.log(111111);
-          console.log(flexGrid.itemsSource[row1].realtimesStart);
-          console.log(
-            tmpViewddata.filter(
-              (x) =>
-                (Number(x.realtimesStart) <=
-                  Number(flexGrid.itemsSource[row1].realtimesStart) ||
-                  Number(flexGrid.itemsSource[row1].realtimesStart)) <=
-                Number(x.realtimesEnd)
-            )
-          );
-
-          this.newIntcode++;
-          for (let rowindex = row1; rowindex <= row2; rowindex++) {
-            viewitem = tmpViewddata[rowindex];
-            for (let colindex = col1; colindex <= col2; colindex++) {
-              this.setViewData(viewitem, colindex, inputitem, stime, etime);
+          for (let col = col1; col <= col2; col = col + 2) {
+            if (this.cntSameJikantai(col, stimeNum, etimeNum) <= 1) {
+              this.viewdataAll.push(
+                this.createDayObj(
+                  inputitem,
+                  this.columnYoubiMap[col],
+                  stime,
+                  etime
+                )
+              );
+              this.newIntcode++;
             }
           }
+          this.viewdataAll.sort((a, b) => {
+            if (a.Yobi < b.Yobi) {
+              return -1;
+            }
+            if (a.Yobi > b.Yobi) {
+              return 1;
+            }
+            // ２次キーは開始時間
+            if (a.StimeNum !== b.StimeNum) {
+              return a.StimeNum - b.StimeNum;
+            }
+            // ３次キーは終了時間
+            if (a.EtimeNum !== b.EtimeNum) {
+              return a.EtimeNum - b.EtimeNum;
+            }
+            // ４次キーは登録順
+            if (a.Intcode !== b.Intcode) {
+              return a.Intcode - b.Intcode;
+            }
+          });
+          console.log(122222222);
+          console.log(this.viewdataAll);
+          let self = this;
+          for (let i = 0; i < tmpViewddata.length; i++) {
+            let stime = Number(tmpViewddata[i].realtimesStart);
+            let etime = Number(tmpViewddata[i].realtimesEnd);
+            viewitem = tmpViewddata[i];
+            // 対象の時間帯のデータを
+            let tmpitems = this.viewdataAll.filter(
+              (x) =>
+                (x.StimeNum <= stime && stime < x.EtimeNum) ||
+                (x.StimeNum < etime && etime <= x.EtimeNum)
+            );
+            this.resetDayObj(viewitem);
+            tmpitems.forEach((dayobj) => {
+              let sametimeList = self.viewdataAll.filter(
+                (x) =>
+                  x.Yobi == dayobj.Yobi &&
+                  x.Intcode != dayobj.Intcode &&
+                  ((dayobj.StimeNum <= x.StimeNum &&
+                    x.StimeNum < dayobj.EtimeNum) ||
+                    (dayobj.StimeNum < x.EtimeNum &&
+                      x.EtimeNum <= dayobj.EtimeNum) ||
+                    (x.StimeNum <= dayobj.StimeNum &&
+                      dayobj.StimeNum < x.EtimeNum) ||
+                    (x.StimeNum < dayobj.EtimeNum &&
+                      dayobj.EtimeNum <= x.EtimeNum))
+              );
+              let preDataCnt = sametimeList.filter(
+                (x) => x.StimeNum <= dayobj.StimeNum
+              ).length;
+              this.setViewData(
+                viewitem,
+                dayobj,
+                sametimeList.length > 0,
+                preDataCnt > 0
+              );
+            });
+          }
+          console.log(11111);
+          console.log(tmpViewddata);
+          // for (let rowindex = row1; rowindex <= row2; rowindex++) {
+          //   viewitem = tmpViewddata[rowindex];
+          //   for (
+          //     let colindex = col1;
+          //     colindex <= col2;
+          //     colindex = colindex + 2
+          //   ) {
+          //     this.setViewData(
+          //       viewitem,
+          //       colindex,
+          //       inputitem,
+          //       stime,
+          //       etime,
+          //       stimeNum,
+          //       etimeNum
+          //     );
+          //   }
+          // }
           // flexGrid.refreshRange(
           //   new wjGrid.CellRange(row1, col1 - 1, row2, col2 + 1)
           // );
-          // console.log(flexGrid.itemsSource);
+          // console.log(tmpViewddata);
           this.viewdata = tmpViewddata;
           flexGrid.refresh();
         }
@@ -1245,144 +1355,301 @@ export default {
         e.cell.style.alignItems = 'center';
       });
     },
-    setViewData(viewitem, c, inputitem, stime, etime) {
-      switch (c) {
+    resetDayObj(viewitem) {
+      viewitem.monday1 = '';
+      viewitem.monday2 = '';
+      viewitem.thuseday1 = '';
+      viewitem.thuseday2 = '';
+      viewitem.wednesday1 = '';
+      viewitem.wednesday2 = '';
+      viewitem.thursday1 = '';
+      viewitem.thursday2 = '';
+      viewitem.friday1 = '';
+      viewitem.friday2 = '';
+      viewitem.saturday1 = '';
+      viewitem.saturday2 = '';
+      viewitem.sunday1 = '';
+      viewitem.sunday2 = '';
+
+      viewitem.mondayObj1 = null;
+      viewitem.mondayObj2 = null;
+      viewitem.thusedayObj1 = null;
+      viewitem.thusedayObj2 = null;
+      viewitem.wednesdayObj1 = null;
+      viewitem.wednesdayObj2 = null;
+      viewitem.thursdayObj1 = null;
+      viewitem.thursdayObj2 = null;
+      viewitem.fridayObj1 = null;
+      viewitem.fridayObj2 = null;
+      viewitem.saturdayObj1 = null;
+      viewitem.saturdayObj2 = null;
+      viewitem.sundayObj1 = null;
+      viewitem.sundayObj2 = null;
+    },
+    cntSameJikantai(c, stimeNum, etimeNum) {
+      return this.viewdataAll.filter(
+        (x) =>
+          x.Yobi == this.columnYoubiMap[c] &&
+          ((x.StimeNum <= stimeNum && stimeNum < x.EtimeNum) ||
+            (x.StimeNum < etimeNum && etimeNum <= x.EtimeNum))
+      ).length;
+    },
+    setViewData(viewitem, dayObj, hasTwoDatas, hasPreData) {
+      switch (dayObj.Yobi) {
+        case 0:
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.monday1 = dayObj.Kmkname;
+              viewitem.mondayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.monday2 = dayObj.Kmkname;
+              viewitem.mondayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.monday1 = dayObj.Kmkname;
+            viewitem.mondayObj1 = Object.assign({}, dayObj);
+            viewitem.monday2 = dayObj.Kmkname;
+            viewitem.mondayObj2 = Object.assign({}, dayObj);
+          }
+          break;
         case 1:
-          viewitem.monday1 = inputitem.every;
-          viewitem.mondayObj1 = this.createDayObj(inputitem, 0, stime, etime);
-          if (viewitem.monday2.length == 0) {
-            viewitem.monday2 = inputitem.every;
-            viewitem.mondayObj2 = viewitem.mondayObj1;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.thuseday1 = dayObj.Kmkname;
+              viewitem.thusedayObj2 = Object.assign({}, dayObj);
+            } else {
+              viewitem.thuseday2 = dayObj.Kmkname;
+              viewitem.thusedayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.thuseday1 = dayObj.Kmkname;
+            viewitem.thusedayObj1 = Object.assign({}, dayObj);
+            viewitem.thuseday2 = dayObj.Kmkname;
+            viewitem.thusedayObj2 = Object.assign({}, dayObj);
           }
           break;
         case 2:
-          viewitem.monday2 = inputitem.every;
-          viewitem.mondayObj2 = this.createDayObj(inputitem, 0, stime, etime);
-          if (viewitem.monday1.length == 0) {
-            viewitem.monday1 = inputitem.every;
-            viewitem.mondayObj1 = viewitem.mondayObj2;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.wednesday1 = dayObj.Kmkname;
+              viewitem.wednesdayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.wednesday2 = dayObj.Kmkname;
+              viewitem.wednesdayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.wednesday1 = dayObj.Kmkname;
+            viewitem.wednesdayObj1 = Object.assign({}, dayObj);
+            viewitem.wednesday2 = dayObj.Kmkname;
+            viewitem.wednesdayObj2 = Object.assign({}, dayObj);
           }
           break;
         case 3:
-          viewitem.thuseday1 = inputitem.every;
-          viewitem.thusedayObj1 = this.createDayObj(inputitem, 1, stime, etime);
-          if (viewitem.thuseday2.length == 0) {
-            viewitem.thuseday2 = inputitem.every;
-            viewitem.thusedayObj2 = viewitem.thusedayObj1;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.thursday1 = dayObj.Kmkname;
+              viewitem.thursdayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.thursday2 = dayObj.Kmkname;
+              viewitem.thursdayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.thursday1 = dayObj.Kmkname;
+            viewitem.thursdayObj1 = Object.assign({}, dayObj);
+            viewitem.thursday2 = dayObj.Kmkname;
+            viewitem.thursdayObj2 = Object.assign({}, dayObj);
           }
           break;
         case 4:
-          viewitem.thuseday2 = inputitem.every;
-          viewitem.thusedayObj2 = this.createDayObj(inputitem, 1, stime, etime);
-          if (viewitem.thuseday1.length == 0) {
-            viewitem.thuseday1 = inputitem.every;
-            viewitem.thusedayObj1 = viewitem.thusedayObj2;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.friday1 = dayObj.Kmkname;
+              viewitem.fridayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.friday2 = dayObj.Kmkname;
+              viewitem.fridayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.friday1 = dayObj.Kmkname;
+            viewitem.fridayObj1 = Object.assign({}, dayObj);
+            viewitem.friday2 = dayObj.Kmkname;
+            viewitem.fridayObj2 = Object.assign({}, dayObj);
           }
           break;
         case 5:
-          viewitem.wednesday1 = inputitem.every;
-          viewitem.wednesdayObj1 = this.createDayObj(
-            inputitem,
-            2,
-            stime,
-            etime
-          );
-          if (viewitem.wednesday2.length == 0) {
-            viewitem.wednesday2 = inputitem.every;
-            viewitem.wednesdayObj2 = viewitem.wednesdayObj1;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.saturday1 = dayObj.Kmkname;
+              viewitem.saturdayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.saturday2 = dayObj.Kmkname;
+              viewitem.saturdayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.saturday1 = dayObj.Kmkname;
+            viewitem.saturdayObj1 = Object.assign({}, dayObj);
+            viewitem.saturday2 = dayObj.Kmkname;
+            viewitem.saturdayObj2 = Object.assign({}, dayObj);
           }
           break;
         case 6:
-          viewitem.wednesday2 = inputitem.every;
-          viewitem.wednesdayObj2 = this.createDayObj(
-            inputitem,
-            2,
-            stime,
-            etime
-          );
-          if (viewitem.wednesday1.length == 0) {
-            viewitem.wednesday1 = inputitem.every;
-            viewitem.wednesdayObj1 = viewitem.wednesdayObj2;
+          if (hasTwoDatas) {
+            if (!hasPreData) {
+              viewitem.sunday1 = dayObj.Kmkname;
+              viewitem.sundayObj1 = Object.assign({}, dayObj);
+            } else {
+              viewitem.sunday2 = dayObj.Kmkname;
+              viewitem.sundayObj2 = Object.assign({}, dayObj);
+            }
+          } else {
+            viewitem.sunday1 = dayObj.Kmkname;
+            viewitem.sundayObj1 = Object.assign({}, dayObj);
+            viewitem.sunday2 = dayObj.Kmkname;
+            viewitem.sundayObj2 = Object.assign({}, dayObj);
           }
           break;
-        case 7:
-          viewitem.thursday1 = inputitem.every;
-          viewitem.thursdayObj1 = this.createDayObj(inputitem, 3, stime, etime);
-          if (viewitem.thursday2.length == 0) {
-            viewitem.thursday2 = inputitem.every;
-            viewitem.thursdayObj2 = viewitem.thursdayObj1;
-          }
-          break;
-        case 8:
-          viewitem.thursday2 = inputitem.every;
-          viewitem.thursdayObj2 = this.createDayObj(inputitem, 3, stime, etime);
-          if (viewitem.thursday1.length == 0) {
-            viewitem.thursday1 = inputitem.every;
-            viewitem.thursdayObj1 = viewitem.thursdayObj2;
-          }
-          break;
-        case 9:
-          viewitem.friday1 = inputitem.every;
-          viewitem.fridayObj1 = this.createDayObj(inputitem, 4, stime, etime);
-          if (viewitem.friday2.length == 0) {
-            viewitem.friday2 = inputitem.every;
-            viewitem.fridayObj2 = viewitem.fridayObj1;
-          }
-          break;
-        case 10:
-          viewitem.friday2 = inputitem.every;
-          viewitem.fridayObj2 = this.createDayObj(inputitem, 4, stime, etime);
-          if (viewitem.friday1.length == 0) {
-            viewitem.friday1 = inputitem.every;
-            viewitem.fridayObj1 = viewitem.fridayObj2;
-          }
-          break;
-        case 11:
-          viewitem.saturday1 = inputitem.every;
-          viewitem.saturdayObj1 = this.createDayObj(inputitem, 5, stime, etime);
-          if (viewitem.saturday2.length == 0) {
-            viewitem.saturday2 = inputitem.every;
-            viewitem.saturdayObj2 = viewitem.saturdayObj1;
-          }
-          break;
-        case 12:
-          viewitem.saturday2 = inputitem.every;
-          viewitem.saturdayObj2 = this.createDayObj(inputitem, 5, stime, etime);
-          if (viewitem.saturday1.length == 0) {
-            viewitem.saturday1 = inputitem.every;
-            viewitem.saturdayObj1 = viewitem.saturdayObj2;
-          }
-          break;
-        case 13:
-          viewitem.sunday1 = inputitem.every;
-          viewitem.sundayObj1 = this.createDayObj(inputitem, 6, stime, etime);
-          if (viewitem.sunday2.length == 0) {
-            viewitem.sunday2 = inputitem.every;
-            viewitem.sundayObj2 = viewitem.sundayObj1;
-          }
-          break;
-        case 14:
-          viewitem.sunday2 = inputitem.every;
-          viewitem.sundayObj2 = this.createDayObj(inputitem, 6, stime, etime);
-          if (viewitem.sunday1.length == 0) {
-            viewitem.sunday1 = inputitem.every;
-            viewitem.sundayObj1 = viewitem.sundayObj2;
-          }
-          break;
-
         default:
           break;
       }
     },
-    createDayObj(mst, yobi, stiem, etime) {
+    setViewDataOLD(viewitem, c, inputitem, stime, etime, stimeNum, etimeNum) {
+      console.log(stimeNum + ':' + etimeNum);
+      let cnt = this.cntSameJikantai(c, stimeNum, etimeNum);
+      switch (c) {
+        case 1:
+          if (cnt == 1) {
+            viewitem.monday1 = inputitem.every;
+            viewitem.mondayObj1 = this.createDayObj(inputitem, 0, stime, etime);
+            viewitem.monday2 = inputitem.every;
+            viewitem.mondayObj2 = viewitem.mondayObj1;
+          } else if (cnt == 2) {
+            viewitem.monday2 = inputitem.every;
+            viewitem.mondayObj2 = this.createDayObj(inputitem, 0, stime, etime);
+          }
+          console.log(1212121212);
+          console.log(viewitem);
+          break;
+        case 3:
+          if (cnt == 1) {
+            viewitem.thuseday1 = inputitem.every;
+            viewitem.thusedayObj1 = this.createDayObj(
+              inputitem,
+              1,
+              stime,
+              etime
+            );
+            viewitem.thuseday1 = inputitem.every;
+            viewitem.thusedayObj1 = viewitem.thusedayObj2;
+          } else if (cnt == 2) {
+            viewitem.thuseday2 = inputitem.every;
+            viewitem.thusedayObj2 = this.createDayObj(
+              inputitem,
+              1,
+              stime,
+              etime
+            );
+          }
+          break;
+        case 5:
+          if (cnt == 1) {
+            viewitem.wednesday1 = inputitem.every;
+            viewitem.wednesdayObj1 = this.createDayObj(
+              inputitem,
+              2,
+              stime,
+              etime
+            );
+            viewitem.wednesday2 = inputitem.every;
+            viewitem.wednesdayObj2 = viewitem.wednesdayObj1;
+          } else if (cnt == 2) {
+            viewitem.wednesday2 = inputitem.every;
+            viewitem.wednesdayObj2 = this.createDayObj(
+              inputitem,
+              2,
+              stime,
+              etime
+            );
+          }
+          break;
+        case 7:
+          if (cnt == 1) {
+            viewitem.thursday1 = inputitem.every;
+            viewitem.thursdayObj1 = this.createDayObj(
+              inputitem,
+              3,
+              stime,
+              etime
+            );
+            viewitem.thursday2 = inputitem.every;
+            viewitem.thursdayObj2 = viewitem.thursdayObj1;
+          } else if (cnt == 2) {
+            viewitem.thursday2 = inputitem.every;
+            viewitem.thursdayObj2 = this.createDayObj(
+              inputitem,
+              3,
+              stime,
+              etime
+            );
+          }
+          break;
+        case 9:
+          if (cnt == 1) {
+            viewitem.friday1 = inputitem.every;
+            viewitem.fridayObj1 = this.createDayObj(inputitem, 4, stime, etime);
+            viewitem.friday2 = inputitem.every;
+            viewitem.fridayObj2 = viewitem.fridayObj1;
+          } else if (cnt == 2) {
+            viewitem.friday2 = inputitem.every;
+            viewitem.fridayObj2 = this.createDayObj(inputitem, 4, stime, etime);
+          }
+          break;
+        case 11:
+          if (cnt == 1) {
+            viewitem.saturday1 = inputitem.every;
+            viewitem.saturdayObj1 = this.createDayObj(
+              inputitem,
+              5,
+              stime,
+              etime
+            );
+            viewitem.saturday2 = inputitem.every;
+            viewitem.saturdayObj2 = viewitem.saturdayObj1;
+          } else if (cnt == 2) {
+            viewitem.saturday2 = inputitem.every;
+            viewitem.saturdayObj2 = this.createDayObj(
+              inputitem,
+              5,
+              stime,
+              etime
+            );
+          }
+          break;
+        case 13:
+          if (cnt == 1) {
+            viewitem.sunday1 = inputitem.every;
+            viewitem.sundayObj1 = this.createDayObj(inputitem, 6, stime, etime);
+            viewitem.sunday2 = inputitem.every;
+            viewitem.sundayObj2 = viewitem.sundayObj1;
+          } else if (cnt == 2) {
+            viewitem.sunday2 = inputitem.every;
+            viewitem.sundayObj2 = this.createDayObj(inputitem, 6, stime, etime);
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    createDayObj(mst, yobi, stime, etime) {
       return {
         Intcode: this.newIntcode,
         Kmkdaicode: 0,
         Kmkchucode: 0,
         Kmkname: mst.every,
         Yobi: yobi,
-        Stime: stiem,
+        Stime: stime,
         Etime: etime,
+        StimeNum: Number(stime.replace(':', '')),
+        EtimeNum: Number(etime.replace(':', '')),
       };
     },
     createViewData() {
@@ -1401,45 +1668,16 @@ export default {
           hourrow.times = String(basetime).padStart(2, '0') + ':00';
         }
         startrealtime = startrealtime.add(30, 'm');
-        hourrow.realtimesStart = startrealtime.format('hhmm');
-        hourrow.realtimesStartFmt = startrealtime.format('hh:mm');
+        hourrow.realtimesStart = startrealtime.format('HHmm');
+        hourrow.realtimesStartFmt = startrealtime.format('HH:mm');
         let endrealtime = startrealtime.add(30, 'm');
-        hourrow.realtimesEnd = endrealtime.format('hhmm');
-        hourrow.realtimesEndFmt = endrealtime.format('hh:mm');
+        hourrow.realtimesEnd = endrealtime.format('HHmm');
+        hourrow.realtimesEndFmt = endrealtime.format('HH:mm');
 
-        hourrow.monday1 = '';
-        hourrow.monday2 = '';
-        hourrow.thuseday1 = '';
-        hourrow.thuseday2 = '';
-        hourrow.wednesday1 = '';
-        hourrow.wednesday2 = '';
-        hourrow.thursday1 = '';
-        hourrow.thursday2 = '';
-        hourrow.friday1 = '';
-        hourrow.friday2 = '';
-        hourrow.saturday1 = '';
-        hourrow.saturday2 = '';
-        hourrow.sunday1 = '';
-        hourrow.sunday2 = '';
-
-        hourrow.mondayObj1 = null;
-        hourrow.mondayObj2 = null;
-        hourrow.thusedayObj1 = null;
-        hourrow.thusedayObj2 = null;
-        hourrow.wednesdayObj1 = null;
-        hourrow.wednesdayObj2 = null;
-        hourrow.thursdayObj1 = null;
-        hourrow.thursdayObj2 = null;
-        hourrow.fridayObj1 = null;
-        hourrow.fridayObj2 = null;
-        hourrow.saturdayObj1 = null;
-        hourrow.saturdayObj2 = null;
-        hourrow.sundayObj1 = null;
-        hourrow.sundayObj2 = null;
+        this.resetDayObj(hourrow);
 
         result.push(hourrow);
       }
-      console.log(result);
       this.viewdata = result;
     },
     createRanges(defaultFlag) {

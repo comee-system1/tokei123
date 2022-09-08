@@ -18,7 +18,7 @@
         <v-col class="rightArea pa-0">
           <v-row
             no-gutters
-            class="pa-1"
+            class="pa-1 pl-0"
             style="height: 30px; background: #d7eeff"
           >
             <v-row no-gutters class="rowStyle">
@@ -189,18 +189,10 @@
             </v-layout>
           </v-row>
           <v-row no-gutters class="mt-1">
-            <div style="width: 50%; height: 20vh">
+            <div style="width: 50%">
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 総合的な援助の方針
               </v-card>
-              <!-- <v-card
-                class="koumokuData2Read pa-1"
-                outlined
-                tile
-                :ripple="false"
-              >
-                {{ getHousin }}
-              </v-card> -->
               <v-textarea
                 class="ma-0 pa-0"
                 no-resize
@@ -219,15 +211,6 @@
               <v-card class="koumokuTitle_c pa-1" outlined tile>
                 全体の状況
               </v-card>
-              <!-- <v-card
-                class="koumokuData2 always-show-scrollbar pa-1"
-                outlined
-                tile
-                :ripple="false"
-                @click="textClicked()"
-              >
-                {{ getJyoukyou }}
-              </v-card> -->
               <v-textarea
                 class="ma-0 pa-0"
                 no-resize
@@ -238,7 +221,7 @@
                 flat
                 dense
                 outlined
-                style="font-size: 14px; height: auto"
+                style="font-size: 14px; height: auto; font-family: monospace"
               ></v-textarea>
             </div>
           </v-row>
@@ -691,7 +674,7 @@ export default {
           index: 0,
           no: 3,
           day: '2020/01/01',
-          kanryou: '□',
+          kanryou: '☐',
           tantou: '担当小',
         },
         {
@@ -710,6 +693,8 @@ export default {
         },
       ],
       drawer: false,
+      aaa: 20,
+      bbb: 20,
     };
   },
   mounted() {},
@@ -902,7 +887,7 @@ export default {
       result.douiKbnIndex = 1;
       result.douiSyomei = '';
       result.housin =
-        '本人の希望する生活の実現と安心した地域での生活を構築する';
+        '本人の希望する生活の実現と安心した地<br>域での生活を構築する';
       result.jyoukyou =
         '公的なサービス導入により生活が安定。一人で買い物に行くようになるなどの生活意欲が向上してきている。事務所や近隣住民、商店などとの関係も良好で、買い物に行くと転院がお財布から必要な金額を取りレシートを入れてくれるようになり、銀行でも本人が行くと職員が来てくれるようになったので、一人での外出が増えている';
 

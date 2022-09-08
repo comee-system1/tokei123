@@ -342,7 +342,7 @@
 
 <script>
 import moment from 'moment';
-import dayjs from 'dayjs';
+//import dayjs from 'dayjs';
 
 import * as wjGrid from '@grapecity/wijmo.grid';
 import UserList from './UserList.vue';
@@ -670,7 +670,11 @@ export default {
 
             let setting = [];
             // データを全部登録
+            // cntをいったんすべて0にする
             setting = this.viewdata.slice();
+            for (let i = 0; i < setting.length; i++) {
+              setting[i].cnt = 0;
+            }
 
             let stime = '';
             let etime = '';
@@ -697,14 +701,31 @@ export default {
                 etime: etime.toString(),
                 week: target.key,
                 data: this.everySelected,
+                cnt: 0,
               });
             }
 
+            target = [];
             if (uprow != downrow || upcol != downcol) {
               for (let r = downrow; r <= uprow; r++) {
                 for (let c = downcol; c <= upcol; c++) {
-                  target = this.wpos.find((v) => v.left === c || v.right === c);
+                  target.push(
+                    this.wpos.find((v) => v.left === c || v.right === c)
+                  );
+                }
+                // console.log(target);
+                let mix = target.filter(
+                  (element, index, self) =>
+                    self.findIndex(
+                      (e) =>
+                        e.left === element.left && e.right === element.right
+                    ) === index
+                );
+                console.log(mix);
+                //  let k = 0;
+                for (let c = 0; c < mix.length; c++) {
                   stime = this.rowTime[r].time;
+                  etime = this.rowTime[uprow].time;
                   // 30分のときは次の時刻
                   etime =
                     stime.toString().slice(-2) == '30'
@@ -712,19 +733,42 @@ export default {
                       : stime + 30;
                   stime = ('0' + stime.toString()).slice(-4).toString();
                   etime = ('0' + etime.toString()).slice(-4).toString();
+                  console.log(stime);
+                  console.log(etime);
+                  /*
                   setting.push({
-                    Intcode: length,
-                    stime: stime,
-                    etime: etime,
-                    week: target.key,
+                    Intcode: length + k,
+                    stime: stime.toString(),
+                    etime: etime.toString(),
+                    week: mix.key,
                     data: this.everySelected,
+                    cnt: 0,
                   });
+*/
+                  //  k++;
                 }
               }
+              /*
+              stime = this.rowTime[downrow].time;
+              etime = this.rowTime[uprow + 1].time;
+              stime = ('0' + stime.toString()).slice(-4).toString();
+              etime = ('0' + etime.toString()).slice(-4).toString();
+              target = this.wpos.find(
+                (v) => v.left === downcol || v.right === upcol
+              );
+              setting.push({
+                Intcode: length + 1,
+                stime: stime.toString(),
+                etime: etime.toString(),
+                week: target.key,
+                data: this.everySelected,
+                cnt: 0,
+              });
+              */
             }
 
             this.viewdata = setting;
-            this.settingData = this.separateData(setting);
+            this.settingData = setting;
 
             this.createData();
             this.createRanges();
@@ -753,29 +797,70 @@ export default {
         etime: '0500',
         week: 0,
         data: 'sample1',
-      });
-      setting.push({
-        Intcode: uniq++,
-        stime: '0400',
-        etime: '0500',
-        week: 0,
-        data: 'sample11',
+        cnt: 0,
       });
 
       setting.push({
         Intcode: uniq++,
-        stime: '0500',
-        etime: '0630',
+        stime: '0400',
+        etime: '1000',
         week: 0,
-        data: 'sample2',
+        data: 'sample11',
+        cnt: 0,
       });
-      /*
+
       setting.push({
         Intcode: uniq++,
-        stime: '0700',
-        etime: '0800',
+        stime: '0600',
+        etime: '0700',
         week: 0,
-        data: '起床',
+        data: 'smp33',
+        cnt: 0,
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '0800',
+        etime: '0900',
+        week: 0,
+        data: 'sample33',
+        cnt: 0,
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '0900',
+        etime: '1100',
+        week: 0,
+        data: 'sample2',
+        cnt: 0,
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '1100',
+        etime: '1500',
+        week: 0,
+        data: 'aaa33',
+        cnt: 0,
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '1200',
+        etime: '1300',
+        week: 0,
+        data: '起床aaaa',
+        cnt: 0,
+      });
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '1800',
+        etime: '1900',
+        week: 0,
+        data: '起床bbb',
+        cnt: 0,
       });
 
       setting.push({
@@ -784,6 +869,7 @@ export default {
         etime: '0730',
         week: 1,
         data: 'sample2',
+        cnt: 0,
       });
 
       setting.push({
@@ -792,6 +878,7 @@ export default {
         etime: '0830',
         week: 1,
         data: 'sample3',
+        cnt: 0,
       });
 
       setting.push({
@@ -800,29 +887,33 @@ export default {
         etime: '1200',
         week: 0,
         data: '起床123',
+        cnt: 0,
       });
       setting.push({
         Intcode: uniq++,
-        stime: '1130',
+        stime: '1100',
         etime: '1200',
         week: 1,
         data: '起床a123',
+        cnt: 0,
       });
-*/
-      // setting.push({
-      //   Intcode: uniq++,
-      //   stime: '0800',
-      //   etime: '0830',
-      //   week: 1,
-      //   data: 'aaa',
-      // });
-      /*
+
+      setting.push({
+        Intcode: uniq++,
+        stime: '0900',
+        etime: '0930',
+        week: 1,
+        data: 'aaa',
+        cnt: 0,
+      });
+
       setting.push({
         Intcode: uniq++,
         stime: '0700',
         etime: '0800',
-        week: 1,
+        week: 2,
         data: '553',
+        cnt: 0,
       });
       setting.push({
         Intcode: uniq++,
@@ -830,15 +921,32 @@ export default {
         etime: '1030',
         week: 2,
         data: '起床123',
+        cnt: 0,
       });
       setting.push({
         Intcode: uniq++,
         stime: '0830',
-        etime: '0900',
+        etime: '1900',
         week: 2,
         data: 'おやつ',
+        cnt: 0,
       });
-      */
+      setting.push({
+        Intcode: uniq++,
+        stime: '1230',
+        etime: '1400',
+        week: 2,
+        data: 'おやつ',
+        cnt: 0,
+      });
+      setting.push({
+        Intcode: uniq++,
+        stime: '0730',
+        etime: '1800',
+        week: 5,
+        data: 'サンプル',
+        cnt: 0,
+      });
 
       let timeline = [];
       let minute = [0, 30];
@@ -860,10 +968,8 @@ export default {
         });
       }
       this.rowTime = rowTime;
-
       this.viewdata = setting;
-      // this.settingData = this.separateData(setting);
-      this.settingData = this.settingMargePoint(setting);
+      this.settingData = setting;
       let item = [];
       item.push(
         {
@@ -930,38 +1036,6 @@ export default {
       );
       this.servicedata = servicedata;
     },
-    /*******************
-     * データを30分ごとに分割
-     ****************/
-    separateData(data) {
-      let array = [];
-      let now = dayjs().format('YYYY-MM-DD');
-      for (let i = 0; i < data.length; i++) {
-        let diff = parseInt(data[i].etime) - parseInt(data[i].stime);
-        // 70の時は700-630等のセル計算になるので、50とする
-        if (diff == 70) {
-          diff = 50;
-        }
-        let calc = Math.ceil(diff / 50);
-        if (calc < 1) calc = 1;
-        for (let j = 0; j < calc; j++) {
-          let stime = dayjs(now + ' ' + data[i].stime)
-            .add(30 * j, 'minutes')
-            .format('Hmm');
-          let sobj = dayjs(now + ' ' + data[i].stime).add(30 * j, 'minutes');
-          let etime = dayjs(sobj).add(30, 'minutes').format('Hmm');
-          array.push({
-            Intcode: data[i].Intcode,
-            stime: stime,
-            etime: etime,
-            week: data[i].week,
-            data: data[i].data,
-          });
-        }
-      }
-      array = this.sameDataAbbr(array);
-      return array;
-    },
     /******************
      * 同じデータを省略
      * 重複データを削除、削除データの重複をまとめて、表示用配列に加える
@@ -991,111 +1065,51 @@ export default {
 
       return array;
     },
-    groupBy(xs, key) {
-      return xs.reduce(function (rv, x) {
-        (rv[x[key]] = rv[x[key]] || []).push(x);
-        return rv;
-      }, {});
+
+    alreadyCountCheck(check, setting) {
+      let cnt = 0;
+      for (let j = 0; j < setting.length; j++) {
+        if (check.week == setting[j].week) {
+          if (
+            parseInt(check.stime) < parseInt(setting[j].etime) &&
+            parseInt(check.etime) > parseInt(setting[j].stime)
+          ) {
+            cnt = setting[j].cnt == 1 ? 2 : 1;
+            return cnt;
+          }
+        }
+      }
+      return 0;
     },
     createData() {
-      let setting = this.settingData;
-      let counter = [];
-      // 指定の時間軸のデータ件数の確認
-      for (let w = 0; w < this.wpos.length; w++) {
-        for (let t = 0; t < this.timeline.length; t++) {
-          let st = this.timeline[t];
-          let cnt = 0;
-          for (let c = 0; c < setting.length; c++) {
-            if (setting[c].week == w) {
-              if (setting[c].stime == st) {
-                cnt++;
-              }
-            }
-          }
-
-          counter.push({
-            [w]: {
-              [st]: cnt,
-              [w]: this.wpos[w].key,
-            },
-          });
-        }
-      }
+      let setting = [];
+      setting = this.settingData;
       // 指定の時間内の件数をカウント
       // cnt:1→left
       // cnt:2→right
       // cnt:0→both
-      //console.log(setting);
       for (let i = 0; i < setting.length; i++) {
-        let w = setting[i].week;
-        let stime = setting[i].stime;
-        for (let c = 0; c < counter.length; c++) {
-          // console.log(setting[i].stime);
-          if (counter[c][w] && counter[c][w][stime]) {
-            console.log(counter[c][w][stime]);
-          }
-          /*
-          if (setting[i].stime == counter[c][w]) {
-            console.log(counter[c]);
-          }
-          */
-        }
-      }
-      /*
-      console.log(counter);
-      for (let i = 0; i < counter.length; i++) {
+        let c = 0;
 
-
-      }
-      */
-      // let timeline = [];
-      // let minute = [0, 30];
-      // for (let t = 4; t <= 22; t++) {
-      //   for (let m = 0; m <= 1; m++) {
-      //     let time =
-      //       this.getdoubleDigestNumer(t).toString() +
-      //       this.getdoubleDigestNumer(minute[m]).toString();
-      //     timeline.push(time);
-      //   }
-      // }
-      // this.timeline = timeline;
-
-      // 指定の時間内の件数をカウント
-      // cnt:1→left
-      // cnt:2→right
-      // cnt:0→both
-
-      /*
-      for (let i = 0; i < setting.length; i++) {
-        let cnt = 0;
-        let stime = setting[i].stime;
-        //let etime = setting[i].etime;
-        let etime = setting[i].lastEtime;
-        let week = setting[i].week;
-        let Intcode = setting[i].Intcode;
+        // 指定時間のデータ件数
         for (let j = 0; j < setting.length; j++) {
-          if (Intcode != setting[j].Intcode && week == setting[j].week) {
+          if (
+            setting[i].Intcode != setting[j].Intcode &&
+            setting[i].week == setting[j].week
+          ) {
             if (
-              parseInt(stime) >= parseInt(setting[j].lastEtime) ||
-              parseInt(etime) <= parseInt(setting[j].stime)
+              parseInt(setting[i].stime) < parseInt(setting[j].etime) &&
+              parseInt(setting[i].etime) > parseInt(setting[j].stime)
             ) {
-              if (cnt == 0) {
-                cnt = 0;
-              }
-            } else {
-              cnt = 1;
-              if (setting[j].cnt > 0) {
-                cnt = 2;
-              }
+              c = this.alreadyCountCheck(setting[i], setting);
             }
           }
         }
-        setting[i].cnt = cnt;
+        setting[i].cnt = c;
       }
-*/
 
       // データにマージ用の値を登録
-      //setting = this.settingMargePoint(setting);
+      setting = this.settingMargePoint(setting);
       this.settingData = setting;
     },
     // 数値2桁
@@ -1212,22 +1226,32 @@ export default {
       }
 
       let ranges = [];
+      console.log(this.settingData);
       for (let i = 0; i < this.settingData.length; i++) {
         this.onflexGrid.cells.setCellData(
           this.settingData[i].strow,
           this.settingData[i].stcol,
           this.settingData[i].data
         );
-        ranges.push(
-          new wjGrid.CellRange(
-            this.settingData[i].strow,
-            this.settingData[i].stcol,
-            this.settingData[i].edrow,
-            this.settingData[i].edcol
-          )
-        );
+        if (
+          this.settingData[i].strow >= 0 &&
+          this.settingData[i].stcol >= 0 &&
+          this.settingData[i].edrow >= 0 &&
+          this.settingData[i].edcol >= 0
+        ) {
+          ranges.push(
+            new wjGrid.CellRange(
+              this.settingData[i].strow,
+              this.settingData[i].stcol,
+              this.settingData[i].edrow,
+              this.settingData[i].edcol
+            )
+          );
+        }
       }
 
+      console.log(ranges);
+      /*
       // 空欄部分をマージ
       for (let r = 0; r < this.timeline.length; r++) {
         for (let w = 0; w < this.weekarray.length; w++) {
@@ -1240,7 +1264,7 @@ export default {
           }
         }
       }
-
+*/
       // 時間軸をマージ
       ranges.push(new wjGrid.CellRange(0, 0, 1, 0));
       this.onflexGrid.cells.setCellData(0, 0, ' ');
