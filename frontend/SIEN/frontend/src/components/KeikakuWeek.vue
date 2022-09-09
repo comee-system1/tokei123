@@ -785,7 +785,7 @@ export default {
       setting.push({
         Intcode: uniq++,
         stime: '0400',
-        etime: '0500',
+        etime: '0600',
         week: 0,
         data: 'sample1',
         cnt: 0,
@@ -880,6 +880,7 @@ export default {
         data: '起床123',
         cnt: 0,
       });
+
       setting.push({
         Intcode: uniq++,
         stime: '1100',
@@ -1217,7 +1218,7 @@ export default {
       }
 
       let ranges = [];
-      console.log(this.settingData);
+
       for (let i = 0; i < this.settingData.length; i++) {
         this.onflexGrid.cells.setCellData(
           this.settingData[i].strow,
@@ -1241,21 +1242,18 @@ export default {
         }
       }
 
-      console.log(ranges);
-      /*
-      // 空欄部分をマージ
-      for (let r = 0; r < this.timeline.length; r++) {
-        for (let w = 0; w < this.weekarray.length; w++) {
-          if (w % 2 == 1) {
-            let dataLeft = this.onflexGrid.cells.getCellData(r, w);
-            let dataRight = this.onflexGrid.cells.getCellData(r, w + 1);
-            if (!dataLeft && !dataRight) {
-              ranges.push(new wjGrid.CellRange(r, w, r, w + 1));
-            }
-          }
-        }
-      }
-*/
+      // console.log(ranges);
+
+      // 空欄部分をマージ;
+      // マージ用のチェック配列作成
+      ranges = this.emptyMerge(ranges, 0, 1, 2);
+      ranges = this.emptyMerge(ranges, 1, 3, 4);
+      ranges = this.emptyMerge(ranges, 2, 5, 6);
+      ranges = this.emptyMerge(ranges, 3, 7, 8);
+      ranges = this.emptyMerge(ranges, 4, 9, 10);
+      ranges = this.emptyMerge(ranges, 5, 11, 12);
+      ranges = this.emptyMerge(ranges, 6, 13, 14);
+
       // 時間軸をマージ
       ranges.push(new wjGrid.CellRange(0, 0, 1, 0));
       this.onflexGrid.cells.setCellData(0, 0, ' ');
@@ -1279,6 +1277,37 @@ export default {
       this.onflexGrid.cells.setCellData(34, 0, '22:00');
 
       this.ranges = ranges;
+    },
+    emptyMerge(ranges, w, col1, col2) {
+      let checkedMerge;
+      let tg;
+
+      checkedMerge = [];
+      tg = [];
+      for (let r = 0; r < this.timeline.length; r++) {
+        tg = this.settingData.find(
+          (v) =>
+            v.week == w &&
+            v.stime <= this.timeline[r] &&
+            v.etime > this.timeline[r] &&
+            v.data.length > 0
+        );
+
+        if (tg) {
+          checkedMerge.push({
+            week: w,
+            data: tg.data,
+          });
+        } else {
+          checkedMerge.push('');
+        }
+      }
+      for (let i = 0; i < checkedMerge.length; i++) {
+        if (!checkedMerge[i]) {
+          ranges.push(new wjGrid.CellRange(i, col1, i, col2));
+        }
+      }
+      return ranges;
     },
     createMerge(flexGrid) {
       let ranges = this.ranges;

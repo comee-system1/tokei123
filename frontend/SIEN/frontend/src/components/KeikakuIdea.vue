@@ -12,62 +12,73 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="mt-1">
-            <v-card class="d-flex justify-start" flat tile>
+          <div class="mt-1">
+            <v-card class="d-flex flex-row" flat tile>
               <v-card
-                outlined
+                :color="'grey lighten-4'"
+                elevation="0"
                 tile
-                width="60"
-                class="text-center label text-caption"
+                small
+                width="100"
+                height="24"
+                class="text-center"
               >
                 利用者名
               </v-card>
               <v-card
-                width="100"
-                class="ml-1 text-caption"
                 elevation="0"
                 outlined
                 tile
+                class="ml-1 pl-1"
+                width="200"
+                height="24"
               >
                 {{ userName }}
               </v-card>
-            </v-card>
+              <v-card class="justify-end ml-auto d-flex flex-row" elevation="0">
+                <v-card elevation="0" tile width="20" class="text-center pt-1">
+                  <input type="checkbox" />
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  class="text-center"
+                  :color="'grey lighten-4'"
+                  v-if="inputTypemodel == 'tab-0'"
+                  >同意署名欄
+                </v-card>
+                <v-card
+                  outlined
+                  tile
+                  width="100"
+                  class="text-center"
+                  :color="'grey lighten-4'"
+                  v-if="inputTypemodel == 'tab-1'"
+                  >完了
+                </v-card>
 
-            <v-card class="d-flex justify-end" flat tile>
-              <v-card
-                outlined
-                tile
-                width="80"
-                class="text-center ml-1 label text-caption"
-                v-if="inputTypemodel == 'tab-0'"
-                >同意署名欄
+                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
+                  2022/04/26 竹下道子
+                </v-card>
               </v-card>
+            </v-card>
+          </div>
+          <div class="mt-1">
+            <v-card class="d-flex flex-row" flat tile>
               <v-card
-                outlined
+                :color="'grey lighten-4'"
+                elevation="0"
                 tile
-                width="60"
-                class="text-center text-caption label ml-1"
-                v-if="inputTypemodel == 'tab-1'"
-                >完了
-              </v-card>
-              <v-card
-                class="lightYellow pl-1 ml-1 text-caption"
-                width="120"
-                outlined
-                tile
-              >
-                竹下道子
-              </v-card>
-              <v-card
-                outlined
-                tile
-                width="60"
-                class="text-center ml-1 label text-caption"
+                small
+                width="100"
+                height="24"
+                class="text-center"
                 >作成日
               </v-card>
               <v-card
-                class="pl-1 ml-1 text-caption"
-                width="120"
+                class="pl-1 ml-1"
+                width="200"
                 outlined
                 tile
                 @click="inputCalendarClick(0)"
@@ -78,10 +89,13 @@
                 </div>
               </v-card>
               <v-card
-                outlined
+                :color="'grey lighten-4'"
+                elevation="0"
                 tile
-                width="70"
-                class="text-center ml-1 label text-caption"
+                small
+                width="100"
+                height="24"
+                class="text-center ml-1"
                 >計画区分
               </v-card>
               <wj-menu
@@ -91,104 +105,110 @@
                 displayMemberPath="name"
                 v-model="keikakuKubunModel"
                 :itemClicked="onkeikakuKubun"
-                style="border-radius: 0px !important"
               >
               </wj-menu>
-              <v-card
-                outlined
-                tile
-                width="60"
-                class="text-center ml-1 label text-caption"
-                >作成者
-              </v-card>
-              <v-card
-                class="lightYellow pl-1 ml-1 text-caption"
-                width="120"
-                outlined
-                tile
-              >
-                竹下道子
+              <v-card class="justify-end ml-auto d-flex flex-row" elevation="0">
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  height="24"
+                  class="text-center ml-1"
+                  >作成者
+                </v-card>
+                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
+                  竹下道子
+                </v-card>
               </v-card>
             </v-card>
-            <div v-if="inputTypemodel == 'tab-0'">
-              <v-card class="d-flex justify-start mt-1" flat tile>
-                <v-card
-                  outlined
-                  tile
-                  class="text-center label text-caption text-no-wrap"
-                >
-                  障害者支援区分
-                </v-card>
-                <v-card
-                  class="lightYellow text-center ml-1 text-caption"
-                  width="50"
-                  outlined
-                  tile
-                >
-                  区分5
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  class="text-center ml-1 label text-caption text-no-wrap"
-                >
-                  障害福祉ｻｰﾋﾞｽ受給者番号
-                </v-card>
-                <v-card
-                  class="lightYellow text-center ml-1 text-caption"
-                  width="100"
-                  outlined
-                  tile
-                >
-                  11000011120
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  class="text-center ml-1 label text-caption text-no-wrap"
-                >
-                  地域相談支援受給者番号
-                </v-card>
-                <v-card
-                  class="lightYellow text-center ml-1 text-caption"
-                  width="100"
-                  outlined
-                  tile
-                >
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  class="text-center ml-1 label text-caption text-no-wrap"
-                >
-                  通所受給者番号
-                </v-card>
-                <v-card
-                  class="lightYellow text-center ml-1 text-caption"
-                  width="100"
-                  outlined
-                  tile
-                >
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  class="text-center ml-1 label text-caption text-no-wrap"
-                >
-                  ﾓﾆﾀﾘﾝｸﾞ期間
-                </v-card>
-                <v-text-field
-                  class="pa-0 ma-0 ml-1 input-text text-caption"
-                  hide-details="false"
-                  outlined
-                  dense
-                  :full-width="true"
-                  :value="' '"
-                >
-                </v-text-field>
+          </div>
+          <div class="mt-1">
+            <v-card class="d-flex flex-row" flat tile>
+              <v-card
+                :color="'grey lighten-4'"
+                elevation="0"
+                tile
+                small
+                width="100"
+                height="24"
+                class="text-center"
+              >
+                障害者支援区分
               </v-card>
-            </div>
-          </v-row>
+              <v-card class="lightYellow ml-1 pl-1" width="200" outlined tile>
+                区分5
+              </v-card>
+              <v-card
+                :color="'grey lighten-4'"
+                elevation="0"
+                tile
+                small
+                width="160"
+                height="24"
+                class="text-center ml-1"
+              >
+                モニタリング期間
+              </v-card>
+
+              <v-text-field
+                class="pa-0 ma-0 ml-1 input-text text-caption"
+                hide-details="false"
+                outlined
+                dense
+                tile
+                :full-width="true"
+                :value="' '"
+              >
+              </v-text-field>
+            </v-card>
+          </div>
+          <div class="mt-1">
+            <v-card class="d-flex flex-row" flat tile>
+              <v-card
+                :color="'grey lighten-4'"
+                elevation="0"
+                tile
+                small
+                width="200"
+                height="24"
+                class="text-center"
+                >障害福祉ｻｰﾋﾞｽ受給者番号
+              </v-card>
+              <v-card class="lightYellow pl-1 ml-1" width="140" outlined tile>
+                1100011120
+              </v-card>
+
+              <v-card
+                :color="'grey lighten-4'"
+                elevation="0"
+                tile
+                small
+                width="200"
+                height="24"
+                class="text-center ml-1"
+                >地域相談支援受給者番号
+              </v-card>
+              <v-card class="lightYellow pl-1 ml-1" width="160" outlined tile>
+                1100011120
+              </v-card>
+
+              <v-card
+                :color="'grey lighten-4'"
+                elevation="0"
+                tile
+                small
+                width="200"
+                height="24"
+                class="text-center ml-1"
+                >通所受給者証番号
+              </v-card>
+              <v-card class="lightYellow pl-1 ml-1" width="160" outlined tile>
+                1100011120
+              </v-card>
+            </v-card>
+          </div>
 
           <v-row no-gutters class="mt-1 pb-2">
             <v-col cols="6">
@@ -274,7 +294,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="keikakuIcrnDatepicker"
+        id="KeikakuListsDatepicker"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
@@ -488,12 +508,11 @@ div#keikakuIdea {
   }
 }
 
-#keikakuIcrnDatepicker {
+#KeikakuListsDatepicker {
   position: absolute;
   margin-top: 20px;
-  position: fixed !important;
   top: 100px;
-  left: 50%;
+  left: 260px;
   width: 300px;
   max-width: 300px;
 }

@@ -7,12 +7,14 @@ import UketukeCheckList from '../views/SIENT/UketukeCheckList.vue'
 import MstMenu from '../views/SIENT/MstMenu.vue'
 import SienPUketukeTouroku from '../views/SIENP/UketukeTourokuParent.vue'
 import MonitoringParent from '../views/SIENP/MonitoringParent.vue'
+import TantoKaigi from '../views/SIENP/TantoKaigi.vue'
 import KeikakuLists from '../views/SIENP/KeikakuLists.vue'
 
 const TitleSoudansien = "相談支援";
 const TitleSoudansienSyukei = "相談支援＞集計表";
 const TitleKeikakuSoudan = "計画相談支援＞受付登録";
 const TitleKeikakuMonitoring = "計画相談支援";
+const TantoKaigiString = "担当者会議";
 Vue.use(VueRouter)
 
 const routes = [
@@ -71,6 +73,14 @@ const routes = [
         component: MonitoringParent,
         meta: {
             title: TitleKeikakuMonitoring,
+        },
+    },
+    {
+        path: '/TantoKaigi',
+        name: '担当者会議',
+        component: TantoKaigi,
+        meta: {
+            title: TantoKaigiString,
         },
     },
     {

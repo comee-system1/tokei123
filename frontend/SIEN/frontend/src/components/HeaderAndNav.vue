@@ -308,6 +308,10 @@ export default {
               link: '/MonitoringParent',
             },
             {
+              name: '担当者会議',
+              link: '/TantoKaigi',
+            },
+            {
               name: '担当者別実績表',
               link: '/TemporaryPage',
             },
