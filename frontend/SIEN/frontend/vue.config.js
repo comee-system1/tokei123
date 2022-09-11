@@ -10,13 +10,8 @@ module.exports = defineConfig({
       alias: {
         '@backend': '../../../backend/',
         '@connect': '../../../connect/',
+        'va': 'vue2-admin-lte/src'
       }
     }
   },
-  pages: {
-    index: {
-      entry: "src/main.js",
-      title: "福祉見聞録",
-    }
-  }
 })

@@ -1,33 +1,33 @@
 @charset "utf-8";
-$red:#ff502f;
-$black:#000;
-$white:#fff;
-$light-gray:#ccc;
-$light-white:#f5f5f5;
-$brawn:#4d4d4d;
-$deepgreen:#004d61;
-$light_yellow:#fffeed;
-$font_color:#333;
-$green:#27904d;
-$pink:#f5d6e6;
-$selected_color:#eee;
+$red: #ff502f;
+$black: #000;
+$white: #fff;
+$light-gray: #ccc;
+$light-white: #f5f5f5;
+$brawn: #4d4d4d;
+$deepgreen: #004d61;
+$light_yellow: #fffeed;
+$font_color: #333;
+$green: #27904d;
+$pink: #f5d6e6;
+$selected_color: #eee;
 // grid系
 $grid_background: #fffeed;
 $grid_hover_background: #ccffcc !important;
 $grid_selected_background: #80adbf !important;
-$grid_selected_color:  #fff !important;
+$grid_selected_color: #fff !important;
 
 //画面部品系
 $view_Title_background : #eee;
-$view_Data_Read_background :  #fffeed;
+$view_Data_Read_background : #fffeed;
 $view_Data_Input_background :$white;
 
 // 必須マークカラー
-$Hissu_Color:#ce3e47;
+$Hissu_Color: #ce3e47;
 
 $btn_background :#f0f0f0;
 
-$cell_fontsize:12px;
+$cell_fontsize: 12px;
 @import "_mixins";
 @import "_jyogenkanri";
 @import "_jissekiKiroku";

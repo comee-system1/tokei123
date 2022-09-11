@@ -81,80 +81,156 @@
             </v-card>
           </div>
           <v-card class="mt-3 pa-2" :color="'grey lighten-4'">
-            <v-card class="d-flex flex-row" flat :color="'grey lighten-4'">
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                class="text-center"
-                >作成日
-              </v-card>
-              <v-card width="140" outlined tile @click="inputCalendarClick(1)">
-                {{ createYmd }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-card>
+            <div>
+              <v-card class="d-flex flex-row" flat :color="'grey lighten-4'">
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  class="text-center"
+                  >作成日
+                </v-card>
+                <v-card
+                  width="140"
+                  outlined
+                  tile
+                  @click="inputCalendarClick(1)"
+                >
+                  {{ createYmd }}
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-card>
 
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                class="text-center"
-                >開催日
-              </v-card>
-              <v-card width="140" outlined tile @click="inputCalendarClick(2)">
-                {{ openYmd }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-card>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  class="text-center"
+                  >開催日
+                </v-card>
+                <v-card
+                  width="140"
+                  outlined
+                  tile
+                  @click="inputCalendarClick(2)"
+                >
+                  {{ openYmd }}
+                  <div class="float-right">
+                    <v-icon small>mdi-calendar-month</v-icon>
+                  </div>
+                </v-card>
 
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                class="text-center pt-1"
-                >開催時間
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  class="text-center pt-1"
+                  >開催時間
+                </v-card>
+                <v-card elevation="0" tile :color="'grey lighten-4'">
+                  <input type="time" class="input_text outline" />
+                  ～
+                  <input type="time" class="input_text outline" />
+                </v-card>
+                <v-card class="ml-auto" :color="'grey lighten-4'">
+                  <v-btn small>開催情報最終表示</v-btn>
+                </v-card>
               </v-card>
-              <v-card elevation="0" tile :color="'grey lighten-4'">
-                <input type="time" class="input_text outline" />
-                ～
-                <input type="time" class="input_text outline" />
+              <v-card class="d-flex flex-row mt-2" flat>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  height="24"
+                  class="text-center"
+                  >開催場所
+                </v-card>
+                <v-text-field
+                  class="pa-0 ma-0 input_text text-caption"
+                  hide-details="false"
+                  outlined
+                  dense
+                  tile
+                  :full-width="true"
+                  :value="' '"
+                  :height="'24'"
+                >
+                </v-text-field>
               </v-card>
-              <v-card class="ml-auto" :color="'grey lighten-4'">
-                <v-btn small>開催情報最終表示</v-btn>
+              <v-card class="d-flex flex-row mt-2" flat>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  class="text-center"
+                  >出席者
+                </v-card>
+                <v-card elevation="0" :color="'grey lighten-4'">
+                  <wj-flex-grid
+                    id="tantoKaigiGrid"
+                    :itemsSource="data"
+                    :autoClipboard="false"
+                    :selectionMode="'4'"
+                    :headersVisibility="'Column'"
+                    :initialized="onInitialized"
+                  >
+                    <wj-flex-grid-column
+                      binding="colmn1"
+                      align="center"
+                      valign="middle"
+                      width="*"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                    <wj-flex-grid-column
+                      binding="colmn2"
+                      align="center"
+                      valign="middle"
+                      :width="150"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                    <wj-flex-grid-column
+                      binding="colmn3"
+                      align="center"
+                      valign="middle"
+                      :width="150"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                    <wj-flex-grid-column
+                      binding="colmn4"
+                      align="center"
+                      valign="middle"
+                      :width="150"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                    <wj-flex-grid-column
+                      binding="colmn5"
+                      align="center"
+                      valign="middle"
+                      width="*"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                    <wj-flex-grid-column
+                      binding="colmn6"
+                      align="center"
+                      valign="middle"
+                      width="*"
+                      :isReadOnly="true"
+                    ></wj-flex-grid-column>
+                  </wj-flex-grid>
+                </v-card>
               </v-card>
-            </v-card>
-            <v-card class="d-flex flex-row mt-2" flat>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                height="24"
-                class="text-center"
-                >開催場所
-              </v-card>
-              <v-text-field
-                class="pa-0 ma-0 input_text text-caption"
-                hide-details="false"
-                outlined
-                dense
-                tile
-                :full-width="true"
-                :value="' '"
-                :height="'24'"
-              >
-              </v-text-field>
-            </v-card>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -227,6 +303,9 @@ export default {
     setUserSelectPoint(row) {
       this.userName = row.names;
     },
+    onInitialized(flexGrid) {
+      console.log(flexGrid);
+    },
     inputCalendarClick(calendarType) {
       this.picker =
         dayjs().format('YYYY') +
@@ -263,7 +342,9 @@ div#tantokaigi {
   min-width: 1350px !important;
   max-width: 1350px !important;
   width: auto;
-
+  #tantoKaigiGrid {
+    width: 100%;
+  }
   .input_text {
     &.outline {
       border: 1px solid $light-gray;

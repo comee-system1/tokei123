@@ -19,7 +19,7 @@
                 elevation="0"
                 tile
                 small
-                width="100"
+                width="180"
                 height="24"
                 class="text-center"
               >
@@ -30,7 +30,7 @@
                 outlined
                 tile
                 class="ml-1 pl-1"
-                width="200"
+                width="140"
                 height="24"
               >
                 {{ userName }}
@@ -71,14 +71,14 @@
                 elevation="0"
                 tile
                 small
-                width="100"
+                width="180"
                 height="24"
                 class="text-center"
                 >作成日
               </v-card>
               <v-card
                 class="pl-1 ml-1"
-                width="200"
+                width="140"
                 outlined
                 tile
                 @click="inputCalendarClick(0)"
@@ -93,7 +93,7 @@
                 elevation="0"
                 tile
                 small
-                width="100"
+                width="160"
                 height="24"
                 class="text-center ml-1"
                 >計画区分
@@ -131,13 +131,13 @@
                 elevation="0"
                 tile
                 small
-                width="100"
+                width="180"
                 height="24"
                 class="text-center"
               >
                 障害者支援区分
               </v-card>
-              <v-card class="lightYellow ml-1 pl-1" width="200" outlined tile>
+              <v-card class="lightYellow ml-1 pl-1" width="140" outlined tile>
                 区分5
               </v-card>
               <v-card
@@ -171,7 +171,7 @@
                 elevation="0"
                 tile
                 small
-                width="200"
+                width="180"
                 height="24"
                 class="text-center"
                 >障害福祉ｻｰﾋﾞｽ受給者番号
@@ -185,7 +185,7 @@
                 elevation="0"
                 tile
                 small
-                width="200"
+                width="160"
                 height="24"
                 class="text-center ml-1"
                 >地域相談支援受給者番号
@@ -199,7 +199,7 @@
                 elevation="0"
                 tile
                 small
-                width="200"
+                width="140"
                 height="24"
                 class="text-center ml-1"
                 >通所受給者証番号
