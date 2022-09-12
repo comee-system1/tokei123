@@ -221,8 +221,9 @@
                 flat
                 dense
                 outlined
-                style="font-size: 14px; height: auto; font-family: monospace"
+                style="font-size: 14px; height: auto"
               ></v-textarea>
+              <!-- <font-family: monospace> ⇐等幅フォント -->
             </div>
           </v-row>
 

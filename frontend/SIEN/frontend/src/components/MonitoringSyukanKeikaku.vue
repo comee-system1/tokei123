@@ -1197,7 +1197,7 @@ export default {
             }
           }
         };
-        flexGrid.mergeManager = mm;
+        // flexGrid.mergeManager = mm;
       }
     },
     onInitialize(flexGrid) {

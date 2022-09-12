@@ -1,7 +1,7 @@
 <template>
   <div id="UketukeSansho">
     <v-container no-gutters fluid class="ml-1 mr-1 mt-1 pa-0">
-      <v-tabs height="20" hide-slider v-model="tab">
+      <v-tabs height="30" hide-slider v-model="tab">
         <v-tab
           v-for="item in menuItem"
           :key="item.val"
@@ -87,7 +87,7 @@ div#UketukeSansho {
     margin-right: 4px;
     margin-bottom: -2px;
     border-color: $light-gray;
-    height: 25px;
+    height: 30px;
   }
   .v-tab--active {
     color: $white;
