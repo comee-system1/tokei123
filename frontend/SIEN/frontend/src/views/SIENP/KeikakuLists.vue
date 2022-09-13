@@ -48,6 +48,7 @@
           <div v-if="tab == 'idea'">
             <KeikakuIdea v-show="ideaFlag == 'create'"></KeikakuIdea>
             <KeikakuWeek v-show="ideaFlag == 'weekplan'"></KeikakuWeek>
+            <KeikakuWeek2 v-show="ideaFlag == 'weekplan2'"></KeikakuWeek2>
           </div>
         </v-tab-item>
         <v-tab-item value="plan">
@@ -67,6 +68,7 @@ import KeikakuIcrn from '../../components/KeikakuLists.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
 import KeikakuPlan from '../../components/KeikakuPlan.vue';
 import KeikakuWeek from '../../components/KeikakuWeek.vue';
+import KeikakuWeek2 from '../../components/KeikakuWeek2.vue';
 
 export default {
   // props: {
@@ -77,11 +79,12 @@ export default {
     KeikakuIdea,
     KeikakuPlan,
     KeikakuWeek,
+    KeikakuWeek2,
   },
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
-      ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
+      ideaFlag: 'weekplan2', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
       yosikiMenu: [
         {
