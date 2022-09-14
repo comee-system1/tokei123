@@ -354,7 +354,7 @@
                   v-model="issue"
                   height="100"
                   rows="5"
-                  class="pt-1"
+                  class="pt-1 issueText"
                   outlined
                   no-resize
                   tile
@@ -647,9 +647,9 @@ export default {
       for (let i = 0; i < consider.length; i++) {
         considerView.push({
           no: consider[i].no,
-          consider: this.hyphenate(consider[i].consider),
-          considerNote: this.hyphenate(consider[i].considerNote),
-          considerResult: this.hyphenate(consider[i].considerResult),
+          consider: consider[i].consider,
+          considerNote: consider[i].considerNote,
+          considerResult: consider[i].considerResult,
         });
       }
 
@@ -658,24 +658,18 @@ export default {
       let issue = '';
       issue =
         '①ああああああああああああああああああああああああああああああああああああああああああああああああ①ああああああああああああああああああああああああああああああああああああああああああああああああ①ああああああああああああああああああああああああああああああああああああああああああああああああ';
-      this.issue = this.hyphenate(issue, 60, '\n');
+      this.issue = issue;
 
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells && e.col >= 1) {
           e.cell.style.textAlign = 'left';
           e.cell.style.justifyContent = 'left';
           e.cell.style.alignItems = 'left';
+          e.cell.style.paddingRight = '90px';
         }
       });
     },
-    hyphenate(str, splitLength = 20, delimiter = '\n') {
-      if (typeof str !== 'string' || str.length === 0) return '';
-      return str
-        .split('')
-        .reduce((a, c, i) =>
-          i > 0 && i % splitLength === 0 ? `${a}${delimiter}${c}` : `${a}${c}`
-        );
-    },
+
     onAlphabetical() {
       alert('alpha');
     },
@@ -805,7 +799,11 @@ div#tantokaigi {
     line-height: 1.25em;
   }
 }
-
+.issueText {
+  textarea {
+    padding-right: 230px !important;
+  }
+}
 .input_text {
   &.outline {
     border: 1px solid $light-gray;
