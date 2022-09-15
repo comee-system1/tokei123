@@ -310,7 +310,6 @@
               <wj-flex-grid-column
                 header="検討した項目"
                 binding="consider"
-                align="center"
                 valign="middle"
                 width="1*"
                 :wordWrap="true"
@@ -319,7 +318,6 @@
               <wj-flex-grid-column
                 header="検討内容"
                 binding="considerNote"
-                align="center"
                 valign="middle"
                 width="1*"
                 :wordWrap="true"
@@ -328,7 +326,6 @@
               <wj-flex-grid-column
                 header="結論"
                 binding="considerResult"
-                align="center"
                 valign="middle"
                 width="1*"
                 :wordWrap="true"
@@ -545,7 +542,6 @@
 
 <script>
 import dayjs from 'dayjs';
-
 import UserList from '../../components/UserList.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 
@@ -666,6 +662,11 @@ export default {
           e.cell.style.justifyContent = 'left';
           e.cell.style.alignItems = 'left';
           e.cell.style.paddingRight = '90px';
+        }
+        if (e.panel == flexGrid.columnHeaders) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
         }
       });
     },

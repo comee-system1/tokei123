@@ -53,6 +53,29 @@
         >
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
+        <v-layout class="right">
+          <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
+            <template v-slot:activator="{ on, attrs }">
+              <v-card
+                v-bind="attrs"
+                v-on="on"
+                class="koumokuTitle pa-1 ml-1"
+                outlined
+                tile
+              >
+                <v-icon dense>mdi-message-alert</v-icon>
+                記号説明
+              </v-card>
+            </template>
+            <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
+              {{ hanrei.name }}
+            </v-layout>
+            <v-layout>
+              <span style="background: pink">&emsp;</span>
+              ：未実施
+            </v-layout>
+          </v-tooltip>
+        </v-layout>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle pa-1" outlined tile> 担当者 </v-card>
@@ -137,28 +160,6 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-layout class="right">
-          <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
-            <template v-slot:activator="{ on, attrs }">
-              <v-card
-                v-bind="attrs"
-                v-on="on"
-                class="koumokuTitle pa-1 ml-1"
-                outlined
-                tile
-              >
-                記号説明
-              </v-card>
-            </template>
-            <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
-              {{ hanrei.name }}
-            </v-layout>
-            <v-layout>
-              <span style="background: pink">&emsp;</span>
-              ：未実施
-            </v-layout>
-          </v-tooltip>
-        </v-layout>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
@@ -316,7 +317,7 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'mymdFmt',
+          dataname: 'rksymdFmt',
           title: '開始日',
           kbntitle: 'モニタリング期間',
           width: '2*',
@@ -324,7 +325,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'sikyuEymd',
+          dataname: 'rkeymdFmt',
           title: '終了日',
           kbntitle: 'モニタリング期間',
           width: '2*',
@@ -890,6 +891,8 @@ export default {
         obj1.rcodeD = obj1.rcode.padStart(7, '0');
         obj1.birthMonth = el.birth.substring(4, 6);
         obj1.mymdFmt = this.getFmtDate(el.mymd);
+        obj1.rksymdFmt = this.getFmtDate(el.rksymd);
+        obj1.rkeymdFmt = this.getFmtDate(el.rkeymd);
         obj1.keikakuYmdFmt = this.getFmtDate(el.keikakuYmd);
         let obj2 = Vue.util.extend({}, obj1);
 

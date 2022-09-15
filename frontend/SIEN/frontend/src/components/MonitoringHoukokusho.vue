@@ -204,7 +204,8 @@
                 flat
                 dense
                 outlined
-                style="font-size: 14px; height: auto; pointer-events: none"
+                background-color="yellow lighten-5"
+                style="font-size: 14px; height: auto"
               ></v-textarea>
             </div>
             <div style="width: 50%">
@@ -1363,6 +1364,7 @@ div#monitoringHoukokusho {
   .v-text-field__slot
   textarea {
   padding-right: 0px;
+  line-height: 150%;
   // overflow-y: scroll !important;
 }
 .always-show-scrollbar {

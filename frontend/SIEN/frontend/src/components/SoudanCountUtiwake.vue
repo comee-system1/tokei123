@@ -7,7 +7,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -140,11 +140,13 @@
             :initialized="onInitializeSoudanCountUtiwakeGrid"
             :formatItem="onFormatItemSoudanCountUtiwake"
             :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSource="soudanCountUtiwakeViewData"
+            :itemsSourceChanging="onItemsSourceChanging"
+            :itemsSource="viewJyoukyouList"
+            v-show="selDispIndex == 0"
           >
           </wj-flex-grid>
           <wj-flex-grid
-            id="sienNaiyouGrid"
+            id="sienNaiyouGridUtiwake"
             :headersVisibility="'Column'"
             :autoGenerateColumns="false"
             :allowAddNew="false"
@@ -156,10 +158,12 @@
             :allowDragging="false"
             :selectionMode="'Row'"
             :isReadOnly="true"
-            :initialized="onInitializesienNaiyouGrid"
+            :initialized="onInitializesienNaiyouGridUtiwake"
             :formatItem="onFormatItemsienNaiyou"
             :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSource="sienNaiyouViewData"
+            :itemsSourceChanging="onItemsSourceChanging"
+            :itemsSource="viewNaiyouList"
+            v-show="selDispIndex == 1"
           >
           </wj-flex-grid>
         </div>
@@ -190,10 +194,10 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
-import { mstHouhou } from '@backend/api/MstHouhou';
-import { mstKankei } from '@backend/api/MstKankei';
+// import { mstHouhou } from '@backend/api/MstHouhou';
+// import { mstKankei } from '@backend/api/MstKankei';
 import MdSelect from '../components/MdSelect.vue';
-
+import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
 const BORDER_SOLID = '1px solid';
 const V_RL = 'vertical-rl';
@@ -203,56 +207,56 @@ const ALI_CENTER = 'center';
 const V_ALI_TOP = 'top';
 const DISPLAY_TC = 'table-cell';
 const DAYJS_CON_CHAR = '-';
-const FIX_CON_CHAR = '-';
-const STYLE_BLOCK = 'block';
+// const FIX_CON_CHAR = '-';
+// const STYLE_BLOCK = 'block';
 const STYLE_NONE = 'none';
 const GRID_ID = {
   Soudan: 'soudanCountUtiwakeGrid',
-  Sien: 'sienNaiyouGrid',
+  Sien: 'sienNaiyouGridUtiwake',
 };
-const SOUDAN_COUNT_ROW_HEAD_ITEM = [
-  {
-    key: 'code',
-    title: 'コード',
-    align: ALI_CENTER,
-    width: 70,
-  },
-  {
-    key: 'name',
-    title: '利用者名',
-    align: ALI_LEFT,
-    width: 120,
-  },
-];
-const SIEN_NAIYOU_ROW_HEAD_ITEM = [
-  {
-    key: 'code',
-    title: 'コード',
-    align: ALI_CENTER,
-    width: 70,
-  },
-  {
-    key: 'name',
-    title: '利用者名',
-    align: ALI_LEFT,
-    width: 120,
-  },
-  {
-    key: 'total',
-    title: '相談\n件数',
-    align: ALI_CENTER,
-    width: 50,
-  },
-];
-const MST_KIND = {
-  Sienkeizoku: { kbn: 1, kbntitle: '新規・継続区分', datanameFix: 'sinki' },
-  Seibetu: { kbn: 2, kbntitle: '性別', datanameFix: 'seibetu' },
-  Setai: { kbn: 3, kbntitle: '世帯状況', datanameFix: 'setai' },
-  Honnin: { kbn: 4, kbntitle: '本人の状況', datanameFix: 'honnin' },
-  Houhou: { kbn: 5, kbntitle: '支援方法', datanameFix: 'houhou' },
-  Kankei: { kbn: 6, kbntitle: '相談者(本人との関係)', datanameFix: 'kankei' },
-  Rank: { kbn: 7, kbntitle: 'ランク', datanameFix: 'rank' },
-};
+// const SOUDAN_COUNT_ROW_HEAD_ITEM = [
+//   {
+//     key: 'code',
+//     title: 'コード',
+//     align: ALI_CENTER,
+//     width: 70,
+//   },
+//   {
+//     key: 'name',
+//     title: '利用者名',
+//     align: ALI_LEFT,
+//     width: 120,
+//   },
+// ];
+// const SIEN_NAIYOU_ROW_HEAD_ITEM = [
+//   {
+//     key: 'code',
+//     title: 'コード',
+//     align: ALI_CENTER,
+//     width: 70,
+//   },
+//   {
+//     key: 'name',
+//     title: '利用者名',
+//     align: ALI_LEFT,
+//     width: 120,
+//   },
+//   {
+//     key: 'total',
+//     title: '相談\n件数',
+//     align: ALI_CENTER,
+//     width: 50,
+//   },
+// ];
+// const MST_KIND = {
+//   Sienkeizoku: { kbn: 1, kbntitle: '新規・継続区分', datanameFix: 'sinki' },
+//   Seibetu: { kbn: 2, kbntitle: '性別', datanameFix: 'seibetu' },
+//   Setai: { kbn: 3, kbntitle: '世帯状況', datanameFix: 'setai' },
+//   Honnin: { kbn: 4, kbntitle: '本人の状況', datanameFix: 'honnin' },
+//   Houhou: { kbn: 5, kbntitle: '支援方法', datanameFix: 'houhou' },
+//   Kankei: { kbn: 6, kbntitle: '相談者(本人との関係)', datanameFix: 'kankei' },
+//   Rank: { kbn: 7, kbntitle: 'ランク', datanameFix: 'rank' },
+// };
 
 export default {
   components: { MdSelect },
@@ -340,6 +344,12 @@ export default {
       mstKankeiList: [],
       selectedYmd: {},
       selectedYmdD: '',
+      targetSYm: '',
+      headerList: [],
+      viewKiasuList: [],
+      viewNinzuList: [],
+      viewJyoukyouList: [],
+      viewNaiyouList: [],
     };
   },
   computed: {
@@ -383,195 +393,116 @@ export default {
       combo.header = combo.selectedItem.name;
     },
     onInitializeSoudanCountUtiwakeGrid(flexGrid) {
-      // 非同期処理を全て行ってからヘッダを作成しに行く
-      Promise.all([
-        mstHouhou().then((result) => {
-          this.mstHouhouList = result;
-        }),
-        mstKankei().then((result) => {
-          this.mstKankeiList = result;
-        }),
-      ]).then(() => {
-        flexGrid.beginUpdate();
-        // ヘッダの追加と設定
-        flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-        flexGrid.columnHeaders.rows[0].allowMerging = true;
-        flexGrid.columnHeaders.rows[1].allowMerging = true;
-        flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
-        flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-        flexGrid.columnHeaders.rows[1].height = 130;
-        flexGrid.alternatingRowStep = 0;
-        flexGrid.frozenColumns = 2;
-        flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
-        flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-        let headerList = this.getHeaderList();
-        // ヘッダ文字列の設定
-        for (let colIndex = 0; colIndex < headerList.length; colIndex++) {
-          flexGrid.columns.insert(colIndex, new wjGrid.Column());
-          let col = flexGrid.columns[colIndex];
-          col.wordWrap = true;
-          col.binding = headerList[colIndex].dataname;
-          col.header = headerList[colIndex].title;
-          col.width = headerList[colIndex].width;
-          col.align = headerList[colIndex].align;
-          col.allowMerging = true;
-          col.multiLine = true;
+      flexGrid.beginUpdate();
+      // ヘッダの追加と設定
+      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      flexGrid.columnHeaders.rows[0].allowMerging = true;
+      flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = 130;
+      flexGrid.alternatingRowStep = 0;
+      flexGrid.frozenColumns = 2;
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.endUpdate();
+      this.$refs.mdselect.setYm(this.picker);
+    },
+    onInitializesienNaiyouGridUtiwake(flexGrid) {
+      flexGrid.beginUpdate();
+      // ヘッダの追加と設定
+      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      flexGrid.columnHeaders.rows[0].allowMerging = true;
+      flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[1].height = 130;
+      flexGrid.alternatingRowStep = 0;
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.frozenColumns = 2;
+      flexGrid.endUpdate();
+    },
+    onItemsSourceChanging(flexGrid) {
+      flexGrid.beginUpdate();
+      if (flexGrid.hostElement.id == 'soudanCountUtiwakeGrid') {
+        this.createSoudanCountGridHeader(flexGrid);
+      } else {
+        this.createsienNaiyouGridHeader(flexGrid);
+      }
+      flexGrid.endUpdate();
+    },
+    createSoudanCountGridHeader(flexGrid) {
+      // ヘッダの追加と設定
+      flexGrid.columns.length = 0;
+      // ヘッダ文字列の設定
+      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
+        let col = flexGrid.columns[colIndex];
+        col.wordWrap = true;
+        if (colIndex == 0) {
+          col.binding = 'riyo_codeD';
+          col.align = ALI_CENTER;
+          col.width = 100;
+        } else if (colIndex == 1) {
+          col.binding = 'riyo_name';
+          col.width = 200;
+        } else {
+          col.binding = 'col' + (colIndex - 2);
+          col.width = 50;
+          col.align = ALI_CENTER;
+        }
+        col.header = this.headerList[colIndex].title_list2;
 
-          flexGrid.columnHeaders.setCellData(
-            0,
-            colIndex,
-            headerList[colIndex].kbntitle
-          );
-        }
+        col.allowMerging = true;
+        col.multiLine = true;
+        flexGrid.columnHeaders.setCellData(
+          0,
+          colIndex,
+          this.headerList[colIndex].title_list1
+        );
+      }
+      if (this.selSyukeiIndex == 0) {
+        flexGrid.columnFooters.setCellData(0, 1, '件数');
+      } else {
         flexGrid.columnFooters.setCellData(0, 1, '人数');
-        flexGrid.endUpdate();
-        this.$refs.mdselect.setYm(this.picker);
-      });
+      }
     },
-    getHeaderList() {
-      let result = [];
-      // 仮想行ヘッダの登録
-      SOUDAN_COUNT_ROW_HEAD_ITEM.forEach(function (mst) {
-        result.push({
-          kbntitle: mst.title,
-          title: mst.title,
-          daicode: 0,
-          chucode: 0,
-          dataname: mst.key,
-          align: mst.align,
-          width: mst.width,
-        });
-      });
-      let self = this;
-      Object.keys(MST_KIND).forEach(function (key) {
-        let tmpList = [];
-        let mstobj = MST_KIND[key];
-        if (mstobj.kbn == MST_KIND.Sienkeizoku.kbn) {
-          tmpList = self.sinkiKeizokuList;
-        } else if (mstobj.kbn == MST_KIND.Seibetu.kbn) {
-          tmpList = self.seibetuList;
-        } else if (mstobj.kbn == MST_KIND.Setai.kbn) {
-          tmpList = self.setaiList;
-        } else if (mstobj.kbn == MST_KIND.Honnin.kbn) {
-          tmpList = self.honninList;
-        } else if (mstobj.kbn == MST_KIND.Houhou.kbn) {
-          tmpList = self.mstHouhouList;
-        } else if (mstobj.kbn == MST_KIND.Kankei.kbn) {
-          tmpList = self.mstKankeiList;
-        } else if (mstobj.kbn == MST_KIND.Rank.kbn) {
-          tmpList = self.rankList;
+    createsienNaiyouGridHeader(flexGrid) {
+      // ヘッダの追加と設定
+      flexGrid.columns.length = 0;
+      // ヘッダ文字列の設定
+      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
+        let col = flexGrid.columns[colIndex];
+        col.wordWrap = true;
+        if (colIndex == 0) {
+          col.binding = 'riyo_codeD';
+          col.align = ALI_CENTER;
+          col.width = 100;
+        } else if (colIndex == 1) {
+          col.binding = 'riyo_name';
+          col.width = 200;
+        } else {
+          col.binding = 'col' + (colIndex - 2);
+          col.align = ALI_CENTER;
+          col.width = 50;
         }
-        tmpList.forEach(function (mst) {
-          let dataname = '';
-          if (
-            mstobj.kbn == MST_KIND.Houhou.kbn ||
-            mstobj.kbn == MST_KIND.Kankei.kbn
-          ) {
-            dataname = mstobj.datanameFix + mst.id;
-          } else {
-            dataname = mstobj.datanameFix + mst.val;
-          }
-          result.push({
-            kbn: mstobj.kbn,
-            kbntitle: mstobj.kbntitle,
-            id: mst.val,
-            title: mst.name,
-            dataname: mstobj.kbn + FIX_CON_CHAR + dataname,
-            align: ALI_CENTER,
-            width: 40,
-          });
-        });
-      });
-      return result.sort((a, b) => {
-        if (a.kbn < b.kbn) {
-          return -1;
-        }
-        if (a.kbn > b.kbn) {
-          return 1;
-        }
-        if (a.id !== b.id) {
-          return a.id - b.id;
-        }
-      });
-    },
-    onInitializesienNaiyouGrid(flexGrid) {
-      // 非同期処理を全て行ってからヘッダを作成しに行く
-      Promise.all([
-        mstHouhou().then((result) => {
-          this.mstHouhouList = result;
-        }),
-      ]).then(() => {
-        flexGrid.beginUpdate();
-        // ヘッダの追加と設定
-        flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-        flexGrid.columnHeaders.rows[0].allowMerging = true;
-        flexGrid.columnHeaders.rows[1].allowMerging = true;
-        flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
-        flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-        flexGrid.columnHeaders.rows[1].height = 130;
-        flexGrid.alternatingRowStep = 0;
-        flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
-        flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-        flexGrid.frozenColumns = 2;
-        let headerList = this.getSienNaiyouHeaderList();
-        // ヘッダ文字列の設定
-        for (let colIndex = 0; colIndex < headerList.length; colIndex++) {
-          flexGrid.columns.insert(colIndex, new wjGrid.Column());
-          let col = flexGrid.columns[colIndex];
-          col.wordWrap = true;
-          col.binding = headerList[colIndex].dataname;
-          col.header = headerList[colIndex].title;
-          col.width = headerList[colIndex].width;
-          col.align = headerList[colIndex].align;
-          col.allowMerging = true;
-          col.multiLine = true;
+        col.header = this.headerList[colIndex].title_list2;
 
-          flexGrid.columnHeaders.setCellData(
-            0,
-            colIndex,
-            headerList[colIndex].kbntitle
-          );
-        }
+        col.allowMerging = true;
+        col.multiLine = true;
+        flexGrid.columnHeaders.setCellData(
+          0,
+          colIndex,
+          this.headerList[colIndex].title_list1
+        );
+      }
+      if (this.selSyukeiIndex == 0) {
+        flexGrid.columnFooters.setCellData(0, 1, '件数');
+      } else {
         flexGrid.columnFooters.setCellData(0, 1, '人数');
-        flexGrid.endUpdate();
-      });
-    },
-    getSienNaiyouHeaderList() {
-      let result = [];
-      // 仮想行ヘッダの登録
-      SIEN_NAIYOU_ROW_HEAD_ITEM.forEach(function (mst) {
-        result.push({
-          kbntitle: mst.title,
-          title: mst.title,
-          daicode: 0,
-          chucode: 0,
-          dataname: mst.key,
-          align: mst.align,
-          width: mst.width,
-        });
-      });
-      this.getSienMstData().forEach(function (mst) {
-        result.push({
-          kbntitle: mst.dainameD,
-          title: mst.chunameD,
-          dataname: mst.daicode + FIX_CON_CHAR + mst.chucode,
-          daicode: mst.daicode,
-          chucode: mst.chucode,
-          align: ALI_CENTER,
-          width: 40,
-        });
-      });
-      return result.sort((a, b) => {
-        if (a.daicode < b.daicode) {
-          return -1;
-        }
-        if (a.daicode > b.daicode) {
-          return 1;
-        }
-        if (a.chucode !== b.chucode) {
-          return a.chucode - b.chucode;
-        }
-      });
+      }
     },
     onItemsSourceChanged(flexGrid) {
       // 初期選択を解除
@@ -593,11 +524,11 @@ export default {
 
       // ヘッダのbindingに組み込まれた区分が異なれば太線区切り
       if (e.panel.columns[e.col].binding != null) {
-        let kbn = e.panel.columns[e.col].binding.split(FIX_CON_CHAR)[0];
-        let nextkbn = '-1';
+        let title_list1 = this.headerList[e.col].title_list1;
+        let nexttitle_list1 = '';
         if (e.col < flexGrid.columns.length - 1) {
-          nextkbn = e.panel.columns[e.col + 1].binding.split(FIX_CON_CHAR)[0];
-          if (kbn != nextkbn) {
+          nexttitle_list1 = this.headerList[e.col + 1].title_list1;
+          if (title_list1 != nexttitle_list1) {
             e.cell.style.borderRight = BORDER_SOLID;
           }
         }
@@ -657,11 +588,11 @@ export default {
 
       // ヘッダのbindingに組み込まれた区分が異なれば太線区切り
       if (e.panel.columns[e.col].binding != null) {
-        let kbn = e.panel.columns[e.col].binding.split(FIX_CON_CHAR)[0];
-        let nextkbn = '-1';
+        let title_list1 = this.headerList[e.col].title_list1;
+        let nexttitle_list1 = '';
         if (e.col < flexGrid.columns.length - 1) {
-          nextkbn = e.panel.columns[e.col + 1].binding.split(FIX_CON_CHAR)[0];
-          if (kbn != nextkbn) {
+          nexttitle_list1 = this.headerList[e.col + 1].title_list1;
+          if (title_list1 != nexttitle_list1) {
             e.cell.style.borderRight = BORDER_SOLID;
           }
         }
@@ -724,171 +655,42 @@ export default {
       this.setViewData(true);
     },
     setViewData(isAll) {
-      this.screenFlag = true;
       this.selectedYmd = null;
       if (isAll) {
-        this.soudanCountUtiwakeViewDataAll =
-          this.loadSoudanCountUtiwakeData(false);
-        this.sienNaiyouViewDataAll = this.loadSienNaiyouData(false);
+        let params = {
+          uniqid: 1,
+          traceid: 123,
+          pJigyoid: 43,
+          pTaisyo: this.selDispIndex == 0 ? 1 : 2,
+          pSymd: this.targetSYm,
+          pEymd: this.targetSYm,
+        };
+        this.screenFlag = true;
+        getConnect('/SyukeiMeisai', params, 'SIENT').then((result) => {
+          this.headerList = result.headerList;
+          this.viewKiasuList = result.kaisuList;
+          this.viewNinzuList = result.ninzuList;
+          this.setViewList();
+          this.screenFlag = false;
+        });
+      } else {
+        this.setViewList();
       }
-      this.userFilterSoudanCountUtiwake();
-      this.userFilterSienNaiyou();
-      this.screenFlag = false;
     },
-    loadSoudanCountUtiwakeData() {
-      let tmpSoudanCountUtiwakeViewData = [];
-      let count = 100;
-      let tmpobj;
-      let val = 0;
-      let self = this;
-      for (let i = 0; i < count; i++) {
-        val = 0;
-        tmpobj = {};
-        tmpobj[SOUDAN_COUNT_ROW_HEAD_ITEM[0].key] =
-          '1' + String(i).padStart(6, '0');
-        tmpobj[SOUDAN_COUNT_ROW_HEAD_ITEM[1].key] = '東経 ' + i + '太郎';
-        this.sinkiKeizokuList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Sienkeizoku) + mst.val] = val++;
-        });
-        this.seibetuList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Seibetu) + mst.val] = val++;
-        });
-        this.setaiList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Setai) + mst.val] = val++;
-        });
-        this.honninList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Honnin) + +mst.val] = val++;
-        });
-        this.mstHouhouList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Houhou) + mst.id] = val++;
-        });
-        this.mstKankeiList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Kankei) + mst.id] = val++;
-        });
-        this.rankList.forEach(function (mst) {
-          tmpobj[self.getNameFix(MST_KIND.Rank) + mst.val] = val++;
-        });
-
-        tmpSoudanCountUtiwakeViewData.push(tmpobj);
-      }
-      return tmpSoudanCountUtiwakeViewData;
-    },
-    getNameFix(datatype) {
-      return datatype.kbn + FIX_CON_CHAR + datatype.datanameFix;
-    },
-    loadSienNaiyouData() {
-      let tmpSienNaiyouViewData = [];
-      let tmpobj;
-      let val = 0;
-      let count = 100;
-      let dataList = this.getSienMstData();
-      for (let i = 0; i < count; i++) {
-        val = 0;
-        tmpobj = {};
-        tmpobj[SIEN_NAIYOU_ROW_HEAD_ITEM[0].key] =
-          '1' + String(i).padStart(6, '0');
-        tmpobj[SIEN_NAIYOU_ROW_HEAD_ITEM[1].key] = '東経 ' + i + '太郎';
-        tmpobj[SIEN_NAIYOU_ROW_HEAD_ITEM[2].key] = '999';
-        dataList.forEach(function (mst) {
-          tmpobj[mst.daicode + FIX_CON_CHAR + mst.chucode] = val++;
-        });
-        tmpSienNaiyouViewData.push(tmpobj);
-      }
-      return tmpSienNaiyouViewData;
-    },
-    getSienMstData() {
-      let tmpviewdata = [];
-      let userCount = 100;
-      let daicode = 0;
-      let dainame = '';
-      let chucode = 0;
-      let chuname = '';
-      for (let i = 1; i < userCount; i++) {
-        if (i == 1 || i == 10 || i == 15) {
-          chucode = 0;
-        }
-        if (i < 10) {
-          daicode = 1;
-          chucode = chucode + 1;
-          dainame = '支援内容';
-          switch (chucode) {
-            case 1:
-              chuname = '福祉サービスの利用等に関する支援';
-              break;
-            case 2:
-              chuname = '障害や症状の理解に関する支援';
-              break;
-            case 3:
-              chuname = '健康・医療に関する支援';
-              break;
-            case 4:
-              chuname = '不安の解消・情緒安定に関する支援';
-              break;
-            case 5:
-              chuname = '保育・教育に関する支援';
-              break;
-            case 6:
-              chuname = '家族関係・人間関係に関する支援';
-              break;
-            case 7:
-              chuname = '家計・経済に関する支援';
-              break;
-            case 8:
-              chuname = '生活技術に関する支援';
-              break;
-            case 9:
-              chuname = 'その他' + chucode;
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
-        } else if (i < 15) {
-          daicode = 2;
-          chucode = chucode + 1;
-          dainame = '機関対応';
-          switch (chucode) {
-            case 1:
-              chuname = '各種機関へ連絡';
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
-        } else if (i < 20) {
-          daicode = 3;
-          chucode = chucode + 1;
-          dainame = '申請代行';
-          switch (chucode) {
-            case 1:
-              chuname = '事業所等との契約';
-              break;
-            case 2:
-              chuname = '手帳等';
-              break;
-            case 3:
-              chuname = 'ライフライン関係';
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
+    setViewList() {
+      if (this.selDispIndex == 0) {
+        if (this.selSyukeiIndex == 0) {
+          this.viewJyoukyouList = this.viewKiasuList.slice();
         } else {
-          break;
+          this.viewJyoukyouList = this.viewNinzuList.slice();
         }
-        tmpviewdata.push({
-          id: i,
-          daicode: daicode,
-          daicodeD: String(daicode).padStart(2, '0'),
-          dainame: dainame,
-          dainameD: dainame,
-          chucode: chucode,
-          chucodeD: String(chucode).padStart(2, '0'),
-          chuname: chuname,
-          chunameD: chuname,
-        });
+      } else {
+        if (this.selSyukeiIndex == 0) {
+          this.viewNaiyouList = this.viewKiasuList.slice();
+        } else {
+          this.viewNaiyouList = this.viewNinzuList.slice();
+        }
       }
-      return tmpviewdata;
     },
     userFilterSoudanCountUtiwake() {
       let tmpSoudanCountUtiwakeViewData = [];
@@ -1013,22 +815,22 @@ export default {
       this.$refs.mdselect.setYm(this.picker);
     },
     dispclick(val) {
-      if (val == 0) {
-        document.getElementById(GRID_ID.Soudan).style.display = STYLE_BLOCK;
-        document.getElementById(GRID_ID.Sien).style.display = STYLE_NONE;
-      } else {
-        document.getElementById(GRID_ID.Soudan).style.display = STYLE_NONE;
-        document.getElementById(GRID_ID.Sien).style.display = STYLE_BLOCK;
-      }
+      this.selDispIndex = val;
+      this.setViewData(true);
     },
     syukeiclick(val) {
-      console.log(val);
+      this.selSyukeiIndex = val;
+      this.setViewData(false);
     },
     setMd(param1) {
       //paramには日付と曜日(３と"金")が入る
-      console.log(param1);
-      this.setViewData(true);
+      let split = this.picker.split('-');
+      this.targetSYm =
+        split[0] +
+        split[1].padStart(2, '0') +
+        String(param1.day).padStart(2, '0');
       this.selectedYmd = param1;
+      this.setViewData(true);
     },
   },
 };
@@ -1046,7 +848,7 @@ div#soudanCountUtiwake {
   max-width: 1920px;
   width: auto;
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
 
   #load_dialog {
@@ -1069,7 +871,8 @@ div#soudanCountUtiwake {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
   }
 
   .searchBtn {
@@ -1078,7 +881,8 @@ div#soudanCountUtiwake {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
   }
 
   .koumokuTitle {
@@ -1108,29 +912,13 @@ div#soudanCountUtiwake {
       font-weight: bold;
     }
   }
-  .countTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    min-width: 150px;
-    max-width: 150px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-    > span {
-      color: red;
-    }
-  }
   .wrap {
     display: flex;
     flex-flow: column;
   }
 
   #soudanCountUtiwakeGrid,
-  #sienNaiyouGrid {
+  #sienNaiyouGridUtiwake {
     color: $font_color;
     font-size: $cell_fontsize;
     .wj-header {
@@ -1183,19 +971,19 @@ div#soudanCountUtiwake {
     }
   }
   #soudanCountUtiwakeGrid,
-  #sienNaiyouGrid {
-    width: 1250px;
+  #sienNaiyouGridUtiwake {
+    width: 90vw;
     min-width: 1250px;
-    height: 74vh;
+    height: 73vh;
   }
   .v-btn-toggle > .v-btn {
     width: 100px;
-    height: 25px;
+    height: 20px;
   }
   div.customCombobox {
     position: relative;
     // width: 300px !important;
-    height: 25px !important;
+    height: 20px !important;
     &.customCombobox {
       // width: 160px !important;
       div {
@@ -1215,41 +1003,20 @@ div#soudanCountUtiwake {
       background-color: #fff;
     }
     div * {
-      height: 21px !important;
+      height: 18px !important;
       // padding: 0;
       span {
         // height: 21px !important;
-        margin-top: 8px;
+        margin-top: 5px;
       }
       &.wj-form-control {
         position: absolute;
-        top: -3px;
+        top: -6px;
         width: 100%;
       }
     }
     input {
-      height: 25px !important;
-    }
-  }
-  a {
-    &.addBtn {
-      height: 25px;
-      width: 100px;
-      background: $btn_background;
-      border: 1px solid $light-gray;
-      display: block;
-      float: left;
-      color: $font_color !important;
-      text-align: center;
-      border-radius: 3px;
-      padding: 1px 10px 0px 20px;
-      cursor: pointer;
-      background-image: url('../assets/plus_gray_15px.png');
-      background-position: top 4px left 2px;
-      background-repeat: no-repeat;
-      &:hover {
-        background-color: $light-gray;
-      }
+      height: 20px !important;
     }
   }
 }

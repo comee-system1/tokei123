@@ -5,7 +5,7 @@ import UketukeSanshoParent from '../views/SIENT/UketukeSanshoParent.vue'
 import KojinRireki from '../views/SIENT/KojinRireki.vue'
 import UketukeCheckList from '../views/SIENT/UketukeCheckList.vue'
 import MstMenu from '../views/SIENT/MstMenu.vue'
-import SienPUketukeTouroku from '../views/SIENP/UketukeTourokuParent.vue'
+import SienPUketukeTouroku from '../components/UketukeIcrn.vue'
 import MonitoringParent from '../views/SIENP/MonitoringParent.vue'
 import TantoKaigi from '../views/SIENP/TantoKaigi.vue'
 import KeikakuLists from '../views/SIENP/KeikakuLists.vue'
@@ -60,7 +60,7 @@ const routes = [
         },
     },
     {
-        path: '/SIENP/UketukeTouroku',
+        path: '/UketukeIcrn',
         name: '受付・対応登録',
         component: SienPUketukeTouroku,
         meta: {

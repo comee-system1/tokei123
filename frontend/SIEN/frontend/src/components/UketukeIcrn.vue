@@ -2,6 +2,7 @@
   <div id="uketukeIcrn">
     <v-container class="mt-1 ml-1 pa-0" fluid>
       <v-navigation-drawer
+        class="blue lighten-5"
         v-model="drawer"
         absolute
         left
@@ -33,7 +34,8 @@
         <MdSelect class="ma-1" ref="mdselect" @dateSelect="setMd"></MdSelect>
       </v-navigation-drawer>
       <v-row no-gutters class="rowStyle mb-1 mt-0">
-        <v-card elevation="1">
+        <div style="width: 90px" v-show="drawer"></div>
+        <v-card elevation="2">
           <a class="addBtn" @click="addClick">新規登録</a>
         </v-card>
       </v-row>
@@ -48,7 +50,7 @@
             dark
             outlined
             :width="50"
-            @click="dispClicked"
+            @click="dispClicked(n.val)"
           >
             {{ n.name }}
           </v-btn>
@@ -114,7 +116,9 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="itemBtn mr-1" @click="searchClicked()"> 検索 </v-btn>
+            <v-btn class="itemBtn mr-1 pa-1" @click="searchClicked()">
+              検索
+            </v-btn>
           </span>
         </v-card>
       </v-row>
@@ -323,7 +327,7 @@
           <v-icon> mdi-close </v-icon>
         </v-btn>
         <UketukeTouroku
-          :dispTab="'Kihonsoudan'"
+          :dispTab="inputRef"
           :selectViewData="viewObj"
           class="ml-1"
         ></UketukeTouroku>
@@ -554,12 +558,13 @@ export default {
       filter: {},
       targetSYm: '',
       targetEYm: '',
-      drawer: false,
+      drawer: true,
       dispIndex: 0,
       dispList: [
         { val: 0, name: '日指定' },
         { val: 1, name: '月指定' },
       ],
+      inputRef: this.getDispKbn(),
     };
   },
 
@@ -639,9 +644,9 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       if (flexGrid.hostElement.id == GRD_ID.Uketuke) {
-        flexGrid.beginUpdate();
+        // flexGrid.beginUpdate();
         flexGrid.autoSizeRows();
-        flexGrid.endUpdate();
+        // flexGrid.endUpdate();
       }
     },
     filterApplied(e) {
@@ -671,6 +676,11 @@ export default {
     },
     dispClicked(index) {
       this.dispIndex = index;
+      if (this.dispIndex == 0) {
+        this.drawer = true;
+      } else {
+        this.drawer = false;
+      }
     },
     onJigyoKbnClicked(s) {
       s.header = this.jigyoKbnList[s.selectedIndex].name;
@@ -707,8 +717,17 @@ export default {
       let f = document.activeElement;
       f.blur();
     },
+    getDispKbn() {
+      this.inputRef = 'Kihonsoudan';
+      var urlparam = location.search.substring(1);
+      if (urlparam == 'ref=Keikakusoudan') {
+        this.inputRef = 'Keikakusoudan';
+      }
+      return this.inputRef;
+    },
     addClick() {
       this.setDispdata(null);
+
       this.tourokuScreenFlag = true;
     },
     kasanUmuclick(e) {
@@ -998,7 +1017,7 @@ div#uketukeIcrn {
     font-size: $cell_fontsize;
     width: 98%;
     min-width: 1050px !important;
-    height: 70vh;
+    height: 73vh;
     min-height: 470px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ

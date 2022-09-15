@@ -97,19 +97,15 @@
         <label style="padding-top: 2px; width: 40px; min-width: 40px"
           >日付</label
         >
-        <v-btn
-          @click="inputCalendarClick()"
-          tile
-          outlined
-          class="service"
-          height="85%"
-          width="150px"
+        <!-- @click="inputCalendarClick()" -->
+        <v-btn tile outlined class="service" height="85%" width="150px"
           >{{ year }}年{{ month }}月{{ date }}日
           <div class="float-right">
             <v-icon small>mdi-calendar-month</v-icon>
           </div>
         </v-btn>
         <v-btn
+          v-if="false"
           elevation="0"
           color="white"
           class="pa-0 ml-1"
@@ -123,6 +119,7 @@
           <v-icon>mdi-arrow-left-bold</v-icon>
         </v-btn>
         <v-btn
+          v-if="false"
           elevation="0"
           color="white"
           class="pa-0 ml-1"
@@ -136,6 +133,7 @@
           <v-icon>mdi-arrow-right-bold</v-icon>
         </v-btn>
         <v-btn
+          v-if="false"
           elevation="0"
           color="white"
           class="coditionbtn pa-0 ml-1"
@@ -297,7 +295,7 @@ export default {
           lists: [
             {
               name: '受付・対応登録',
-              link: '/SIENP/UketukeTouroku',
+              link: '/UketukeIcrn/?ref=Keikakusoudan',
             },
             {
               name: '計画作成',
