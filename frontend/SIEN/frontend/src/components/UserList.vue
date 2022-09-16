@@ -248,7 +248,7 @@ import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '@connect/getConnect';
 
-let uniqid = 2; // 現在は1のみapiが実行する
+let uniqid = 1; // 現在は1のみapiが実行する
 let traceid = 123;
 
 const keySort = 'keyval00003';

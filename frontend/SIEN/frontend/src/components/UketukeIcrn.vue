@@ -644,9 +644,9 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       if (flexGrid.hostElement.id == GRD_ID.Uketuke) {
-        // flexGrid.beginUpdate();
+        flexGrid.beginUpdate();
         flexGrid.autoSizeRows();
-        // flexGrid.endUpdate();
+        flexGrid.endUpdate();
       }
     },
     filterApplied(e) {
@@ -741,11 +741,6 @@ export default {
     setViewData(isAll) {
       this.screenFlag = true;
       if (isAll) {
-        // uketukeIcrn(this.targetSYm, this.targetSYm, 0).then((result) => {
-        //   this.viewdataAll = result;
-        //   this.userFilter();
-        //   this.screenFlag = false;
-        // });
         let params = {
           uniqid: 1,
           traceid: 123,

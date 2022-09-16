@@ -97,26 +97,41 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col :cols="gridMain">
+            <v-col :cols="gridMain" style="position: relative">
+              <div
+                style="
+                  position: absolute;
+                  top: 22px;
+                  left: 86px;
+                  z-index: 10;
+                  width: 100px;
+                  height: 100px;
+                  border: 1px solid red;
+                  background-color: white;
+                  border-radius: 5px;
+                  resize: vertical;
+                  overflow: hidden;
+                "
+              >
+                aaaa
+              </div>
+
               <wj-flex-grid
-                id="keikakuWeekGrid"
-                :selectionMode="'4'"
+                id="keikakuGrid"
+                :selectionMode="3"
                 :headersVisibility="'Column'"
                 :alternatingRowStep="0"
                 :autoGenerateColumns="false"
-                :allowDragging="false"
                 :allowResizing="false"
+                :allowDragging="false"
                 :allowSorting="false"
-                :allowMerging="'Cells'"
-                :isReadOnly="true"
                 :showBandedRows="false"
                 :initialized="onInitialize"
-                :itemsSourceChanged="onInitializeItemChanged"
-                :style="styles"
+                :itemsSource="viewdata"
               >
                 <wj-flex-grid-column
                   :header="' '"
-                  binding="times"
+                  binding="time"
                   align="center"
                   valign="middle"
                   :width="80"
@@ -128,7 +143,6 @@
                   :header="val.header"
                   :binding="val.binding"
                   align="center"
-                  valign="middle"
                   format="g"
                   width="2*"
                   :allowMerging="true"
@@ -406,73 +420,38 @@ export default {
         },
         {
           key: 2,
-          binding: 'monday2',
-          groupKey: 0,
-        },
-        {
-          key: 3,
           header: '火',
           binding: 'thuseday1',
           groupKey: 1,
         },
         {
-          key: 4,
-          binding: 'thuseday2',
-          groupKey: 1,
-        },
-        {
-          key: 5,
+          key: 3,
           header: '水',
           binding: 'wednesday1',
           groupKey: 2,
         },
         {
-          key: 6,
-          binding: 'wednesday2',
-          groupKey: 2,
-        },
-        {
-          key: 7,
+          key: 4,
           header: '木',
           binding: 'thursday1',
           groupKey: 3,
         },
         {
-          key: 8,
-          binding: 'thursday2',
-          groupKey: 3,
-        },
-        {
-          key: 9,
+          key: 5,
           header: '金',
           binding: 'friday1',
           groupKey: 4,
         },
         {
-          key: 10,
-          binding: 'friday2',
-          groupKey: 4,
-        },
-        {
-          key: 11,
+          key: 6,
           header: '土',
           binding: 'saturday1',
           groupKey: 5,
         },
         {
-          key: 12,
-          binding: 'saturday2',
-          groupKey: 5,
-        },
-        {
-          key: 13,
+          key: 0,
           header: '日・祝',
           binding: 'sunday1',
-          groupKey: 6,
-        },
-        {
-          key: 14,
-          binding: 'sunday2',
           groupKey: 6,
         },
       ],
@@ -494,55 +473,20 @@ export default {
       weekActiveServiceTitle: '',
       weekActiveServiceText: '',
       userName: '',
-      wpos: [
-        // 月曜日
+      myArray: [
         {
-          key: 0,
-          left: 1,
-          right: 2,
+          id: 1,
+          name: 'aaaa',
         },
-        // 火曜日
         {
-          key: 1,
-          left: 3,
-          right: 4,
-        },
-        // 水曜日
-        {
-          key: 2,
-          left: 5,
-          right: 6,
-        },
-        // 木曜日
-        {
-          key: 3,
-          left: 7,
-          right: 8,
-        },
-        // 金曜日
-        {
-          key: 4,
-          left: 9,
-          right: 10,
-        },
-        // 土曜日
-        {
-          key: 5,
-          left: 11,
-          right: 12,
-        },
-        // 日曜日
-        {
-          key: 6,
-          left: 13,
-          right: 14,
+          id: 2,
+          name: 'bbb',
         },
       ],
     };
   },
   created() {},
   mounted() {
-    this._makeDragSource(this.onflexGrid);
     window.addEventListener('resize', this.calculateWindowHeight);
 
     this.mainActiveTitle = '主な日常生活の活動';
@@ -631,146 +575,6 @@ export default {
       }
       this.calculateWindowHeight();
     },
-    /******************************
-     * グリッドのドラックドロップ
-     */
-    _makeDragSource(s) {
-      s.addEventListener(
-        s.hostElement,
-        'mousedown',
-        (e) => {
-          // 右側の日常生活を押下時のみ有効
-          if (this.everySelected != 0) {
-            let ht = this.onflexGrid.hitTest(e);
-            this.draggedFlag = true;
-            this.position.down = { col: ht.col, row: ht.row };
-          }
-        },
-        true
-      );
-      s.addEventListener(
-        s.hostElement,
-        'mouseup',
-        (e) => {
-          if (this.everySelected != 0) {
-            let ht = this.onflexGrid.hitTest(e);
-            this.position.up = { col: ht.col, row: ht.row };
-            let downcol = this.position.down.col;
-            let downrow = this.position.down.row;
-            let upcol = this.position.up.col;
-            let uprow = this.position.up.row;
-            if (upcol < downcol) {
-              downcol = this.position.up.col;
-              upcol = this.position.down.col;
-            }
-            if (uprow < downrow) {
-              downrow = this.position.up.row;
-              uprow = this.position.down.row;
-            }
-
-            let setting = [];
-            // データを全部登録
-            // cntをいったんすべて0にする
-            setting = this.viewdata.slice();
-            for (let i = 0; i < setting.length; i++) {
-              setting[i].cnt = 0;
-            }
-
-            let stime = '';
-            let etime = '';
-            // ドラッグが無しのとき
-            let target = '';
-            let length = parseInt(setting.length) + 1;
-            if (uprow == downrow && upcol == downcol) {
-              // クリックしたweek
-              target = this.wpos.find(
-                (v) => v.left === upcol || v.right === upcol
-              );
-              stime = this.rowTime[uprow].time;
-              // 30分のときは次の時刻
-              etime =
-                stime.toString().slice(-2) == '30'
-                  ? stime - 30 + 100
-                  : stime + 30;
-
-              stime = ('0' + stime.toString()).slice(-4).toString();
-              etime = ('0' + etime.toString()).slice(-4).toString();
-              setting.push({
-                Intcode: length + 1,
-                stime: stime.toString(),
-                etime: etime.toString(),
-                week: target.key,
-                data: this.everySelected,
-                cnt: 0,
-              });
-            }
-
-            target = [];
-            if (uprow != downrow || upcol != downcol) {
-              let st = [];
-              let et = [];
-              let wt = [];
-              for (let r = downrow; r <= uprow; r++) {
-                for (let c = downcol; c <= upcol; c++) {
-                  target.push(
-                    this.wpos.find((v) => v.left === c || v.right === c)
-                  );
-                }
-                // console.log(target);
-                let mix = target.filter(
-                  (element, index, self) =>
-                    self.findIndex(
-                      (e) =>
-                        e.left === element.left && e.right === element.right
-                    ) === index
-                );
-
-                for (let c = 0; c < mix.length; c++) {
-                  stime = this.rowTime[r].time;
-                  etime = this.rowTime[uprow].time;
-                  // 30分のときは次の時刻
-                  etime =
-                    stime.toString().slice(-2) == '30'
-                      ? stime - 30 + 100
-                      : stime + 30;
-                  stime = ('0' + stime.toString()).slice(-4).toString();
-                  etime = ('0' + etime.toString()).slice(-4).toString();
-                  st.push(stime);
-                  et.push(etime);
-                  wt.push(mix[c].key);
-                }
-              }
-              let min = Math.min(...st);
-              let max = Math.max(...et);
-              min = ('0' + min.toString()).slice(-4).toString();
-              max = ('0' + max.toString()).slice(-4).toString();
-
-              let intcode = length + 1;
-              for (let i = 0; i < wt.length; i++) {
-                setting.push({
-                  Intcode: intcode,
-                  stime: min.toString(),
-                  etime: max.toString(),
-                  week: wt[i],
-                  data: this.everySelected,
-                  cnt: 0,
-                });
-              }
-            }
-
-            this.viewdata = setting;
-            this.settingData = setting;
-
-            this.createData();
-            this.createRanges();
-            this.createMerge(this.onflexGrid);
-
-            this.draggedFlag = false;
-          }
-        },
-        true
-      );
-    },
 
     /****************
      * ユーザー一覧を押下
@@ -803,6 +607,15 @@ export default {
       this.rowTime = rowTime;
       this.viewdata = setting;
       this.settingData = setting;
+    },
+
+    /********************
+     * 日常生活
+     *************/
+    onInitializeItem(flexGrid) {
+      let _self = this;
+      this.onItemGrid = flexGrid;
+
       let item = [];
       item.push(
         {
@@ -844,6 +657,21 @@ export default {
       );
       this.itemdata = item;
 
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          _self.everySelected = _self.itemdata[ht.row].every;
+          _self.onServiceGrid.select(-1, -1);
+        }
+      });
+    },
+    /********************
+     * 福祉サービス
+     *************/
+    onInitializeServiceItem(flexGrid) {
+      let _self = this;
+      this.onServiceGrid = flexGrid;
+
       let servicedata = [];
       servicedata.push(
         {
@@ -868,141 +696,7 @@ export default {
         }
       );
       this.servicedata = servicedata;
-    },
-    /******************
-     * 同じデータを省略
-     * 重複データを削除、削除データの重複をまとめて、表示用配列に加える
-     *******************/
-    sameDataAbbr(data) {
-      let array = [];
-      let last = [];
-      // 配列の最後
-      for (let i = 0; i < data.length; i++) {
-        if (data[i + 1] || i == data.length - 1) {
-          if (i == data.length - 1 || data[i].Intcode != data[i + 1].Intcode) {
-            last.push(data[i]);
-          }
-        }
-      }
-      let no = 0;
-      for (let i = 0; i < data.length; i++) {
-        if (!data[i - 1] || data[i].Intcode != data[i - 1].Intcode) {
-          if (last[no]) {
-            data[i]['lastStime'] = last[no].stime;
-            data[i]['lastEtime'] = last[no].etime;
-            no++;
-          }
-        }
-        array.push(data[i]);
-      }
 
-      return array;
-    },
-
-    alreadyCountCheck(check, setting) {
-      let cnt = 0;
-      for (let j = 0; j < setting.length; j++) {
-        if (check.week == setting[j].week) {
-          if (
-            parseInt(check.stime) < parseInt(setting[j].etime) &&
-            parseInt(check.etime) > parseInt(setting[j].stime)
-          ) {
-            cnt = setting[j].cnt == 1 ? 2 : 1;
-            return cnt;
-          }
-        }
-      }
-      return 0;
-    },
-    createData() {
-      let setting = [];
-      setting = this.settingData;
-      // 指定の時間内の件数をカウント
-      // cnt:1→left
-      // cnt:2→right
-      // cnt:0→both
-      for (let i = 0; i < setting.length; i++) {
-        let c = 0;
-
-        // 指定時間のデータ件数
-        for (let j = 0; j < setting.length; j++) {
-          if (
-            setting[i].Intcode != setting[j].Intcode &&
-            setting[i].week == setting[j].week
-          ) {
-            if (
-              parseInt(setting[i].stime) < parseInt(setting[j].etime) &&
-              parseInt(setting[i].etime) > parseInt(setting[j].stime)
-            ) {
-              c = this.alreadyCountCheck(setting[i], setting);
-            }
-          }
-        }
-        setting[i].cnt = c;
-      }
-
-      // データにマージ用の値を登録
-      setting = this.settingMargePoint(setting);
-      this.settingData = setting;
-    },
-    // 数値2桁
-    getdoubleDigestNumer(number) {
-      return ('0' + number).slice(-2);
-    },
-    settingMargePoint(data) {
-      let array = [];
-      let rowTime = this.rowTime;
-      for (let i = 0; i < data.length; i++) {
-        let sr = 0;
-        let er = 0;
-        // 時間ごとに表示行の調整
-        for (let t = 0; t < rowTime.length; t++) {
-          if (data[i] && data[i].stime == rowTime[t].time) {
-            sr = rowTime[t].r;
-          }
-          if (data[i] && data[i].etime == rowTime[t].time) {
-            er = rowTime[t].r - 1;
-          }
-        }
-        array[i] = data[i];
-        array[i]['strow'] = sr;
-        array[i]['edrow'] = er;
-        if (data[i].cnt == 1) {
-          // 左側
-          array[i]['stcol'] = this.wpos[data[i].week].left;
-          array[i]['edcol'] = this.wpos[data[i].week].left;
-        } else if (data[i].cnt == 2) {
-          // 右側
-          array[i]['stcol'] = this.wpos[data[i].week].right;
-          array[i]['edcol'] = this.wpos[data[i].week].right;
-        } else {
-          // 両方
-          array[i]['stcol'] = this.wpos[data[i].week].left;
-          array[i]['edcol'] = this.wpos[data[i].week].right;
-        }
-      }
-      return array;
-    },
-    /********************
-     * 日常生活
-     *************/
-    onInitializeItem(flexGrid) {
-      let _self = this;
-      this.onItemGrid = flexGrid;
-      flexGrid.hostElement.addEventListener('click', function (e) {
-        let ht = flexGrid.hitTest(e);
-        if (ht.cellType == wjGrid.CellType.Cell) {
-          _self.everySelected = _self.itemdata[ht.row].every;
-          _self.onServiceGrid.select(-1, -1);
-        }
-      });
-    },
-    /********************
-     * 福祉サービス
-     *************/
-    onInitializeServiceItem(flexGrid) {
-      let _self = this;
-      this.onServiceGrid = flexGrid;
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
@@ -1029,149 +723,43 @@ export default {
       });
       */
     },
+    // 数値2桁
+    getdoubleDigestNumer(number) {
+      return ('0' + number).slice(-2);
+    },
     onInitialize(flexGrid) {
       this.onflexGrid = flexGrid;
-      flexGrid.frozenColumns = 1;
 
-      this.dataSetted();
-      this.createData();
-      this.createRanges(true);
-      this.createMerge(flexGrid);
-
-      flexGrid.cells.rows.defaultSize = 18;
-      flexGrid.formatItem.addHandler(function (s, e) {
-        e.cell.style.textAlign = 'center';
-        e.cell.style.justifyContent = 'center';
-        e.cell.style.alignItems = 'center';
-      });
-    },
-    createRanges(defaultFlag) {
-      let headerRanges = [];
-      // 曜日軸のグループ化
-      for (let i = 1; i <= 7; i++) {
-        headerRanges.push(new wjGrid.CellRange(0, i * 2 - 1, 0, i * 2));
-      }
-      this.headerRanges = headerRanges;
-      if (defaultFlag) {
-        for (let r = 0; r < this.timeline.length; r++) {
-          this.onflexGrid.cells.rows.insert(r, new wjGrid.Row());
-        }
-      }
-
-      let ranges = [];
-
-      for (let i = 0; i < this.settingData.length; i++) {
-        this.onflexGrid.cells.setCellData(
-          this.settingData[i].strow,
-          this.settingData[i].stcol,
-          this.settingData[i].data
-        );
-        if (
-          this.settingData[i].strow >= 0 &&
-          this.settingData[i].stcol >= 0 &&
-          this.settingData[i].edrow >= 0 &&
-          this.settingData[i].edcol >= 0
-        ) {
-          ranges.push(
-            new wjGrid.CellRange(
-              this.settingData[i].strow,
-              this.settingData[i].stcol,
-              this.settingData[i].edrow,
-              this.settingData[i].edcol
-            )
-          );
-        }
-      }
-
-      // console.log(ranges);
-
-      // 空欄部分をマージ;
-      // マージ用のチェック配列作成
-      ranges = this.emptyMerge(ranges, 0, 1, 2);
-      ranges = this.emptyMerge(ranges, 1, 3, 4);
-      ranges = this.emptyMerge(ranges, 2, 5, 6);
-      ranges = this.emptyMerge(ranges, 3, 7, 8);
-      ranges = this.emptyMerge(ranges, 4, 9, 10);
-      ranges = this.emptyMerge(ranges, 5, 11, 12);
-      ranges = this.emptyMerge(ranges, 6, 13, 14);
-
-      // 時間軸をマージ
-      ranges.push(new wjGrid.CellRange(0, 0, 1, 0));
-      this.onflexGrid.cells.setCellData(0, 0, ' ');
-      ranges.push(new wjGrid.CellRange(2, 0, 5, 0));
-      this.onflexGrid.cells.setCellData(2, 0, '06:00');
-      ranges.push(new wjGrid.CellRange(6, 0, 9, 0));
-      this.onflexGrid.cells.setCellData(6, 0, '08:00');
-      ranges.push(new wjGrid.CellRange(10, 0, 13, 0));
-      this.onflexGrid.cells.setCellData(10, 0, '10:00');
-      ranges.push(new wjGrid.CellRange(14, 0, 17, 0));
-      this.onflexGrid.cells.setCellData(14, 0, '12:00');
-      ranges.push(new wjGrid.CellRange(18, 0, 21, 0));
-      this.onflexGrid.cells.setCellData(18, 0, '14:00');
-      ranges.push(new wjGrid.CellRange(22, 0, 25, 0));
-      this.onflexGrid.cells.setCellData(22, 0, '16:00');
-      ranges.push(new wjGrid.CellRange(26, 0, 29, 0));
-      this.onflexGrid.cells.setCellData(26, 0, '18:00');
-      ranges.push(new wjGrid.CellRange(30, 0, 33, 0));
-      this.onflexGrid.cells.setCellData(30, 0, '20:00');
-      ranges.push(new wjGrid.CellRange(34, 0, 37, 0));
-      this.onflexGrid.cells.setCellData(34, 0, '22:00');
-
-      this.ranges = ranges;
-    },
-    emptyMerge(ranges, w, col1, col2) {
-      let checkedMerge;
-      let tg;
-
-      checkedMerge = [];
-      tg = [];
-      for (let r = 0; r < this.timeline.length; r++) {
-        tg = this.settingData.find(
-          (v) =>
-            v.week == w &&
-            v.stime <= this.timeline[r] &&
-            v.etime > this.timeline[r] &&
-            v.data.length > 0
-        );
-
-        if (tg) {
-          checkedMerge.push({
-            week: w,
-            data: tg.data,
+      let setting = [];
+      let minute = [0, 30];
+      for (let t = 4; t <= 22; t++) {
+        for (let m = 0; m <= 1; m++) {
+          let time =
+            this.getdoubleDigestNumer(t).toString() +
+            this.getdoubleDigestNumer(minute[m]).toString();
+          //setting.push(time);
+          setting.push({
+            time: time,
           });
-        } else {
-          checkedMerge.push('');
         }
       }
-      for (let i = 0; i < checkedMerge.length; i++) {
-        if (!checkedMerge[i]) {
-          ranges.push(new wjGrid.CellRange(i, col1, i, col2));
-        }
-      }
-      return ranges;
+      this.viewdata = setting;
+
+      //flexGrid.frozenColumns = 1;
+
+      // this.dataSetted();
+      // //  this.createData();
+      // this.createRanges(true);
+      // this.createMerge(flexGrid);
+
+      flexGrid.cells.rows.defaultSize = 14;
+      // flexGrid.formatItem.addHandler(function (s, e) {
+      //   e.cell.style.textAlign = 'center';
+      //   e.cell.style.justifyContent = 'center';
+      //   e.cell.style.alignItems = 'center';
+      // });
     },
-    createMerge(flexGrid) {
-      let ranges = this.ranges;
-      let headerRanges = this.headerRanges;
-      let mm = new wjGrid.MergeManager();
-      mm.getMergedRange = function (panel, r, c) {
-        if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < ranges.length; h++) {
-            if (ranges[h].contains(r, c)) {
-              return ranges[h];
-            }
-          }
-        }
-        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
-            }
-          }
-        }
-      };
-      flexGrid.mergeManager = mm;
-    },
+
     inputCalendarClick() {
       this.picker =
         moment().format('YYYY') +

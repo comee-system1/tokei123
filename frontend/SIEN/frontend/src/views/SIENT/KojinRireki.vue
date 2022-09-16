@@ -31,7 +31,7 @@
                 class="ml-1"
                 color="transparent"
                 height="100%"
-                style="border: none"
+                style="border: none; margin-top: -1px"
                 outlined
                 tile
               >
@@ -47,14 +47,18 @@
                   </div>
                 </v-btn>
               </v-card>
-              <v-card class="rirekikoumokuTitleMini ml-1 pa-1" outlined tile>
+              <v-card
+                class="rirekikoumokuTitleMini ml-1 pa-1 pb-1"
+                outlined
+                tile
+              >
                 ～
               </v-card>
               <v-card
                 class="ml-1"
                 color="transparent"
                 height="100%"
-                style="border: none"
+                style="border: none; margin-top: -1px"
                 outlined
                 tile
               >
@@ -144,11 +148,11 @@
                 項目選択
               </v-btn>
               <v-btn
-                class="itemBtn ml-1"
-                style="width: 125px"
+                class="itemBtn mr-1"
+                style="width: 25px"
                 @click="filterClrclick()"
               >
-                フィルタクリア
+                <v-icon small>mdi-filter-off</v-icon>
               </v-btn>
             </v-row>
             <v-row class="ma-0 mt-1" no-gutters>
@@ -283,6 +287,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import { getConnect } from '../../../../connect/getConnect';
 const STR_MARU = '○';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
@@ -327,7 +332,7 @@ export default {
       ],
       headerList: [
         {
-          dataname: 'day',
+          dataname: 'ymdD',
           title: '日付',
           kbntitle: '',
           width: sysConst.GRD_COL_WIDTH.Ymd,
@@ -341,14 +346,14 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'houhou',
+          dataname: 'sdnhourk',
           title: '方法',
           kbntitle: '受付・対応',
           width: 40,
           align: 'left',
         },
         {
-          dataname: 'naiyou',
+          dataname: 'naiyo',
           title: '内容',
           kbntitle: '受付・対応',
           width: sysConst.GRD_COL_WIDTH.Naiyou,
@@ -486,14 +491,11 @@ export default {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.columnHeaders.rows[2].allowMerging = false;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header * 4;
-      flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header / 2;
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
@@ -601,17 +603,16 @@ export default {
       if (flexGrid.columns.length == 0) {
         return;
       }
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        (e.row == 1 ||
-          (e.row == 0 && e.col == 0) ||
-          (e.row == 0 && e.col == 1) ||
-          (e.row == 0 && e.col == 4) ||
-          (e.row == 0 && e.col == 5) ||
-          (e.row == 0 && e.col == 31))
-      ) {
-        e.cell.style.borderBottom = 'None';
-      }
+      // if (
+      //   e.panel == flexGrid.columnHeaders &&
+      //   ((e.row == 0 && e.col == 0) ||
+      //     (e.row == 0 && e.col == 1) ||
+      //     (e.row == 0 && e.col == 4) ||
+      //     (e.row == 0 && e.col == 5) ||
+      //     (e.row == 0 && e.col == 31))
+      // ) {
+      //   e.cell.style.borderBottom = 'None';
+      // }
       if (e.panel == flexGrid.cells) {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
@@ -619,19 +620,15 @@ export default {
         if (this.selSyousaiDispUmuIndex == 1 && e.col == 3) {
           e.cell.innerHTML =
             '<font color="blue">' +
-            wjCore.escapeHtml(tmpitem.naiyou) +
+            wjCore.escapeHtml(tmpitem.cskmknm) +
             '</font>' +
             '<div>' +
-            wjCore.escapeHtml(tmpitem.naiyouDetail) +
+            wjCore.escapeHtml(e.cell.innerHTML) +
             '</div>';
         }
         if (e.row < flexGrid.rows.length - 1) {
           let tmpitempre = e.panel.rows[e.row + 1].dataItem;
-          if (
-            tmpitem.day.getFullYear() != tmpitempre.day.getFullYear() ||
-            tmpitem.day.getMonth() != tmpitempre.day.getMonth() ||
-            tmpitem.day.getDate() != tmpitempre.day.getDate()
-          ) {
+          if (tmpitem.ymd != tmpitempre.ymd) {
             e.cell.style.borderBottom = STYLE_BORDER_SOLID;
           }
         }
@@ -705,9 +702,26 @@ export default {
     },
     setViewData(isAll) {
       if (isAll) {
-        this.viewDataAll = this.loadData(false);
+        let params = {
+          uniqid: 1,
+          traceid: 123,
+          pJigyoid: 43,
+          pIntcode: this.userInfo.riid,
+          pSymd: this.startymd.format('YYYYMMDD'),
+          pEymd: this.endymd.format('YYYYMMDD'),
+          Dspkbn: 0,
+        };
+        console.log(params);
+        getConnect('/Uktk', params, 'SIENT').then((result) => {
+          console.log(12345);
+          console.log(result);
+          this.viewDataAll = result;
+          this.userFilter();
+          this.screenFlag = false;
+        });
+      } else {
+        this.userFilter();
       }
-      this.userFilter();
     },
     loadData() {
       let result = [];
@@ -1096,7 +1110,7 @@ div#kojinRireki {
   }
 
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
   .rirekikoumokuTitleMini {
     color: $font_color;
@@ -1115,7 +1129,8 @@ div#kojinRireki {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
   }
 
   .itemBtn {
@@ -1124,7 +1139,8 @@ div#kojinRireki {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
     width: 75px;
   }
   #icrnGrid {
@@ -1190,6 +1206,47 @@ div#kojinRireki {
     width: auto;
     // min-width: 1050px;
     // max-width: 1920px;
+  }
+  .centerArea {
+    .customCombobox {
+      position: relative;
+      // width: 300px !important;
+      height: 20px !important;
+      &.customCombobox {
+        // width: 160px !important;
+        div {
+          text-align: left;
+        }
+      }
+      &#comboFiltersKasan {
+        width: 250px !important;
+      }
+      .wj-btn.wj-btn-default {
+        border-left: none !important;
+      }
+      &:hover {
+        background-color: #e1e1e1;
+      }
+      &:focus {
+        background-color: #fff;
+      }
+      div * {
+        height: 18px !important;
+        // padding: 0;
+        span {
+          // height: 21px !important;
+          margin-top: 5px;
+        }
+        &.wj-form-control {
+          position: absolute;
+          top: -6px;
+          width: 100%;
+        }
+      }
+      input {
+        height: 20px !important;
+      }
+    }
   }
 }
 

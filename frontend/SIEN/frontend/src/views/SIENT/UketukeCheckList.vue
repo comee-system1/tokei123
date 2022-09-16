@@ -7,7 +7,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -23,14 +23,14 @@
             </div>
           </v-btn>
         </v-card>
-        <v-card class="rirekikoumokuTitleMini ml-1 pa-1" outlined tile>
+        <v-card class="rirekikoumokuTitleMini ml-1 pa-1 pb-2" outlined tile>
           ～
         </v-card>
         <v-card
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -49,18 +49,6 @@
         <v-btn class="itemBtn ml-1" @click="inputCalendarClick(2)">
           月指定
         </v-btn>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 詳細表示 </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" v-model="selSyousaiDispUmuIndex">
-          <v-btn
-            v-for="n in syousaiDispList"
-            :key="n.val"
-            small
-            outlined
-            @click="grdDispChangeclick()"
-          >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile v-if="false">
@@ -68,7 +56,7 @@
         </v-card>
         <wj-menu
           id="comboFiltersJigyoKbn"
-          class="customCombobox ml-1"
+          class="customCombobox mr-1"
           :itemsSource="jigyoKbnList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -79,10 +67,10 @@
           v-if="false"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1" outlined tile> 入力区分 </v-card>
+        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力区分 </v-card>
         <wj-menu
           id="comboFiltersInput"
-          class="customCombobox ml-1"
+          class="customCombobox mr-1"
           :itemsSource="inputList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -92,10 +80,10 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 市区町村 </v-card>
+        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 市区町村 </v-card>
         <wj-menu
           id="comboFiltersSikuchoson"
-          class="customCombobox ml-1"
+          class="customCombobox mr-1"
           :itemsSource="sikuchosonList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -105,10 +93,10 @@
           :itemClicked="onSikuchosonClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 担当者 </v-card>
+        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 担当者 </v-card>
         <wj-menu
           id="comboFiltersTantousya"
-          class="customCombobox ml-1"
+          class="customCombobox mr-1"
           :itemsSource="tantousyaList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -118,13 +106,13 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-btn class="itemBtn ml-1" @click="searchclick()"> 検索 </v-btn>
+        <v-btn class="itemBtn mr-1" @click="searchclick()"> 検索 </v-btn>
         <v-btn
-          class="itemBtn ml-1"
-          style="width: 125px"
+          class="itemBtn mr-1"
+          style="width: 25px"
           @click="filterClrclick()"
         >
-          フィルタクリア
+          <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1" style="position: relative">
@@ -160,7 +148,18 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-
+        <v-card class="koumokuTitle pa-1 ml-7" outlined tile> 詳細表示 </v-card>
+        <v-btn-toggle class="flex-wrap ml-1" v-model="selSyousaiDispUmuIndex">
+          <v-btn
+            v-for="n in syousaiDispList"
+            :key="n.val"
+            small
+            outlined
+            @click="grdDispChangeclick()"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
         <v-card
           class="countTitle pa-1 ml-1"
           outlined
@@ -543,16 +542,7 @@ export default {
       filter: {},
     };
   },
-  mounted() {
-    this.setNonFilterCol();
-  },
   methods: {
-    setNonFilterCol() {
-      // for (let i = 0; i < 2; i++) {
-      //   var Nonefilter = this.filter.getColumnFilter(i);
-      //   Nonefilter.filterType = 'None';
-      // }
-    },
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
@@ -563,12 +553,9 @@ export default {
       flexGrid.beginUpdate();
 
       // ヘッダの追加と設定
-      flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
-      flexGrid.columnHeaders.rows[1].allowMerging = false;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 3;
-      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header / 2;
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
@@ -581,11 +568,7 @@ export default {
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 2) {
-          col.allowResizing = true;
-        } else {
-          col.allowResizing = false;
-        }
+        col.allowResizing = true;
         if (colIndex == 0) {
           col.format = sysConst.FORMAT.Ymd;
         }
@@ -595,8 +578,6 @@ export default {
           colIndex,
           this.headerList[colIndex].title
         );
-
-        flexGrid.columnHeaders.setCellData(1, colIndex, ' ');
       }
 
       flexGrid.endUpdate();
@@ -605,22 +586,12 @@ export default {
       if (flexGrid.columns.length == 0) {
         return;
       }
-      if (e.panel == flexGrid.columnHeaders && e.col == 0) {
-        this.setNonFilterCol();
-      }
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        e.panel.rows.length > 1 &&
-        e.row == 0
-      ) {
-        e.cell.style.borderBottom = 'None';
-      }
+
       if (e.panel == flexGrid.cells) {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
-          console.log(1);
           e.cell.innerHTML =
             '<font color="blue">' +
             wjCore.escapeHtml(tmpitem.naiyou) +
@@ -1009,7 +980,7 @@ div#uketukeCheckList {
   }
 
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
   .rowStyleMini {
     height: 15px;
@@ -1031,7 +1002,8 @@ div#uketukeCheckList {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
   }
 
   .itemBtn {
@@ -1040,8 +1012,13 @@ div#uketukeCheckList {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    min-height: 19px;
+    height: 19px;
     width: 75px;
+  }
+  .v-btn-toggle > .v-btn {
+    width: 50px;
+    height: 20px;
   }
   #icrnGrid {
     color: $font_color;
@@ -1104,6 +1081,45 @@ div#uketukeCheckList {
     height: 78vh;
     width: auto;
     max-width: 1330px;
+  }
+  div.customCombobox {
+    position: relative;
+    width: 125px !important;
+    height: 18px !important;
+    &.customCombobox {
+      // width: 160px !important;
+      div {
+        text-align: left;
+      }
+    }
+    &#comboFiltersKasan {
+      width: 250px !important;
+    }
+    .wj-btn.wj-btn-default {
+      border-left: none !important;
+    }
+    &:hover {
+      background-color: #e1e1e1;
+    }
+    &:focus {
+      background-color: #fff;
+    }
+    div * {
+      height: 18px !important;
+      // padding: 0;
+      span {
+        // height: 21px !important;
+        margin-top: 6px;
+      }
+      &.wj-form-control {
+        position: absolute;
+        top: -5px;
+        width: 100%;
+      }
+    }
+    input {
+      height: 16px !important;
+    }
   }
 }
 
