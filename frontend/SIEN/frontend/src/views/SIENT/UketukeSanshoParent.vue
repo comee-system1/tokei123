@@ -21,7 +21,7 @@
         <v-tab-item value="SoudanCount" transition="none">
           <SoudanCount></SoudanCount>
         </v-tab-item>
-        <v-tab-item value="SoudanCountUtiwake" eager transition="none">
+        <v-tab-item value="SoudanCountUtiwake" transition="none">
           <SoudanCountUtiwake></SoudanCountUtiwake>
         </v-tab-item>
         <v-tab-item value="RiyouCheck" transition="none">

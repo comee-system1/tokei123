@@ -189,6 +189,13 @@
                     width="100"
                     class="text-center"
                     >出席者
+                    <v-btn
+                      small
+                      class="mt-8"
+                      :color="'primary'"
+                      @click="onSelectedAttend"
+                      >出席者選択</v-btn
+                    >
                   </v-card>
                   <v-card elevation="0" :color="'grey lighten-4'">
                     <wj-flex-grid
@@ -197,6 +204,12 @@
                       :autoClipboard="false"
                       :selectionMode="'1'"
                       :headersVisibility="'0'"
+                      :allowAddNew="false"
+                      :allowDelete="false"
+                      :allowDragging="false"
+                      :allowPinning="false"
+                      :allowResizing="false"
+                      :allowSorting="false"
                       :initialized="onInitialized"
                       :itemsSourceChanged="onItemsSourceChanged"
                     >
@@ -250,37 +263,12 @@
           </v-card>
           <div class="mt-2">
             <v-card class="d-flex flex-row" flat>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                height="24"
-                class="text-center pt-1"
-              >
-                参照
-              </v-card>
-              <v-btn-toggle class="ml-2">
+              <v-btn-toggle>
                 <v-btn small>新規入力</v-btn>
                 <v-btn small>内容更新</v-btn>
               </v-btn-toggle>
 
-              <v-card
-                elevation="0"
-                class="text-center pt-1 ml-auto d-flex flex-row"
-              >
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  height="24"
-                  class="text-center pt-1"
-                >
-                  参照
-                </v-card>
+              <v-card elevation="0" class="text-center ml-auto d-flex flex-row">
                 <v-btn-toggle class="ml-2">
                   <v-btn small>行追加</v-btn>
                   <v-btn small>行削除</v-btn>
@@ -390,7 +378,7 @@
     </v-dialog>
 
     <!-- 出席者 -->
-    <v-dialog v-model="attend_dialog" width="600" class="attend_dialog">
+    <v-dialog v-model="attend_dialog" width="800" class="attend_dialog">
       <v-card>
         <v-card-title class="text-caption primary white--text lighten-2">
           会議出席者 選択
@@ -407,134 +395,200 @@
           class="mt-2"
           ><v-icon dark small> mdi-close </v-icon>
         </v-btn>
-        <div class="pa-2">
-          <div class="d-flex flex-row text-caption" flat>
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="100"
-              height="24"
-              class="text-center pt-1"
-            >
-              事業所
-            </v-card>
+        <v-row>
+          <v-col cols="6">
+            <div class="pt-2 pl-2">
+              <v-btn small @click="editSort" :disabled="sortDisabled"
+                >並替え</v-btn
+              >
+              <v-btn small class="ml-2" @click="editDelete">個別削除</v-btn>
+              <v-btn small class="ml-2">個別挿入</v-btn>
+              <v-btn small class="ml-2">全クリア</v-btn>
 
-            <select class="w100p ml-1 selectbox" v-model="selJijyosyo">
-              <option value="" v-for="val in jijyosyoList" :key="val.val">
-                {{ val.name }}
-              </option>
-            </select>
-          </div>
+              <wj-flex-grid
+                id="selectedAttendGrid"
+                class="mt-2"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowDragging="false"
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
+                :selectionMode="'Row'"
+                :headersVisibility="'Column'"
+                :initialized="onInitializedSelected"
+                :itemsSourceChanged="onInitializedSelectedChanged"
+                :itemsSource="selectedAttendView"
+              >
+                <wj-flex-grid-column
+                  header="No"
+                  binding="num"
+                  align="center"
+                  valign="middle"
+                  :width="40"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  header="職種"
+                  binding="syokusyu"
+                  align="center"
+                  valign="middle"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  header="氏名"
+                  binding="simei"
+                  align="center"
+                  valign="middle"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+            </div>
+            <div class="d-flex flex-row text-caption" flat>
+              <div class="text-start pa-1">
+                <v-btn color="primary" small @click="editSortSetted">
+                  並順
+                </v-btn>
+              </div>
+              <div class="text-end pa-1 ml-auto">
+                <v-btn color="primary" class="ml-auto" small> 設定 </v-btn>
+              </div>
+            </div>
+          </v-col>
+          <v-col cols="6">
+            <div class="pa-2">
+              <div class="d-flex flex-row text-caption" flat>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  height="24"
+                  class="text-center pt-1"
+                >
+                  事業所
+                </v-card>
 
-          <div class="mt-1 d-flex flex-row text-caption" flat>
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="100"
-              height="24"
-              class="text-center pt-1"
-            >
-              職種指定
-            </v-card>
-            <select class="w100p ml-1 selectbox" v-model="selSyokusyu">
-              <option value="" v-for="val in syokusyuList" :key="val.val">
-                {{ val.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="pa-2">
-          <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
-          </alphabet-button>
+                <select class="w100p ml-1 selectbox" v-model="selJijyosyo">
+                  <option value="" v-for="val in jijyosyoList" :key="val.val">
+                    {{ val.name }}
+                  </option>
+                </select>
+              </div>
 
-          <wj-flex-grid
-            id="attendGrid"
-            class="mt-2"
-            :itemsSource="attendSelect"
-            :autoClipboard="false"
-            :selectionMode="'Row'"
-            :headersVisibility="'Column'"
-            :autoRowHeights="true"
-            :initialized="onInitializedAttend"
-            :itemsSourceChanged="onInitializedAttendChanged"
-          >
-            <wj-flex-grid-column
-              header="コード"
-              binding="code"
-              align="center"
-              valign="middle"
-              width="1*"
-              :isReadOnly="true"
-            ></wj-flex-grid-column>
-            <wj-flex-grid-column
-              header="職種"
-              binding="syokusyu"
-              align="center"
-              valign="middle"
-              width="2*"
-              :isReadOnly="true"
-            ></wj-flex-grid-column>
-            <wj-flex-grid-column
-              header="氏名"
-              binding="name"
-              align="center"
-              valign="middle"
-              width="2*"
-              :isReadOnly="true"
-            ></wj-flex-grid-column>
-          </wj-flex-grid>
-          <div class="text-caption">手動入力</div>
-          <div class="d-flex flex-row text-caption" flat>
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="40"
-              height="24"
-              class="text-center pt-1"
-            >
-              コード
-            </v-card>
-            <input type="text" class="ml-1 input_text outline w100" />
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="40"
-              height="24"
-              class="text-center pt-1 ml-1"
-            >
-              職種
-            </v-card>
-            <input type="text" class="ml-1 input_text outline w160" />
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="40"
-              height="24"
-              class="text-center pt-1 ml-1"
-            >
-              氏名
-            </v-card>
-            <input type="text" class="ml-1 input_text outline w160" />
-          </div>
-        </div>
-        <div class="text-end pa-1">
-          <v-btn color="primary" @click="dialog = false" small>
-            選択解除
-          </v-btn>
-          <v-btn color="primary" @click="dialog = false" small class="ml-1">
-            追加
-          </v-btn>
-        </div>
+              <div class="mt-1 d-flex flex-row text-caption" flat>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  height="24"
+                  class="text-center pt-1"
+                >
+                  職種指定
+                </v-card>
+                <select class="w100p ml-1 selectbox" v-model="selSyokusyu">
+                  <option value="" v-for="val in syokusyuList" :key="val.val">
+                    {{ val.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="pa-2">
+              <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+              </alphabet-button>
+
+              <wj-flex-grid
+                id="attendGrid"
+                class="mt-2"
+                :itemsSource="attendSelect"
+                :autoClipboard="false"
+                :selectionMode="'Row'"
+                :headersVisibility="'Column'"
+                :autoRowHeights="true"
+                :initialized="onInitializedAttend"
+                :itemsSourceChanged="onInitializedAttendChanged"
+              >
+                <wj-flex-grid-column
+                  header="コード"
+                  binding="code"
+                  align="center"
+                  valign="middle"
+                  width="1*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  header="職種"
+                  binding="syokusyu"
+                  align="center"
+                  valign="middle"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  header="氏名"
+                  binding="name"
+                  align="center"
+                  valign="middle"
+                  width="2*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+              <div class="text-caption">手動入力</div>
+              <div class="d-flex flex-row text-caption" flat>
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="40"
+                  height="24"
+                  class="text-center pt-1"
+                >
+                  ｺｰﾄﾞ
+                </v-card>
+                <input type="text" class="ml-1 input_text outline w60" />
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="40"
+                  height="24"
+                  class="text-center pt-1 ml-1"
+                >
+                  職種
+                </v-card>
+                <input type="text" class="ml-1 input_text outline w100" />
+                <v-card
+                  :color="'grey lighten-4'"
+                  elevation="0"
+                  tile
+                  small
+                  width="40"
+                  height="24"
+                  class="text-center pt-1 ml-1"
+                >
+                  氏名
+                </v-card>
+                <input type="text" class="ml-1 input_text outline w100" />
+              </div>
+            </div>
+
+            <div class="text-end pa-1">
+              <v-btn color="primary" @click="dialog = false" small>
+                選択解除
+              </v-btn>
+              <v-btn color="primary" @click="dialog = false" small class="ml-1">
+                追加
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
       </v-card>
     </v-dialog>
   </div>
@@ -544,6 +598,8 @@
 import dayjs from 'dayjs';
 import UserList from '../../components/UserList.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import sysConst from '@/utiles/const';
+import * as wjGrid from '@grapecity/wijmo.grid';
 
 export default {
   // props: {
@@ -588,6 +644,8 @@ export default {
       selSyokusyu: [],
       jijyosyoList: [],
       syokusyuList: [],
+      selectedAttendView: [],
+      selectedAttendViewDefault: [],
       getYmd:
         dayjs().format('YYYY') +
         '年' +
@@ -609,6 +667,10 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      sortDisabled: true,
+      sortEditFlag: false,
+      sortEditCount: 1,
+      onFlexGridSelected: [],
     };
   },
 
@@ -620,7 +682,14 @@ export default {
       this.userName = row.names;
     },
     onInitializedAttend(flexGrid) {
-      console.log(flexGrid);
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel.cellType == wjGrid.CellType.Cell) {
+          e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          e.cell.style.textAlign = 'left';
+          e.cell.style.justifyContent = 'left';
+          e.cell.style.alignItems = 'left';
+        }
+      });
     },
     onInitializedAttendChanged(flexGrid) {
       flexGrid.select(-1, -1);
@@ -671,9 +740,6 @@ export default {
       });
     },
 
-    onAlphabetical() {
-      alert('alpha');
-    },
     /******************
      * 出席者
      *********************/
@@ -711,20 +777,8 @@ export default {
         syokusyu: '相談支援専門員',
         name: '竹下　美智子',
       });
-      for (let i = 3; i < 6; i++) {
-        attendSelect.push({
-          code: '',
-          syokusyu: '',
-          name: '',
-        });
-      }
-      this.attendSelect = attendSelect;
 
-      let _self = this;
-      flexGrid.hostElement.addEventListener('click', function (e) {
-        console.log(e);
-        _self.attend_dialog = true;
-      });
+      this.attendSelect = attendSelect;
 
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells) {
@@ -736,6 +790,143 @@ export default {
     },
     onItemsSourceChanged(flexGrid) {
       flexGrid.select(-1, -1);
+    },
+    onSelectedAttend() {
+      this.attend_dialog = true;
+    },
+    onInitializedSelectedChanged(flexGrid) {
+      flexGrid.select(-1, -1);
+    },
+    onInitializedSelected(flexGrid) {
+      flexGrid.select(-1, -1);
+      this.onFlexGridSelected = flexGrid;
+      let selectedAttendView = [];
+      selectedAttendView.push({
+        num: 1,
+        syokusyu: '相談支援専門員',
+        simei: '鈴木 妙子',
+      });
+      selectedAttendView.push({
+        num: 2,
+        syokusyu: '相談支援専門員',
+        simei: '竹下 美智子',
+      });
+      for (let i = 3; i <= 12; i++) {
+        selectedAttendView.push({
+          num: i,
+          syokusyu: '',
+          simei: '',
+        });
+      }
+      // 並び順
+      selectedAttendView.sort((a, b) => {
+        return a.num < b.num ? -1 : 1;
+      });
+
+      this.selectedAttendView = selectedAttendView;
+      this.selectedAttendViewDefault = selectedAttendView;
+
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel == s.cells) {
+          e.cell.style.textAlign = 'left';
+          e.cell.style.justifyContent = 'left';
+          e.cell.style.alignItems = 'left';
+        }
+      });
+
+      let _self = this;
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        // 並び順変更可能状態
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          if (_self.sortEditFlag && ht.col == 0) {
+            if (
+              flexGrid.cells.rows[ht.row].dataItem.num.length == 0 &&
+              _self.selectedAttendView[ht.row].syokusyu &&
+              _self.selectedAttendView[ht.row].simei
+            ) {
+              _self.selectedAttendView[ht.row].num = _self.sortEditCount;
+              flexGrid.setCellData(ht.row, 0, _self.sortEditCount);
+              _self.sortEditCount++;
+            }
+          }
+          // 並替えボタンの有効チェック
+          let cntdisable = 0;
+          for (let i = 0; i < _self.selectedAttendView.length; i++) {
+            if (
+              !_self.selectedAttendView[i].num &&
+              _self.selectedAttendView[i].syokusyu &&
+              _self.selectedAttendView[i].simei
+            ) {
+              cntdisable++;
+            }
+          }
+          if (cntdisable == 0) {
+            _self.sortDisabled = false;
+          }
+        }
+      });
+    },
+
+    onAlphabetical() {
+      alert('alpha');
+    },
+    /********************************
+     * 並び順指定
+     * 並順ボタンを押下時にnumを空欄にする
+     *****************************/
+    editSortSetted() {
+      let selectedAttendView = this.selectedAttendView;
+      let sortEdit = [];
+      for (let i = 0; i < selectedAttendView.length; i++) {
+        sortEdit.push({
+          num: '',
+          syokusyu: selectedAttendView[i].syokusyu,
+          simei: selectedAttendView[i].simei,
+        });
+      }
+      this.selectedAttendView = sortEdit;
+      this.sortEditFlag = true;
+      this.sortEditCount = 1;
+      this.sortDisabled = true;
+    },
+    editDelete() {
+      if (this.onFlexGridSelected.selectedItems[0]) {
+        let number = this.onFlexGridSelected.selectedItems[0].num;
+        let index = this.selectedAttendView.findIndex(
+          ({ num }) => num === number
+        );
+        this.selectedAttendView[index] = [];
+        this.editSort();
+      }
+    },
+    editSort() {
+      let selectedAttendView = this.selectedAttendView;
+
+      let sortEdit = [];
+      let cnt = 1;
+      for (let i = 0; i < selectedAttendView.length; i++) {
+        if (selectedAttendView[i].syokusyu) {
+          sortEdit.push({
+            num: selectedAttendView[i].num,
+            syokusyu: selectedAttendView[i].syokusyu,
+            simei: selectedAttendView[i].simei,
+          });
+          cnt++;
+        }
+      }
+      for (let i = cnt - 1; i < selectedAttendView.length; i++) {
+        sortEdit.push({
+          num: i + 1,
+          syokusyu: selectedAttendView[i].syokusyu,
+          simei: selectedAttendView[i].simei,
+        });
+      }
+      // 並び順
+      sortEdit.sort((a, b) => {
+        return a.num < b.num ? -1 : 1;
+      });
+      this.selectedAttendView = sortEdit;
     },
     dispalyChange() {
       this.onDisplayFlag = this.onDisplayFlag ? false : true;
@@ -771,6 +962,7 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
+
 div#tantokaigi {
   color: $font_color;
   font-size: 12px;
@@ -778,7 +970,6 @@ div#tantokaigi {
   min-width: 1350px !important;
   max-width: 1350px !important;
   width: auto;
-
   #tantoKaigiGrid {
     width: 100%;
     height: 80px;
@@ -800,6 +991,13 @@ div#tantokaigi {
     line-height: 1.25em;
   }
 }
+div#selectedAttendGrid {
+  color: $font_color;
+  font-size: 12px;
+  font-family: 'メイリオ';
+  width: 100%;
+  height: 240px;
+}
 .issueText {
   textarea {
     padding-right: 230px !important;
@@ -812,8 +1010,8 @@ div#tantokaigi {
   &.w100 {
     width: 100px;
   }
-  &.w160 {
-    width: 160px;
+  &.w60 {
+    width: 60px;
   }
   div {
     height: 24px !important;
@@ -833,7 +1031,7 @@ div#tantokaigi {
 }
 #attendGrid {
   font-size: 12px;
-  height: 100px;
+  height: 120px;
 }
 div {
   &.customCombobox {

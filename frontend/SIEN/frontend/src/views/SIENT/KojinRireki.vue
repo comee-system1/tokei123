@@ -94,7 +94,7 @@
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
-              <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+              <!-- <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
                 支援項目
               </v-card>
               <v-btn-toggle
@@ -110,9 +110,28 @@
                 >
                   {{ n.name }}
                 </v-btn>
-              </v-btn-toggle>
+              </v-btn-toggle> -->
             </v-row>
             <v-row no-gutters class="rowStyle mt-1">
+              <v-card class="koumokuTitle pa-1" outlined tile>
+                表示内容
+              </v-card>
+              <v-btn-toggle
+                class="flex-wrap ml-1"
+                v-model="selSienkoumokuUmuIndex"
+              >
+                <v-btn
+                  v-for="n in dispNaiyouList"
+                  :key="n.val"
+                  small
+                  outlined
+                  @click="grdDispChangeclick(1)"
+                >
+                  {{ n.name }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-row>
+            <v-row no-gutters class="rowStyle mt-1" v-if="false">
               <v-card class="koumokuTitle pa-1" outlined tile>
                 事業区分
               </v-card>
@@ -334,100 +353,162 @@ export default {
         {
           dataname: 'ymdD',
           title: '日付',
+          chutitle: '',
           kbntitle: '',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '3*',
           align: 'center',
         },
         {
-          dataname: 'jigyokbnD',
-          title: '事\n業\n区\n分',
-          kbntitle: '',
-          width: 30,
+          dataname: 'kojin_naiiyou',
+          title: '内容',
+          chutitle: '',
+          kbntitle: '計画作成',
+          width: '3*',
+          align: 'left',
+        },
+        {
+          dataname: 'keikakusakusei',
+          title: '様\n式',
+          chutitle: '',
+          kbntitle: '計画作成',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'P_tantousyakaigi',
+          title: '担\n会\n議',
+          chutitle: '',
+          kbntitle: '計画作成',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jyukyukoufu',
+          title: '障\n害\n者',
+          chutitle: '',
+          kbntitle: '受給者証',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jyukyukoufu',
+          title: '障\n害\n児',
+          chutitle: '',
+          kbntitle: '受給者証',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jyukyukoufu',
+          title: '地\n域\n相',
+          chutitle: '',
+          kbntitle: '受給者証',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jissi',
+          title: '予定\n月',
+          chutitle: '',
+          kbntitle: 'モニタリング',
+          width: '1.5*',
+          align: 'center',
+        },
+        {
+          dataname: 'jissi',
+          title: '終\n期\n月',
+          chutitle: '',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'kbn',
+          title: '区分',
+          chutitle: '中止・延期',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'kbn',
+          title: '理由',
+          chutitle: '中止・延期',
+          kbntitle: 'モニタリング',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dataname: 'jikaiyotei',
+          title: '実\n施',
+          chutitle: '',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jikaiyotei',
+          title: '週\n間',
+          chutitle: '',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jikaiyotei',
+          title: '変\n更',
+          chutitle: '案',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'jikaiyotei',
+          title: '更\n新',
+          chutitle: '案',
+          kbntitle: 'モニタリング',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dataname: 'M_tantousyakaigi',
+          title: '担\n会\n議',
+          chutitle: '',
+          kbntitle: 'モニタリング',
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'sdnhourk',
           title: '方法',
-          kbntitle: '受付・対応',
-          width: 40,
+          chutitle: '',
+          kbntitle: '支援内容',
+          width: '1.5*',
           align: 'left',
         },
         {
           dataname: 'naiyo',
           title: '内容',
-          kbntitle: '受付・対応',
+          chutitle: '',
+          kbntitle: '支援内容',
           width: sysConst.GRD_COL_WIDTH.Naiyou,
           align: 'left',
         },
         {
           dataname: 'kasankoumoku',
           title: '加算項目',
+          chutitle: '',
           kbntitle: '',
-          width: sysConst.GRD_COL_WIDTH.UserName,
+          width: '3*',
           align: 'left',
         },
         {
-          dataname: 'tantousya',
+          dataname: 'tanto',
           title: '担当者',
+          chutitle: '',
           kbntitle: '',
-          width: sysConst.GRD_COL_WIDTH.Tantousya,
+          width: '1.5*',
           align: 'left',
-        },
-        {
-          dataname: 'keiyakuteiketu',
-          title: '契約\n締結',
-          kbntitle: '計画作成',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'keikakusakusei',
-          title: '計画作成',
-          kbntitle: '計画作成',
-          width: sysConst.GRD_COL_WIDTH.UserName,
-          align: 'left',
-        },
-        {
-          dataname: 'P_tantousyakaigi',
-          title: '担当者\n会議',
-          kbntitle: '計画作成',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'jyukyukoufu',
-          title: '受給\n交付',
-          kbntitle: '計画作成',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'jissi',
-          title: '実施',
-          kbntitle: 'モニタリング',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'kbn',
-          title: '区分',
-          kbntitle: 'モニタリング',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'jikaiyotei',
-          title: '次回\n予定',
-          kbntitle: 'モニタリング',
-          width: 30,
-          align: 'center',
-        },
-        {
-          dataname: 'M_tantousyakaigi',
-          title: '担当者\n会議',
-          kbntitle: 'モニタリング',
-          width: 30,
-          align: 'center',
         },
       ],
       sienKoumokuHeaderList: [
@@ -465,6 +546,13 @@ export default {
       selInputKbn: 0,
       selSyousaiDispUmuIndex: 0,
       selSienkoumokuUmuIndex: 0,
+      selDispNaiyouIndex: 0,
+      dispNaiyouList: [
+        { val: 0, name: '全部' },
+        { val: 1, name: '計画作成' },
+        { val: 2, name: 'モニタリング' },
+        { val: 3, name: '支援内容' },
+      ],
       viewDataAll: [],
       viewData: [],
       sienkoumoku_dialog: false,
@@ -491,11 +579,14 @@ export default {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
+      flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnHeaders.rows[2].allowMerging = true;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header * 4;
+      flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
@@ -526,10 +617,15 @@ export default {
         flexGrid.columnHeaders.setCellData(
           1,
           colIndex,
+          !this.headerList[colIndex].chutitle
+            ? this.headerList[colIndex].title
+            : this.headerList[colIndex].chutitle
+        );
+        flexGrid.columnHeaders.setCellData(
+          2,
+          colIndex,
           this.headerList[colIndex].title
         );
-
-        flexGrid.columnHeaders.setCellData(2, colIndex, ' ');
       }
       flexGrid.endUpdate();
     },
@@ -628,19 +724,38 @@ export default {
         }
         if (e.row < flexGrid.rows.length - 1) {
           let tmpitempre = e.panel.rows[e.row + 1].dataItem;
-          if (tmpitem.ymd != tmpitempre.ymd) {
+          if (tmpitem.ymd.substring(0, 6) != tmpitempre.ymd.substring(0, 6)) {
             e.cell.style.borderBottom = STYLE_BORDER_SOLID;
           }
         }
-        if (e.col == 1 || e.col == 3 || e.col == 5 || e.col == 9) {
+        if (
+          e.col == 0 ||
+          e.col == 3 ||
+          e.col == 6 ||
+          e.col == 15 ||
+          e.col == 17
+        ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
       } else {
-        if (e.col == 1 || e.col == 3 || e.col == 5 || e.col == 9) {
-          e.cell.style.borderRight = STYLE_BORDER_SOLID;
-        } else if (e.row == 0 && (e.col == 2 || e.col == 6)) {
+        if (
+          (e.row == 0 && e.col == 0) ||
+          (e.row == 0 && e.col == 1) ||
+          (e.row == 0 && e.col == 4) ||
+          (e.row == 0 && e.col == 7) ||
+          (e.row == 0 && e.col == 16) ||
+          (e.row == 1 && e.col == 3) ||
+          (e.row == 1 && e.col == 6) ||
+          (e.row == 1 && e.col == 15) ||
+          (e.row == 1 && e.col == 17)
+        ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
+        // if (e.col == 1 || e.col == 3 || e.col == 5 || e.col == 9) {
+        //   e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        // } else if (e.row == 0 && (e.col == 2 || e.col == 6)) {
+        //   e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        // }
       }
     },
     onFormatItemSienKoumoku(flexGrid, e) {
@@ -707,12 +822,10 @@ export default {
           traceid: 123,
           pJigyoid: 43,
           pIntcode: this.userInfo.riid,
-          pSymd: this.startymd.format('YYYYMMDD'),
-          pEymd: this.endymd.format('YYYYMMDD'),
-          Dspkbn: 0,
+          pSrhym: this.startymd.format('YYYYMMDD'),
         };
-        console.log(params);
-        getConnect('/Uktk', params, 'SIENT').then((result) => {
+        // pErhym: this.endymd.format('YYYYMMDD'), console.log(params);
+        getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
           console.log(12345);
           console.log(result);
           this.viewDataAll = result;
@@ -942,7 +1055,7 @@ export default {
     getYmd(outputkbn) {
       if (outputkbn == 0) {
         if (!this.startymd) {
-          this.startymd = dayjs().startOf('months');
+          this.startymd = dayjs().subtract(11, 'M').startOf('months');
         }
         return (
           this.startymd.format('YYYY') +
@@ -1203,8 +1316,8 @@ div#kojinRireki {
   }
   #icrnGrid {
     height: 78vh;
-    width: auto;
-    // min-width: 1050px;
+    width: 78vw;
+    min-width: 1050px;
     // max-width: 1920px;
   }
   .centerArea {

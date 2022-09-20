@@ -990,8 +990,8 @@ import * as wjCore from '@grapecity/wijmo';
 import { mstHouhou } from '@backend/api/MstHouhou';
 import { mstKankei } from '@backend/api/MstKankei';
 import { mstSodantaiou } from '@backend/api/MstSodantaiou';
-import { uketukeIcrn } from '@backend/api/UketukeIcrn';
 import UserList from '../components/UserList.vue';
+import { getConnect } from '@connect/getConnect';
 
 const DISP_MST_GRD = {
   SienHouhou: 1,
@@ -1183,7 +1183,7 @@ export default {
       ],
       rirekidata: [],
       RirekiHerderItem: [
-        { dataname: 'taiouYmd', title: '対応日', width: 90, align: 'center' },
+        { dataname: 'ymdD', title: '対応日', width: 90, align: 'center' },
         { dataname: 'naiyo', title: '内容', width: '*', align: 'left' },
       ],
       kihondata: [],
@@ -1599,12 +1599,12 @@ export default {
             wjCore.escapeHtml(e.cell.innerHTML) +
             '</div>' +
             '<font >' +
-            tmpitem.sTime +
+            tmpitem.jikan +
             '</font>';
         } else if (e.col == 1) {
           e.cell.innerHTML =
             '<font color="blue">' +
-            tmpitem.title +
+            tmpitem.cskmknm +
             '</font>' +
             '<div>' +
             wjCore.escapeHtml(e.cell.innerHTML) +
@@ -1710,7 +1710,9 @@ export default {
       let backcolor = '';
       let backcolorsoudansya = '';
       if (enabled) {
-        document.getElementById(INPUT_ID.Syokai).setAttribute(dis, enabled);
+        if (document.getElementById(INPUT_ID.Syokai) != null) {
+          document.getElementById(INPUT_ID.Syokai).setAttribute(dis, enabled);
+        }
         document.getElementById(INPUT_ID.SienHouhou).setAttribute(dis, enabled);
         document.getElementById(INPUT_ID.Kankei).setAttribute(dis, enabled);
         document.getElementById(INPUT_ID.Soudansya).setAttribute(dis, enabled);
@@ -1726,7 +1728,9 @@ export default {
         backcolor = sysConst.COLOR.gridNoneBackground;
         backcolorsoudansya = sysConst.COLOR.gridNoneBackground;
       } else {
-        document.getElementById(INPUT_ID.Syokai).removeAttribute(dis);
+        if (document.getElementById(INPUT_ID.Syokai) != null) {
+          document.getElementById(INPUT_ID.Syokai).removeAttribute(dis);
+        }
         document.getElementById(INPUT_ID.SienHouhou).removeAttribute(dis);
         document.getElementById(INPUT_ID.Kankei).removeAttribute(dis);
         document.getElementById(INPUT_ID.Dousekisya1).removeAttribute(dis);
@@ -2046,10 +2050,20 @@ export default {
         this.rirekidata = [];
         return;
       }
-      uketukeIcrn(symd, eymd, riid).then((result) => {
+      let params = {
+        uniqid: 1,
+        traceid: 123,
+        pJigyoid: 43,
+        pIntcode: this.userInfo.riid,
+        pSymd: this.kikanSymd.format('YYYYMMDD'),
+        pEymd: this.kikanEymd.format('YYYYMMDD'),
+        Dspkbn: 0,
+      };
+      console.log(params);
+      getConnect('/Uktk', params, 'SIENT').then((result) => {
+        console.log(12345);
+        console.log(result);
         this.rirekidata = result;
-        this.getSodantaiouMst();
-        console.log(this.rirekidata);
       });
     },
     kihonInputClicked() {},

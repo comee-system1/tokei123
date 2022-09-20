@@ -321,6 +321,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import { getConnect } from '../../../../connect/getConnect';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
 export default {
@@ -394,124 +395,124 @@ export default {
       ],
       headerList: [
         {
-          dataname: 'day',
+          dataname: 'ymdD',
           title: '対応日',
-          width: sysConst.GRD_COL_WIDTH.Ymd,
+          width: '3*',
           align: 'center',
         },
         {
-          dataname: 'time',
+          dataname: 'jikan',
           title: '時間',
-          width: sysConst.GRD_COL_WIDTH.Time,
+          width: '2*',
           align: 'center',
         },
         {
-          dataname: 'name',
+          dataname: 'rname',
           title: '利用者名',
-          width: sysConst.GRD_COL_WIDTH.UserName,
+          width: '4*',
           align: 'left',
         },
         {
           dataname: 'age',
           title: '年\n齢',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
-          dataname: 'sex',
+          dataname: 'sexname',
           title: '性\n別',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'sichoson',
           title: '市区\n町村',
-          width: 70,
+          width: '2*',
           align: 'left',
         },
         {
           dataname: 'syougaisienkbn',
           title: '障\n支\n区',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'syougaikbn1',
           title: '障害区分',
-          width: 40,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'syougaikbn2',
           title: '障害区分',
-          width: 40,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'syougaikbn3',
           title: '障害区分',
-          width: 40,
+          width: '1*',
           align: 'center',
         },
         {
-          dataname: 'setai',
+          dataname: 'setairk',
           title: '世帯状況',
-          width: 90,
+          width: '3*',
           align: 'left',
         },
         {
-          dataname: 'honnin',
+          dataname: 'honninrk',
           title: '本人状況',
-          width: 90,
+          width: '3*',
           align: 'left',
         },
         {
-          dataname: 'nyuukyokbn',
+          dataname: 'sykkbnkigo',
           title: '入\n区',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
           dataname: 'sinki',
           title: '新\n規',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
-          dataname: 'houhou',
+          dataname: 'sdnhourk',
           title: '方法',
-          width: 40,
+          width: '2*',
           align: 'left',
         },
         {
-          dataname: 'kankei',
+          dataname: 'sdnkanrk',
           title: '関係',
-          width: 40,
+          width: '2*',
           align: 'left',
         },
         {
-          dataname: 'naiyou',
+          dataname: 'naiyo',
           title: '内容',
           width: sysConst.GRD_COL_WIDTH.Naiyou,
           align: 'left',
         },
         {
-          dataname: 'rank',
+          dataname: 'ranknm',
           title: 'ラ\nン\nク',
-          width: 30,
+          width: '1*',
           align: 'center',
         },
         {
-          dataname: 'syoyoujikan',
+          dataname: 'syoyo',
           title: '所\n要\n時',
-          width: 40,
+          width: '1*',
           align: 'center',
         },
         {
-          dataname: 'taiousya',
+          dataname: 'sryaku',
           title: '対応者',
           kbntitle: '',
-          width: sysConst.GRD_COL_WIDTH.Tantousya,
+          width: '2*',
           align: 'left',
         },
       ],
@@ -594,11 +595,16 @@ export default {
         if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
           e.cell.innerHTML =
             '<font color="blue">' +
-            wjCore.escapeHtml(tmpitem.naiyou) +
+            wjCore.escapeHtml(tmpitem.cskmknm) +
             '</font>' +
             '<div>' +
-            wjCore.escapeHtml(tmpitem.naiyouDetail) +
+            wjCore.escapeHtml(e.cell.innerHTML) +
             '</div>';
+        }
+        if (e.col == 10) {
+          if (tmpitem.setairk.length == 0) {
+            e.cell.innerHTML = '<font color="red">※未入力</font>';
+          }
         }
       }
       if (
@@ -638,9 +644,25 @@ export default {
     },
     setViewData(isAll) {
       if (isAll) {
-        this.viewDataAll = this.loadData(false);
+        let params = {
+          uniqid: 1,
+          traceid: 123,
+          pJigyoid: 43,
+          pSymd: this.startymd.format('YYYYMMDD'),
+          pEymd: this.endymd.format('YYYYMMDD'),
+          Dspkbn: 0,
+        };
+        console.log(params);
+        getConnect('/Uktk', params, 'SIENT').then((result) => {
+          console.log(12345);
+          console.log(result);
+          this.viewDataAll = result;
+          this.userFilter();
+        });
+        // this.viewDataAll = this.loadData(false);
+      } else {
+        this.userFilter();
       }
-      this.userFilter();
     },
     loadData() {
       let result = [];
@@ -1079,8 +1101,8 @@ div#uketukeCheckList {
   }
   #icrnGrid {
     height: 78vh;
-    width: auto;
-    max-width: 1330px;
+    width: 98%;
+    min-width: 1250px;
   }
   div.customCombobox {
     position: relative;

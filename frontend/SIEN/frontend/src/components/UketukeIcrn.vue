@@ -1095,7 +1095,7 @@ div#uketukeIcrn {
       background-color: #fff;
     }
     div * {
-      height: 20px !important;
+      height: 18px !important;
       // padding: 0;
       span {
         // height: 21px !important;

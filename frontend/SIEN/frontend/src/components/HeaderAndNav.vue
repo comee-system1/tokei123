@@ -294,8 +294,16 @@ export default {
           src: 'mdi-text-box-edit-outline',
           lists: [
             {
-              name: '受付・対応登録',
+              name: '相談受付',
               link: '/UketukeIcrn/?ref=Keikakusoudan',
+            },
+            {
+              name: '契約報告書',
+              link: '/TemporaryPage',
+            },
+            {
+              name: 'アセスメント',
+              link: '/TemporaryPage',
             },
             {
               name: '計画作成',
@@ -310,11 +318,15 @@ export default {
               link: '/TantoKaigi',
             },
             {
-              name: '担当者別実績表',
-              link: '/TemporaryPage',
+              name: '個人履歴',
+              link: '/KojinRireki',
             },
             {
-              name: '個人履歴',
+              name: '担当者別実績表',
+              link: '/TantousyaBetuJisseki',
+            },
+            {
+              name: '加算用記録表',
               link: '/TemporaryPage',
             },
             { name: 'マスタ', link: '/MstMenu' },
