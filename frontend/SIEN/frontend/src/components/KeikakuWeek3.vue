@@ -178,7 +178,7 @@ export default {
         eventClick: this.onEventClick,
         droppable: true,
         editable: true,
-        navLinks: true,
+        navLinks: false,
         selectable: true,
         contentHeight: '600px',
         slotDuration: '00:30:00',
@@ -348,9 +348,9 @@ div#keikakuWeek {
       }
     }
   }
-  .fc-highlight {
-    background-color: transparent !important;
-  }
+  // .fc-highlight {
+  //   background-color: transparent !important;
+  // }
   // .fc-event-time {
   //   display: none;
   // }
