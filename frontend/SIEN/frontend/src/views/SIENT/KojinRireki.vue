@@ -47,15 +47,11 @@
                   </div>
                 </v-btn>
               </v-card>
-              <v-card
-                class="rirekikoumokuTitleMini ml-1 pa-1 pb-1"
-                outlined
-                tile
-              >
+              <v-card class="rirekikoumokuTitleMini pa-1 pb-1" outlined tile>
                 ～
               </v-card>
               <v-card
-                class="ml-1"
+                class="mr-1"
                 color="transparent"
                 height="100%"
                 style="border: none; margin-top: -1px"
@@ -74,14 +70,14 @@
                   </div>
                 </v-btn>
               </v-card>
-              <v-btn class="itemBtn ml-1" @click="inputCalendarClick(2)">
+              <v-btn class="itemBtn mr-1" @click="inputCalendarClick(2)">
                 月指定
               </v-btn>
-              <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
                 詳細表示
               </v-card>
               <v-btn-toggle
-                class="flex-wrap ml-1"
+                class="flex-wrap mr-1"
                 v-model="selSyousaiDispUmuIndex"
               >
                 <v-btn

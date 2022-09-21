@@ -49,7 +49,6 @@ export default {
       while (flexGrid.rows.length < 2) {
         flexGrid.rows.push(new wjGrid.Row());
       }
-
       flexGrid.columns[0].width = 220;
       flexGrid.columns[1].width = 80;
       flexGrid.columns[2].width = 40;
@@ -58,15 +57,18 @@ export default {
       // 疑似ヘッダーを作成
       flexGrid.columns[0].cssClass = 'create-header';
       flexGrid.rows[0].cssClass = 'create-header';
+      if (this.$parent.displaySetting[1].tokuteiNissuFlag === false) {
+        this.mainFlexGrid.setCellData(0, 0, '特定入所障害児食費等給付費');
+        flexGrid.columns[1].visible = false;
+        flexGrid.columns[2].visible = false;
+      } else {
+        this.mainFlexGrid.setCellData(0, 0, '特定障害者特別給付費');
+      }
       this.mainFlexGrid.setCellData(0, 1, '算定日額');
       this.mainFlexGrid.setCellData(0, 2, '日数');
       this.mainFlexGrid.setCellData(0, 3, '給付費請求額');
       this.mainFlexGrid.setCellData(0, 4, '実費算定額');
       // 助成自治体FragがFALSEの場合、助成自治体番号を非表示
-      if (this.$parent.displaySetting[1].tokuteiNissuFlag === false) {
-        flexGrid.columns[1].visible = false;
-        flexGrid.columns[2].visible = false;
-      } 
     },
     /**
      * セルのマージ
@@ -74,15 +76,15 @@ export default {
     mergeCell(flexGrid) {
       let mm = new wjGrid.MergeManager();
       // 結合するセルの範囲を指定
-      let headerRanges = [
+      let cellRanges = [
         new wjGrid.CellRange(0, 0, 1, 0),
       ];
       // getMergedRangeメソッドをオーバーライドする
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.Cell) {
-          for (let h = 0; h < headerRanges.length; h++) {
-            if (headerRanges[h].contains(r, c)) {
-              return headerRanges[h];
+          for (let h = 0; h < cellRanges.length; h++) {
+            if (cellRanges[h].contains(r, c)) {
+              return cellRanges[h];
             }
           }
         }
@@ -93,7 +95,6 @@ export default {
      * セルのデザイン修正
      */
     formatCell(flexGrid) {
-      
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
@@ -110,14 +111,14 @@ export default {
             s.paddingRight = '4px'
         }
         if ((r == 0) && (c == 0)) {
-        // if (this.$parent.displaySetting[1].jyoseijichitaiFlag === false) {
-          s.lineHeight = '38px'
-          cell.innerHTML = '特定障害者特別給付費';
-        // else {
-            // s.lineHeight = '19px'
-        //   cell.innerHTML = '特定入所障害<br/>児食費等給付費';
-        // }
-        } 
+            s.lineHeight = '38px'
+        }
+        if ((r == 0) && (c == 4)) {
+            s.borderRadius = '0 4px 0 0';
+        }
+        if ((r == 1) && (c == 4)) {
+            s.borderRadius = '0 0 4px 0';
+        }
       };
     },
     /**
@@ -141,6 +142,7 @@ export default {
 @import '@/assets/scss/common.scss';
 #kyuhumeisai-tokuteiSyogai {
   #kyuhumeisai-tokuteiSyogai-grid {
+    width: auto;
     &.wj-content {
       border-right: none;
       border-bottom: none;

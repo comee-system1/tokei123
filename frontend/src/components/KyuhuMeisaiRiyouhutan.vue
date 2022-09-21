@@ -1,18 +1,18 @@
 <template>
   <div id="kyuhumeisai-riyouhutan" class="d-flex">
     <wj-flex-grid
-        id="kyuhumeisai-riyouhutan-grid"
-        :headersVisibility="'Row'"
-        :alternatingRowStep="0"
-        :initialized="onInitialized"
-        :isReadOnly="true"
-        :deferResizing="false"
-        :allowAddNew="false"
-        :allowDelete="false"
-        :allowDragging="false"
-        :allowPinning="false"
-        :allowResizing="false"
-        :allowSorting="false"
+      id="kyuhumeisai-riyouhutan-grid"
+      :headersVisibility="'Row'"
+      :alternatingRowStep="0"
+      :initialized="onInitialized"
+      :isReadOnly="true"
+      :deferResizing="false"
+      :allowAddNew="false"
+      :allowDelete="false"
+      :allowDragging="false"
+      :allowPinning="false"
+      :allowResizing="false"
+      :allowSorting="false"
       >
     </wj-flex-grid>
   </div>
@@ -35,6 +35,11 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得データの挿入
+        this.setRiyousyaHutanData(flexGrid)
+      }
+      this.createCell(flexGrid);
       // セルのマージ
       this.mergeCell(flexGrid);
       // セルのデザイン修正
@@ -53,6 +58,47 @@ export default {
       }
       flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
+    },
+    /**
+     * 親コンポーネントで選択したユーザーデータを加工し表示
+     */
+    setRiyousyaHutanData(flexGrid) {
+      // 取得したデータ挿入（API取得時修正）
+      let pkmk = this.$parent.kyuhumeisaiApiData.kojin;
+      // 利用者負担上限月額①
+      let riyouhutanSplit = [];
+      riyouhutanSplit = pkmk.jyogengaku.split('');
+      let l = '';
+      l = riyouhutanSplit.length;
+      // 値を右寄せで挿入
+      for (let i = 6; 0 < l; i--) {
+        // 「i」がセルのx座標、「ｌ」がriyouhutangakuの桁数
+        flexGrid.setCellData(0, i, riyouhutanSplit[l-1]);
+        l--;
+      }
+      if (this.genmenTaisyosyFlag && (this.syogaiShienFlag === false)) {
+        // 就労継続支援Ａ型事業者負担減免対象者
+        flexGrid.setCellData(0, 17, pkmk.agm_riyoumu);
+      }
+
+      // 障害支援区分
+      if (this.genmenTaisyosyFlag && this.syogaiShienFlag) {
+        flexGrid.setCellData(0, 17, pkmk.teido);
+      }
+
+      let pkmj = this.$parent.kyuhumeisaiApiData.jknr;
+      // 指定事業所番号を分割して表示
+      let jigyosyoNoSplit = [];
+      jigyosyoNoSplit = pkmj.jjigyono.split('');
+      for (let i = 0; i < jigyosyoNoSplit.length; i++) {
+        flexGrid.setCellData(1, i + 7, jigyosyoNoSplit[i]);
+      }
+      // 管理結果
+      flexGrid.setCellData(1, 20, pkmj.rslt);
+      // 管理結果額
+      flexGrid.setCellData(1, 25, pkmj.gaku);
+      // 事務所名
+      flexGrid.setCellData(2, 7, pkmj.kjgyoname);
     },
     /**
      * セルのマージ
@@ -159,7 +205,7 @@ export default {
             s.backgroundColor = sysConst.COLOR.selectedColor;
           }
           // 線を補填
-          if(r == 0){
+          if (r == 0){
             s.borderTop = '1px solid rgba(0,0,0,.2)';
           }
           // borderRadiusを修正
@@ -169,7 +215,7 @@ export default {
           if ((r == 1) && (c == 25)) {
             s.borderRadius = '0 4px 0 0';
           }
-          if(_self.genmenTaisyosyFlag || _self.syogaiShienFlag) {
+          if (_self.genmenTaisyosyFlag) {
             // 就労継続支援A型...免措置実施または障害支援区分セル表示時のデザイン
             for (let i = 20; i < 28; i++) {
               if ((r == 0) && (c == i)) {
@@ -208,42 +254,13 @@ export default {
               }
             }
           }
+            // borderRadiusを修正
+            if ((r == 2) && (c == 7)) {
+              s.textAlign = 'left';
+              s.paddingLeft = '4px';
+            }
         }
       };
-    },
-    /**
-     * 親コンポーネントで選択したユーザーデータを加工し表示
-     */
-    setRiyousyaHutanData(riyousyaHutanData){
-      // 取得したデータ挿入（API取得時修正）
-
-      // 利用者負担上限月額①
-      let riyouhutangakuSplit = [];
-      riyouhutangakuSplit = riyousyaHutanData['jyogengaku1'].split('');
-      let l = '';
-      l = riyouhutangakuSplit.length;
-      // 値を右寄せで挿入
-      for (let i = 6; 0 < l; i--) {
-        // 「i」がセルのx座標、「ｌ」がriyouhutangakuの桁数
-        this.mainFlexGrid.setCellData(0, i, riyouhutangakuSplit[l-1]);
-        l--;
-      }
-      if (this.genmenTaisyosyFlag && this.syogaiShienFlag === false) {
-        // 就労継続支援Ａ型事業者負担減免対象者
-        this.mainFlexGrid.setCellData(0, 17, riyousyaHutanData['kinroukeizokushien']);
-      }
-
-      // 障害支援区分
-      if (this.genmenTaisyosyFlag && this.syogaiShienFlag) {
-        this.mainFlexGrid.setCellData(0, 25, riyousyaHutanData['kinroukeizokushien']);
-      }
-
-      // 指定事業所番号を分割して表示
-      let jigyosyoBangoSplit = [];
-      jigyosyoBangoSplit = riyousyaHutanData['jigyosyobango'].split('');
-      for (let i = 0; i <jigyosyoBangoSplit.length; i++) {
-        this.mainFlexGrid.setCellData(1, i + 7, jigyosyoBangoSplit[i]);
-      }
     }
   }
 }

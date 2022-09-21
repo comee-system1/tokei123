@@ -245,7 +245,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import datepickerYear from 'vuejs-datepicker';
@@ -267,10 +267,10 @@ export default {
   },
   data() {
     return {
-      year: moment().year(),
-      month: moment().format('MM'),
-      seikyu_year: moment().add('month', 1).startOf('month').format('YYYY'),
-      seikyu_month: moment().add('month', 1).startOf('month').format('MM'),
+      year: dayjs().year(),
+      month: dayjs().format('MM'),
+      seikyu_year: dayjs().add(1, 'month').startOf('month').format('YYYY'),
+      seikyu_month: dayjs().add(1, 'month').startOf('month').format('MM'),
       picker: '',
       header_dialog: true,
       datepicker_dialog: false,
@@ -281,7 +281,7 @@ export default {
       storage: {},
       isActive: false,
       ja: ja,
-      defaultYear: moment().year().toString(),
+      defaultYear: dayjs().year().toString(),
     };
   },
   created: function () {
@@ -551,9 +551,21 @@ export default {
           serviceJigyo: _self.jimusyo[ht.row].serviceJigyo,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-
         ls.setlocalStorageEncript('serviceJigyo', teikyoService);
         ls.setlocalStorageEncript('selectRow', _self.jimusyo[ht.row].uid);
+        // 給付明細表示切り替え用
+        ls.setlocalStorageEncript(
+          'jimusyoBango',
+          _self.jimusyo[ht.row].jimusyoBango
+        );
+        ls.setlocalStorageEncript(
+          'serviceJigyo',
+          _self.jimusyo[ht.row].serviceJigyo
+        );
+        ls.setlocalStorageEncript(
+          'selectJigyoCode',
+          _self.jimusyo[ht.row].teikyoCode
+        );
         let returns = {};
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
@@ -600,7 +612,7 @@ export default {
       this.returndata['teikyo_year'] = this.year;
       this.returndata['teikyo_month'] = this.month;
       this.returndata['search_button'] = true;
-      this.returndata['defaultYear'] = moment(this.defaultYear).format('YYYY');
+      this.returndata['defaultYear'] = dayjs(this.defaultYear).format('YYYY');
       this.$emit('parent-service-select', this.returndata);
     },
     /**************
@@ -632,46 +644,46 @@ export default {
       let seikyu_date = this.seikyu_year + this.seikyu_month + '01';
       if (type == 3) {
         //請求月を「←（前月）」「→（翌月）」で変更した場合は、提供月も自動で請求月の前月表示
-        this.seikyu_year = moment(seikyu_date)
+        this.seikyu_year = dayjs(seikyu_date)
           .subtract(1, 'months')
           .format('YYYY');
-        this.seikyu_month = moment(seikyu_date)
+        this.seikyu_month = dayjs(seikyu_date)
           .subtract(1, 'months')
           .format('MM');
         seikyu_date = this.seikyu_year + '-' + this.seikyu_month + '-01';
-        this.year = moment(seikyu_date).subtract(1, 'months').format('YYYY');
-        this.month = moment(seikyu_date).subtract(1, 'months').format('MM');
+        this.year = dayjs(seikyu_date).subtract(1, 'months').format('YYYY');
+        this.month = dayjs(seikyu_date).subtract(1, 'months').format('MM');
       } else if (type == 4) {
         //請求月を「←（前月）」「→（翌月）」で変更した場合は、提供月も自動で請求月の前月表示
-        this.seikyu_year = moment(seikyu_date).add(1, 'months').format('YYYY');
-        this.seikyu_month = moment(seikyu_date).add(1, 'months').format('MM');
+        this.seikyu_year = dayjs(seikyu_date).add(1, 'months').format('YYYY');
+        this.seikyu_month = dayjs(seikyu_date).add(1, 'months').format('MM');
         seikyu_date = this.seikyu_year + '-' + this.seikyu_month + '-01';
 
-        this.year = moment(seikyu_date).add(-1, 'months').format('YYYY');
-        this.month = moment(seikyu_date).add(-1, 'months').format('MM');
+        this.year = dayjs(seikyu_date).add(-1, 'months').format('YYYY');
+        this.month = dayjs(seikyu_date).add(-1, 'months').format('MM');
       } else if (type == 1) {
-        this.year = moment(date).subtract(1, 'months').format('YYYY');
-        this.month = moment(date).subtract(1, 'months').format('MM');
+        this.year = dayjs(date).subtract(1, 'months').format('YYYY');
+        this.month = dayjs(date).subtract(1, 'months').format('MM');
         // 入退院報告書の時
         if (this.nenkanRiyouNissuFlag) {
-          this.defaultYear = moment(this.defaultYear)
+          this.defaultYear = dayjs(this.defaultYear)
             .add(-1, 'year')
             .format('YYYY');
         }
       } else if (type == 2) {
-        this.year = moment(date).add(1, 'months').format('YYYY');
-        this.month = moment(date).add(1, 'months').format('MM');
+        this.year = dayjs(date).add(1, 'months').format('YYYY');
+        this.month = dayjs(date).add(1, 'months').format('MM');
         // 入退院報告書の時
         if (this.nenkanRiyouNissuFlag) {
-          this.defaultYear = moment(this.defaultYear)
+          this.defaultYear = dayjs(this.defaultYear)
             .add(1, 'year')
             .format('YYYY');
         }
       }
       //請求月と提供月が同じになった場合
       if (this.year == this.seikyu_year && this.month == this.seikyu_month) {
-        this.seikyu_year = moment(seikyu_date).add(1, 'months').format('YYYY');
-        this.seikyu_month = moment(seikyu_date).add(1, 'months').format('MM');
+        this.seikyu_year = dayjs(seikyu_date).add(1, 'months').format('YYYY');
+        this.seikyu_month = dayjs(seikyu_date).add(1, 'months').format('MM');
       }
     },
     calenderChange: function (e) {

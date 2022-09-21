@@ -22,19 +22,14 @@
               style="width: 200px"
             >
             </wj-menu>
-            <v-btn
-              class="ml-1"
-              small
-              style="width: 60px; height: 25px;"
-              >
+            <v-btn class="ml-1" small style="width: 60px; height: 25px">
               検索
             </v-btn>
           </div>
           <div class="d-flex">
             <label>印刷種類</label>
             <!-- mandatoryは初期選択 -->
-            <v-btn-toggle class="flex-wrap" mandatory
-              >
+            <v-btn-toggle class="flex-wrap" mandatory>
               <!-- 印刷種類「一覧」選択時「入退院・外泊」は選択不可 -->
               <v-btn
                 small
@@ -244,7 +239,6 @@
 </template>
 
 <script>
-import moment from 'moment';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
@@ -267,10 +261,6 @@ const alphabet = [
 export default {
   data() {
     return {
-      iryokikanmeibi_year: moment().add('days', 2).startOf('days').format('YYYY'),
-      iryokikanmeibi_month: moment().add('days', 2).startOf('days').format('MM'),
-      iryokikanmeibi_date: moment().add('days', 2).startOf('days').format('DD'),
-      picker: '',
       riyosyaCombo: riyosyaCombo,
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
       alphabet: alphabet,
@@ -278,17 +268,17 @@ export default {
       alphaSelect: 0,
       gridHeight: '', // グリッドの高さ
       sortFlag: { kanaFlag: true, codeFlag: false, bangoFlag: false },
-      insatsuFlag: { houkokusyoFlag: true, disabledFlag: false},
+      insatsuFlag: { houkokusyoFlag: true, disabledFlag: false },
       selGaihaku: false,
       selNyutaiin: false,
       selNyutaiinDisabledu: false,
       selGaihakuDisabledu: false,
-    }
+    };
   },
   components: {
     HeaderServices,
   },
-    mounted() {
+  mounted() {
     this.handleResize();
   },
   created() {
@@ -343,8 +333,7 @@ export default {
       if (e.selectedIndex != -1) {
         e.header = e.text;
         this.onRiyosya(e.text, e.selectedIndex);
-        e.text,
-        e.selectedIndex
+        e.text, e.selectedIndex;
       }
       let f = document.activeElement;
       f.blur();
@@ -352,7 +341,7 @@ export default {
     /*************
      * 利用者のフィルタリンク
      */
-   onRiyosya(text, key) {
+    onRiyosya(text, key) {
       // フィルタリングの実施
       this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
       this.nyuTaiinData = this.filtered();
@@ -386,7 +375,7 @@ export default {
       this.gridDesignModify(flexGrid);
 
       // カナソートを実行
-      this.sort(1); 
+      this.sort(1);
 
       flexGrid.itemsSource = this.nyuTaiinData;
     },
@@ -431,8 +420,7 @@ export default {
      * 全体セルのマージ
      */
     createCellMerge(flexGrid) {
-      let headerRanges = [
-      ];
+      let headerRanges = [];
       // データセル用のマージ配列の作成
       let ranges = [];
       let merge = this.createMergeArray(this.nyuTaiinData);
@@ -465,7 +453,7 @@ export default {
           }
         }
       };
-      flexGrid.mergeManager = mm; 
+      flexGrid.mergeManager = mm;
     },
     /****************
      *セルのクリックイベント
@@ -502,7 +490,7 @@ export default {
       flexGrid.cellEditEnding.addHandler((s, e) => {
         // 編集されたセルを取得
         let changedBikou = flexGrid.getCellData(e.row, 6);
-        // 入力された値を保持 
+        // 入力された値を保持
         this.nyuTaiinData[e.row]['bikoudsp'] = changedBikou;
       });
     },
@@ -533,7 +521,7 @@ export default {
       let Data = [];
       // 受給者番号の配列を作成
       for (let i = 0; i < this.nyuTaiinData.length; i++) {
-        Data.push (this.nyuTaiinData[i]['jyukyuno']);
+        Data.push(this.nyuTaiinData[i]['jyukyuno']);
       }
       // 重複した値を削除
       let set = new Set(Data);
@@ -553,7 +541,7 @@ export default {
      * グリッドのデザイン修正
      */
     gridDesignModify(flexGrid) {
-      flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.color = sysConst.COLOR.fontColor;
@@ -565,18 +553,18 @@ export default {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           // 上下中央寄せ
           s.display = 'flex';
-          s.alignItems ='center'
-          s.justifyContent ='center'
+          s.alignItems = 'center';
+          s.justifyContent = 'center';
           // 印刷セル縦書き
           if (c == 7) {
             s.writingMode = 'vertical-rl';
-            s.borderRight= 'none';
+            s.borderRight = 'none';
           }
           // 2行以上で表示する行に文字列を挿入
-          if ((r == 0) && (c == 2)) {
+          if (r == 0 && c == 2) {
             cell.innerHTML = '入退院<br/>外泊の別';
           }
-          if ((r == 0) && (c == 5)) {
+          if (r == 0 && c == 5) {
             cell.innerHTML = '入院先医療機関名/<br/>外泊先';
           }
         }
@@ -585,28 +573,28 @@ export default {
           s.textAlign = 'center';
           // セル背景の変更
           s.backgroundColor = sysConst.COLOR.gridBackground;
-          if ((c == 6) || (c == 7)) {
+          if (c == 6 || c == 7) {
             s.backgroundColor = sysConst.COLOR.white;
           }
           // 文字の位置変更
-          if ((c == 1) || (c == 5)) {
+          if (c == 1 || c == 5) {
             s.textAlign = 'left';
-            s.paddingLeft = '4px'
+            s.paddingLeft = '4px';
           }
           // 文字の位置変更
           if (c == 6) {
-            s.textAlign ='left'
-            s.paddingLeft = '4px'
+            s.textAlign = 'left';
+            s.paddingLeft = '4px';
           }
           // 文字の位置変更
           if (c == 7) {
             s.display = 'flex';
-            s.alignItems ='center'
-            s.justifyContent ='center'
-            s.borderRight= 'none';
+            s.alignItems = 'center';
+            s.justifyContent = 'center';
+            s.borderRight = 'none';
           }
         }
-      }
+      };
     },
     /**************
      * 並び順変更
@@ -624,7 +612,7 @@ export default {
       if (type == 3) {
         this.sortFlag.bangoFlag = true;
       }
-      this.onSort(type)
+      this.onSort(type);
     },
     /******************
      * ソート
@@ -634,7 +622,7 @@ export default {
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.riyousyamei !== "" && b.riyousyamei !== "") {
+          if (a.riyousyamei !== '' && b.riyousyamei !== '') {
             if (a.riyousyamei < b.riyousyamei) {
               return -1;
             }
@@ -648,7 +636,7 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.riyocode !== "" && b.riyocode !== "") {
+          if (a.riyocode !== '' && b.riyocode !== '') {
             if (a.riyocode < b.riyocode) {
               return -1;
             }
@@ -662,7 +650,7 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyuno !== "" && b.jyukyuno !== "") {
+          if (a.jyukyuno !== '' && b.jyukyuno !== '') {
             if (a.jyukyuno < b.jyukyuno) {
               return -1;
             }
@@ -684,7 +672,7 @@ export default {
       this.insatsuFlag.houkokusyoFlag = false;
       this.insatsuFlag.disabledFlag = false;
       if (type == 1) {
-        this.insatsuFlag.houkokusyoFlag = true; 
+        this.insatsuFlag.houkokusyoFlag = true;
       }
       if (type == 2) {
         this.insatsuFlag.disabledFlag = true;
@@ -725,8 +713,10 @@ export default {
       let array = [];
       for (let i = 0; i < this.allData.length; i++) {
         // 入退院/外泊者または全員が選択されている時
-        if (this.filterTextRiyosya.riyosyaKey == 0 ||
-            this.filterTextRiyosya.riyosyaKey == 3){
+        if (
+          this.filterTextRiyosya.riyosyaKey == 0 ||
+          this.filterTextRiyosya.riyosyaKey == 3
+        ) {
           array.push(this.allData[i]);
         } else {
           if (
@@ -742,8 +732,7 @@ export default {
             // 退院者を選択
             (this.filterTextRiyosya.riyosyaKey === 5 &&
               this.allData[i]['nyutaikbn'] === 2)
-            )
-          {
+          ) {
             array.push(this.allData[i]);
           }
         }
@@ -808,8 +797,8 @@ export default {
         }
       });
       return get;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -829,13 +818,13 @@ div#nyuTaiin {
     width: auto;
   }
   .wj-control {
-     .wj-template {
+    .wj-template {
       height: 23px !important;
     }
   }
   .user-info {
     label {
-      margin-right: 4px!important;
+      margin-right: 4px !important;
     }
   }
   .no-flex-grow {
@@ -857,7 +846,7 @@ div#nyuTaiin {
       border-right: solid 1px rgba(0, 0, 0, 0.12);
       height: 25px;
       padding-left: 12px;
-        .v-input--selection-controls__ripple {
+      .v-input--selection-controls__ripple {
         z-index: 10;
         height: 28px;
         width: 28px;
@@ -871,7 +860,7 @@ div#nyuTaiin {
     .v-icon {
       font-size: 18px;
     }
-    .v-label{
+    .v-label {
       font-size: 12px;
       color: #333;
       background: $white;
@@ -882,7 +871,7 @@ div#nyuTaiin {
     .v-input__control {
       background-color: #eee;
     }
-    .v-label  {
+    .v-label {
       background-color: #eee;
     }
   }

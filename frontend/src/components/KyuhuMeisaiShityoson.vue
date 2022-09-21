@@ -33,6 +33,10 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得データの挿入
+        this.setShityosonData(flexGrid);
+      }
       // セルのデザイン修正
       this.formatCell(flexGrid);
     },
@@ -53,6 +57,25 @@ export default {
       if (this.$parent.displaySetting[1].jyoseijichitaiFlag === false) {
         flexGrid.rows[1].visible = false;
       } 
+    },
+    /**
+     * 取得したデータを挿入
+     */
+    setShityosonData(flexGrid) {
+      // API取得時修正
+      // 市町村番号を分割して表示
+      let pkmk = this.$parent.kyuhumeisaiApiData.kojin;
+      let splitShichoson = [];
+      splitShichoson = pkmk.shichosoncd.split('');
+      for (let i = 0; i < splitShichoson.length; i++) {
+        flexGrid.setCellData(0, i, splitShichoson[i]);
+      }
+      // 助成自治体番号を分割して表示
+      let splitJyoseiid = [];
+      splitJyoseiid = pkmk.jyoseiid.split('');
+      for (let l = 0; l < splitJyoseiid.length; l++) {
+        flexGrid.setCellData(1, l, splitJyoseiid[l]);
+      }
     },
     /**
      * セルのデザイン修正
@@ -85,33 +108,6 @@ export default {
           s.backgroundColor = sysConst.COLOR.gridBackground;
         }
       };
-    },
-    /**
-     * 親コンポーネントで選択したユーザーデータを加工し表示
-     */
-    setShityosonData(shityosonData){
-      // 市町村番号を分割して表示
-      // API取得時修正
-      let shityosonCodeSplit = [];
-      shityosonCodeSplit = String(shityosonData['sityoid']).split('');
-      for (let i = 0; i <shityosonCodeSplit.length; i++) {
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
-        this.mainFlexGrid.setCellData(0, i, shityosonCodeSplit[i]);
-      }
-      this.mainFlexGrid.setCellData(0, 3, '0');
-      this.mainFlexGrid.setCellData(0, 4, '0');
-      this.mainFlexGrid.setCellData(0, 5, '0');
-
-      
-      // 助成自治体番号を分割して表示
-      // API取得時修正
-      this.mainFlexGrid.setCellData(1, 0, '0');
-      this.mainFlexGrid.setCellData(1, 1, '1');
-      this.mainFlexGrid.setCellData(1, 2, '2');
-      this.mainFlexGrid.setCellData(1, 3, '3');
-      this.mainFlexGrid.setCellData(1, 4, '4');
-      this.mainFlexGrid.setCellData(1, 5, '5');
     },
   }
 }

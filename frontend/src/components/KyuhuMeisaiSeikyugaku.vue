@@ -124,7 +124,7 @@ export default {
       this.mainFlexGrid = flexGrid;
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
-
+      console.log(this.seikyugakuApiData)
       // Gridを作成
       this.createGrid(flexGrid)
 
@@ -170,7 +170,7 @@ export default {
         //-1はヘッダー2列目分
         let row = [];
 
-      if(this.seikyugakuApiData.length) {
+      if (this.seikyugakuApiData.length) {
         // APIデータが取得できている場合はAPIデータの数を設定
         this.columnLength = this.seikyugakuApiData.length * 4;
         for (let r = 0; r < this.seikyugakuObj.length; r++) {
@@ -228,7 +228,16 @@ export default {
               }
             }
           }
+          if (this.columnLength < 20) {
+            // 取得データが5件未満の場合空列を追加
+            for (let e = 0; e < 20 - this.columnLength ; e++) {
+              row['emptyColumn' + e]  = '';
+            }
+          }
           seikyugakuData.push(row);
+        }
+        if (this.columnLength < 20) {
+          this.columnLength = this.columnLength + 20 - this.columnLength;
         }
       } else {
         // APIデータが取得できていない場合は空データを設定
@@ -324,7 +333,7 @@ export default {
               s.lineHeight = '40px';
             }
             if ((r == 14) && (c == 0)) {
-              if(_self.dispItemPtn === 2) {
+              if (_self.dispItemPtn === 2) {
                 s.lineHeight = '40px';
               }
             }
@@ -336,7 +345,7 @@ export default {
             s.paddingRight = '4px';
             if ((r == 1) || (r == 2)) {
               s.textAlign = 'center';
-              if((((c +1) % 4) == 0) && (r == 2)) {
+              if ((((c +1) % 4) == 0) && (r == 2)) {
                 s.textAlign = 'left';
                 s.paddingLeft = '4px';
               }
@@ -365,7 +374,6 @@ export default {
           // 請求額Gird特別費のヘッダー文字上書き
           flexGrid.setCellData(15, 1, '高額障害福祉サービス費')
         }
-        console.log(this.mainFlexGrid.itemsSource)
       } else if (this.dispItemPtn === 3) {
         // 様式B,Eの場合、特別対策費とA型減免を非表示
         flexGrid.rows[9].visible = false;
@@ -462,10 +470,6 @@ export default {
             s.lineHeight = '40px';
             s.backgroundColor = sysConst.COLOR.selectedColor;
           }
-          // if ((r == 0) || (r == 1) ||  (r == 4) || (r == 6) || (r == 7)) {
-          //   s.backgroundColor = sysConst.COLOR.selectedColor;
-            
-          // }
         }
       }
     },

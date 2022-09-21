@@ -270,8 +270,8 @@ export default {
   },
   methods: {
     handleDateSelect(selectInfo) {
-      alert(selectInfo.startStr);
-      alert(selectInfo.endStr);
+      console.log(selectInfo.startStr);
+      console.log(selectInfo.endStr);
       /*
       let title = prompt('Please enter a new title for your event');
       let calendarApi = selectInfo.view.calendar;

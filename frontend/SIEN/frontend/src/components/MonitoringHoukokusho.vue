@@ -243,6 +243,7 @@
               :allowDragging="false"
               :selectionMode="'Cell'"
               :initialized="onInitializeIcrnGrid"
+              :showMarquee="true"
               :formatItem="onFormatItem"
               :itemsSourceChanging="onItemsSourceChanging"
               :itemsSourceChanged="onItemsSourceChanged"
@@ -1263,12 +1264,12 @@ div#monitoringHoukokusho {
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }
-    // .wj-cells
-    //   .wj-row:hover
-    //   .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
-    //   transition: all 0s;
-    //   background: $grid_hover_background;
-    // }
+    .wj-cells
+      .wj-row:hover
+      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+      transition: all 0s;
+      background: $grid_hover_background;
+    }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
       background: $grid_selected_background;

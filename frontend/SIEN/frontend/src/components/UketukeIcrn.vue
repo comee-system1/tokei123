@@ -592,20 +592,9 @@ export default {
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 3;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.alternatingRowStep = 0;
-      flexGrid.endUpdate();
-      this.$refs.mdselect.setYm(this.pickerSym);
-    },
-    setDispdata(tmpitem) {
-      this.viewObj = tmpitem;
-    },
-    onItemsSourceChanging(flexGrid) {
-      flexGrid.beginUpdate();
-      let headerlist = this.uketukeHeaderList;
-      if (this.selKasanUmuIndex == 1) {
-        headerlist = this.uketukeKasanHeaderList;
-      }
       flexGrid.columns.clear();
       let filtercols = [];
+      let headerlist = this.uketukeHeaderList;
       for (let colIndex = 0; colIndex < headerlist.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
@@ -635,6 +624,14 @@ export default {
         flexGrid.columnHeaders.setCellData(1, colIndex, ' ');
       }
       this.filter.filterColumns = filtercols;
+      flexGrid.endUpdate();
+      this.$refs.mdselect.setYm(this.pickerSym);
+    },
+    setDispdata(tmpitem) {
+      this.viewObj = tmpitem;
+    },
+    onItemsSourceChanging(flexGrid) {
+      flexGrid.beginUpdate();
       flexGrid.endUpdate();
     },
     onItemsSourceChanged(flexGrid) {

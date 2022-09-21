@@ -132,6 +132,7 @@
           :itemsSourceChanging="onItemsSourceChanging"
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="viewdatayoteisya"
+          :showMarquee="true"
         >
           <wj-flex-grid-filter
             :initialized="filterInitializedyoteisyaIcrn"
@@ -982,6 +983,16 @@ div#monitoringJissiIcrn {
     .wj-filter-on {
       color: blue;
       border-color: lightgray;
+    }
+    .wj-glyph-filter {
+      // background-repeat: no-repeat;
+      // background-position: bottom right;
+      margin-top: 20px;
+      margin-left: 3px;
+      margin-right: 1px;
+      width: 5px;
+      height: 5px;
+      // border: none;
     }
   }
 

@@ -95,7 +95,7 @@
           </v-row>
           <v-row class="ma-0 mt-1" no-gutters>
             <wj-flex-grid
-              id="icrnGrid"
+              id="tantousyaBetuJissekiicrnGrid"
               :headersVisibility="'Column'"
               :autoGenerateColumns="false"
               :allowAddNew="false"
@@ -397,16 +397,6 @@ export default {
       if (flexGrid.columns.length == 0) {
         return;
       }
-      // if (
-      //   e.panel == flexGrid.columnHeaders &&
-      //   ((e.row == 0 && e.col == 0) ||
-      //     (e.row == 0 && e.col == 1) ||
-      //     (e.row == 0 && e.col == 4) ||
-      //     (e.row == 0 && e.col == 5) ||
-      //     (e.row == 0 && e.col == 31))
-      // ) {
-      //   e.cell.style.borderBottom = 'None';
-      // }
       if (e.panel == flexGrid.cells) {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
@@ -420,10 +410,10 @@ export default {
         }
         if (
           e.col == 0 ||
+          e.col == 1 ||
+          e.col == 2 ||
           e.col == 3 ||
-          e.col == 6 ||
-          e.col == 15 ||
-          e.col == 17
+          e.col == 10
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -431,13 +421,11 @@ export default {
         if (
           (e.row == 0 && e.col == 0) ||
           (e.row == 0 && e.col == 1) ||
+          (e.row == 0 && e.col == 2) ||
+          (e.row == 0 && e.col == 3) ||
           (e.row == 0 && e.col == 4) ||
-          (e.row == 0 && e.col == 7) ||
-          (e.row == 0 && e.col == 16) ||
-          (e.row == 1 && e.col == 3) ||
-          (e.row == 1 && e.col == 6) ||
-          (e.row == 1 && e.col == 15) ||
-          (e.row == 1 && e.col == 17)
+          (e.row == 1 && e.col == 9) ||
+          (e.row == 2 && e.col == 10)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -709,10 +697,12 @@ div#tantousyaBetuJisseki {
     height: 19px;
     width: 75px;
   }
-  #icrnGrid {
+  #tantousyaBetuJissekiicrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-
+    height: 82vh;
+    width: 98%;
+    min-width: 1050px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -767,12 +757,7 @@ div#tantousyaBetuJisseki {
       border-color: lightgray;
     }
   }
-  #icrnGrid {
-    height: 78vh;
-    width: 98%;
-    min-width: 1050px;
-    // max-width: 1920px;
-  }
+
   .customCombobox {
     position: relative;
     // width: 300px !important;

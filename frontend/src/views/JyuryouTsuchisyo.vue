@@ -72,18 +72,13 @@
               受給者番号
             </v-btn>
           </v-btn-toggle>
-          <v-btn
-            class="ml-1 mt-1"
-            small
-            style="width: 60px; height: 25px;"
-          >
+          <v-btn class="ml-1 mt-1" small style="width: 60px; height: 25px">
             検索
           </v-btn>
         </v-col>
         <!-- no-flex-grow  -->
         <v-col class="d-flex justify-end">
           <div class="d-block">
-
             <div class="d-flex">
               <label>印刷種類</label>
               <!-- mandatoryは初期選択 -->
@@ -148,12 +143,14 @@
               <div class="mt-1 d-flex">
                 <label>印刷日</label>
                 <v-btn
-                   class="service"
+                  class="service"
                   @click="inputCalendarClick('insatsubi')"
                   tile
                   outlined
                   height="25"
-                  >{{ insatsubi_year }}年{{ insatsubi_month }}月{{ insatsubi_date }}日
+                  >{{ insatsubi_year }}年{{ insatsubi_month }}月{{
+                    insatsubi_date
+                  }}日
                   <div class="float-right">
                     <v-icon small>mdi-calendar-month</v-icon>
                   </div>
@@ -186,7 +183,7 @@
               v-model="datepicker_dialog"
               width="290"
               class="datepicker_dialogs"
-              >
+            >
               <v-date-picker
                 id="jyuryoDatepicker"
                 type="date"
@@ -200,7 +197,10 @@
           </div>
         </v-col>
       </v-row>
-      <v-row class="justify-sm-space-between align-end mt-1 follow-grid-width" no-gutters>
+      <v-row
+        class="justify-sm-space-between align-end mt-1 follow-grid-width"
+        no-gutters
+      >
         <v-btn-toggle class="flex-wrap" mandatory>
           <v-btn
             small
@@ -216,18 +216,18 @@
             {{ n }}
           </v-btn>
         </v-btn-toggle>
-          <wj-menu
-            :header="'全選択/全解除'"
-            :itemClicked="onselectedIndexChanged"
-            class="customCombobox customComboboxAuto"
-          >
-            <wj-menu-item>
-              <b>選択/印刷を全選択</b>
-            </wj-menu-item>
-            <wj-menu-item>
-              <b>選択/印刷を全解除</b>
-            </wj-menu-item>
-          </wj-menu>
+        <wj-menu
+          :header="'全選択/全解除'"
+          :itemClicked="onselectedIndexChanged"
+          class="customCombobox customComboboxAuto"
+        >
+          <wj-menu-item>
+            <b>選択/印刷を全選択</b>
+          </wj-menu-item>
+          <wj-menu-item>
+            <b>選択/印刷を全解除</b>
+          </wj-menu-item>
+        </wj-menu>
       </v-row>
       <v-row class="mt-1" no-gutters>
         <wj-flex-grid
@@ -337,7 +337,7 @@
         <v-col class="pt-0 pb-0 mr-1 d-flex justify-end">
           <v-btn
             small
-            style="width: 100px; height: 25px;"
+            style="width: 100px; height: 25px"
             @click="registerJyuryoubi()"
           >
             受領日登録
@@ -349,13 +349,12 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
 import HeaderServices from '../components/HeaderServices.vue';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import { jyuryouTsuchisyo } from '@backend/api/JyuryouTsuchisyo';
-
 
 const riyosyaCombo = [];
 const shityosonCombo = [];
@@ -375,9 +374,9 @@ const alphabet = [
 export default {
   data() {
     return {
-      insatsubi_year: moment().format('YYYY'),
-      insatsubi_month: moment().format('MM'),
-      insatsubi_date: moment().format('DD'),
+      insatsubi_year: dayjs().format('YYYY'),
+      insatsubi_month: dayjs().format('MM'),
+      insatsubi_date: dayjs().format('DD'),
       picker: '',
       datepicker_dialog: false,
       header_dialog: true,
@@ -387,13 +386,13 @@ export default {
       shityosonCombo: shityosonCombo,
       JyuryouTsuchisyoData: [],
       filterTextRiyosya: { riyosyaKey: 0 }, // 検索項目
-      filterTextShityoson: { shityosonKey: 0, shityoson:'指定なし'}, // 検索項目
-      year: moment().format('YYYY'),
-      month: moment().format('MM'),
-      date: moment().format('DD'),
+      filterTextShityoson: { shityosonKey: 0, shityoson: '指定なし' }, // 検索項目
+      year: dayjs().format('YYYY'),
+      month: dayjs().format('MM'),
+      date: dayjs().format('DD'),
       alphaSelect: 0,
       sortFlag: { kanaFlag: true, codeFlag: false, bangoFlag: false },
-    }
+    };
   },
   components: {
     HeaderServices,
@@ -423,26 +422,26 @@ export default {
     // 市町村コンボボックス
     this.shityosonCombo = [];
     this.shityosonCombo.push(
-        { 
-          key: 0,
-          text: '指定なし' 
-        },
-        {
-          key: 1,
-          text: '東経市' 
-        },
-        {
-          key: 2,
-          text: '西経市'
-        },
-        {
-          key: 3,
-          text: '南経市' 
-        },
-        {
-          key: 4,
-          text: '北経市' 
-        },
+      {
+        key: 0,
+        text: '指定なし',
+      },
+      {
+        key: 1,
+        text: '東経市',
+      },
+      {
+        key: 2,
+        text: '西経市',
+      },
+      {
+        key: 3,
+        text: '南経市',
+      },
+      {
+        key: 4,
+        text: '北経市',
+      }
     );
   },
   methods: {
@@ -453,9 +452,15 @@ export default {
       this.dialog_type = dialog_type;
       //受領日
       let picker = '';
-      if (dialog_type == 'juryobi') picker = this.year + '-' + this.month + '-' + this.date;
+      if (dialog_type == 'juryobi')
+        picker = this.year + '-' + this.month + '-' + this.date;
       if (dialog_type == 'insatsubi')
-        picker = this.insatsubi_year + '-' + this.insatsubi_month +'-' + this.insatsubi_date;
+        picker =
+          this.insatsubi_year +
+          '-' +
+          this.insatsubi_month +
+          '-' +
+          this.insatsubi_date;
 
       this.picker = picker;
       this.datepicker_dialog = true;
@@ -491,23 +496,32 @@ export default {
     // 請求月 3:前月 4:翌月
     calendarClick(type) {
       let changeDate = this.year + this.month + this.date;
-      let changeInsatsubiDate = this.insatsubi_year + this.insatsubi_month + this.insatsubi_date;
+      let changeInsatsubiDate =
+        this.insatsubi_year + this.insatsubi_month + this.insatsubi_date;
       if (type == 1) {
         // 受領日←選択時
-        this.month = moment(changeDate).subtract(1, 'days').format('MM');
-        this.date = moment(changeDate).subtract(1, 'days').format('DD');
+        this.month = dayjs(changeDate).subtract(1, 'days').format('MM');
+        this.date = dayjs(changeDate).subtract(1, 'days').format('DD');
       } else if (type == 2) {
         // 受領日→選択時
-        this.month = moment(changeDate).add(1, 'days').format('MM');
-        this.date = moment(changeDate).add(1, 'days').format('DD');
+        this.month = dayjs(changeDate).add(1, 'days').format('MM');
+        this.date = dayjs(changeDate).add(1, 'days').format('DD');
       } else if (type == 3) {
         // 印刷日←選択時
-        this.insatsubi_month = moment(changeInsatsubiDate).subtract(1, 'days').format('MM');
-        this.insatsubi_date = moment(changeInsatsubiDate).subtract(1, 'days').format('DD');
+        this.insatsubi_month = dayjs(changeInsatsubiDate)
+          .subtract(1, 'days')
+          .format('MM');
+        this.insatsubi_date = dayjs(changeInsatsubiDate)
+          .subtract(1, 'days')
+          .format('DD');
       } else if (type == 4) {
         // 印刷日→選択時
-        this.insatsubi_month = moment(changeInsatsubiDate).add(1, 'days').format('MM');
-        this.insatsubi_date = moment(changeInsatsubiDate).add(1, 'days').format('DD');
+        this.insatsubi_month = dayjs(changeInsatsubiDate)
+          .add(1, 'days')
+          .format('MM');
+        this.insatsubi_date = dayjs(changeInsatsubiDate)
+          .add(1, 'days')
+          .format('DD');
       }
     },
     /*********************
@@ -517,8 +531,7 @@ export default {
       if (e.selectedIndex != -1) {
         e.header = e.text;
         this.onRiyosya(e.text, e.selectedIndex);
-        e.text,
-        e.selectedIndex
+        e.text, e.selectedIndex;
       }
       let f = document.activeElement;
       f.blur();
@@ -530,8 +543,7 @@ export default {
       if (e.selectedIndex != -1) {
         e.header = e.text;
         this.onShityoson(e.text, e.selectedIndex);
-        e.text,
-        e.selectedIndex
+        e.text, e.selectedIndex;
       }
       let f = document.activeElement;
       f.blur();
@@ -602,17 +614,20 @@ export default {
      * 受領日の書き込み
      */
     registerJyuryoubi() {
-      let jyuryoubiYmd = new Date(this.year, Number(this.month) - 1, this.date)
+      let jyuryoubiYmd = new Date(this.year, Number(this.month) - 1, this.date);
       for (let i = 0; i < this.JyuryouTsuchisyoData.length; i++) {
-        if ((this.mainFlexGrid.getCellData(i, 10) === '〇') &&
-        ((this.mainFlexGrid.getCellData(i, 9) === null) ||
-        ((this.mainFlexGrid.getCellData(i, 9) === ' ')))) {
+        if (
+          this.mainFlexGrid.getCellData(i, 10) === '〇' &&
+          (this.mainFlexGrid.getCellData(i, 9) === null ||
+            this.mainFlexGrid.getCellData(i, 9) === ' ')
+        ) {
           // 丸がついているデータに受領日を表示
-          this.mainFlexGrid.setCellData(i, 9 ,jyuryoubiYmd);
+          this.mainFlexGrid.setCellData(i, 9, jyuryoubiYmd);
         }
 
         // 選択されている受領日を登録
-        this.JyuryouTsuchisyoData[i]['jyuymd'] = this.year + this.month + this.date;
+        this.JyuryouTsuchisyoData[i]['jyuymd'] =
+          this.year + this.month + this.date;
       }
     },
     /**************
@@ -672,44 +687,43 @@ export default {
      * グリッドのデザイン修正
      */
     gridDesignModify(flexGrid) {
- 
-    flexGrid.itemFormatter = function(panel,r,c,cell){
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
         // グリッド内共通スタイル
         let s = cell.style;
         s.color = sysConst.COLOR.fontColor;
         s.fontWeight = 'normal';
-        s.fontSize = '12px'
+        s.fontSize = '12px';
         // s.border = 'solid 1px';
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
           // ヘッダー上下中央寄せ
-          if((r == 0) || (r == 1) || (r == 2)){
+          if (r == 0 || r == 1 || r == 2) {
             s.display = 'flex';
-            s.alignItems ='center'
-            s.justifyContent ='center'
+            s.alignItems = 'center';
+            s.justifyContent = 'center';
           }
           // 印刷セル縦書き
-          if((r == 0) && (c == 10)){
+          if (r == 0 && c == 10) {
             s.writingMode = 'vertical-rl';
-            s.borderRight= 'none';
+            s.borderRight = 'none';
           }
           // 2行以上で表示する行に文字列を挿入
-          if ((r == 1) && (c == 3)) {
+          if (r == 1 && c == 3) {
             cell.innerHTML = 'サービスに要した<br/>費用の全体の額<br/>(A)';
           }
-          if ((r == 2) && (c == 4)) {
+          if (r == 2 && c == 4) {
             cell.innerHTML = '利用者負担<br/>(B)<br/>a+b';
           }
-          if ((r == 2) && (c == 5)) {
+          if (r == 2 && c == 5) {
             cell.innerHTML = '(本人分)<br/>a';
           }
-          if ((r == 2) && (c == 6)) {
+          if (r == 2 && c == 6) {
             cell.innerHTML = '(軽減等)<br/>b';
           }
-          if ((r == 1) && (c == 7)) {
+          if (r == 1 && c == 7) {
             cell.innerHTML = '特定障害者<br/>特別給付費<br/>(C)';
           }
-          if ((r == 1) && (c == 8)) {
+          if (r == 1 && c == 8) {
             cell.innerHTML = '代理受領額<br/>(A)-(B)+(C)';
           }
         }
@@ -721,22 +735,22 @@ export default {
           }
           if (c == 10) {
             s.backgroundColor = sysConst.COLOR.white;
-            s.borderRight= 'none';
+            s.borderRight = 'none';
           }
           // 文字の位置変更
-          if ((c == 1) || (c == 2)) {
+          if (c == 1 || c == 2) {
             s.textAlign = 'left';
-            s.paddingLeft = '4px'
+            s.paddingLeft = '4px';
           }
           for (let h = 3; h <= 8; h++) {
             // 3列目～8列目を右寄せ
             if (c == h) {
               s.textAlign = 'right';
-              s.paddingRight = '4px'
+              s.paddingRight = '4px';
             }
           }
         }
-      }
+      };
     },
     /**************
      * 並び順変更
@@ -755,7 +769,7 @@ export default {
         this.sortFlag.bangoFlag = true;
       }
 
-      this.onSort(type)
+      this.onSort(type);
     },
     /******************
      * ソートの実行
@@ -765,7 +779,7 @@ export default {
       // カナソート
       if (type == 1) {
         array.sort((a, b) => {
-          if (a.rnames !== "" && b.rnames !== "") {
+          if (a.rnames !== '' && b.rnames !== '') {
             if (a.rnames < b.rnames) {
               return -1;
             }
@@ -779,7 +793,7 @@ export default {
       // コードソート
       if (type == 2) {
         array.sort((a, b) => {
-          if (a.riyocode !== "" && b.riyocode !== "") {
+          if (a.riyocode !== '' && b.riyocode !== '') {
             if (a.riyocode < b.riyocode) {
               return -1;
             }
@@ -793,7 +807,7 @@ export default {
       // 受給者番号
       if (type == 3) {
         array.sort((a, b) => {
-          if (a.jyukyuno !== "" && b.jyukyuno !== "") {
+          if (a.jyukyuno !== '' && b.jyukyuno !== '') {
             if (a.jyukyuno < b.jyukyuno) {
               return -1;
             }
@@ -814,7 +828,7 @@ export default {
      */
     onselectedIndexChanged(s) {
       // 印刷用
-      console.log(s.selectedIndex)
+      console.log(s.selectedIndex);
       if (s.selectedIndex == 0 || s.selectedIndex == 1) {
         this.selectAll(s.selectedIndex);
       }
@@ -829,8 +843,7 @@ export default {
         for (let i = 0; i < this.allData.length; i++) {
           this.mainFlexGrid.setCellData(i, 10, mark);
         }
-      }
-      else {
+      } else {
         for (let i = 0; i < this.allData.length; i++) {
           this.mainFlexGrid.setCellData(i, 10, ' ');
           this.mainFlexGrid.setCellData(i, 9, ' ');
@@ -849,7 +862,7 @@ export default {
     /*************
      * 利用者のフィルタリング
      */
-   onRiyosya(text, key) {
+    onRiyosya(text, key) {
       // フィルタリングの実施
       this.filterTextRiyosya = { riyosyaKey: key, riyosya: text };
       this.mainFlexGrid.itemsSource = [];
@@ -870,20 +883,24 @@ export default {
       let array = [];
       for (let i = 0; i < this.allData.length; i++) {
         // 検索条件がないとき
-        if (this.filterTextRiyosya.riyosyaKey == 0 &&
-            this.filterTextShityoson.shityosonKey == 0){
+        if (
+          this.filterTextRiyosya.riyosyaKey == 0 &&
+          this.filterTextShityoson.shityosonKey == 0
+        ) {
           array.push(this.allData[i]);
         } else {
           if (
             // 利用者コンボボックス
-            ((this.filterTextRiyosya.riyosyaKey == 0) ||
-            (this.filterTextRiyosya.riyosyaKey == 1 && this.allData[i]['nyukyo'] == 1) ||
-            (this.filterTextRiyosya.riyosyaKey == 2 && this.allData[i]['taikyo'] == 1)) &&
+            (this.filterTextRiyosya.riyosyaKey == 0 ||
+              (this.filterTextRiyosya.riyosyaKey == 1 &&
+                this.allData[i]['nyukyo'] == 1) ||
+              (this.filterTextRiyosya.riyosyaKey == 2 &&
+                this.allData[i]['taikyo'] == 1)) &&
             // 市町村コンボボックス
-            ((this.allData[i]['sityoryaku'].indexOf(
+            (this.allData[i]['sityoryaku'].indexOf(
               this.filterTextShityoson.shityoson
-            ) != -1 ) ||
-            (this.filterTextShityoson.shityosonKey == 0))
+            ) != -1 ||
+              this.filterTextShityoson.shityosonKey == 0)
           ) {
             array.push(this.allData[i]);
           }
@@ -949,8 +966,8 @@ export default {
         }
       });
       return get;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -965,7 +982,7 @@ div#JyuryouTsuchisyo {
   max-width: none;
   width: auto;
   .sort_menu {
-  min-width: 1300px;
+    min-width: 1300px;
   }
   .wj-flexgrid {
     width: auto;
@@ -975,7 +992,7 @@ div#JyuryouTsuchisyo {
   }
   .user-info {
     label {
-      margin-right: 4px!important;
+      margin-right: 4px !important;
     }
   }
   .no-flex-grow {

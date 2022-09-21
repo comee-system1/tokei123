@@ -9,6 +9,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: true,                     // 利用者負担Grid表示Flag
       serviceGridFlag:       true,                     // サービス種別Grid表示Flag
       seikyugakuTabFlag:     true,                     // タブ表示フラグ
+      nittyuGridFlag:        false,                   // 特定障害者Grid表示Flag
       tokuteiSyogaiGridFlag: true,                     // 特定障害者Grid表示Flag
       // 受給者Grid
       ketteiName:            '支給決定障害者等氏名',     //支給決定障害者等氏名 or 給付決定保護者氏名 or 通所給付決定保護者氏名
@@ -34,6 +35,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: true,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         true,
@@ -52,6 +54,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: true,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        true,
       tokuteiSyogaiGridFlag: true,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         true,
@@ -60,22 +63,23 @@ kyuhumeisaiPtn.push(
       todofukenFlag:         false,
       jyoseijichitaiFlag:    true,
       genmensotiFlag:        false,
-      genmenTaisyosyaFlag:   false,
+      genmenTaisyosyaFlag:   true,
       syogaiShienFlag:       true,
       seikyugakuType:        3,
-      tokuteiNissuFlag:      true
+      tokuteiNissuFlag:      false
     },
     {
       // C 計画相談支援給付費明細書
       riyousyaHutanGridFlag: false,
       serviceGridFlag:       false,
       seikyugakuTabFlag:     false,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         false,
       shogaijiName:          '',
       tourokuJigyosyoFlag:   false,
-      todofukenFlag:         true,
+      todofukenFlag:         false,
       jyoseijichitaiFlag:    false,
       genmensotiFlag:        false,
       genmenTaisyosyaFlag:   false,
@@ -88,6 +92,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: false,
       serviceGridFlag:       false,
       seikyugakuTabFlag:     false,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         false,
@@ -106,6 +111,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: false,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         false,
@@ -124,6 +130,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: true,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: true,
       ketteiName:            '給付決定保護者氏名',
       syougaijiFlag:         true,
@@ -135,13 +142,14 @@ kyuhumeisaiPtn.push(
       genmenTaisyosyaFlag:   false,
       syogaiShienFlag:       false,
       seikyugakuType:        3,
-      tokuteiNissuFlag:      false
+      tokuteiNissuFlag:      true
     },
     {
       // E-2 障害児通所給付費等明細書
       riyousyaHutanGridFlag: true,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '通所給付決定保護者氏名',
       syougaijiFlag:         true,
@@ -160,6 +168,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: false,
       serviceGridFlag:       false,
       seikyugakuTabFlag:     false,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '給付決定保護者氏名',
       syougaijiFlag:         false,
@@ -178,6 +187,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: false,
       serviceGridFlag:       false,
       seikyugakuTabFlag:     false,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: false,
       ketteiName:            '給付決定保護者氏名',
       syougaijiFlag:         false,
@@ -196,6 +206,7 @@ kyuhumeisaiPtn.push(
       riyousyaHutanGridFlag: true,
       serviceGridFlag:       true,
       seikyugakuTabFlag:     true,
+      nittyuGridFlag:        false,
       tokuteiSyogaiGridFlag: true,
       ketteiName:            '支給決定障害者等氏名',
       syougaijiFlag:         true,

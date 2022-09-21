@@ -16,4 +16,10 @@ module.exports = defineConfig({
       }
     }
   },
+  pages: {
+    index: {
+      entry: "src/main.js",
+      title: "福祉見聞録",
+    }
+  }
 })

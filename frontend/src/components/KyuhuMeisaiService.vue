@@ -26,9 +26,7 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
-      jyoseijichitaiFlag: true,
       mainFlexGrid:[],
-      serviceData:[],
     };
   },
   methods: {
@@ -36,8 +34,13 @@ export default {
       this.mainFlexGrid = flexGrid;
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
-      // 初期表示の空配列を設定
-      this.setEnptyData(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得したデータをセット
+        flexGrid.itemsSource = this.$parent.serviceData;
+      } else {
+        // 初期表示の空配列を設定
+        this.setEnptyData(flexGrid);
+      }
       // セルのサイズ修正
       this.settingCell(flexGrid);
       // セルのマージ
@@ -74,9 +77,9 @@ export default {
      * Grid配列の初期表示
      */
     setEnptyData(flexGrid){
-      let meisaiListData = [];
+      let serviceData = [];
       for (let i = 0; i < 3; i++){
-        meisaiListData.push(
+        serviceData.push(
           {
             serviceNo:         '',
             sYmdTtl:           '開始年月日',
@@ -90,7 +93,7 @@ export default {
           }
         )
       }
-      flexGrid.itemsSource = meisaiListData;
+      flexGrid.itemsSource = serviceData;
     },
     /**
      * セルのマージ
@@ -98,7 +101,7 @@ export default {
     mergeCell(flexGrid) {
       let mm = new wjGrid.MergeManager();
       let dataLength; 
-      if(flexGrid.itemsSource.length < 3) {
+      if (flexGrid.itemsSource.length < 3) {
         dataLength = 3;
       } else {
         dataLength = flexGrid.itemsSource.length;
@@ -167,31 +170,6 @@ export default {
           }
         }
       };
-    },
-    /**
-     * 親コンポーネントから受けとったデータを加工し表示
-     */
-    setServiceData(serviceData){
-      let meisaiListData = [];
-      
-      for (let i = 0; i < serviceData.length; i++){
-        meisaiListData.push(
-          {
-            serviceNo:         serviceData[i]['serviceNo'],
-            sYmdTtl:           '開始年月日',
-            sYmd:              serviceData[i]['sYmd'],
-            eYmdTtl:           '終了年月日',
-            eYmd:              serviceData[i]['eYmd'],
-            riyouNissuuTtl:    '利用日数',
-            riyouNissuu:       serviceData[i]['riyouNissuu'],
-            nyuinNissuuTtl:    '入院日数',
-            nyuinNissuu:       serviceData[i]['nyuinNissuu'],
-          }
-        )
-      }
-      this.mainFlexGrid.itemsSource = meisaiListData;
-      this.settingCell(this.mainFlexGrid);
-      this.mergeCell(this.mainFlexGrid);
     },
   }
 }

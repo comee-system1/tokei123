@@ -196,6 +196,7 @@
           :allowSorting="false"
           :allowDragging="false"
           :selectionMode="'Cell'"
+          :showMarquee="true"
           :isReadOnly="true"
           :initialized="onInitializekeikakuIcrnGrid"
           :formatItem="onFormatItemkeikakuIcrn"
@@ -1167,6 +1168,11 @@ div#monitoringYotei {
     .wj-filter-on {
       color: blue;
       border-color: lightgray;
+    }
+    .wj-glyph-filter {
+      // margin-top: 10px;
+      width: 3px;
+      height: 3px;
     }
   }
 

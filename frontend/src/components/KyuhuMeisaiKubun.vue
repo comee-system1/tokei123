@@ -28,11 +28,16 @@ export default {
   },
   methods: {
     onInitialized(flexGrid) {
+      
       this.mainFlexGrid = flexGrid;
       // グリッドの選択を無効にする
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得データの挿入
+        this.setKubunData(flexGrid);
+      }
       // セルのマージ
       this.mergeCell(flexGrid);
       // セルのデザイン修正
@@ -54,11 +59,23 @@ export default {
       }
       flexGrid.rowHeaders.columns.defaultSize = 90;
       flexGrid.columns.defaultSize = 90;
-      console.log(this.$parent.displaySetting[1].genmensotiFlag )
       // 減免措置FragがFALSEの場合、就労継続支援A型事業者負担減免措置実施を非表示
       if (this.$parent.displaySetting[1].genmensotiFlag === false) {
         flexGrid.rows[1].visible = false;
       } 
+    },
+    /**
+     * 取得したデータを挿入
+     */
+    setKubunData(flexGrid) {
+      // 地域区分
+      let pkmk = this.$parent.kyuhumeisaiApiData.kojin;
+      flexGrid.setCellData(0, 0, pkmk.kyutiname);
+
+      // 就労継続支援
+      if (this.$parent.displaySetting[1].genmensotiFlag) {
+        flexGrid.setCellData(1, 0, pkmk.agm_jigyoumu);
+      }
     },
     /**
      * セルのマージ
@@ -154,23 +171,7 @@ export default {
           }
         }
       };
-    },
-    /**
-     * 親コンポーネントで選択したユーザーデータを加工し表示
-     */
-    setKubunData(kubunData){
-      // API取得時修正
-      // 地域区分
-      console.log(kubunData)
-      this.mainFlexGrid.setCellData(0, 0, kubunData['tiikikubun']);
-
-      
-      // 就労継続支援
-      // API取得時修正
-      if (this.$parent.displaySetting[1].genmensotiFlag) {
-        this.mainFlexGrid.setCellData(1, 0, kubunData['kinroukeizokushien']);
-      }
-    },
+    }
   }
 }
 </script>

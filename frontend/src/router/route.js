@@ -10,7 +10,12 @@ import TemporaryPage from '../views/TemporaryPage.vue'
 import SampleLogin from '../views/SampleLogin.vue'
 import SampleAuth from '../views/SampleAuth.vue'
 import SamplePdf from '../views/SamplePdf.vue'
-
+// 接続確認後削除
+import ApiConnectTest from '../views/ApiConnectTest.vue'
+import SIENT from '../views/ApiConnect/SIENT.vue'
+import SIENP from '../views/ApiConnect/SIENP.vue'
+import SIENC from '../views/ApiConnect/SIENC.vue'
+// 削除ここまで
 import ApiTemporaryPage from '../views/ApiTemporaryPage.vue'
 import KobetsuRiyouTouroku from '../views/KobetsuRiyouTouroku.vue'
 import ReceptSyukei from '../views/ReceptSyukei.vue'
@@ -215,6 +220,26 @@ const routes = [{
         name: 'pdfのみ',
         parentName: '親の仮のページ2',
         component: SamplePdf,
+    },
+    {
+        path: '/ApiConnectTest',
+        name: 'API接続確認',
+        component: ApiConnectTest,
+    },
+    {
+        path: '/ApiConnect/SIENT',
+        name: 'API接続確認SIENT',
+        component: SIENT,
+    },
+    {
+        path: '/ApiConnect/SIENP',
+        name: 'API接続確認SIENP',
+        component: SIENP,
+    },
+    {
+        path: '/ApiConnect/SIENC',
+        name: 'API接続確認SIENC',
+        component: SIENC,
     },
 ]
 

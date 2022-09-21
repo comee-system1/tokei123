@@ -2523,7 +2523,7 @@ div#uketukeTouroku {
     min-width: 420px;
     max-width: 420px;
     min-height: 500px;
-    height: 88vh;
+    height: 82vh;
     border: thin solid;
     border-color: green;
 

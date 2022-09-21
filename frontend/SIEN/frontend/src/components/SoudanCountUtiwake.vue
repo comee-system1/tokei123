@@ -115,7 +115,7 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-btn class="searchBtn ml-1" @click="searchClicked"> 検索 </v-btn>
+        <v-btn class="searchBtn mr-1" @click="searchClicked"> 検索 </v-btn>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <MdSelect ref="mdselect" @dateSelect="setMd"></MdSelect>
@@ -461,11 +461,13 @@ export default {
           colIndex,
           this.headerList[colIndex].title_list1
         );
-      }
-      if (this.selSyukeiIndex == 0) {
-        flexGrid.columnFooters.setCellData(0, 1, '件数');
-      } else {
-        flexGrid.columnFooters.setCellData(0, 1, '人数');
+        if (colIndex == 1) {
+          if (this.selSyukeiIndex == 0) {
+            flexGrid.columnFooters.setCellData(0, colIndex, '件数');
+          } else {
+            flexGrid.columnFooters.setCellData(0, colIndex, '人数');
+          }
+        }
       }
     },
     createsienNaiyouGridHeader(flexGrid) {
@@ -497,11 +499,13 @@ export default {
           colIndex,
           this.headerList[colIndex].title_list1
         );
-      }
-      if (this.selSyukeiIndex == 0) {
-        flexGrid.columnFooters.setCellData(0, 1, '件数');
-      } else {
-        flexGrid.columnFooters.setCellData(0, 1, '人数');
+        if (colIndex == 1) {
+          if (this.selSyukeiIndex == 0) {
+            flexGrid.columnFooters.setCellData(0, colIndex, '件数');
+          } else {
+            flexGrid.columnFooters.setCellData(0, colIndex, '人数');
+          }
+        }
       }
     },
     onItemsSourceChanged(flexGrid) {
@@ -820,7 +824,7 @@ export default {
     },
     syukeiclick(val) {
       this.selSyukeiIndex = val;
-      this.setViewData(false);
+      this.setViewData(true);
     },
     setMd(param1) {
       //paramには日付と曜日(３と"金")が入る

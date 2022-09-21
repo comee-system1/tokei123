@@ -33,6 +33,10 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得データの挿入
+        this.setJigyosyoData(flexGrid);
+      }
       // セルのマージ
       this.mergeCell(flexGrid);
       // セルのデザイン修正
@@ -51,6 +55,21 @@ export default {
       }
       flexGrid.rowHeaders.columns.defaultSize = 200;
       flexGrid.columns.defaultSize = 30;
+    },
+    /**
+     * 親コンポーネントで選択したユーザーデータを加工し表示
+     */
+    setJigyosyoData(flexGrid) {
+      // 受給者証番号を分割して表示
+      let splitCode = [];
+      let pkdj = this.$parent.kyuhumeisaiData.jigyosyo;
+      splitCode = pkdj.jimusyoBango.split('');
+      for (let i = 0; i < splitCode.length -1; i++) {
+        // 暫定上記繰り返しの-1は後に修正
+        flexGrid.setCellData(0, i, splitCode[i]);
+      }
+      // // 事業者名を表示
+      flexGrid.setCellData(1, 0, pkdj.serviceJigyo);
     },
     /**
      * セルのマージ
@@ -88,7 +107,7 @@ export default {
         // ヘッダーデザイン修正
         if (panel.cellType == wjGrid.CellType.RowHeader) {
           if ((r == 0) && (c == 0)) {
-           if(_self.$parent.displaySetting[1].tourokuJigyosyoFlag) {
+           if (_self.$parent.displaySetting[1].tourokuJigyosyoFlag) {
               cell.innerHTML = '登録事業所番号';
             } else {
               cell.innerHTML = '指定事業所番号';
@@ -112,22 +131,7 @@ export default {
           }
         }
       };
-    },
-    /**
-     * 親コンポーネントで選択したユーザーデータを加工し表示
-     */
-    setJigyosyoData(jigyosyoData){
-      // 受給者証番号を分割して表示
-      let jimusyoBangoeSplit = [];
-      jimusyoBangoeSplit = jigyosyoData['jimusyoBango'].split('');
-      for (let i = 0; i < jimusyoBangoeSplit.length -1; i++) {
-        // 暫定上記繰り返しの-1は後に修正
-        this.mainFlexGrid.setCellData(0, i, jimusyoBangoeSplit[i]);
-      }
-
-      // // 事業者名を表示
-      this.mainFlexGrid.setCellData(1, 0, jigyosyoData['serviceJigyo']);
-    },
+    }
   }
 }
 </script>

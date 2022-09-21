@@ -33,6 +33,10 @@ export default {
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // セルの作成と文字列挿入
       this.createCell(flexGrid);
+      if (this.$parent.dataSetFlag) {
+        // 取得データの挿入
+        this.setJyukyusyaData(flexGrid);
+      }
       // セルのマージ
       this.mergeCell(flexGrid);
       // セルのデザイン修正
@@ -55,6 +59,25 @@ export default {
       if (this.$parent.displaySetting[1].syougaijiFlag === false) {
         flexGrid.rows[2].visible = false;
       } 
+    },
+    /**
+     * 親コンポーネントで選択したユーザーデータを加工し表示
+     */
+    setJyukyusyaData(flexGrid) {
+      // 受給者証番号を分割して表示
+      let splitCode = [];
+      let pkdj = this.$parent.kyuhumeisaiData.jyukyusya
+      splitCode = pkdj.jyukyuno.split('');
+      for (let i = 0; i < splitCode.length; i++) {
+        flexGrid.setCellData(0, i, splitCode[i]);
+      }
+
+      // 支給決定障害者氏名を表示
+      flexGrid.setCellData(1, 0, pkdj.jyukyusyaName);
+      if (this.$parent.displaySetting[1].syougaijiFlag === true) {
+        // 支給決定に係る障害児氏名を表示(仮)
+        flexGrid.setCellData(2, 0, pkdj.syogaijiName);
+      }
     },
     /**
      * セルのマージ
@@ -130,25 +153,7 @@ export default {
           // }
         }
       };
-    },
-    /**
-     * 親コンポーネントで選択したユーザーデータを加工し表示
-     */
-    setJyukyusyaData(jyukyusyaData){
-      // 受給者証番号を分割して表示
-      let jyukyusyaCodeSplit = [];
-      jyukyusyaCodeSplit = jyukyusyaData['jyukyuno'].split('');
-      for (let i = 0; i <jyukyusyaCodeSplit.length; i++) {
-        this.mainFlexGrid.setCellData(0, i, jyukyusyaCodeSplit[i]);
-      }
-
-      // 支給決定障害者氏名を表示
-      this.mainFlexGrid.setCellData(1, 0, jyukyusyaData['names']);
-      if (this.syougaijiFlag === true) {
-        // 支給決定に係る障害児氏名を表示(仮)
-        this.mainFlexGrid.setCellData(2, 0, '東経 太郎');
-      }
-    },
+    }
   }
 }
 </script>
