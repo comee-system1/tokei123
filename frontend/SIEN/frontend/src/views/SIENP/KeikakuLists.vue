@@ -15,7 +15,7 @@
             </v-tab>
           </v-tabs>
         </v-col>
-        <v-col v-if="tab == 'idea' || tab == 'plan'">
+        <v-col v-if="tab == 'idea' || tab == 'plan' || tab == 'state'">
           <v-row class="yosikiMenu" no-gutters>
             <v-col cols="1">
               <label> 様式 </label>
@@ -23,7 +23,7 @@
             <v-col cols="10" class="ml-1">
               <v-tabs height="20">
                 <v-tab
-                  v-for="yosikiValue in yosikiMenu"
+                  v-for="yosikiValue in yosikiArray"
                   :key="yosikiValue.key"
                   @change="tabsYosikiChange(yosikiValue.key)"
                   >{{ yosikiValue.name }}</v-tab
@@ -39,6 +39,9 @@
         <v-tab-item value="KeikakuIcrn">
           <KeikakuIcrn></KeikakuIcrn>
         </v-tab-item>
+        <v-tab-item value="state">
+          <AttendeeState></AttendeeState>
+        </v-tab-item>
         <v-tab-item value="assessment">
           <!-- <SoudanCount></SoudanCount> -->
           Tab 2 Content assessment
@@ -46,9 +49,8 @@
         <v-tab-item value="basic"> Tab 3 Content assessment </v-tab-item>
         <v-tab-item value="idea" eager>
           <div v-if="tab == 'idea'">
-            <KeikakuIdea v-show="ideaFlag == 'create'"></KeikakuIdea>
-            <KeikakuWeek v-show="ideaFlag == 'weekplan'"></KeikakuWeek>
-            <KeikakuWeek3 v-show="ideaFlag == 'weekplan3'"></KeikakuWeek3>
+            <KeikakuIdea v-if="ideaFlag == 'create'"></KeikakuIdea>
+            <KeikakuWeek3 v-if="ideaFlag == 'weekplan3'"></KeikakuWeek3>
           </div>
         </v-tab-item>
         <v-tab-item value="plan">
@@ -65,6 +67,7 @@
 <script>
 import ls from '@/utiles/localStorage';
 import KeikakuIcrn from '../../components/KeikakuLists.vue';
+import AttendeeState from '../../components/AttendeeState.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
 import KeikakuPlan from '../../components/KeikakuPlan.vue';
 import KeikakuWeek from '../../components/KeikakuWeek.vue';
@@ -76,10 +79,30 @@ export default {
   // },
   components: {
     KeikakuIcrn, //SoudanCount, SoudanCountUtiwake
+    AttendeeState,
     KeikakuIdea,
     KeikakuPlan,
     KeikakuWeek,
     KeikakuWeek3,
+  },
+  computed: {
+    yosikiArray() {
+      let yosikiMenu = [];
+      for (let i = 0; i < this.yosikiMenu.length; i++) {
+        if (
+          (this.tab == 'state' && this.yosikiMenu[i].group == 2) ||
+          ((this.tab == 'idea' || this.tab == 'plan') &&
+            this.yosikiMenu[i].group == 1)
+        ) {
+          yosikiMenu.push({
+            key: this.yosikiMenu[i].key,
+            name: this.yosikiMenu[i].name,
+            group: this.yosikiMenu[i].group,
+          });
+        }
+      }
+      return yosikiMenu;
+    },
   },
   data: function () {
     return {
@@ -90,29 +113,50 @@ export default {
         {
           key: 'create',
           name: '計画案作成',
+          group: 1,
         },
         {
-          key: 'weekplan',
+          key: 'weekplan3',
           name: '週間計画表',
+          group: 1,
+        },
+
+        {
+          key: 'basic',
+          name: '基本情報',
+          group: 2,
+        },
+        {
+          key: 'present',
+          name: '現在の生活',
+          group: 2,
         },
       ],
       menuItem: [
         { name: '計画一覧', href: '#KeikakuIcrn', hrefval: 'KeikakuIcrn' },
+
         {
-          name: 'アセスメント',
-          href: '#assessment',
-          hrefval: 'assessment',
+          name: '申請者の状況',
+          href: '#state',
+          hrefval: 'state',
         },
-        {
-          name: '基本情報',
-          href: '#basic',
-          hrefval: 'basic',
-        },
+
+        // {
+        //   name: 'アセスメント',
+        //   href: '#assessment',
+        //   hrefval: 'assessment',
+        // },
+        // {
+        //   name: '基本情報',
+        //   href: '#basic',
+        //   hrefval: 'basic',
+        // },
         {
           name: '計画案作成',
           href: '#idea',
           hrefval: 'idea',
         },
+
         {
           name: '計画作成',
           href: '#plan',

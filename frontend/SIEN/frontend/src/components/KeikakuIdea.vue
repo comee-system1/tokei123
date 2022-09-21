@@ -306,7 +306,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import UserList from './UserList.vue';
 import keikakuideaIkou from './KeikakuIdeaIkou.vue';
@@ -340,11 +340,11 @@ export default {
       datepicker_dialog: false,
       picker: '',
       getYm:
-        moment().format('YYYY') +
+        dayjs().format('YYYY') +
         '年' +
-        moment().format('MM') +
+        dayjs().format('MM') +
         '月' +
-        moment().format('DD') +
+        dayjs().format('DD') +
         '日',
       keikakuKubun: [
         { id: 0, name: 'サービス等利用計画' },
@@ -390,15 +390,15 @@ export default {
     },
     inputCalendarClick() {
       this.picker =
-        moment().format('YYYY') +
+        dayjs().format('YYYY') +
         '-' +
-        moment().format('MM') +
+        dayjs().format('MM') +
         '-' +
-        moment().format('DD');
+        dayjs().format('DD');
       this.datepicker_dialog = true;
     },
     monthSelect() {
-      this.getYm = moment(this.picker).format('YYYY年MM月DD日');
+      this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
