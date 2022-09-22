@@ -180,6 +180,8 @@
 <script>
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wjcGridFilter from '@grapecity/wijmo.grid.filter';
+import sysConst from '@/utiles/const';
+
 export default {
   // props: {
   //   selectedData: Object, // 検索条件等
@@ -301,6 +303,9 @@ export default {
             e.cell.style.textAlign = 'left';
             e.cell.style.justifyContent = 'left';
             e.cell.style.alignItems = 'left';
+          }
+          if (e.col <= 4) {
+            e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
         }
       });
