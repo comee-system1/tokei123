@@ -134,7 +134,7 @@
               </v-btn>
               <v-navigation-drawer
                 v-model="drawer"
-                absolute
+                fixed
                 temporary
                 right
                 hide-overlay
@@ -696,8 +696,6 @@ export default {
         },
       ],
       drawer: false,
-      aaa: 20,
-      bbb: 20,
     };
   },
   mounted() {},

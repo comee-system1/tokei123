@@ -299,11 +299,11 @@ export default {
             },
             {
               name: '契約報告書',
-              link: '/TemporaryPage',
+              link: '/KeiyakuHokoku',
             },
             {
               name: 'アセスメント',
-              link: '/TemporaryPage',
+              link: '/AssessmentInput',
             },
             {
               name: '計画作成',
