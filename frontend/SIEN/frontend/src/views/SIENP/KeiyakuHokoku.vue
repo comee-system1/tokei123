@@ -87,7 +87,7 @@
           id="keiyakuGrid"
           :itemsSource="viewData"
           :autoClipboard="false"
-          :selectionMode="'1'"
+          :selectionMode="'Row'"
           :headersVisibility="'Column'"
           :allowAddNew="false"
           :allowDelete="false"
@@ -174,6 +174,311 @@
         </wj-flex-grid>
       </div>
     </v-container>
+
+    <v-dialog v-model="contactDialog" :width="800" class="contactDialogArea">
+      <v-card>
+        <v-toolbar dark color="primary" height="32">
+          <v-toolbar-title class="text-caption">契約報告書作成</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn icon dark @click="contactDialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+      </v-card>
+      <v-card class="pa-2" tile flat>
+        <div class="history_menu pa-2" v-bind:class="{ 'is-active': open }">
+          <wj-flex-grid
+            id="serviceHistoryGrid"
+            :selectionMode="'Row'"
+            :headersVisibility="'Column'"
+            :alternatingRowStep="0"
+            :autoGenerateColumns="false"
+            :allowDragging="false"
+            :allowResizing="false"
+            :allowSorting="false"
+            :allowMerging="'Cells'"
+            :isReadOnly="true"
+            :showBandedRows="false"
+            :initialized="onInitializeService"
+            :itemsSourceChanged="onInitializeServiceChanged"
+            :itemsSource="viewDataHistory"
+          >
+            <wj-flex-grid-column
+              :header="'開始日'"
+              binding="startHistoryDate"
+              align="center"
+              valign="middle"
+              width="1*"
+              :isReadOnly="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              :header="'終了日'"
+              binding="endHistoryDate"
+              align="center"
+              valign="middle"
+              width="1*"
+              :isReadOnly="true"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </div>
+        <v-card class="d-flex justify-start" flat tile>
+          <v-card
+            outlined
+            tile
+            color="primary"
+            dark
+            width="120"
+            class="text-center label text-caption"
+          >
+            利用者名
+          </v-card>
+          <v-card
+            width="650"
+            class="text-caption lightYellow"
+            elevation="0"
+            outlined
+            tile
+            >{{ userName }}
+          </v-card>
+        </v-card>
+        <v-card class="d-flex justify-start mt-1" flat tile>
+          <v-card
+            outlined
+            tile
+            color="primary"
+            dark
+            width="120"
+            class="text-center label text-caption"
+          >
+            相談事業者
+          </v-card>
+          <v-card
+            width="140"
+            class="text-caption lightYellow text-center"
+            elevation="0"
+            outlined
+            tile
+            >{{ jyukyusyaCode }}
+          </v-card>
+          <v-card
+            width="510"
+            class="text-caption lightYellow"
+            elevation="0"
+            outlined
+            tile
+            >{{ jyukyusyaJigyosyo }}
+          </v-card>
+        </v-card>
+        <v-card class="d-flex justify-start mt-1" flat tile>
+          <v-card
+            outlined
+            tile
+            color="primary"
+            dark
+            width="120"
+            class="text-center label text-caption"
+          >
+            サービス内容
+          </v-card>
+          <v-card
+            width="40"
+            class="text-caption lightYellow text-center"
+            elevation="0"
+            outlined
+            tile
+            >{{ serviceNumber }}
+          </v-card>
+          <v-card
+            width="610"
+            class="text-caption lightYellow"
+            elevation="0"
+            outlined
+            tile
+            >{{ serviceDetail }}
+          </v-card>
+        </v-card>
+        <div class="pa-4 bgColor mt-1">
+          <v-card
+            class="d-flex justify-start mt-1"
+            flat
+            tile
+            color="transparent"
+          >
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+              color="transparent"
+              dark
+            >
+              受給者番号
+            </v-card>
+            <v-card
+              width="140"
+              class="text-caption lightYellow text-center"
+              elevation="0"
+              outlined
+              tile
+              >{{ jyukyusyaBango }}
+            </v-card>
+          </v-card>
+          <v-card
+            class="d-flex justify-start mt-1"
+            flat
+            tile
+            color="transparent"
+          >
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+              color="transparent"
+              dark
+            >
+              支給決定障害者<br />(保護者)
+            </v-card>
+            <v-card
+              width="300"
+              height="24"
+              class="text-caption lightYellow"
+              elevation="0"
+              outlined
+              tile
+              >{{ jyukyusyaBango }}
+            </v-card>
+          </v-card>
+          <v-card
+            class="d-flex justify-start mt-1"
+            flat
+            tile
+            color="transparent"
+          >
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+              color="transparent"
+              dark
+            >
+              児童氏名
+            </v-card>
+            <v-card
+              width="300"
+              height="24"
+              class="text-caption lightYellow"
+              elevation="0"
+              outlined
+              tile
+              >{{ jidosimei }}
+            </v-card>
+          </v-card>
+        </div>
+        <div class="pa-4 bgBorder mt-1">
+          <v-card class="d-flex justify-start mt-1" flat tile>
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+            >
+              契約締結
+            </v-card>
+            <v-card
+              width="140"
+              class="text-caption text-center"
+              elevation="0"
+              outlined
+              tile
+              color="primary"
+              dark
+              >契約期間始期
+            </v-card>
+            <v-card
+              elevation="0"
+              width="160"
+              outlined
+              tile
+              class="text-center label text-caption ml-1"
+            >
+              {{ keiyakukaisi }}
+
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
+            <v-card elevation="0" tile class="label text-caption ml-auto">
+              <v-btn small v-on:click="open = !open">履歴参照</v-btn>
+            </v-card>
+          </v-card>
+          <v-card class="d-flex justify-start mt-1" flat tile>
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+            >
+              契約終了
+            </v-card>
+            <v-card
+              width="140"
+              class="text-caption text-center"
+              elevation="0"
+              outlined
+              tile
+              color="primary"
+              dark
+              >契約期間終期
+            </v-card>
+            <v-card
+              elevation="0"
+              width="160"
+              outlined
+              tile
+              class="text-center label text-caption ml-1"
+            >
+              {{ keiyakusyuryo }}
+
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
+          </v-card>
+          <v-card class="d-flex justify-start mt-1" flat tile>
+            <v-card
+              elevation="0"
+              width="120"
+              class="text-center label text-caption"
+            >
+              &nbsp;
+            </v-card>
+            <v-card
+              width="140"
+              class="text-caption text-center pt-6"
+              elevation="0"
+              outlined
+              tile
+              color="primary"
+              dark
+              height="80"
+              >終了理由
+            </v-card>
+            <v-textarea
+              dense
+              tile
+              outlined
+              elevation="0"
+              class="ml-1"
+              name="syuryoriyu"
+              height="80"
+            ></v-textarea>
+          </v-card>
+          <v-row>
+            <v-col><v-btn small>削除</v-btn></v-col>
+            <v-col class="text-end"><v-btn small>登録</v-btn></v-col>
+          </v-row>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -181,6 +486,7 @@
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wjcGridFilter from '@grapecity/wijmo.grid.filter';
 import sysConst from '@/utiles/const';
+import * as wjGrid from '@grapecity/wijmo.grid';
 
 export default {
   // props: {
@@ -194,6 +500,7 @@ export default {
     return {
       filter: '',
       onService: '',
+      contactDialog: false,
       service: [
         {
           id: 1,
@@ -240,6 +547,17 @@ export default {
       ],
       viewData: [],
       viewDataDefault: [],
+      userName: '',
+      jyukyusyaCode: '',
+      jyukyusyaBango: '',
+      jyukyusyaJigyosyo: '',
+      serviceNumber: '',
+      serviceDetail: '',
+      jidosimei: '',
+      keiyakukaisi: '',
+      keiyakusyuryo: '',
+      open: false,
+      viewDataHistory: [],
     };
   },
 
@@ -256,6 +574,30 @@ export default {
     onAlphabetical() {
       this.userFilter();
     },
+    onInitializeService(flexGrid) {
+      let viewDataHistory = [];
+      viewDataHistory.push({
+        startHistoryDate: '2022/04/27',
+        endHistoryDate: '',
+      });
+      viewDataHistory.push({
+        startHistoryDate: '2022/04/27',
+        endHistoryDate: '2022/04/29',
+      });
+
+      this.viewDataHistory = viewDataHistory;
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          console.log(ht);
+          _self.open = false;
+        }
+      });
+    },
+    onInitializeServiceChanged(flexGrid) {
+      flexGrid.select(-1, -1);
+    },
     onInitialized(flexGrid) {
       let viewData = [];
       viewData.push({
@@ -264,39 +606,53 @@ export default {
         name: '熊本 忠雄',
         kana: 'ｸﾏﾓﾄﾀﾀﾞｵ',
         jyukyusyaBango: '1102580123',
+        jyukyusyaJigyosyo: '相談支援事業所 ひなぎく',
         hogosya: '長崎 和夫',
         keiyakukaisi: '',
         keiyakusyuryo: '',
         syuryoriyu: '',
         print: '',
+        serviceNumber: 52,
+        serviceDetail: '計画相談支援',
+        jidosimei: '',
       });
       viewData.push({
         city: '東経市',
         code: '1000063',
         name: '宮崎 太一',
         kana: 'ﾐﾔｻﾞｷ',
+        jyukyusyaCode: '1100000123',
         jyukyusyaBango: '1102698712',
+        jyukyusyaJigyosyo: '相談支援事業所 ひなぎく',
         hogosya: '',
         keiyakukaisi: '',
         keiyakusyuryo: '',
         syuryoriyu: '',
         print: '',
+        serviceNumber: 52,
+        serviceDetail: '計画相談支援',
+        jidosimei: '',
       });
       viewData.push({
         city: '西経市',
         code: '1000118',
         name: '佐賀 正雄',
         kana: 'ｻｶﾞ',
+        jyukyusyaCode: '1100000123',
         jyukyusyaBango: '1102698712',
+        jyukyusyaJigyosyo: '相談支援事業所 ひなぎく',
         hogosya: '長崎和夫',
         keiyakukaisi: '2022/04/25',
-        keiyakusyuryo: '',
+        keiyakusyuryo: '2022/04/30',
         syuryoriyu: '',
         print: '',
+        serviceNumber: 52,
+        serviceDetail: '計画相談支援',
+        jidosimei: '',
       });
       this.viewDataDefault = viewData;
       this.userFilter();
-
+      let _self = this;
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells) {
           if (e.col == 0 || e.col == 2 || e.col == 4) {
@@ -306,7 +662,25 @@ export default {
           }
           if (e.col <= 4) {
             e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            e.cell.style.color = sysConst.COLOR.fontColor;
           }
+        }
+      });
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          console.log(tmpitem);
+          _self.userName = tmpitem.code + ' ' + tmpitem.name;
+          _self.jyukyusyaCode = tmpitem.jyukyusyaCode;
+          _self.jyukyusyaBango = tmpitem.jyukyusyaBango;
+          _self.jyukyusyaJigyosyo = tmpitem.jyukyusyaJigyosyo;
+          _self.serviceNumber = tmpitem.serviceNumber;
+          _self.serviceDetail = tmpitem.serviceDetail;
+          _self.jidosimei = tmpitem.jidosimei;
+          _self.keiyakukaisi = tmpitem.keiyakukaisi;
+          _self.keiyakusyuryo = tmpitem.keiyakusyuryo;
+          _self.contactDialog = true;
         }
       });
     },
@@ -349,5 +723,53 @@ div#keiyakuHokoku {
   min-width: 1350px !important;
   max-width: 1350px !important;
   width: auto;
+
+  .wj-state-selected,
+  .wj-state-multi-selected {
+    background-color: $grid_selected_background;
+    color: $white !important;
+  }
+}
+div#serviceHistoryGrid {
+  color: $font_color;
+  font-size: 12px;
+  font-family: 'メイリオ';
+}
+.bgColor {
+  background-color: $grid_selected_background;
+}
+.bgBorder {
+  border: 2px solid $grid_selected_background;
+}
+
+/*----------------------------
+* メニュー本体
+*----------------------------*/
+.history_menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
+  background: $view_Title_background;
+}
+
+/*----------------------------
+* アニメーション部分
+*----------------------------*/
+
+/* アニメーション前のメニューの状態 */
+.history_menu {
+  transform: translateX(100vw);
+  transition: all 0.3s linear;
+}
+/* アニメーション後のメニューの状態 */
+.history_menu.is-active {
+  transform: translateX(0);
 }
 </style>
