@@ -185,7 +185,7 @@ export default {
 @import '@/assets/scss/common.scss';
 div#keikakulists {
   color: $font_color;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1350px !important;

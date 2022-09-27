@@ -85,6 +85,7 @@
                   :key="n.val"
                   small
                   outlined
+                  height="20"
                   @click="grdDispChangeclick(0)"
                 >
                   {{ n.name }}
@@ -121,6 +122,7 @@
                   :key="n.val"
                   small
                   outlined
+                  height="20"
                   @click="grdDispChangeclick(1)"
                 >
                   {{ n.name }}

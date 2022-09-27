@@ -20,7 +20,7 @@
                 tile
                 small
                 width="180"
-                height="24"
+                height="20"
                 class="text-center"
               >
                 利用者名
@@ -31,7 +31,7 @@
                 tile
                 class="ml-1 pl-1"
                 width="140"
-                height="24"
+                height="20"
               >
                 {{ userName }}
               </v-card>
@@ -72,7 +72,7 @@
                 tile
                 small
                 width="180"
-                height="24"
+                height="20"
                 class="text-center"
                 >作成日
               </v-card>
@@ -94,7 +94,7 @@
                 tile
                 small
                 width="160"
-                height="24"
+                height="20"
                 class="text-center ml-1"
                 >計画区分
               </v-card>
@@ -114,7 +114,7 @@
                   tile
                   small
                   width="100"
-                  height="24"
+                  height="20"
                   class="text-center ml-1"
                   >作成者
                 </v-card>
@@ -132,7 +132,7 @@
                 tile
                 small
                 width="180"
-                height="24"
+                height="20"
                 class="text-center"
               >
                 障害者支援区分
@@ -146,7 +146,7 @@
                 tile
                 small
                 width="160"
-                height="24"
+                height="20"
                 class="text-center ml-1"
               >
                 モニタリング期間
@@ -172,7 +172,7 @@
                 tile
                 small
                 width="180"
-                height="24"
+                height="20"
                 class="text-center"
                 >障害福祉ｻｰﾋﾞｽ受給者番号
               </v-card>
@@ -186,7 +186,7 @@
                 tile
                 small
                 width="160"
-                height="24"
+                height="20"
                 class="text-center ml-1"
                 >地域相談支援受給者番号
               </v-card>
@@ -200,7 +200,7 @@
                 tile
                 small
                 width="140"
-                height="24"
+                height="20"
                 class="text-center ml-1"
                 >通所受給者証番号
               </v-card>
@@ -213,14 +213,14 @@
           <v-row no-gutters class="mt-1 pb-2">
             <v-col cols="6">
               <v-btn-toggle>
-                <v-btn small>新規入力</v-btn>
-                <v-btn small>内容更新</v-btn>
+                <v-btn small height="20">新規入力</v-btn>
+                <v-btn small height="20">内容更新</v-btn>
               </v-btn-toggle>
             </v-col>
             <v-col cols="6" align="right">
-              <v-btn-toggle tile>
-                <v-btn small>前回コピー</v-btn>
-                <v-btn small>履歴参照</v-btn>
+              <v-btn-toggle>
+                <v-btn small height="20">前回コピー</v-btn>
+                <v-btn small height="20">履歴参照</v-btn>
               </v-btn-toggle>
             </v-col>
           </v-row>
@@ -255,7 +255,7 @@
           </v-tabs-items>
           <v-row dense class="ma-2" justify="space-between">
             <v-col cols="4">
-              <v-btn small>削除</v-btn>
+              <v-btn small height="20">削除</v-btn>
             </v-col>
             <v-col cols="7">
               <v-card class="d-flex justify-end" flat tile>
@@ -263,21 +263,27 @@
                   outlined
                   tile
                   width="60"
-                  class="text-center text-caption label pt-1"
+                  height="20"
+                  class="text-center text-caption label"
                   >完了
                 </v-card>
                 <v-card elevation="0" width="30" class="text-center mt-1">
                   <input type="checkbox" />
                 </v-card>
                 <v-card
-                  class="lightYellow pl-1 pt-1 ml-1"
+                  class="lightYellow pl-1 ml-1"
                   width="140"
+                  height="20"
                   outlined
                   tile
                 >
                   竹下道子
                 </v-card>
-                <v-btn small class="ml-3" @click="ideaIkouKadaiRegist"
+                <v-btn
+                  small
+                  class="ml-3"
+                  height="20"
+                  @click="ideaIkouKadaiRegist"
                   >登録</v-btn
                 >
               </v-card>
@@ -431,7 +437,7 @@ export default {
 
 div#keikakuIdea {
   color: $font_color;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1920px;

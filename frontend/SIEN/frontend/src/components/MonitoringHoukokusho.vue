@@ -19,7 +19,7 @@
           <v-row
             no-gutters
             class="pa-1 pl-0"
-            style="height: 30px; background: #d7eeff"
+            style="height: 28px; background: #d7eeff"
           >
             <v-row no-gutters class="rowStyle">
               <v-card class="koumokuTitle pa-1" outlined tile>
@@ -70,6 +70,7 @@
                 color="secondary"
                 dark
                 outlined
+                height="20"
                 @click="inputClicked(n.val)"
               >
                 {{ n.name }}
@@ -127,7 +128,7 @@
             </v-card>
             <v-layout class="right">
               <v-btn class="itemBtn mr-1" @click="copyClicked()">
-                前回コピー
+                前回ｺﾋﾟｰ
               </v-btn>
               <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
                 履歴参照
@@ -269,6 +270,7 @@
                   color="secondary"
                   dark
                   outlined
+                  height="20"
                   @click="kekkaClicked(n.val)"
                 >
                   {{ n.name }}
@@ -852,12 +854,10 @@ export default {
 
             if (chkval == 0) {
               e.cell.innerHTML =
-                "<button class='grdbtn' value='0' style='border-color:red" +
-                "'>無</button><button class='grdbtn' value='1'>有</button>";
+                "<button class='grdbtn' value='0' style='border-color:red'>無</button><button class='grdbtn' value='1'>有</button>";
             } else {
               e.cell.innerHTML =
-                "<button class='grdbtn' value='0' >無</button><button class='grdbtn' value='1' style='border-color:red" +
-                "'>有</button>";
+                "<button class='grdbtn' value='0'>無</button><button class='grdbtn' value='1' style='border-color:red'>有</button>";
             }
           }
 
@@ -1123,7 +1123,7 @@ div#monitoringHoukokusho {
     max-width: 1050px;
     // width: 1020px;
     .rowStyle {
-      height: 22px;
+      height: 20px;
     }
   }
 
@@ -1295,9 +1295,6 @@ div#monitoringHoukokusho {
     }
   }
 
-  .v-btn-toggle > .v-btn {
-    height: 20px;
-  }
   button.grdbtn {
     border: 1px solid $light-gray;
     margin: 0px 1px;
@@ -1397,9 +1394,6 @@ div#monitoringHoukokusho {
     border: none;
   }
 
-  .v-btn-toggle > .v-btn {
-    height: 20px;
-  }
   input[type='text'] {
     width: 200px;
     height: 100%;

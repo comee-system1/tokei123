@@ -63,6 +63,7 @@
                 :key="n.val"
                 small
                 outlined
+                height="20"
                 @click="grdDispChangeclick(1)"
               >
                 {{ n.name }}
@@ -87,7 +88,13 @@
               表示内容
             </v-card>
             <v-btn-toggle class="flex-wrap mr-1" v-model="selDispNaiyouIndex">
-              <v-btn v-for="n in dispNaiyouList" :key="n.val" small outlined>
+              <v-btn
+                v-for="n in dispNaiyouList"
+                :key="n.val"
+                height="20"
+                small
+                outlined
+              >
                 <!-- @click="grdDispChangeclick(1)" -->
                 {{ n.name }}
               </v-btn>

@@ -91,3 +91,11 @@ $width: 1600px;
     text-align: center;
   }
 }
+div{
+  .customCombobox{
+    height:20px !important;
+    .wj-input{
+      height:20px !important;
+    }
+  }
+}

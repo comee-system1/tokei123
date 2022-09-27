@@ -4,47 +4,55 @@
       <div class="mt-1">
         <v-card class="d-flex flex-row" flat>
           <v-card
-            :color="'grey lighten-4 pt-1'"
+            :color="'grey lighten-4'"
             elevation="0"
             tile
             small
             width="100"
-            height="28"
+            height="20"
             class="text-center"
           >
             サービス
           </v-card>
-          <v-btn-toggle class="ml-1" dense mandatory v-model="onService">
-            <v-btn small v-for="val in service" :key="val.id">{{
+          <v-btn-toggle
+            class="ml-1"
+            dense
+            mandatory
+            v-model="onService"
+            height="20"
+          >
+            <v-btn small v-for="val in service" :key="val.id" height="20">{{
               val.name
             }}</v-btn>
           </v-btn-toggle>
           <v-card
-            :color="'grey lighten-4 pt-1'"
+            :color="'grey lighten-4'"
             elevation="0"
             tile
             small
             width="100"
-            height="28"
+            height="20"
             class="text-center ml-1"
           >
             対象者
           </v-card>
           <v-btn-toggle class="ml-1" dense mandatory v-model="onTarget">
-            <v-btn small v-for="val in target" :key="val.id">{{
+            <v-btn small v-for="val in target" :key="val.id" height="20">{{
               val.name
             }}</v-btn>
           </v-btn-toggle>
-          <v-btn small class="ml-3" @click="onSearch">検索開始</v-btn>
+          <v-btn small class="ml-3" @click="onSearch" height="20"
+            >検索開始</v-btn
+          >
         </v-card>
         <v-card class="d-flex flex-row mt-1" flat>
           <v-card
-            :color="'grey lighten-4 pt-1'"
+            :color="'grey lighten-4'"
             elevation="0"
             tile
             small
             width="100"
-            height="28"
+            height="20"
             class="text-center"
           >
             市区町村

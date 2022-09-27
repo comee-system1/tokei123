@@ -2,11 +2,13 @@
   <div id="keikakuLists">
     <v-container class="mt-1 ml-1 pa-0" :style="styles" style="max-width: 100%">
       <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+          表示月
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
-          height="100%"
+          height="20"
           style="border: none"
           outlined
           tile
@@ -25,7 +27,7 @@
           <v-btn
             elevation="0"
             class="pa-0 ml-1"
-            height="100%"
+            height="20"
             x-small
             tile
             @click="inputCalendarClick(1)"
@@ -35,7 +37,7 @@
           <v-btn
             elevation="0"
             class="pa-0 ml-1"
-            height="100%"
+            height="20"
             x-small
             tile
             @click="inputCalendarClick(2)"
@@ -43,10 +45,12 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn>検索開始</v-btn>
+        <v-btn small height="20" class="ml-2">検索開始</v-btn>
       </v-row>
-      <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile> 担当者 </v-card>
+      <v-row class="rowStyle" no-gutters>
+        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+          担当者
+        </v-card>
         <wj-menu
           id="comboFilters"
           class="customCombobox ml-1"
@@ -59,7 +63,9 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 対象者 </v-card>
+        <v-card class="koumokuTitle pa-1 ml-1" outlined tile height="20">
+          対象者
+        </v-card>
         <v-btn-toggle
           class="flex-wrap ml-1"
           v-model="taisyousyaIndex"
@@ -72,6 +78,7 @@
             color="secondary"
             dark
             outlined
+            height="20"
           >
             {{ n.name }}
           </v-btn>
@@ -106,7 +113,9 @@
           </v-card>
         </v-col>
         <v-col cols="3" style="text-align: right">
-          <v-btn x-small @click="onClickJyukyusya">受給者証登録へ</v-btn>
+          <v-btn x-small @click="onClickJyukyusya" height="20"
+            >受給者証登録へ</v-btn
+          >
         </v-col>
         <!--
         <v-col cols="3" style="text-align: right">
@@ -1117,7 +1126,7 @@ div#keikakuLists {
 
   .ymd,
   .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 14px;
+    font-size: 12px;
     background-color: $white;
     border: thin solid;
     border-color: $light-gray;
@@ -1152,7 +1161,7 @@ div#keikakuLists {
   }
 
   .itemBtn {
-    font-size: 14px;
+    font-size: 12px;
     background: $btn_background;
     border: thin solid;
     border-color: $light-gray;
@@ -1163,10 +1172,7 @@ div#keikakuLists {
 
   div.customCombobox {
     position: relative;
-    width: 125px !important;
-    height: 25px !important;
     &.customCombobox {
-      width: 160px !important;
       div {
         text-align: left;
       }
@@ -1201,7 +1207,7 @@ div#keikakuLists {
     }
   }
   .v-input--selection-controls .v-input__slot > .v-label {
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 

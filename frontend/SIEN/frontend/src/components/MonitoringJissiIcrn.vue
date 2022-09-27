@@ -68,6 +68,7 @@
             color="secondary"
             dark
             outlined
+            height="20"
             @click="siborikomiClicked"
           >
             {{ n.name }}
@@ -82,6 +83,7 @@
             color="secondary"
             dark
             outlined
+            height="20"
             @click="yousikiClicked(n.val)"
           >
             {{ n.name }}
@@ -108,13 +110,8 @@
           <span class="miman mr-1" style="width: 80px">18歳未満</span>
         </v-card>
       </v-row>
-      <v-row
-        class="ma-0 mt-1"
-        no-gutters
-        style="background-color: #d7eeff; width: 98%"
-      >
+      <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
-          class="ma-1"
           id="yoteisyaIcrnGrid"
           :headersVisibility="'Column'"
           :autoGenerateColumns="false"
@@ -929,7 +926,7 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 100%;
+    width: 98%;
     height: 72vh;
     min-height: 450px;
     .wj-header {
@@ -996,16 +993,6 @@ div#monitoringJissiIcrn {
     }
   }
 
-  // #yoteisyaIcrnGrid {
-  //   width: auto;
-  //   // min-width: 1250px;
-  //   height: 70vh;
-  //   min-height: 500px;
-  // }
-  .v-btn-toggle > .v-btn {
-    // width: 150px;
-    height: 20px;
-  }
   div.customCombobox {
     position: relative;
     width: 125px !important;

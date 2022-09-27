@@ -49,7 +49,8 @@
             color="secondary"
             dark
             outlined
-            :width="50"
+            width="50"
+            height="20"
             @click="dispClicked(n.val)"
           >
             {{ n.name }}
@@ -1065,10 +1066,6 @@ div#uketukeIcrn {
     }
   }
 
-  .v-btn-toggle > .v-btn {
-    width: 100px;
-    height: 20px;
-  }
   div.customCombobox {
     position: relative;
     width: 125px !important;
@@ -1119,7 +1116,7 @@ div#uketukeIcrn {
       color: $font_color !important;
       text-align: center;
       border-radius: 3px;
-      padding: 0px 10px 0px 20px;
+      padding: 0px 10px 10px 20px;
       cursor: pointer;
       background-image: url('../assets/plus_gray_15px.png');
       background-position: top 2px left 2px;

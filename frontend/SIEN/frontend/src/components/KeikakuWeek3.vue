@@ -15,12 +15,12 @@
             <div class="mt-1">
               <v-card class="d-flex flex-row" flat tile>
                 <v-card
-                  :color="'pt-1 grey lighten-4'"
+                  :color="'grey lighten-4'"
                   elevation="0"
                   tile
                   small
                   width="120"
-                  height="28"
+                  height="20"
                   class="text-center"
                 >
                   利用者名
@@ -29,24 +29,24 @@
                   elevation="0"
                   outlined
                   tile
-                  class="ml-1 pl-1 pt-1 lightYellow"
+                  class="ml-1 pl-1 lightYellow"
                   width="160"
-                  height="28"
+                  height="20"
                 >
                   {{ userName }}
                 </v-card>
                 <v-card
-                  :color="'grey lighten-4 pt-1 ml-1'"
+                  :color="'grey lighten-4 ml-1'"
                   elevation="0"
                   tile
                   small
                   width="80"
-                  height="28"
+                  height="20"
                   class="text-center"
                 >
                   作成日
                 </v-card>
-                <v-card class="text-center pt-1 ml-1" width="140" outlined tile>
+                <v-card class="text-center ml-1" width="140" outlined tile>
                   {{ getYmd }}
                 </v-card>
               </v-card>
@@ -54,19 +54,20 @@
             <div class="mt-1">
               <v-card class="d-flex flex-row" flat tile>
                 <v-card
-                  :color="'pt-1 grey lighten-4'"
+                  :color="'grey lighten-4'"
                   elevation="0"
                   tile
                   small
                   width="120"
-                  height="28"
+                  height="20"
                   class="text-center"
                 >
                   週間計画開始年月
                 </v-card>
                 <v-card
-                  class="pt-1 ml-1 text-center"
+                  class="ml-1 text-center"
                   width="160"
+                  height="20"
                   outlined
                   tile
                   @click="inputCalendarClick(0)"
@@ -77,7 +78,12 @@
                   </div>
                 </v-card>
                 <v-card class="ml-auto" elevation="0">
-                  <v-tabs light height="24">
+                  <v-tabs
+                    light
+                    height="20"
+                    @change="onInputChange"
+                    v-model="inputChange"
+                  >
                     <v-tab>週間予定</v-tab>
                     <v-tab>主な日常生活等</v-tab>
                   </v-tabs>
@@ -87,18 +93,17 @@
           </div>
           <FullCalendar
             ref="fullCalendar"
+            id="fullCalendar"
             :options="calendarOptions"
-            class="mt-1"
           />
-
           <v-card class="mt-1 d-flex justify-end" flat tile>
             <v-card
-              :color="'pt-1 grey lighten-4'"
+              :color="'grey lighten-4'"
               elevation="0"
               tile
               small
               width="60"
-              height="28"
+              height="20"
               class="text-center"
             >
               完了
@@ -112,19 +117,21 @@
               tile
               outlined
               width="200"
+              height="20"
             ></v-card>
-            <v-btn small class="ml-1" elevation="0" @click="regist">登録</v-btn>
+            <v-btn small class="ml-1" elevation="0" @click="regist" height="20"
+              >登録</v-btn
+            >
           </v-card>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth2 }">
           <div class="mt-1 ht60">
-            <v-btn-toggle tile>
-              <v-btn x-small>前回コピー</v-btn>
-              <v-btn x-small>履歴参照</v-btn>
+            <v-btn-toggle tile class="ml-n4">
+              <v-btn small height="20">前回コピー</v-btn>
+              <v-btn small height="20">履歴参照</v-btn>
             </v-btn-toggle>
           </div>
           <wj-flex-grid
-            class="mt-1"
             id="keikakuLifeGrid"
             :selectionMode="3"
             :headersVisibility="1"
@@ -209,6 +216,7 @@ export default {
   },
   data() {
     return {
+      moveFlag: false,
       onLifeGrid: '',
       onFukusiGrid: '',
       leftWidth: '280px',
@@ -229,10 +237,13 @@ export default {
         dayjs().format('DD') +
         '日',
       getYm: dayjs().format('YYYY') + '年' + dayjs().format('MM') + '月',
+      inputChange: 0,
       calendarOptions: {
         plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, Draggable],
         initialView: 'timeGridWeek',
         headerToolbar: false,
+        // eventMouseEnter: this.handleEventMouseEnter.bind(this),
+        // eventMouseLeave: this.handleEventMouseLeave.bind(this),
         select: this.handleDateSelect,
         //  dateClick: this.handleDateClick,
         eventClick: this.onEventClick,
@@ -240,12 +251,17 @@ export default {
         editable: true,
         navLinks: false,
         selectable: true,
-        contentHeight: '500px',
+        contentHeight: '76vh',
         slotDuration: '00:30:00',
         locale: 'ja',
         firstDay: 1,
         dayMaxEvents: true,
         nowIndicator: true,
+        slotLabelFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          omitZeroMinute: false,
+        },
         events: [],
         views: {
           timeGridWeek: {
@@ -270,7 +286,36 @@ export default {
     };
   },
   computed: {},
+
   mounted() {
+    let elem = document.getElementById('fullCalendar');
+    let newDiv = document.createElement('div');
+    elem.addEventListener('mousedown', function (e) {
+      this.moveFlag = true;
+      newDiv.className = 'cls';
+      console.log(e.clientY);
+      let cy = 0;
+      if (e.clientY >= 435 && e.clientY < 455) {
+        cy = 435;
+      }
+      newDiv.style.top = cy - 80 + 'px';
+
+      let cx = 0;
+      if (e.clientX >= 330 && e.clientX < 450) {
+        cx = 330;
+      }
+      newDiv.style.left = cx + 'px';
+      elem.appendChild(newDiv);
+    });
+    elem.addEventListener('mousemove', function (e) {
+      if (this.moveFlag == true) {
+        console.log(e);
+      }
+    });
+    elem.addEventListener('mouseup', function () {
+      this.moveFlag = false;
+      newDiv.remove();
+    });
     let life = [];
     life.push(
       {
@@ -340,20 +385,207 @@ export default {
     let events = [];
     events = [
       {
-        title: 'event 1',
-        start: '2022-09-21T12:00:00',
-        end: '2022-09-21T14:30:00',
+        title: '起床',
+        start: '2022-09-26T07:00:00',
+        end: '2022-09-26T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
       },
       {
-        title: 'event 2',
-        start: '2022-09-21T11:00:00',
-        end: '2022-09-21T12:30:00',
+        title: 'テレビドラマ・朝食',
+        start: '2022-09-26T07:30:00',
+        end: '2022-09-26T08:00:00',
+      },
+      {
+        title: 'ゴミ収集',
+        start: '2022-09-26T08:00:00',
+        end: '2022-09-26T08:30:00',
+        backgroundColor: 'yellow',
+        textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-09-26T12:00:00',
+        end: '2022-09-26T12:30:00',
+      },
+
+      {
+        title: '起床',
+        start: '2022-09-27T07:00:00',
+        end: '2022-09-27T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+      {
+        title: 'ヘルパー(家事)',
+        start: '2022-09-27T10:00:00',
+        end: '2022-09-27T12:00:00',
+        backgroundColor: 'yellow',
+        textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-09-27T07:30:00',
+        end: '2022-09-27T08:00:00',
+      },
+      {
+        title: '起床',
+        start: '2022-09-28T07:00:00',
+        end: '2022-09-28T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-09-27T12:00:00',
+        end: '2022-09-27T12:30:00',
+      },
+
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-09-28T07:30:00',
+        end: '2022-09-28T08:00:00',
+      },
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-09-28T12:00:00',
+        end: '2022-09-28T12:30:00',
+      },
+      {
+        title: '通院同行(内科・歯科)',
+        start: '2022-09-28T14:00:00',
+        end: '2022-09-28T16:00:00',
+        backgroundColor: 'red',
+      },
+      {
+        title: '起床',
+        start: '2022-09-29T07:00:00',
+        end: '2022-09-29T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-09-29T07:30:00',
+        end: '2022-09-29T08:00:00',
+      },
+      {
+        title: '外出(買い物・銀行・クリーニング等)',
+        start: '2022-09-29T08:13:00',
+        end: '2022-09-29T12:00:00',
+        backgroundColor: 'pink',
+        textColor: 'black',
+      },
+
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-09-29T12:00:00',
+        end: '2022-09-29T12:30:00',
+      },
+
+      {
+        title: '起床',
+        start: '2022-09-30T07:00:00',
+        end: '2022-09-30T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-09-30T07:30:00',
+        end: '2022-09-30T08:00:00',
+      },
+      {
+        title: '起床',
+        start: '2022-10-01T07:00:00',
+        end: '2022-10-01T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-09-30T12:00:00',
+        end: '2022-09-30T12:30:00',
+      },
+
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-10-01T07:30:00',
+        end: '2022-10-01T08:00:00',
+      },
+
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-10-01T12:00:00',
+        end: '2022-10-01T12:30:00',
+      },
+
+      {
+        title: '起床',
+        start: '2022-10-02T07:00:00',
+        end: '2022-10-02T07:30:00',
+        backgroundColor: 'green',
+        //textColor: 'black',
+      },
+      {
+        title: 'テレビドラマ・朝食',
+        start: '2022-10-02T07:30:00',
+        end: '2022-10-02T08:00:00',
+      },
+
+      {
+        title: 'テレビドラマ・昼食',
+        start: '2022-10-02T12:00:00',
+        end: '2022-10-02T12:30:00',
+      },
+
+      {
+        title: '夕食',
+        start: '2022-09-26T19:30:00',
+        end: '2022-09-26T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-09-27T19:30:00',
+        end: '2022-09-27T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-09-28T19:30:00',
+        end: '2022-09-28T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-09-29T19:30:00',
+        end: '2022-09-29T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-09-30T19:30:00',
+        end: '2022-09-30T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-10-01T19:30:00',
+        end: '2022-10-01T20:00:00',
+      },
+      {
+        title: '夕食',
+        start: '2022-10-02T19:30:00',
+        end: '2022-10-02T20:00:00',
       },
     ];
     this.events = events;
     this.calendarOptions.events = events;
   },
   methods: {
+    handleEventMouseEnter() {
+      alert('enter');
+    },
+    handleEventMouseLeave() {
+      alert('leave');
+    },
     handleDateSelect(selectInfo) {
       let startdate = dayjs(selectInfo.startStr).format('YYYYMMDD');
       let enddate = dayjs(selectInfo.endStr).format('YYYYMMDD');
@@ -363,7 +595,7 @@ export default {
       let calendarApi = selectInfo.view.calendar;
       calendarApi.unselect(); // clear date selection
       if (this.eventSelected.length == 0) {
-        alert('select event');
+        //alert('select event');
         return false;
       }
       // 日付が別の時は日付分ループする
@@ -389,26 +621,6 @@ export default {
           end: selectInfo.endStr,
         });
       }
-
-      //this.events = events;
-      //this.calendarOptions.events = events;
-
-      /*
-      let title = prompt('Please enter a new title for your event');
-      let calendarApi = selectInfo.view.calendar;
-
-      calendarApi.unselect(); // clear date selection
-
-      if (title) {
-        calendarApi.addEvent({
-          id: 1,
-          title,
-          start: selectInfo.startStr,
-          end: selectInfo.endStr,
-          allDay: selectInfo.allDay,
-        });
-      }
-      */
     },
     /***********************
      * 登録ボタン
@@ -470,6 +682,12 @@ export default {
     changeInitializeFukusi(flexGrid) {
       flexGrid.select(-1, -1);
     },
+    /*****************************
+     * 入力内容切替
+     *************************/
+    onInputChange() {
+      console.log(this.inputChange);
+    },
   },
 };
 </script>
@@ -505,11 +723,78 @@ div#keikakuWeek {
       }
     }
   }
+
   .fc-highlight {
     background-color: transparent !important;
   }
   .fc-event-time {
     display: none;
+  }
+  div {
+    .fc-event-title {
+      word-wrap: break-word;
+    }
+  }
+  .fc-timegrid-slot-label {
+    background: $grid_selected_background;
+    color: $white;
+  }
+  table {
+    tr {
+      th {
+        &.fc-col-header-cell {
+          background: $grid_selected_background;
+          a {
+            color: $white !important;
+          }
+        }
+      }
+      td {
+        &:first-child {
+          border-top: none;
+        }
+      }
+    }
+    &.fc-scrollgrid-liquid {
+      tr {
+        &.fc-scrollgrid-section-body {
+          td {
+            &:first-child {
+              table {
+                tr {
+                  &:not(:nth-child(4n + 1)) {
+                    td {
+                      div {
+                        display: none;
+                      }
+                    }
+                  }
+                  &:nth-child(1) {
+                    td {
+                      color: $grid_selected_background;
+                    }
+                  }
+                  &:nth-child(4n + 1) {
+                    td {
+                      div {
+                        &.fc-timegrid-slot-label-frame {
+                          position: relative;
+                          div {
+                            position: absolute;
+                            top: -20px;
+                            left: 0px;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 div#keikakuFukusiGrid,
@@ -518,5 +803,18 @@ div#keikakuLifeGrid {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
+}
+// #fullCalendar {
+//   position: relative;
+// }
+.cls {
+  width: 120px;
+  height: 20px;
+  background-color: green;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
 }
 </style>

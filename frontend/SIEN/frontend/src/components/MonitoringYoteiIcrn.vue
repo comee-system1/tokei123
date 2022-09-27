@@ -104,6 +104,7 @@
             color="secondary"
             dark
             outlined
+            height="20"
             @click="taisyousyaClicked"
           >
             {{ n.name }}
@@ -122,6 +123,7 @@
             color="primary  "
             dark
             outlined
+            height="20"
             @click="taisyousyaClicked"
           >
             {{ n.name }}
@@ -155,6 +157,7 @@
             color="secondary"
             dark
             outlined
+            height="20"
             @click="siborikomiClicked"
           >
             {{ n.name }}
@@ -177,6 +180,7 @@
               color="secondary"
               dark
               outlined
+              height="20"
             >
               {{ n.name }}
             </v-btn>
@@ -1183,10 +1187,7 @@ div#monitoringYotei {
     min-height: 400px;
     z-index: 2;
   }
-  .v-btn-toggle > .v-btn {
-    // width: 150px;
-    height: 20px;
-  }
+
   div.customCombobox {
     position: relative;
     width: 125px !important;

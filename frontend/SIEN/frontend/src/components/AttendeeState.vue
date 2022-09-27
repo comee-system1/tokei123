@@ -14,12 +14,12 @@
           <div class="mt-1">
             <v-card class="d-flex flex-row" flat tile>
               <v-card
-                :color="'pt-1 grey lighten-4'"
+                :color="' grey lighten-4'"
                 elevation="0"
                 tile
                 small
                 width="80"
-                height="28"
+                height="20"
                 class="text-center"
               >
                 利用者名
@@ -28,9 +28,9 @@
                 elevation="0"
                 outlined
                 tile
-                class="ml-1 pl-1 pt-1 lightYellow"
+                class="ml-1 pl-1 lightYellow"
                 width="160"
-                height="28"
+                height="20"
               >
                 {{ userName }}
               </v-card>
@@ -39,36 +39,37 @@
           <div class="mt-1">
             <v-card class="d-flex flex-row" flat tile>
               <v-card
-                :color="'grey lighten-4 pt-1'"
+                :color="'grey lighten-4 '"
                 elevation="0"
                 tile
                 small
                 width="80"
-                height="28"
+                height="20"
                 class="text-center"
               >
                 入力
               </v-card>
-              <v-card elevation="0" tile class="pl-1">
+              <v-card elevation="0" class="pl-1">
                 <v-btn-toggle>
-                  <v-btn small>新規入力</v-btn>
-                  <v-btn small>内容更新</v-btn>
+                  <v-btn small height="20">新規入力</v-btn>
+                  <v-btn small height="20">内容更新</v-btn>
                 </v-btn-toggle>
               </v-card>
               <v-card
-                :color="'grey lighten-4 pt-1 ml-1'"
+                :color="'grey lighten-4  ml-1'"
                 elevation="0"
                 tile
                 small
                 width="80"
-                height="28"
+                height="20"
                 class="text-center"
               >
                 作成日
               </v-card>
               <v-card
-                class="pt-1 ml-1"
+                class="ml-1"
                 width="140"
+                height="20"
                 outlined
                 tile
                 @click="inputCalendarClick(0)"
@@ -80,9 +81,9 @@
               </v-card>
 
               <v-card class="ml-auto" elevation="0">
-                <v-btn small>利用者より</v-btn>
-                <v-btn small class="ml-1">前回コピー</v-btn>
-                <v-btn small class="ml-1">履歴参照</v-btn>
+                <v-btn small height="20">利用者より</v-btn>
+                <v-btn small class="ml-1" height="20">前回コピー</v-btn>
+                <v-btn small class="ml-1" height="20">履歴参照</v-btn>
               </v-card>
             </v-card>
           </div>
@@ -225,7 +226,7 @@ export default {
 @import '@/assets/scss/common.scss';
 div#attendeeState {
   color: $font_color;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;

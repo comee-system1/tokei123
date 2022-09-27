@@ -12,66 +12,18 @@
           >
           </user-list>
         </v-col>
-        <v-col class="centerArea">
+        <v-col>
           <!-- 中央エリア -->
-          <v-row no-gutters class="rowStyle mt-1">
+          <v-row no-gutters class="rowStyle mt-1 mb-1">
             <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
               利用者名
             </v-card>
             <v-card class="koumokuData mr-1 pa-1" tile outlined>
               {{ userInfo.names }}
             </v-card>
-          </v-row>
-          <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力 </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="selInput">
-              <v-btn
-                v-for="n in inputList"
-                :key="n.val"
-                small
-                outlined
-                @click="inputChangeclick(1)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 種類 </v-card>
-            <wj-menu
-              id="comboFilters"
-              class="customCombobox mr-1"
-              :itemsSource="kindList"
-              :initialized="initComboFilters"
-              :isRequired="true"
-              selectedValuePath="val"
-              displayMemberPath="name"
-              v-model="selKind"
-              :itemClicked="onKindClicked"
-            >
-            </wj-menu>
-            <v-card class="koumokuTitle pa-1" outlined tile> 作成日 </v-card>
-            <v-card
-              class="ml-1"
-              color="transparent"
-              height="100%"
-              style="border: none; margin-top: -1px"
-              outlined
-              tile
-            >
-              <v-btn
-                @click="inputCalendarClick(0)"
-                tile
-                outlined
-                width="160px"
-                height="100%"
-                >{{ getYmd(0) }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-            </v-card>
             <v-layout class="right">
               <v-btn class="itemBtn mr-1" @click="copyClicked()">
-                前回コピー
+                前回ｺﾋﾟｰ
               </v-btn>
               <v-btn class="itemBtn mr-1" v-on:click.stop="drawer = !drawer">
                 履歴参照
@@ -136,8 +88,63 @@
               </v-navigation-drawer>
             </v-layout>
           </v-row>
+          <v-row no-gutters class="rowStyle mb-1">
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力 </v-card>
+            <v-btn-toggle class="flex-wrap mr-1" v-model="selInput">
+              <v-btn
+                v-for="n in inputList"
+                :key="n.val"
+                small
+                outlined
+                height="20"
+                @click="inputChangeclick(1)"
+              >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 種類 </v-card>
+            <wj-menu
+              id="comboFilters"
+              class="customCombobox mr-1"
+              :itemsSource="kindList"
+              :initialized="initComboFilters"
+              :isRequired="true"
+              selectedValuePath="val"
+              displayMemberPath="name"
+              v-model="selKind"
+              :itemClicked="onKindClicked"
+            >
+            </wj-menu>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              作成日
+            </v-card>
+            <v-card
+              class="mr-1"
+              color="transparent"
+              height="100%"
+              style="border: none; margin-top: -1px"
+              outlined
+              tile
+            >
+              <v-btn
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                width="160px"
+                height="100%"
+                >{{ getYmd(0) }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-card>
+            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              作成者
+            </v-card>
+            <v-card class="koumokuData mr-1 pa-1" tile outlined> </v-card>
+          </v-row>
 
-          <v-row class="gridArea ma-0 mt-1" no-gutters>
+          <v-row class="ma-0 pa-0" no-gutters>
             <wj-flex-grid
               id="icrnGrid"
               :headersVisibility="'None'"
@@ -267,9 +274,26 @@ export default {
       this.maingrid = flexGrid;
       flexGrid.beginningEdit.addHandler((s, e) => {
         let tmpitem = flexGrid.cells.rows[e.row].dataItem;
-        if (tmpitem.datakbn == 1) {
+        if (
+          tmpitem.datakbn == 1 ||
+          tmpitem.datakbn == 3 ||
+          (tmpitem.datakbn == 4 && e.col == 0)
+        ) {
           e.cancel = true;
           return;
+        }
+      });
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          if (tmpitem.datakbn == 4 && e.target.tagName == 'BUTTON') {
+            tmpitem.selSentaku = e.target.value;
+            flexGrid.refreshRange(
+              new wjGrid.CellRange(ht.row, ht.col, ht.row, ht.col)
+            );
+          }
         }
       });
       flexGrid.beginUpdate();
@@ -279,7 +303,6 @@ export default {
     },
     onFormatItemIcrn(flexGrid, e) {
       if (flexGrid.columns.length == 0) {
-        console.log(e);
         return;
       }
       let tmpitem = e.panel.rows[e.row].dataItem;
@@ -294,6 +317,23 @@ export default {
       if (tmpitem.datakbn == 3) {
         e.cell.style.textAlign = 'center';
         e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
+      }
+      if (tmpitem.datakbn == 4) {
+        if (e.col > 0) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
+        }
+        if (e.col == 3) {
+          if (tmpitem.selSentaku == 0) {
+            e.cell.innerHTML =
+              "<button class='grdbtn' value='2' >無</button><br><button class='grdbtn' value='1'>有</button>";
+          } else if (tmpitem.selSentaku == 1) {
+            e.cell.innerHTML =
+              "<button class='grdbtn' value='2' >無</button><br><button class='grdbtn' value='1' style='border-color:red'>有</button>";
+          } else {
+            e.cell.innerHTML =
+              "<button class='grdbtn' value='2' style='border-color:red'>無</button><br><button class='grdbtn' value='1'>有</button>";
+          }
+        }
       }
     },
     onItemsSourceChanging(flexGrid) {
@@ -310,7 +350,7 @@ export default {
         tmpitem = flexGrid.itemsSource[i];
         if (tmpitem.datakbn == 1 || tmpitem.datakbn == 2) {
           ranges.push(
-            new wjGrid.CellRange(i, 0, i, this.headerList.length - 1)
+            new wjGrid.CellRange(i, 0, i, flexGrid.columns.length - 1)
           );
         }
       }
@@ -367,31 +407,31 @@ export default {
         this.headerList.push({
           title: '項目',
           align: 'left',
-          width: '5*',
+          width: '*',
           dataname: 'title1',
         });
         this.headerList.push({
           title: '数値',
           align: 'right',
-          width: '1*',
+          width: 50,
           dataname: 'title2',
         });
         this.headerList.push({
           title: '点数',
           align: 'right',
-          width: '1*',
+          width: 50,
           dataname: 'title3',
         });
         this.headerList.push({
           title: '援助等の有無',
           align: 'left',
-          width: '5*',
+          width: '*',
           dataname: 'title4',
         });
         this.headerList.push({
           title: '実態',
           align: 'left',
-          width: '5*',
+          width: '*',
           dataname: 'title5',
         });
         this.createGrdHeader();
@@ -430,6 +470,45 @@ export default {
         title3: this.headerList[2].title,
         title4: this.headerList[3].title,
         title5: this.headerList[4].title,
+      });
+      result.push({
+        datakbn: 4,
+        title1: '生活費',
+        title2: '',
+        title3: '',
+        title4: '',
+        title5: '',
+        sentakusi: [
+          { name: '有', val: 1 },
+          { name: '無', val: 2 },
+        ],
+        selSentaku: 0,
+      });
+      result.push({
+        datakbn: 4,
+        title1: '住まい',
+        title2: '',
+        title3: '',
+        title4: '',
+        title5: '',
+        sentakusi: [
+          { name: '有', val: 1 },
+          { name: '無', val: 2 },
+        ],
+        selSentaku: 0,
+      });
+      result.push({
+        datakbn: 4,
+        title1: '家財道具等',
+        title2: '',
+        title3: '',
+        title4: '',
+        title5: '',
+        sentakusi: [
+          { name: '有', val: 1 },
+          { name: '無', val: 2 },
+        ],
+        selSentaku: 0,
       });
 
       return result;
@@ -494,16 +573,12 @@ div#assessmentInput {
     min-height: 450px;
     width: 275px;
   }
-  .centerArea {
-    min-width: 1050px;
-    max-width: 1050px;
-  }
   .koumokuTitle {
     color: $font_color;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100px;
+    width: 75px;
     height: 100%;
     text-align: center;
     background: $view_Title_background;
@@ -568,9 +643,9 @@ div#assessmentInput {
     width: 75px;
   }
   #icrnGrid {
-    height: 100%;
-    width: 90%;
-    min-width: 1000px;
+    min-height: 520px;
+    width: 77vw;
+    // min-width: 1000px;
     color: $font_color;
     font-size: $cell_fontsize;
 
@@ -595,12 +670,12 @@ div#assessmentInput {
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }
-    .wj-cells
-      .wj-row:hover
-      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
-      transition: all 0s;
-      background: $grid_hover_background;
-    }
+    // .wj-cells
+    //   .wj-row:hover
+    //   .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    //   transition: all 0s;
+    //   background: $grid_hover_background;
+    // }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
       background: $grid_selected_background;
@@ -631,7 +706,7 @@ div#assessmentInput {
   .centerArea {
     .customCombobox {
       position: relative;
-      width: 200px !important;
+      width: 175px !important;
       height: 20px !important;
       &.customCombobox {
         // width: 160px !important;
@@ -667,16 +742,29 @@ div#assessmentInput {
       }
     }
   }
-  .gridArea {
-    height: 78vh;
-    min-height: 400px;
-    width: 78vw;
-    overflow-y: scroll;
-    overflow-x: auto;
-  }
   .v-application--is-ltr .v-list-item__action:first-child,
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 4px;
+  }
+  button.grdbtn {
+    border: 1px solid $light-gray;
+    margin: 0px 1px;
+    border-radius: 50%;
+    border-color: transparent;
+    width: 20px;
+    color: $black !important;
+    &:hover {
+      background-color: $light-gray;
+    }
+    &:disabled {
+      background-color: $light-white;
+      color: $light-white;
+      opacity: 0.2;
+    }
+
+    &.act {
+      background-color: $light-gray;
+    }
   }
 }
 

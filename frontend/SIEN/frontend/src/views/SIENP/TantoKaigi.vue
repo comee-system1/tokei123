@@ -390,7 +390,7 @@
           absolute
           top
           right
-          @click="attend_dialog = false"
+          @click="undoChange"
           color="secondary"
           class="mt-2"
           ><v-icon dark small> mdi-close </v-icon>
@@ -401,9 +401,9 @@
               <v-btn small @click="editSort" :disabled="sortDisabled"
                 >並替え</v-btn
               >
-              <v-btn small class="ml-2" @click="editDelete">個別削除</v-btn>
-              <v-btn small class="ml-2">個別挿入</v-btn>
-              <v-btn small class="ml-2">全クリア</v-btn>
+              <v-btn small class="ml-2" @click="selectAllDelete"
+                >全クリア</v-btn
+              >
 
               <wj-flex-grid
                 id="selectedAttendGrid"
@@ -438,7 +438,7 @@
                 ></wj-flex-grid-column>
                 <wj-flex-grid-column
                   header="氏名"
-                  binding="simei"
+                  binding="name"
                   align="center"
                   valign="middle"
                   width="2*"
@@ -453,12 +453,22 @@
                 </v-btn>
               </div>
               <div class="text-end pa-1 ml-auto">
+                <v-btn
+                  color="primary"
+                  class="ml-auto"
+                  small
+                  @click="editDelete"
+                >
+                  削除
+                </v-btn>
+              </div>
+              <div class="text-end pa-1 ml-auto">
                 <v-btn color="primary" class="ml-auto" small> 設定 </v-btn>
               </div>
             </div>
           </v-col>
           <v-col cols="6">
-            <div class="pa-2">
+            <div class="pa-2 attend-dialog-select">
               <div class="d-flex flex-row text-caption" flat>
                 <v-card
                   :color="'grey lighten-4'"
@@ -466,17 +476,26 @@
                   tile
                   small
                   width="100"
-                  height="24"
-                  class="text-center pt-1"
+                  height="25"
+                  class="text-center pt-1 caption-left"
                 >
                   事業所
                 </v-card>
-
-                <select class="w100p ml-1 selectbox" v-model="selJijyosyo">
-                  <option value="" v-for="val in jijyosyoList" :key="val.val">
-                    {{ val.name }}
-                  </option>
-                </select>
+                <v-select
+                  class="ml-1"
+                  item-text="name"
+                  item-value="val"
+                  label="指定無し"
+                  :items="jijyosyoList"
+                  v-model="selectedJigyosyo"
+                  hide-details
+                  dense
+                  solo
+                  flat
+                  return-object
+                  @change="onJigyosyoChanged"
+                >
+                </v-select>
               </div>
 
               <div class="mt-1 d-flex flex-row text-caption" flat>
@@ -486,16 +505,26 @@
                   tile
                   small
                   width="100"
-                  height="24"
-                  class="text-center pt-1"
+                  height="25"
+                  class="text-center pt-1 caption-left"
                 >
                   職種指定
                 </v-card>
-                <select class="w100p ml-1 selectbox" v-model="selSyokusyu">
-                  <option value="" v-for="val in syokusyuList" :key="val.val">
-                    {{ val.name }}
-                  </option>
-                </select>
+                <v-select
+                  class="ml-1"
+                  item-text="name"
+                  item-value="val"
+                  label="指定無し"
+                  :items="syokusyuList"
+                  v-model="selectedSyokusyu"
+                  hide-details
+                  dense
+                  solo
+                  flat
+                  return-object
+                  @change="onSyokusyuChanged"
+                >
+                </v-select>
               </div>
             </div>
             <div class="pa-2">
@@ -507,6 +536,8 @@
                 class="mt-2"
                 :itemsSource="attendSelect"
                 :autoClipboard="false"
+                :allowResizing="false"
+                :allowSorting="false"
                 :selectionMode="'Row'"
                 :headersVisibility="'Column'"
                 :autoRowHeights="true"
@@ -539,7 +570,7 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
               <div class="text-caption">手動入力</div>
-              <div class="d-flex flex-row text-caption" flat>
+              <div class="d-flex flex-row text-caption">
                 <v-card
                   :color="'grey lighten-4'"
                   elevation="0"
@@ -548,10 +579,18 @@
                   width="40"
                   height="24"
                   class="text-center pt-1"
+                  v-model="manualCode"
                 >
                   ｺｰﾄﾞ
                 </v-card>
-                <input type="text" class="ml-1 input_text outline w60" />
+                <v-text-field
+                  class="ml-1 input_text outline w60 manual-form"
+                  v-model="manualCode"
+                  dense
+                  solo
+                  flat
+                >
+                </v-text-field>
                 <v-card
                   :color="'grey lighten-4'"
                   elevation="0"
@@ -563,7 +602,15 @@
                 >
                   職種
                 </v-card>
-                <input type="text" class="ml-1 input_text outline w100" />
+                <v-text-field
+                  class="ml-1 input_text outline w100 manual-form"
+                  v-model="manualSyokusyu"
+                  hide-details
+                  dense
+                  solo
+                  flat
+                >
+                </v-text-field>
                 <v-card
                   :color="'grey lighten-4'"
                   elevation="0"
@@ -575,15 +622,28 @@
                 >
                   氏名
                 </v-card>
-                <input type="text" class="ml-1 input_text outline w100" />
+                <v-text-field
+                  class="ml-1 input_text outline w100 manual-form"
+                  v-model="manualName"
+                  hide-details
+                  dense
+                  solo
+                  flat
+                >
+                </v-text-field>
               </div>
             </div>
 
             <div class="text-end pa-1">
-              <v-btn color="primary" @click="dialog = false" small>
+              <v-btn color="primary" @click="selectedAttendResetSelect()" small>
                 選択解除
               </v-btn>
-              <v-btn color="primary" @click="dialog = false" small class="ml-1">
+              <v-btn
+                color="primary"
+                @click="addSelectedAttendManual()"
+                small
+                class="ml-1"
+              >
                 追加
               </v-btn>
             </div>
@@ -609,21 +669,7 @@ export default {
     UserList,
     AlphabetButton,
   },
-  mounted() {
-    let syokusyuList = [];
-    syokusyuList.push({
-      val: 0,
-      name: '指定無し',
-    });
-    this.syokusyuList = syokusyuList;
-
-    let jijyosyoList = [];
-    jijyosyoList.push({
-      val: 1,
-      name: 'とうけい相談支援事業所',
-    });
-    this.jijyosyoList = jijyosyoList;
-  },
+  mounted() {},
   data: function () {
     return {
       leftWidth: '280px',
@@ -633,19 +679,59 @@ export default {
       calendarType: 0,
       picker: '',
       attendView: [],
+      attendSelectDefault: [],
       attendSelect: [],
+      manualCode: '',
+      manualSyokusyu: '',
+      manualName: '',
+      selectedRowData: [],
+      selectedAttendViewDefault: [],
       considerView: [],
       issue: '',
       display: '↓',
       onDisplayFlag: true,
       offDisplayFlag: false,
       attend_dialog: false,
+      onFlexGridAttend: [],
       selJijyosyo: [],
       selSyokusyu: [],
-      jijyosyoList: [],
-      syokusyuList: [],
+      selectedJigyosyo: {
+        val: 0,
+        name: '指定無し',
+      },
+      jijyosyoList: [
+        {
+          val: 0,
+          name: '指定無し',
+        },
+        {
+          val: 1,
+          name: 'とうけい相談支援事業所１',
+        },
+        {
+          val: 2,
+          name: 'とうけい相談支援事業所２',
+        },
+      ],
+      selectedSyokusyu: {
+        val: 0,
+        name: '指定無し',
+      },
+      syokusyuList: [
+        {
+          val: 0,
+          name: '指定無し',
+        },
+        {
+          val: 1,
+          name: '相談支援専門員',
+        },
+        {
+          val: 2,
+          name: 'その他',
+        },
+      ],
       selectedAttendView: [],
-      selectedAttendViewDefault: [],
       getYmd:
         dayjs().format('YYYY') +
         '年' +
@@ -682,9 +768,18 @@ export default {
       this.userName = row.names;
     },
     onInitializedAttend(flexGrid) {
+      this.onFlexGridAttend = flexGrid;
+      // 選択した行のデータ取得;
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        // selectedAttendGridへ追加可能状態
+        let ht = flexGrid.hitTest(e);
+        let selectRow = ht._row;
+        this.selectedRowData = this.attendSelect[selectRow];
+      });
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel.cellType == wjGrid.CellType.Cell) {
           e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+          e.cell.style.color = sysConst.COLOR.fontColor;
           e.cell.style.textAlign = 'left';
           e.cell.style.justifyContent = 'left';
           e.cell.style.alignItems = 'left';
@@ -748,19 +843,34 @@ export default {
       attendView.push({
         column1: {
           position: '相談支援専門員',
-          name: '鈴木妙子',
+          intId: 5,
+          code: '10001',
+          syokusyu: '相談支援専門員',
+          name: '鈴木　妙子',
+          kana: 'ｽｽﾞｷ ｻｴｺ',
+          jigyosyo: 'とうけい相談支援事業所1',
         },
       });
       attendView.push({
         column1: {
           position: '相談支援専門員',
-          name: '鈴木美智子',
+          intId: 8,
+          code: '10002',
+          syokusyu: 'その他',
+          name: '西経　太郎',
+          kana: 'ｾｲｹｲ ﾀﾛｳ',
+          jigyosyo: 'とうけい相談支援事業所1',
         },
       });
       attendView.push({
         column1: {
           position: '',
+          intId: '',
+          code: '',
+          syokusyu: '',
           name: '',
+          kana: '',
+          jigyosyo: '',
         },
       });
       this.attendView = attendView;
@@ -768,16 +878,31 @@ export default {
       let attendSelect = [];
 
       attendSelect.push({
+        intId: 5, // 見立て内部ID
         code: '10001',
         syokusyu: '相談支援専門員',
         name: '鈴木　妙子',
+        kana: 'ｽｽﾞｷ ｻｴｺ',
+        jigyosyo: 'とうけい相談支援事業所１',
       });
       attendSelect.push({
+        intId: 6,
         code: '10002',
-        syokusyu: '相談支援専門員',
+        syokusyu: 'その他',
         name: '竹下　美智子',
+        kana: 'ﾀｹｼﾀ ﾐﾁｺ',
+        jigyosyo: 'とうけい相談支援事業所１',
+      });
+      attendSelect.push({
+        intId: 3,
+        code: '10003',
+        syokusyu: '相談支援専門員',
+        name: '東経 太郎',
+        kana: 'ﾄｳｹｲ ﾀﾛｳ',
+        jigyosyo: 'とうけい相談支援事業所２',
       });
 
+      this.attendSelectDefault = attendSelect;
       this.attendSelect = attendSelect;
 
       flexGrid.formatItem.addHandler(function (s, e) {
@@ -798,33 +923,48 @@ export default {
       flexGrid.select(-1, -1);
     },
     onInitializedSelected(flexGrid) {
-      flexGrid.select(-1, -1);
+      // flexGrid.select(-1, -1);
       this.onFlexGridSelected = flexGrid;
       let selectedAttendView = [];
       selectedAttendView.push({
         num: 1,
+        intId: 5,
+        code: '10001',
         syokusyu: '相談支援専門員',
-        simei: '鈴木 妙子',
+        name: '鈴木　妙子',
+        kana: 'ｽｽﾞｷ ｻｴｺ',
+        jigyosyo: 'とうけい相談支援事業所1',
       });
       selectedAttendView.push({
         num: 2,
-        syokusyu: '相談支援専門員',
-        simei: '竹下 美智子',
+        intId: 8,
+        code: '10002',
+        syokusyu: 'その他',
+        name: '西経　太郎',
+        kana: 'ｾｲｹｲ ﾀﾛｳ',
+        jigyosyo: 'とうけい相談支援事業所1',
       });
+      // 15件以下の場合は空データを挿入
       for (let i = 3; i <= 12; i++) {
         selectedAttendView.push({
           num: i,
+          intId: '',
+          code: '',
           syokusyu: '',
-          simei: '',
+          name: '',
+          kana: ' ',
+          jigyosyo: '',
         });
       }
+
       // 並び順
       selectedAttendView.sort((a, b) => {
         return a.num < b.num ? -1 : 1;
       });
-
+      this.selectedAttendViewDefault = JSON.parse(
+        JSON.stringify(selectedAttendView)
+      );
       this.selectedAttendView = selectedAttendView;
-      this.selectedAttendViewDefault = selectedAttendView;
 
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells) {
@@ -836,14 +976,14 @@ export default {
 
       let _self = this;
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        // 並び順変更可能状態
         let ht = flexGrid.hitTest(e);
+        // 並び順変更可能状態
         if (ht.panel == flexGrid.cells) {
           if (_self.sortEditFlag && ht.col == 0) {
             if (
               flexGrid.cells.rows[ht.row].dataItem.num.length == 0 &&
               _self.selectedAttendView[ht.row].syokusyu &&
-              _self.selectedAttendView[ht.row].simei
+              _self.selectedAttendView[ht.row].name
             ) {
               _self.selectedAttendView[ht.row].num = _self.sortEditCount;
               flexGrid.setCellData(ht.row, 0, _self.sortEditCount);
@@ -856,7 +996,7 @@ export default {
             if (
               !_self.selectedAttendView[i].num &&
               _self.selectedAttendView[i].syokusyu &&
-              _self.selectedAttendView[i].simei
+              _self.selectedAttendView[i].name
             ) {
               cntdisable++;
             }
@@ -864,12 +1004,108 @@ export default {
           if (cntdisable == 0) {
             _self.sortDisabled = false;
           }
+          if (
+            _self.sortEditFlag == false &&
+            _self.selectedRowData.length != 0
+          ) {
+            // selectedAttendGridへ追加可能状態
+            let selectedAttendViewAdd = _self.selectedAttendView;
+            let rdCount = this.getRealdata(selectedAttendViewAdd, 'syokusyu');
+            // 要素数を取得;
+            let l = Object.keys(selectedAttendViewAdd[rdCount]).length;
+            let keyArr = Object.keys(selectedAttendViewAdd[rdCount]);
+            if (rdCount <= ht.row) {
+              // 選択した行が実データの数より大きい場合、最後の行に選択したデータを登録;
+              for (let i = 0; i < l; i++) {
+                selectedAttendViewAdd[rdCount][keyArr[i]] =
+                  _self.selectedRowData[keyArr[i]];
+              }
+            } else if (14 < rdCount) {
+              alert('登録できるのは15人までです');
+            } else {
+              // 選択した行が実データの数以下場合、選択した行の一つ下の行に値を代入
+              selectedAttendViewAdd.splice(
+                ht.row + 1,
+                0,
+                _self.selectedRowData
+              );
+            }
+            _self.selectedAttendView = selectedAttendViewAdd;
+            _self.numSort();
+            flexGrid.itemsSource = [];
+            flexGrid.itemsSource = _self.selectedAttendView;
+            // attendGridの選択解除
+            _self.onFlexGridAttend.select(-1, -1);
+            // 選択データを初期化
+            _self.selectedRowData = [];
+          }
         }
       });
     },
-
+    getRealdata(array, key) {
+      // 配列の実データ数を取得;
+      let dataLength = 0;
+      for (let i = 0; i < array.length; i++) {
+        if (array[i][key]) {
+          dataLength++;
+        }
+      }
+      return dataLength;
+    },
     onAlphabetical() {
-      alert('alpha');
+      this.userFilter();
+    },
+    onJigyosyoChanged(s) {
+      // 事業所の選択値
+      this.selectedJigyosyo = s;
+      this.userFilter();
+    },
+    onSyokusyuChanged(s) {
+      // 職種指定の選択値
+      this.selectedSyokusyu = s;
+      this.userFilter();
+    },
+
+    userFilter() {
+      let data = [];
+      let _self = this;
+      // 事業所、職種指定の絞り込み
+      this.attendSelectDefault.forEach(function (value) {
+        if (
+          (value.jigyosyo.indexOf(_self.selectedJigyosyo.name) != -1 ||
+            _self.selectedJigyosyo.val === 0) &&
+          (value.syokusyu.indexOf(_self.selectedSyokusyu.name) != -1 ||
+            _self.selectedSyokusyu.val === 0)
+        ) {
+          data.push(value);
+        }
+      });
+      // カナ検索絞り込み
+      data = this.$refs.alp.alphabetFilter(data, 'kana');
+
+      // itemsSourceに配列代入
+      this.attendSelect = data;
+    },
+    selectedAttendResetSelect() {
+      this.onFlexGridAttend.select(-1, -1);
+    },
+    addSelectedAttendManual() {
+      // データが入っているデータの数を取得
+      let rdCount = this.getRealdata(this.selectedAttendView, 'syokusyu');
+      if (14 < rdCount) {
+        alert('登録できるのは15人までです');
+      } else {
+        // 実数で入っているデータの一番下に入力データを登録
+        this.selectedAttendView[rdCount].code = this.manualCode;
+        this.selectedAttendView[rdCount].syokusyu = this.manualSyokusyu;
+        this.selectedAttendView[rdCount].name = this.manualName;
+        this.onFlexGridSelected.itemsSource = [];
+        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
+        // 入力値を初期化
+        this.manualCode = '';
+        this.manualSyokusyu = '';
+        this.manualName = '';
+      }
     },
     /********************************
      * 並び順指定
@@ -881,8 +1117,12 @@ export default {
       for (let i = 0; i < selectedAttendView.length; i++) {
         sortEdit.push({
           num: '',
+          intId: selectedAttendView[i].intId,
+          code: selectedAttendView[i].code,
           syokusyu: selectedAttendView[i].syokusyu,
-          simei: selectedAttendView[i].simei,
+          name: selectedAttendView[i].name,
+          kana: selectedAttendView[i].kana,
+          jigyosyo: selectedAttendView[i].jigyosyo,
         });
       }
       this.selectedAttendView = sortEdit;
@@ -896,9 +1136,29 @@ export default {
         let index = this.selectedAttendView.findIndex(
           ({ num }) => num === number
         );
-        this.selectedAttendView[index] = [];
-        this.editSort();
+        this.selectedAttendView.splice([index], 1);
+        this.numSort();
+        this.onFlexGridSelected.itemsSource = [];
+        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
       }
+    },
+    numSort() {
+      // num順に並べ替える（データ追加、削除時使用）
+      let selectedAttendView = this.selectedAttendView;
+      let sortedArr = [];
+      for (let i = 0; i < selectedAttendView.length; i++) {
+        let l = i + 1;
+        sortedArr.push({
+          num: l,
+          intId: selectedAttendView[i].intId,
+          code: selectedAttendView[i].code,
+          syokusyu: selectedAttendView[i].syokusyu,
+          name: selectedAttendView[i].name,
+          kana: selectedAttendView[i].kana,
+          jigyosyo: selectedAttendView[i].jigyosyo,
+        });
+      }
+      this.selectedAttendView = sortedArr;
     },
     editSort() {
       let selectedAttendView = this.selectedAttendView;
@@ -906,11 +1166,15 @@ export default {
       let sortEdit = [];
       let cnt = 1;
       for (let i = 0; i < selectedAttendView.length; i++) {
-        if (selectedAttendView[i].syokusyu) {
+        if (selectedAttendView[i].intId) {
           sortEdit.push({
             num: selectedAttendView[i].num,
+            intId: selectedAttendView[i].intId,
+            code: selectedAttendView[i].code,
             syokusyu: selectedAttendView[i].syokusyu,
-            simei: selectedAttendView[i].simei,
+            name: selectedAttendView[i].name,
+            kana: selectedAttendView[i].kana,
+            jigyosyo: selectedAttendView[i].jigyosyo,
           });
           cnt++;
         }
@@ -918,8 +1182,12 @@ export default {
       for (let i = cnt - 1; i < selectedAttendView.length; i++) {
         sortEdit.push({
           num: i + 1,
+          intId: selectedAttendView[i].intId,
+          code: selectedAttendView[i].code,
           syokusyu: selectedAttendView[i].syokusyu,
-          simei: selectedAttendView[i].simei,
+          name: selectedAttendView[i].name,
+          kana: selectedAttendView[i].kana,
+          jigyosyo: selectedAttendView[i].jigyosyo,
         });
       }
       // 並び順
@@ -927,6 +1195,36 @@ export default {
         return a.num < b.num ? -1 : 1;
       });
       this.selectedAttendView = sortEdit;
+      this.sortEditFlag = false;
+    },
+    undoChange() {
+      // if (confirm('変更を元に戻します。よろしいですか？')) {
+      // 変更前のデータに変更
+      let temp = JSON.parse(JSON.stringify(this.selectedAttendViewDefault));
+      this.selectedAttendView = temp;
+      this.onFlexGridSelected.itemsSource = [];
+      this.onFlexGridSelected.itemsSource = temp;
+      // }
+      this.attend_dialog = false;
+    },
+    selectAllDelete() {
+      if (confirm('選択した出席者をすべて削除します。よろしいですか？')) {
+        let delArr = [];
+        for (let l = 1; l < 16; l++) {
+          delArr.push({
+            num: l,
+            intId: '',
+            code: '',
+            syokusyu: '',
+            name: '',
+            kana: '',
+            jigyosyo: '',
+          });
+        }
+        this.selectedAttendView = delArr;
+        this.onFlexGridSelected.itemsSource = [];
+        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
+      }
     },
     dispalyChange() {
       this.onDisplayFlag = this.onDisplayFlag ? false : true;
@@ -1032,12 +1330,41 @@ div#selectedAttendGrid {
 #attendGrid {
   font-size: 12px;
   height: 120px;
+  .wj-cells
+    .wj-row:hover
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    transition: all 0s;
+    background: $grid_hover_background;
+  }
+
+  .wj-cells .wj-cell.wj-state-multi-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
+
+  .wj-cells .wj-cell.wj-state-selected {
+    background: $grid_selected_background;
+    color: $grid_selected_color;
+  }
 }
 div {
   &.customCombobox {
     &.w100p {
       width: 100% !important;
     }
+  }
+}
+.attend-dialog-select {
+  .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+    min-height: 25px !important;
+    height: 25px;
+    font-size: 12px;
+  }
+  .caption-left {
+    min-width: 100px;
+  }
+  .v-input__control > .v-input__slot {
+    border: 1px solid #ccc;
   }
 }
 .selectbox {
@@ -1051,5 +1378,11 @@ div {
   border: 1px solid #ccc;
   width: 100%;
   padding-left: 10px;
+}
+.manual-form {
+  font-size: 12px;
+  .v-input__slot {
+    padding: 0 4px !important;
+  }
 }
 </style>
