@@ -295,10 +295,26 @@ export default {
       newDiv.className = 'cls';
       console.log(e.clientY);
       let cy = 0;
-      if (e.clientY >= 435 && e.clientY < 455) {
-        cy = 435;
+      let y = 170;
+      let y2 = y + 15;
+      for (let i = 1; i < 20; i++) {
+        if (e.clientY >= y && e.clientY < y2) {
+          cy = y;
+        }
+        newDiv.style.top = cy - 80 + 'px';
+        y = y2;
+        y2 = y2 * i + 1;
       }
-      newDiv.style.top = cy - 80 + 'px';
+      // if (e.clientY >= 170 && e.clientY < 185) {
+      //   cy = 170;
+      // }
+      // if (e.clientY >= 185 && e.clientY < 200) {
+      //   cy = 185;
+      // }
+
+      // if (e.clientY >= 435 && e.clientY < 455) {
+      //   cy = 435;
+      // }
 
       let cx = 0;
       if (e.clientX >= 330 && e.clientX < 450) {
