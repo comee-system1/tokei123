@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringHoukokusho">
-    <v-container class="ml-1 pa-0" style="max-width: 100%" fluid>
+    <v-container class="pa-1" fluid>
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }" style="height: 70vh">
           <user-list
@@ -1115,13 +1115,12 @@ div#monitoringHoukokusho {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1266px !important;
+  min-width: 1300px !important;
   max-width: 1920px;
-  width: auto;
+  // width: auto;
   .rightArea {
-    min-width: 1050px;
-    max-width: 1050px;
-    // width: 1020px;
+    min-width: 700px;
+    width: 700px;
     .rowStyle {
       height: 20px;
     }

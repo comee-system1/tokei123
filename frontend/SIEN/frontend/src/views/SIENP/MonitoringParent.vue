@@ -1,7 +1,7 @@
 <template>
   <div id="monitoringParent">
-    <v-container no-gutters fluid class="ml-1 mr-1 mt-1 pa-0">
-      <v-tabs height="30" hide-slider v-model="tab">
+    <v-container no-gutters fluid class="mt-1 pa-0">
+      <v-tabs height="30" hide-slider v-model="tab" class="pl-1">
         <v-tab
           v-for="item in menuItem"
           :key="item.val"
@@ -97,9 +97,9 @@ div#monitoringParent {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1350px !important;
+  // min-width: 1350px !important;
   max-width: 1920px;
-  width: auto;
+  // width: auto;
 
   .parentTab {
     border: 1px solid;

@@ -89,7 +89,7 @@ export default {
 
       keikakuKubunModel: '',
       editTextDialog: false,
-      headerheight: 260,
+      headerheight: 300,
     };
   },
   created() {},

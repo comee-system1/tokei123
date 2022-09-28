@@ -208,7 +208,10 @@
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="viewdatakeikaku"
         >
-          <wj-flex-grid-filter :initialized="filterInitializedkeikakuIcrn" />
+          <wj-flex-grid-filter
+            :initialized="filterInitializedkeikakuIcrn"
+            :showFilterIcons="false"
+          />
         </wj-flex-grid>
       </v-layout>
     </v-container>
@@ -589,6 +592,15 @@ export default {
     },
     onInitializekeikakuIcrnGrid(flexGrid) {
       this.mainFlexGrid = flexGrid;
+
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filterkeikakuIcrn.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filterkeikakuIcrn.showFilterIcons = false;
+      });
+
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());

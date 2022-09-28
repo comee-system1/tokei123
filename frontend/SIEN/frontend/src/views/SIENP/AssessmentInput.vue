@@ -1,8 +1,8 @@
 <template>
   <div id="assessmentInput">
-    <v-container no-gutters fluid class="container ml-1 pa-0">
+    <v-container no-gutters fluid class="container pa-0">
       <v-row no-gutters>
-        <v-col class="leftArea">
+        <v-col class="leftArea ml-1">
           <!-- 左側エリア -->
           <user-list
             ref="user_list"
@@ -12,7 +12,7 @@
           >
           </user-list>
         </v-col>
-        <v-col>
+        <v-col class="rightArea" style="width: 700px; min-width: 700px">
           <!-- 中央エリア -->
           <v-row no-gutters class="rowStyle mt-1 mb-1">
             <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
@@ -144,7 +144,7 @@
             <v-card class="koumokuData mr-1 pa-1" tile outlined> </v-card>
           </v-row>
 
-          <v-row class="ma-0 pa-0" no-gutters>
+          <v-row no-gutters>
             <wj-flex-grid
               id="icrnGrid"
               :headersVisibility="'None'"
@@ -565,13 +565,17 @@ div#assessmentInput {
   font-family: 'メイリオ';
   // min-width: 1050px !important;
   // max-width: 1920px;
-  min-width: 1266px !important;
-  width: auto;
+  // min-width: 1266px !important;
+  // width: auto;
   .leftArea {
     min-width: 275px;
     max-width: 275px;
     min-height: 450px;
     width: 275px;
+  }
+  .rightArea {
+    width: 700px;
+    min-width: 700px;
   }
   .koumokuTitle {
     color: $font_color;
@@ -644,8 +648,9 @@ div#assessmentInput {
   }
   #icrnGrid {
     min-height: 520px;
-    width: 77vw;
-    // min-width: 1000px;
+    height: 80vh;
+    width: 1050px;
+    min-width: 1050px;
     color: $font_color;
     font-size: $cell_fontsize;
 
@@ -703,45 +708,7 @@ div#assessmentInput {
       border-color: lightgray;
     }
   }
-  .centerArea {
-    .customCombobox {
-      position: relative;
-      width: 175px !important;
-      height: 20px !important;
-      &.customCombobox {
-        // width: 160px !important;
-        div {
-          text-align: left;
-        }
-      }
 
-      .wj-btn.wj-btn-default {
-        border-left: none !important;
-      }
-      &:hover {
-        background-color: #e1e1e1;
-      }
-      &:focus {
-        background-color: #fff;
-      }
-      div * {
-        height: 18px !important;
-        // padding: 0;
-        span {
-          // height: 21px !important;
-          margin-top: 5px;
-        }
-        &.wj-form-control {
-          position: absolute;
-          top: -5px;
-          width: 100%;
-        }
-      }
-      input {
-        height: 20px !important;
-      }
-    }
-  }
   .v-application--is-ltr .v-list-item__action:first-child,
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 4px;

@@ -1,5 +1,5 @@
 <template>
-  <div id="attendeeState">
+  <div id="attendeeState" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -181,6 +181,14 @@ export default {
   components: {
     UserList,
   },
+  computed: {
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   data() {
     return {
       leftWidth: '280px',
@@ -195,10 +203,19 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      headerheight: 100,
     };
   },
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('attendeeState') != null) {
+        document.getElementById('attendeeState').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     /****************
      * ユーザー一覧を押下
      */

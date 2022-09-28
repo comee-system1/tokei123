@@ -246,7 +246,6 @@
           件
         </v-card>
       </v-row>
-
       <v-row class="ma-0" no-gutters>
         <wj-flex-grid
           id="uketukeIcrnGrid"
@@ -1010,8 +1009,7 @@ div#uketukeIcrn {
     font-size: $cell_fontsize;
     width: 98%;
     min-width: 1050px !important;
-    height: 73vh;
-    min-height: 470px;
+    height: 76vh;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;

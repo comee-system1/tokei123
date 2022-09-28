@@ -265,7 +265,7 @@ export default {
       viewData: [],
       onflexGrid: [],
       viewDataLength: 0,
-      headerheight: 240,
+      headerheight: 300,
       editTextDialog: false,
       serviceData: [],
       serviceDataLength: 0,

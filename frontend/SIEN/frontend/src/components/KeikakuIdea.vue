@@ -137,7 +137,13 @@
               >
                 障害者支援区分
               </v-card>
-              <v-card class="lightYellow ml-1 pl-1" width="140" outlined tile>
+              <v-card
+                class="lightYellow ml-1 pl-1"
+                width="140"
+                height="20"
+                outlined
+                tile
+              >
                 区分5
               </v-card>
               <v-card

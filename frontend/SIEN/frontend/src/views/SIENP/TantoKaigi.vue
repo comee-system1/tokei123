@@ -200,7 +200,6 @@
                   <v-card elevation="0" :color="'grey lighten-4'">
                     <wj-flex-grid
                       id="tantoKaigiGrid"
-                      :itemsSource="attendView"
                       :autoClipboard="false"
                       :selectionMode="'1'"
                       :headersVisibility="'0'"
@@ -213,48 +212,6 @@
                       :initialized="onInitialized"
                       :itemsSourceChanged="onItemsSourceChanged"
                     >
-                      <wj-flex-grid-column
-                        binding="column1.position"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
-                      <wj-flex-grid-column
-                        binding="column1.name"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
-                      <wj-flex-grid-column
-                        binding="column2.position"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
-                      <wj-flex-grid-column
-                        binding="column2.name"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
-                      <wj-flex-grid-column
-                        binding="column3.position"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
-                      <wj-flex-grid-column
-                        binding="column3.name"
-                        align="center"
-                        valign="middle"
-                        :width="156"
-                        :isReadOnly="true"
-                      ></wj-flex-grid-column>
                     </wj-flex-grid>
                   </v-card>
                 </v-card>
@@ -401,7 +358,11 @@
               <v-btn small @click="editSort" :disabled="sortDisabled"
                 >並替え</v-btn
               >
-              <v-btn small class="ml-2" @click="selectAllDelete"
+              <v-btn
+                small
+                class="ml-2"
+                @click="allDelete"
+                :disabled="allDeleteDisabled"
                 >全クリア</v-btn
               >
 
@@ -417,8 +378,8 @@
                 :selectionMode="'Row'"
                 :headersVisibility="'Column'"
                 :initialized="onInitializedSelected"
-                :itemsSourceChanged="onInitializedSelectedChanged"
                 :itemsSource="selectedAttendView"
+                :itemsSourceChanged="onInitializedSelectedChanged"
               >
                 <wj-flex-grid-column
                   header="No"
@@ -457,13 +418,22 @@
                   color="primary"
                   class="ml-auto"
                   small
+                  :disabled="deleteDisabled"
                   @click="editDelete"
                 >
                   削除
                 </v-btn>
               </div>
               <div class="text-end pa-1 ml-auto">
-                <v-btn color="primary" class="ml-auto" small> 設定 </v-btn>
+                <v-btn
+                  color="primary"
+                  class="ml-auto"
+                  small
+                  :disabled="registDisabled"
+                  @click="registSelect"
+                >
+                  設定
+                </v-btn>
               </div>
             </div>
           </v-col>
@@ -535,7 +505,10 @@
                 id="attendGrid"
                 class="mt-2"
                 :itemsSource="attendSelect"
-                :autoClipboard="false"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowDragging="false"
+                :allowPinning="false"
                 :allowResizing="false"
                 :allowSorting="false"
                 :selectionMode="'Row'"
@@ -679,6 +652,7 @@ export default {
       calendarType: 0,
       picker: '',
       attendView: [],
+      onFlexGridAttendView: [],
       attendSelectDefault: [],
       attendSelect: [],
       manualCode: '',
@@ -754,6 +728,9 @@ export default {
         dayjs().format('DD') +
         '日',
       sortDisabled: true,
+      deleteDisabled: false,
+      allDeleteDisabled: false,
+      registDisabled: false,
       sortEditFlag: false,
       sortEditCount: 1,
       onFlexGridSelected: [],
@@ -839,42 +816,59 @@ export default {
      * 出席者
      *********************/
     onInitialized(flexGrid) {
+      // グリッドの選択を無効にする;
+      flexGrid.selectionMode = wjGrid.SelectionMode.None;
+      // 出席者データ取得
+      this.onFlexGridAttendView = flexGrid;
       let attendView = [];
       attendView.push({
-        column1: {
-          position: '相談支援専門員',
-          intId: 5,
-          code: '10001',
-          syokusyu: '相談支援専門員',
-          name: '鈴木　妙子',
-          kana: 'ｽｽﾞｷ ｻｴｺ',
-          jigyosyo: 'とうけい相談支援事業所1',
-        },
+        num: 1,
+        position: '相談支援専門員',
+        intId: 5,
+        code: '10001',
+        syokusyu: '相談支援専門員',
+        name: '鈴木 妙子',
+        kana: 'ｽｽﾞｷ ｻｴｺ',
+        jigyosyo: 'とうけい相談支援事業所1',
       });
       attendView.push({
-        column1: {
-          position: '相談支援専門員',
-          intId: 8,
-          code: '10002',
-          syokusyu: 'その他',
-          name: '西経　太郎',
-          kana: 'ｾｲｹｲ ﾀﾛｳ',
-          jigyosyo: 'とうけい相談支援事業所1',
-        },
+        num: 2,
+        position: '相談支援専門員',
+        intId: 8,
+        code: '10002',
+        syokusyu: 'その他',
+        name: '西経 太郎',
+        kana: 'ｾｲｹｲ ﾀﾛｳ',
+        jigyosyo: 'とうけい相談支援事業所1',
       });
-      attendView.push({
-        column1: {
-          position: '',
+      // 15件以下の場合は空データを挿入
+      for (let i = 3; i <= 15; i++) {
+        attendView.push({
+          num: i,
           intId: '',
           code: '',
           syokusyu: '',
           name: '',
           kana: '',
           jigyosyo: '',
-        },
-      });
+        });
+      }
       this.attendView = attendView;
 
+      // セルに値を挿入
+      this.setAttendViewData();
+
+      // セルの幅調整
+      flexGrid.columns.defaultSize = 154;
+      // セルのデザイン修正
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        let s = cell.style;
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          if (c == 0 || c == 2 || c == 4) {
+            s.borderRight = 'none';
+          }
+        }
+      };
       let attendSelect = [];
 
       attendSelect.push({
@@ -904,14 +898,6 @@ export default {
 
       this.attendSelectDefault = attendSelect;
       this.attendSelect = attendSelect;
-
-      flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel == s.cells) {
-          e.cell.style.textAlign = 'left';
-          e.cell.style.justifyContent = 'left';
-          e.cell.style.alignItems = 'left';
-        }
-      });
     },
     onItemsSourceChanged(flexGrid) {
       flexGrid.select(-1, -1);
@@ -926,45 +912,15 @@ export default {
       // flexGrid.select(-1, -1);
       this.onFlexGridSelected = flexGrid;
       let selectedAttendView = [];
-      selectedAttendView.push({
-        num: 1,
-        intId: 5,
-        code: '10001',
-        syokusyu: '相談支援専門員',
-        name: '鈴木　妙子',
-        kana: 'ｽｽﾞｷ ｻｴｺ',
-        jigyosyo: 'とうけい相談支援事業所1',
-      });
-      selectedAttendView.push({
-        num: 2,
-        intId: 8,
-        code: '10002',
-        syokusyu: 'その他',
-        name: '西経　太郎',
-        kana: 'ｾｲｹｲ ﾀﾛｳ',
-        jigyosyo: 'とうけい相談支援事業所1',
-      });
-      // 15件以下の場合は空データを挿入
-      for (let i = 3; i <= 12; i++) {
-        selectedAttendView.push({
-          num: i,
-          intId: '',
-          code: '',
-          syokusyu: '',
-          name: '',
-          kana: ' ',
-          jigyosyo: '',
-        });
-      }
 
       // 並び順
       selectedAttendView.sort((a, b) => {
         return a.num < b.num ? -1 : 1;
       });
       this.selectedAttendViewDefault = JSON.parse(
-        JSON.stringify(selectedAttendView)
+        JSON.stringify(this.attendView)
       );
-      this.selectedAttendView = selectedAttendView;
+      this.selectedAttendView = this.attendView;
 
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells) {
@@ -1001,7 +957,7 @@ export default {
               cntdisable++;
             }
           }
-          if (cntdisable == 0) {
+          if (_self.sortEditFlag && cntdisable == 0) {
             _self.sortDisabled = false;
           }
           if (
@@ -1011,24 +967,41 @@ export default {
             // selectedAttendGridへ追加可能状態
             let selectedAttendViewAdd = _self.selectedAttendView;
             let rdCount = this.getRealdata(selectedAttendViewAdd, 'syokusyu');
-            // 要素数を取得;
-            let l = Object.keys(selectedAttendViewAdd[rdCount]).length;
-            let keyArr = Object.keys(selectedAttendViewAdd[rdCount]);
-            if (rdCount <= ht.row) {
-              // 選択した行が実データの数より大きい場合、最後の行に選択したデータを登録;
-              for (let i = 0; i < l; i++) {
-                selectedAttendViewAdd[rdCount][keyArr[i]] =
-                  _self.selectedRowData[keyArr[i]];
-              }
-            } else if (14 < rdCount) {
-              alert('登録できるのは15人までです');
+            // 登録データの重複確認
+            let registeredIntId = [];
+            for (let d = 0; d < rdCount; d++) {
+              // 既に登録されているintId配列を作成
+              registeredIntId.push(_self.selectedAttendView[d].intId);
+            }
+            // 選択値と重複がないか確認
+            let duplicationFlag =
+              registeredIntId.indexOf(_self.selectedRowData.intId) !== -1;
+
+            if (duplicationFlag) {
+              alert('既に登録されています');
             } else {
-              // 選択した行が実データの数以下場合、選択した行の一つ下の行に値を代入
-              selectedAttendViewAdd.splice(
-                ht.row + 1,
-                0,
-                _self.selectedRowData
-              );
+              // 要素数を取得;
+              if (rdCount <= ht.row && rdCount < 15) {
+                let keyArr = Object.keys(selectedAttendViewAdd[rdCount]);
+                let l = keyArr.length;
+                // 選択した行が実データの数以上の場合、最後の行に選択したデータを登録;
+                for (let i = 0; i < l; i++) {
+                  selectedAttendViewAdd[rdCount][keyArr[i]] =
+                    _self.selectedRowData[keyArr[i]];
+                }
+              } else if (15 <= rdCount) {
+                // 登録が16人以上になる場合
+                alert('登録できるのは15人までです');
+              } else {
+                // 選択した行が実データの数以下場合、選択した行の一つ下の行に値を代入
+                selectedAttendViewAdd.splice(
+                  ht.row + 1,
+                  0,
+                  _self.selectedRowData
+                );
+                // 末尾のデータを削除（データ数15個固定のため）
+                selectedAttendViewAdd.pop();
+              }
             }
             _self.selectedAttendView = selectedAttendViewAdd;
             _self.numSort();
@@ -1041,6 +1014,41 @@ export default {
           }
         }
       });
+    },
+    setAttendViewData() {
+      // itemsSourceを初期化
+      this.onFlexGridAttendView.itemsSource = [];
+      // セルの作成;
+      while (this.onFlexGridAttendView.columns.length < 6) {
+        this.onFlexGridAttendView.columns.push(new wjGrid.Column());
+      }
+      while (this.onFlexGridAttendView.rows.length < 5) {
+        this.onFlexGridAttendView.rows.push(new wjGrid.Row());
+      }
+
+      let c = 0; // Column座標変数
+      let r = 0; // Row座標変数
+      // 実数値の数を取得
+      let rdCount = this.getRealdata(this.attendView, 'syokusyu');
+      let arr = [];
+      // 職種、氏名の順でデータを取得し格納
+      for (let l = 0; l < rdCount; l++) {
+        arr.push(this.attendView[l].syokusyu);
+        arr.push(this.attendView[l].name);
+      }
+      for (let i = 0; i < arr.length; i++) {
+        if (c == 6) {
+          // 行が変わるごとに初期化
+          c = 0;
+          // 行が変わるごとにれる座標に加算
+          r++;
+        }
+        // データを挿入;
+        if (i < 6 * i + 6) {
+          this.onFlexGridAttendView.setCellData(r, c, arr[i]);
+        }
+        c++;
+      }
     },
     getRealdata(array, key) {
       // 配列の実データ数を取得;
@@ -1094,6 +1102,8 @@ export default {
       let rdCount = this.getRealdata(this.selectedAttendView, 'syokusyu');
       if (14 < rdCount) {
         alert('登録できるのは15人までです');
+      } else if (!this.manualCode || !this.manualSyokusyu || !this.manualName) {
+        alert('空欄があります。');
       } else {
         // 実数で入っているデータの一番下に入力データを登録
         this.selectedAttendView[rdCount].code = this.manualCode;
@@ -1129,6 +1139,9 @@ export default {
       this.sortEditFlag = true;
       this.sortEditCount = 1;
       this.sortDisabled = true;
+      this.deleteDisabled = true;
+      this.allDeleteDisabled = true;
+      this.registDisabled = true;
     },
     editDelete() {
       if (this.onFlexGridSelected.selectedItems[0]) {
@@ -1137,10 +1150,25 @@ export default {
           ({ num }) => num === number
         );
         this.selectedAttendView.splice([index], 1);
+        this.selectedAttendView.push({
+          num: '',
+          intId: '',
+          code: '',
+          syokusyu: '',
+          name: '',
+          kana: '',
+          jigyosyo: '',
+        });
         this.numSort();
         this.onFlexGridSelected.itemsSource = [];
         this.onFlexGridSelected.itemsSource = this.selectedAttendView;
       }
+    },
+    registSelect() {
+      this.attendView = [];
+      this.attendView = this.selectedAttendView;
+      this.setAttendViewData();
+      this.attend_dialog = false;
     },
     numSort() {
       // num順に並べ替える（データ追加、削除時使用）
@@ -1196,19 +1224,21 @@ export default {
       });
       this.selectedAttendView = sortEdit;
       this.sortEditFlag = false;
+      this.deleteDisabled = false;
+      this.allDeleteDisabled = false;
+      this.registDisabled = false;
+      this.sortDisabled = true;
     },
     undoChange() {
-      // if (confirm('変更を元に戻します。よろしいですか？')) {
-      // 変更前のデータに変更
+      // 変更前のデータに戻す
       let temp = JSON.parse(JSON.stringify(this.selectedAttendViewDefault));
       this.selectedAttendView = temp;
       this.onFlexGridSelected.itemsSource = [];
       this.onFlexGridSelected.itemsSource = temp;
-      // }
       this.attend_dialog = false;
     },
-    selectAllDelete() {
-      if (confirm('選択した出席者をすべて削除します。よろしいですか？')) {
+    allDelete() {
+      if (confirm('出席者をすべて削除します。よろしいですか？')) {
         let delArr = [];
         for (let l = 1; l < 16; l++) {
           delArr.push({

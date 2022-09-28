@@ -38,7 +38,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 const NONE = 'none';
-const grdRowheight = 16;
+const grdRowheight = 17;
 
 export default {
   data() {

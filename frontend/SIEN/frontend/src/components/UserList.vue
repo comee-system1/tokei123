@@ -359,6 +359,8 @@ export default {
       if (document.getElementById('user-list_scrollbar') != null) {
         document.getElementById('user-list_scrollbar').style.height =
           window.innerHeight - this.headerheight + 'px';
+        document.getElementById('userListGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
       }
     },
     switched() {
@@ -656,6 +658,7 @@ div#user-list_scrollbar {
   font-family: 'メイリオ';
   padding: 0;
   width: var(--width);
+
   #userListGrid {
     height: var(--height);
   }

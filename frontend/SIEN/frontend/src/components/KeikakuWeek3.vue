@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuWeek">
+  <div id="keikakuWeek" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -208,8 +208,56 @@ import Draggable from '@fullcalendar/interaction';
 import UserList from './UserList.vue';
 import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
-
+let w = ['mon', 'thu', 'web', 'the', 'fri', 'sat', 'sun'];
+let wk = '';
+let x = 330;
+let startY = 0;
+let endY = 0;
+let startWeekPos = 0;
+let endWeekPos = 0;
+function diffXCount(st, ed) {
+  let pos1 = w.indexOf(st);
+  let pos2 = w.indexOf(ed);
+  startWeekPos = pos1;
+  endWeekPos = pos2;
+  let calc = endWeekPos - startWeekPos + 1;
+  return calc;
+}
+function mouseDragGetWeek(e) {
+  x = 330;
+  for (let i = 0; i < 7; i++) {
+    if (e.clientX >= x && e.clientX < x + 120) {
+      wk = w[i];
+      break;
+    }
+    x = parseInt(x + 120);
+  }
+}
+function mouseDragBackgroundColor(elem, e, newDiv) {
+  let cy = 0;
+  let y = 170;
+  for (let i = 0; i < 36; i++) {
+    if (e.clientY >= y && e.clientY < y + 15) {
+      cy = y;
+      startY = y;
+    }
+    newDiv.style.top = cy - 80 + 'px';
+    y = y + 15;
+  }
+  let cx = 0;
+  for (let i = 0; i <= 7; i++) {
+    if (e.clientX >= x && e.clientX < x + 120) {
+      cx = x;
+    }
+    newDiv.style.left = cx + 'px';
+    x = x + 120;
+  }
+  if (cx && cy) {
+    elem.appendChild(newDiv);
+  }
+}
 export default {
+  mouseDragBackgroundColor,
   components: {
     FullCalendar, // make the <FullCalendar> tag available
     UserList,
@@ -247,11 +295,12 @@ export default {
         select: this.handleDateSelect,
         //  dateClick: this.handleDateClick,
         eventClick: this.onEventClick,
+        eventDragStart: this.onDragEvent,
         droppable: true,
         editable: true,
         navLinks: false,
         selectable: true,
-        contentHeight: '76vh',
+        contentHeight: '78vh',
         slotDuration: '00:30:00',
         locale: 'ja',
         firstDay: 1,
@@ -283,53 +332,51 @@ export default {
           // },
         },
       },
+      headerheight: 60,
     };
   },
-  computed: {},
-
+  computed: {
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   mounted() {
     let elem = document.getElementById('fullCalendar');
     let newDiv = document.createElement('div');
+    let _self = this;
+    let startX = '';
     elem.addEventListener('mousedown', function (e) {
-      this.moveFlag = true;
-      newDiv.className = 'cls';
-      console.log(e.clientY);
-      let cy = 0;
-      let y = 170;
-      let y2 = y + 15;
-      for (let i = 1; i < 20; i++) {
-        if (e.clientY >= y && e.clientY < y2) {
-          cy = y;
-        }
-        newDiv.style.top = cy - 80 + 'px';
-        y = y2;
-        y2 = y2 * i + 1;
+      if (_self.eventSelected.length != 0) {
+        newDiv = document.createElement('div');
+        this.moveFlag = true;
+        newDiv.className = 'cls';
+        mouseDragGetWeek(e);
+        startX = wk;
+        mouseDragBackgroundColor(elem, e, newDiv);
       }
-      // if (e.clientY >= 170 && e.clientY < 185) {
-      //   cy = 170;
-      // }
-      // if (e.clientY >= 185 && e.clientY < 200) {
-      //   cy = 185;
-      // }
-
-      // if (e.clientY >= 435 && e.clientY < 455) {
-      //   cy = 435;
-      // }
-
-      let cx = 0;
-      if (e.clientX >= 330 && e.clientX < 450) {
-        cx = 330;
-      }
-      newDiv.style.left = cx + 'px';
-      elem.appendChild(newDiv);
     });
     elem.addEventListener('mousemove', function (e) {
-      if (this.moveFlag == true) {
-        console.log(e);
+      if (this.moveFlag == true && _self.eventSelected.length != 0) {
+        mouseDragGetWeek(e);
+        let client_w = 120;
+        // 曜日配列の位置をとって差分の取得
+        let diffX = diffXCount(startX, wk);
+        newDiv.style.width = parseInt(client_w * diffX) + 'px';
+        newDiv.style.height = parseInt(e.clientY - startY) + 'px';
       }
     });
-    elem.addEventListener('mouseup', function () {
+    elem.addEventListener('mouseup', function (e) {
+      endY = e.clientY;
       this.moveFlag = false;
+      newDiv.style.width = 'auto';
+      newDiv.remove();
+    });
+    elem.addEventListener('mouseleave', function () {
+      this.moveFlag = false;
+      newDiv.style.width = 'auto';
       newDiv.remove();
     });
     let life = [];
@@ -594,8 +641,17 @@ export default {
     ];
     this.events = events;
     this.calendarOptions.events = events;
+
+    window.addEventListener('resize', this.calculateWindowHeight);
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('keikakuWeek') != null) {
+        document.getElementById('keikakuWeek').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
+
     handleEventMouseEnter() {
       alert('enter');
     },
@@ -603,17 +659,44 @@ export default {
       alert('leave');
     },
     handleDateSelect(selectInfo) {
+      // ドラッグドロップした位置が過去の時間の場合は何もしない
+      if (endY < startY) {
+        return false;
+      }
+      // ドラッグドロップした位置が過去の日の場合は何もしない
+      if (endWeekPos < startWeekPos) {
+        return false;
+      }
       let startdate = dayjs(selectInfo.startStr).format('YYYYMMDD');
       let enddate = dayjs(selectInfo.endStr).format('YYYYMMDD');
+      let startmonth = dayjs(selectInfo.startStr).format('YYYYMM');
+      let endmonth = dayjs(selectInfo.endStr).format('YYYYMM');
       let starttime = dayjs(selectInfo.startStr).format('HH:mm:ss');
       let endtime = dayjs(selectInfo.endStr).format('HH:mm:ss');
       let diff = enddate - startdate;
+
+      // 月跨ぎの時
+      // 月毎のloopを計算
+      if (startmonth != endmonth) {
+        // スタート月の最終日
+        let startEndDay = dayjs(selectInfo.startStr)
+          .add(1, 'month')
+          .date(0)
+          .format('YYYYMMDD');
+        diff = startEndDay - startdate;
+        // 翌月の最初の日
+        let tmp = endmonth + '01';
+        let diffnext = parseInt(enddate - tmp) + 1;
+        diff = diff + diffnext;
+      }
+
       let calendarApi = selectInfo.view.calendar;
       calendarApi.unselect(); // clear date selection
       if (this.eventSelected.length == 0) {
         //alert('select event');
         return false;
       }
+
       // 日付が別の時は日付分ループする
       if (diff > 0) {
         for (let i = 0; i <= diff; i++) {
@@ -621,7 +704,6 @@ export default {
             dayjs(startdate).add(i, 'd').format('YYYY-MM-DD') + 'T' + starttime;
           let end =
             dayjs(startdate).add(i, 'd').format('YYYY-MM-DD') + 'T' + endtime;
-
           calendarApi.addEvent({
             id: 1,
             title: this.eventSelected,
@@ -649,7 +731,12 @@ export default {
     handleDateClick(arg) {
       alert('date click! ' + arg.dateStr);
     },
-    onEventClick: function (info) {
+    onDragEvent() {
+      this.eventSelected = '';
+      this.onLifeGrid.select(-1, -1);
+      this.onFukusiGrid.select(-1, -1);
+    },
+    onEventClick(info) {
       console.log('onEvent');
 
       if (info.el.classList.contains('fc-h-event')) {
@@ -825,9 +912,9 @@ div#keikakuLifeGrid {
 // }
 .cls {
   width: 120px;
-  height: 20px;
+  height: 16px;
   background-color: green;
-  opacity: 0.5;
+  opacity: 0.3;
   position: absolute;
   top: 0;
   left: 0;

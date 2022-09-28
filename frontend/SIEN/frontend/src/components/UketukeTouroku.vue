@@ -155,7 +155,7 @@
             </v-row>
             <v-container no-gutters fluid class="v-tabCont pa-0">
               <!-- CP -->
-              <v-tabs-items v-model="kbnTab">
+              <v-tabs-items v-model="kbnTab" transition="none">
                 <!-- transition="false" -->
                 <v-tab-item value="Kihonsoudan">
                   <v-container
@@ -723,7 +723,7 @@
           </v-container>
           <v-container no-gutters fluid class="container ma-0 pa-0">
             <v-tabs-items v-model="rightTab">
-              <v-tab-item value="User" eager>
+              <v-tab-item value="User" eager transition="none">
                 <user-list
                   ref="user_list"
                   class="ml-1"
@@ -735,7 +735,7 @@
                 >
                 </user-list>
               </v-tab-item>
-              <v-tab-item value="Mst" eager>
+              <v-tab-item value="Mst" eager transition="none">
                 <!-- 右側＞参照＞マスタ -->
                 <v-container no-gutters fluid class="container ma-0 pa-1">
                   <wj-flex-grid
@@ -799,7 +799,7 @@
                 </v-container>
               </v-tab-item>
 
-              <v-tab-item value="Soudan" eager>
+              <v-tab-item value="Soudan" eager transition="none">
                 <!-- 右側＞参照＞相談履歴 -->
                 <v-container no-gutters fluid class="container ma-0 pa-1">
                   <v-row no-gutters class="rowStyle mt-1">
@@ -904,7 +904,7 @@
                   </v-row>
                 </v-container>
               </v-tab-item>
-              <v-tab-item value="Kihon" eager>
+              <v-tab-item value="Kihon" eager transition="none">
                 <v-container no-gutters fluid class="container ma-0 pa-1">
                   <!-- 右側＞参照＞基本情報 -->
                   <wj-flex-grid
