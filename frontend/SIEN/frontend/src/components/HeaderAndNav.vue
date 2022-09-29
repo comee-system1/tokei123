@@ -82,7 +82,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="#588C73" dark dense height="30px">
+    <v-app-bar app color="#588C73" flat dark dense height="30px">
       <div class="d-flex align-center">
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <!-- <v-toolbar-title>{{ pageTitle }}</v-toolbar-title> -->
@@ -94,58 +94,7 @@
         elevation="0"
         height="100%"
       >
-        <label style="padding-top: 2px; width: 40px; min-width: 40px"
-          >日付</label
-        >
-        <!-- @click="inputCalendarClick()" -->
-        <v-btn tile outlined class="service" height="85%" width="150px"
-          >{{ year }}年{{ month }}月{{ date }}日
-          <div class="float-right">
-            <v-icon small>mdi-calendar-month</v-icon>
-          </div>
-        </v-btn>
-        <v-btn
-          v-if="false"
-          elevation="0"
-          color="white"
-          class="pa-0 ml-1"
-          x-small
-          height="85%"
-          style="min-width: auto; border-radius: 3px"
-          tile
-          light
-          @click="calendarClick(1)"
-        >
-          <v-icon>mdi-arrow-left-bold</v-icon>
-        </v-btn>
-        <v-btn
-          v-if="false"
-          elevation="0"
-          color="white"
-          class="pa-0 ml-1"
-          x-small
-          height="85%"
-          style="min-width: auto; border-radius: 3px"
-          tile
-          light
-          @click="calendarClick(2)"
-        >
-          <v-icon>mdi-arrow-right-bold</v-icon>
-        </v-btn>
-        <v-btn
-          v-if="false"
-          elevation="0"
-          color="white"
-          class="coditionbtn pa-0 ml-1"
-          x-small
-          height="85%"
-          width="50px"
-          style="min-width: auto; border-radius: 3px"
-          tile
-          light
-          @click="searchButton()"
-          >更新
-        </v-btn>
+        <PankuzuList></PankuzuList>
       </v-card>
 
       <v-spacer></v-spacer>
@@ -193,19 +142,7 @@
       <v-icon v-if="isMaximize" @click="maximize">mdi-arrow-collapse</v-icon>
       <v-icon v-if="!isMaximize" @click="maximize">mdi-arrow-expand</v-icon>
     </v-app-bar>
-    <v-dialog v-model="datepicker_dialog" class="datepicker_dialogs">
-      <v-date-picker
-        id="headerAndNavDatepicker"
-        scrollable
-        no-title
-        mode="single"
-        v-model="picker"
-        locale="jp-ja"
-        :day-format="(date) => new Date(date).getDate()"
-        @change="dateSelect"
-      >
-      </v-date-picker>
-    </v-dialog>
+
     <v-row id="screen_dialog" v-show="screenFlag">
       <v-col class="text-h2">
         条件が変更されました。<br />更新ボタンを押してください。</v-col
@@ -215,7 +152,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import PankuzuList from './PankuzuList';
 export default {
   data() {
     return {
@@ -336,19 +273,46 @@ export default {
           name: '地域相談支援',
           mdi: true,
           src: 'mdi-home-edit-outline',
-          lists: [],
+          lists: [
+            {
+              name: '相談受付',
+              link: '/TemporaryPage',
+            },
+            {
+              name: '地域移行予定・実績一覧',
+              link: '/TemporaryPage',
+            },
+            {
+              name: 'アセスメント',
+              link: '/TemporaryPage',
+            },
+            {
+              name: '地域移行支援計画',
+              link: '/ChiikiIkoSienKeikaku',
+            },
+            {
+              name: '担当者会議',
+              link: '/TemporaryPage',
+            },
+            {
+              name: '地域定着台帳',
+              link: '/TemporaryPage',
+            },
+            {
+              name: '個人履歴',
+              link: '/TemporaryPage',
+            },
+            { name: 'マスタ', link: '/TemporaryPage' },
+          ],
         },
       ],
-      year: moment().year(),
-      month: moment().format('MM'),
-      date: moment().date(),
 
-      datepicker_dialog: false,
-      picker:
-        moment().year() + '-' + moment().format('M') + '-' + moment().date(),
       screenFlag: false, // 検索ボタン押下前にデータエリアにスクリーンを行う
       returndata: [], // 検索ボタンを押下時に選択値を渡す変数
     };
+  },
+  components: {
+    PankuzuList,
   },
   created: function () {
     document.addEventListener('fullscreenchange', () => {
@@ -371,49 +335,6 @@ export default {
     },
   },
   methods: {
-    inputCalendarClick() {
-      this.datepicker_dialog = true;
-    },
-    /**************
-     * 月の選択 ダイアログの日付を押下
-     */
-    dateSelect() {
-      let split = this.picker.split('-');
-      this.year = split[0];
-      this.month = split[1];
-      this.date = split[2];
-      this.datepicker_dialog = false;
-      this.screenFlag = true;
-    },
-    //カレンダーボタンの日付遷移
-    // 提供月 1:前月 2:翌月
-    // 請求月 3:前月 4:翌月
-    calendarClick(type) {
-      let tmpdate;
-      if (type == 1) {
-        tmpdate = moment({
-          years: this.year,
-          months: this.month - 1,
-          days: this.date,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        }).add(-1, 'days');
-      } else {
-        tmpdate = moment({
-          years: this.year,
-          months: this.month - 1,
-          days: this.date,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        }).add(1, 'days');
-      }
-      this.year = tmpdate.format('YYYY');
-      this.month = tmpdate.format('MM');
-      this.date = tmpdate.format('DD');
-      this.screenFlag = true;
-    },
     /**************
      * 検索ボタンを押下
      */

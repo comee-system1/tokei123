@@ -12,12 +12,14 @@ import TantoKaigi from '../views/SIENP/TantoKaigi.vue'
 import KeikakuLists from '../views/SIENP/KeikakuLists.vue'
 import AssessmentInput from '../views/SIENP/AssessmentInput.vue'
 import KeiyakuHokoku from '../views/SIENP/KeiyakuHokoku.vue'
+import ChiikiIkoSienKeikaku from '../views/SIENC/ChiikiIkoSienKeikaku.vue'
 
 const TitleSoudansien = "相談支援";
 const TitleSoudansienSyukei = "相談支援＞集計表";
 const TitleKeikaku = "計画相談支援";
 const TantoKaigiString = "担当者会議";
 const TitleKeiyaku = "契約報告書";
+const TitleChiikiSoudan = "地域相談支援";
 Vue.use(VueRouter)
 
 const routes = [
@@ -116,6 +118,14 @@ const routes = [
         component: KeiyakuHokoku,
         meta: {
             title: TitleKeiyaku,
+        },
+    },
+    {
+        path: '/ChiikiIkoSienKeikaku',
+        name: '地域移行支援計画',
+        component: ChiikiIkoSienKeikaku,
+        meta: {
+            title: TitleChiikiSoudan,
         },
     },
 

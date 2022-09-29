@@ -2,7 +2,7 @@
   <div id="monitoringHoukokusho">
     <v-container class="pa-1" fluid>
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }" style="height: 70vh">
+        <v-col :style="{ 'max-width': leftWidth }" style="height: 100%">
           <user-list
             ref="user_list"
             :dispAddDaicho="false"

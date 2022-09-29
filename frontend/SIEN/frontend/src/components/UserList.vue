@@ -44,7 +44,7 @@
                   v-for="n in userDispList"
                   :key="n.val"
                   small
-                  color="secondary"
+                  color="primary"
                   dark
                   :height="25"
                   outlined
@@ -103,7 +103,7 @@
                   v-for="n in dispYoteisyaList"
                   :key="n.val"
                   small
-                  color="secondary"
+                  color="primary"
                   dark
                   :height="25"
                   :width="25"
@@ -152,7 +152,7 @@
               v-for="n in sortSelList"
               :key="n.val"
               small
-              color="secondary"
+              color="primary"
               dark
               outlined
               :height="20"
@@ -576,7 +576,7 @@ export default {
       });
       this.userGrid = flexGrid;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 1;
       flexGrid.alternatingRowStep = 0;
 
       let params = [];

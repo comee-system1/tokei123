@@ -11,7 +11,7 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }" class="pr-1">
-          <div class="ht60">
+          <div class="ht50">
             <div class="mt-1">
               <v-card class="d-flex flex-row" flat tile>
                 <v-card
@@ -125,7 +125,7 @@
           </v-card>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth2 }">
-          <div class="mt-1 ht60">
+          <div class="mt-1 ht50">
             <v-btn-toggle tile class="ml-n4">
               <v-btn small height="20">前回コピー</v-btn>
               <v-btn small height="20">履歴参照</v-btn>
@@ -235,13 +235,13 @@ function mouseDragGetWeek(e) {
 }
 function mouseDragBackgroundColor(elem, e, newDiv) {
   let cy = 0;
-  let y = 170;
+  let y = 140;
   for (let i = 0; i < 36; i++) {
     if (e.clientY >= y && e.clientY < y + 15) {
       cy = y;
       startY = y;
     }
-    newDiv.style.top = cy - 80 + 'px';
+    newDiv.style.top = cy - 60 + 'px';
     y = y + 15;
   }
   let cx = 0;
@@ -325,11 +325,6 @@ export default {
               return week;
             },
           },
-
-          // timeGridDay: {
-          //   slotMinTime: '04:00:00',
-          //   slotMaxTime: '22:00:00',
-          // },
         },
       },
       headerheight: 60,
@@ -351,7 +346,7 @@ export default {
     elem.addEventListener('mousedown', function (e) {
       if (_self.eventSelected.length != 0) {
         newDiv = document.createElement('div');
-        this.moveFlag = true;
+        _self.moveFlag = true;
         newDiv.className = 'cls';
         mouseDragGetWeek(e);
         startX = wk;
@@ -359,7 +354,7 @@ export default {
       }
     });
     elem.addEventListener('mousemove', function (e) {
-      if (this.moveFlag == true && _self.eventSelected.length != 0) {
+      if (_self.moveFlag == true && _self.eventSelected.length != 0) {
         mouseDragGetWeek(e);
         let client_w = 120;
         // 曜日配列の位置をとって差分の取得
@@ -370,7 +365,7 @@ export default {
     });
     elem.addEventListener('mouseup', function (e) {
       endY = e.clientY;
-      this.moveFlag = false;
+      _self.moveFlag = false;
       newDiv.style.width = 'auto';
       newDiv.remove();
     });
@@ -812,8 +807,8 @@ div#keikakuWeek {
   .lightYellow {
     background-color: $light_yellow;
   }
-  .ht60 {
-    height: 60px;
+  .ht50 {
+    height: 50px;
   }
 
   .fc-scrollgrid-sync-table {

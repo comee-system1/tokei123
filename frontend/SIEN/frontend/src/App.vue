@@ -2,7 +2,6 @@
   <v-app>
     <v-main>
       <HeaderAndNav @parent-ymd-select="getSelectYmdComponent"> </HeaderAndNav>
-      <PankuzuList></PankuzuList>
       <router-view :selectedData="selectedData"></router-view>
     </v-main>
   </v-app>
@@ -10,7 +9,6 @@
 
 <script>
 import HeaderAndNav from './components/HeaderAndNav';
-import PankuzuList from './components/PankuzuList';
 import * as wjcCore from '@grapecity/wijmo';
 
 wjcCore.setLicenseKey(
@@ -21,7 +19,6 @@ export default {
   name: 'App',
   components: {
     HeaderAndNav,
-    PankuzuList,
   },
   data() {
     return {

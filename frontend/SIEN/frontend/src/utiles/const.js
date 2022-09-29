@@ -16,15 +16,26 @@ const COLOR = {
     gridSelectedBackground: '#80adbf',
     gridSelectedColor: '#fff',
     gridMiniTotalBackground: '#FFFFCC',
-    gridTotalBackground: '#CEFCFC',
+    gridTotalBackground: '#FFFACD',
     gridNoneBackground: '#E2E2E2',
     gridHeaderRemarkBackground: '#FFECCC',
+    gridHeaderBlueBackground: 'aliceblue',
     gridRemarkBackground: '#FFF6E8',
     HissuMarkColor: '#ce3e47',
     basicGridColor: '#1f7872',
     blueTextColor: '#2196F3',
     separateBorderColor: '1px solid',
-
+    viewTitleBackground: '#4169E1',
+    viewTitleFontColor: 'white',
+    viewTitleBackgroundBlue: 'aliceblue',
+    viewTitleFontColorBlue: 'midnightblue',
+    viewTitleBackgroundGreenDark: '#CBFFD3',
+    viewTitleBackgroundGreen: '#E6FFE9',
+    viewTitleFontColorGreen: 'darkgreen',
+    viewTitleBackgroundOrangeDark: '#FFE4C4',
+    viewTitleBackgroundOrange: '#FFEFD5',
+    viewTitleFontColorOrange: 'saddlebrown',
+    viewHosokuBackground: 'lightgoldenrodyellow',
 };
 
 const FORMAT = {
@@ -36,6 +47,7 @@ const FORMAT = {
 const GRDROWHEIGHT = {
     Header: 20,
     Row: 20,
+    RowHigh: 24,
 };
 const GRD_COL_WIDTH = {
     UserName: 130, // 全角10文字

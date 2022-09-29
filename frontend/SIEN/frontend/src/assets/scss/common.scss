@@ -16,11 +16,24 @@ $grid_background: #fffeed;
 $grid_hover_background: #ccffcc !important;
 $grid_selected_background: #80adbf !important;
 $grid_selected_color: #fff !important;
+$grid_Header_background_Blue: #80adbf !important;
 
 //画面部品系
 $view_Title_background : #eee;
+$view_Title_font_color : white;
+$view_Title_background_Main : #0070C0;
+$view_Title_font_color_Main : white;
+$view_Title_background_Blue : aliceblue;
+$view_Title_font_color_Blue : midnightblue;
+$view_Title_background_Green_Dark : #CBFFD3;
+$view_Title_background_Green : #E6FFE9;
+$view_Title_font_color_Green : darkgreen;
+$view_Title_background_Orange_Dark : #FFE4C4;
+$view_Title_background_Orange : #FFEFD5;
+$view_Title_font_color_Orange : saddlebrown;
+$view_Hosoku_background:lightgoldenrodyellow;
 $view_Data_Read_background : #fffeed;
-$view_Data_Input_background :$white;
+$view_Data_Input_background :aliceblue;
 
 // 必須マークカラー
 $Hissu_Color: #ce3e47;

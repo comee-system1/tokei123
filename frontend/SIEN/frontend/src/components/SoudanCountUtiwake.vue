@@ -2,7 +2,9 @@
   <div id="soudanCountUtiwake">
     <v-container class="mt-1 ml-1 pa-0" fluid>
       <v-row no-gutters class="rowStyle mt-0">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示月
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
@@ -45,7 +47,12 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile style="display: none">
+        <v-card
+          class="koumokuTitle titleMain pa-1"
+          outlined
+          tile
+          style="display: none"
+        >
           事業区分
         </v-card>
         <wj-menu
@@ -61,7 +68,9 @@
           style="display: none"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1" outlined tile> 入力区分 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          入力区分
+        </v-card>
         <wj-menu
           id="comboFiltersInput"
           class="customCombobox ml-1"
@@ -74,7 +83,9 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 対応者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          対応者
+        </v-card>
         <wj-menu
           id="comboFiltersTaiousya"
           class="customCombobox ml-1"
@@ -87,7 +98,9 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 表示内容 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          表示内容
+        </v-card>
         <v-btn-toggle class="flex-wrap ml-1" v-model="selDispIndex" mandatory>
           <v-btn
             v-for="n in dispList"
@@ -95,11 +108,14 @@
             small
             outlined
             @click="dispclick(n.val)"
+            color="primary"
           >
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 集計内容 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          集計内容
+        </v-card>
         <v-btn-toggle
           class="flex-wrap ml-1"
           style="margin-right: 5px"
@@ -111,6 +127,7 @@
             small
             outlined
             @click="syukeiclick(n.val)"
+            color="primary"
           >
             {{ n.name }}
           </v-btn>
@@ -403,8 +420,8 @@ export default {
       flexGrid.columnHeaders.rows[1].height = 130;
       flexGrid.alternatingRowStep = 0;
       flexGrid.frozenColumns = 2;
-      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
-      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
       flexGrid.endUpdate();
       this.$refs.mdselect.setYm(this.picker);
     },
@@ -418,8 +435,8 @@ export default {
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = 130;
       flexGrid.alternatingRowStep = 0;
-      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
-      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
+      flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
       flexGrid.frozenColumns = 2;
       flexGrid.endUpdate();
     },
@@ -451,6 +468,7 @@ export default {
           col.binding = 'col' + (colIndex - 2);
           col.width = 50;
           col.align = ALI_CENTER;
+          col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
 
@@ -489,6 +507,7 @@ export default {
           col.binding = 'col' + (colIndex - 2);
           col.align = ALI_CENTER;
           col.width = 50;
+          col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
 
@@ -556,6 +575,8 @@ export default {
             e.cell.style.verticalAlign = V_ALI_TOP;
             e.cell.style.display = DISPLAY_TC;
           }
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
           // 未入力は赤くする⇐必要か？
           // if (e.col == 9) {
           //   e.cell.innerHTML =
@@ -573,9 +594,14 @@ export default {
       //     e.cell.style.borderBottom = NONE;
       //   }
       // }
-      // else if (e.panel == flexGrid.columnFooters) {
-      //   e.cell.style.borderTop = BORDER_SOLID;
-      // }
+      else if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.borderTop = ' double 4px black';
+        if (e.col <= 1) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+        }
+      }
     },
     onFormatItemsienNaiyou(flexGrid, e) {
       if (flexGrid.columns.length == 0) {
@@ -623,15 +649,21 @@ export default {
             e.cell.style.verticalAlign = V_ALI_TOP;
             e.cell.style.display = DISPLAY_TC;
           }
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
         }
       } else if (e.panel == flexGrid.cells) {
         // if (e.row == flexGrid.rows.length - 1) {
         //   e.cell.style.borderBottom = NONE;
         // }
+      } else if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.borderTop = ' double 4px black';
+        if (e.col <= 1) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+        }
       }
-      // else if (e.panel == flexGrid.columnFooters) {
-      //   e.cell.style.borderTop = BORDER_SOLID;
-      // }
     },
     onJigyoKbnClicked(s) {
       s.header = this.jigyoKbnList[s.selectedIndex].name;
@@ -902,6 +934,18 @@ div#soudanCountUtiwake {
     background: $view_Title_background;
     border: none;
   }
+  .titleMain {
+    color: $view_Title_font_color_Main;
+    background: $view_Title_background_Main;
+  }
+  .titleGreen {
+    color: $view_Title_font_color_Green;
+    background: $view_Title_background_Green;
+  }
+  .titleOrange {
+    color: $view_Title_font_color_Orange;
+    background: $view_Title_background_Orange;
+  }
   .gridTitle {
     color: mediumblue;
     width: 500px;
@@ -925,6 +969,10 @@ div#soudanCountUtiwake {
   #sienNaiyouGridUtiwake {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: 90vw;
+    min-width: 1250px;
+    height: 73vh;
+    background: $grid_background;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -935,6 +983,7 @@ div#soudanCountUtiwake {
       text-align: center;
       font-weight: normal;
     }
+
     .wj-cell-maker {
       width: 15px;
       height: 15px;
@@ -974,11 +1023,16 @@ div#soudanCountUtiwake {
       border-radius: 0px;
     }
   }
-  #soudanCountUtiwakeGrid,
+
+  #soudanCountUtiwakeGrid {
+    .wj-header {
+      background: $view_Title_background_Green_Dark;
+    }
+  }
   #sienNaiyouGridUtiwake {
-    width: 90vw;
-    min-width: 1250px;
-    height: 73vh;
+    .wj-header {
+      background: $view_Title_background_Orange_Dark;
+    }
   }
   .v-btn-toggle > .v-btn {
     width: 100px;

@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex md12 class="pankuzu-list">
+    <v-flex md12 class="pankuzu-list mt-1">
       <P>
         {{ pageMainTitle }}＞<b>{{ pageTitle }}</b>
       </P>
@@ -27,11 +27,12 @@ export default {
 
 <style scoped>
 .pankuzu-list {
-  background-color: lightgrey;
+  /*background-color: lightgrey;
+  */
 }
 
 .pankuzu-list p {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 </style>

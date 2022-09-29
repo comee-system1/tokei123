@@ -40,14 +40,15 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 表示単位 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          表示単位
+        </v-card>
         <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
           <v-btn
             v-for="n in dispList"
             :key="n.val"
             small
-            color="secondary"
-            dark
+            color="primary"
             outlined
             width="50"
             height="20"
@@ -57,7 +58,6 @@
           </v-btn>
         </v-btn-toggle>
 
-        <!-- <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 表示月 </v-card> -->
         <v-card
           class="mr-1"
           color="transparent"
@@ -66,22 +66,23 @@
           outlined
           tile
         >
-          <v-btn
-            @click="inputCalendarClick(0)"
-            class="mr-1"
-            tile
-            outlined
-            width="125px"
-            height="100%"
-            >{{ getYm(0) }}
-            <div class="float-right">
-              <v-icon small>mdi-calendar-month</v-icon>
-            </div>
-          </v-btn>
           <span v-if="dispIndex == 0">
             <v-btn
+              @click="inputCalendarClick(0)"
+              class="ymd mr-1"
+              tile
+              outlined
+              width="150px"
+              height="100%"
+              >{{ getYmd() }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+
+            <v-btn
               elevation="0"
-              class="pa-0 mr-1"
+              class="ymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -91,7 +92,7 @@
             </v-btn>
             <v-btn
               elevation="0"
-              class="pa-0 mr-1"
+              class="ymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -104,10 +105,42 @@
             </v-btn>
           </span>
           <span v-else>
+            <v-btn
+              @click="inputCalendarClick(90)"
+              class="ymd mr-1"
+              tile
+              outlined
+              width="125px"
+              height="100%"
+              >{{ getYm(0) }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+            <!-- <v-btn
+              elevation="0"
+              class="pa-0 mr-1"
+              height="100%"
+              x-small
+              tile
+              @click="inputCalendarClick(91)"
+            >
+              <v-icon>mdi-arrow-left-bold</v-icon>
+            </v-btn>
+            <v-btn
+              elevation="0"
+              class="pa-0 mr-1"
+              height="100%"
+              x-small
+              tile
+              @click="inputCalendarClick(92)"
+            >
+              <v-icon>mdi-arrow-right-bold</v-icon>
+            </v-btn> -->
             <label class="mr-1">～</label>
             <v-btn
               @click="inputCalendarClick(99)"
-              class="mr-1"
+              class="ymd mr-1"
               tile
               outlined
               width="125px"
@@ -140,7 +173,9 @@
           v-if="false"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 対応者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          対応者
+        </v-card>
         <wj-menu
           id="comboFiltersTaiousya"
           class="customCombobox mr-1"
@@ -153,7 +188,9 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力区分 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          入力区分
+        </v-card>
         <wj-menu
           id="comboFiltersInput"
           class="customCombobox mr-1"
@@ -167,7 +204,7 @@
         >
         </wj-menu>
         <v-card
-          class="koumokuTitle pa-1 mr-1"
+          class="koumokuTitle titleMain pa-1 mr-1"
           outlined
           tile
           v-if="selKasanUmuIndex == 0"
@@ -269,11 +306,25 @@
           <wj-flex-grid-filter
             :initialized="filterInitialized"
             :filterApplied="filterApplied"
+            :showFilterIcons="false"
           />
         </wj-flex-grid>
       </v-row>
     </v-container>
     <!-- ダイアログエリア -->
+    <v-dialog v-model="datepickerYmd_dialog" class="datepickerYmd_dialogs">
+      <v-date-picker
+        id="uketukeIcrnDatepicker"
+        scrollable
+        no-title
+        mode="single"
+        v-model="pickerYmd"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="dateSelect"
+      >
+      </v-date-picker>
+    </v-dialog>
     <v-dialog
       v-model="datepickerSym_dialog"
       width="200"
@@ -542,10 +593,13 @@ export default {
       viewdataAll: [],
       viewdata: [],
       viewObj: {},
+      kikanYmd: '',
       kikanSYm: '',
       kikanEYm: '',
+      pickerYmd: '',
       pickerSym: '',
       pickerEym: '',
+      datepickerYmd_dialog: false,
       datepickerSym_dialog: false,
       datepickerEym_dialog: false,
       selJigyoKbn: 0,
@@ -556,6 +610,7 @@ export default {
       screenFlag: false,
       tourokuScreenFlag: false,
       filter: {},
+      targetYmd: '',
       targetSYm: '',
       targetEYm: '',
       drawer: true,
@@ -585,6 +640,13 @@ export default {
           this.tourokuScreenFlag = true;
           this.setDispdata(tmpitem);
         }
+      });
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filter.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filter.showFilterIcons = false;
       });
 
       // ヘッダの追加と設定
@@ -625,7 +687,7 @@ export default {
       }
       this.filter.filterColumns = filtercols;
       flexGrid.endUpdate();
-      this.$refs.mdselect.setYm(this.pickerSym);
+      this.$refs.mdselect.setYm(this.pickerYmd);
     },
     setDispdata(tmpitem) {
       this.viewObj = tmpitem;
@@ -650,6 +712,17 @@ export default {
       this.grdAutoSizeRow(e.grid);
     },
     onFormatItemUketukeIcrn(flexGrid, e) {
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.col < 3) {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        } else if (e.col < 7) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        }
+      }
       if (e.panel == flexGrid.cells) {
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
@@ -669,6 +742,10 @@ export default {
             wjCore.escapeHtml(e.cell.innerHTML) +
             '</div>';
         }
+      }
+      e.cell.style.borderRight = '';
+      if (e.col == 2 || e.col == 6) {
+        e.cell.style.borderRight = '1px solid';
       }
     },
     dispClicked(index) {
@@ -742,8 +819,8 @@ export default {
           uniqid: 1,
           traceid: 123,
           pJigyoid: 43,
-          pSymd: this.targetSYm,
-          pEymd: this.targetSYm,
+          pSymd: this.targetYmd,
+          pEymd: this.targetYmd,
           Dspkbn: 0,
         };
         if (this.dispIndex == 1) {
@@ -836,6 +913,25 @@ export default {
       // }
       this.viewdata = tmpviewdata;
     },
+    getYmd() {
+      if (!this.kikanYmd) {
+        this.kikanYmd = dayjs();
+        this.pickerYmd =
+          this.kikanYmd.year() +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
+      }
+      return (
+        this.kikanYmd.format('YYYY') +
+        '年' +
+        this.kikanYmd.format('MM') +
+        '月' +
+        this.kikanYmd.format('DD') +
+        '日'
+      );
+    },
     getYm(kbn) {
       if (kbn == 0) {
         if (!this.kikanSYm) {
@@ -872,10 +968,10 @@ export default {
           '-' +
           this.kikanEYm.format('DD');
         this.datepickerEym_dialog = true;
-      } else {
-        if (kbn == 1) {
+      } else if (kbn == 90 || kbn == 91 || kbn == 92) {
+        if (kbn == 91) {
           this.kikanSYm = this.kikanSYm.subtract(1, 'months');
-        } else if (kbn == 2) {
+        } else if (kbn == 92) {
           this.kikanSYm = this.kikanSYm.add(1, 'months');
         }
         this.pickerSym =
@@ -884,13 +980,39 @@ export default {
           this.kikanSYm.format('MM') +
           '-' +
           this.kikanSYm.format('DD');
-        if (kbn == 0) {
+        if (kbn == 90) {
           this.datepickerSym_dialog = true;
         } else {
           this.viewdata = [];
         }
-        this.$refs.mdselect.setYm(this.pickerSym);
+      } else {
+        if (kbn == 1) {
+          this.kikanYmd = this.kikanYmd.subtract(1, 'day');
+        } else if (kbn == 2) {
+          this.kikanYmd = this.kikanYmd.add(1, 'day');
+        }
+        this.pickerYmd =
+          this.kikanYmd.format('YYYY') +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
+        if (kbn == 0) {
+          this.datepickerYmd_dialog = true;
+        } else {
+          this.viewdata = [];
+        }
+        let tmp =
+          this.kikanYmd.format('YYYY') +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-01';
+        this.$refs.mdselect.setYm(tmp);
       }
+    },
+    dateSelect() {
+      this.kikanYmd = dayjs(this.pickerYmdker);
+      this.datepickerYmd_dialog = false;
     },
     monthSelect(kbn) {
       if (kbn == 0) {
@@ -912,11 +1034,12 @@ export default {
     },
     setMd(param1) {
       //paramには日付と曜日(３と"金")が入る
-      let split = this.pickerSym.split('-');
-      this.targetSYm =
+      let split = this.pickerYmd.split('-');
+      this.targetYmd =
         split[0] +
         split[1].padStart(2, '0') +
         String(param1.day).padStart(2, '0');
+      this.kikanYmd = dayjs(this.targetYmd);
       this.setViewData(true);
     },
     filterClrclick() {
@@ -955,8 +1078,7 @@ div#uketukeIcrn {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn {
+  .ymd {
     font-size: 14px;
     background-color: $white;
     border: thin solid;
@@ -966,7 +1088,6 @@ div#uketukeIcrn {
   }
 
   .koumokuTitle {
-    color: $font_color;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -975,8 +1096,11 @@ div#uketukeIcrn {
     max-width: 100px;
     height: 100%;
     text-align: center;
-    background: $view_Title_background;
     border: none;
+  }
+  .titleMain {
+    color: $view_Title_font_color_Main;
+    background: $view_Title_background_Main;
   }
   .countTitle {
     color: $font_color;
@@ -988,7 +1112,7 @@ div#uketukeIcrn {
     max-width: 150px;
     height: 100%;
     text-align: center;
-    background: $view_Title_background;
+    background: $view_Hosoku_background;
     border: none;
     > span {
       color: red;
@@ -1001,7 +1125,7 @@ div#uketukeIcrn {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    height: 18px;
     width: 75px;
   }
   #uketukeIcrnGrid {
@@ -1010,10 +1134,12 @@ div#uketukeIcrn {
     width: 98%;
     min-width: 1050px !important;
     height: 76vh;
+    background: $grid_background;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
       font-size: $cell_fontsize;
+      background: $view_Data_Input_background;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1136,6 +1262,33 @@ div#uketukeIcrn {
 }
 .v-picker__title {
   display: none !important;
+}
+#uketukeIcrnDatepicker {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 100px;
+  left: 150px;
+  width: 300px;
+  max-width: 300px;
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(7)
+    .v-btn__content {
+    color: blue;
+  }
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(1)
+    .v-btn__content {
+    color: red;
+  }
 }
 #uketukeIcrnDatepickerS {
   position: absolute;

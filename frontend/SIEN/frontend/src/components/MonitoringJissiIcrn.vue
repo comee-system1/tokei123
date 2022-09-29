@@ -134,6 +134,7 @@
           <wj-flex-grid-filter
             :initialized="filterInitializedyoteisyaIcrn"
             :filterApplied="filterApplied"
+            :showFilterIcons="false"
           />
         </wj-flex-grid>
       </v-row>
@@ -393,6 +394,14 @@ export default {
       this.filteryoteisyaIcrn = filter;
     },
     onInitializeyoteisyaIcrnGrid(flexGrid) {
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filteryoteisyaIcrn.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filteryoteisyaIcrn.showFilterIcons = false;
+      });
+
       // flexGrid.beginUpdate();
       // クリックイベント
       // flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {

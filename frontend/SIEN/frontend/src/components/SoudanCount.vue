@@ -2,7 +2,9 @@
   <div id="soudanCount">
     <v-container class="mt-1 ml-1 pa-0" fluid>
       <v-row no-gutters class="rowStyle mt-0">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示月
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
@@ -43,7 +45,9 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 事業区分 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          事業区分
+        </v-card>
         <wj-menu
           id="comboFiltersJigyoKbn"
           class="customCombobox ml-1"
@@ -56,7 +60,9 @@
           :itemClicked="onJigyoKbnClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 入力区分 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          入力区分
+        </v-card>
         <wj-menu
           id="comboFiltersInput"
           class="customCombobox ml-1"
@@ -69,7 +75,9 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 対応者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          対応者
+        </v-card>
         <wj-menu
           id="comboFiltersTaiousya"
           class="customCombobox ml-1"
@@ -279,7 +287,7 @@ export default {
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.RowHigh;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[1].height = 130;
       flexGrid.alternatingRowStep = 0;
@@ -317,7 +325,7 @@ export default {
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.RowHigh;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[1].height = 130;
       flexGrid.alternatingRowStep = 0;
@@ -421,6 +429,8 @@ export default {
           //     wjCore.escapeHtml(e.cell.innerHTML) +
           //     '</div>';
           // }
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
         }
       } else if (e.panel == flexGrid.cells) {
         if (e.row == flexGrid.rows.length - 1) {
@@ -474,6 +484,8 @@ export default {
             e.cell.style.verticalAlign = V_ALI_TOP;
             e.cell.style.display = DISPLAY_TC;
           }
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
         }
       } else if (e.panel == flexGrid.cells) {
         if (e.row == flexGrid.rows.length - 1) {
@@ -629,7 +641,6 @@ div#soudanCount {
   }
 
   .koumokuTitle {
-    color: $font_color;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -638,8 +649,11 @@ div#soudanCount {
     max-width: 100px;
     height: 100%;
     text-align: center;
-    background: $view_Title_background;
     border: none;
+  }
+  .titleMain {
+    color: $view_Title_font_color_Main;
+    background: $view_Title_background_Main;
   }
   .gridTitle {
     color: mediumblue;
@@ -664,6 +678,9 @@ div#soudanCount {
   #sienNaiyouGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: 1250px;
+    min-height: 200px;
+    background: $grid_background;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -713,10 +730,15 @@ div#soudanCount {
       border-radius: 0px;
     }
   }
-  #soudanCountGrid,
+  #soudanCountGrid {
+    .wj-header {
+      background: $view_Title_background_Green_Dark;
+    }
+  }
   #sienNaiyouGrid {
-    width: 1250px;
-    min-height: 200px;
+    .wj-header {
+      background: $view_Title_background_Orange_Dark;
+    }
   }
 
   div.customCombobox {

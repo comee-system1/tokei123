@@ -264,6 +264,7 @@
           <wj-flex-grid-filter
             :initialized="filterInitialized"
             :filterApplied="filterApplied"
+            :showFilterIcons="false"
           />
         </wj-flex-grid>
       </v-row>
@@ -551,6 +552,14 @@ export default {
       this.filter = filter;
     },
     onInitializeIcrnGrid(flexGrid) {
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filter.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filter.showFilterIcons = false;
+      });
+
       flexGrid.beginUpdate();
 
       // ヘッダの追加と設定
