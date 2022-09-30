@@ -41,8 +41,12 @@ $Hissu_Color: #ce3e47;
 $btn_background :#f0f0f0;
 
 $cell_fontsize: 12px;
+
+
 @import "_mixins";
 @import "_jyogenkanri";
 @import "_jissekiKiroku";
+@import "_commons";
+@import "_dialogs";
 // ユーザー一覧開閉の秒数
 $seconds: 0.2s;

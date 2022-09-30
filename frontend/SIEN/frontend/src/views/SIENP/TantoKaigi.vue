@@ -19,7 +19,7 @@
                 tile
                 small
                 width="100"
-                height="24"
+                height="20"
                 class="text-center"
               >
                 利用者名
@@ -30,7 +30,7 @@
                 tile
                 class="ml-1 pl-1"
                 width="200"
-                height="24"
+                height="20"
               >
                 {{ userName }}
               </v-card>
@@ -39,13 +39,13 @@
           <div class="mt-1">
             <v-card class="d-flex flex-row" flat>
               <v-btn-toggle>
-                <v-btn small>新規入力</v-btn>
-                <v-btn small>内容更新</v-btn>
+                <v-btn small height="20">新規入力</v-btn>
+                <v-btn small height="20">内容更新</v-btn>
               </v-btn-toggle>
               <v-btn-toggle class="ml-2">
-                <v-btn small>計画案</v-btn>
-                <v-btn small>モニタリング</v-btn>
-                <v-btn small>その他</v-btn>
+                <v-btn small height="20">計画案</v-btn>
+                <v-btn small height="20">モニタリング</v-btn>
+                <v-btn small height="20">その他</v-btn>
               </v-btn-toggle>
 
               <v-card
@@ -54,8 +54,8 @@
                 tile
                 small
                 width="100"
-                height="24"
-                class="text-center ml-1 pt-1"
+                height="20"
+                class="text-center ml-1"
                 >計画案作成日
               </v-card>
               <v-card
@@ -71,11 +71,11 @@
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-card>
-              <v-card class="ml-1"> <v-btn small>案履歴参照</v-btn> </v-card>
+              <v-btn small height="20" class="ml-1">案履歴参照</v-btn>
               <v-card class="ml-auto">
                 <v-btn-toggle tile>
-                  <v-btn small>前回コピー</v-btn>
-                  <v-btn small>履歴参照</v-btn>
+                  <v-btn small height="20">前回コピー</v-btn>
+                  <v-btn small height="20">履歴参照</v-btn>
                 </v-btn-toggle>
               </v-card>
             </v-card>
@@ -141,7 +141,9 @@
                   ～
                   <input type="time" class="input_text outline" />
                 </v-card>
-                <v-btn class="ml-auto" x-small>開催情報最終表示</v-btn>
+                <v-btn class="ml-auto" small height="20"
+                  >開催情報最終表示</v-btn
+                >
 
                 <v-btn x-small class="ml-2" @click="dispalyChange">{{
                   display
@@ -162,11 +164,8 @@
                   class="pa-0 ma-0 input_text text-caption"
                   hide-details="false"
                   outlined
-                  dense
-                  tile
                   :full-width="true"
-                  :value="' '"
-                  :height="'24'"
+                  height="20"
                 >
                 </v-text-field>
               </v-card>
@@ -191,9 +190,10 @@
                     >出席者
                     <v-btn
                       small
-                      class="mt-8"
+                      class="mt-10"
                       :color="'primary'"
                       @click="onSelectedAttend"
+                      height="20"
                       >出席者選択</v-btn
                     >
                   </v-card>
@@ -221,15 +221,15 @@
           <div class="mt-2">
             <v-card class="d-flex flex-row" flat>
               <v-btn-toggle>
-                <v-btn small>新規入力</v-btn>
-                <v-btn small>内容更新</v-btn>
+                <v-btn small height="20">新規入力</v-btn>
+                <v-btn small height="20">内容更新</v-btn>
               </v-btn-toggle>
 
               <v-card elevation="0" class="text-center ml-auto d-flex flex-row">
                 <v-btn-toggle class="ml-2">
-                  <v-btn small>行追加</v-btn>
-                  <v-btn small>行削除</v-btn>
-                  <v-btn small>順変更</v-btn>
+                  <v-btn small height="20">行追加</v-btn>
+                  <v-btn small height="20">行削除</v-btn>
+                  <v-btn small height="20">順変更</v-btn>
                 </v-btn-toggle>
               </v-card>
             </v-card>
@@ -242,6 +242,9 @@
               :selectionMode="'1'"
               :headersVisibility="'Column'"
               :autoRowHeights="true"
+              :allowResizing="false"
+              :allowDragging="false"
+              :allowSorting="false"
               :initialized="onInitializedConsider"
             >
               <wj-flex-grid-column

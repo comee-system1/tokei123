@@ -185,15 +185,21 @@
 
     <v-dialog v-model="contactDialog" :width="800" class="contactDialogArea">
       <v-card>
-        <v-toolbar dark color="primary" height="32">
-          <v-toolbar-title class="text-caption">契約報告書作成</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn icon dark @click="contactDialog = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
+        <v-card-title class="text-caption primary white--text lighten-2">
+          契約報告書作成
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          absolute
+          top
+          right
+          @click="contactDialog = false"
+          color="secondary"
+          class="mt-2"
+          ><v-icon dark small> mdi-close </v-icon>
+        </v-btn>
       </v-card>
       <v-card class="pa-2" tile flat>
         <div class="history_menu pa-2" v-bind:class="{ 'is-active': open }">
