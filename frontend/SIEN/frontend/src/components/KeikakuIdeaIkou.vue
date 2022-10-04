@@ -12,7 +12,7 @@
           {{ value.title }}
         </v-card>
       </v-col>
-      <v-col class="mr-0 text-caption">
+      <v-col cols="10" class="mr-0 text-caption">
         <v-card
           class="pa-1 editarea"
           elevation="0"
@@ -163,6 +163,7 @@ export default {
   }
   .editarea {
     overflow-y: scroll;
+    width: 890px;
   }
 }
 .keikakuideaTextarea {

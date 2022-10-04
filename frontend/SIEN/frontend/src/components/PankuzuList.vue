@@ -1,9 +1,7 @@
 <template>
   <v-layout>
     <v-flex md12 class="pankuzu-list mt-1">
-      <P>
-        {{ pageMainTitle }}＞<b>{{ pageTitle }}</b>
-      </P>
+      <P> {{ pageMainTitle }}＞{{ pageTitle }} </P>
     </v-flex>
   </v-layout>
 </template>

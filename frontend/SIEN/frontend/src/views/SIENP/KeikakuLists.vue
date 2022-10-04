@@ -1,67 +1,51 @@
 <template>
-  <div id="keikakulists">
-    <v-container no-gutters fluid class="pa-0">
-      <v-row no-gutters class="mt-2">
-        <v-col>
+  <v-container no-gutters fluid class="pa-0">
+    <v-row no-gutters class="commonTab" style="width: 100%">
+      <v-col>
+        <v-card class="d-flex flex-row" flat tile>
           <v-tabs height="20" hide-slider v-model="tab">
             <v-tab
               v-for="item in menuItem"
               :key="item.val"
-              class="parentTab"
               :href="item.href"
               @change="tabsChange(item.hrefval)"
             >
               {{ item.name }}
             </v-tab>
           </v-tabs>
-        </v-col>
-        <v-col v-if="tab == 'idea' || tab == 'plan' || tab == 'state'">
-          <v-row class="yosikiMenu" no-gutters>
-            <v-col cols="1">
-              <label> 様式 </label>
-            </v-col>
-            <v-col cols="10" class="ml-1">
-              <v-tabs height="20">
-                <v-tab
-                  v-for="yosikiValue in yosikiArray"
-                  :key="yosikiValue.key"
-                  @change="tabsYosikiChange(yosikiValue.key)"
-                  >{{ yosikiValue.name }}</v-tab
-                >
-              </v-tabs>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container no-gutters fluid class="ma-0 pa-0">
-      <v-tabs-items class="v-tabCont" v-model="tab">
-        <v-tab-item value="KeikakuIcrn">
-          <KeikakuIcrn></KeikakuIcrn>
-        </v-tab-item>
-        <v-tab-item value="state">
-          <AttendeeState></AttendeeState>
-        </v-tab-item>
-        <v-tab-item value="assessment">
-          <!-- <SoudanCount></SoudanCount> -->
-          Tab 2 Content assessment
-        </v-tab-item>
-        <v-tab-item value="basic"> Tab 3 Content assessment </v-tab-item>
-        <v-tab-item value="idea" eager>
-          <div v-if="tab == 'idea'">
-            <KeikakuIdea v-if="ideaFlag == 'create'"></KeikakuIdea>
-            <KeikakuWeek3 v-if="ideaFlag == 'weekplan3'"></KeikakuWeek3>
-          </div>
-        </v-tab-item>
-        <v-tab-item value="plan">
-          <div v-if="tab == 'plan'">
-            <KeikakuPlan v-show="planFlag == 'create'"></KeikakuPlan>
-            <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
-          </div>
-        </v-tab-item>
-      </v-tabs-items>
-    </v-container>
-  </div>
+          <v-tabs height="20" v-model="subtab">
+            <v-tab
+              v-for="yosikiValue in yosikiArray"
+              :key="yosikiValue.key"
+              @change="tabsYosikiChange(yosikiValue.key)"
+              >{{ yosikiValue.name }}</v-tab
+            >
+          </v-tabs>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-tabs-items v-model="tab">
+      <v-tab-item value="KeikakuIcrn">
+        <KeikakuIcrn></KeikakuIcrn>
+      </v-tab-item>
+      <v-tab-item value="state">
+        <AttendeeState></AttendeeState>
+      </v-tab-item>
+      <v-tab-item value="idea">
+        <div v-if="tab == 'idea'">
+          <KeikakuIdea v-if="ideaFlag == 'create'"></KeikakuIdea>
+          <KeikakuWeek3 v-if="ideaFlag == 'weekplan3'"></KeikakuWeek3>
+        </div>
+      </v-tab-item>
+      <v-tab-item value="plan">
+        <div v-if="tab == 'plan'">
+          <KeikakuPlan v-show="planFlag == 'create'"></KeikakuPlan>
+          <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
+        </div>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-container>
 </template>
 
 <script>
@@ -107,6 +91,7 @@ export default {
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
+      subtab: 0,
       ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
       yosikiMenu: [
@@ -173,6 +158,12 @@ export default {
   methods: {
     tabsChange(hrefval) {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
+      // alert(hrefval);
+      // alert(this.ideaFlag);
+      if (hrefval == 'idea') {
+        this.ideaFlag = 'create';
+      }
+      this.subtab = 0;
     },
     tabsYosikiChange(value) {
       this.ideaFlag = value;
@@ -183,54 +174,4 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#keikakulists {
-  color: $font_color;
-  font-size: 12px;
-  font-family: 'メイリオ';
-  min-width: 1350px !important;
-  max-width: 1350px !important;
-  width: auto;
-
-  .parentTab {
-    border: 1px solid;
-    margin-right: 4px;
-    margin-bottom: -2px;
-    border-color: $light-gray;
-    height: 25px;
-  }
-  .v-tab--active {
-    color: $white;
-
-    background: #1976d2;
-    border-color: #1976d2;
-  }
-  .v-tabCont {
-    border-top: 2px solid;
-    border-color: #1976d2;
-  }
-  .wj-cell {
-    padding: 2px;
-    padding-top: 1px;
-  }
-
-  .yosikiMenu {
-    div {
-      &.v-tab {
-        background-color: $grid_selected_background;
-        color: canvastext;
-        &--active {
-          color: blue;
-        }
-      }
-      label {
-        background-color: $deepgreen;
-        width: 100%;
-        display: block;
-        color: $white;
-        text-align: center;
-        height: 20px;
-      }
-    }
-  }
-}
 </style>

@@ -338,37 +338,30 @@
     </v-dialog>
 
     <!-- 出席者 -->
-    <v-dialog v-model="attend_dialog" width="800" class="attend_dialog">
-      <v-card>
-        <v-card-title class="text-caption primary white--text lighten-2">
-          会議出席者 選択
-        </v-card-title>
+    <v-dialog v-model="attend_dialog" width="850">
+      <v-card class="common_dialog">
+        <v-card-title class="dialog_title"> 会議出席者 選択 </v-card-title>
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
           @click="undoChange"
-          color="secondary"
-          class="mt-2"
+          class="mt-2 dialog_close"
           ><v-icon dark small> mdi-close </v-icon>
         </v-btn>
         <v-row>
           <v-col cols="6">
             <div class="pt-2 pl-2">
               <v-btn small @click="editSort" :disabled="sortDisabled"
-                >並替え</v-btn
-              >
+                >並替え
+              </v-btn>
               <v-btn
                 small
                 class="ml-2"
                 @click="allDelete"
                 :disabled="allDeleteDisabled"
-                >全クリア</v-btn
-              >
-
+                >全クリア
+              </v-btn>
               <wj-flex-grid
                 id="selectedAttendGrid"
                 class="mt-2"
@@ -382,7 +375,7 @@
                 :headersVisibility="'Column'"
                 :initialized="onInitializedSelected"
                 :itemsSource="selectedAttendView"
-                :itemsSourceChanged="onInitializedSelectedChanged"
+                :itemsSourceChanged="selectedAttendChanged"
               >
                 <wj-flex-grid-column
                   header="No"
@@ -410,16 +403,15 @@
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </div>
-            <div class="d-flex flex-row text-caption" flat>
-              <div class="text-start pa-1">
-                <v-btn color="primary" small @click="editSortSetted">
+            <div class="d-flex flex-row" flat>
+              <div class="pa-1">
+                <v-btn class="func_btn" small @click="editSortSetted">
                   並順
                 </v-btn>
               </div>
-              <div class="text-end pa-1 ml-auto">
+              <div class="pa-1">
                 <v-btn
-                  color="primary"
-                  class="ml-auto"
+                  class="ml-auto func_btn"
                   small
                   :disabled="deleteDisabled"
                   @click="editDelete"
@@ -427,10 +419,9 @@
                   削除
                 </v-btn>
               </div>
-              <div class="text-end pa-1 ml-auto">
+              <div class="pa-1">
                 <v-btn
-                  color="primary"
-                  class="ml-auto"
+                  class="ml-auto func_btn"
                   small
                   :disabled="registDisabled"
                   @click="registSelect"
@@ -441,21 +432,13 @@
             </div>
           </v-col>
           <v-col cols="6">
-            <div class="pa-2 attend-dialog-select">
-              <div class="d-flex flex-row text-caption" flat>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  height="25"
-                  class="text-center pt-1 caption-left"
-                >
+            <div class="pa-2">
+              <div class="d-flex flex-row" flat>
+                <v-card elevation="0" class="dialog_label pt-1">
                   事業所
                 </v-card>
                 <v-select
-                  class="ml-1"
+                  class="ml-1 dialog_select"
                   item-text="name"
                   item-value="val"
                   label="指定無し"
@@ -471,20 +454,12 @@
                 </v-select>
               </div>
 
-              <div class="mt-1 d-flex flex-row text-caption" flat>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  height="25"
-                  class="text-center pt-1 caption-left"
-                >
+              <div class="mt-1 d-flex flex-row" flat>
+                <v-card elevation="0" tile small class="dialog_label pt-1">
                   職種指定
                 </v-card>
                 <v-select
-                  class="ml-1"
+                  class="ml-1 dialog_select"
                   item-text="name"
                   item-value="val"
                   label="指定無し"
@@ -548,62 +523,42 @@
               <div class="text-caption">手動入力</div>
               <div class="d-flex flex-row text-caption">
                 <v-card
-                  :color="'grey lighten-4'"
                   elevation="0"
-                  tile
-                  small
-                  width="40"
-                  height="24"
-                  class="text-center pt-1"
+                  class="dialog_label wr-40 pt-1"
                   v-model="manualCode"
                 >
                   ｺｰﾄﾞ
                 </v-card>
                 <v-text-field
-                  class="ml-1 input_text outline w60 manual-form"
+                  class="ml-1 input_text w60 manual-form"
                   v-model="manualCode"
                   dense
-                  solo
+                  outlined
+                  :rules="[codeRules]"
                   flat
+                  type="number"
+                  maxlength="7"
                 >
                 </v-text-field>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="40"
-                  height="24"
-                  class="text-center pt-1 ml-1"
-                >
+                <v-card elevation="0" class="dialog_label wr-40 pt-1 ml-1">
                   職種
                 </v-card>
                 <v-text-field
-                  class="ml-1 input_text outline w100 manual-form"
+                  class="ml-1 input_text w100 manual-form"
                   v-model="manualSyokusyu"
-                  hide-details
                   dense
-                  solo
+                  outlined
                   flat
                 >
                 </v-text-field>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="40"
-                  height="24"
-                  class="text-center pt-1 ml-1"
-                >
+                <v-card elevation="0" class="dialog_label wr-40 pt-1 ml-1">
                   氏名
                 </v-card>
                 <v-text-field
-                  class="ml-1 input_text outline w100 manual-form"
+                  class="ml-1 input_text w100 manual-form"
                   v-model="manualName"
-                  hide-details
                   dense
-                  solo
+                  outlined
                   flat
                 >
                 </v-text-field>
@@ -611,14 +566,17 @@
             </div>
 
             <div class="text-end pa-1">
-              <v-btn color="primary" @click="selectedAttendResetSelect()" small>
+              <v-btn
+                @click="selectedAttendResetSelect()"
+                small
+                class="func_btn"
+              >
                 選択解除
               </v-btn>
               <v-btn
-                color="primary"
                 @click="addSelectedAttendManual()"
                 small
-                class="ml-1"
+                class="ml-1 func_btn"
               >
                 追加
               </v-btn>
@@ -655,10 +613,11 @@ export default {
       calendarType: 0,
       picker: '',
       attendView: [],
-      onFlexGridAttendView: [],
+      flexGridAttendView: [],
       attendSelectDefault: [],
       attendSelect: [],
       manualCode: '',
+      codeRules: (value) => value.length == 7 || '7桁で入力してください',
       manualSyokusyu: '',
       manualName: '',
       selectedRowData: [],
@@ -669,7 +628,7 @@ export default {
       onDisplayFlag: true,
       offDisplayFlag: false,
       attend_dialog: false,
-      onFlexGridAttend: [],
+      flexGridAttend: [],
       selJijyosyo: [],
       selSyokusyu: [],
       selectedJigyosyo: {
@@ -736,7 +695,7 @@ export default {
       registDisabled: false,
       sortEditFlag: false,
       sortEditCount: 1,
-      onFlexGridSelected: [],
+      flexGridSelected: [],
     };
   },
 
@@ -748,7 +707,7 @@ export default {
       this.userName = row.names;
     },
     onInitializedAttend(flexGrid) {
-      this.onFlexGridAttend = flexGrid;
+      this.flexGridAttend = flexGrid;
       // 選択した行のデータ取得;
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         // selectedAttendGridへ追加可能状態
@@ -822,7 +781,7 @@ export default {
       // グリッドの選択を無効にする;
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
       // 出席者データ取得
-      this.onFlexGridAttendView = flexGrid;
+      this.flexGridAttendView = flexGrid;
       let attendView = [];
       attendView.push({
         num: 1,
@@ -903,17 +862,23 @@ export default {
       this.attendSelect = attendSelect;
     },
     onItemsSourceChanged(flexGrid) {
+      // 選択状態を解除
       flexGrid.select(-1, -1);
     },
     onSelectedAttend() {
       this.attend_dialog = true;
     },
-    onInitializedSelectedChanged(flexGrid) {
+    selectedAttendChanged(flexGrid) {
       flexGrid.select(-1, -1);
+      if (!this.getRealdata(this.selectedAttendView, 'syokusyu')) {
+        this.registDisabled = true;
+      } else {
+        this.registDisabled = false;
+      }
     },
     onInitializedSelected(flexGrid) {
       // flexGrid.select(-1, -1);
-      this.onFlexGridSelected = flexGrid;
+      this.flexGridSelected = flexGrid;
       let selectedAttendView = [];
 
       // 並び順
@@ -976,11 +941,8 @@ export default {
               // 既に登録されているintId配列を作成
               registeredIntId.push(_self.selectedAttendView[d].intId);
             }
-            // 選択値と重複がないか確認
-            let duplicationFlag =
-              registeredIntId.indexOf(_self.selectedRowData.intId) !== -1;
-
-            if (duplicationFlag) {
+            if (registeredIntId.indexOf(_self.selectedRowData.intId) !== -1) {
+              // 選択値と重複がある場合
               alert('既に登録されています');
             } else {
               // 要素数を取得;
@@ -1011,7 +973,7 @@ export default {
             flexGrid.itemsSource = [];
             flexGrid.itemsSource = _self.selectedAttendView;
             // attendGridの選択解除
-            _self.onFlexGridAttend.select(-1, -1);
+            _self.flexGridAttend.select(-1, -1);
             // 選択データを初期化
             _self.selectedRowData = [];
           }
@@ -1020,13 +982,13 @@ export default {
     },
     setAttendViewData() {
       // itemsSourceを初期化
-      this.onFlexGridAttendView.itemsSource = [];
+      this.flexGridAttendView.itemsSource = [];
       // セルの作成;
-      while (this.onFlexGridAttendView.columns.length < 6) {
-        this.onFlexGridAttendView.columns.push(new wjGrid.Column());
+      while (this.flexGridAttendView.columns.length < 6) {
+        this.flexGridAttendView.columns.push(new wjGrid.Column());
       }
-      while (this.onFlexGridAttendView.rows.length < 5) {
-        this.onFlexGridAttendView.rows.push(new wjGrid.Row());
+      while (this.flexGridAttendView.rows.length < 5) {
+        this.flexGridAttendView.rows.push(new wjGrid.Row());
       }
 
       let c = 0; // Column座標変数
@@ -1047,9 +1009,7 @@ export default {
           r++;
         }
         // データを挿入;
-        if (i < 6 * i + 6) {
-          this.onFlexGridAttendView.setCellData(r, c, arr[i]);
-        }
+        this.flexGridAttendView.setCellData(r, c, arr[i]);
         c++;
       }
     },
@@ -1098,26 +1058,35 @@ export default {
       this.attendSelect = data;
     },
     selectedAttendResetSelect() {
-      this.onFlexGridAttend.select(-1, -1);
+      this.flexGridAttend.select(-1, -1);
     },
     addSelectedAttendManual() {
+      console.log(this.codeRules);
       // データが入っているデータの数を取得
       let rdCount = this.getRealdata(this.selectedAttendView, 'syokusyu');
       if (14 < rdCount) {
         alert('登録できるのは15人までです');
       } else if (!this.manualCode || !this.manualSyokusyu || !this.manualName) {
         alert('空欄があります。');
+      } else if (this.validationCode) {
+        alert('コードの値に誤りがあります。');
       } else {
         // 実数で入っているデータの一番下に入力データを登録
         this.selectedAttendView[rdCount].code = this.manualCode;
         this.selectedAttendView[rdCount].syokusyu = this.manualSyokusyu;
         this.selectedAttendView[rdCount].name = this.manualName;
-        this.onFlexGridSelected.itemsSource = [];
-        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
+        this.flexGridSelected.itemsSource = [];
+        this.flexGridSelected.itemsSource = this.selectedAttendView;
         // 入力値を初期化
         this.manualCode = '';
         this.manualSyokusyu = '';
         this.manualName = '';
+      }
+    },
+    validationCode() {
+      // 手動入力バリデーション設定
+      if (this.manualCode.length != 7) {
+        return false;
       }
     },
     /********************************
@@ -1147,8 +1116,8 @@ export default {
       this.registDisabled = true;
     },
     editDelete() {
-      if (this.onFlexGridSelected.selectedItems[0]) {
-        let number = this.onFlexGridSelected.selectedItems[0].num;
+      if (this.flexGridSelected.selectedItems[0]) {
+        let number = this.flexGridSelected.selectedItems[0].num;
         let index = this.selectedAttendView.findIndex(
           ({ num }) => num === number
         );
@@ -1163,8 +1132,8 @@ export default {
           jigyosyo: '',
         });
         this.numSort();
-        this.onFlexGridSelected.itemsSource = [];
-        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
+        this.flexGridSelected.itemsSource = [];
+        this.flexGridSelected.itemsSource = this.selectedAttendView;
       }
     },
     registSelect() {
@@ -1236,8 +1205,8 @@ export default {
       // 変更前のデータに戻す
       let temp = JSON.parse(JSON.stringify(this.selectedAttendViewDefault));
       this.selectedAttendView = temp;
-      this.onFlexGridSelected.itemsSource = [];
-      this.onFlexGridSelected.itemsSource = temp;
+      this.flexGridSelected.itemsSource = [];
+      this.flexGridSelected.itemsSource = temp;
       this.attend_dialog = false;
     },
     allDelete() {
@@ -1255,8 +1224,8 @@ export default {
           });
         }
         this.selectedAttendView = delArr;
-        this.onFlexGridSelected.itemsSource = [];
-        this.onFlexGridSelected.itemsSource = this.selectedAttendView;
+        this.flexGridSelected.itemsSource = [];
+        this.flexGridSelected.itemsSource = this.selectedAttendView;
       }
     },
     dispalyChange() {
@@ -1348,6 +1317,9 @@ div#selectedAttendGrid {
     height: 24px !important;
     min-height: 24px !important;
   }
+  input {
+    border: none !important;
+  }
 }
 
 #TantoKaigiDatepicker {
@@ -1387,19 +1359,7 @@ div {
     }
   }
 }
-.attend-dialog-select {
-  .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
-    min-height: 25px !important;
-    height: 25px;
-    font-size: 12px;
-  }
-  .caption-left {
-    min-width: 100px;
-  }
-  .v-input__control > .v-input__slot {
-    border: 1px solid #ccc;
-  }
-}
+
 .selectbox {
   &::-ms-expand {
     display: auto;
@@ -1414,8 +1374,22 @@ div {
 }
 .manual-form {
   font-size: 12px;
+  .v-input__control {
+    display: block;
+    .v-text-field__details {
+      padding: 0;
+      .error--text {
+        font-size: 10px;
+      }
+    }
+  }
   .v-input__slot {
     padding: 0 4px !important;
+  }
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    display: none;
+    margin: 0;
   }
 }
 </style>

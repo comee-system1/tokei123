@@ -226,11 +226,11 @@ function diffXCount(st, ed) {
 function mouseDragGetWeek(e) {
   x = 330;
   for (let i = 0; i < 7; i++) {
-    if (e.clientX >= x && e.clientX < x + 120) {
+    if (e.clientX >= x && e.clientX < x + 138) {
       wk = w[i];
       break;
     }
-    x = parseInt(x + 120);
+    x = parseInt(x + 138);
   }
 }
 function mouseDragBackgroundColor(elem, e, newDiv) {
@@ -241,16 +241,16 @@ function mouseDragBackgroundColor(elem, e, newDiv) {
       cy = y;
       startY = y;
     }
-    newDiv.style.top = cy - 60 + 'px';
+    newDiv.style.top = cy - 50 + 'px';
     y = y + 15;
   }
   let cx = 0;
   for (let i = 0; i <= 7; i++) {
-    if (e.clientX >= x && e.clientX < x + 120) {
+    if (e.clientX >= x && e.clientX < x + 60) {
       cx = x;
     }
     newDiv.style.left = cx + 'px';
-    x = x + 120;
+    x = x + 138;
   }
   if (cx && cy) {
     elem.appendChild(newDiv);
@@ -356,7 +356,7 @@ export default {
     elem.addEventListener('mousemove', function (e) {
       if (_self.moveFlag == true && _self.eventSelected.length != 0) {
         mouseDragGetWeek(e);
-        let client_w = 120;
+        let client_w = 138;
         // 曜日配列の位置をとって差分の取得
         let diffX = diffXCount(startX, wk);
         newDiv.style.width = parseInt(client_w * diffX) + 'px';
@@ -833,18 +833,12 @@ div#keikakuWeek {
       word-wrap: break-word;
     }
   }
-  .fc-timegrid-slot-label {
-    background: $grid_selected_background;
-    color: $white;
-  }
+
   table {
     tr {
       th {
         &.fc-col-header-cell {
-          background: $grid_selected_background;
-          a {
-            color: $white !important;
-          }
+          background-color: $time_color_header;
         }
       }
       td {
@@ -872,6 +866,61 @@ div#keikakuWeek {
                       color: $grid_selected_background;
                     }
                   }
+                  &:nth-child(n + 1) {
+                    &:nth-child(-n + 4) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_aqua;
+                        }
+                      }
+                    }
+                  }
+                  &:nth-child(n + 5) {
+                    &:nth-child(-n + 8) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_yellow;
+                        }
+                      }
+                    }
+                  }
+                  &:nth-child(n + 9) {
+                    &:nth-child(-n + 16) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_skin;
+                        }
+                      }
+                    }
+                  }
+                  &:nth-child(n + 17) {
+                    &:nth-child(-n + 28) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_grey;
+                        }
+                      }
+                    }
+                  }
+                  &:nth-child(n + 29) {
+                    &:nth-child(-n + 32) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_purple;
+                        }
+                      }
+                    }
+                  }
+                  &:nth-child(n + 33) {
+                    &:nth-child(-n + 36) {
+                      td {
+                        &.fc-timegrid-slot-label {
+                          background-color: $time_color_aqua;
+                        }
+                      }
+                    }
+                  }
+
                   &:nth-child(4n + 1) {
                     td {
                       div {
@@ -906,7 +955,7 @@ div#keikakuLifeGrid {
 //   position: relative;
 // }
 .cls {
-  width: 120px;
+  width: 138px;
   height: 16px;
   background-color: green;
   opacity: 0.3;

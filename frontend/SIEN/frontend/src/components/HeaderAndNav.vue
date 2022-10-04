@@ -84,7 +84,10 @@
 
     <v-app-bar app color="#588C73" flat dark dense height="30px">
       <div class="d-flex align-center">
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon
+          height="25px"
+          @click="drawer = !drawer"
+        ></v-app-bar-nav-icon>
         <!-- <v-toolbar-title>{{ pageTitle }}</v-toolbar-title> -->
       </div>
 

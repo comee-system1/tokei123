@@ -420,6 +420,16 @@ export default {
                   cell.style.borderBottom = 0;
                 }
               }
+              if (c >= 0 && c <= 3) {
+                cell.style.backgroundColor =
+                  sysConst.COLOR.viewTitleBackgroundOrange;
+              } else if (c >= 4 && c <= 11) {
+                cell.style.backgroundColor =
+                  sysConst.COLOR.viewTitleBackgroundBlue;
+              } else {
+                cell.style.backgroundColor =
+                  sysConst.COLOR.viewTitleBackgroundGreen;
+              }
             }
             if (panel.cellType == wjGrid.CellType.ColumnFooter) {
               if (c > 1) {

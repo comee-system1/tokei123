@@ -2,7 +2,11 @@
   <div id="monitoringHoukokusho">
     <v-container class="pa-1" fluid>
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }" style="height: 100%">
+        <v-col
+          :style="{ 'max-width': leftWidth }"
+          style="height: 100%"
+          class="mr-2"
+        >
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
@@ -16,52 +20,78 @@
           </user-list>
         </v-col>
         <v-col class="rightArea pa-0">
-          <v-row
-            no-gutters
-            class="pa-1 pl-0"
-            style="height: 28px; background: #d7eeff"
-          >
-            <v-row no-gutters class="rowStyle">
-              <v-card class="koumokuTitle pa-1" outlined tile>
+          <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
+            <v-row no-gutters class="rowStyle" style="position: relative">
+              <v-card
+                class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
+                outlined
+                tile
+              >
                 利用者名
               </v-card>
-              <v-card class="koumokuData ml-1 pl-1" tile outlined>
+              <v-card
+                class="koumokuData mr-1 pb-1 pl-1 pt-0"
+                tile
+                outlined
+                width="200"
+                style="border: 1px solid; border-color: #0000aa"
+              >
                 {{ userData.riyocodeD }} {{ userData.names }}
               </v-card>
-              <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
+              <v-card
+                class="koumokuTitle pa-1"
+                outlined
+                tile
+                style="
+                  position: absolute;
+                  left: 370px;
+                  background: #008000;
+                  color: white;
+                "
+              >
                 計画作成日
               </v-card>
               <v-card
                 class="koumokuData ml-1"
-                style="width: 125px; text-align: center"
+                style="
+                  width: 125px;
+                  text-align: center;
+                  position: absolute;
+                  left: 470px;
+                "
                 tile
                 outlined
               >
                 {{ keikakuYmd }}
               </v-card>
-              <v-layout class="right">
-                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-                  同意署名欄
-                </v-card>
-                <input
-                  type="checkbox"
-                  class="mr-1"
-                  v-model="viewdataAll.doui"
-                  @change="douiCheck()"
-                />
-                <v-card
-                  class="koumokuData pa-1"
-                  style="width: 125px"
-                  outlined
-                  tile
-                >
-                  {{ getDouisya }}
-                </v-card>
-              </v-layout>
+              <v-spacer></v-spacer>
+              <v-card class="koumokuTitle titleOrange pa-1 mr-1" outlined tile>
+                同意署名欄
+              </v-card>
+              <input
+                type="checkbox"
+                class="mr-1"
+                v-model="viewdataAll.doui"
+                @change="douiCheck()"
+              />
+              <v-card
+                class="koumokuData pa-1"
+                style="width: 125px"
+                outlined
+                tile
+              >
+                {{ getDouisya }}
+              </v-card>
             </v-row>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力 </v-card>
+            <v-card
+              class="koumokuTitleShort titleMain pa-1 mr-1 ml-1"
+              outlined
+              tile
+            >
+              入力
+            </v-card>
             <v-btn-toggle class="flex-wrap mr-1" mandatory>
               <v-btn
                 v-for="n in inputList"
@@ -70,13 +100,14 @@
                 color="secondary"
                 dark
                 outlined
+                width="25"
                 height="20"
                 @click="inputClicked(n.val)"
               >
                 {{ n.name }}
               </v-btn>
             </v-btn-toggle>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+            <v-card class="koumokuTitleShort titleMain pa-1 mr-1" outlined tile>
               実施日
             </v-card>
             <v-card
@@ -93,13 +124,13 @@
                 outlined
                 width="150px"
                 height="100%"
-                class="pa-0 mr-1"
+                class="btnymd pa-0 mb-1"
                 >{{ getYmd() }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                 elevation="0"
                 class="pa-0 mr-1"
                 height="100%"
@@ -118,80 +149,79 @@
                 @click="inputCalendarClick(2)"
               >
                 <v-icon>mdi-arrow-right-bold</v-icon>
-              </v-btn>
+              </v-btn> -->
             </v-card>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+            <v-card class="koumokuTitleShort titleMain pa-1 mr-1" outlined tile>
               担当者
             </v-card>
             <v-card class="koumokuData" tile style="width: 125px" outlined>
               担当者名
             </v-card>
-            <v-layout class="right">
-              <v-btn class="itemBtn mr-1" @click="copyClicked()">
-                前回ｺﾋﾟｰ
-              </v-btn>
-              <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
-                履歴参照
-              </v-btn>
-              <v-navigation-drawer
-                v-model="drawer"
-                fixed
-                temporary
-                right
-                hide-overlay
-                :width="200"
-                :min-width="200"
-                style="font-size: 12px"
-              >
-                <v-list class="pa-0 ma-0" dense>
-                  <v-card
-                    class="koumokuTitle_c pa-1"
-                    style="background: lightgray; min-width: 200px"
-                    outlined
-                    tile
-                    :height="30"
+            <v-spacer></v-spacer>
+            <v-btn class="itemBtn mr-1" @click="copyClicked()">
+              前回ｺﾋﾟｰ
+            </v-btn>
+            <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
+              履歴参照
+            </v-btn>
+            <v-navigation-drawer
+              v-model="drawer"
+              fixed
+              temporary
+              right
+              hide-overlay
+              :width="200"
+              :min-width="200"
+              style="font-size: 12px"
+            >
+              <v-list class="pa-0 ma-0" dense>
+                <v-card
+                  class="koumokuTitle_c pa-1"
+                  style="background: lightgray; min-width: 200px"
+                  outlined
+                  tile
+                  :height="30"
+                >
+                  履歴参照
+                  <v-btn
+                    elevation="2"
+                    icon
+                    small
+                    absolute
+                    top
+                    right
+                    v-on:click.stop="drawer = !drawer"
+                    class="closeButton mr-3"
+                    color="secondary"
+                    ><v-icon dark small> mdi-close </v-icon></v-btn
                   >
-                    履歴参照
-                    <v-btn
-                      elevation="2"
-                      icon
-                      small
-                      absolute
-                      top
-                      right
-                      v-on:click.stop="drawer = !drawer"
-                      class="closeButton mr-3"
-                      color="secondary"
-                      ><v-icon dark small> mdi-close </v-icon></v-btn
-                    >
-                  </v-card>
-                  <template v-for="item in rirekiList">
-                    <v-list-item
-                      class="pa-0 ma-0"
-                      dense
-                      :key="`first-${item.index}`"
-                      @click="rirekiClicked(item)"
-                    >
-                      <v-list-item-content class="pa-0 pl-2 ma-0">
-                        <table>
-                          <tr>
-                            <td width="10%" align="center">{{ item.no }}</td>
-                            <td width="40%" align="center">{{ item.day }}</td>
-                            <td width="10%" align="left">{{ item.kanryou }}</td>
-                            <td width="40%" align="left">{{ item.tantou }}</td>
-                          </tr>
-                        </table>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider :key="`second-${item.index}`" />
-                  </template>
-                </v-list>
-              </v-navigation-drawer>
-            </v-layout>
+                </v-card>
+                <template v-for="item in rirekiList">
+                  <v-list-item
+                    class="pa-0 ma-0"
+                    dense
+                    :key="`first-${item.index}`"
+                    @click="rirekiClicked(item)"
+                  >
+                    <v-list-item-content class="pa-0 pl-2 ma-0">
+                      <table>
+                        <tr>
+                          <td width="10%" align="center">{{ item.no }}</td>
+                          <td width="40%" align="center">{{ item.day }}</td>
+                          <td width="10%" align="left">{{ item.kanryou }}</td>
+                          <td width="40%" align="left">{{ item.tantou }}</td>
+                        </tr>
+                      </table>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider :key="`second-${item.index}`" />
+                </template>
+              </v-list>
+            </v-navigation-drawer>
           </v-row>
           <v-row no-gutters class="mt-1">
             <div style="width: 50%">
-              <v-card class="koumokuTitle_c pa-1" outlined tile>
+              <v-card class="koumokuTitle_c titleGreen pa-1" outlined tile>
                 総合的な援助の方針
               </v-card>
               <v-textarea
@@ -210,7 +240,7 @@
               ></v-textarea>
             </div>
             <div style="width: 50%">
-              <v-card class="koumokuTitle_c pa-1" outlined tile>
+              <v-card class="koumokuTitle_c titleBlue pa-1" outlined tile>
                 全体の状況
               </v-card>
               <v-textarea
@@ -253,89 +283,82 @@
             </wj-flex-grid>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-layout class="right">
-              <v-spacer></v-spacer>
-              <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
-                結果
-              </v-card>
-              <v-btn-toggle
-                class="flex-wrap mr-1"
-                v-model="kekkaIndex"
-                mandatory
-              >
-                <v-btn
-                  v-for="n in kekkaList"
-                  :key="n.val"
-                  small
-                  color="secondary"
-                  dark
-                  outlined
-                  height="20"
-                  @click="kekkaClicked(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-              <v-layout class="rowStyle" v-if="kekkaIndex == 3">
-                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-                  ｻｰﾋﾞｽ終了日
-                </v-card>
-                <v-btn
-                  @click="inputCalendarClick(8)"
-                  tile
-                  outlined
-                  width="150px"
-                  height="100%"
-                  class="pa-0 mr-1"
-                  >{{ getKanryouYmd(0) }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-btn>
-              </v-layout>
-              <v-layout class="rowStyle" v-else>
-                <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-                  次回案作成月
-                </v-card>
-                <v-btn
-                  @click="inputCalendarClick(9)"
-                  tile
-                  outlined
-                  width="150px"
-                  height="100%"
-                  class="pa-0 mr-1"
-                  :disabled="kekkaIndex == 0"
-                  >{{ getKanryouYmd(1) }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-btn>
-              </v-layout>
-
-              <v-card class="koumokuTitleShort pa-1 mr-1" outlined tile>
-                完了
-              </v-card>
-              <input
-                type="checkbox"
-                class="mr-1"
-                v-model="viewdataAll.kanryou"
-                @change="douiCheck()"
-              />
-              <v-card
-                class="koumokuData pa-1 pr-1 mr-1"
-                style="width: 100px"
+            <v-card class="koumokuTitleShort titleMain pa-1 mr-1" outlined tile>
+              結果
+            </v-card>
+            <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
+              <v-btn
+                v-for="n in kekkaList"
+                :key="n.val"
+                small
+                color="secondary"
+                dark
                 outlined
-                tile
+                height="20"
+                @click="kekkaClicked(n.val)"
               >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+            <v-layout class="rowStyle" v-if="kekkaIndex == 3">
+              <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+                ｻｰﾋﾞｽ終了日
               </v-card>
               <v-btn
-                class="itemBtn"
-                :loading="loading"
-                @click="searchClicked()"
-              >
-                登録
+                @click="inputCalendarClick(8)"
+                tile
+                outlined
+                width="150px"
+                height="100%"
+                class="pa-0 mr-1"
+                >{{ getKanryouYmd(0) }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
               </v-btn>
             </v-layout>
+            <v-layout class="rowStyle" v-else>
+              <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+                次回案作成月
+              </v-card>
+              <v-btn
+                @click="inputCalendarClick(9)"
+                tile
+                outlined
+                width="150px"
+                height="100%"
+                class="pa-0 mr-1"
+                :disabled="kekkaIndex == 0"
+                >{{ getKanryouYmd(1) }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-layout>
+
+            <v-card
+              class="koumokuTitleShort titleOrange pa-1 mr-1"
+              outlined
+              tile
+            >
+              完了
+            </v-card>
+            <input
+              type="checkbox"
+              class="mr-1"
+              v-model="viewdataAll.kanryou"
+              @change="douiCheck()"
+            />
+            <v-card
+              class="koumokuData pa-1 pr-1 mr-1"
+              style="width: 100px"
+              outlined
+              tile
+            >
+            </v-card>
+            <v-btn class="itemBtn" :loading="loading" @click="searchClicked()">
+              登録
+            </v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -386,92 +409,35 @@
       >
       </v-date-picker>
     </v-dialog>
-    <v-dialog
-      v-model="jyoukyouInputflg"
-      :width="jyoukyouwidth"
-      class="inputDialog"
-    >
-      <v-card
-        class="koumokuTitle_c pa-1"
-        style="background: lightgray"
-        outlined
-        tile
-      >
-        全体の状況
+    <v-dialog v-model="douiInputflg" width="350">
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          モニタリング 利用者同意・署名
+        </v-card-title>
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
-          @click="header_dialog_close(1)"
-          class="closeButton"
-          color="secondary"
+          @click="header_dialog_close()"
+          class="dialog_close mt-2"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-      </v-card>
-      <v-textarea
-        class="ma-0 pa-0"
-        no-resize
-        v-model="inputjyoukyou"
-        height="500"
-        hide-details
-        solo
-        flat
-        dense
-        outlined
-        style="font-size: 14px"
-      ></v-textarea>
-      <v-card
-        class="koumokuTitle_c pa-1"
-        style="background: lightgray; height: 30px"
-        outlined
-        tile
-      >
-        <v-btn
-          elevation="2"
-          small
-          absolute
-          top
-          right
-          @click="header_dialog_close(2)"
-          class="closeButton"
-          color="secondary"
-          >設定</v-btn
-        >
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="douiInputflg" width="350" class="inputDialog">
-      <v-card
-        class="koumokuTitle_c pa-1"
-        style="background: lightgray"
-        outlined
-        tile
-      >
-        モニタリング 利用者同意・署名
-        <v-btn
-          elevation="2"
-          icon
-          small
-          absolute
-          top
-          right
-          @click="header_dialog_close(3)"
-          class="closeButton"
-          color="secondary"
-          ><v-icon dark small> mdi-close </v-icon></v-btn
-        >
-      </v-card>
-      <div style="background: white" class="pa-1">
-        <v-row no-gutters class="inputDialogRowStyle mb-1">
-          <v-card class="koumokuTitle pa-1" outlined tile> 利用者名 </v-card>
-          <v-card class="koumokuData ml-1 pl-1" tile outlined>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+          >
+            利用者名
+          </v-card>
+          <v-card class="koumokuData pa-1 pb-3" tile outlined width="200">
             {{ userData.riyocodeD }} {{ userData.names }}
           </v-card>
         </v-row>
-        <v-row no-gutters class="inputDialogRowStyle mb-1">
-          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 同意日 </v-card>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card class="koumokuTitle titleBlue pa-1 ml-1 mr-1" outlined tile>
+            同意日
+          </v-card>
           <v-btn
             @click="inputCalendarClick(7)"
             tile
@@ -485,8 +451,10 @@
             </div>
           </v-btn>
         </v-row>
-        <v-row no-gutters class="inputDialogRowStyle mb-1">
-          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 様式 </v-card>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card class="koumokuTitle titleBlue pa-1 ml-1 mr-1" outlined tile>
+            様式
+          </v-card>
           <v-btn-toggle
             class="flex-wrap mr-1"
             v-model="viewdataAll.douiKbnIndex"
@@ -499,24 +467,30 @@
               color="secondary"
               dark
               outlined
+              width="25"
+              height="25"
             >
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
         </v-row>
-        <v-row no-gutters class="inputDialogRowStyle mb-1">
-          <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 署名 </v-card>
-          <input class="pl-1" type="text" v-model="viewdataAll.douiSyomei" />
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card class="koumokuTitle titleBlue pa-1 ml-1 mr-1" outlined tile>
+            署名
+          </v-card>
+          <input
+            class="pl-1"
+            type="text"
+            v-model="viewdataAll.douiSyomei"
+            style="width: 200px; border: 1px solid lightgray"
+          />
         </v-row>
-        <v-row no-gutters class="inputDialogRowStyle">
-          <v-layout class="left">
-            <v-btn class="itemBtn mr-1" @click="copyClicked()"> 削除 </v-btn>
-          </v-layout>
-          <v-layout class="right">
-            <v-btn class="itemBtn mr-1" @click="copyClicked()"> 登録 </v-btn>
-          </v-layout>
+        <v-row no-gutters class="rowStyle_Input">
+          <v-btn class="mr-1" height="25" @click="copyClicked()"> 削除 </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="copyClicked()"> 登録 </v-btn>
         </v-row>
-      </div>
+      </v-card>
     </v-dialog>
     <v-dialog
       v-model="datepickerDouiYmd_dialog"
@@ -638,7 +612,6 @@ export default {
         },
       ],
       viewdataAll: { housin: '', jyoukyou: '', viewdata: [] },
-      inputjyoukyou: '',
       kikanYmd: '',
       douiYmd: '',
       picker: '',
@@ -651,7 +624,6 @@ export default {
       datepickerDouiYmd_dialog: false,
       screenFlag: false,
       douiInputflg: false,
-      jyoukyouInputflg: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
       selTantousya: 0,
@@ -834,7 +806,14 @@ export default {
       flexGrid.endUpdate();
     },
     onFormatItem(flexGrid, e) {
-      if (e.panel == flexGrid.cells) {
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.col < 3) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        }
+      } else if (e.panel == flexGrid.cells) {
         e.cell.style.backgroundColor = '';
         if (e.col == 0) {
           e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
@@ -869,6 +848,10 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
+      }
+      e.cell.style.borderRight = '';
+      if (e.col == 2) {
+        e.cell.style.borderRight = '1px solid';
       }
     },
     searchClicked() {
@@ -1074,14 +1057,6 @@ export default {
     inputClicked(kbn) {
       console.log(kbn);
     },
-    textClicked() {
-      if (!this.userData.names) {
-        return;
-      }
-      this.jyoukyouwidth = 525;
-      this.inputjyoukyou = this.viewdataAll.jyoukyou;
-      this.jyoukyouInputflg = true;
-    },
     douiCheck() {
       if (!this.userData.names) {
         return;
@@ -1090,15 +1065,8 @@ export default {
         this.douiInputflg = true;
       }
     },
-    header_dialog_close(kbn) {
-      if (kbn == 1) {
-        this.jyoukyouInputflg = false;
-      } else if (kbn == 2) {
-        this.viewdataAll.jyoukyou = this.inputjyoukyou;
-        this.jyoukyouInputflg = false;
-      } else if (kbn == 3) {
-        this.douiInputflg = false;
-      }
+    header_dialog_close() {
+      this.douiInputflg = false;
     },
     kekkaClicked(index) {
       this.kekkaIndex = index;
@@ -1115,15 +1083,13 @@ div#monitoringHoukokusho {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1300px !important;
-  max-width: 1920px;
+  min-width: 1330px !important;
+  max-width: 1330px;
+  height: 100%;
   // width: auto;
   .rightArea {
     min-width: 700px;
     width: 700px;
-    .rowStyle {
-      height: 20px;
-    }
   }
 
   #load_dialog {
@@ -1140,29 +1106,16 @@ div#monitoringHoukokusho {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
+  // .ymd,
+  // .v-btn:not(.addbtn, .itemBtn) {
+  //   font-size: 14px;
+  //   background-color: $white;
+  //   border: thin solid;
+  //   border-color: $light-gray;
+  //   color: $font_color;
+  //   height: 100%;
+  // }
 
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
   .koumokuTitleShort {
     color: $font_color;
     display: flex;
@@ -1176,16 +1129,16 @@ div#monitoringHoukokusho {
     background: $view_Title_background;
     border: none;
   }
-  .koumokuData {
-    color: $font_color;
-    width: 200px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
+  // .koumokuData {
+  //   color: $font_color;
+  //   width: 200px;
+  //   height: 100%;
+  //   text-align: left;
+  //   background: $view_Data_Read_background;
+  //   border: none;
+  // }
   .koumokuTitle_c {
-    color: $font_color;
+    // color: $font_color;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1193,7 +1146,7 @@ div#monitoringHoukokusho {
     min-width: 300px;
     height: 20px;
     text-align: center;
-    background: $view_Title_background;
+    // background: $view_Title_background;
   }
   .koumokuData2 {
     color: $font_color;
@@ -1216,16 +1169,6 @@ div#monitoringHoukokusho {
     height: 18vh;
     background: $view_Data_Read_background;
   }
-  .left {
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-  }
-  .right {
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-  }
 
   .itemBtn {
     font-size: 14px;
@@ -1233,7 +1176,7 @@ div#monitoringHoukokusho {
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    height: 100%;
+    height: 18px;
     width: 75px;
   }
 
@@ -1242,7 +1185,7 @@ div#monitoringHoukokusho {
     font-size: $cell_fontsize;
     // width: auto;
     // min-width: 1250px;
-    height: 48vh;
+    height: 55vh;
     // min-height: 300px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -1336,19 +1279,19 @@ div#monitoringHoukokusho {
     overflow: auto;
     height: 130px;
   }
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
+  // .koumokuTitle {
+  //   color: $font_color;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   width: 100px;
+  //   min-width: 100px;
+  //   max-width: 100px;
+  //   height: 100%;
+  //   text-align: center;
+  //   background: $view_Title_background;
+  //   border: none;
+  // }
   .v-application--is-ltr .v-list-item__action:first-child,
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 4px;
@@ -1365,67 +1308,36 @@ div#monitoringHoukokusho {
 .always-show-scrollbar {
   overflow-y: scroll !important;
 }
-.inputDialogRowStyle {
-  height: 22px;
-  color: $font_color;
-  font-size: 14px !important;
-  font-family: 'メイリオ';
-  .koumokuData {
-    color: $font_color;
-    width: 200px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
+// .inputDialogRowStyle {
+//   height: 22px;
+//   color: $font_color;
+//   font-size: 14px !important;
+//   font-family: 'メイリオ';
+//   .koumokuData {
+//     color: $font_color;
+//     width: 200px;
+//     height: 100%;
+//     text-align: left;
+//     background: $view_Data_Read_background;
+//     border: none;
+//   }
 
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-
-  input[type='text'] {
-    width: 200px;
-    height: 100%;
-    text-align: left;
-    border: 1px solid lightgray;
-  }
-
-  input:focus {
-    border: 1px solid #ff9900;
-    outline: 0;
-  }
-  .right {
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100% !important;
-    width: 75px;
-  }
-}
+//   // .itemBtn {
+//   //   font-size: 14px;
+//   //   background: $btn_background;
+//   //   border: thin solid;
+//   //   border-color: $light-gray;
+//   //   color: $font_color;
+//   //   height: 100% !important;
+//   //   width: 75px;
+//   // }
+// }
 .v-picker {
   z-index: 10;
 }
-.v-picker__title {
-  display: none !important;
-}
+// .v-picker__title {
+//   display: none !important;
+// }
 #monitoringHoukokushoDatepicker {
   position: absolute;
   margin-top: 20px;

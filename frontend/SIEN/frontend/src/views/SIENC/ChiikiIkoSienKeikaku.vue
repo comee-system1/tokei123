@@ -1,9 +1,9 @@
 <template>
   <div id="chiikiIkoSienKeikaku">
     <v-container no-gutters fluid class="pa-0">
-      <v-row no-gutters class="mt-2">
+      <v-row no-gutters>
         <v-col>
-          <v-tabs height="20" hide-slider v-model="tab">
+          <v-tabs class="tabrow" height="20" hide-slider v-model="tab">
             <v-tab
               v-for="item in menuItem"
               :key="item.val"
@@ -92,22 +92,27 @@ div#chiikiIkoSienKeikaku {
   max-width: 1350px !important;
   width: auto;
 
+  .v-slide-group__wrapper {
+    background-color: #588c73;
+  }
   .parentTab {
     border: 1px solid;
     margin-right: 4px;
     margin-bottom: -2px;
-    border-color: $light-gray;
-    height: 25px;
+    border-color: #588c73;
+    height: 20px;
+    color: $white;
+    background: #588c73;
   }
   .v-tab--active {
-    color: $white;
-
-    background: #1976d2;
-    border-color: #1976d2;
+    color: #333;
+    background: #fff;
+    border-color: #fff;
+    margin-bottom: 4px;
   }
   .v-tabCont {
     border-top: 2px solid;
-    border-color: #1976d2;
+    border-color: $white;
   }
   .wj-cell {
     padding: 2px;

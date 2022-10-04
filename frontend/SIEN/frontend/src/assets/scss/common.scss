@@ -14,8 +14,8 @@ $selected_color: #eee;
 // grid系
 $grid_background: #fffeed;
 $grid_hover_background: #ccffcc !important;
-$grid_selected_background: #80adbf !important;
-$grid_selected_color: #fff !important;
+$grid_selected_background: mistyrose !important;
+$grid_selected_color: #333 !important;
 $grid_Header_background_Blue: #80adbf !important;
 
 //画面部品系
@@ -24,6 +24,7 @@ $view_Title_font_color : white;
 $view_Title_background_Main : #0070C0;
 $view_Title_font_color_Main : white;
 $view_Title_background_Blue : aliceblue;
+$view_Title_background_Blue_Dark : #1F4E79;
 $view_Title_font_color_Blue : midnightblue;
 $view_Title_background_Green_Dark : #CBFFD3;
 $view_Title_background_Green : #E6FFE9;
@@ -34,6 +35,7 @@ $view_Title_font_color_Orange : saddlebrown;
 $view_Hosoku_background:lightgoldenrodyellow;
 $view_Data_Read_background : #fffeed;
 $view_Data_Input_background :aliceblue;
+$tab_background :#588c73;
 
 // 必須マークカラー
 $Hissu_Color: #ce3e47;
@@ -41,12 +43,14 @@ $Hissu_Color: #ce3e47;
 $btn_background :#f0f0f0;
 
 $cell_fontsize: 12px;
-
-
-@import "_mixins";
-@import "_jyogenkanri";
-@import "_jissekiKiroku";
-@import "_commons";
-@import "_dialogs";
+$dialog_title_fontsize: 14px;
 // ユーザー一覧開閉の秒数
 $seconds: 0.2s;
+
+// 週間予定の時間の色
+$time_color_header:#ccc;
+$time_color_aqua:#e3fbff;
+$time_color_yellow:#ffffd9;
+$time_color_skin:#ffeddd;
+$time_color_grey:#e4e4e4;
+$time_color_purple:#e3e3fb;

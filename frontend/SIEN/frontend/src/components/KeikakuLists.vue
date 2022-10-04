@@ -355,7 +355,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="keikakuIcrnDatepicker"
+        id="keikakuListDatepicker"
         type="month"
         v-model="picker"
         locale="jp-ja"
@@ -585,7 +585,7 @@ export default {
         { key: 2, val: '15px' },
         { key: 3, val: '13px' },
       ],
-      gridFontSize: '13px',
+      gridFontSize: '12px',
       headerRowHeight: 130,
       viewdataAll: [],
       viewdata: [],
@@ -644,6 +644,7 @@ export default {
       headerPlus12345: 0,
       headerPlus123456: 0,
       headerheight: 200,
+      checkicon: ['□', '☑'],
     };
   },
   created() {
@@ -701,26 +702,6 @@ export default {
         array = result;
         this.viewdata = array;
         this.viewdataAll = array;
-        let foot = [];
-        foot = [
-          this.viewdata.length,
-          10,
-          '',
-          36,
-          6,
-          5,
-          4,
-          4,
-          4,
-          4,
-          2,
-          2,
-          1,
-          14,
-          12,
-          14,
-        ];
-        this.footerdata = foot;
         let _self = this;
         this.mainGrid = flexGrid;
         this.createHeader(flexGrid);
@@ -787,6 +768,23 @@ export default {
             }
             if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
               cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+            }
+
+            // 同意カラム
+            if (c == 12 || c == 13) {
+              cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+            }
+            // 支給決定@カラム確認中
+            if (c == 14) {
+              if (tmpitem.doui_an == 1) {
+                cell.innerHTML = '☑';
+              } else {
+                cell.innerHTML = '□';
+              }
+            }
+            // サービス等利用計画
+            if (c == 20) {
+              cell.innerHTML = _self.checkicon[tmpitem.doui_an];
             }
           }
 
@@ -1222,12 +1220,11 @@ div#keikakuListGrid {
 .v-picker__title {
   display: none !important;
 }
-#keikakuIcrnDatepicker {
+#keikakuListDatepicker {
   position: absolute;
   margin-top: 20px;
-  position: fixed !important;
-  top: 100px;
-  left: 70px;
+  top: 60px;
+  left: 100px;
   width: 300px;
   max-width: 300px;
 

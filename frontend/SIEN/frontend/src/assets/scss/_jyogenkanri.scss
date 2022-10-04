@@ -1,3 +1,5 @@
+@import "common.scss";
+
 #jijyougen {
   font-size: 14px;
   font-family: 'メイリオ';
@@ -6,6 +8,7 @@
   .w-100 {
     width: 100%;
   }
+
   label {
     margin-right: 10px;
     padding-top: 10px;
@@ -15,18 +18,20 @@
   }
 
   .filterArea {
-    width:1280px;
+    width: 1280px;
   }
+
   .jijyougen-container {
     padding: 4px;
   }
 
   #flexGrid {
     min-height: 300px;
-    label{
-      width:0px;
-      top:0;
-      padding:0;
+
+    label {
+      width: 0px;
+      top: 0;
+      padding: 0;
     }
   }
 
@@ -34,6 +39,7 @@
     display: flex;
     align-items: center;
     width: 100%;
+
     img {
       &.wj-cell-maker {
         width: 15px;
@@ -74,10 +80,12 @@
     background-color: $light-white !important;
     color: $font-color !important;
   }
+
   .wj-cells .wj-cell.wj-state-multi-selected {
     background-color: $light-white !important;
     color: $font-color !important;
   }
+
   ::-webkit-scrollbar {
     width: 2px;
   }

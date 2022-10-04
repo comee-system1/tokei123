@@ -1,0 +1,103 @@
+@import "common.scss";
+
+/**********************
+* v-row系設定
+***********************/
+.rowStyle {
+    height: 20px;
+}
+.rowStyle_Input {
+    height: 25px;
+}
+.rowStyle_Dark {
+    height: 28px; 
+    background: #C2EEFF
+}
+
+/**********************
+* ラベル系設定
+***********************/
+.koumokuTitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 100%;
+    text-align: center;
+    border: none;
+}
+.titleMain {
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Main !important;
+}
+.titleBlueDark {
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Blue_Dark !important;
+}
+.titleBlue {
+    color: $view_Title_font_color_Blue !important;
+    background: $view_Title_background_Blue !important;
+}
+.titleGreen {
+    color: $view_Title_font_color_Green !important;
+    background: $view_Title_background_Green !important;
+}
+.titleOrange {
+    color: $view_Title_font_color_Orange !important;
+    background: $view_Title_background_Orange !important;
+}
+.titleGlay{
+    color: $white !important;
+    background: transparent !important;
+}
+
+.koumokuData {
+    color: $font_color;
+    height: 100%;
+    text-align: left;
+    background: $view_Data_Read_background !important;
+    border: none;
+  }
+
+/**********************
+* input系設定
+***********************/
+  input[type='text'] {
+    height: 100%;
+    text-align: left;
+    // border: 1px solid lightgray ;
+  }
+  input:focus {
+    border: 1px solid #ff9900 !important;
+    outline: 0;
+  }
+
+/**********************
+* ボタン系設定
+***********************/
+.btnymd {
+    font-size: 14px;
+    background-color: $white !important;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 100%;
+  }
+
+/**********************
+* Tab系設定
+***********************/
+div.commonTab{
+    .v-tab--active {
+        background: white;
+    }
+    .theme--light.v-tabs > .v-tabs-bar .v-tab:not(.v-tab--active){
+        color: $white;
+        background-color: $tab_background !important;
+    }
+    .v-slide-group__content{
+        background-color: $tab_background !important;
+    }
+}

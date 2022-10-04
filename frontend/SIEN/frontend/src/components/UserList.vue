@@ -3,6 +3,7 @@
     id="user-list_scrollbar"
     :style="styles"
     :class="{ 'pr-5': dispHideBar === true, 'pr-2': dispHideBar === false }"
+    class="pl-1 pr-1"
   >
     <div
       :class="{
@@ -47,6 +48,7 @@
                   color="primary"
                   dark
                   :height="25"
+                  :min-width="15"
                   outlined
                   @click="siborikomiUser(n.val)"
                 >
@@ -80,61 +82,56 @@
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters v-show="dispYoteiYm">
           <v-col cols="*" style="height: 100%">
-            <div align="right">
-              <label class="mr-1">予定月</label>
+            <label class="titleGlay pl-1 pr-1">予定月</label>
+            <v-btn
+              @click="inputCalendarClick()"
+              tile
+              outlined
+              width="115px"
+              height="100%"
+              class="btnymd pa-0 mr-1"
+              >{{ getYoteiYm() }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+            <v-btn-toggle
+              class="flex-wrap ma-0"
+              v-model="selDispYoteisya"
+              mandatory
+            >
               <v-btn
-                @click="inputCalendarClick()"
-                tile
+                v-for="n in dispYoteisyaList"
+                :key="n.val"
+                small
+                color="secondary"
+                dark
+                :height="20"
+                :width="25"
                 outlined
-                width="115px"
-                height="100%"
-                class="pa-0 mr-1"
-                >{{ getYoteiYm() }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-              <v-btn-toggle
-                class="flex-wrap ma-0"
-                v-model="selDispYoteisya"
-                mandatory
+                @click="siborikomiYoteisya(n.val)"
               >
-                <v-btn
-                  v-for="n in dispYoteisyaList"
-                  :key="n.val"
-                  small
-                  color="primary"
-                  dark
-                  :height="25"
-                  :width="25"
-                  outlined
-                  @click="siborikomiYoteisya(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </div>
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
           </v-col>
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <v-col cols="*">
-            <div align="right">
-              <label class="mr-1">担当者</label>
-              <wj-menu
-                id="comboFilters2"
-                class="customCombobox"
-                :itemsSource="tantouList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="selTantou"
-                :itemClicked="onTantouClicked"
-                style="width: 150px"
-              >
-              </wj-menu>
-            </div>
+            <label class="titleGlay pl-1 pr-1">担当者</label>
+            <wj-menu
+              id="comboFilters2"
+              class="customCombobox"
+              :itemsSource="tantouList"
+              :initialized="initComboFilters"
+              :isRequired="true"
+              selectedValuePath="val"
+              displayMemberPath="name"
+              v-model="selTantou"
+              :itemClicked="onTantouClicked"
+            >
+            </wj-menu>
           </v-col>
         </v-row>
 
@@ -146,13 +143,13 @@
           ></wj-combo-box>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters justify="center">
+        <!-- <v-row class="rowStyle mt-1 mr-1" no-gutters justify="center">
           <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
             <v-btn
               v-for="n in sortSelList"
               :key="n.val"
               small
-              color="primary"
+              color="secondary"
               dark
               outlined
               :height="20"
@@ -162,7 +159,7 @@
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
-        </v-row>
+        </v-row> -->
         <div class="rowStyle mt-1" no-gutters>
           <v-btn-toggle class="flex-wrap ma-0" v-model="alphaSearch" mandatory>
             <v-btn
@@ -328,7 +325,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 200,
+      headerheight: 160,
       // 予定月用プロパティ
       pickerYoteiYm: '',
       yoteiYm: '',
@@ -658,7 +655,7 @@ div#user-list_scrollbar {
   font-family: 'メイリオ';
   padding: 0;
   width: var(--width);
-
+  background: #778899;
   #userListGrid {
     height: var(--height);
   }
@@ -699,12 +696,12 @@ div#user-list_scrollbar {
 
   .wj-cells .wj-cell.wj-state-multi-selected {
     background: $grid_selected_background;
-    color: $grid_selected_color;
+    color: $font_color;
   }
 
   .wj-cells .wj-cell.wj-state-selected {
     background: $grid_selected_background;
-    color: $grid_selected_color;
+    color: $font_color;
   }
   .wj-tooltip.hdr-tip {
     background: black;
@@ -734,7 +731,7 @@ div#user-list_scrollbar {
     width: 200px !important;
     height: 20px !important;
     &.customCombobox {
-      // width: 160px !important;
+      width: 220px !important;
       div {
         text-align: left;
       }

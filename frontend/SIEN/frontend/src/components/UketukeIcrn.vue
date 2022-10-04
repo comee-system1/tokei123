@@ -8,7 +8,7 @@
         left
         :width="90"
         :min-width="90"
-        style="font-size: 12px"
+        style="font-size: 14px; min-height: 1000px"
       >
         <v-card
           class="koumokuTitle_c pa-1"
@@ -25,8 +25,10 @@
             absolute
             top
             right
+            height="20"
+            width="20"
             v-on:click.stop="drawer = !drawer"
-            class="closeButton"
+            class="closeButton mt-1"
             color="secondary"
             ><v-icon dark small> mdi-close </v-icon></v-btn
           >
@@ -48,7 +50,7 @@
             v-for="n in dispList"
             :key="n.val"
             small
-            color="primary"
+            color="secondary"
             outlined
             width="50"
             height="20"
@@ -69,7 +71,7 @@
           <span v-if="dispIndex == 0">
             <v-btn
               @click="inputCalendarClick(0)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="150px"
@@ -82,7 +84,7 @@
 
             <v-btn
               elevation="0"
-              class="ymd pa-0 mr-1"
+              class="btnymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -92,7 +94,7 @@
             </v-btn>
             <v-btn
               elevation="0"
-              class="ymd pa-0 mr-1"
+              class="btnymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -107,7 +109,7 @@
           <span v-else>
             <v-btn
               @click="inputCalendarClick(90)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="125px"
@@ -117,30 +119,10 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <!-- <v-btn
-              elevation="0"
-              class="pa-0 mr-1"
-              height="100%"
-              x-small
-              tile
-              @click="inputCalendarClick(91)"
-            >
-              <v-icon>mdi-arrow-left-bold</v-icon>
-            </v-btn>
-            <v-btn
-              elevation="0"
-              class="pa-0 mr-1"
-              height="100%"
-              x-small
-              tile
-              @click="inputCalendarClick(92)"
-            >
-              <v-icon>mdi-arrow-right-bold</v-icon>
-            </v-btn> -->
             <label class="mr-1">～</label>
             <v-btn
               @click="inputCalendarClick(99)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="125px"
@@ -157,22 +139,6 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile v-if="false">
-          事業区分
-        </v-card>
-        <wj-menu
-          id="comboFiltersJigyoKbn"
-          class="customCombobox ml-1"
-          :itemsSource="jigyoKbnList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selJigyoKbn"
-          :itemClicked="onJigyoKbnClicked"
-          v-if="false"
-        >
-        </wj-menu>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
@@ -203,12 +169,7 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          outlined
-          tile
-          v-if="selKasanUmuIndex == 0"
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ランク
         </v-card>
         <wj-menu
@@ -221,7 +182,6 @@
           displayMemberPath="name"
           v-model="selRank"
           :itemClicked="onRankClicked"
-          v-if="selKasanUmuIndex == 0"
         >
         </wj-menu>
 
@@ -232,55 +192,9 @@
         >
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
-        <v-layout class="right">
-          <v-card class="countTitle pa-1 mr-1" outlined tile>
-            実人数: <span>{{ viewdata.length }} </span>人
-          </v-card>
-        </v-layout>
-      </v-row>
-      <v-row no-gutters class="rowStyle mb-1" v-if="false">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示内容 </v-card>
-        <v-btn-toggle
-          class="flex-wrap ml-1"
-          style="margin-right: 5px"
-          v-model="selKasanUmuIndex"
-        >
-          <v-btn
-            v-for="n in kasanUmuList"
-            :key="n.val"
-            small
-            outlined
-            @click="kasanUmuclick(n.val)"
-          >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-
-        <v-card
-          class="koumokuTitle pa-1 ml-1"
-          outlined
-          tile
-          v-if="selKasanUmuIndex == 1"
-        >
-          加算項目
-        </v-card>
-        <wj-menu
-          id="comboFiltersKasan"
-          class="customCombobox ml-1"
-          :itemsSource="kasanList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selRank"
-          :itemClicked="onKasanClicked"
-          v-if="selKasanUmuIndex == 1"
-        >
-        </wj-menu>
-        <v-card class="countTitle pa-1 ml-1" outlined tile>
-          延件数:
-          <span>{{ viewdata.length }} </span>
-          件
+        <v-spacer></v-spacer>
+        <v-card class="countTitle pa-1 mr-3" outlined tile>
+          実人数: <span>{{ viewdata.length }} </span>人
         </v-card>
       </v-row>
       <v-row class="ma-0" no-gutters>
@@ -551,12 +465,6 @@ export default {
           align: 'left',
         },
       ],
-      jigyoKbnList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '相談支援' },
-        { val: 2, name: '計画相談' },
-        { val: 3, name: '地域相談' },
-      ],
       taiousyaList: [
         { val: 0, name: '指定なし' },
         { val: 1, name: '宇都宮' },
@@ -579,17 +487,6 @@ export default {
         { val: 3, name: 'C' },
         { val: 4, name: 'D' },
       ],
-      kasanList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '加算A' },
-        { val: 2, name: '加算B' },
-        { val: 3, name: '加算C' },
-        { val: 4, name: '加算D' },
-      ],
-      kasanUmuList: [
-        { val: 0, name: '全部' },
-        { val: 1, name: '加算有り' },
-      ],
       viewdataAll: [],
       viewdata: [],
       viewObj: {},
@@ -602,11 +499,9 @@ export default {
       datepickerYmd_dialog: false,
       datepickerSym_dialog: false,
       datepickerEym_dialog: false,
-      selJigyoKbn: 0,
       selTaiousya: 0,
       selInputKbn: 0,
       selRank: 0,
-      selKasanUmuIndex: 0,
       screenFlag: false,
       tourokuScreenFlag: false,
       filter: {},
@@ -687,7 +582,9 @@ export default {
       }
       this.filter.filterColumns = filtercols;
       flexGrid.endUpdate();
-      this.$refs.mdselect.setYm(this.pickerYmd);
+      let tmp =
+        this.kikanYmd.format('YYYY') + '-' + this.kikanYmd.format('MM') + '-01';
+      this.$refs.mdselect.setYm(tmp);
     },
     setDispdata(tmpitem) {
       this.viewObj = tmpitem;
@@ -726,11 +623,9 @@ export default {
       if (e.panel == flexGrid.cells) {
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (this.selKasanUmuIndex == 0) {
-          if (e.col == 6 || e.col == 7) {
-            if (tmpitem.jigyouKbn == sysConst.JIGYOKBN.Renraku) {
-              e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
-            }
+        if (e.col == 6 || e.col == 7) {
+          if (tmpitem.jigyouKbn == sysConst.JIGYOKBN.Renraku) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
         if (e.col == 9) {
@@ -756,13 +651,6 @@ export default {
         this.drawer = false;
       }
     },
-    onJigyoKbnClicked(s) {
-      s.header = this.jigyoKbnList[s.selectedIndex].name;
-      this.selJigyoKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-    },
     onTaiousyaClicked(s) {
       s.header = this.taiousyaList[s.selectedIndex].name;
       this.selTaiousya = s.selectedValue;
@@ -784,13 +672,6 @@ export default {
       let f = document.activeElement;
       f.blur();
     },
-    onKasanClicked(s) {
-      s.header = this.kasanList[s.selectedIndex].name;
-      this.selRank = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-    },
     getDispKbn() {
       this.inputRef = 'Kihonsoudan';
       var urlparam = location.search.substring(1);
@@ -803,10 +684,6 @@ export default {
       this.setDispdata(null);
 
       this.tourokuScreenFlag = true;
-    },
-    kasanUmuclick(e) {
-      this.selKasanUmuIndex = e;
-      this.setViewData(false);
     },
     searchClicked() {
       // 初期データ読込
@@ -850,13 +727,7 @@ export default {
     userFilter() {
       let tmpviewdata = [];
       tmpviewdata = this.viewdataAll.concat();
-      // 絞込１
-      if (this.selJigyoKbn > 0) {
-        // 事業区分
-        tmpviewdata = tmpviewdata.filter(
-          (x) => x.jigyouKbn == this.selJigyoKbn
-        );
-      }
+
       if (this.selTaiousya > 0) {
         // 対応者
         tmpviewdata = tmpviewdata.filter(
@@ -1011,7 +882,7 @@ export default {
       }
     },
     dateSelect() {
-      this.kikanYmd = dayjs(this.pickerYmdker);
+      this.kikanYmd = dayjs(this.pickerYmd);
       this.datepickerYmd_dialog = false;
     },
     monthSelect(kbn) {
@@ -1060,9 +931,6 @@ div#uketukeIcrn {
   min-width: 1266px !important;
   max-width: 1920px;
   // width: auto;
-  .rowStyle {
-    height: 20px;
-  }
 
   #load_dialog {
     position: fixed;
@@ -1078,30 +946,6 @@ div#uketukeIcrn {
     margin: 0;
   }
 
-  .ymd {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-
-  .koumokuTitle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    border: none;
-  }
-  .titleMain {
-    color: $view_Title_font_color_Main;
-    background: $view_Title_background_Main;
-  }
   .countTitle {
     color: $font_color;
     display: flex;
@@ -1131,7 +975,7 @@ div#uketukeIcrn {
   #uketukeIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98%;
+    width: 99%;
     min-width: 1050px !important;
     height: 76vh;
     background: $grid_background;

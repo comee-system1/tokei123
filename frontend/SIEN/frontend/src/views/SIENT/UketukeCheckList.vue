@@ -160,24 +160,11 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card
-          class="countTitle pa-1 ml-1"
-          outlined
-          tile
-          style="position: absolute; left: 1150px"
-        >
+        <v-spacer></v-spacer>
+        <v-card class="countTitle pa-1 mr-3" outlined tile>
           相談件数:
           <span>{{ 0 }} </span>
           件
-        </v-card>
-        <v-card
-          class="countTitle pa-1 ml-1"
-          outlined
-          tile
-          style="position: absolute; left: 800px"
-          v-if="false"
-        >
-          連絡調整: <span>{{ 0 }} </span>件
         </v-card>
       </v-row>
       <!-- いったん非表示 -->

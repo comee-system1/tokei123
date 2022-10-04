@@ -1,34 +1,35 @@
 <template>
   <div id="UketukeSansho">
-    <v-container no-gutters fluid class="pa-0">
-      <v-tabs height="30" hide-slider v-model="tab" background-color="#588c73">
-        <v-tab
-          v-for="item in menuItem"
-          :key="item.val"
-          class="parentTab"
-          :href="item.href"
-          @change="tabsChange(item.hrefval)"
-        >
-          {{ item.name }}
-        </v-tab>
-      </v-tabs>
-    </v-container>
-    <v-container no-gutters fluid class="ma-0 pa-0">
-      <v-tabs-items class="v-tabCont" v-model="tab">
-        <v-tab-item value="Sansyo" transition="none">
-          <UketukeIcrn></UketukeIcrn>
-        </v-tab-item>
-        <v-tab-item value="SoudanCount" transition="none">
-          <SoudanCount></SoudanCount>
-        </v-tab-item>
-        <v-tab-item value="SoudanCountUtiwake" transition="none">
-          <SoudanCountUtiwake></SoudanCountUtiwake>
-        </v-tab-item>
-        <v-tab-item value="RiyouCheck" transition="none">
-          Tab 5 Content
-        </v-tab-item>
-      </v-tabs-items>
-    </v-container>
+    <div class="commonTab">
+      <v-container no-gutters fluid class="pa-0">
+        <v-tabs height="20" hide-slider v-model="tab">
+          <v-tab
+            v-for="item in menuItem"
+            :key="item.val"
+            :href="item.href"
+            @change="tabsChange(item.hrefval)"
+          >
+            {{ item.name }}
+          </v-tab>
+        </v-tabs>
+      </v-container>
+      <v-container no-gutters fluid class="pa-0">
+        <v-tabs-items v-model="tab">
+          <v-tab-item value="Sansyo" transition="none">
+            <UketukeIcrn></UketukeIcrn>
+          </v-tab-item>
+          <v-tab-item value="SoudanCount" transition="none">
+            <SoudanCount></SoudanCount>
+          </v-tab-item>
+          <v-tab-item value="SoudanCountUtiwake" transition="none">
+            <SoudanCountUtiwake></SoudanCountUtiwake>
+          </v-tab-item>
+          <v-tab-item value="RiyouCheck" transition="none">
+            Tab 5 Content
+          </v-tab-item>
+        </v-tabs-items>
+      </v-container>
+    </div>
   </div>
 </template>
 
@@ -78,36 +79,8 @@ div#UketukeSansho {
   font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1350px !important;
+  min-width: 1300px !important;
   max-width: 1920px;
   width: auto;
-
-  .parentTab {
-    border: 1px solid;
-    // margin-right: 4px;
-    // margin-bottom: -2px;
-    // border-color: $light-gray;
-    border: none;
-    height: 30px;
-    color: $white;
-    background: #588c73;
-  }
-  .v-tab--active {
-    color: $font_color;
-    font-size: 14px;
-
-    background: white;
-    // border-color: #588c73;
-    // border-color: white;
-  }
-  .v-tabCont {
-    border-top: 2px solid;
-    // border-color: #588c73;
-    border: none;
-  }
-  .wj-cell {
-    padding: 2px;
-    padding-top: 1px;
-  }
 }
 </style>

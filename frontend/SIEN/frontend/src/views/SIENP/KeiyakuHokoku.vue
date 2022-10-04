@@ -1,96 +1,78 @@
 <template>
-  <div id="keiyakuHokoku">
+  <div id="keiyakuHokoku" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
-      <div class="mt-1">
-        <v-card class="d-flex flex-row" flat>
-          <v-card
-            :color="'grey lighten-4'"
-            elevation="0"
-            tile
-            small
-            width="100"
-            height="20"
-            class="text-center"
-          >
-            サービス
-          </v-card>
-          <v-btn-toggle
-            class="ml-1"
-            dense
-            mandatory
-            v-model="onService"
-            height="20"
-          >
-            <v-btn small v-for="val in service" :key="val.id" height="20">{{
-              val.name
-            }}</v-btn>
-          </v-btn-toggle>
-          <v-card
-            :color="'grey lighten-4'"
-            elevation="0"
-            tile
-            small
-            width="100"
-            height="20"
-            class="text-center ml-1"
-          >
-            対象者
-          </v-card>
-          <v-btn-toggle class="ml-1" dense mandatory v-model="onTarget">
-            <v-btn small v-for="val in target" :key="val.id" height="20">{{
-              val.name
-            }}</v-btn>
-          </v-btn-toggle>
-          <v-btn small class="ml-3" @click="onSearch" height="20"
-            >検索開始</v-btn
-          >
+      <v-row no-gutters class="rowStyle mb-1 mt-1">
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          表示日
         </v-card>
-        <v-card class="d-flex flex-row mt-1" flat>
-          <v-card
-            :color="'grey lighten-4'"
-            elevation="0"
-            tile
-            small
-            width="100"
-            height="20"
-            class="text-center"
-          >
-            市区町村
-          </v-card>
-          <wj-menu
-            :itemClicked="selectedCityChanged"
-            selectedValuePath="id"
-            displayMemberPath="name"
-            class="customCombobox ml-1"
-            :isRequired="true"
-          >
-            <wj-menu-item v-for="val in cities" :key="val.id">{{
-              val.name
-            }}</wj-menu-item>
-          </wj-menu>
+        <v-card
+          class="pl-1"
+          width="140"
+          height="20"
+          outlined
+          tile
+          @click="onDatepicker(1)"
+          v-model="displayDate"
+        >
+          {{ getYmDisplay }}
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
+          </div>
         </v-card>
-        <v-card class="d-flex flex-row mt-1" flat>
-          <v-card>
-            <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
-            </alphabet-button>
-          </v-card>
-          <v-card class="ml-auto d-flex flex-row" elevation="0">
-            <v-card
-              :color="'lime lighten-4 pt-1'"
-              elevation="0"
-              tile
-              small
-              width="100"
-              height="24"
-              class="text-center"
-            >
-              契約済人数
-            </v-card>
-            <v-card elevation="0" class="ml-3 pt-1"> 999名 </v-card>
-          </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
+          サービス
         </v-card>
-      </div>
-      <div class="mt-1">
+        <v-btn-toggle dense mandatory v-model="onService" height="20">
+          <v-btn small v-for="val in service" :key="val.id" height="20">{{
+            val.name
+          }}</v-btn>
+        </v-btn-toggle>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
+          対象者
+        </v-card>
+        <v-btn-toggle dense mandatory v-model="onTarget">
+          <v-btn small v-for="val in target" :key="val.id" height="20">{{
+            val.name
+          }}</v-btn>
+        </v-btn-toggle>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
+          市区町村
+        </v-card>
+        <wj-menu
+          :itemClicked="selectedCityChanged"
+          selectedValuePath="id"
+          displayMemberPath="name"
+          class="customCombobox"
+          :isRequired="true"
+        >
+          <wj-menu-item v-for="val in cities" :key="val.id">{{
+            val.name
+          }}</wj-menu-item>
+        </wj-menu>
+      </v-row>
+      <v-row no-gutters class="rowStyle mb-1 mt-1">
+        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+        </alphabet-button>
+
+        <v-card class="koumokuTitle titleBlue pa-1 mr-1 ml-auto" outlined tile>
+          提出日
+        </v-card>
+        <v-card
+          class="pl-1"
+          width="140"
+          height="20"
+          outlined
+          tile
+          @click="onDatepicker(2)"
+        >
+          {{ getYmSend }}
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
+          </div>
+        </v-card>
+      </v-row>
+
+      <div class="mt-2">
         <wj-flex-grid
           id="keiyakuGrid"
           :itemsSource="viewData"
@@ -106,7 +88,10 @@
           :initialized="onInitialized"
           :itemsSourceChanged="onItemsSourceChanged"
         >
-          <wj-flex-grid-filter :initialized="initialized"></wj-flex-grid-filter>
+          <wj-flex-grid-filter
+            :initialized="initialized"
+            :showFilterIcons="false"
+          ></wj-flex-grid-filter>
           <wj-flex-grid-column
             header="市区町村"
             binding="city"
@@ -183,21 +168,28 @@
       </div>
     </v-container>
 
-    <v-dialog v-model="contactDialog" :width="800" class="contactDialogArea">
-      <v-card>
-        <v-card-title class="text-caption primary white--text lighten-2">
-          契約報告書作成
-        </v-card-title>
+    <!--表示日ダイアログ-->
+    <v-dialog v-model="datepicker_dialog" width="300" eager>
+      <v-date-picker
+        v-model="picker"
+        id="datepickerDialog"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="monthSelect"
+      >
+      </v-date-picker>
+    </v-dialog>
+
+    <!-- 契約報告書 -->
+    <v-dialog v-model="contactDialog" :width="800">
+      <v-card class="common_dialog">
+        <v-card-title class="dialog_title"> 契約報告書作成 </v-card-title>
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
           @click="contactDialog = false"
-          color="secondary"
-          class="mt-2"
+          class="mt-2 dialog_close"
           ><v-icon dark small> mdi-close </v-icon>
         </v-btn>
       </v-card>
@@ -237,17 +229,8 @@
             ></wj-flex-grid-column>
           </wj-flex-grid>
         </div>
-        <v-card class="d-flex justify-start" flat tile>
-          <v-card
-            outlined
-            tile
-            color="primary"
-            dark
-            width="120"
-            class="text-center label text-caption"
-          >
-            利用者名
-          </v-card>
+        <v-card class="d-flex justify-start common_dialog" flat tile>
+          <v-card outlined tile dark class="dialog_label"> 利用者名 </v-card>
           <v-card
             width="650"
             class="text-caption lightYellow"
@@ -257,17 +240,8 @@
             >{{ userName }}
           </v-card>
         </v-card>
-        <v-card class="d-flex justify-start mt-1" flat tile>
-          <v-card
-            outlined
-            tile
-            color="primary"
-            dark
-            width="120"
-            class="text-center label text-caption"
-          >
-            相談事業者
-          </v-card>
+        <v-card class="d-flex justify-start mt-1 common_dialog" flat tile>
+          <v-card outlined tile class="dialog_label"> 相談事業者 </v-card>
           <v-card
             width="140"
             class="text-caption lightYellow text-center"
@@ -285,17 +259,8 @@
             >{{ jyukyusyaJigyosyo }}
           </v-card>
         </v-card>
-        <v-card class="d-flex justify-start mt-1" flat tile>
-          <v-card
-            outlined
-            tile
-            color="primary"
-            dark
-            width="120"
-            class="text-center label text-caption"
-          >
-            サービス内容
-          </v-card>
+        <v-card class="d-flex justify-start mt-1 common_dialog" flat tile>
+          <v-card outlined tile class="dialog_label"> サービス内容 </v-card>
           <v-card
             width="40"
             class="text-caption lightYellow text-center"
@@ -389,7 +354,7 @@
             </v-card>
           </v-card>
         </div>
-        <div class="pa-4 bgBorder mt-1">
+        <div class="pa-4 bgBorder mt-1 common_dialog">
           <v-card class="d-flex justify-start mt-1" flat tile>
             <v-card
               elevation="0"
@@ -414,6 +379,7 @@
               outlined
               tile
               class="text-center label text-caption ml-1"
+              @click="onDatepicker(3)"
             >
               {{ keiyakukaisi }}
 
@@ -422,7 +388,9 @@
               </div>
             </v-card>
             <v-card elevation="0" tile class="label text-caption ml-auto">
-              <v-btn small v-on:click="open = !open">履歴参照</v-btn>
+              <v-btn class="func_btn" small v-on:click="open = !open"
+                >履歴参照</v-btn
+              >
             </v-card>
           </v-card>
           <v-card class="d-flex justify-start mt-1" flat tile>
@@ -449,6 +417,7 @@
               outlined
               tile
               class="text-center label text-caption ml-1"
+              @click="onDatepicker(4)"
             >
               {{ keiyakusyuryo }}
 
@@ -487,8 +456,10 @@
             ></v-textarea>
           </v-card>
           <v-row>
-            <v-col><v-btn small>削除</v-btn></v-col>
-            <v-col class="text-end"><v-btn small>登録</v-btn></v-col>
+            <v-col><v-btn class="func_btn" small>削除</v-btn></v-col>
+            <v-col class="text-end"
+              ><v-btn class="func_btn" small>登録</v-btn></v-col
+            >
           </v-row>
         </div>
       </v-card>
@@ -497,6 +468,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wjcGridFilter from '@grapecity/wijmo.grid.filter';
 import sysConst from '@/utiles/const';
@@ -509,12 +481,24 @@ export default {
   components: {
     AlphabetButton,
   },
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
+  computed: {
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
+  },
   data: function () {
     return {
       filter: '',
       onService: '',
       contactDialog: false,
+      datepicker_dialog: false,
+      picker: '',
       service: [
         {
           id: 1,
@@ -572,10 +556,70 @@ export default {
       keiyakusyuryo: '',
       open: false,
       viewDataHistory: [],
+      getYmDisplay:
+        dayjs().format('YYYY') +
+        '年' +
+        dayjs().format('MM') +
+        '月' +
+        dayjs().format('DD') +
+        '日',
+      getYmSend:
+        dayjs().format('YYYY') +
+        '年' +
+        dayjs().format('MM') +
+        '月' +
+        dayjs().format('DD') +
+        '日',
+      daySelectType: '',
+      displayDate: '', // 表示日
+      headerheight: 100,
     };
   },
 
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('keiyakuGrid') != null) {
+        document.getElementById('keiyakuGrid').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
+
+    onDatepicker(daySelectType) {
+      this.daySelectType = daySelectType;
+      this.datepicker_dialog = true;
+      var elem = document.getElementById('datepickerDialog');
+      if (daySelectType == 1) {
+        elem.style.top = '50px';
+        elem.style.left = '50px';
+      }
+      if (daySelectType == 2) {
+        elem.style.top = '80px';
+        elem.style.left = 'auto';
+        elem.style.right = '200px';
+      }
+      if (daySelectType == 3 || daySelectType == 4) {
+        elem.style.top = '160px';
+        elem.style.left = 'auto';
+        elem.style.right = 'auto';
+      }
+    },
+    monthSelect(kbn) {
+      let ex = kbn.split('-');
+      if (this.daySelectType == 1) {
+        this.getYmDisplay = ex[0] + '年' + ex[1] + '月' + ex[2] + '日';
+      }
+      if (this.daySelectType == 2) {
+        this.getYmSend = ex[0] + '年' + ex[1] + '月' + ex[2] + '日';
+      }
+      if (this.daySelectType == 3) {
+        this.keiyakukaisi = ex[0] + '年' + ex[1] + '月' + ex[2] + '日';
+      }
+      if (this.daySelectType == 4) {
+        this.keiyakusyuryo = ex[0] + '年' + ex[1] + '月' + ex[2] + '日';
+      }
+
+      this.datepicker_dialog = false;
+    },
     initialized: function (filter) {
       this.filter = filter;
       this.filter.defaultFilterType = wjcGridFilter.FilterType.Condition;
@@ -613,6 +657,14 @@ export default {
       flexGrid.select(-1, -1);
     },
     onInitialized(flexGrid) {
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filter.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filter.showFilterIcons = false;
+      });
+
       let viewData = [];
       viewData.push({
         city: '東経市',
@@ -730,9 +782,16 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
+#datepickerDialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+}
+
 div#keiyakuHokoku {
   color: $font_color;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1350px !important;
@@ -744,10 +803,26 @@ div#keiyakuHokoku {
     color: $white !important;
   }
 }
+div#keiyakuGrid {
+  .wj-header {
+    font-weight: normal;
+
+    &:nth-child(-n + 5) {
+      background: $view_Title_background_Orange_Dark;
+    }
+    &:nth-child(n + 6) {
+      background: $view_Title_background_Blue;
+    }
+    &:last-child {
+      background: $light-white;
+    }
+  }
+}
 div#serviceHistoryGrid {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
+  height: var(--height);
 }
 .bgColor {
   background-color: $grid_selected_background;

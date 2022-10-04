@@ -808,7 +808,6 @@
                   :dispHideBar="false"
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
-                  style="height: 75vh"
                 >
                 </user-list>
               </v-tab-item>
@@ -2608,6 +2607,9 @@ div#uketukeTouroku {
       border: thin solid;
       border-radius: 10px;
       height: 25px;
+    }
+    .v-slide-group__content {
+      background-color: $white !important;
     }
 
     .rirekikoumokuTitle {

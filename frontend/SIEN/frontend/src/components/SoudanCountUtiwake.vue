@@ -1,73 +1,138 @@
 <template>
   <div id="soudanCountUtiwake">
-    <v-container class="mt-1 ml-1 pa-0" fluid>
-      <v-row no-gutters class="rowStyle mt-0">
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
-          表示月
-        </v-card>
+    <v-container class="mt-1 ml-1 pa-0" fluid style="min-height: 89vh">
+      <v-navigation-drawer
+        class="blue lighten-5"
+        v-model="drawer"
+        absolute
+        left
+        :width="90"
+        :min-width="90"
+        style="font-size: 12px; min-height: 1000px"
+      >
         <v-card
-          class="ml-1"
+          class="koumokuTitle_c pa-1"
+          style="background: lightgray"
+          outlined
+          tile
+          :height="30"
+        >
+          日付選択
+          <v-btn
+            elevation="2"
+            icon
+            small
+            absolute
+            top
+            right
+            height="20"
+            width="20"
+            v-on:click.stop="drawer = !drawer"
+            class="closeButton mt-1"
+            color="secondary"
+            ><v-icon dark small> mdi-close </v-icon></v-btn
+          >
+        </v-card>
+        <MdSelect class="ma-1" ref="mdselect" @dateSelect="setMd"></MdSelect>
+      </v-navigation-drawer>
+      <v-row no-gutters class="rowStyle mb-1">
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          表示単位
+        </v-card>
+        <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
+          <v-btn
+            v-for="n in dispList"
+            :key="n.val"
+            small
+            color="secondary"
+            outlined
+            width="50"
+            height="20"
+            @click="dispClicked(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+
+        <v-card
+          class="mr-1"
           color="transparent"
           height="100%"
-          style="border: none; margin-top: -1px"
+          style="border: none"
           outlined
           tile
         >
-          <v-btn
-            @click="inputCalendarClick(0)"
-            tile
-            outlined
-            width="125px"
-            height="100%"
-            >{{ getYm() }}
-            <div class="float-right">
-              <v-icon small>mdi-calendar-month</v-icon>
-            </div>
-          </v-btn>
-          <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="100%"
-            x-small
-            tile
-            @click="inputCalendarClick(1)"
-          >
-            <v-icon>mdi-arrow-left-bold</v-icon>
-          </v-btn>
-          <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="100%"
-            x-small
-            tile
-            @click="inputCalendarClick(2)"
-          >
-            <v-icon>mdi-arrow-right-bold</v-icon>
-          </v-btn>
+          <span v-if="dispIndex == 0">
+            <v-btn
+              @click="inputCalendarClick(0)"
+              class="ymd mr-1"
+              tile
+              outlined
+              width="150px"
+              height="100%"
+              >{{ getYmd() }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+
+            <v-btn
+              elevation="0"
+              class="ymd pa-0 mr-1"
+              height="100%"
+              x-small
+              tile
+              @click="inputCalendarClick(1)"
+            >
+              <v-icon>mdi-arrow-left-bold</v-icon>
+            </v-btn>
+            <v-btn
+              elevation="0"
+              class="ymd pa-0 mr-1"
+              height="100%"
+              x-small
+              tile
+              @click="inputCalendarClick(2)"
+            >
+              <v-icon>mdi-arrow-right-bold</v-icon>
+            </v-btn>
+            <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
+              日付選択
+            </v-btn>
+          </span>
+          <span v-else>
+            <v-btn
+              @click="inputCalendarClick(90)"
+              class="ymd mr-1"
+              tile
+              outlined
+              width="125px"
+              height="100%"
+              >{{ getYm(0) }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+            <label class="mr-1">～</label>
+            <v-btn
+              @click="inputCalendarClick(99)"
+              class="ymd mr-1"
+              tile
+              outlined
+              width="125px"
+              height="100%"
+              >{{ getYm(1) }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+            <v-btn class="itemBtn mr-1 pa-1" @click="searchClicked()">
+              検索
+            </v-btn>
+          </span>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
-        <v-card
-          class="koumokuTitle titleMain pa-1"
-          outlined
-          tile
-          style="display: none"
-        >
-          事業区分
-        </v-card>
-        <wj-menu
-          id="comboFiltersJigyoKbn"
-          class="customCombobox ml-1"
-          :itemsSource="jigyoKbnList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selJigyoKbn"
-          :itemClicked="onJigyoKbnClicked"
-          style="display: none"
-        >
-        </wj-menu>
         <v-card class="koumokuTitle titleMain pa-1" outlined tile>
           入力区分
         </v-card>
@@ -101,14 +166,19 @@
         <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
           表示内容
         </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" v-model="selDispIndex" mandatory>
+        <v-btn-toggle
+          class="flex-wrap ml-1"
+          v-model="selDispGridIndex"
+          mandatory
+        >
           <v-btn
-            v-for="n in dispList"
+            v-for="n in dispGridList"
             :key="n.val"
             small
+            width="75"
             outlined
             @click="dispclick(n.val)"
-            color="primary"
+            color="secondary"
           >
             {{ n.name }}
           </v-btn>
@@ -126,79 +196,103 @@
             :key="n.val"
             small
             outlined
+            width="50"
             @click="syukeiclick(n.val)"
-            color="primary"
+            color="secondary"
           >
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-btn class="searchBtn mr-1" @click="searchClicked"> 検索 </v-btn>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
-        <MdSelect ref="mdselect" @dateSelect="setMd"></MdSelect>
-        <div class="wrap ma-0 ml-1">
-          <v-card class="gridTitle pa-0 ma-0" outlined tile>
-            {{ title }}
-            <span class="ml-3">{{ selectedYmdD }}</span>
-          </v-card>
-          <wj-flex-grid
-            id="soudanCountUtiwakeGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializeSoudanCountUtiwakeGrid"
-            :formatItem="onFormatItemSoudanCountUtiwake"
-            :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSourceChanging="onItemsSourceChanging"
-            :itemsSource="viewJyoukyouList"
-            v-show="selDispIndex == 0"
-          >
-          </wj-flex-grid>
-          <wj-flex-grid
-            id="sienNaiyouGridUtiwake"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'Row'"
-            :isReadOnly="true"
-            :initialized="onInitializesienNaiyouGridUtiwake"
-            :formatItem="onFormatItemsienNaiyou"
-            :itemsSourceChanged="onItemsSourceChanged"
-            :itemsSourceChanging="onItemsSourceChanging"
-            :itemsSource="viewNaiyouList"
-            v-show="selDispIndex == 1"
-          >
-          </wj-flex-grid>
-        </div>
+        <v-card class="gridTitle pa-0 ma-0" outlined tile>
+          {{ title }}
+        </v-card>
+        <wj-flex-grid
+          id="soudanCountUtiwakeGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializeSoudanCountUtiwakeGrid"
+          :formatItem="onFormatItemSoudanCountUtiwake"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSourceChanging="onItemsSourceChanging"
+          :itemsSource="viewJyoukyouList"
+          v-show="selDispGridIndex == 0"
+        >
+        </wj-flex-grid>
+        <wj-flex-grid
+          id="sienNaiyouGridUtiwake"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializesienNaiyouGridUtiwake"
+          :formatItem="onFormatItemsienNaiyou"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSourceChanging="onItemsSourceChanging"
+          :itemsSource="viewNaiyouList"
+          v-show="selDispGridIndex == 1"
+        >
+        </wj-flex-grid>
       </v-row>
     </v-container>
     <!-- ダイアログエリア -->
-    <v-dialog
-      v-model="datepicker_dialog"
-      width="200"
-      class="datepicker_dialogs"
-    >
+    <v-dialog v-model="datepickerYmd_dialog" class="datepickerYmd_dialogs">
       <v-date-picker
         id="soudanCountUtiwakeDatepicker"
-        type="month"
-        v-model="picker"
+        scrollable
+        no-title
+        mode="single"
+        v-model="pickerYmd"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
-        @change="monthSelect"
+        @change="dateSelect"
+      >
+      </v-date-picker>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerSym_dialog"
+      width="200"
+      class="datepickerSym_dialogs"
+    >
+      <v-date-picker
+        id="soudanCountUtiwakeDatepickerS"
+        type="month"
+        v-model="pickerSym"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="monthSelect(0)"
+      >
+      </v-date-picker>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerEym_dialog"
+      width="200"
+      class="datepickerSym_dialogs"
+    >
+      <v-date-picker
+        id="soudanCountUtiwakeDatepickerE"
+        type="month"
+        v-model="pickerEym"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="monthSelect(1)"
       >
       </v-date-picker>
     </v-dialog>
@@ -221,9 +315,10 @@ const V_RL = 'vertical-rl';
 const PAD_TOP = '4px';
 const ALI_LEFT = 'left';
 const ALI_CENTER = 'center';
+const ALI_RIGHT = 'right';
 const V_ALI_TOP = 'top';
 const DISPLAY_TC = 'table-cell';
-const DAYJS_CON_CHAR = '-';
+// const DAYJS_CON_CHAR = '-';
 // const FIX_CON_CHAR = '-';
 // const STYLE_BLOCK = 'block';
 const STYLE_NONE = 'none';
@@ -279,8 +374,8 @@ export default {
   components: { MdSelect },
   data() {
     return {
-      selDispIndex: 0,
-      dispList: [
+      selDispGridIndex: 0,
+      dispGridList: [
         { val: 0, name: '相談者状況' },
         { val: 1, name: '支援内容' },
       ],
@@ -288,12 +383,6 @@ export default {
       syukeiList: [
         { val: 0, name: '回数' },
         { val: 1, name: '人数' },
-      ],
-      jigyoKbnList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '相談支援' },
-        { val: 2, name: '計画相談' },
-        { val: 3, name: '地域相談' },
       ],
       inputList: [
         { val: 0, name: '指定なし' },
@@ -310,34 +399,6 @@ export default {
         { val: 0, name: '指定なし' },
         { val: 1, name: '宇都宮' },
       ],
-      sinkiKeizokuList: [
-        { val: 1, name: '新規相談' },
-        { val: 2, name: '継続相談' },
-        { val: 3, name: '契約前新規' },
-        { val: 4, name: '契約前支援' },
-      ],
-      seibetuList: [
-        { val: 1, name: '男性' },
-        { val: 2, name: '女性' },
-        { val: 3, name: 'その他' },
-      ],
-      setaiList: [
-        { val: 1, name: '家族と同居' },
-        { val: 2, name: '障害者世帯' },
-        { val: 3, name: '一人暮らし' },
-        { val: 4, name: '施設入所' },
-        { val: 5, name: '病院入院' },
-        { val: 6, name: 'その他' },
-        { val: 7, name: '(未入力)' },
-      ],
-      honninList: [
-        { val: 1, name: '自閉症' },
-        { val: 2, name: 'アスペルガー症候群' },
-        { val: 3, name: '広汎性発達障害' },
-        { val: 4, name: '学習障害' },
-        { val: 5, name: '不明' },
-        { val: 6, name: '(未入力)' },
-      ],
       rankList: [
         { val: 1, name: 'A' },
         { val: 2, name: 'B' },
@@ -350,10 +411,7 @@ export default {
       sienNaiyouViewData: [],
       viewObj: {},
       userObj: {},
-      kikanYm: '',
-      picker: '',
       datepicker_dialog: false,
-      selJigyoKbn: 0,
       selTaiousya: 0,
       selInputKbn: 0,
       screenFlag: false,
@@ -361,12 +419,29 @@ export default {
       mstKankeiList: [],
       selectedYmd: {},
       selectedYmdD: '',
-      targetSYm: '',
       headerList: [],
       viewKiasuList: [],
       viewNinzuList: [],
       viewJyoukyouList: [],
       viewNaiyouList: [],
+      kikanYmd: '',
+      kikanSYm: '',
+      kikanEYm: '',
+      pickerYmd: '',
+      pickerSym: '',
+      pickerEym: '',
+      datepickerYmd_dialog: false,
+      datepickerSym_dialog: false,
+      datepickerEym_dialog: false,
+      targetYmd: '',
+      targetSYm: '',
+      targetEYm: '',
+      drawer: true,
+      dispIndex: 0,
+      dispList: [
+        { val: 0, name: '日指定' },
+        { val: 1, name: '月指定' },
+      ],
     };
   },
   computed: {
@@ -377,7 +452,7 @@ export default {
       } else {
         option = ' （人数）';
       }
-      if (this.selDispIndex == 0) {
+      if (this.selDispGridIndex == 0) {
         return '■ 相談者状況' + option;
       } else {
         return '■ 支援内容　' + option;
@@ -423,7 +498,9 @@ export default {
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
       flexGrid.endUpdate();
-      this.$refs.mdselect.setYm(this.picker);
+      let tmp =
+        this.kikanYmd.format('YYYY') + '-' + this.kikanYmd.format('MM') + '-01';
+      this.$refs.mdselect.setYm(tmp);
     },
     onInitializesienNaiyouGridUtiwake(flexGrid) {
       flexGrid.beginUpdate();
@@ -460,14 +537,14 @@ export default {
         if (colIndex == 0) {
           col.binding = 'riyo_codeD';
           col.align = ALI_CENTER;
-          col.width = 100;
+          col.width = 70;
         } else if (colIndex == 1) {
           col.binding = 'riyo_name';
-          col.width = 200;
+          col.width = 150;
         } else {
           col.binding = 'col' + (colIndex - 2);
-          col.width = 50;
-          col.align = ALI_CENTER;
+          col.width = 30;
+          col.align = ALI_RIGHT;
           col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
@@ -499,14 +576,14 @@ export default {
         if (colIndex == 0) {
           col.binding = 'riyo_codeD';
           col.align = ALI_CENTER;
-          col.width = 100;
+          col.width = 70;
         } else if (colIndex == 1) {
           col.binding = 'riyo_name';
-          col.width = 200;
+          col.width = 150;
         } else {
           col.binding = 'col' + (colIndex - 2);
-          col.align = ALI_CENTER;
-          col.width = 50;
+          col.align = ALI_RIGHT;
+          col.width = 30;
           col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
@@ -601,6 +678,11 @@ export default {
         } else {
           e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
         }
+        if (e.col > 1) {
+          e.cell.style.textAlign = ALI_RIGHT;
+          e.cell.style.justifyContent = ALI_RIGHT;
+          e.cell.style.alignItems = ALI_RIGHT;
+        }
       }
     },
     onFormatItemsienNaiyou(flexGrid, e) {
@@ -663,14 +745,12 @@ export default {
         } else {
           e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
         }
+        if (e.col > 1) {
+          e.cell.style.textAlign = ALI_RIGHT;
+          e.cell.style.justifyContent = ALI_RIGHT;
+          e.cell.style.alignItems = ALI_RIGHT;
+        }
       }
-    },
-    onJigyoKbnClicked(s) {
-      s.header = this.jigyoKbnList[s.selectedIndex].name;
-      this.selJigyoKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
     },
     onTaiousyaClicked(s) {
       s.header = this.taiousyaList[s.selectedIndex].name;
@@ -697,10 +777,24 @@ export default {
           uniqid: 1,
           traceid: 123,
           pJigyoid: 43,
-          pTaisyo: this.selDispIndex == 0 ? 1 : 2,
-          pSymd: this.targetSYm,
-          pEymd: this.targetSYm,
+          pTaisyo: this.selDispGridIndex == 0 ? 1 : 2,
+          pSymd: this.targetYmd,
+          pEymd: this.targetYmd,
+          pSiid: 0,
+          pChiku: 0,
+          pHostName: 'cl021',
         };
+        if (this.dispIndex == 1) {
+          let split = this.pickerSym.split('-');
+          this.targetSYm = split[0] + split[1].padStart(2, '0') + '01';
+          let splitE = this.pickerEym.split('-');
+          this.targetEYm =
+            splitE[0] +
+            splitE[1].padStart(2, '0') +
+            this.kikanEYm.endOf('month').format('DD');
+          params.pSymd = this.targetSYm;
+          params.pEymd = this.targetEYm;
+        }
         this.screenFlag = true;
         getConnect('/SyukeiMeisai', params, 'SIENT').then((result) => {
           this.headerList = result.headerList;
@@ -714,7 +808,7 @@ export default {
       }
     },
     setViewList() {
-      if (this.selDispIndex == 0) {
+      if (this.selDispGridIndex == 0) {
         if (this.selSyukeiIndex == 0) {
           this.viewJyoukyouList = this.viewKiasuList.slice();
         } else {
@@ -732,13 +826,7 @@ export default {
       let tmpSoudanCountUtiwakeViewData = [];
       tmpSoudanCountUtiwakeViewData =
         this.soudanCountUtiwakeViewDataAll.concat();
-      // 絞込１
-      if (this.selJigyoKbn > 0) {
-        // 事業区分
-        tmpSoudanCountUtiwakeViewData = tmpSoudanCountUtiwakeViewData.filter(
-          (x) => x.jigyouKbn == this.selJigyoKbn
-        );
-      }
+
       if (this.selTaiousya > 0) {
         // 対応者
         tmpSoudanCountUtiwakeViewData = tmpSoudanCountUtiwakeViewData.filter(
@@ -794,13 +882,7 @@ export default {
     userFilterSienNaiyou() {
       let tmpSienNaiyouViewData = [];
       tmpSienNaiyouViewData = this.sienNaiyouViewDataAll.concat();
-      // 絞込１
-      if (this.selJigyoKbn > 0) {
-        // 事業区分
-        tmpSienNaiyouViewData = tmpSienNaiyouViewData.filter(
-          (x) => x.jigyouKbn == this.selJigyoKbn
-        );
-      }
+
       if (this.selTaiousya > 0) {
         // 対応者
         tmpSienNaiyouViewData = tmpSienNaiyouViewData.filter(
@@ -810,63 +892,144 @@ export default {
 
       this.sienNaiyouViewData = tmpSienNaiyouViewData;
     },
-    getYm() {
-      if (!this.kikanYm) {
-        this.kikanYm = dayjs().set('date', 1);
-        this.picker =
-          this.kikanYm.year() + DAYJS_CON_CHAR + this.kikanYm.format('MM');
+    getYmd() {
+      if (!this.kikanYmd) {
+        this.kikanYmd = dayjs();
+        this.pickerYmd =
+          this.kikanYmd.year() +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
       }
       return (
-        this.kikanYm.format('YYYY') + '年' + this.kikanYm.format('MM') + '月'
+        this.kikanYmd.format('YYYY') +
+        '年' +
+        this.kikanYmd.format('MM') +
+        '月' +
+        this.kikanYmd.format('DD') +
+        '日'
       );
     },
-    inputCalendarClick(kbn) {
-      if (kbn == 1) {
-        this.kikanYm = this.kikanYm.subtract(1, 'months');
-      } else if (kbn == 2) {
-        this.kikanYm = this.kikanYm.add(1, 'months');
-      }
-      this.picker =
-        this.kikanYm.format('YYYY') +
-        DAYJS_CON_CHAR +
-        this.kikanYm.format('MM') +
-        DAYJS_CON_CHAR +
-        this.kikanYm.format('DD');
+    getYm(kbn) {
       if (kbn == 0) {
-        this.datepicker_dialog = true;
+        if (!this.kikanSYm) {
+          this.kikanSYm = dayjs().startOf('months');
+          this.pickerSym =
+            this.kikanSYm.year() + '-' + this.kikanSYm.format('MM');
+        }
+        return (
+          this.kikanSYm.format('YYYY') +
+          '年' +
+          this.kikanSYm.format('MM') +
+          '月'
+        );
       } else {
-        this.soudanCountUtiwakeViewData = [];
+        if (!this.kikanEYm) {
+          this.kikanEYm = dayjs().startOf('months');
+          this.pickerEym =
+            this.kikanEYm.year() + '-' + this.kikanEYm.format('MM');
+        }
+        return (
+          this.kikanEYm.format('YYYY') +
+          '年' +
+          this.kikanEYm.format('MM') +
+          '月'
+        );
       }
-      this.selectedYmd = null;
-      this.soudanCountUtiwakeViewData = [];
-      this.sienNaiyouViewData = [];
-      this.$refs.mdselect.setYm(this.picker);
     },
-    monthSelect() {
-      this.kikanYm = dayjs(this.picker);
-      this.selectedYmd = null;
-      this.soudanCountUtiwakeViewData = [];
-      this.sienNaiyouViewData = [];
-      this.datepicker_dialog = false;
-      this.$refs.mdselect.setYm(this.picker);
+    inputCalendarClick(kbn) {
+      if (kbn == 99) {
+        this.pickerEym =
+          this.kikanEYm.format('YYYY') +
+          '-' +
+          this.kikanEYm.format('MM') +
+          '-' +
+          this.kikanEYm.format('DD');
+        this.datepickerEym_dialog = true;
+      } else if (kbn == 90 || kbn == 91 || kbn == 92) {
+        if (kbn == 91) {
+          this.kikanSYm = this.kikanSYm.subtract(1, 'months');
+        } else if (kbn == 92) {
+          this.kikanSYm = this.kikanSYm.add(1, 'months');
+        }
+        this.pickerSym =
+          this.kikanSYm.format('YYYY') +
+          '-' +
+          this.kikanSYm.format('MM') +
+          '-' +
+          this.kikanSYm.format('DD');
+        if (kbn == 90) {
+          this.datepickerSym_dialog = true;
+        } else {
+          this.viewdata = [];
+        }
+      } else {
+        if (kbn == 1) {
+          this.kikanYmd = this.kikanYmd.subtract(1, 'day');
+        } else if (kbn == 2) {
+          this.kikanYmd = this.kikanYmd.add(1, 'day');
+        }
+        this.pickerYmd =
+          this.kikanYmd.format('YYYY') +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-' +
+          this.kikanYmd.format('DD');
+        if (kbn == 0) {
+          this.datepickerYmd_dialog = true;
+        } else {
+          this.viewdata = [];
+        }
+        let tmp =
+          this.kikanYmd.format('YYYY') +
+          '-' +
+          this.kikanYmd.format('MM') +
+          '-01';
+        this.$refs.mdselect.setYm(tmp);
+      }
+    },
+    dateSelect() {
+      this.kikanYmd = dayjs(this.pickerYmd);
+      this.datepickerYmd_dialog = false;
+    },
+    monthSelect(kbn) {
+      if (kbn == 0) {
+        this.kikanSYm = dayjs(this.pickerSym);
+        this.$refs.mdselect.setYm(this.pickerSym);
+        this.viewdata = [];
+        this.datepickerSym_dialog = false;
+      } else {
+        this.kikanEYm = dayjs(this.pickerEym);
+        this.viewdata = [];
+        this.datepickerEym_dialog = false;
+      }
+    },
+    setMd(param1) {
+      //paramには日付と曜日(３と"金")が入る
+      let split = this.pickerYmd.split('-');
+      this.targetYmd =
+        split[0] +
+        split[1].padStart(2, '0') +
+        String(param1.day).padStart(2, '0');
+      this.kikanYmd = dayjs(this.targetYmd);
+      this.setViewData(true);
     },
     dispclick(val) {
-      this.selDispIndex = val;
+      this.selDispGridIndex = val;
       this.setViewData(true);
     },
     syukeiclick(val) {
       this.selSyukeiIndex = val;
       this.setViewData(true);
     },
-    setMd(param1) {
-      //paramには日付と曜日(３と"金")が入る
-      let split = this.picker.split('-');
-      this.targetSYm =
-        split[0] +
-        split[1].padStart(2, '0') +
-        String(param1.day).padStart(2, '0');
-      this.selectedYmd = param1;
-      this.setViewData(true);
+    dispClicked(index) {
+      this.dispIndex = index;
+      if (this.dispIndex == 0) {
+        this.drawer = true;
+      } else {
+        this.drawer = false;
+      }
     },
   },
 };
@@ -901,16 +1064,24 @@ div#soudanCountUtiwake {
     margin: 0;
   }
 
-  .v-btn {
+  .ymd {
     font-size: 14px;
     background-color: $white;
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
-    min-height: 19px;
-    height: 19px;
+    height: 100%;
   }
 
+  .itemBtn {
+    font-size: 14px;
+    background: $btn_background;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 18px;
+    width: 75px;
+  }
   .searchBtn {
     font-size: 14px;
     background: $btn_background;
@@ -969,10 +1140,11 @@ div#soudanCountUtiwake {
   #sienNaiyouGridUtiwake {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 90vw;
+    width: 99%;
     min-width: 1250px;
-    height: 73vh;
+    height: 77vh;
     background: $grid_background;
+    z-index: 0;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1078,9 +1250,9 @@ div#soudanCountUtiwake {
     }
   }
 }
-.v-picker {
-  z-index: 10;
-}
+// .v-picker {
+//   z-index: 10;
+// }
 .v-picker__title {
   display: none !important;
 }
@@ -1089,7 +1261,7 @@ div#soudanCountUtiwake {
   margin-top: 20px;
   position: fixed !important;
   top: 100px;
-  left: 70px;
+  left: 150px;
   width: 300px;
   max-width: 300px;
 
@@ -1110,6 +1282,24 @@ div#soudanCountUtiwake {
     .v-btn__content {
     color: red;
   }
+}
+#soudanCountUtiwakeDatepickerS {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 120px;
+  left: 100px;
+  width: 300px;
+  max-width: 300px;
+}
+#soudanCountUtiwakeDatepickerE {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 120px;
+  left: 270px;
+  width: 300px;
+  max-width: 300px;
 }
 
 .v-dialog {

@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuIdea">
+  <div id="keikakuIdea" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -158,16 +158,7 @@
                 モニタリング期間
               </v-card>
 
-              <v-text-field
-                class="pa-0 ma-0 ml-1 input-text text-caption"
-                hide-details="false"
-                outlined
-                dense
-                tile
-                :full-width="true"
-                :value="' '"
-              >
-              </v-text-field>
+              <input type="text" class="ml-1" />
             </v-card>
           </div>
           <div class="mt-1">
@@ -447,6 +438,7 @@ div#keikakuIdea {
   font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1920px;
+  height: var(--height);
   width: auto;
   span#selectUserExamNumber,
   span#selectUserText {
@@ -457,12 +449,14 @@ div#keikakuIdea {
     background-color: $light-gray;
   }
   .input-text {
-    font-size: 12px;
-    border-radius: 4px !important;
     div {
-      height: 24px;
-      min-height: 24px;
+      height: 21px;
+      min-height: 21px;
+      margin-top: -1px;
     }
+  }
+  .w100p {
+    width: 100%;
   }
   .mw240 {
     max-width: 240px;
