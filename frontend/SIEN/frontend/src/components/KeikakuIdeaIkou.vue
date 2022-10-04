@@ -2,13 +2,7 @@
   <div id="listsArea" :style="styles">
     <v-row dense v-for="value in note" :key="value.key">
       <v-col cols="2" class="text-center valign text-caption">
-        <v-card
-          class="pa-1 lightYellow"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-        >
+        <v-card class="pa-1 lightGreen" elevation="0" outlined tile height="90">
           {{ value.title }}
         </v-card>
       </v-col>
@@ -175,5 +169,8 @@ export default {
     margin-top: 0px !important;
     margin-right: 10px;
   }
+}
+.lightGreen {
+  background-color: $view_Title_background_Green !important;
 }
 </style>

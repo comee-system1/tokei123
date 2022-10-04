@@ -673,6 +673,17 @@ export default {
   height: var(--height);
   color: $font_color;
   font-family: 'メイリオ';
+
+  .wj-header {
+    font-weight: normal;
+    background: $view_Title_background_Blue;
+    color: $view_Title_font_color_Blue;
+    &:last-child {
+      background: $light-white;
+      color: $grid_selected_color;
+    }
+  }
+
   .wj-cell {
     display: flex;
     &.wj-header {

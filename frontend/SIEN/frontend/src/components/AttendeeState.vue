@@ -11,17 +11,9 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="' grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="80"
-                height="20"
-                class="text-center"
-              >
+          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
+            <v-col cols="12" class="d-flex pa-1">
+              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
               </v-card>
               <v-card
@@ -29,74 +21,68 @@
                 outlined
                 tile
                 class="ml-1 pl-1 lightYellow"
-                width="160"
+                width="300"
                 height="20"
               >
                 {{ userName }}
               </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
+            <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
+              入力
             </v-card>
-          </div>
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4 '"
-                elevation="0"
-                tile
-                small
-                width="80"
-                height="20"
-                class="text-center"
-              >
-                入力
-              </v-card>
-              <v-card elevation="0" class="pl-1">
-                <v-btn-toggle>
-                  <v-btn small height="20">新規入力</v-btn>
-                  <v-btn small height="20">内容更新</v-btn>
-                </v-btn-toggle>
-              </v-card>
-              <v-card
-                :color="'grey lighten-4  ml-1'"
-                elevation="0"
-                tile
-                small
-                width="80"
-                height="20"
-                class="text-center"
-              >
-                作成日
-              </v-card>
-              <v-card
-                class="ml-1"
-                width="140"
-                height="20"
-                outlined
-                tile
-                @click="inputCalendarClick(0)"
-              >
-                {{ getYm }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-card>
+            <v-card elevation="0" class="pl-1">
+              <v-btn-toggle>
+                <v-btn small height="20">新規</v-btn>
+                <v-btn small height="20">修正</v-btn>
+              </v-btn-toggle>
+            </v-card>
+            <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
+              作成日
+            </v-card>
 
-              <v-card class="ml-auto" elevation="0">
-                <v-btn small height="20">利用者より</v-btn>
-                <v-btn small class="ml-1" height="20">前回コピー</v-btn>
-                <v-btn small class="ml-1" height="20">履歴参照</v-btn>
-              </v-card>
+            <v-card
+              class="ml-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+              @click="inputCalendarClick(0)"
+            >
+              {{ getYm }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
             </v-card>
-          </div>
+            <v-card class="koumokuTitle titleOrange ml-1 wMin" outlined tile>
+              作成者
+            </v-card>
+            <v-card
+              class="lightYellow pl-1 ml-1"
+              width="140"
+              elevation="0"
+              tile
+            >
+              大正雅夫
+            </v-card>
+            <v-card class="ml-auto" elevation="0">
+              <v-btn small height="20">利用者基本情報より</v-btn>
+              <v-btn small class="ml-1" height="20">前回コピー</v-btn>
+              <v-btn small class="ml-1" height="20">履歴参照</v-btn>
+            </v-card>
+          </v-row>
+
           <div class="mt-1">
-            <v-app-bar flat height="24">
+            <v-app-bar flat height="24" class="titleBlue">
               <v-app-bar-title class="caption"
-                >1.外用(支援経過・現状と課題等)</v-app-bar-title
+                >1.概要(支援経過・現状と課題等)</v-app-bar-title
               >
             </v-app-bar>
             <v-textarea class="mt-1" outlined hide-details="false"></v-textarea>
           </div>
           <div class="mt-1">
-            <v-app-bar flat height="24">
+            <v-app-bar flat height="24" class="titleBlue">
               <v-app-bar-title class="text-caption"
                 >2.利用者の状況</v-app-bar-title
               >
@@ -264,7 +250,7 @@ div#attendeeState {
     border-left: 1px solid #ccc;
     font-size: 12px;
     th {
-      background-color: $grid_hover_background;
+      background-color: $view_Title_background_Blue;
       text-align: center;
       padding: 4px;
       font-weight: normal;

@@ -1,59 +1,33 @@
 <template>
   <div id="keikakuLists">
     <v-container class="mt-1 ml-1 pa-0" :style="styles" style="max-width: 100%">
-      <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+      <v-row no-gutters class="rowStyle mb-1 mt-1">
+        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           表示月
         </v-card>
+
         <v-card
-          class="ml-1"
-          color="transparent"
-          height="20"
-          style="border: none"
+          class="pl-1"
+          width="140"
+          height="24"
           outlined
           tile
+          @click="inputCalendarClick(0)"
         >
-          <v-btn
-            @click="inputCalendarClick(0)"
-            tile
-            outlined
-            width="125px"
-            height="100%"
-            >{{ getYm() }}
-            <div class="float-right">
-              <v-icon small>mdi-calendar-month</v-icon>
-            </div>
-          </v-btn>
-          <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="20"
-            x-small
-            tile
-            @click="inputCalendarClick(1)"
-          >
-            <v-icon>mdi-arrow-left-bold</v-icon>
-          </v-btn>
-          <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="20"
-            x-small
-            tile
-            @click="inputCalendarClick(2)"
-          >
-            <v-icon>mdi-arrow-right-bold</v-icon>
-          </v-btn>
+          {{ getYm() }}
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
+          </div>
         </v-card>
-        <v-btn small height="20" class="ml-2">検索開始</v-btn>
+        <v-btn small height="24" class="ml-2">検索開始</v-btn>
       </v-row>
       <v-row class="rowStyle" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           担当者
         </v-card>
         <wj-menu
           id="comboFilters"
-          class="customCombobox ml-1"
+          class="customCombobox"
           :itemsSource="tantousyaList"
           :initialized="initComboFilters"
           :isRequired="true"
@@ -63,7 +37,7 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile height="20">
+        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           対象者
         </v-card>
         <v-btn-toggle
@@ -78,7 +52,7 @@
             color="secondary"
             dark
             outlined
-            height="20"
+            height="24"
           >
             {{ n.name }}
           </v-btn>
@@ -117,13 +91,6 @@
             >受給者証登録へ</v-btn
           >
         </v-col>
-        <!--
-        <v-col cols="3" style="text-align: right">
-          <v-btn-toggle v-model="fontsizeModel" @change="onFontsize()">
-            <v-btn v-for="val in fontArray" :key="val.key">{{ val.val }}</v-btn>
-          </v-btn-toggle>
-        </v-col>
-        -->
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -744,6 +711,18 @@ export default {
             if (r <= 1) {
               cell.style.borderBottom = 0;
             }
+            if (c >= 0 && c <= 4) {
+              cell.style.backgroundColor =
+                sysConst.COLOR.viewTitleBackgroundOrangeDark;
+            }
+            if (c >= 5 && c <= 16) {
+              cell.style.backgroundColor =
+                sysConst.COLOR.viewTitleBackgroundBlue;
+            }
+            if (c >= 17 && c <= 22) {
+              cell.style.backgroundColor =
+                sysConst.COLOR.viewTitleBackgroundGreen;
+            }
           }
           if (panel.cellType == wjGrid.CellType.ColumnFooter) {
             if (c > 1) {
@@ -751,6 +730,7 @@ export default {
               cell.style.justifyContent = 'right';
               cell.style.alignItems = 'right';
             }
+            cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
           if (panel.cellType == wjGrid.CellType.Cell) {
             let tmpitem = panel.rows[r].dataItem;
@@ -1212,6 +1192,10 @@ div#keikakuLists {
 div#keikakuListGrid {
   width: 100%;
   height: var(--height);
+
+  .wj-header {
+    font-weight: normal;
+  }
 }
 
 .v-picker {

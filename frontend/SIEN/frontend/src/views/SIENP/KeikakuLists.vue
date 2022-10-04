@@ -13,6 +13,7 @@
               {{ item.name }}
             </v-tab>
           </v-tabs>
+          <v-card id="yousikiLabel" tile v-if="yousikiLabel">様式</v-card>
           <v-tabs height="20" v-model="subtab">
             <v-tab
               v-for="yosikiValue in yosikiArray"
@@ -69,6 +70,11 @@ export default {
     KeikakuWeek,
     KeikakuWeek3,
   },
+  mounted() {
+    if (this.tab == 'state' || this.tab == 'idea' || this.tab == 'plan') {
+      this.yousikiLabel = true;
+    }
+  },
   computed: {
     yosikiArray() {
       let yosikiMenu = [];
@@ -94,10 +100,11 @@ export default {
       subtab: 0,
       ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
+      yousikiLabel: false,
       yosikiMenu: [
         {
           key: 'create',
-          name: '計画案作成',
+          name: '計画案',
           group: 1,
         },
         {
@@ -158,10 +165,14 @@ export default {
   methods: {
     tabsChange(hrefval) {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
-      // alert(hrefval);
+      //alert(hrefval);
+      this.yousikiLabel = false;
       // alert(this.ideaFlag);
       if (hrefval == 'idea') {
         this.ideaFlag = 'create';
+      }
+      if (hrefval == 'state' || hrefval == 'idea' || hrefval == 'plan') {
+        this.yousikiLabel = true;
       }
       this.subtab = 0;
     },
@@ -174,4 +185,15 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
+#yousikiLabel {
+  height: 20px;
+  width: 80px;
+  background-color: $view_Title_font_color_Green;
+  color: $white;
+  text-align: center;
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+  left: 43%;
+}
 </style>

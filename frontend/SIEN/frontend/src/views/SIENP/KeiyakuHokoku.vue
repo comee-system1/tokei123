@@ -2,7 +2,7 @@
   <div id="keiyakuHokoku" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters class="rowStyle mb-1 mt-1">
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           表示日
         </v-card>
         <v-card

@@ -12,223 +12,140 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="180"
-                height="20"
-                class="text-center"
-              >
+          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
+            <v-col cols="12" class="d-flex pa-1">
+              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
               </v-card>
               <v-card
                 elevation="0"
                 outlined
                 tile
-                class="ml-1 pl-1"
-                width="140"
+                class="ml-1 pl-1 lightYellow"
+                width="300"
                 height="20"
               >
                 {{ userName }}
               </v-card>
-              <v-card class="justify-end ml-auto d-flex flex-row" elevation="0">
-                <v-card elevation="0" tile width="20" class="text-center pt-1">
-                  <input type="checkbox" />
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  width="100"
-                  class="text-center"
-                  :color="'grey lighten-4'"
-                  v-if="inputTypemodel == 'tab-0'"
-                  >同意署名欄
-                </v-card>
-                <v-card
-                  outlined
-                  tile
-                  width="100"
-                  class="text-center"
-                  :color="'grey lighten-4'"
-                  v-if="inputTypemodel == 'tab-1'"
-                  >完了
-                </v-card>
-
-                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
-                  2022/04/26 竹下道子
-                </v-card>
-              </v-card>
-            </v-card>
-          </div>
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="180"
-                height="20"
-                class="text-center"
-                >作成日
-              </v-card>
-              <v-card
-                class="pl-1 ml-1"
-                width="140"
-                outlined
-                tile
-                @click="inputCalendarClick(0)"
-              >
-                {{ getYm }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-card>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="160"
-                height="20"
-                class="text-center ml-1"
-                >計画区分
-              </v-card>
-              <wj-menu
-                class="customCombobox ml-1 text-caption"
-                :itemsSource="keikakuKubun"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="keikakuKubunModel"
-                :itemClicked="onkeikakuKubun"
-              >
-              </wj-menu>
-              <v-card class="justify-end ml-auto d-flex flex-row" elevation="0">
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  height="20"
-                  class="text-center ml-1"
-                  >作成者
-                </v-card>
-                <v-card class="lightYellow pl-1 ml-1" width="200" outlined tile>
-                  竹下道子
-                </v-card>
-              </v-card>
-            </v-card>
-          </div>
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="180"
-                height="20"
-                class="text-center"
-              >
-                障害者支援区分
-              </v-card>
-              <v-card
-                class="lightYellow ml-1 pl-1"
-                width="140"
-                height="20"
-                outlined
-                tile
-              >
-                区分5
-              </v-card>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="160"
-                height="20"
-                class="text-center ml-1"
-              >
-                モニタリング期間
-              </v-card>
-
-              <input type="text" class="ml-1" />
-            </v-card>
-          </div>
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="180"
-                height="20"
-                class="text-center"
-                >障害福祉ｻｰﾋﾞｽ受給者番号
-              </v-card>
-              <v-card class="lightYellow pl-1 ml-1" width="140" outlined tile>
-                1100011120
-              </v-card>
-
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="160"
-                height="20"
-                class="text-center ml-1"
-                >地域相談支援受給者番号
-              </v-card>
-              <v-card class="lightYellow pl-1 ml-1" width="160" outlined tile>
-                1100011120
-              </v-card>
-
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="140"
-                height="20"
-                class="text-center ml-1"
-                >通所受給者証番号
-              </v-card>
-              <v-card class="lightYellow pl-1 ml-1" width="160" outlined tile>
-                1100011120
-              </v-card>
-            </v-card>
-          </div>
-
-          <v-row no-gutters class="mt-1 pb-2">
-            <v-col cols="6">
-              <v-btn-toggle>
-                <v-btn small height="20">新規入力</v-btn>
-                <v-btn small height="20">内容更新</v-btn>
-              </v-btn-toggle>
-            </v-col>
-            <v-col cols="6" align="right">
-              <v-btn-toggle>
-                <v-btn small height="20">前回コピー</v-btn>
-                <v-btn small height="20">履歴参照</v-btn>
-              </v-btn-toggle>
             </v-col>
           </v-row>
-
-          <v-card class="d-flex justify-start" flat tile height="23">
-            <v-tabs v-model="inputTypemodel">
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
+            <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
+              入力
+            </v-card>
+            <v-btn-toggle mandatory>
+              <v-btn small height="20">新規入力</v-btn>
+              <v-btn small height="20">内容更新</v-btn>
+            </v-btn-toggle>
+            <v-card class="koumokuTitle titleMain ml-1 wMin" outlined tile>
+              作成日
+            </v-card>
+            <v-card
+              class="pl-1 ml-1"
+              width="140"
+              outlined
+              tile
+              @click="inputCalendarClick(0)"
+            >
+              {{ getYm }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
+            <v-card class="koumokuTitle titleOrange ml-1 wMin" outlined tile>
+              作成者
+            </v-card>
+            <v-card
+              class="lightYellow pl-1 ml-1"
+              width="140"
+              elevation="0"
+              tile
+            >
+              大正雅夫
+            </v-card>
+            <v-card class="ml-auto" elevation="0">
+              <v-btn small height="20" class="ml-1">前回コピー</v-btn>
+              <v-btn small height="20" class="ml-1">履歴参照</v-btn>
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
+            <v-card class="koumokuTitle titleBlue fblue wMdl" outlined tile>
+              障害者支援区分
+            </v-card>
+            <v-card
+              class="lightYellow ml-1 pl-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+            >
+              区分5
+            </v-card>
+            <v-card
+              class="koumokuTitle titleBlue fblue wMdl ml-1"
+              outlined
+              tile
+            >
+              モニタリング期間
+            </v-card>
+            <input type="text" class="border ml-1 tlong" />
+          </v-row>
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
+            <v-card class="koumokuTitle titleBlue fblue wMdl" outlined tile>
+              障害者福祉ｻｰﾋﾞｽ受給者番号
+            </v-card>
+            <v-card
+              class="lightYellow ml-1 pl-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+            >
+              1100011120
+            </v-card>
+            <v-card
+              class="koumokuTitle titleBlue fblue wMdl ml-1"
+              outlined
+              tile
+            >
+              地域相談支援受給者番号
+            </v-card>
+            <v-card
+              class="lightYellow ml-1 pl-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+            >
+              1100011120
+            </v-card>
+            <v-card
+              class="koumokuTitle titleBlue fblue wMdl ml-1"
+              outlined
+              tile
+            >
+              通所受給者証番号
+            </v-card>
+            <v-card
+              class="lightYellow ml-1 pl-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+            >
+              1100011120
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
+            <v-tabs
+              v-model="inputTypemodel"
+              class="mSizeCommonTab"
+              color="rgba(255, 0, 0, 0)"
+            >
               <v-tab
-                class="text-caption"
                 v-for="value in inputType"
                 :key="value.key"
-                style="height: 24px"
+                active-class="act"
                 :href="'#tab-' + value.key"
               >
                 {{ value.value }}</v-tab
@@ -240,7 +157,7 @@
               <v-btn small @click="rowAdd('view')">行追加</v-btn>
               <v-btn small @click="rowDelete('view')">行削除</v-btn>
             </v-btn-toggle>
-          </v-card>
+          </v-row>
 
           <v-tabs-items v-model="inputTypemodel">
             <v-tab-item value="tab-0" :eager="true">
@@ -252,16 +169,11 @@
           </v-tabs-items>
           <v-row dense class="ma-2" justify="space-between">
             <v-col cols="4">
-              <v-btn small height="20">削除</v-btn>
+              <v-btn small>削除</v-btn>
             </v-col>
             <v-col cols="7">
               <v-card class="d-flex justify-end" flat tile>
-                <v-card
-                  outlined
-                  tile
-                  width="60"
-                  height="20"
-                  class="text-center text-caption label"
+                <v-card outlined tile class="koumokuTitle wMin titleOrange"
                   >完了
                 </v-card>
                 <v-card elevation="0" width="30" class="text-center mt-1">
@@ -269,18 +181,14 @@
                 </v-card>
                 <v-card
                   class="lightYellow pl-1 ml-1"
-                  width="140"
+                  width="240"
                   height="20"
                   outlined
                   tile
                 >
-                  竹下道子
+                  2022/09/28 竹下道子
                 </v-card>
-                <v-btn
-                  small
-                  class="ml-3"
-                  height="20"
-                  @click="ideaIkouKadaiRegist"
+                <v-btn small class="ml-3" @click="ideaIkouKadaiRegist"
                   >登録</v-btn
                 >
               </v-card>
@@ -327,6 +235,10 @@ export default {
     return {
       inputTypemodel: 'tab-0', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
+        {
+          key: 3,
+          value: '全体',
+        },
         {
           key: 0,
           value: '意向・方針',
