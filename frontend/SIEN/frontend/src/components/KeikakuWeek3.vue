@@ -208,30 +208,16 @@ import Draggable from '@fullcalendar/interaction';
 import UserList from './UserList.vue';
 import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
-let w = ['mon', 'thu', 'web', 'the', 'fri', 'sat', 'sun'];
-let wk = '';
+//let w = ['mon', 'thu', 'web', 'the', 'fri', 'sat', 'sun'];
+//let wk = '';
 let x = 330;
 let startY = 0;
 let endY = 0;
 let startWeekPos = 0;
 let endWeekPos = 0;
-function diffXCount(st, ed) {
-  let pos1 = w.indexOf(st);
-  let pos2 = w.indexOf(ed);
-  startWeekPos = pos1;
-  endWeekPos = pos2;
-  let calc = endWeekPos - startWeekPos + 1;
-  return calc;
-}
-function mouseDragGetWeek(e) {
+
+function mouseDragGetWeek() {
   x = 330;
-  for (let i = 0; i < 7; i++) {
-    if (e.clientX >= x && e.clientX < x + 138) {
-      wk = w[i];
-      break;
-    }
-    x = parseInt(x + 138);
-  }
 }
 function mouseDragBackgroundColor(elem, e, newDiv) {
   let cy = 0;
@@ -250,7 +236,7 @@ function mouseDragBackgroundColor(elem, e, newDiv) {
       cx = x;
     }
     newDiv.style.left = cx + 'px';
-    x = x + 138;
+    x = x + 110;
   }
   if (cx && cy) {
     elem.appendChild(newDiv);
@@ -348,18 +334,16 @@ export default {
         newDiv = document.createElement('div');
         _self.moveFlag = true;
         newDiv.className = 'cls';
+        startX = e.clientX;
         mouseDragGetWeek(e);
-        startX = wk;
         mouseDragBackgroundColor(elem, e, newDiv);
       }
     });
     elem.addEventListener('mousemove', function (e) {
       if (_self.moveFlag == true && _self.eventSelected.length != 0) {
         mouseDragGetWeek(e);
-        let client_w = 138;
-        // 曜日配列の位置をとって差分の取得
-        let diffX = diffXCount(startX, wk);
-        newDiv.style.width = parseInt(client_w * diffX) + 'px';
+        // let client_w = e.clientX;
+        newDiv.style.width = parseInt(e.clientX - startX) + 50 + 'px';
         newDiv.style.height = parseInt(e.clientY - startY) + 'px';
       }
     });
@@ -370,9 +354,9 @@ export default {
       newDiv.remove();
     });
     elem.addEventListener('mouseleave', function () {
-      this.moveFlag = false;
+      // this.moveFlag = false;
       newDiv.style.width = 'auto';
-      newDiv.remove();
+      // newDiv.remove();
     });
     let life = [];
     life.push(
@@ -444,195 +428,195 @@ export default {
     events = [
       {
         title: '起床',
-        start: '2022-09-26T07:00:00',
-        end: '2022-09-26T07:30:00',
+        start: '2022-10-06T07:00:00',
+        end: '2022-10-06T07:30:00',
         backgroundColor: 'green',
         //textColor: 'black',
       },
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-09-26T07:30:00',
-        end: '2022-09-26T08:00:00',
-      },
-      {
-        title: 'ゴミ収集',
-        start: '2022-09-26T08:00:00',
-        end: '2022-09-26T08:30:00',
-        backgroundColor: 'yellow',
-        textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-09-26T12:00:00',
-        end: '2022-09-26T12:30:00',
-      },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-09-26T07:30:00',
+      //   end: '2022-09-26T08:00:00',
+      // },
+      // {
+      //   title: 'ゴミ収集',
+      //   start: '2022-09-26T08:00:00',
+      //   end: '2022-09-26T08:30:00',
+      //   backgroundColor: 'yellow',
+      //   textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-09-26T12:00:00',
+      //   end: '2022-09-26T12:30:00',
+      // },
 
-      {
-        title: '起床',
-        start: '2022-09-27T07:00:00',
-        end: '2022-09-27T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
-      {
-        title: 'ヘルパー(家事)',
-        start: '2022-09-27T10:00:00',
-        end: '2022-09-27T12:00:00',
-        backgroundColor: 'yellow',
-        textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-09-27T07:30:00',
-        end: '2022-09-27T08:00:00',
-      },
-      {
-        title: '起床',
-        start: '2022-09-28T07:00:00',
-        end: '2022-09-28T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-09-27T12:00:00',
-        end: '2022-09-27T12:30:00',
-      },
+      // {
+      //   title: '起床',
+      //   start: '2022-09-27T07:00:00',
+      //   end: '2022-09-27T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
+      // {
+      //   title: 'ヘルパー(家事)',
+      //   start: '2022-09-27T10:00:00',
+      //   end: '2022-09-27T12:00:00',
+      //   backgroundColor: 'yellow',
+      //   textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-09-27T07:30:00',
+      //   end: '2022-09-27T08:00:00',
+      // },
+      // {
+      //   title: '起床',
+      //   start: '2022-09-28T07:00:00',
+      //   end: '2022-09-28T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-09-27T12:00:00',
+      //   end: '2022-09-27T12:30:00',
+      // },
 
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-09-28T07:30:00',
-        end: '2022-09-28T08:00:00',
-      },
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-09-28T12:00:00',
-        end: '2022-09-28T12:30:00',
-      },
-      {
-        title: '通院同行(内科・歯科)',
-        start: '2022-09-28T14:00:00',
-        end: '2022-09-28T16:00:00',
-        backgroundColor: 'red',
-      },
-      {
-        title: '起床',
-        start: '2022-09-29T07:00:00',
-        end: '2022-09-29T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-09-29T07:30:00',
-        end: '2022-09-29T08:00:00',
-      },
-      {
-        title: '外出(買い物・銀行・クリーニング等)',
-        start: '2022-09-29T08:13:00',
-        end: '2022-09-29T12:00:00',
-        backgroundColor: 'pink',
-        textColor: 'black',
-      },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-09-28T07:30:00',
+      //   end: '2022-09-28T08:00:00',
+      // },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-09-28T12:00:00',
+      //   end: '2022-09-28T12:30:00',
+      // },
+      // {
+      //   title: '通院同行(内科・歯科)',
+      //   start: '2022-09-28T14:00:00',
+      //   end: '2022-09-28T16:00:00',
+      //   backgroundColor: 'red',
+      // },
+      // {
+      //   title: '起床',
+      //   start: '2022-09-29T07:00:00',
+      //   end: '2022-09-29T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-09-29T07:30:00',
+      //   end: '2022-09-29T08:00:00',
+      // },
+      // {
+      //   title: '外出(買い物・銀行・クリーニング等)',
+      //   start: '2022-09-29T08:13:00',
+      //   end: '2022-09-29T12:00:00',
+      //   backgroundColor: 'pink',
+      //   textColor: 'black',
+      // },
 
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-09-29T12:00:00',
-        end: '2022-09-29T12:30:00',
-      },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-09-29T12:00:00',
+      //   end: '2022-09-29T12:30:00',
+      // },
 
-      {
-        title: '起床',
-        start: '2022-09-30T07:00:00',
-        end: '2022-09-30T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-09-30T07:30:00',
-        end: '2022-09-30T08:00:00',
-      },
-      {
-        title: '起床',
-        start: '2022-10-01T07:00:00',
-        end: '2022-10-01T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
+      // {
+      //   title: '起床',
+      //   start: '2022-09-30T07:00:00',
+      //   end: '2022-09-30T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-09-30T07:30:00',
+      //   end: '2022-09-30T08:00:00',
+      // },
+      // {
+      //   title: '起床',
+      //   start: '2022-10-01T07:00:00',
+      //   end: '2022-10-01T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
 
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-09-30T12:00:00',
-        end: '2022-09-30T12:30:00',
-      },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-09-30T12:00:00',
+      //   end: '2022-09-30T12:30:00',
+      // },
 
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-10-01T07:30:00',
-        end: '2022-10-01T08:00:00',
-      },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-10-01T07:30:00',
+      //   end: '2022-10-01T08:00:00',
+      // },
 
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-10-01T12:00:00',
-        end: '2022-10-01T12:30:00',
-      },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-10-01T12:00:00',
+      //   end: '2022-10-01T12:30:00',
+      // },
 
-      {
-        title: '起床',
-        start: '2022-10-02T07:00:00',
-        end: '2022-10-02T07:30:00',
-        backgroundColor: 'green',
-        //textColor: 'black',
-      },
-      {
-        title: 'テレビドラマ・朝食',
-        start: '2022-10-02T07:30:00',
-        end: '2022-10-02T08:00:00',
-      },
+      // {
+      //   title: '起床',
+      //   start: '2022-10-02T07:00:00',
+      //   end: '2022-10-02T07:30:00',
+      //   backgroundColor: 'green',
+      //   //textColor: 'black',
+      // },
+      // {
+      //   title: 'テレビドラマ・朝食',
+      //   start: '2022-10-02T07:30:00',
+      //   end: '2022-10-02T08:00:00',
+      // },
 
-      {
-        title: 'テレビドラマ・昼食',
-        start: '2022-10-02T12:00:00',
-        end: '2022-10-02T12:30:00',
-      },
+      // {
+      //   title: 'テレビドラマ・昼食',
+      //   start: '2022-10-02T12:00:00',
+      //   end: '2022-10-02T12:30:00',
+      // },
 
-      {
-        title: '夕食',
-        start: '2022-09-26T19:30:00',
-        end: '2022-09-26T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-09-27T19:30:00',
-        end: '2022-09-27T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-09-28T19:30:00',
-        end: '2022-09-28T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-09-29T19:30:00',
-        end: '2022-09-29T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-09-30T19:30:00',
-        end: '2022-09-30T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-10-01T19:30:00',
-        end: '2022-10-01T20:00:00',
-      },
-      {
-        title: '夕食',
-        start: '2022-10-02T19:30:00',
-        end: '2022-10-02T20:00:00',
-      },
+      // {
+      //   title: '夕食',
+      //   start: '2022-09-26T19:30:00',
+      //   end: '2022-09-26T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-09-27T19:30:00',
+      //   end: '2022-09-27T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-09-28T19:30:00',
+      //   end: '2022-09-28T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-09-29T19:30:00',
+      //   end: '2022-09-29T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-09-30T19:30:00',
+      //   end: '2022-09-30T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-10-01T19:30:00',
+      //   end: '2022-10-01T20:00:00',
+      // },
+      // {
+      //   title: '夕食',
+      //   start: '2022-10-02T19:30:00',
+      //   end: '2022-10-02T20:00:00',
+      // },
     ];
     this.events = events;
     this.calendarOptions.events = events;
@@ -799,7 +783,7 @@ div#keikakuWeek {
   // overflow-x: scroll;
   // width: 1366px !important;
   min-width: 1266px !important;
-  max-width: 1920px;
+  max-width: 1266px;
   width: auto;
   .input_form {
     border: 1px solid #ccc;
@@ -951,11 +935,12 @@ div#keikakuLifeGrid {
   font-size: 12px;
   font-family: 'メイリオ';
 }
-// #fullCalendar {
-//   position: relative;
-// }
+#fullCalendar {
+  //   position: relative;
+  //width: 800px;
+}
 .cls {
-  width: 138px;
+  width: 10px;
   height: 16px;
   background-color: green;
   opacity: 0.3;

@@ -137,36 +137,35 @@
             </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1 mt-1">
-            <v-tabs
-              v-model="inputTypemodel"
-              class="mSizeCommonTab"
-              color="rgba(255, 0, 0, 0)"
-            >
-              <v-tab
-                v-for="value in inputType"
-                :key="value.key"
-                active-class="act"
-                :href="'#tab-' + value.key"
+            <v-col>
+              <v-tabs
+                v-model="inputTypemodel"
+                class="mSizeCommonTab"
+                color="rgba(255, 0, 0, 0)"
+                height="24"
               >
-                {{ value.value }}</v-tab
-              >
-            </v-tabs>
-
-            <v-btn-toggle tile v-if="inputTypemodel == 'tab-1'">
-              <v-btn small @click="rowSort('view')">順変更</v-btn>
-              <v-btn small @click="rowAdd('view')">行追加</v-btn>
-              <v-btn small @click="rowDelete('view')">行削除</v-btn>
-            </v-btn-toggle>
+                <v-tab
+                  v-for="value in inputType"
+                  :key="value.key"
+                  active-class="act"
+                  :href="'#tab-' + value.key"
+                >
+                  {{ value.value }}</v-tab
+                >
+              </v-tabs>
+            </v-col>
+            <v-col class="text-end">
+              <v-btn-toggle tile v-if="inputTypemodel == 'tab-2'">
+                <v-btn small @click="rowSort('view')">順変更</v-btn>
+                <v-btn small @click="rowAdd('view')">行追加</v-btn>
+                <v-btn small @click="rowDelete('view')">行削除</v-btn>
+              </v-btn-toggle>
+            </v-col>
           </v-row>
-
-          <v-tabs-items v-model="inputTypemodel">
-            <v-tab-item value="tab-0" :eager="true">
-              <keikakuideaIkou ref="childikou"></keikakuideaIkou>
-            </v-tab-item>
-            <v-tab-item value="tab-1" :eager="true">
-              <keikakuideaKadai ref="childkadai"></keikakuideaKadai>
-            </v-tab-item>
-          </v-tabs-items>
+          <div class="mt-2">
+            <keikakuideaKadai ref="childkadai"></keikakuideaKadai>
+            <keikakuideaIkou ref="childikou"></keikakuideaIkou>
+          </div>
           <v-row dense class="ma-2" justify="space-between">
             <v-col cols="4">
               <v-btn small>削除</v-btn>
@@ -222,6 +221,7 @@ import dayjs from 'dayjs';
 import UserList from './UserList.vue';
 import keikakuideaIkou from './KeikakuIdeaIkou.vue';
 import keikakuideaKadai from './KeikakuideaKadai.vue';
+
 export default {
   props: {
     dispHideBar: Boolean,
@@ -233,10 +233,10 @@ export default {
   },
   data() {
     return {
-      inputTypemodel: 'tab-0', // tab-0:意向・方針 tab-1:課題・支援
+      inputTypemodel: 'tab-2', // tab-0:意向・方針 tab-1:課題・支援
       inputType: [
         {
-          key: 3,
+          key: 2,
           value: '全体',
         },
         {
@@ -267,10 +267,13 @@ export default {
       ],
       keikakuKubunModel: '',
       userName: '',
+      headerheight: 60,
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
   computed: {
     styles() {
       // ブラウザの高さ
@@ -285,6 +288,13 @@ export default {
     },
   },
   methods: {
+    calculateWindowHeight() {
+      console.log('resize');
+      if (document.getElementById('keikakuIdea') != null) {
+        document.getElementById('keikakuIdea').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
     /****************
      * ユーザー一覧を押下
      */

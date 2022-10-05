@@ -325,7 +325,7 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 160,
+      headerheight: 80,
       // 予定月用プロパティ
       pickerYoteiYm: '',
       yoteiYm: '',
@@ -346,7 +346,8 @@ export default {
     styles() {
       // ブラウザの高さ
       return {
-        '--height': window.innerHeight - this.headerheight + 'px',
+        '--height':
+          window.innerHeight - (parseInt(this.headerheight) + 100) + 'px',
         '--width': this.userListWidth,
       };
     },
@@ -357,7 +358,7 @@ export default {
         document.getElementById('user-list_scrollbar').style.height =
           window.innerHeight - this.headerheight + 'px';
         document.getElementById('userListGrid').style.height =
-          window.innerHeight - this.headerheight + 'px';
+          window.innerHeight - (parseInt(this.headerheight) + 100) + 'px';
       }
     },
     switched() {

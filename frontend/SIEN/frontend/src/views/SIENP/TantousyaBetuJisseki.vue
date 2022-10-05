@@ -1,10 +1,17 @@
 <template>
   <div id="tantousyaBetuJisseki">
-    <v-container no-gutters fluid class="container ml-1 pa-0">
+    <v-container no-gutters fluid class="container pa-1">
       <v-row no-gutters>
         <v-container no-gutters fluid class="container pa-0">
           <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1" outlined tile> 表示期間 </v-card>
+            <v-card
+              class="koumokuTitle titleMain pa-1"
+              width="100"
+              outlined
+              tile
+            >
+              表示期間
+            </v-card>
             <v-card
               class="ml-1"
               color="transparent"
@@ -19,7 +26,7 @@
                 outlined
                 width="125px"
                 height="100%"
-                class="pa-0 mr-1"
+                class="btnymd pa-0 mr-1"
                 >{{ getYm(0) }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
@@ -27,7 +34,7 @@
               </v-btn>
               <v-btn
                 elevation="0"
-                class="pa-0 mr-1"
+                class="btnymd pa-0 mr-1"
                 height="100%"
                 x-small
                 tile
@@ -37,7 +44,7 @@
               </v-btn>
               <v-btn
                 elevation="0"
-                class="pa-0 mr-1"
+                class="btnymd pa-0 mr-1"
                 height="100%"
                 x-small
                 tile
@@ -46,17 +53,27 @@
                 <v-icon>mdi-arrow-right-bold</v-icon>
               </v-btn>
             </v-card>
-            <v-btn class="itemBtn mr-1" @click="searchClicked()"> 検索 </v-btn>
+            <v-btn class="itemBtn mr-1" height="20" @click="searchClicked()">
+              検索
+            </v-btn>
             <v-btn
               class="itemBtn mr-1"
-              style="width: 25px"
+              width="25"
+              height="20"
               @click="filterClrclick()"
             >
               <v-icon small>mdi-filter-off</v-icon>
             </v-btn>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 様式 </v-card>
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
+              様式
+            </v-card>
             <v-btn-toggle class="flex-wrap mr-1" v-model="selYousiki">
               <v-btn
                 v-for="n in yousikiList"
@@ -64,12 +81,18 @@
                 small
                 outlined
                 height="20"
+                width="25"
                 @click="grdDispChangeclick(1)"
               >
                 {{ n.name }}
               </v-btn>
             </v-btn-toggle>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
               担当者
             </v-card>
             <wj-menu
@@ -84,7 +107,12 @@
             >
               <!-- :itemClicked="onInputClicked" -->
             </wj-menu>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
               表示内容
             </v-card>
             <v-btn-toggle class="flex-wrap mr-1" v-model="selDispNaiyouIndex">
@@ -123,6 +151,7 @@
               <wj-flex-grid-filter
                 :initialized="filterInitialized"
                 :filterApplied="filterApplied"
+                :showFilterIcons="false"
               />
             </wj-flex-grid>
           </v-row>
@@ -211,7 +240,7 @@ export default {
         },
         {
           dataname: 'yousiki',
-          title: '様',
+          title: '様\n式',
           chutitle: '計画案',
           kbntitle: '計画作成',
           width: 30,
@@ -219,7 +248,7 @@ export default {
         },
         {
           dataname: 'doui',
-          title: '同',
+          title: '同\n意',
           chutitle: '計画案',
           kbntitle: '計画作成',
           width: 30,
@@ -227,7 +256,7 @@ export default {
         },
         {
           dataname: 'teisyutu',
-          title: '提',
+          title: '提\n出',
           chutitle: '計画案',
           kbntitle: '計画作成',
           width: 30,
@@ -251,7 +280,7 @@ export default {
         },
         {
           dataname: 'keikakudoui',
-          title: '同',
+          title: '同\n意',
           chutitle: '計画',
           kbntitle: '計画作成',
           width: 30,
@@ -267,7 +296,7 @@ export default {
         },
         {
           dataname: 'monitoringdoui',
-          title: '同',
+          title: '同\n意',
           chutitle: '報告書',
           kbntitle: 'モニタリング',
           width: 30,
@@ -283,7 +312,7 @@ export default {
         },
         {
           dataname: 'keizoku',
-          title: '継',
+          title: '継\n続',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
           width: 30,
@@ -291,7 +320,7 @@ export default {
         },
         {
           dataname: 'henkou',
-          title: '変',
+          title: '変\n更',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
           width: 30,
@@ -299,7 +328,7 @@ export default {
         },
         {
           dataname: 'kousin',
-          title: '更',
+          title: '更\n新',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
           width: 30,
@@ -332,7 +361,7 @@ export default {
         { val: 0, name: '全部' },
         { val: 1, name: '計画作成' },
         { val: 2, name: 'モニタリング' },
-        { val: 3, name: '支援内容' },
+        { val: 3, name: '加算項目' },
       ],
       viewDataAll: [],
       viewData: [],
@@ -347,6 +376,13 @@ export default {
       this.filter = filter;
     },
     onInitializeIcrnGrid(flexGrid) {
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filter.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filter.showFilterIcons = false;
+      });
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -425,6 +461,18 @@ export default {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
       } else {
+        if (e.col < 3) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        } else if (e.col < 11) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else if (e.col < 19) {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        } else {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        }
         if (
           (e.row == 0 && e.col == 0) ||
           (e.row == 0 && e.col == 1) ||
@@ -615,100 +663,14 @@ div#tantousyaBetuJisseki {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1350px !important;
+  min-width: 1300px !important;
   max-width: 1920px;
   width: auto;
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-  .koumokuData {
-    color: $font_color;
-    display: flex;
-    align-items: center;
-    width: auto;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_read {
-    color: $font_color;
-    width: 150px;
-    height: 100%;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_input {
-    color: $font_color;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Input_background;
-    padding-top: 2px;
-    padding-left: 2px;
-  }
-
-  .koumokuData_c {
-    width: 280px;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-
-  .rowStyle {
-    height: 20px;
-  }
-  .rirekikoumokuTitleMini {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 25px;
-    height: 25px;
-    text-align: center;
-    background: $white;
-    border: none;
-  }
-  .v-btn {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-  }
-
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-    width: 75px;
-  }
   #tantousyaBetuJissekiicrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     height: 82vh;
-    width: 98%;
+    width: 100%;
     min-width: 1050px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -721,10 +683,7 @@ div#tantousyaBetuJisseki {
       font-weight: normal;
       line-height: 110%;
     }
-    .wj-cell-maker {
-      width: 15px;
-      height: 15px;
-    }
+
     .wj-cell {
       padding: 2px;
     }

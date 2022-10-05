@@ -1,6 +1,24 @@
 @import "common.scss";
 
+html {
+    overflow-x: auto;
+    /* overflow-y: auto; */
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
 
+
+    body {
+        .v-application {
+            font-family: "メイリオ",
+                sans-serif !important;
+        }
+
+    }
+}
+
+.v-application--wrap {
+    min-height: auto !important;
+}
 
 /**********************
 * v-row系設定
@@ -26,11 +44,12 @@
     justify-content: center;
     align-items: center;
     width: 100px;
-    min-width: 100px;
-    max-width: 100px;
+    // min-width: 100px;
+    // max-width: 100px;
     height: 100%;
     text-align: center;
     border: none;
+
 
     &.wMin {
         width: 60px;
@@ -43,40 +62,41 @@
         min-width: auto;
         max-width: none;
     }
+
 }
 
 .titleMain {
-    color: $view_Title_font_color_Main  !important;
-    background: $view_Title_background_Main  !important;
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Main !important;
 }
 
 .titleBlueDark {
-    color: $view_Title_font_color_Main  !important;
-    background: $view_Title_background_Blue_Dark  !important;
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Blue_Dark !important;
 }
 
 .titleBlue {
-    color: $view_Title_font_color_Blue  !important;
-    background: $view_Title_background_Blue  !important;
+    color: $view_Title_font_color_Blue !important;
+    background: $view_Title_background_Blue !important;
 
     &.fblue {
-        color: $view_Title_font_color_Blue  !important;
+        color: $view_Title_font_color_Blue !important;
     }
 
 }
 
 .titleGreen {
-    color: $view_Title_font_color_Green  !important;
-    background: $view_Title_background_Green  !important;
+    color: $view_Title_font_color_Green !important;
+    background: $view_Title_background_Green !important;
 }
 
 .titleOrange {
-    color: $view_Title_font_color_Orange  !important;
-    background: $view_Title_background_Orange  !important;
+    color: $view_Title_font_color_Orange !important;
+    background: $view_Title_background_Orange !important;
 }
 
 .titleGlay {
-    color: $white  !important;
+    color: $white !important;
     background: transparent !important;
 }
 
@@ -84,18 +104,36 @@
     color: $font_color;
     height: 100%;
     text-align: left;
-    background: $view_Data_Read_background  !important;
+    background: $view_Data_Read_background !important;
     border: none;
 }
 
 /**********************
 * input系設定
 ***********************/
+input {
+    color: $font_color;
+    border: thin solid;
+    border-color: $light-gray;
+    height: 100%;
+    text-align: center;
+    padding-left: 2px;
+}
+
+input[type='time'] {
+    width: 75px;
+    height: 100%;
+
+    &.border {
+        border: 1px solid lightgray;
+    }
+}
+
 input[type='text'] {
     height: 100%;
     text-align: left;
-
     // border: 1px solid lightgray ;
+
     &.border {
         border: 1px solid lightgray;
     }
@@ -103,6 +141,7 @@ input[type='text'] {
     &.tlong {
         width: 448px;
     }
+
 }
 
 input:focus {
@@ -110,16 +149,54 @@ input:focus {
     outline: 0;
 }
 
+input:disabled {
+    background: $view_Data_Read_background;
+}
+
 /**********************
 * ボタン系設定
 ***********************/
 .btnymd {
-    font-size: 14px;
-    background-color: $white  !important;
+    background-color: $white !important;
     border: thin solid;
     border-color: $light-gray;
     color: $font_color;
     height: 100%;
+}
+
+.v-btn {
+    font-size: 14px;
+
+    &.small {
+        font-size: 12px;
+    }
+
+    &.big {
+        font-size: 16px;
+    }
+}
+
+a {
+    &.addBtn {
+        height: 20px;
+        width: 100px;
+        background: $btn_background;
+        border: 1px solid $light-gray;
+        display: block;
+        float: left;
+        color: $font_color !important;
+        text-align: center;
+        border-radius: 3px;
+        padding: 0px 10px 10px 20px;
+        cursor: pointer;
+        background-image: url('../plus_gray_15px.png');
+        background-position: top 2px left 2px;
+        background-repeat: no-repeat;
+
+        &:hover {
+            background-color: $light-gray;
+        }
+    }
 }
 
 /**********************
@@ -132,13 +209,14 @@ div.commonTab {
 
     .theme--light.v-tabs>.v-tabs-bar .v-tab:not(.v-tab--active) {
         color: $white;
-        background-color: $tab_background  !important;
+        background-color: $tab_background !important;
     }
 
     .v-slide-group__content {
-        background-color: $tab_background  !important;
+        background-color: $tab_background !important;
     }
 }
+
 
 div.mSizeCommonTab {
     .v-tab--active {
@@ -161,6 +239,119 @@ div.mSizeCommonTab {
                 background: $light_yellow;
                 border: 1px solid $light-gray;
             }
+        }
+    }
+}
+
+
+/**********************
+* ドロワー系設定
+***********************/
+.drawerTitle {
+    font-size: 14px !important;
+    height: 100%;
+    background-color: $view_Title_background_Main !important; //primary
+    color: $view_Title_font_color !important; //white
+    border: none;
+}
+
+
+
+
+
+
+
+
+
+
+/**********************
+* mixinの残骸　後ほど消す
+***********************/
+
+/* パンくずリスト下の基本情報エリアのスタイル */
+.basic-info {
+    background-color: $selected_color;
+    height: 80px;
+    padding: 0 10px;
+    position: relative;
+}
+
+.basic-info label {
+    color: $font_color;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-right: 20px;
+}
+
+.service-selection-area {
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+#sarvice-combo {
+    width: 500px;
+    font-size: 14px;
+}
+
+.month-selection-area {
+    margin-bottom: 5px;
+}
+
+.month-selection-area label {
+    margin-right: 33px;
+}
+
+.month-selection-area label:nth-child(3) {
+    margin-left: 60px;
+}
+
+.month-selection-area Input {
+    background-color: white;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 4px;
+    height: 30px;
+    padding: 5px;
+}
+
+.input_picker {
+    div>input {
+        border: 1px solid #ccc !important;
+        font-size: 0.85em;
+        border-radius: 3px;
+        display: block;
+        text-align: left;
+        padding: 3px;
+        border-style: solid !important;
+        background: url('@/assets/calender_25px.png') no-repeat right;
+        background-size: 15px 15px;
+        background-position: right 3px center;
+    }
+}
+
+.user-info {
+    width: auto;
+    padding: 4px;
+
+    label:not(.labelhosoku) {
+        display: inline-block;
+        // margin-top: 2px;
+        margin-right: 2px;
+        padding-top: 2px;
+        background: $view_Title_background;
+        border: none;
+        height: 27px;
+        width: 60px;
+        text-align: center;
+    }
+}
+
+div {
+    .customCombobox {
+        height: 20px !important;
+
+        .wj-input {
+            height: 20px !important;
         }
     }
 }

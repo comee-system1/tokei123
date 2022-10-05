@@ -4,8 +4,13 @@
       <v-row no-gutters>
         <v-col class="centerArea">
           <v-container no-gutters fluid class="container pa-0 mt-1">
-            <v-row no-gutters class="rowStyle">
-              <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input">
+              <v-card
+                class="koumokuTitle titleMain pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 対応者名
               </v-card>
               <v-card class="koumokuData ml-1 pa-1" tile outlined>
@@ -20,8 +25,13 @@
                 </v-card>
               </v-col>
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1">
+              <v-card
+                class="koumokuTitle titleBlue pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 対応日<span class="mandatoryMark"> * </span>
               </v-card>
               <v-card
@@ -38,6 +48,7 @@
                   outlined
                   width="160px"
                   height="100%"
+                  class="btnymd"
                   >{{ getYmd() }}
                   <div class="float-right">
                     <v-icon small>mdi-calendar-month</v-icon>
@@ -45,7 +56,7 @@
                 </v-btn>
                 <v-btn
                   elevation="0"
-                  class="pa-0 ml-1"
+                  class="btnymd pa-0 ml-1"
                   height="100%"
                   x-small
                   tile
@@ -55,16 +66,17 @@
                 </v-btn>
                 <v-btn
                   elevation="0"
-                  class="pa-0 ml-1"
+                  class="btnymd pa-0 ml-1"
                   height="100%"
-                  x-small
+                  width="35"
+                  min-width="35"
                   tile
                   @click="calendarClick(0)"
                   >今日
                 </v-btn>
                 <v-btn
                   elevation="0"
-                  class="pa-0 ml-1"
+                  class="btnymd pa-0 ml-1"
                   height="100%"
                   x-small
                   tile
@@ -74,17 +86,23 @@
                 </v-btn>
                 <v-btn
                   elevation="0"
-                  class="pa-0 ml-1"
+                  class="btnymd pa-0 ml-1"
                   height="100%"
-                  x-small
+                  width="85"
+                  min-width="85"
                   tile
                   @click="searchClick()"
                   >利用者検索
                 </v-btn>
               </v-card>
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1">
+              <v-card
+                class="koumokuTitle titleBlue pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 利用者名<span class="mandatoryMark"> * </span>
               </v-card>
               <input
@@ -98,8 +116,13 @@
                 readonly="readonly"
               />
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1 mb-1">
-              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1 mb-1">
+              <v-card
+                class="koumokuTitle titleBlue pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 開始時間<span class="mandatoryMark"> * </span>
               </v-card>
               <input
@@ -111,27 +134,34 @@
               />
               <v-btn
                 elevation="0"
-                class="pa-0 ml-1"
+                class="btnymd pa-0 ml-1"
                 height="100%"
-                x-small
+                width="50"
+                min-width="50"
                 tile
                 @click="timeClick(0)"
                 >クリア
               </v-btn>
               <v-btn
                 elevation="0"
-                class="pa-0 ml-1"
+                class="btnymd pa-0 ml-1"
                 height="100%"
-                x-small
+                width="50"
+                min-width="50"
                 tile
                 @click="timeClick(1)"
                 >現時刻
               </v-btn>
             </v-row>
             <!-- <v-divider class="mt-1"></v-divider> -->
-            <!-- <v-row no-gutters class="rowStyle" style="display: none"> -->
-            <v-row no-gutters class="rowStyle mt-1" style="display: none">
-              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
+            <!-- <v-row no-gutters class="rowStyle_Input" style="display: none"> -->
+            <v-row no-gutters class="rowStyle_Input mt-1" style="display: none">
+              <v-card
+                class="koumokuTitle titleGreen pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 事業区分<span class="mandatoryMark"> * </span>
               </v-card>
               <v-tabs
@@ -164,11 +194,12 @@
                     class="container ma-0 pa-0"
                     style="height: 100%"
                   >
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -179,8 +210,8 @@
                         <v-btn
                           v-for="n in jigyoKbnItem"
                           :key="n.val"
-                          small
                           outlined
+                          height="25"
                           @click="jigyoKbnclick(n.val)"
                           color="primary"
                         >
@@ -188,11 +219,12 @@
                         </v-btn>
                       </v-btn-toggle>
                     </v-row>
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         初回・継続
                       </v-card>
@@ -204,8 +236,8 @@
                         <v-btn
                           v-for="n in SyokaiorKeizokuItem"
                           :key="n.val"
-                          small
                           outlined
+                          height="25"
                           v-bind:disabled="rirekiDataSelect.inputkbn == 3"
                           color="primary"
                         >
@@ -232,11 +264,12 @@
                     class="container ma-0 pa-0"
                     style="height: 100%"
                   >
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -249,6 +282,7 @@
                           :key="n.val"
                           small
                           outlined
+                          height="25"
                           @click="keikakuInputKbnclick(n.val)"
                           color="primary"
                         >
@@ -256,11 +290,12 @@
                         </v-btn>
                       </v-btn-toggle>
                     </v-row>
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         加算有無<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -273,6 +308,7 @@
                           :key="n.val"
                           small
                           outlined
+                          height="25"
                           @click="KasanUmuclick(n.val, 0)"
                           color="primary"
                         >
@@ -286,12 +322,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         支援方法
                       </v-card>
@@ -311,12 +348,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         加算項目
                       </v-card>
@@ -337,12 +375,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         機関・場所
                       </v-card>
@@ -362,12 +401,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         対応者名
                       </v-card>
@@ -387,12 +427,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         終了時間<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -405,7 +446,7 @@
                       />
                       <v-btn
                         elevation="0"
-                        class="pa-0 ml-1"
+                        class="btnymd pa-0 ml-1"
                         height="100%"
                         x-small
                         tile
@@ -414,7 +455,7 @@
                       </v-btn>
                       <v-btn
                         elevation="0"
-                        class="pa-0 ml-1"
+                        class="btnymd pa-0 ml-1"
                         height="100%"
                         x-small
                         tile
@@ -432,11 +473,12 @@
                     class="container ma-0 pa-0"
                     style="height: 100%"
                   >
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -449,6 +491,7 @@
                           :key="n.val"
                           small
                           outlined
+                          height="25"
                           @click="chiikiInputKbnclick(n.val)"
                           color="primary"
                         >
@@ -456,11 +499,12 @@
                         </v-btn>
                       </v-btn-toggle>
                     </v-row>
-                    <v-row no-gutters class="rowStyle mt-1">
+                    <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         加算有無<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -473,6 +517,7 @@
                           :key="n.val"
                           small
                           outlined
+                          height="25"
                           @click="KasanUmuclick(n.val, 1)"
                           color="primary"
                         >
@@ -486,12 +531,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         支援方法
                       </v-card>
@@ -511,12 +557,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         加算項目
                       </v-card>
@@ -537,12 +584,13 @@
                         kasanUmuItem[1].val
                       "
                       no-gutters
-                      class="rowStyle mt-1"
+                      class="rowStyle_Input mt-1"
                     >
                       <v-card
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
+                        width="100"
                       >
                         委託先
                       </v-card>
@@ -560,8 +608,13 @@
                 </v-tab-item>
               </v-tabs-items>
             </v-container>
-            <v-row no-gutters class="rowStyle mt-1" v-if="dipCommonFlg">
-              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+              <v-card
+                class="koumokuTitle titleGreen pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 支援方法
               </v-card>
               <input
@@ -573,7 +626,12 @@
                 @click="inputClicked(1)"
                 readonly="readonly"
               />
-              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
+              <v-card
+                class="koumokuTitle titleGreen ml-1 pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 同席者１
               </v-card>
               <input
@@ -585,8 +643,13 @@
                 @click="inputClicked(4)"
               />
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1" v-if="dipCommonFlg">
-              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+              <v-card
+                class="koumokuTitle titleGreen pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 関係
               </v-card>
               <input
@@ -598,7 +661,12 @@
                 @click="inputClicked(2)"
                 readonly="readonly"
               />
-              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
+              <v-card
+                class="koumokuTitle titleGreen ml-1 pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 同席者２
               </v-card>
               <input
@@ -610,8 +678,13 @@
                 @click="inputClicked(5)"
               />
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1" v-if="dipCommonFlg">
-              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+              <v-card
+                class="koumokuTitle titleGreen pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 相談者名
               </v-card>
               <input
@@ -622,7 +695,12 @@
                 v-model="rirekiDataSelect.sdnnam"
                 @click="inputClicked(3)"
               />
-              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
+              <v-card
+                class="koumokuTitle titleGreen ml-1 pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 同席者３
               </v-card>
               <input
@@ -635,8 +713,13 @@
               />
             </v-row>
             <v-divider class="btmborder mt-1"></v-divider>
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle_Input mt-1">
+              <v-card
+                class="koumokuTitle titleOrange pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 支援項目<span class="mandatoryMark"> * </span>
               </v-card>
               <input
@@ -660,6 +743,7 @@
                 style="position: relative"
                 outlined
                 tile
+                width="100"
               >
                 内容
                 <span class="mandatoryMark"> * </span>
@@ -679,8 +763,12 @@
               ></v-textarea>
             </v-row>
 
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle titleOrange pa-1" outlined tile
+            <v-row no-gutters class="rowStyle_Input mt-1">
+              <v-card
+                class="koumokuTitle titleOrange pa-1"
+                width="100"
+                outlined
+                tile
                 >業務日誌</v-card
               >
               <v-checkbox
@@ -690,11 +778,12 @@
                 style="width: 200px"
               >
               </v-checkbox>
-              <div name="hideitem" class="rowStyle" style="display: flex">
+              <div name="hideitem" class="rowStyle_Input" style="display: flex">
                 <v-card
                   class="koumokuTitle titleOrange pa-1 ml-1"
                   outlined
                   tile
+                  width="100"
                   v-if="dispPeerCounselor"
                 >
                   ﾋﾟｱｶｳﾝｾﾗｰ
@@ -709,6 +798,7 @@
                     :key="n.val"
                     small
                     outlined
+                    height="25"
                     color="primary"
                   >
                     {{ n.name }}
@@ -716,9 +806,18 @@
                 </v-btn-toggle>
               </div>
             </v-row>
-            <div name="hideitem" class="rowStyle" style="display: flex">
-              <v-row no-gutters class="rowStyle mt-1 mb-1" v-if="dispSyoyou">
-                <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
+            <div name="hideitem" class="rowStyle_Input" style="display: flex">
+              <v-row
+                no-gutters
+                class="rowStyle_Input mt-1 mb-1"
+                v-if="dispSyoyou"
+              >
+                <v-card
+                  class="koumokuTitle titleOrange pa-1"
+                  width="100"
+                  outlined
+                  tile
+                >
                   所要時間
                 </v-card>
                 <input
@@ -732,6 +831,7 @@
                   class="koumokuTitle titleOrange pa-1"
                   outlined
                   tile
+                  width="100"
                   v-if="dispRank"
                   >ランク</v-card
                 >
@@ -745,6 +845,7 @@
                     :key="n.val"
                     small
                     outlined
+                    height="25"
                     color="primary"
                   >
                     {{ n.name }}
@@ -753,25 +854,26 @@
               </v-row>
             </div>
 
-            <v-row no-gutters class="rowStyle mt-2 mb-2">
-              <v-col cols="5">
-                <v-btn class="centerBtn" @click="clrClicked(0)">
-                  画面クリア
-                </v-btn>
-                <v-btn class="centerBtn ml-1" @click="clrClicked(1)">
-                  内容クリア
-                </v-btn>
-              </v-col>
-              <v-col cols="2">
-                <v-btn class="centerBtn" @click="delClicked"> 削除 </v-btn>
-              </v-col>
-              <v-col cols="*">
-                <div align="right">
-                  <v-btn class="centerBtn mr-1" @click="addClicked">
-                    登録
-                  </v-btn>
-                </div>
-              </v-col>
+            <v-row no-gutters class="rowStyle_Input mt-2 mb-2">
+              <v-btn width="100" height="25" @click="clrClicked(0)">
+                画面クリア
+              </v-btn>
+              <v-btn
+                class="ml-1"
+                width="100"
+                height="25"
+                @click="clrClicked(1)"
+              >
+                内容クリア
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn class="" width="75" height="25" @click="delClicked">
+                削除
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn class="mr-1" width="75" height="25" @click="addClicked">
+                登録
+              </v-btn>
             </v-row>
           </v-container>
           <v-container no-gutters fluid class="container pa-0"></v-container>
@@ -803,7 +905,7 @@
               <v-tab-item value="User" eager transition="none">
                 <user-list
                   ref="user_list"
-                  class="ml-1"
+                  class="pa-1 ml-1"
                   :dispAddDaicho="true"
                   :dispHideBar="false"
                   @child-select="setUserSelectPoint"
@@ -813,7 +915,7 @@
               </v-tab-item>
               <v-tab-item value="Mst" eager transition="none">
                 <!-- 右側＞参照＞マスタ -->
-                <v-container no-gutters fluid class="container ma-0 pa-1">
+                <v-container no-gutters fluid class="container ma-0 pa-1 pt-0">
                   <wj-flex-grid
                     id="mstIcrnGrid"
                     :headersVisibility="'Column'"
@@ -877,9 +979,14 @@
 
               <v-tab-item value="Soudan" eager transition="none">
                 <!-- 右側＞参照＞相談履歴 -->
-                <v-container no-gutters fluid class="container ma-0 pa-1">
-                  <v-row no-gutters class="rowStyle mt-1">
-                    <v-card class="rirekikoumokuTitle pa-1" outlined tile>
+                <v-container no-gutters fluid class="container ma-0 pa-1 pt-0">
+                  <v-row no-gutters class="rowStyle_Input">
+                    <v-card
+                      class="koumokuTitle titleMain pa-1"
+                      width="50"
+                      outlined
+                      tile
+                    >
                       期間
                     </v-card>
                     <v-card
@@ -896,19 +1003,14 @@
                         outlined
                         width="130px"
                         height="100%"
+                        class="btnymd"
                         >{{ getSYm() }}
                         <div class="float-right">
                           <v-icon small>mdi-calendar-month</v-icon>
                         </div>
                       </v-btn>
                     </v-card>
-                    <v-card
-                      class="rirekikoumokuTitleMini ml-1 pa-1"
-                      outlined
-                      tile
-                    >
-                      ～
-                    </v-card>
+                    <label class="mr-1 ml-1">～</label>
                     <v-card
                       class="ml-1"
                       color="transparent"
@@ -923,6 +1025,7 @@
                         outlined
                         width="130px"
                         height="100%"
+                        class="btnymd"
                         >{{ getEYm() }}
                         <div class="float-right">
                           <v-icon small>mdi-calendar-month</v-icon>
@@ -930,8 +1033,17 @@
                       </v-btn>
                     </v-card>
                   </v-row>
-                  <v-row no-gutters class="rowStyle mt-1" style="height: 25px">
-                    <v-card class="rirekikoumokuTitle pa-1" outlined tile>
+                  <v-row
+                    no-gutters
+                    class="rowStyle_Input mt-1"
+                    style="height: 25px"
+                  >
+                    <v-card
+                      class="koumokuTitle titleMain pa-1"
+                      width="50"
+                      outlined
+                      tile
+                    >
                       項目
                     </v-card>
                     <wj-menu
@@ -949,7 +1061,8 @@
                     </wj-menu>
                     <v-btn
                       class="ml-1"
-                      style="width: 50px; height: 25px"
+                      width="50"
+                      height="25"
                       @click="rirekiSearchClicked()"
                     >
                       検索
@@ -958,7 +1071,7 @@
                   <v-row no-gutters class="mt-1">
                     <wj-flex-grid
                       id="rirekiIcrnGrid"
-                      style="height: 68vh"
+                      style="height: 65vh"
                       :headersVisibility="'Column'"
                       :autoGenerateColumns="false"
                       :allowAddNew="false"
@@ -981,7 +1094,7 @@
                 </v-container>
               </v-tab-item>
               <v-tab-item value="Kihon" eager transition="none">
-                <v-container no-gutters fluid class="container ma-0 pa-1">
+                <v-container no-gutters fluid class="container ma-0 pa-1 pt-0">
                   <!-- 右側＞参照＞基本情報 -->
                   <wj-flex-grid
                     id="kihonIcrnGrid"
@@ -2460,36 +2573,11 @@ div#uketukeTouroku {
   width: 1050px;
   height: auto;
   // width: auto;
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
+
   .centerArea {
     // margin-right: 4px;
     min-width: 630px;
     max-width: 630px;
-    // min-height: 450px;
-    // // height: 87vh;
-    // // background: #a4c6ff;
-    // // border: thin solid;
-    .ymd,
-    .v-btn {
-      font-size: 14px;
-      background-color: $white;
-      border: thin solid;
-      border-color: $light-gray;
-      color: $font_color;
-      height: 25px;
-    }
-    .centerBtn {
-      border: thin solid;
-      border-color: $light-gray;
-      width: 90px;
-      height: 30px;
-      background: $btn_background;
-    }
-
     .v-tab {
       border: 1px solid;
       margin-right: 4px;
@@ -2513,44 +2601,6 @@ div#uketukeTouroku {
     .btmborder {
       border: 1px solid;
       border-color: teal;
-    }
-    .koumokuTitleMini {
-      color: $font_color;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      background: $white;
-      border: none;
-    }
-
-    input {
-      color: $font_color;
-      border: thin solid;
-      border-color: $light-gray;
-      width: 100px;
-      height: 100%;
-      text-align: center;
-      padding-left: 2px;
-    }
-    input[type='time'] {
-      width: 75px;
-      height: 100%;
-    }
-    input[type='text'] {
-      width: 200px;
-      height: 100%;
-      text-align: left;
-    }
-
-    input:focus {
-      border: 1px solid #ff9900;
-      outline: 0;
-    }
-    input:disabled {
-      background: $view_Data_Read_background;
     }
 
     .v-textarea {
@@ -2580,9 +2630,6 @@ div#uketukeTouroku {
     .v-input__slot {
       padding-left: 0px;
     }
-    .v-checkbox {
-      color: $font_color;
-    }
 
     .mandatoryMark {
       position: absolute;
@@ -2611,30 +2658,6 @@ div#uketukeTouroku {
     .v-slide-group__content {
       background-color: $white !important;
     }
-
-    .rirekikoumokuTitle {
-      color: $font_color;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 50px;
-      height: 25px;
-      text-align: center;
-      background: $view_Title_background;
-      border: none;
-    }
-    .rirekikoumokuTitleMini {
-      color: $font_color;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      background: $white;
-      border: none;
-    }
-
     #mstIcrnGrid,
     #soudansyaMstIcrnGrid,
     #sienMstIcrnGrid,
@@ -2695,56 +2718,6 @@ div#uketukeTouroku {
     }
   }
 
-  .koumokuTitle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-
-    border: none;
-  }
-  .titleMain {
-    color: $view_Title_font_color_Main;
-    background: $view_Title_background_Main;
-  }
-  .titleBlue {
-    color: $view_Title_font_color_Blue;
-    background: $view_Title_background_Blue;
-  }
-  .titleGreen {
-    color: $view_Title_font_color_Green;
-    background: $view_Title_background_Green;
-  }
-  .titleOrange {
-    color: $view_Title_font_color_Orange;
-    background: $view_Title_background_Orange;
-  }
-
-  .koumokuData {
-    color: $font_color;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-
-  .koumokuData_input {
-    color: $font_color;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Input_background;
-    padding-top: 2px;
-    padding-left: 2px;
-  }
-  .rowStyle {
-    height: 25px;
-  }
   .rowStyleHigh {
     height: 150px;
   }

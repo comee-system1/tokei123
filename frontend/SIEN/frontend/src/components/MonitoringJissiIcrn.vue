@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringJissiIcrn">
-    <v-container class="mt-1 ml-1 pa-0" style="max-width: 100%" fluid>
+    <v-container class="pa-1" fluid>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card
@@ -935,7 +935,7 @@ div#monitoringJissiIcrn {
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 98%;
+    width: 100%;
     height: 72vh;
     min-height: 450px;
     .wj-header {

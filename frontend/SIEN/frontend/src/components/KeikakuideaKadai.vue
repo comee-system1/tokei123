@@ -7,7 +7,6 @@
       :itemsSource="viewData"
       :allowDragging="'Both'"
       :autoRowHeights="true"
-      :style="styles"
     >
       <wj-flex-grid-column
         header="順位"
@@ -265,7 +264,6 @@ export default {
       viewData: [],
       onflexGrid: [],
       viewDataLength: 0,
-      headerheight: 300,
       editTextDialog: false,
       serviceData: [],
       serviceDataLength: 0,
@@ -285,24 +283,9 @@ export default {
     };
   },
   created() {},
-  mounted() {
-    window.addEventListener('resize', this.calculateWindowHeight);
-  },
-  computed: {
-    styles() {
-      // ブラウザの高さ
-      return {
-        '--height': window.innerHeight - this.headerheight + 'px',
-      };
-    },
-  },
+  mounted() {},
+  computed: {},
   methods: {
-    calculateWindowHeight() {
-      if (document.getElementById('kadaiGrid') != null) {
-        document.getElementById('kadaiGrid').style.height =
-          window.innerHeight - this.headerheight + 'px';
-      }
-    },
     /****************************
      * 登録ボタンを押下
      */
@@ -669,11 +652,6 @@ export default {
 @import '@/assets/scss/common.scss';
 #serviceGrid,
 #kadaiGrid {
-  font-size: 12px;
-  height: var(--height);
-  color: $font_color;
-  font-family: 'メイリオ';
-
   .wj-header {
     font-weight: normal;
     background: $view_Title_background_Blue;

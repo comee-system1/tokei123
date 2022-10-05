@@ -19,9 +19,9 @@
             <v-icon small>mdi-calendar-month</v-icon>
           </div>
         </v-card>
-        <v-btn small height="24" class="ml-2">検索開始</v-btn>
+        <v-btn height="20" class="ml-2">検索開始</v-btn>
       </v-row>
-      <v-row class="rowStyle" no-gutters>
+      <v-row class="rowStyle mt-2" no-gutters>
         <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           担当者
         </v-card>
@@ -37,7 +37,7 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
+        <v-card class="koumokuTitle titleMain ml-1" outlined tile>
           対象者
         </v-card>
         <v-btn-toggle
@@ -87,9 +87,7 @@
           </v-card>
         </v-col>
         <v-col cols="3" style="text-align: right">
-          <v-btn x-small @click="onClickJyukyusya" height="20"
-            >受給者証登録へ</v-btn
-          >
+          <v-btn @click="onClickJyukyusya" height="20">受給者証登録へ</v-btn>
         </v-col>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
@@ -658,7 +656,6 @@ export default {
     },
     onInitialize(flexGrid) {
       let array = [];
-
       let params = {
         uniqid: 1,
         traceid: 1,
@@ -791,7 +788,7 @@ export default {
       var panel = flexGrid.columnHeaders;
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows[1].height = 120;
+      flexGrid.columnHeaders.rows[1].height = 80;
       for (let i = 0; i < this.headerColumn1.length; i++) {
         let name = this.headerColumn1[i];
         panel.setCellData(0, i, name);
@@ -1065,11 +1062,8 @@ export default {
 div#keikakuListGrid,
 div#keikakuLists {
   color: $font_color;
-  font-size: 12px;
   font-family: 'メイリオ';
-  .rowStyle {
-    height: 25px;
-  }
+  font-size: 14px;
   .wj-right {
     &.wj-elem-filter {
       float: none;
@@ -1102,29 +1096,6 @@ div#keikakuLists {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 12px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
   .hosokuTitle {
     color: $font_color;
     display: flex;
@@ -1136,16 +1107,6 @@ div#keikakuLists {
     > .premonth {
       background: #ffcccc;
     }
-  }
-
-  .itemBtn {
-    font-size: 12px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-    width: 75px;
   }
 
   div.customCombobox {

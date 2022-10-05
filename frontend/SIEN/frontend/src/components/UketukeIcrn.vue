@@ -1,22 +1,16 @@
 <template>
   <div id="uketukeIcrn">
-    <v-container class="mt-1 ml-1 pa-0" fluid>
+    <v-container class="pa-1" fluid>
       <v-navigation-drawer
         class="blue lighten-5"
         v-model="drawer"
         absolute
         left
-        :width="90"
-        :min-width="90"
-        style="font-size: 14px; min-height: 1000px"
+        width="90"
+        min-width="90"
+        style="min-height: 1000px"
       >
-        <v-card
-          class="koumokuTitle_c pa-1"
-          style="background: lightgray"
-          outlined
-          tile
-          :height="30"
-        >
+        <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
           <v-btn
             elevation="2"
@@ -28,7 +22,7 @@
             height="20"
             width="20"
             v-on:click.stop="drawer = !drawer"
-            class="closeButton mt-1"
+            class="mt-1"
             color="secondary"
             ><v-icon dark small> mdi-close </v-icon></v-btn
           >
@@ -42,14 +36,18 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           表示単位
         </v-card>
         <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
           <v-btn
             v-for="n in dispList"
             :key="n.val"
-            small
             color="secondary"
             outlined
             width="50"
@@ -102,7 +100,7 @@
             >
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
-            <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
+            <v-btn height="20" v-on:click.stop="drawer = !drawer">
               日付選択
             </v-btn>
           </span>
@@ -132,14 +130,19 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="itemBtn mr-1 pa-1" @click="searchClicked()">
+            <v-btn class="mr-1 pa-1" height="20" @click="searchClicked()">
               検索
             </v-btn>
           </span>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           対応者
         </v-card>
         <wj-menu
@@ -154,7 +157,12 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           入力区分
         </v-card>
         <wj-menu
@@ -169,7 +177,12 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           ランク
         </v-card>
         <wj-menu
@@ -185,11 +198,7 @@
         >
         </wj-menu>
 
-        <v-btn
-          class="itemBtn mr-1"
-          style="width: 25px"
-          @click="filterClrclick()"
-        >
+        <v-btn class="mr-1" width="25" height="20" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
@@ -963,15 +972,6 @@ div#uketukeIcrn {
     }
   }
 
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 18px;
-    width: 75px;
-  }
   #uketukeIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
@@ -1072,33 +1072,6 @@ div#uketukeIcrn {
     input {
       height: 16px !important;
     }
-  }
-  a {
-    &.addBtn {
-      height: 20px;
-      width: 100px;
-      background: $btn_background;
-      border: 1px solid $light-gray;
-      display: block;
-      float: left;
-      color: $font_color !important;
-      text-align: center;
-      border-radius: 3px;
-      padding: 0px 10px 10px 20px;
-      cursor: pointer;
-      background-image: url('../assets/plus_gray_15px.png');
-      background-position: top 2px left 2px;
-      background-repeat: no-repeat;
-      &:hover {
-        background-color: $light-gray;
-      }
-    }
-  }
-  .right {
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 40px;
   }
 }
 .v-picker {

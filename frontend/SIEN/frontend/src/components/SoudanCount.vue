@@ -8,27 +8,20 @@
         left
         :width="90"
         :min-width="90"
-        style="font-size: 12px; min-height: 1000px"
+        style="min-height: 1000px"
       >
-        <v-card
-          class="koumokuTitle_c pa-1"
-          style="background: lightgray"
-          outlined
-          tile
-          :height="30"
-        >
+        <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
           <v-btn
             elevation="2"
             icon
-            small
             absolute
             top
             right
             height="20"
             width="20"
             v-on:click.stop="drawer = !drawer"
-            class="closeButton mt-1"
+            class="mt-1"
             color="secondary"
             ><v-icon dark small> mdi-close </v-icon></v-btn
           >
@@ -37,14 +30,18 @@
       </v-navigation-drawer>
 
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           表示単位
         </v-card>
         <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
           <v-btn
             v-for="n in dispList"
             :key="n.val"
-            small
             color="secondary"
             outlined
             width="50"
@@ -66,7 +63,7 @@
           <span v-if="dispIndex == 0">
             <v-btn
               @click="inputCalendarClick(0)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="150px"
@@ -79,7 +76,7 @@
 
             <v-btn
               elevation="0"
-              class="ymd pa-0 mr-1"
+              class="btnymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -89,7 +86,7 @@
             </v-btn>
             <v-btn
               elevation="0"
-              class="ymd pa-0 mr-1"
+              class="btnymd pa-0 mr-1"
               height="100%"
               x-small
               tile
@@ -97,14 +94,14 @@
             >
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
-            <v-btn class="itemBtn" v-on:click.stop="drawer = !drawer">
+            <v-btn height="20" v-on:click.stop="drawer = !drawer">
               日付選択
             </v-btn>
           </span>
           <span v-else>
             <v-btn
               @click="inputCalendarClick(90)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="125px"
@@ -117,7 +114,7 @@
             <label class="mr-1">～</label>
             <v-btn
               @click="inputCalendarClick(99)"
-              class="ymd mr-1"
+              class="btnymd mr-1"
               tile
               outlined
               width="125px"
@@ -127,14 +124,19 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="itemBtn mr-1 pa-1" @click="searchClicked()">
+            <v-btn class="mr-1 pa-1" height="20" @click="searchClicked()">
               検索
             </v-btn>
           </span>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           対応者
         </v-card>
         <wj-menu
@@ -149,7 +151,12 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           入力区分
         </v-card>
         <wj-menu
@@ -164,7 +171,12 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+        <v-card
+          class="koumokuTitle titleMain pa-1 mr-1"
+          width="100"
+          outlined
+          tile
+        >
           ランク
         </v-card>
         <wj-menu
@@ -791,52 +803,7 @@ div#soudanCount {
   // min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-  .rowStyle {
-    height: 20px;
-  }
-  .ymd {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 18px;
-    width: 75px;
-  }
 
-  .searchBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-  }
-
-  .koumokuTitle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    border: none;
-  }
-  .titleMain {
-    color: $view_Title_font_color_Main;
-    background: $view_Title_background_Main;
-  }
   .gridTitle {
     color: mediumblue;
     width: 500px;

@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringYotei">
-    <v-container class="mt-1 ml-1 pa-0" style="max-width: 100%" fluid>
+    <v-container class="pa-1" fluid>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
         <v-card
@@ -1193,7 +1193,7 @@ div#monitoringYotei {
   }
 
   div#monitoringYoteiGrid {
-    width: 98%;
+    width: 100%;
     // min-width: 1250px;
     height: 70vh;
     min-height: 400px;

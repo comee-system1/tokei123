@@ -15,7 +15,7 @@
           height="90"
           @click="editText(value.key)"
         >
-          {{ value.value }}
+          <div>{{ value.value }}</div>
         </v-card>
       </v-col>
     </v-row>
@@ -152,12 +152,17 @@ export default {
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  width: 100%;
   &::-webkit-scrollbar {
     display: none;
   }
   .editarea {
     overflow-y: scroll;
-    width: 890px;
+    //width: 890px;
+    width: 100%;
+    div {
+      width: 870px;
+    }
   }
 }
 .keikakuideaTextarea {

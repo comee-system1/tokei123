@@ -33,15 +33,3 @@ export default {
   },
 };
 </script>
-
-<style>
-html {
-  overflow-x: auto;
-  /* overflow-y: auto; */
-  overscroll-behavior-y: none;
-  overscroll-behavior-x: none;
-}
-.v-application--wrap {
-  min-height: auto !important;
-}
-</style>

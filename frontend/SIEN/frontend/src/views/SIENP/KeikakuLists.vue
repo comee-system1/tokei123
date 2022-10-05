@@ -27,19 +27,19 @@
     </v-row>
 
     <v-tabs-items v-model="tab">
-      <v-tab-item value="KeikakuIcrn">
+      <v-tab-item value="KeikakuIcrn" :eager="true">
         <KeikakuIcrn></KeikakuIcrn>
       </v-tab-item>
-      <v-tab-item value="state">
+      <v-tab-item value="state" :eager="true">
         <AttendeeState></AttendeeState>
       </v-tab-item>
-      <v-tab-item value="idea">
+      <v-tab-item value="idea" :eager="true">
         <div v-if="tab == 'idea'">
           <KeikakuIdea v-if="ideaFlag == 'create'"></KeikakuIdea>
           <KeikakuWeek3 v-if="ideaFlag == 'weekplan3'"></KeikakuWeek3>
         </div>
       </v-tab-item>
-      <v-tab-item value="plan">
+      <v-tab-item value="plan" :eager="true">
         <div v-if="tab == 'plan'">
           <KeikakuPlan v-show="planFlag == 'create'"></KeikakuPlan>
           <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>

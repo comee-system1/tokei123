@@ -1,30 +1,50 @@
 <template>
   <div id="kojinRireki">
-    <v-container no-gutters fluid class="container ml-1 pa-0">
+    <v-container no-gutters fluid class="container mt-1 pa-0">
       <v-row no-gutters>
-        <v-col class="leftArea">
+        <v-col class="leftArea ml-1">
           <!-- 左側エリア -->
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
+            style="height: 100%"
           >
           </user-list>
         </v-col>
-        <v-col class="centerArea">
+        <v-col class="centerArea ml-2">
           <!-- 中央エリア -->
           <v-container no-gutters fluid class="container pa-0">
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle pa-1" outlined tile>
-                利用者名
-              </v-card>
-              <v-card class="koumokuData ml-1 pa-1" tile outlined>
-                {{ userInfo.names }}
-              </v-card>
+            <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
+              <v-row no-gutters class="rowStyle" style="position: relative">
+                <v-card
+                  class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
+                  outlined
+                  tile
+                  width="100"
+                >
+                  利用者名
+                </v-card>
+                <v-card
+                  class="koumokuData mr-1 pb-1 pl-1 pt-0"
+                  tile
+                  outlined
+                  width="200"
+                  style="border: 1px solid; border-color: #0000aa"
+                >
+                  {{ userInfo.names }}
+                </v-card>
+              </v-row>
             </v-row>
+
             <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle pa-1" outlined tile>
+              <v-card
+                class="koumokuTitle titleMain pa-1 ml-1"
+                width="100"
+                outlined
+                tile
+              >
                 表示期間
               </v-card>
               <v-card
@@ -41,15 +61,14 @@
                   outlined
                   width="160px"
                   height="100%"
+                  class="btnymd pa-0"
                   >{{ getYmd(0) }}
                   <div class="float-right">
                     <v-icon small>mdi-calendar-month</v-icon>
                   </div>
                 </v-btn>
               </v-card>
-              <v-card class="rirekikoumokuTitleMini pa-1 pb-1" outlined tile>
-                ～
-              </v-card>
+              <label class="mr-1">～</label>
               <v-card
                 class="mr-1"
                 color="transparent"
@@ -64,16 +83,26 @@
                   outlined
                   width="160px"
                   height="100%"
+                  class="btnymd pa-0"
                   >{{ getYmd(1) }}
                   <div class="float-right">
                     <v-icon small>mdi-calendar-month</v-icon>
                   </div>
                 </v-btn>
               </v-card>
-              <v-btn class="itemBtn mr-1" @click="inputCalendarClick(2)">
+              <v-btn
+                class="itemBtn mr-1"
+                height="20"
+                @click="inputCalendarClick(2)"
+              >
                 月指定
               </v-btn>
-              <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              <v-card
+                class="koumokuTitle titleMain pa-1 mr-1"
+                width="100"
+                outlined
+                tile
+              >
                 詳細表示
               </v-card>
               <v-btn-toggle
@@ -83,94 +112,38 @@
                 <v-btn
                   v-for="n in syousaiDispList"
                   :key="n.val"
-                  small
                   outlined
                   height="20"
-                  @click="grdDispChangeclick(0)"
+                  width="35"
+                  min-width="35"
+                  @click="grdDispChangeclick(n.val)"
                 >
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
-              <!-- <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
-                支援項目
-              </v-card>
-              <v-btn-toggle
-                class="flex-wrap ml-1"
-                v-model="selSienkoumokuUmuIndex"
-              >
-                <v-btn
-                  v-for="n in sienkoumokuUmuList"
-                  :key="n.val"
-                  small
-                  outlined
-                  @click="grdDispChangeclick(1)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle> -->
             </v-row>
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle pa-1" outlined tile>
+            <v-row no-gutters class="rowStyle mt-1 ml-1">
+              <v-card
+                class="koumokuTitle titleMain pa-1"
+                width="100"
+                outlined
+                tile
+              >
                 表示内容
               </v-card>
-              <v-btn-toggle
-                class="flex-wrap ml-1"
-                v-model="selSienkoumokuUmuIndex"
-              >
+              <v-btn-toggle class="flex-wrap ml-1" v-model="selDispNaiyouIndex">
                 <v-btn
                   v-for="n in dispNaiyouList"
                   :key="n.val"
-                  small
                   outlined
                   height="20"
-                  @click="grdDispChangeclick(1)"
+                  :width="n.width"
+                  :min-width="n.width"
+                  @click="grdNaiyouclick(n.val)"
                 >
                   {{ n.name }}
                 </v-btn>
               </v-btn-toggle>
-            </v-row>
-            <v-row no-gutters class="rowStyle mt-1" v-if="false">
-              <v-card class="koumokuTitle pa-1" outlined tile>
-                事業区分
-              </v-card>
-              <wj-menu
-                id="comboFiltersJigyoKbn"
-                class="customCombobox ml-1"
-                :itemsSource="jigyoKbnList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="selJigyoKbn"
-                :itemClicked="onJigyoKbnClicked"
-              >
-              </wj-menu>
-              <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
-                入力区分
-              </v-card>
-              <wj-menu
-                id="comboFiltersInput"
-                class="customCombobox ml-1"
-                :itemsSource="inputList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                selectedValuePath="val"
-                displayMemberPath="name"
-                v-model="selInputKbn"
-                :itemClicked="onInputClicked"
-              >
-              </wj-menu>
-
-              <v-btn class="itemBtn ml-1" @click="sienKoumokuclick()">
-                項目選択
-              </v-btn>
-              <v-btn
-                class="itemBtn mr-1"
-                style="width: 25px"
-                @click="filterClrclick()"
-              >
-                <v-icon small>mdi-filter-off</v-icon>
-              </v-btn>
             </v-row>
             <v-row class="ma-0 mt-1" no-gutters>
               <wj-flex-grid
@@ -246,54 +219,6 @@
       >
       </v-date-picker>
     </v-dialog>
-    <v-dialog
-      v-model="sienkoumoku_dialog"
-      width="500"
-      persistent
-      no-click-animation
-      class="datepicker_dialogs"
-    >
-      <v-card class="ma-0 pa-1 pr-3 pt-3">
-        <v-container no-gutters fluid class="kojinRirekiSienKoumoku">
-          <v-btn
-            elevation="2"
-            icon
-            small
-            fixed
-            top
-            right
-            @click="kojinRirekiSienKoumoku_dialog_close()"
-            class="closeButton"
-            color="red"
-          >
-            <v-icon> mdi-close </v-icon></v-btn
-          >
-          <wj-flex-grid
-            id="kojinRirekiSienKoumokuGrid"
-            :headersVisibility="'Column'"
-            :autoGenerateColumns="false"
-            :allowAddNew="false"
-            :allowDelete="false"
-            :allowPinning="false"
-            :allowMerging="'AllHeaders'"
-            :allowResizing="false"
-            :allowSorting="false"
-            :allowDragging="false"
-            :selectionMode="'None'"
-            :isReadOnly="true"
-            :initialized="onInitializeSienKoumokuGrid"
-            :formatItem="onFormatItemSienKoumoku"
-            :itemsSource="sienKoumokuData"
-          >
-          </wj-flex-grid>
-          <v-row class="rowStyle" no-gutters>
-            <v-btn class="SienKoumokuSetBtn" @click="sienKoumokuSetclick()">
-              決定
-            </v-btn>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -306,10 +231,10 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '../../../../connect/getConnect';
-const STR_MARU = '○';
+// const STR_MARU = '○';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
-const GRD_FROZEN_ROW = 1;
+// const GRD_FROZEN_ROW = 1;
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -547,15 +472,13 @@ export default {
       selSienkoumokuUmuIndex: 0,
       selDispNaiyouIndex: 0,
       dispNaiyouList: [
-        { val: 0, name: '全部' },
-        { val: 1, name: '計画作成' },
-        { val: 2, name: 'モニタリング' },
-        { val: 3, name: '支援内容' },
+        { val: 0, name: '全部', width: 40 },
+        { val: 1, name: '計画作成', width: 70 },
+        { val: 2, name: 'モニタリング', width: 100 },
+        { val: 3, name: '支援内容', width: 70 },
       ],
       viewDataAll: [],
       viewData: [],
-      sienkoumoku_dialog: false,
-      sienKoumokuData: [],
       filter: {},
     };
   },
@@ -568,9 +491,6 @@ export default {
     },
   },
   methods: {
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
-    },
     filterInitialized: function (filter) {
       this.filter = filter;
     },
@@ -636,72 +556,6 @@ export default {
       }
       flexGrid.endUpdate();
     },
-    onInitializeSienKoumokuGrid(flexGrid) {
-      // クリックイベント
-      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        let ht = flexGrid.hitTest(e);
-        if (ht.panel == flexGrid.cells) {
-          flexGrid.beginUpdate();
-          if (ht.col == 0) {
-            // 大分類の場合はその中分類すべての選択解除を行う
-            let targetitem = flexGrid.rows[ht.row].dataItem;
-            let txt = ' ';
-            if (ht.panel.getCellData(ht.row, 2) != STR_MARU) {
-              txt = STR_MARU;
-            }
-            for (let r = 1; r < flexGrid.rows.length; r++) {
-              let tmpitem = flexGrid.rows[r].dataItem;
-              if (targetitem.daicode == tmpitem.daicode) {
-                ht.panel.setCellData(r, 2, txt);
-              }
-            }
-          } else {
-            if (ht.row == 0) {
-              // 全ての場合は〇を解除できない
-              if (ht.panel.getCellData(ht.row, 2) != STR_MARU) {
-                ht.panel.setCellData(ht.row, 2, STR_MARU);
-                for (let r = 1; r < flexGrid.rows.length; r++) {
-                  ht.panel.setCellData(r, 2, ' ');
-                }
-              }
-            } else {
-              if (ht.panel.getCellData(ht.row, 2) == STR_MARU) {
-                ht.panel.setCellData(ht.row, 2, ' ');
-              } else {
-                ht.panel.setCellData(ht.row, 2, STR_MARU);
-                // 1つでも全部以外に〇がついた場合は全部の〇を解除
-                ht.panel.setCellData(0, 2, ' ');
-              }
-            }
-          }
-          flexGrid.endUpdate();
-        }
-      });
-      flexGrid.beginUpdate();
-      // ヘッダの追加と設定
-      flexGrid.columnHeaders.rows[0].allowMerging = true;
-      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
-      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
-      flexGrid.frozenRows = GRD_FROZEN_ROW;
-      // ヘッダ文字列の設定
-      for (
-        let colIndex = 0;
-        colIndex < this.sienKoumokuHeaderList.length;
-        colIndex++
-      ) {
-        flexGrid.columns.insert(colIndex, new wjGrid.Column());
-        let col = flexGrid.columns[colIndex];
-        col.wordWrap = true;
-        col.binding = this.sienKoumokuHeaderList[colIndex].dataname;
-        col.header = this.sienKoumokuHeaderList[colIndex].title;
-        col.width = this.sienKoumokuHeaderList[colIndex].width;
-        col.align = this.sienKoumokuHeaderList[colIndex].align;
-        col.allowMerging = true;
-        col.multiLine = true;
-      }
-      this.sienKoumokuData = this.loadSienKoumokuData();
-      flexGrid.endUpdate();
-    },
     onFormatItemIcrn(flexGrid, e) {
       if (flexGrid.columns.length == 0) {
         return;
@@ -745,6 +599,18 @@ export default {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
       } else {
+        if (e.col < 1) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        } else if (e.col < 7) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else if (e.col < 16) {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        } else {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        }
         if (
           (e.row == 0 && e.col == 0) ||
           (e.row == 0 && e.col == 1) ||
@@ -765,33 +631,7 @@ export default {
         // }
       }
     },
-    onFormatItemSienKoumoku(flexGrid, e) {
-      // if (e.col == 2) {
-      //   e.cell.style.borderRight = STYLE_NONE;
-      // }
-      if (e.panel == flexGrid.cells) {
-        e.cell.style.borderBottom = STYLE_DEFAULT;
-        e.cell.style.backgroundColor = STYLE_DEFAULT;
-        let tmpitem = e.panel.rows[e.row].dataItem;
-        if (e.row > 0 && e.col == 0) {
-          let tmpitempre = e.panel.rows[e.row - 1].dataItem;
-          if (tmpitem.daicode == tmpitempre.daicode) {
-            e.panel.setCellData(e.row, e.col, ' ');
-          }
-        }
-        if (e.row > 0 && e.row < flexGrid.rows.length - 1) {
-          let tmpNextitem = e.panel.rows[e.row + 1].dataItem;
-          if (tmpitem.daicode != tmpNextitem.daicode) {
-            e.cell.style.borderBottom = STYLE_BORDER_SOLID;
-          } else if (e.col == 0 && tmpitem.daicode == tmpNextitem.daicode) {
-            e.cell.style.borderBottom = 0;
-          }
-        }
-        if (e.col == 2) {
-          e.cell.style.backgroundColor = sysConst.COLOR.white;
-        }
-      }
-    },
+
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
       flexGrid.endUpdate();
@@ -810,6 +650,12 @@ export default {
       flexGrid.endUpdate();
     },
     grdDispChangeclick(kbn) {
+      console.log(kbn);
+      this.selSyousaiDispUmuIndex = kbn;
+      this.setViewData(false);
+    },
+    grdNaiyouclick(kbn) {
+      this.selDispNaiyouIndex = kbn;
       console.log(kbn);
       this.setViewData(false);
     },
@@ -952,113 +798,6 @@ export default {
       // }
       this.viewData = tmpviewdata;
     },
-    loadSienKoumokuData() {
-      let tmpviewdata = [];
-      tmpviewdata.push({
-        id: 0,
-        daicode: 0,
-        daicodeD: '',
-        dainame: '',
-        dainameD: '',
-        chucode: 0,
-        chucodeD: '',
-        chuname: '全表示',
-        chunameD: '',
-        select: '○',
-      });
-      let userCount = 100;
-      let daicode = 0;
-      let dainame = '';
-      let chucode = 0;
-      let chuname = '';
-      for (let i = 1; i < userCount; i++) {
-        if (i == 1 || i == 10 || i == 15) {
-          chucode = 0;
-        }
-        if (i < 10) {
-          daicode = 1;
-          chucode = chucode + 1;
-          dainame = '支援内容';
-          switch (chucode) {
-            case 1:
-              chuname = '福祉サービスの利用等に関する支援';
-              break;
-            case 2:
-              chuname = '障害や症状の理解に関する支援';
-              break;
-            case 3:
-              chuname = '健康・医療に関する支援';
-              break;
-            case 4:
-              chuname = '不安の解消・情緒安定に関する支援';
-              break;
-            case 5:
-              chuname = '保育・教育に関する支援';
-              break;
-            case 6:
-              chuname = '家族関係・人間関係に関する支援';
-              break;
-            case 7:
-              chuname = '家計・経済に関する支援';
-              break;
-            case 8:
-              chuname = '生活技術に関する支援';
-              break;
-            case 9:
-              chuname = 'その他' + chucode;
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
-        } else if (i < 15) {
-          daicode = 2;
-          chucode = chucode + 1;
-          dainame = '機関対応';
-          switch (chucode) {
-            case 1:
-              chuname = '各種機関へ連絡';
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
-        } else if (i < 20) {
-          daicode = 3;
-          chucode = chucode + 1;
-          dainame = '申請代行';
-          switch (chucode) {
-            case 1:
-              chuname = '事業所等との契約';
-              break;
-            case 2:
-              chuname = '手帳等';
-              break;
-            case 3:
-              chuname = 'ライフライン関係';
-              break;
-            default:
-              chuname = 'その他' + chucode;
-              break;
-          }
-        } else {
-          break;
-        }
-        tmpviewdata.push({
-          id: i,
-          daicode: daicode,
-          daicodeD: String(daicode).padStart(2, '0'),
-          dainame: dainame,
-          dainameD: dainame,
-          chucode: chucode,
-          chucodeD: String(chucode).padStart(2, '0'),
-          chuname: chuname,
-          chunameD: chuname,
-          select: '',
-        });
-      }
-      return tmpviewdata;
-    },
     getYmd(outputkbn) {
       if (outputkbn == 0) {
         if (!this.startymd) {
@@ -1130,32 +869,8 @@ export default {
         this.datepicker_dialog_month = false;
       }
     },
-    onJigyoKbnClicked(s) {
-      s.header = this.jigyoKbnList[s.selectedIndex].name;
-      this.selJigyoKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-    },
-    onInputClicked(s) {
-      s.header = this.inputList[s.selectedIndex].name;
-      this.selInputKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-    },
-    sienKoumokuclick() {
-      this.sienkoumoku_dialog = true;
-    },
     filterClrclick() {
       this.filter.clear();
-    },
-    kojinRirekiSienKoumoku_dialog_close() {
-      this.sienkoumoku_dialog = false;
-    },
-    sienKoumokuSetclick() {
-      this.kojinRirekiSienKoumoku_dialog_close();
-      //ここで支援項目絞込用の処理を行う
     },
   },
 };
@@ -1167,105 +882,23 @@ div#kojinRireki {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1350px !important;
-  max-width: 1920px;
-  width: auto;
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
+  min-width: 1300px !important;
+  // max-width: 1920px;
+  // width: auto;
+
   .leftArea {
     min-width: 275px;
     max-width: 275px;
-    min-height: 450px;
     width: 275px;
     // border: thin solid;
   }
 
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-  .koumokuData {
-    color: $font_color;
-    display: flex;
-    align-items: center;
-    width: auto;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_read {
-    color: $font_color;
-    width: 150px;
-    height: 100%;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_input {
-    color: $font_color;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Input_background;
-    padding-top: 2px;
-    padding-left: 2px;
-  }
-
-  .koumokuData_c {
-    width: 280px;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-
-  .rowStyle {
-    height: 20px;
-  }
-  .rirekikoumokuTitleMini {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 25px;
-    height: 25px;
-    text-align: center;
-    background: $white;
-    border: none;
-  }
-  .v-btn {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-  }
-
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-    width: 75px;
-  }
   #icrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    height: 78vh;
+    width: 77vw;
+    min-width: 900px;
 
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -1285,9 +918,7 @@ div#kojinRireki {
     .wj-cell {
       padding: 2px;
     }
-    .wj-cell:not(.wj-header) {
-      background: $grid_background;
-    }
+
     .wj-cells
       .wj-row:hover
       .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
@@ -1319,53 +950,6 @@ div#kojinRireki {
     .wj-filter-on {
       color: blue;
       border-color: lightgray;
-    }
-  }
-  #icrnGrid {
-    height: 78vh;
-    width: 78vw;
-    min-width: 1050px;
-    // max-width: 1920px;
-  }
-  .centerArea {
-    .customCombobox {
-      position: relative;
-      // width: 300px !important;
-      height: 20px !important;
-      &.customCombobox {
-        // width: 160px !important;
-        div {
-          text-align: left;
-        }
-      }
-      &#comboFiltersKasan {
-        width: 250px !important;
-      }
-      .wj-btn.wj-btn-default {
-        border-left: none !important;
-      }
-      &:hover {
-        background-color: #e1e1e1;
-      }
-      &:focus {
-        background-color: #fff;
-      }
-      div * {
-        height: 18px !important;
-        // padding: 0;
-        span {
-          // height: 21px !important;
-          margin-top: 5px;
-        }
-        &.wj-form-control {
-          position: absolute;
-          top: -6px;
-          width: 100%;
-        }
-      }
-      input {
-        height: 20px !important;
-      }
     }
   }
 }
@@ -1416,88 +1000,5 @@ div#kojinRireki {
   position: fixed !important;
   top: 70px;
   left: 600px;
-}
-
-.kojinRirekiSienKoumoku {
-  background-color: $white;
-  .closeButton {
-    z-index: 100;
-    position: absolute;
-    right: 0;
-    top: 0;
-    background-color: $white;
-  }
-  .rowStyle {
-    height: 25px;
-    position: relative;
-    .SienKoumokuSetBtn {
-      font-size: 14px;
-      background: $btn_background;
-      border: thin solid;
-      border-color: $light-gray;
-      color: $font_color;
-      height: 25px !important;
-      width: 75px;
-      position: absolute;
-      right: 0;
-      bottom: 0;
-    }
-  }
-}
-#kojinRirekiSienKoumokuGrid {
-  // height: 400px;
-  // width: 500px;
-  // margin: 4px;
-  color: $font_color;
-  font-size: $cell_fontsize;
-
-  .wj-header {
-    // ヘッダのみ縦横中央寄せ
-    color: $font_color;
-    font-size: $cell_fontsize;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-weight: normal;
-  }
-  .wj-cell-maker {
-    width: 15px;
-    height: 15px;
-  }
-  .wj-cell {
-    padding: 2px;
-  }
-  .wj-cell:not(.wj-header) {
-    background: $grid_background;
-  }
-  .wj-cells
-    .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
-    transition: all 0s;
-    background: $grid_hover_background;
-  }
-
-  .wj-cells .wj-cell.wj-state-multi-selected {
-    background: $grid_selected_background;
-    color: $grid_selected_color;
-  }
-
-  .wj-cells .wj-cell.wj-state-selected {
-    background: $grid_selected_background;
-    color: $grid_selected_color;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: $light-gray;
-    border-radius: 0px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: $brawn;
-    border-radius: 0px;
-  }
 }
 </style>
