@@ -22,7 +22,6 @@
                   class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
                   outlined
                   tile
-                  width="100"
                 >
                   利用者名
                 </v-card>
@@ -39,12 +38,7 @@
             </v-row>
 
             <v-row no-gutters class="rowStyle mt-1">
-              <v-card
-                class="koumokuTitle titleMain pa-1 ml-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
                 表示期間
               </v-card>
               <v-card
@@ -97,12 +91,7 @@
               >
                 月指定
               </v-btn>
-              <v-card
-                class="koumokuTitle titleMain pa-1 mr-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
                 詳細表示
               </v-card>
               <v-btn-toggle
@@ -123,12 +112,7 @@
               </v-btn-toggle>
             </v-row>
             <v-row no-gutters class="rowStyle mt-1 ml-1">
-              <v-card
-                class="koumokuTitle titleMain pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleMain pa-1" outlined tile>
                 表示内容
               </v-card>
               <v-btn-toggle class="flex-wrap ml-1" v-model="selDispNaiyouIndex">

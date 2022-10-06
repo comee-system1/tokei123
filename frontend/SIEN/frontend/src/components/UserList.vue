@@ -26,37 +26,22 @@
     >
       <v-col>
         <v-row no-gutters class="rowStyle ml-1" v-if="dispAddDaicho">
-          <v-col cols="*">
+          <v-btn style="width: 100px" @click="addClicked"> 台帳新規登録 </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn-toggle class="flex-wrap ma-0" v-model="selDispKbn" mandatory>
             <v-btn
-              style="width: 100px; height: 25px; font-size: 12px"
-              @click="addClicked"
+              v-for="n in userDispList"
+              :key="n.val"
+              color="secondary"
+              dark
+              :width="n.width"
+              :min-width="n.width"
+              outlined
+              @click="siborikomiUser(n.val)"
             >
-              台帳新規登録
+              {{ n.name }}
             </v-btn>
-          </v-col>
-          <v-col cols="7" class="mr-1">
-            <div align="right">
-              <v-btn-toggle
-                class="flex-wrap ma-0"
-                v-model="selDispKbn"
-                mandatory
-              >
-                <v-btn
-                  v-for="n in userDispList"
-                  :key="n.val"
-                  small
-                  color="primary"
-                  dark
-                  :height="25"
-                  :min-width="15"
-                  outlined
-                  @click="siborikomiUser(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </div>
-          </v-col>
+          </v-btn-toggle>
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters v-show="dispSvcReki">
@@ -143,23 +128,23 @@
           ></wj-combo-box>
         </v-row>
 
-        <!-- <v-row class="rowStyle mt-1 mr-1" no-gutters justify="center">
+        <v-row class="rowStyle mt-1 mr-1" no-gutters justify="center">
           <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
             <v-btn
               v-for="n in sortSelList"
               :key="n.val"
-              small
               color="secondary"
               dark
               outlined
               :height="20"
-              style="font-size: 12px"
+              :width="n.width"
+              :min-width="n.width"
               @click="sortUser(n.val)"
             >
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
-        </v-row> -->
+        </v-row>
         <div class="rowStyle mt-1" no-gutters>
           <v-btn-toggle class="flex-wrap ma-0" v-model="alphaSearch" mandatory>
             <v-btn
@@ -270,6 +255,10 @@ export default {
     dispHideBar: Boolean,
     dispSvcReki: Boolean,
     dispYoteiYm: Boolean,
+    headerheight: {
+      type: Number,
+      default: 80,
+    },
   },
   data() {
     return {
@@ -280,8 +269,8 @@ export default {
       switchAreaRightFlag: false,
       switchAreaLeftFlag: false,
       userDispList: [
-        { val: 0, name: '台帳' },
-        { val: 1, name: '本日予定者' },
+        { val: 0, name: '台帳', width: 45 },
+        { val: 1, name: '本日予定者', width: 85 },
       ],
       textSearch: '',
       userDataSelect: [],
@@ -315,9 +304,9 @@ export default {
         { id: 4, name: '担当者D' },
       ],
       sortSelList: [
-        { val: 0, name: 'コード順' },
-        { val: 1, name: 'カナ順' },
-        { val: 2, name: '受給者番号順' },
+        { val: 0, name: 'コード順', width: 70 },
+        { val: 1, name: 'カナ順', width: 70 },
+        { val: 2, name: '受給者番号順', width: 100 },
       ],
       hdrTips: new Tooltip({
         position: PopupPosition.RightTop,
@@ -325,7 +314,6 @@ export default {
         showDelay: 300,
         cssClass: 'hdr-tip',
       }),
-      headerheight: 80,
       // 予定月用プロパティ
       pickerYoteiYm: '',
       yoteiYm: '',
@@ -347,7 +335,7 @@ export default {
       // ブラウザの高さ
       return {
         '--height':
-          window.innerHeight - (parseInt(this.headerheight) + 100) + 'px',
+          window.innerHeight - (parseInt(this.headerheight) + 125) + 'px',
         '--width': this.userListWidth,
       };
     },
@@ -358,7 +346,7 @@ export default {
         document.getElementById('user-list_scrollbar').style.height =
           window.innerHeight - this.headerheight + 'px';
         document.getElementById('userListGrid').style.height =
-          window.innerHeight - (parseInt(this.headerheight) + 100) + 'px';
+          window.innerHeight - (parseInt(this.headerheight) + 125) + 'px';
       }
     },
     switched() {

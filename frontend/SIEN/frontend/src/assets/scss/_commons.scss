@@ -8,10 +8,17 @@ html {
 
 
     body {
+
         .v-application {
             font-family: "メイリオ",
                 sans-serif !important;
+
+            .body-2 {
+                font-family: "メイリオ", sans-serif !important;
+            }
         }
+
+
 
     }
 }
@@ -33,7 +40,11 @@ html {
 
 .rowStyle_Dark {
     height: 28px;
-    background: #C2EEFF
+    background: #C2EEFF;
+
+    &.tall {
+        height: 32px;
+    }
 }
 
 /**********************
@@ -49,6 +60,7 @@ html {
     height: 100%;
     text-align: center;
     border: none;
+    font-size: 14px;
 
 
     &.wMin {
@@ -61,6 +73,10 @@ html {
         width: 160px;
         min-width: auto;
         max-width: none;
+    }
+
+    &.wLng {
+        width: 180px;
     }
 
 }
@@ -99,6 +115,12 @@ html {
     color: $white !important;
     background: transparent !important;
 }
+
+.titleTranceparent {
+    border: none !important;
+    background: $view_Title_background_none !important;
+}
+
 
 .koumokuData {
     color: $font_color;
@@ -255,8 +277,26 @@ div.mSizeCommonTab {
     border: none;
 }
 
+/*******************************
+* selectbox設定
+****************************/
+.customSelectBox {
+    width: 200px;
+    border: 1px solid $light-gray;
+    height: 21px;
+    -moz-appearance: menulist;
+    -webkit-appearance: menulist;
+    display: block;
 
+    &:focus {
+        outline: none;
+    }
 
+    &:hover {
+        background-color: $light-white;
+        cursor: pointer;
+    }
+}
 
 
 

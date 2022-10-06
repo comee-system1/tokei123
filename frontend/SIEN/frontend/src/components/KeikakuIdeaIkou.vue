@@ -1,14 +1,21 @@
 <template>
-  <div id="listsArea" :style="styles">
+  <div id="listsArea">
     <v-row dense v-for="value in note" :key="value.key">
       <v-col cols="2" class="text-center valign text-caption">
-        <v-card class="pa-1 lightGreen" elevation="0" outlined tile height="90">
-          {{ value.title }}
+        <v-card
+          class="pa-1 lightGreen"
+          elevation="0"
+          outlined
+          tile
+          height="90"
+          relative
+        >
+          <label>{{ value.title }}</label>
         </v-card>
       </v-col>
       <v-col cols="10" class="mr-0 text-caption">
         <v-card
-          class="pa-1 editarea"
+          class="pa-1 editarea mx-auto"
           elevation="0"
           outlined
           tile
@@ -87,29 +94,15 @@ export default {
     };
   },
   created() {},
-  mounted() {
-    window.addEventListener('resize', this.calculateWindowHeight);
-  },
+  mounted() {},
   computed: {
     textstyles() {
       return {
         minHeight: '100vh',
       };
     },
-    styles() {
-      // ブラウザの高さ
-      return {
-        '--height': window.innerHeight - this.headerheight + 'px',
-      };
-    },
   },
   methods: {
-    calculateWindowHeight() {
-      if (document.getElementById('listsArea') != null) {
-        document.getElementById('listsArea').style.height =
-          window.innerHeight - this.headerheight + 'px';
-      }
-    },
     /******************************
      * 入力内容切替ボタンを押下
      */
@@ -147,7 +140,6 @@ export default {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
-  height: var(--height);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -157,11 +149,12 @@ export default {
     display: none;
   }
   .editarea {
+    overflow: hidden;
     overflow-y: scroll;
     //width: 890px;
     width: 100%;
     div {
-      width: 870px;
+      width: 860px;
     }
   }
 }
@@ -177,5 +170,12 @@ export default {
 }
 .lightGreen {
   background-color: $view_Title_background_Green !important;
+  label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
 }
 </style>

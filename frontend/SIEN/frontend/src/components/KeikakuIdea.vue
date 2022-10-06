@@ -12,7 +12,7 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
+          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
@@ -21,9 +21,9 @@
                 elevation="0"
                 outlined
                 tile
-                class="ml-1 pl-1 lightYellow"
+                class="ml-1 pl-1 lightYellow body-2"
                 width="300"
-                height="20"
+                height="24"
               >
                 {{ userName }}
               </v-card>
@@ -34,15 +34,16 @@
               入力
             </v-card>
             <v-btn-toggle mandatory>
-              <v-btn small height="20">新規入力</v-btn>
-              <v-btn small height="20">内容更新</v-btn>
+              <v-btn small height="20" class="body-2">新規入力</v-btn>
+              <v-btn small height="20" class="body-2">内容更新</v-btn>
             </v-btn-toggle>
             <v-card class="koumokuTitle titleMain ml-1 wMin" outlined tile>
               作成日
             </v-card>
             <v-card
-              class="pl-1 ml-1"
+              class="pl-1 ml-1 body-2"
               width="140"
+              height="21"
               outlined
               tile
               @click="inputCalendarClick(0)"
@@ -56,25 +57,26 @@
               作成者
             </v-card>
             <v-card
-              class="lightYellow pl-1 ml-1"
+              class="lightYellow pl-1 ml-1 body-2"
               width="140"
               elevation="0"
+              height="21"
               tile
             >
               大正雅夫
             </v-card>
             <v-card class="ml-auto" elevation="0">
-              <v-btn small height="20" class="ml-1">前回コピー</v-btn>
-              <v-btn small height="20" class="ml-1">履歴参照</v-btn>
+              <v-btn small height="20" class="ml-1 body-2">前回コピー</v-btn>
+              <v-btn small height="20" class="ml-1 body-2">履歴参照</v-btn>
             </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1 mt-1">
-            <v-card class="koumokuTitle titleBlue fblue wMdl" outlined tile>
+            <v-card class="koumokuTitle titleBlue fblue wLng" outlined tile>
               障害者支援区分
             </v-card>
             <v-card
-              class="lightYellow ml-1 pl-1"
-              width="140"
+              class="lightYellow ml-1 pl-1 body-2"
+              width="100"
               height="20"
               outlined
               tile
@@ -88,15 +90,15 @@
             >
               モニタリング期間
             </v-card>
-            <input type="text" class="border ml-1 tlong" />
+            <input type="text" class="border ml-1 wLong" />
           </v-row>
           <v-row no-gutters class="rowStyle mb-1 mt-1">
-            <v-card class="koumokuTitle titleBlue fblue wMdl" outlined tile>
+            <v-card class="koumokuTitle titleBlue fblue wLng" outlined tile>
               障害者福祉ｻｰﾋﾞｽ受給者番号
             </v-card>
             <v-card
-              class="lightYellow ml-1 pl-1"
-              width="140"
+              class="lightYellow ml-1 pl-1 body-2"
+              width="100"
               height="20"
               outlined
               tile
@@ -111,7 +113,7 @@
               地域相談支援受給者番号
             </v-card>
             <v-card
-              class="lightYellow ml-1 pl-1"
+              class="lightYellow ml-1 pl-1 body-2"
               width="140"
               height="20"
               outlined
@@ -127,7 +129,7 @@
               通所受給者証番号
             </v-card>
             <v-card
-              class="lightYellow ml-1 pl-1"
+              class="lightYellow ml-1 pl-1 body-2"
               width="140"
               height="20"
               outlined
@@ -155,7 +157,10 @@
               </v-tabs>
             </v-col>
             <v-col class="text-end">
-              <v-btn-toggle tile v-if="inputTypemodel == 'tab-2'">
+              <v-btn-toggle
+                tile
+                v-if="inputTypemodel == 'tab-2' || inputTypemodel == 'tab-1'"
+              >
                 <v-btn small @click="rowSort('view')">順変更</v-btn>
                 <v-btn small @click="rowAdd('view')">行追加</v-btn>
                 <v-btn small @click="rowDelete('view')">行削除</v-btn>
@@ -163,8 +168,16 @@
             </v-col>
           </v-row>
           <div class="mt-2">
-            <keikakuideaKadai ref="childkadai"></keikakuideaKadai>
-            <keikakuideaIkou ref="childikou"></keikakuideaIkou>
+            <div id="scrollbody">
+              <keikakuideaKadai
+                ref="childkadai"
+                v-if="inputTypemodel == 'tab-2' || inputTypemodel == 'tab-1'"
+              ></keikakuideaKadai>
+              <keikakuideaIkou
+                ref="childikou"
+                v-if="inputTypemodel == 'tab-2' || inputTypemodel == 'tab-0'"
+              ></keikakuideaIkou>
+            </div>
           </div>
           <v-row dense class="ma-2" justify="space-between">
             <v-col cols="4">
@@ -179,7 +192,7 @@
                   <input type="checkbox" />
                 </v-card>
                 <v-card
-                  class="lightYellow pl-1 ml-1"
+                  class="lightYellow pl-1 ml-1 body-2"
                   width="240"
                   height="20"
                   outlined
@@ -268,6 +281,7 @@ export default {
       keikakuKubunModel: '',
       userName: '',
       headerheight: 60,
+      headerheightbody: 260,
     };
   },
   created() {},
@@ -279,6 +293,7 @@ export default {
       // ブラウザの高さ
       return {
         '--height': window.innerHeight - this.headerheight + 'px',
+        '--heightbody': window.innerHeight - this.headerheightbody + 'px',
       };
     },
     textstyles() {
@@ -289,10 +304,13 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      console.log('resize');
       if (document.getElementById('keikakuIdea') != null) {
         document.getElementById('keikakuIdea').style.height =
           window.innerHeight - this.headerheight + 'px';
+      }
+      if (document.getElementById('scrollbody') != null) {
+        document.getElementById('scrollbody').style.height =
+          window.innerHeight - this.headerheightbody + 'px';
       }
     },
     /****************
@@ -356,8 +374,6 @@ export default {
 
 div#keikakuIdea {
   color: $font_color;
-  font-size: 12px;
-  font-family: 'メイリオ';
   min-width: 1350px !important;
   max-width: 1920px;
   height: var(--height);
@@ -367,72 +383,22 @@ div#keikakuIdea {
     min-width: 150px;
     display: block;
   }
-  div.label {
-    background-color: $light-gray;
-  }
-  .input-text {
-    div {
-      height: 21px;
-      min-height: 21px;
-      margin-top: -1px;
-    }
-  }
-  .w100p {
-    width: 100%;
-  }
-  .mw240 {
-    max-width: 240px;
-  }
-  .mw200 {
-    max-width: 200px;
-  }
-  .mw180 {
-    max-width: 180px;
-  }
-  .mw160 {
-    max-width: 160px;
-  }
-  .mw140 {
-    max-width: 140px;
-  }
-  .mw120 {
-    max-width: 120px;
-  }
-  .mw100 {
-    max-width: 100px;
-  }
-  .mw90 {
-    max-width: 90px;
-  }
-  .mw30 {
-    max-width: 30px;
-  }
-  .h140 {
-    height: 140px;
-    overflow: auto;
-  }
-  .editarea {
-    &:hover {
-      border: 1px solid $selected_color;
-      background-color: $view_Title_background;
-    }
-  }
+
   .lightYellow {
     background-color: $view_Data_Read_background;
   }
-  .valign {
-    display: table;
-    div {
-      &:first-child {
-        display: table-cell;
-        vertical-align: middle;
-      }
-    }
+  .wLong {
+    width: 448px;
   }
-}
-.editTextarea {
-  textarea {
-    height: 80vh !important;
+  #scrollbody {
+    overflow: hidden;
+    overflow-y: auto;
+    height: var(--heightbody);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 

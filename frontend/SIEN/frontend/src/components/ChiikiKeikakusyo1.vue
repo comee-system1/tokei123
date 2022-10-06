@@ -1,5 +1,5 @@
 <template>
-  <div id="attendeeState" :style="styles">
+  <div id="chiikiKeikakusyo1" :style="styles">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
         <v-col :style="{ 'max-width': leftWidth }">
@@ -11,7 +11,7 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
+          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
@@ -22,20 +22,20 @@
                 tile
                 class="ml-1 pl-1 lightYellow"
                 width="300"
-                height="24"
+                height="20"
               >
                 {{ userName }}
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters class="rowStyle mb-1 mt-1 body-2">
+          <v-row no-gutters class="rowStyle mb-1 mt-1">
             <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
               入力
             </v-card>
             <v-card elevation="0" class="pl-1">
               <v-btn-toggle>
-                <v-btn small height="20" class="body-2">新規</v-btn>
-                <v-btn small height="20" class="body-2">修正</v-btn>
+                <v-btn small height="20">新規</v-btn>
+                <v-btn small height="20">修正</v-btn>
               </v-btn-toggle>
             </v-card>
             <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
@@ -43,7 +43,7 @@
             </v-card>
 
             <v-card
-              class="ml-1 body-2"
+              class="ml-1"
               width="140"
               height="20"
               outlined
@@ -67,25 +67,19 @@
               大正雅夫
             </v-card>
             <v-card class="ml-auto" elevation="0">
-              <v-btn small height="20" class="body-2">利用者基本情報より</v-btn>
-              <v-btn small class="ml-1 body-2" height="20">前回コピー</v-btn>
-              <v-btn small class="ml-1 body-2" height="20">履歴参照</v-btn>
+              <!-- <v-btn small height="20">利用者基本情報より</v-btn> -->
+              <v-btn small height="20">前回コピー</v-btn>
+              <v-btn small class="ml-1" height="20">履歴参照</v-btn>
             </v-card>
           </v-row>
 
           <div class="mt-1">
-            <v-app-bar flat height="24" class="titleBlue">
-              <v-app-bar-title class="body-2"
-                >1.概要(支援経過・現状と課題等)</v-app-bar-title
+            <v-app-bar flat height="24" class="titleBlueDark">
+              <v-app-bar-title class="text-caption"
+                >利用者の状況</v-app-bar-title
               >
             </v-app-bar>
-            <v-textarea class="mt-1" outlined hide-details="false"></v-textarea>
-          </div>
-          <div class="mt-1">
-            <v-app-bar flat height="24" class="titleBlue">
-              <v-app-bar-title class="body-2">2.利用者の状況</v-app-bar-title>
-            </v-app-bar>
-            <table class="table mt-1 body-2">
+            <table class="table mt-1">
               <tr>
                 <th>氏名</th>
                 <td>東経真奈美</td>
@@ -96,47 +90,115 @@
               </tr>
               <tr>
                 <th rowspan="2">住所</th>
-                <td colspan="3" rowspan="2"></td>
+                <td colspan="3" rowspan="2" style="vertical-align: top">aaa</td>
+                <th>電話番号①</th>
+                <td>000</td>
+              </tr>
+              <tr>
+                <th>電話番号②</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>メールアドレス</th>
+                <td colspan="3"></td>
+                <th>携帯番号</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>携帯メール</th>
+                <td colspan="3"></td>
+                <th>FAX番号</th>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+          <div class="mt-1">
+            <v-app-bar flat height="24" class="titleBlueDark">
+              <v-app-bar-title class="text-caption"
+                >施設・病院情報</v-app-bar-title
+              >
+            </v-app-bar>
+            <table class="table mt-1">
+              <tr>
+                <th>施設・病院名</th>
+                <td class="wide"></td>
+                <th>担当者名</th>
+                <td></td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <th rowspan="2">住所</th>
+                <td rowspan="2" style="vertical-align: top">
+                  984-0052<br />aaa<br />aaa
+                </td>
                 <th>電話番号</th>
                 <td></td>
               </tr>
               <tr>
-                <th>FAX番号</th>
+                <th>ＦＡＸ番号</th>
                 <td></td>
               </tr>
-              <tr>
-                <th>障害・疾患名</th>
-                <td></td>
-                <th>障害支援区分</th>
-                <td>区分4</td>
-                <th>性別</th>
-                <td>女</td>
-              </tr>
             </table>
-            <table class="table mt-1 body-2">
-              <tr>
-                <th class="half">家族構成 ※年齢、職業、主たる介護者を記入</th>
-                <th class="half">
-                  社会関係図 ※本人とかかわりを持つ機関・人物等(役割)
-                </th>
-              </tr>
-              <tr>
-                <td class="half"></td>
-                <td class="half"></td>
-              </tr>
-            </table>
-            <div class="mt-1 mb-3">
-              <v-card class="d-flex flex-row" flat tile>
-                <v-card elevation="0" tile>
-                  <v-btn small class="body-2">クリア</v-btn>
-                  <v-btn small class="ml-2 body-2">削除</v-btn>
-                </v-card>
-                <v-card elevation="0" tile class="ml-auto">
-                  <v-btn small class="body-2">登録</v-btn>
-                </v-card>
-              </v-card>
-            </div>
           </div>
+          <div class="mt-1">
+            <v-app-bar flat height="24" class="titleBlueDark">
+              <v-app-bar-title class="text-caption"
+                >アセスメント</v-app-bar-title
+              >
+            </v-app-bar>
+            <v-app-bar flat height="24" class="titleBlue mt-1">
+              <v-app-bar-title class="caption"
+                >1.利用者の心身の状況</v-app-bar-title
+              >
+            </v-app-bar>
+            <v-textarea
+              class="mt-1"
+              rows="2"
+              no-resize
+              outlined
+              hide-details="false"
+            ></v-textarea>
+            <v-app-bar flat height="24" class="titleBlue">
+              <v-app-bar-title class="caption"
+                >2.利用者の置かれている環境</v-app-bar-title
+              >
+            </v-app-bar>
+            <v-textarea
+              class="mt-1"
+              rows="2"
+              no-resize
+              outlined
+              hide-details="false"
+              :value="value"
+            ></v-textarea>
+          </div>
+          <v-row dense class="ma-2" justify="space-between">
+            <v-col cols="4">
+              <v-btn small>削除</v-btn>
+            </v-col>
+            <v-col cols="7">
+              <v-card class="d-flex justify-end" flat tile>
+                <v-card
+                  outlined
+                  tile
+                  width="60"
+                  class="text-center text-caption label pt-1"
+                  >完了
+                </v-card>
+                <v-card elevation="0" width="30" class="text-center mt-1">
+                  <input type="checkbox" />
+                </v-card>
+                <v-card
+                  class="lightYellow pl-1 pt-1 ml-1"
+                  width="140"
+                  outlined
+                  tile
+                >
+                </v-card>
+                <v-btn small class="ml-3">登録</v-btn>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -147,7 +209,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="attendeeStateDatepicker"
+        id="chiikiKeikakusyo1Datepicker"
         v-model="picker"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
@@ -188,6 +250,7 @@ export default {
         dayjs().format('DD') +
         '日',
       headerheight: 100,
+      value: 'ssss\nddddd\nfff',
     };
   },
   mounted() {
@@ -195,8 +258,8 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('attendeeState') != null) {
-        document.getElementById('attendeeState').style.height =
+      if (document.getElementById('chiikiKeikakusyo1') != null) {
+        document.getElementById('chiikiKeikakusyo1').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
     },
@@ -225,11 +288,10 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#attendeeState {
+div#chiikiKeikakusyo1 {
   color: $font_color;
-  min-width: 1266px !important;
-  max-width: 1920px;
-  width: auto;
+  font-size: 12px;
+  font-family: 'メイリオ';
 
   .v-app-bar-title__content {
     width: 100%;
@@ -251,10 +313,6 @@ div#attendeeState {
       border-right: 1px solid #ccc;
       border-bottom: 1px solid #ccc;
       width: 80px;
-      &.half {
-        width: 50%;
-        text-align: left;
-      }
     }
     td {
       background-color: $grid_background;
@@ -262,15 +320,18 @@ div#attendeeState {
       border-bottom: 1px solid #ccc;
       padding: 4px;
       width: 160px;
-      &.half {
-        width: 50%;
-        height: 80px;
+      &.wide {
+        width: 400px;
       }
     }
   }
 }
+.v-textarea.v-text-field--enclosed.v-text-field--outlined:not(.v-input--dense)
+  textarea {
+  margin-top: 4px;
+}
 
-#attendeeStateDatepicker {
+#chiikiKeikakusyo1Datepicker {
   position: absolute;
   margin-top: 20px;
   top: 100px;

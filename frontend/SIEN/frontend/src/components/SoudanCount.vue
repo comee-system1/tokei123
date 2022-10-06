@@ -1,6 +1,6 @@
 <template>
   <div id="soudanCount">
-    <v-container class="mt-1 ml-1 pa-0" fluid style="min-height: 87vh">
+    <v-container class="pa-1" fluid style="min-height: 90vh">
       <v-navigation-drawer
         class="blue lighten-5"
         v-model="drawer"
@@ -30,12 +30,7 @@
       </v-navigation-drawer>
 
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示単位
         </v-card>
         <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
@@ -131,12 +126,7 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
         <wj-menu
@@ -151,12 +141,7 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
         <wj-menu
@@ -171,12 +156,7 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ランク
         </v-card>
         <wj-menu
@@ -819,7 +799,7 @@ div#soudanCount {
   #sienNaiyouGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 99%;
+    width: 100%;
     min-height: 200px;
     background: $grid_background;
     .wj-header {

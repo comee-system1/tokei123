@@ -11,57 +11,39 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }" class="pr-1">
-          <div class="ht50">
-            <div class="mt-1">
-              <v-card class="d-flex flex-row" flat tile>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="120"
-                  height="20"
-                  class="text-center"
-                >
-                  利用者名
-                </v-card>
-                <v-card
-                  elevation="0"
-                  outlined
-                  tile
-                  class="ml-1 pl-1 lightYellow"
-                  width="160"
-                  height="20"
-                >
-                  {{ userName }}
-                </v-card>
-                <v-card
-                  :color="'grey lighten-4 ml-1'"
-                  elevation="0"
-                  tile
-                  small
-                  width="80"
-                  height="20"
-                  class="text-center"
-                >
-                  作成日
-                </v-card>
-                <v-card class="text-center ml-1" width="140" outlined tile>
-                  {{ getYmd }}
-                </v-card>
+          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
+            <v-col cols="12" class="d-flex pa-1">
+              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
+                利用者名
               </v-card>
-            </div>
-            <div class="mt-1">
-              <v-card class="d-flex flex-row" flat tile>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="120"
-                  height="20"
-                  class="text-center"
-                >
+              <v-card
+                elevation="0"
+                outlined
+                tile
+                class="ml-1 pl-1 lightYellow"
+                width="300"
+                height="24"
+              >
+                {{ userName }}
+              </v-card>
+              <v-card class="koumokuTitle titleMain ml-1" outlined tile>
+                作成日
+              </v-card>
+              <v-card
+                class="text-center ml-1"
+                width="140"
+                height="24"
+                outlined
+                tile
+              >
+                {{ getYmd }}
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col :style="{ 'max-width': calendarAreaWidth }">
+              <v-row no-gutters class="rowStyle mb-1 body-2">
+                <v-card class="koumokuTitle titleMain mr-1 wMdl" outlined tile>
                   週間計画開始年月
                 </v-card>
                 <v-card
@@ -77,106 +59,114 @@
                     <v-icon small>mdi-calendar-month</v-icon>
                   </div>
                 </v-card>
-                <v-card class="ml-auto" elevation="0">
-                  <v-tabs
-                    light
-                    height="20"
-                    @change="onInputChange"
-                    v-model="inputChange"
-                  >
-                    <v-tab>週間予定</v-tab>
-                    <v-tab>主な日常生活等</v-tab>
-                  </v-tabs>
-                </v-card>
-              </v-card>
-            </div>
-          </div>
-          <FullCalendar
-            ref="fullCalendar"
-            id="fullCalendar"
-            :options="calendarOptions"
-          />
-          <v-card class="mt-1 d-flex justify-end" flat tile>
-            <v-card
-              :color="'grey lighten-4'"
-              elevation="0"
-              tile
-              small
-              width="60"
-              height="20"
-              class="text-center"
-            >
-              完了
-            </v-card>
-            <v-card elevation="0">
-              <input type="checkbox" class="mt-2 ml-2" />
-            </v-card>
-            <v-card
-              elevation="0"
-              class="ml-2 lightYellow"
-              tile
-              outlined
-              width="200"
-              height="20"
-            ></v-card>
-            <v-btn small class="ml-1" elevation="0" @click="regist" height="20"
-              >登録</v-btn
-            >
-          </v-card>
-        </v-col>
-        <v-col :style="{ 'max-width': rightWidth2 }">
-          <div class="mt-1 ht50">
-            <v-btn-toggle tile class="ml-n4">
-              <v-btn small height="20">前回コピー</v-btn>
-              <v-btn small height="20">履歴参照</v-btn>
-            </v-btn-toggle>
-          </div>
-          <wj-flex-grid
-            id="keikakuLifeGrid"
-            :selectionMode="3"
-            :headersVisibility="1"
-            :alternatingRowStep="0"
-            :autoGenerateColumns="false"
-            :allowResizing="false"
-            :allowDragging="false"
-            :allowSorting="false"
-            :showBandedRows="false"
-            :initialized="onInitializeLife"
-            :itemsSourceChanged="changeInitializeLife"
-            :itemsSource="itemdataLife"
-          >
-            <wj-flex-grid-column
-              :header="'日常生活'"
-              binding="every"
-              align="center"
-              :isReadOnly="true"
-              width="*"
-            ></wj-flex-grid-column>
-          </wj-flex-grid>
 
-          <wj-flex-grid
-            class="mt-1"
-            id="keikakuFukusiGrid"
-            :selectionMode="3"
-            :headersVisibility="1"
-            :alternatingRowStep="0"
-            :autoGenerateColumns="false"
-            :allowResizing="false"
-            :allowDragging="false"
-            :allowSorting="false"
-            :showBandedRows="false"
-            :initialized="onInitializeFukusi"
-            :itemsSourceChanged="changeInitializeFukusi"
-            :itemsSource="itemdataFukusi"
-          >
-            <wj-flex-grid-column
-              :header="'福祉サービス'"
-              binding="every"
-              align="center"
-              :isReadOnly="true"
-              width="*"
-            ></wj-flex-grid-column>
-          </wj-flex-grid>
+                <v-card class="koumokuTitle titleMain ml-auto" outlined tile>
+                  入力内容
+                </v-card>
+                <v-btn
+                  @click="onClickInput('week')"
+                  small
+                  height="20"
+                  class="body-2 ml-2"
+                  :class="{ active: toggled == 'week' }"
+                  >週間予定</v-btn
+                >
+                <v-btn
+                  @click="onClickInput('life')"
+                  small
+                  height="20"
+                  class="body-2 ml-2"
+                  :class="{ active: toggled == 'life' }"
+                  >主な日常生活等</v-btn
+                >
+              </v-row>
+
+              <FullCalendar
+                ref="fullCalendar"
+                id="fullCalendar"
+                :options="calendarOptions"
+              />
+              <v-row no-gutters class="rowStyle mb-1 mt-1 body-2 justify-end">
+                <v-card outlined tile class="koumokuTitle wMin titleOrange"
+                  >完了
+                </v-card>
+                <v-card elevation="0">
+                  <input type="checkbox" class="ml-2" />
+                </v-card>
+                <v-card
+                  elevation="0"
+                  class="ml-2 lightYellow"
+                  tile
+                  outlined
+                  width="200"
+                  height="20"
+                ></v-card>
+                <v-btn
+                  small
+                  class="ml-1"
+                  elevation="0"
+                  @click="regist"
+                  height="20"
+                  >登録</v-btn
+                >
+              </v-row>
+            </v-col>
+            <v-col :style="{ 'max-width': inputAreaWidth }" class="pl-1">
+              <div class="mt-1">
+                <v-btn small height="20" class="body-2 wfull">前回コピー</v-btn>
+                <v-btn small height="20" class="body-2 mt-1 wfull"
+                  >履歴参照</v-btn
+                >
+              </div>
+              <wj-flex-grid
+                id="keikakuLifeGrid"
+                class="mt-1"
+                :selectionMode="3"
+                :headersVisibility="1"
+                :alternatingRowStep="0"
+                :autoGenerateColumns="false"
+                :allowResizing="false"
+                :allowDragging="false"
+                :allowSorting="false"
+                :showBandedRows="false"
+                :initialized="onInitializeLife"
+                :itemsSourceChanged="changeInitializeLife"
+                :itemsSource="itemdataLife"
+              >
+                <wj-flex-grid-column
+                  :header="'日常生活'"
+                  binding="every"
+                  align="center"
+                  :isReadOnly="true"
+                  width="*"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+
+              <wj-flex-grid
+                class="mt-1"
+                id="keikakuFukusiGrid"
+                :selectionMode="3"
+                :headersVisibility="1"
+                :alternatingRowStep="0"
+                :autoGenerateColumns="false"
+                :allowResizing="false"
+                :allowDragging="false"
+                :allowSorting="false"
+                :showBandedRows="false"
+                :initialized="onInitializeFukusi"
+                :itemsSourceChanged="changeInitializeFukusi"
+                :itemsSource="itemdataFukusi"
+              >
+                <wj-flex-grid-column
+                  :header="'福祉サービス'"
+                  binding="every"
+                  align="center"
+                  :isReadOnly="true"
+                  width="*"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -232,7 +222,7 @@ function mouseDragBackgroundColor(elem, e, newDiv) {
   }
   let cx = 0;
   for (let i = 0; i <= 7; i++) {
-    if (e.clientX >= x && e.clientX < x + 60) {
+    if (e.clientX >= x && e.clientX < x + 110) {
       cx = x;
     }
     newDiv.style.left = cx + 'px';
@@ -250,6 +240,9 @@ export default {
   },
   data() {
     return {
+      calendarAreaWidth: '800px',
+      inputAreaWidth: '200px',
+      toggled: 'week',
       moveFlag: false,
       onLifeGrid: '',
       onFukusiGrid: '',
@@ -699,6 +692,12 @@ export default {
         });
       }
     },
+    /****************
+     * 入力内容
+     *****************/
+    onClickInput(type) {
+      this.toggled = type;
+    },
     /***********************
      * 登録ボタン
      ***********************/
@@ -811,6 +810,11 @@ div#keikakuWeek {
   }
   .fc-event-time {
     display: none;
+  }
+  .v-btn {
+    &.active {
+      background-color: $gray;
+    }
   }
   div {
     .fc-event-title {
@@ -938,6 +942,9 @@ div#keikakuLifeGrid {
 #fullCalendar {
   //   position: relative;
   //width: 800px;
+}
+.wfull {
+  width: 98%;
 }
 .cls {
   width: 10px;

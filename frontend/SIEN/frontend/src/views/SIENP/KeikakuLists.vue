@@ -13,7 +13,9 @@
               {{ item.name }}
             </v-tab>
           </v-tabs>
-          <v-card id="yousikiLabel" tile v-if="yousikiLabel">様式</v-card>
+          <v-card id="yousikiLabel" tile v-if="yousikiLabel" class="body-2"
+            >様式</v-card
+          >
           <v-tabs height="20" v-model="subtab">
             <v-tab
               v-for="yosikiValue in yosikiArray"
@@ -191,7 +193,6 @@ export default {
   background-color: $view_Title_font_color_Green;
   color: $white;
   text-align: center;
-  font-size: 12px;
   position: absolute;
   top: 0;
   left: 43%;

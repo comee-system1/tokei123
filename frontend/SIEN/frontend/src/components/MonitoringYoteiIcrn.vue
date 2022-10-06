@@ -1,8 +1,10 @@
 <template>
   <div id="monitoringYotei">
     <v-container class="pa-1" fluid>
-      <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+      <v-row no-gutters class="rowStyle">
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示月
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
@@ -17,6 +19,7 @@
             outlined
             width="125px"
             height="100%"
+            class="btnymd"
             >{{ getYm() }}
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
@@ -24,7 +27,7 @@
           </v-btn>
           <v-btn
             elevation="0"
-            class="pa-0 ml-1"
+            class="btnymd pa-0 ml-1"
             height="100%"
             x-small
             tile
@@ -34,7 +37,7 @@
           </v-btn>
           <v-btn
             elevation="0"
-            class="pa-0 ml-1"
+            class="btnymd pa-0 ml-1"
             height="100%"
             x-small
             tile
@@ -43,42 +46,44 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn class="itemBtn ml-1" :loading="loading" @click="searchClicked()">
+        <v-btn
+          class="ml-1"
+          height="100%"
+          :loading="loading"
+          @click="searchClicked()"
+        >
           検索
         </v-btn>
-        <v-btn
-          class="itemBtn ml-1"
-          style="width: 25px"
-          @click="filterClrclick()"
-        >
+        <v-btn class="ml-1" width="25" height="100%" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
-        <v-layout class="right">
-          <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
-            <template v-slot:activator="{ on, attrs }">
-              <v-card
-                v-bind="attrs"
-                v-on="on"
-                class="koumokuTitle pa-1 ml-1"
-                outlined
-                tile
-              >
-                <v-icon dense>mdi-message-alert</v-icon>
-                記号説明
-              </v-card>
-            </template>
-            <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
-              {{ hanrei.name }}
-            </v-layout>
-            <v-layout>
-              <span style="background: pink">&emsp;</span>
-              ：未実施
-            </v-layout>
-          </v-tooltip>
-        </v-layout>
+        <v-spacer></v-spacer>
+        <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
+          <template v-slot:activator="{ on, attrs }">
+            <v-card
+              v-bind="attrs"
+              v-on="on"
+              class="koumokuTitle titleGreen pa-1 ml-1"
+              outlined
+              tile
+            >
+              <v-icon dense>mdi-message-alert</v-icon>
+              記号説明
+            </v-card>
+          </template>
+          <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
+            {{ hanrei.name }}
+          </v-layout>
+          <v-layout>
+            <span style="background: pink">&emsp;</span>
+            ：未実施
+          </v-layout>
+        </v-tooltip>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile> 担当者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          担当者
+        </v-card>
         <wj-menu
           id="comboFilters"
           class="customCombobox ml-1"
@@ -91,7 +96,9 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 対象者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          対象者
+        </v-card>
         <v-btn-toggle
           class="flex-wrap ml-1"
           v-model="taisyousyaIndex"
@@ -100,7 +107,6 @@
           <v-btn
             v-for="n in taisyousyaList"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
@@ -119,7 +125,6 @@
           <v-btn
             v-for="n in taisyousyaYoteiList"
             :key="n.val"
-            small
             color="primary  "
             dark
             outlined
@@ -131,7 +136,9 @@
         </v-btn-toggle>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile> 市区町村 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          市区町村
+        </v-card>
         <wj-menu
           id="comboFiltersSikuchoson"
           class="customCombobox ml-1"
@@ -144,7 +151,9 @@
           :itemClicked="onSikuchosonClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 絞込 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          絞込
+        </v-card>
         <v-btn-toggle
           class="flex-wrap ml-1"
           v-model="siborikomiIndex"
@@ -153,7 +162,6 @@
           <v-btn
             v-for="n in siborikomiList"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
@@ -170,24 +178,24 @@
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           <span class="miman mr-1" style="width: 80px">18歳未満</span>
         </v-card>
-        <v-layout class="right">
-          <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 入力 </v-card>
-          <v-btn-toggle class="flex-wrap ml-1" color="primary">
-            <v-btn
-              v-for="n in inputList"
-              :key="n.val"
-              small
-              color="secondary"
-              dark
-              outlined
-              height="20"
-            >
-              {{ n.name }}
-            </v-btn>
-          </v-btn-toggle>
-        </v-layout>
+        <v-spacer></v-spacer>
+        <v-card class="koumokuTitle titleOrange pa-1 ml-1" outlined tile>
+          入力
+        </v-card>
+        <v-btn-toggle class="flex-wrap ml-1" color="primary">
+          <v-btn
+            v-for="n in inputList"
+            :key="n.val"
+            color="secondary"
+            dark
+            outlined
+            height="20"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
       </v-row>
-      <v-layout class="ma-0 mt-1 mr-1" no-gutters style="width: 100%">
+      <v-row class="ma-0 mt-1 mr-1" no-gutters style="width: 100%">
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
@@ -213,7 +221,7 @@
             :showFilterIcons="false"
           />
         </wj-flex-grid>
-      </v-layout>
+      </v-row>
     </v-container>
     <!-- ダイアログエリア -->
     <v-dialog
@@ -309,7 +317,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'yousiki',
+          dataname: 'yoshikiName',
           title: '様式',
           kbntitle: 'サービス等利用計画作成',
           width: '2*',
@@ -849,12 +857,20 @@ export default {
           e.cell.style.borderLeft = '1px solid blue';
         }
       } else if (e.panel == flexGrid.columnFooters) {
-        e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        e.cell.style.borderTop = ' double 4px black';
         let tmpym = this.dispYmList[e.col - 11];
         if (tmpym == this.kikanYm.format('YYYYMM')) {
           e.cell.style.borderRight = '1px solid blue';
           e.cell.style.borderLeft = '1px solid blue';
           e.cell.style.borderBottom = '1px solid blue';
+        }
+        if (e.col <= 10) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+        }
+        if (e.col == 0) {
+          e.cell.style.borderRight = '1px solid';
         }
       }
       if (e.panel != flexGrid.columnHeaders) {
@@ -890,9 +906,13 @@ export default {
           uniqid: 1,
           traceid: 123,
           pJigyoid: 43,
+          pDspYm: this.kikanYm.format('YYYYMM'),
           pSym: this.kikanYm.format('YYYYMM'),
+          pEym: this.kikanYm.format('YYYYMM'),
         };
         getConnect('/moniYoteiView', params).then((result) => {
+          console.log(11111);
+          console.log(result);
           this.viewdatakeikakuAll = this.createViewData(result);
           this.userFilter();
         });
@@ -1056,15 +1076,11 @@ export default {
 div#monitoringYotei {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-  .rowStyle {
-    height: 20px;
-  }
 
   #load_dialog {
     position: fixed;
@@ -1080,29 +1096,6 @@ div#monitoringYotei {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
   .hosokuTitle {
     color: $font_color;
     display: flex;
@@ -1116,23 +1109,14 @@ div#monitoringYotei {
     }
   }
 
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-    width: 75px;
-  }
-
-  .haikei {
-    background-repeat: repeat;
-  }
-
   #monitoringYoteiGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: 100%;
+    // min-width: 1250px;
+    height: 75vh;
+    min-height: 400px;
+    z-index: 2;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1192,14 +1176,6 @@ div#monitoringYotei {
     }
   }
 
-  div#monitoringYoteiGrid {
-    width: 100%;
-    // min-width: 1250px;
-    height: 70vh;
-    min-height: 400px;
-    z-index: 2;
-  }
-
   div.customCombobox {
     position: relative;
     width: 125px !important;
@@ -1239,9 +1215,7 @@ div#monitoringYotei {
       height: 20px !important;
     }
   }
-  .v-input--selection-controls .v-input__slot > .v-label {
-    font-size: 14px;
-  }
+
   .miman {
     padding: 0;
     position: relative;
@@ -1258,12 +1232,6 @@ div#monitoringYotei {
     height: 0;
     border-top: 10px solid green;
     border-left: 10px solid transparent;
-  }
-  .right {
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 40px;
   }
 }
 

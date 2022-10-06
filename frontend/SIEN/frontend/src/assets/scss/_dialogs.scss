@@ -1,24 +1,25 @@
 @import "common.scss";
 
-
-
 //dialog大枠
 .common_dialog {
     background-color: $view_Title_font_color; //white
     position: relative;
     font-size: $cell_fontsize;
 
+    //タイトルデザイン
     .v-card__title {
         &.dialog_title {
             font-size: $dialog_title_fontsize;
             background-color: $view_Title_background_Main; //primary
             color: $view_Title_font_color; //white
+            padding: 11px 9px 11px;
         }
     }
 
+    //ボタンデザイン
     .v-btn {
         &.dialog_close {
-            color: $black; //secondary
+            color: $grid_selected_color;
             background-color: $view_Title_font_color; //white
             position: absolute;
             top: 10px;
@@ -26,45 +27,71 @@
             left: auto;
         }
 
-        //ボタンデザイン
         &.func_btn {
-            color: $view_Title_font_color; //white
-            background-color: $view_Title_background_Main; //primary
+            color: $grid_selected_color;
+            background-color: $light-white;
+
+            &.ht_min {
+                height: 20px;
+            }
         }
     }
 
-    //ラベルデザイン
+    //背景色
+    .dialog_back {
+        background-color: $light-white;
+
+
+    }
+
+
+    //ラベル調整
     .v-card {
-        &.dialog_label {
-            text-align: center;
-            width: 100px;
-            height: 25px;
-            color: $black;
-            background-color: $light-white;
+        &.dialog_label_none {
+            background-color: $view_Title_background_none;
         }
 
         //サイズ調整用
         &.wr-40 {
             width: 40px;
-            height: 24pxW;
+            height: 24px;
         }
+
+        &.wd-70 {
+            width: 70px;
+            text-align: center;
+        }
+
+
+
+
+
     }
 
     //セレクトデザイン
-    div {
-        &.dialog_select {
-            border: solid 1px $light-gray;
-            font-size: $cell_fontsize;
+    .dialog_select {
+        font-size: $cell_fontsize;
+        width: 300px;
+        height: 25px;
 
-            .v-input__control {
-                min-height: 25px !important;
-            }
+        .v-input__control {
+            min-height: 25px !important;
+            min-width: 100px;
+
         }
 
         input {
-            border: none;
+            border: none !important;
+            border-style: none;
+
         }
 
+    }
+
+    .dialog_text_field {
+        background-color: $view_Title_font_color;
+        height: 25px;
+        width: 185px;
     }
 
 

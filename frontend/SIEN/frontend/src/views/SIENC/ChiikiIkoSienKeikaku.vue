@@ -1,43 +1,40 @@
 <template>
   <div id="chiikiIkoSienKeikaku">
-    <v-container no-gutters fluid class="pa-0">
-      <v-row no-gutters>
-        <v-col>
-          <v-tabs class="tabrow" height="20" hide-slider v-model="tab">
-            <v-tab
-              v-for="item in menuItem"
-              :key="item.val"
-              class="parentTab"
-              :href="item.href"
-              @change="tabsChange(item.hrefval)"
-            >
-              {{ item.name }}
-            </v-tab>
-          </v-tabs>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container no-gutters fluid class="ma-0 pa-0">
-      <v-tabs-items class="v-tabCont" v-model="tab">
-        <v-tab-item value="ChiikiKeikakuList">
-          <ChiikiKeikakuList></ChiikiKeikakuList>
-        </v-tab-item>
-        <v-tab-item value="ChiikiKeikakusyo1">
-          Tab 2 Content assessment
-        </v-tab-item>
-        <v-tab-item value="ChiikiKeikakusyo2">
-          Tab 3 Content assessment
-        </v-tab-item>
-      </v-tabs-items>
-    </v-container>
+    <div class="commonTab">
+      <v-container no-gutters fluid class="pa-0">
+        <v-tabs height="20" hide-slider v-model="tab">
+          <v-tab
+            v-for="item in menuItem"
+            :key="item.val"
+            :href="item.href"
+            @change="tabsChange(item.hrefval)"
+          >
+            {{ item.name }}
+          </v-tab>
+        </v-tabs>
+      </v-container>
+      <v-container no-gutters fluid class="pa-0">
+        <v-tabs-items v-model="tab">
+          <v-tab-item value="ChiikiKeikakuList">
+            <ChiikiKeikakuList></ChiikiKeikakuList>
+          </v-tab-item>
+          <v-tab-item value="ChiikiKeikakusyo1">
+            <ChiikiKeikakusyo1></ChiikiKeikakusyo1>
+          </v-tab-item>
+          <v-tab-item value="ChiikiKeikakusyo2">
+            <ChiikiKeikakusyo2></ChiikiKeikakusyo2>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-container>
+    </div>
   </div>
 </template>
 
 <script>
 import ls from '@/utiles/localStorage';
 import ChiikiKeikakuList from '../../components/ChiikiKeikakuList.vue';
-// import ChiikiKeikakusyo1 from '../../components/ChiikiKeikakuList.vue';
-// import ChiikiKeikakusyo2 from '../../components/ChiikiKeikakuList.vue';
+import ChiikiKeikakusyo1 from '../../components/ChiikiKeikakusyo1.vue';
+import ChiikiKeikakusyo2 from '../../components/ChiikiKeikakusyo2.vue';
 
 export default {
   // props: {
@@ -45,6 +42,8 @@ export default {
   // },
   components: {
     ChiikiKeikakuList,
+    ChiikiKeikakusyo1,
+    ChiikiKeikakusyo2,
   },
   computed: {},
   data: function () {
@@ -86,37 +85,8 @@ export default {
 @import '@/assets/scss/common.scss';
 div#chiikiIkoSienKeikaku {
   color: $font_color;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1350px !important;
-  max-width: 1350px !important;
-  width: auto;
-
-  .v-slide-group__wrapper {
-    background-color: #588c73;
-  }
-  .parentTab {
-    border: 1px solid;
-    margin-right: 4px;
-    margin-bottom: -2px;
-    border-color: #588c73;
-    height: 20px;
-    color: $white;
-    background: #588c73;
-  }
-  .v-tab--active {
-    color: #333;
-    background: #fff;
-    border-color: #fff;
-    margin-bottom: 4px;
-  }
-  .v-tabCont {
-    border-top: 2px solid;
-    border-color: $white;
-  }
-  .wj-cell {
-    padding: 2px;
-    padding-top: 1px;
-  }
+  max-width: 1920px;
 }
 </style>

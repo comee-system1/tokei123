@@ -45,9 +45,18 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn small height="20" class="ml-2">検索開始</v-btn>
+        <v-btn class="itemBtn ml-1" :loading="loading" @click="searchClicked()">
+          検索
+        </v-btn>
+        <v-btn
+          class="itemBtn ml-1"
+          style="width: 25px"
+          @click="filterClrclick()"
+        >
+          <v-icon small>mdi-filter-off</v-icon>
+        </v-btn>
       </v-row>
-      <v-row class="rowStyle" no-gutters>
+      <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle pa-1" outlined tile height="20">
           担当者
         </v-card>
@@ -104,7 +113,10 @@
           :itemsSource="viewdata"
           :style="{ 'font-size': gridFontSize }"
         >
-          <wj-flex-grid-filter></wj-flex-grid-filter>
+          <wj-flex-grid-filter
+            :initialized="filterInitializedkeikakuIcrn"
+            :showFilterIcons="false"
+          />
           <wj-flex-grid-column
             :binding="'riyocode'"
             align="center"
@@ -373,97 +385,100 @@ export default {
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
-    filterInitializedkeikakuIcrn: function (filter) {
+    filterInitializedkeikakuIcrn(filter) {
       this.filterkeikakuIcrn = filter;
     },
     onInitialize(flexGrid) {
-      let array = [];
+      let _self = this;
+      this.mainGrid = flexGrid;
+      this.createHeader(flexGrid);
+      this.createFooter(flexGrid);
 
-      let params = {
-        uniqid: 1,
-        traceid: 1,
-        pJigyoid: 43,
-        pSym: 202112,
-      };
-      return getConnect('/' + VIEWID + 'View', params, 'SIENC').then(
-        (result) => {
-          array = result;
-          this.viewdata = array;
-          this.viewdataAll = array;
-          let _self = this;
-          this.mainGrid = flexGrid;
-          this.createHeader(flexGrid);
-          this.createFooter(flexGrid);
+      this.createMerge(flexGrid);
 
-          this.createMerge(flexGrid);
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filterkeikakuIcrn.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filterkeikakuIcrn.showFilterIcons = false;
+      });
 
-          flexGrid.itemFormatter = function (panel, r, c, cell) {
-            if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-              if (c == 9 || c == 10) {
-                if (r == 2) {
-                  cell.style.borderBottom = 0;
-                }
-              } else if (
-                c == 4 ||
-                c == 5 ||
-                c == 7 ||
-                c == 8 ||
-                c == 11 ||
-                c == 12 ||
-                c == 13
-              ) {
-                if (r == 1) {
-                  cell.style.borderBottom = 0;
-                }
-              } else {
-                if (r == 0) {
-                  cell.style.borderBottom = 0;
-                }
-              }
-              if (c >= 0 && c <= 3) {
-                cell.style.backgroundColor =
-                  sysConst.COLOR.viewTitleBackgroundOrange;
-              } else if (c >= 4 && c <= 11) {
-                cell.style.backgroundColor =
-                  sysConst.COLOR.viewTitleBackgroundBlue;
-              } else {
-                cell.style.backgroundColor =
-                  sysConst.COLOR.viewTitleBackgroundGreen;
-              }
-            }
-            if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-              if (c > 1) {
-                cell.style.textAlign = 'right';
-                cell.style.justifyContent = 'right';
-                cell.style.alignItems = 'right';
-              }
-            }
-            if (panel.cellType == wjGrid.CellType.Cell) {
-              let tmpitem = panel.rows[r].dataItem;
-              if (tmpitem.age <= 18) {
-                if (c == 1) {
-                  wjCore.addClass(cell, 'miman');
-                }
-              }
-              if (c == 1 || c == 3 || c == 15) {
-                cell.style.textAlign = 'left';
-              } else if (c == 2) {
-                cell.style.textAlign = 'right';
-              } else {
-                cell.style.textAlign = 'center';
-              }
-              cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-            }
-
-            if (c == _self.headerPlus1234) {
-              cell.style.borderLeftStyle = 'double';
-            }
-            if (c == _self.headerPlus12345) {
-              cell.style.borderLeftStyle = 'double';
-            }
-          };
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          if (c >= 0 && c <= 3) {
+            cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundOrange;
+          } else if (c >= 4 && c <= 11) {
+            cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+          } else {
+            cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundGreen;
+          }
         }
+        if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+          if (c > 1) {
+            cell.style.textAlign = 'right';
+            cell.style.justifyContent = 'right';
+            cell.style.alignItems = 'right';
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          let tmpitem = panel.rows[r].dataItem;
+          if (tmpitem.age <= 18) {
+            if (c == 1) {
+              wjCore.addClass(cell, 'miman');
+            }
+          }
+          if (c == 1 || c == 3 || c == 15) {
+            cell.style.textAlign = 'left';
+          } else if (c == 2) {
+            cell.style.textAlign = 'right';
+          } else {
+            cell.style.textAlign = 'center';
+          }
+          cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+        }
+
+        if (c == _self.headerPlus1234) {
+          cell.style.borderLeftStyle = 'double';
+        }
+        if (c == _self.headerPlus12345) {
+          cell.style.borderLeftStyle = 'double';
+        }
+      };
+    },
+    searchClicked() {
+      // 初期データ読込
+      this.setViewData(true);
+      let rc = this.mainGrid.columnHeaders.getCellBoundingRect(
+        0,
+        this.mainGrid.columns.length - 1,
+        true
       );
+      this.mainGrid.scrollPosition = new wjCore.Point(-rc.right, 0);
+    },
+    setViewData(isAll) {
+      this.screenFlag = true;
+      this.loading = true;
+      if (isAll) {
+        let params = {
+          uniqid: 1,
+          traceid: 1,
+          pJigyoid: 43,
+          pSym: 202112,
+        };
+        getConnect('/' + VIEWID + 'View', params, 'SIENC').then((result) => {
+          this.viewdata = result;
+          this.viewdataAll = result;
+        });
+      } else {
+        this.userFilter();
+      }
+      this.loading = false;
+    },
+    filterClrclick() {
+      this.filterkeikakuIcrn.clear();
     },
     onItemsSourceChanged(flexGrid) {
       flexGrid.beginUpdate();
@@ -479,12 +494,10 @@ export default {
       var panel = flexGrid.columnHeaders;
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
-      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       // flexGrid.columnHeaders.rows[1].height = 50;
       for (let i = 0; i < this.headerColumn1.length; i++) {
         let name = this.headerColumn1[i];
         panel.setCellData(0, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -494,7 +507,6 @@ export default {
       for (let i = this.headerColumn1.length; i < this.headerPlus12; i++) {
         let name = this.headerColumn2[no];
         panel.setCellData(1, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -504,7 +516,6 @@ export default {
       for (let i = this.headerPlus12; i < this.headerPlus123; i++) {
         let name = this.headerColumn3[no];
         panel.setCellData(0, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -520,7 +531,6 @@ export default {
         }
         let name = this.headerColumn4[no];
         panel.setCellData(c, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -532,7 +542,6 @@ export default {
       for (let i = this.headerPlus1234; i < this.headerPlus12345; i++) {
         let name = this.headerColumn5[no];
         panel.setCellData(1, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -543,7 +552,6 @@ export default {
       for (let i = this.headerPlus12345; i < this.headerPlus123456; i++) {
         let name = this.headerColumn6[no];
         panel.setCellData(0, i, name);
-        panel.setCellData(3, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -713,7 +721,7 @@ div#chiikiKeikakuList {
   font-size: 12px;
   font-family: 'メイリオ';
   .rowStyle {
-    height: 25px;
+    height: 20px;
   }
   .wj-right {
     &.wj-elem-filter {
@@ -746,7 +754,7 @@ div#chiikiKeikakuList {
 
   .ymd,
   .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 12px;
+    font-size: 14px;
     background-color: $white;
     border: thin solid;
     border-color: $light-gray;
@@ -769,7 +777,7 @@ div#chiikiKeikakuList {
   }
 
   .itemBtn {
-    font-size: 12px;
+    font-size: 14px;
     background: $btn_background;
     border: thin solid;
     border-color: $light-gray;

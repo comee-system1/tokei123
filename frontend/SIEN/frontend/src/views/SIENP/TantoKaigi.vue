@@ -11,225 +11,171 @@
           </user-list>
         </v-col>
         <v-col :style="{ 'max-width': rightWidth }">
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat tile>
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                height="20"
-                class="text-center"
-              >
+          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
+            <v-col cols="12" class="d-flex pa-1">
+              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
               </v-card>
               <v-card
                 elevation="0"
                 outlined
                 tile
-                class="ml-1 pl-1"
-                width="200"
-                height="20"
+                class="ml-1 pl-1 lightYellow"
+                width="300"
+                height="24"
               >
                 {{ userName }}
               </v-card>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="rowStyle mb-1 mt-1 body-2">
+            <v-btn-toggle>
+              <v-btn small height="20" class="body-2">新規入力</v-btn>
+              <v-btn small height="20" class="body-2">内容更新</v-btn>
+            </v-btn-toggle>
+            <v-btn-toggle class="ml-2">
+              <v-btn small height="20" class="body-2">計画案</v-btn>
+              <v-btn small height="20" class="body-2">モニタリング</v-btn>
+              <v-btn small height="20" class="body-2">その他</v-btn>
+            </v-btn-toggle>
+            <v-card class="koumokuTitle titleBlueDark ml-1" outlined tile>
+              計画案作成日
             </v-card>
-          </div>
-          <div class="mt-1">
-            <v-card class="d-flex flex-row" flat>
-              <v-btn-toggle>
-                <v-btn small height="20">新規入力</v-btn>
-                <v-btn small height="20">内容更新</v-btn>
-              </v-btn-toggle>
-              <v-btn-toggle class="ml-2">
-                <v-btn small height="20">計画案</v-btn>
-                <v-btn small height="20">モニタリング</v-btn>
-                <v-btn small height="20">その他</v-btn>
-              </v-btn-toggle>
+            <v-card
+              class="pl-1 ml-1"
+              width="140"
+              height="20"
+              outlined
+              tile
+              @click="inputCalendarClick(0)"
+            >
+              {{ getYmd }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
+            <v-btn small height="20" class="ml-1 body-2">案履歴参照</v-btn>
 
-              <v-card
-                :color="'grey lighten-4'"
-                elevation="0"
-                tile
-                small
-                width="100"
-                height="20"
-                class="text-center ml-1"
-                >計画案作成日
+            <v-btn-toggle class="ml-auto">
+              <v-btn small height="20" class="body-2">前回コピー</v-btn>
+              <v-btn small height="20" class="body-2">履歴参照</v-btn>
+            </v-btn-toggle>
+          </v-row>
+
+          <v-card class="mt-3 pa-2" :color="'grey lighten-4'">
+            <v-row no-gutters class="rowStyle mb-1 mt-1 body-2">
+              <v-card class="koumokuTitle titleTranceparent mr-1" outlined tile>
+                作成日
               </v-card>
               <v-card
-                class="pl-1 ml-1"
                 width="140"
                 height="20"
                 outlined
                 tile
-                @click="inputCalendarClick(0)"
+                @click="inputCalendarClick(1)"
               >
-                {{ getYmd }}
+                {{ createYmd }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-card>
-              <v-btn small height="20" class="ml-1">案履歴参照</v-btn>
-              <v-card class="ml-auto">
-                <v-btn-toggle tile>
-                  <v-btn small height="20">前回コピー</v-btn>
-                  <v-btn small height="20">履歴参照</v-btn>
-                </v-btn-toggle>
-              </v-card>
-            </v-card>
-          </div>
-          <v-card class="mt-3 pa-2" :color="'grey lighten-4'">
-            <div>
-              <v-card class="d-flex flex-row" flat :color="'grey lighten-4'">
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  class="text-center"
-                  >作成日
-                </v-card>
-                <v-card
-                  width="140"
-                  height="20"
-                  outlined
-                  tile
-                  @click="inputCalendarClick(1)"
-                >
-                  {{ createYmd }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-card>
 
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  class="text-center"
-                  >開催日
-                </v-card>
-                <v-card
-                  width="140"
-                  height="20"
-                  outlined
-                  tile
-                  @click="inputCalendarClick(2)"
-                >
-                  {{ openYmd }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-card>
-
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  class="text-center pt-1"
-                  >開催時間
-                </v-card>
-                <v-card elevation="0" tile :color="'grey lighten-4'">
-                  <input type="time" class="input_text outline" />
-                  ～
-                  <input type="time" class="input_text outline" />
-                </v-card>
-                <v-btn class="ml-auto" small height="20"
-                  >開催情報最終表示</v-btn
-                >
-
-                <v-btn x-small class="ml-2" @click="dispalyChange">{{
-                  display
-                }}</v-btn>
+              <v-card class="koumokuTitle titleTranceparent mr-1" outlined tile>
+                開催日
               </v-card>
-              <v-card class="d-flex flex-row mt-2" flat>
-                <v-card
-                  :color="'grey lighten-4'"
-                  elevation="0"
-                  tile
-                  small
-                  width="100"
-                  height="24"
-                  class="text-center"
-                  >開催場所
-                </v-card>
-                <v-text-field
-                  class="pa-0 ma-0 input_text text-caption"
-                  hide-details="false"
-                  outlined
-                  :full-width="true"
-                  height="20"
-                >
-                </v-text-field>
-              </v-card>
-              <div
-                v-bind:class="{
-                  offDisplayFlag: offDisplayFlag,
-                  onDisplayFlag: onDisplayFlag,
-                }"
+              <v-card
+                width="140"
+                height="20"
+                outlined
+                tile
+                @click="inputCalendarClick(2)"
               >
+                {{ openYmd }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-card>
+
+              <v-card class="koumokuTitle titleTranceparent mr-1" outlined tile>
+                開催時間
+              </v-card>
+              <v-card elevation="0" tile :color="'grey lighten-4'">
+                <input type="time" class="input_text outline" />
+                ～
+                <input type="time" class="input_text outline" />
+              </v-card>
+
+              <v-btn class="ml-auto body-2" small height="20"
+                >開催情報最終表示</v-btn
+              >
+
+              <v-btn x-small class="ml-2" @click="dispalyChange">{{
+                display
+              }}</v-btn>
+            </v-row>
+            <v-row no-gutters class="rowStyle mb-1 mt-2 body-2">
+              <v-card class="koumokuTitle titleTranceparent mr-1" outlined tile>
+                開催場所
+              </v-card>
+              <input type="text" class="input_text pa-1 wflex" />
+            </v-row>
+
+            <div
+              v-bind:class="{
+                offDisplayFlag: offDisplayFlag,
+                onDisplayFlag: onDisplayFlag,
+              }"
+            >
+              <v-row no-gutters class="mt-3">
                 <v-card
-                  class="d-flex flex-row mt-2"
-                  flat
                   :color="'grey lighten-4'"
-                >
-                  <v-card
-                    :color="'grey lighten-4'"
-                    elevation="0"
-                    tile
+                  elevation="0"
+                  tile
+                  small
+                  width="100"
+                  class="text-center body-2"
+                  >出席者
+                  <v-btn
                     small
-                    width="100"
-                    class="text-center"
-                    >出席者
-                    <v-btn
-                      small
-                      class="mt-10"
-                      :color="'primary'"
-                      @click="onSelectedAttend"
-                      height="20"
-                      >出席者選択</v-btn
-                    >
-                  </v-card>
-                  <v-card elevation="0" :color="'grey lighten-4'">
-                    <wj-flex-grid
-                      id="tantoKaigiGrid"
-                      :autoClipboard="false"
-                      :selectionMode="'1'"
-                      :headersVisibility="'0'"
-                      :allowAddNew="false"
-                      :allowDelete="false"
-                      :allowDragging="false"
-                      :allowPinning="false"
-                      :allowResizing="false"
-                      :allowSorting="false"
-                      :initialized="onInitialized"
-                      :itemsSourceChanged="onItemsSourceChanged"
-                    >
-                    </wj-flex-grid>
-                  </v-card>
+                    class="mt-10 body-2"
+                    :color="'primary'"
+                    @click="onSelectedAttend"
+                    height="20"
+                    >出席者選択</v-btn
+                  >
                 </v-card>
-              </div>
+                <v-card elevation="0" :color="'grey lighten-4'">
+                  <wj-flex-grid
+                    id="tantoKaigiGrid"
+                    :autoClipboard="false"
+                    :selectionMode="'1'"
+                    :headersVisibility="'0'"
+                    :allowAddNew="false"
+                    :allowDelete="false"
+                    :allowDragging="false"
+                    :allowPinning="false"
+                    :allowResizing="false"
+                    :allowSorting="false"
+                    :initialized="onInitialized"
+                    :itemsSourceChanged="onItemsSourceChanged"
+                  >
+                  </wj-flex-grid>
+                </v-card>
+              </v-row>
             </div>
           </v-card>
           <div class="mt-2">
             <v-card class="d-flex flex-row" flat>
               <v-btn-toggle>
-                <v-btn small height="20">新規入力</v-btn>
-                <v-btn small height="20">内容更新</v-btn>
+                <v-btn small height="20" class="body-2">新規入力</v-btn>
+                <v-btn small height="20" class="body-2">内容更新</v-btn>
               </v-btn-toggle>
 
               <v-card elevation="0" class="text-center ml-auto d-flex flex-row">
                 <v-btn-toggle class="ml-2">
-                  <v-btn small height="20">行追加</v-btn>
-                  <v-btn small height="20">行削除</v-btn>
-                  <v-btn small height="20">順変更</v-btn>
+                  <v-btn small height="20" class="body-2">行追加</v-btn>
+                  <v-btn small height="20" class="body-2">行削除</v-btn>
+                  <v-btn small height="20" class="body-2">順変更</v-btn>
                 </v-btn-toggle>
               </v-card>
             </v-card>
@@ -346,103 +292,94 @@
           icon
           small
           @click="undoChange"
-          class="mt-2 dialog_close"
+          class="mt-1 dialog_close"
           ><v-icon dark small> mdi-close </v-icon>
         </v-btn>
-        <v-row>
-          <v-col cols="6">
-            <div class="pt-2 pl-2">
-              <v-btn small @click="editSort" :disabled="sortDisabled"
-                >並替え
-              </v-btn>
+        <v-row no-gutters>
+          <v-col cols="6" class="pa-1">
+            <v-row class="mt-2 ml-1">
+              <v-card class="koumokuTitle titleMain wMin" outlined tile
+                >編集</v-card
+              >
+              <v-btn class="func_btn ht_min ml-1" @click="editsort" small
+                >順変更</v-btn
+              >
+
               <v-btn
                 small
-                class="ml-2"
+                class="ml-1 func_btn ht_min"
                 @click="allDelete"
                 :disabled="allDeleteDisabled"
-                >全クリア
-              </v-btn>
-              <wj-flex-grid
-                id="selectedAttendGrid"
-                class="mt-2"
-                :allowAddNew="false"
-                :allowDelete="false"
-                :allowDragging="false"
-                :allowPinning="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :selectionMode="'Row'"
-                :headersVisibility="'Column'"
-                :initialized="onInitializedSelected"
-                :itemsSource="selectedAttendView"
-                :itemsSourceChanged="selectedAttendChanged"
+                >削除</v-btn
               >
-                <wj-flex-grid-column
-                  header="No"
-                  binding="num"
-                  align="center"
-                  valign="middle"
-                  :width="40"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  header="職種"
-                  binding="syokusyu"
-                  align="center"
-                  valign="middle"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-                <wj-flex-grid-column
-                  header="氏名"
-                  binding="name"
-                  align="center"
-                  valign="middle"
-                  width="2*"
-                  :isReadOnly="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </div>
-            <div class="d-flex flex-row" flat>
-              <div class="pa-1">
-                <v-btn class="func_btn" small @click="editSortSetted">
-                  並順
-                </v-btn>
-              </div>
-              <div class="pa-1">
-                <v-btn
-                  class="ml-auto func_btn"
-                  small
-                  :disabled="deleteDisabled"
-                  @click="editDelete"
-                >
-                  削除
-                </v-btn>
-              </div>
-              <div class="pa-1">
-                <v-btn
-                  class="ml-auto func_btn"
-                  small
-                  :disabled="registDisabled"
-                  @click="registSelect"
-                >
-                  設定
-                </v-btn>
-              </div>
-            </div>
+            </v-row>
+            <wj-flex-grid
+              class="mt-4"
+              height="1000"
+              id="selectedAttendGrid"
+              :alternatingRowStep="0"
+              :allowAddNew="false"
+              :allowDelete="false"
+              :allowDragging="false"
+              :allowPinning="false"
+              :allowResizing="false"
+              :allowSorting="false"
+              :selectionMode="'Row'"
+              :headersVisibility="'Column'"
+              :initialized="onInitializedSelected"
+              :itemsSource="selectedAttendView"
+              :itemsSourceChanged="selectedAttendChanged"
+            >
+              <wj-flex-grid-column
+                header="No"
+                binding="num"
+                align="center"
+                valign="middle"
+                :width="40"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                header="職種"
+                binding="syokusyu"
+                align="center"
+                valign="middle"
+                width="2*"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                header="氏名"
+                binding="name"
+                align="center"
+                valign="middle"
+                width="2*"
+                :isReadOnly="true"
+              ></wj-flex-grid-column>
+            </wj-flex-grid>
+
+            <v-row class="pa-3">
+              <v-btn
+                class="ml-auto ht-min func_btn"
+                small
+                :disabled="registDisabled"
+                @click="registSelect"
+              >
+                設定
+              </v-btn>
+            </v-row>
           </v-col>
+
           <v-col cols="6">
-            <div class="pa-2">
-              <div class="d-flex flex-row" flat>
-                <v-card elevation="0" class="dialog_label pt-1">
-                  事業所
-                </v-card>
+            <div class="dialog_back pa-1 mt-1 mb-2">
+              <v-row no-gutters class="mb-1">
+                <v-card class="koumokuTitle titleBlue" height="25" outlined tile
+                  >事業所</v-card
+                >
                 <v-select
-                  class="ml-1 dialog_select"
+                  class="dialog_select ml-1"
                   item-text="name"
                   item-value="val"
-                  label="指定無し"
-                  :items="jijyosyoList"
+                  label="指定なし"
+                  :items="jigyosyoList"
                   v-model="selectedJigyosyo"
                   hide-details
                   dense
@@ -452,17 +389,16 @@
                   @change="onJigyosyoChanged"
                 >
                 </v-select>
-              </div>
-
-              <div class="mt-1 d-flex flex-row" flat>
-                <v-card elevation="0" tile small class="dialog_label pt-1">
-                  職種指定
-                </v-card>
+              </v-row>
+              <v-row no-gutters class="mb-1">
+                <v-card class="koumokuTitle titleBlue" outlined tile height="25"
+                  >職種指定</v-card
+                >
                 <v-select
-                  class="ml-1 dialog_select"
+                  class="dialog_select ml-1"
                   item-text="name"
                   item-value="val"
-                  label="指定無し"
+                  label="指定なし"
                   :items="syokusyuList"
                   v-model="selectedSyokusyu"
                   hide-details
@@ -473,15 +409,16 @@
                   @change="onSyokusyuChanged"
                 >
                 </v-select>
-              </div>
-            </div>
-            <div class="pa-2">
-              <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
-              </alphabet-button>
+              </v-row>
 
+              <alphabet-button
+                class="mt-1"
+                ref="alp"
+                @onAlphabetical="onAlphabetical"
+              ></alphabet-button>
               <wj-flex-grid
                 id="attendGrid"
-                class="mt-2"
+                class="mt-1"
                 :itemsSource="attendSelect"
                 :allowAddNew="false"
                 :allowDelete="false"
@@ -520,66 +457,44 @@
                   :isReadOnly="true"
                 ></wj-flex-grid-column>
               </wj-flex-grid>
-              <div class="text-caption">手動入力</div>
-              <div class="d-flex flex-row text-caption">
-                <v-card
-                  elevation="0"
-                  class="dialog_label wr-40 pt-1"
-                  v-model="manualCode"
-                >
-                  ｺｰﾄﾞ
-                </v-card>
-                <v-text-field
-                  class="ml-1 input_text w60 manual-form"
-                  v-model="manualCode"
-                  dense
-                  outlined
-                  :rules="[codeRules]"
-                  flat
-                  type="number"
-                  maxlength="7"
-                >
-                </v-text-field>
-                <v-card elevation="0" class="dialog_label wr-40 pt-1 ml-1">
-                  職種
-                </v-card>
-                <v-text-field
-                  class="ml-1 input_text w100 manual-form"
-                  v-model="manualSyokusyu"
-                  dense
-                  outlined
-                  flat
-                >
-                </v-text-field>
-                <v-card elevation="0" class="dialog_label wr-40 pt-1 ml-1">
-                  氏名
-                </v-card>
-                <v-text-field
-                  class="ml-1 input_text w100 manual-form"
-                  v-model="manualName"
-                  dense
-                  outlined
-                  flat
-                >
-                </v-text-field>
-              </div>
-            </div>
 
-            <div class="text-end pa-1">
-              <v-btn
-                @click="selectedAttendResetSelect()"
-                small
-                class="func_btn"
-              >
-                選択解除
-              </v-btn>
-              <v-btn
-                @click="addSelectedAttendManual()"
-                small
-                class="ml-1 func_btn"
-              >
-                追加
-              </v-btn>
+              <v-row class="mt-2 mb-2" no-gutters>
+                <v-btn
+                  @click="addSelectedAttendManual()"
+                  class="mt-3 func_btn"
+                  small
+                >
+                  <v-icon left> mdi-arrow-left </v-icon>追加
+                </v-btn>
+
+                <v-card class="titleMain ml-2 pt-5 wd-70" outlined tile
+                  >手入力</v-card
+                >
+                <v-card class="ml-1 dialog_label_none" elevation="0">
+                  <v-row no-gutters class="mb-1">
+                    <v-card
+                      outlined
+                      tile
+                      elevation="0"
+                      class="koumokuTitel titleBlue pt-1 wd-70"
+                    >
+                      職種
+                    </v-card>
+                    <input type="text" class="dialog_text_field ml-1" />
+                  </v-row>
+                  <v-row no-gutters>
+                    <v-card
+                      outlined
+                      tile
+                      elevation="0"
+                      class="koumokuTitel titleBlue pt-1 wd-70"
+                    >
+                      氏名
+                    </v-card>
+                    <input type="text" class="dialog_text_field ml-1" />
+                  </v-row>
+                </v-card>
+              </v-row>
             </div>
           </v-col>
         </v-row>
@@ -635,7 +550,7 @@ export default {
         val: 0,
         name: '指定無し',
       },
-      jijyosyoList: [
+      jigyosyoList: [
         {
           val: 0,
           name: '指定無し',
@@ -1296,7 +1211,7 @@ div#selectedAttendGrid {
   font-size: 12px;
   font-family: 'メイリオ';
   width: 100%;
-  height: 240px;
+  background: $view_Title_font_color_Main;
 }
 .issueText {
   textarea {
@@ -1304,6 +1219,11 @@ div#selectedAttendGrid {
   }
 }
 .input_text {
+  background: $white;
+  height: 20px !important;
+  &.wflex {
+    width: 660px;
+  }
   &.outline {
     border: 1px solid $light-gray;
   }
@@ -1334,7 +1254,8 @@ div#selectedAttendGrid {
 }
 #attendGrid {
   font-size: 12px;
-  height: 120px;
+  height: 320px;
+  background-color: $light_yellow;
   .wj-cells
     .wj-row:hover
     .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {

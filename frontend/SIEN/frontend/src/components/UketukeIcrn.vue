@@ -36,12 +36,7 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示単位
         </v-card>
         <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
@@ -137,12 +132,7 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
         <wj-menu
@@ -157,12 +147,7 @@
           :itemClicked="onTaiousyaClicked"
         >
         </wj-menu>
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
         <wj-menu
@@ -177,12 +162,7 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card
-          class="koumokuTitle titleMain pa-1 mr-1"
-          width="100"
-          outlined
-          tile
-        >
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ランク
         </v-card>
         <wj-menu
@@ -202,7 +182,7 @@
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
-        <v-card class="countTitle pa-1 mr-3" outlined tile>
+        <v-card class="countTitle pa-1" outlined tile>
           実人数: <span>{{ viewdata.length }} </span>人
         </v-card>
       </v-row>
@@ -285,25 +265,23 @@
         color="primary"
       ></v-progress-circular>
     </v-overlay>
-    <v-dialog v-model="tourokuScreenFlag" width="1080" eager>
-      <v-card no-gutters class="touroku_dialogs pb-1">
+    <v-dialog v-model="tourokuScreenFlag" width="1070" eager>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title">
+          モニタリング 利用者同意・署名
+        </v-card-title>
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
           @click="touroku_dialog_close()"
-          class="closeButton"
-          color="red"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-          <v-icon> mdi-close </v-icon>
-        </v-btn>
         <UketukeTouroku
           :dispTab="inputRef"
           :selectViewData="viewObj"
-          class="ml-1"
+          class="ml-1 pb-2"
         ></UketukeTouroku>
       </v-card>
     </v-dialog>
@@ -975,9 +953,9 @@ div#uketukeIcrn {
   #uketukeIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    width: 99%;
+    width: 100%;
     min-width: 1050px !important;
-    height: 76vh;
+    height: 80vh;
     background: $grid_background;
     .wj-header {
       // ヘッダのみ縦横中央寄せ

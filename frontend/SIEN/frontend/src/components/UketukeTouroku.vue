@@ -5,15 +5,10 @@
         <v-col class="centerArea">
           <v-container no-gutters fluid class="container pa-0 mt-1">
             <v-row no-gutters class="rowStyle_Input">
-              <v-card
-                class="koumokuTitle titleMain pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleMain pa-1" outlined tile>
                 対応者名
               </v-card>
-              <v-card class="koumokuData ml-1 pa-1" tile outlined>
+              <v-card class="koumokuData ml-1 pa-0" width="300" tile outlined>
                 {{ tantouData.code }} {{ tantouData.name }}
               </v-card>
               <v-col cols="*">
@@ -26,12 +21,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1">
-              <v-card
-                class="koumokuTitle titleBlue pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
                 対応日<span class="mandatoryMark"> * </span>
               </v-card>
               <v-card
@@ -97,18 +87,13 @@
               </v-card>
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1">
-              <v-card
-                class="koumokuTitle titleBlue pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
                 利用者名<span class="mandatoryMark"> * </span>
               </v-card>
               <input
                 id="uketukeTourokuUser"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 style="width: 300px"
                 name="txtuser"
                 v-model="dispUserName"
@@ -117,16 +102,11 @@
               />
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1 mb-1">
-              <v-card
-                class="koumokuTitle titleBlue pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
                 開始時間<span class="mandatoryMark"> * </span>
               </v-card>
               <input
-                class="ml-1"
+                class="ml-1 border"
                 type="time"
                 id="timeinput"
                 name="appt"
@@ -156,12 +136,7 @@
             <!-- <v-divider class="mt-1"></v-divider> -->
             <!-- <v-row no-gutters class="rowStyle_Input" style="display: none"> -->
             <v-row no-gutters class="rowStyle_Input mt-1" style="display: none">
-              <v-card
-                class="koumokuTitle titleGreen pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 事業区分<span class="mandatoryMark"> * </span>
               </v-card>
               <v-tabs
@@ -199,7 +174,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -213,7 +187,7 @@
                           outlined
                           height="25"
                           @click="jigyoKbnclick(n.val)"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -224,7 +198,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         初回・継続
                       </v-card>
@@ -239,7 +212,7 @@
                           outlined
                           height="25"
                           v-bind:disabled="rirekiDataSelect.inputkbn == 3"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -269,7 +242,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -280,11 +252,10 @@
                         <v-btn
                           v-for="n in keikakuInputKbnItem"
                           :key="n.val"
-                          small
                           outlined
                           height="25"
                           @click="keikakuInputKbnclick(n.val)"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -295,7 +266,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         加算有無<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -306,11 +276,10 @@
                         <v-btn
                           v-for="n in kasanUmuItem"
                           :key="n.val"
-                          small
                           outlined
                           height="25"
                           @click="KasanUmuclick(n.val, 0)"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -328,14 +297,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         支援方法
                       </v-card>
                       <input
                         id="uketukeTourokuKeikakuSienHouhou"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         name="txtsienhouhou_keikaku"
                         v-model="rirekiDataSelect.sdnhourk"
                         @click="inputClicked(11)"
@@ -354,14 +322,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         加算項目
                       </v-card>
                       <input
                         id="uketukeTourokuKeikakuKasan"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         style="width: 400px"
                         name="txtkasankoumoku_keikaku"
                         v-model="kihonInfo.keikakuSoudanObj.kasanname"
@@ -381,14 +348,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         機関・場所
                       </v-card>
                       <input
                         id="uketukeTourokuKeikakuKikanBasyo"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         style="width: 400px"
                         name="txtkikanBasyo"
                         v-model="kihonInfo.keikakuSoudanObj.kikanbasyoname"
@@ -407,14 +373,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         対応者名
                       </v-card>
                       <input
                         id="taiousyamei_keikaku"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         style="width: 400px"
                         name="txttaiousyamei"
                         v-model="kihonInfo.keikakuSoudanObj.taiousyameiname"
@@ -433,12 +398,11 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         終了時間<span class="mandatoryMark"> * </span>
                       </v-card>
                       <input
-                        class="ml-1"
+                        class="ml-1 border"
                         type="time"
                         id="timeinput"
                         name="appt"
@@ -448,7 +412,8 @@
                         elevation="0"
                         class="btnymd pa-0 ml-1"
                         height="100%"
-                        x-small
+                        width="50"
+                        min-width="50"
                         tile
                         @click="timeClick(2)"
                         >クリア
@@ -457,7 +422,8 @@
                         elevation="0"
                         class="btnymd pa-0 ml-1"
                         height="100%"
-                        x-small
+                        width="50"
+                        min-width="50"
                         tile
                         @click="timeClick(3)"
                         >現時刻
@@ -478,7 +444,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         入力区分<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -489,11 +454,10 @@
                         <v-btn
                           v-for="n in chiikiInputKbnItem"
                           :key="n.val"
-                          small
                           outlined
                           height="25"
                           @click="chiikiInputKbnclick(n.val)"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -504,7 +468,6 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         加算有無<span class="mandatoryMark"> * </span>
                       </v-card>
@@ -515,11 +478,10 @@
                         <v-btn
                           v-for="n in kasanUmuItem"
                           :key="n.val"
-                          small
                           outlined
                           height="25"
                           @click="KasanUmuclick(n.val, 1)"
-                          color="primary"
+                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -537,14 +499,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         支援方法
                       </v-card>
                       <input
                         id="uketukeTourokuChiikiSienHouhou"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         name="txtsienhouhou_chiiki"
                         v-model="rirekiDataSelect.sdnhourk"
                         @click="inputClicked(21)"
@@ -563,14 +524,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         加算項目
                       </v-card>
                       <input
                         id="uketukeTourokuChiikiKasan"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         style="width: 400px"
                         name="txtkasankoumoku_chiiki"
                         v-model="kihonInfo.chiikiSoudanObj.kasanname"
@@ -590,14 +550,13 @@
                         class="koumokuTitle titleGreen pa-1"
                         outlined
                         tile
-                        width="100"
                       >
                         委託先
                       </v-card>
                       <input
                         id="uketukeTourokuChiikiItakusaki"
                         type="text"
-                        class="ml-1"
+                        class="ml-1 border"
                         style="width: 400px"
                         name="txtitakusaki"
                         v-model="kihonInfo.chiikiSoudanObj.itakusakiname"
@@ -609,104 +568,74 @@
               </v-tabs-items>
             </v-container>
             <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
-              <v-card
-                class="koumokuTitle titleGreen pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 支援方法
               </v-card>
               <input
                 id="uketukeTourokuSienhouhou"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtsienhouhou"
                 v-model="rirekiDataSelect.sdnhourk"
                 @click="inputClicked(1)"
                 readonly="readonly"
               />
-              <v-card
-                class="koumokuTitle titleGreen ml-1 pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者１
               </v-card>
               <input
                 id="uketukeTourokuDousekisya1"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtdouseki1"
                 v-model="kihonInfo.dousekisya1Obj.name"
                 @click="inputClicked(4)"
               />
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
-              <v-card
-                class="koumokuTitle titleGreen pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 関係
               </v-card>
               <input
                 id="uketukeTourokuKankei"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtkaneki"
                 v-model="rirekiDataSelect.sdnkanrk"
                 @click="inputClicked(2)"
                 readonly="readonly"
               />
-              <v-card
-                class="koumokuTitle titleGreen ml-1 pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者２
               </v-card>
               <input
                 id="uketukeTourokuDousekisya2"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtdouseki2"
                 v-model="kihonInfo.dousekisya2Obj.name"
                 @click="inputClicked(5)"
               />
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
-              <v-card
-                class="koumokuTitle titleGreen pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 相談者名
               </v-card>
               <input
                 id="uketukeTourokuSoudansya"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtsoudansya"
                 v-model="rirekiDataSelect.sdnnam"
                 @click="inputClicked(3)"
               />
-              <v-card
-                class="koumokuTitle titleGreen ml-1 pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者３
               </v-card>
               <input
                 id="uketukeTourokuDousekisya3"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtdouseki3"
                 v-model="kihonInfo.dousekisya3Obj.name"
                 @click="inputClicked(6)"
@@ -714,19 +643,14 @@
             </v-row>
             <v-divider class="btmborder mt-1"></v-divider>
             <v-row no-gutters class="rowStyle_Input mt-1">
-              <v-card
-                class="koumokuTitle titleOrange pa-1"
-                width="100"
-                outlined
-                tile
-              >
+              <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
                 支援項目<span class="mandatoryMark"> * </span>
               </v-card>
               <input
                 id="uketukeTourokuSienkoumoku"
                 style="width: 400px"
                 type="text"
-                class="ml-1"
+                class="ml-1 border"
                 name="txtsienkoumoku"
                 v-model="rirekiDataSelect.cskmknm"
                 @click="inputClicked(7)"
@@ -743,7 +667,6 @@
                 style="position: relative"
                 outlined
                 tile
-                width="100"
               >
                 内容
                 <span class="mandatoryMark"> * </span>
@@ -764,15 +687,12 @@
             </v-row>
 
             <v-row no-gutters class="rowStyle_Input mt-1">
-              <v-card
-                class="koumokuTitle titleOrange pa-1"
-                width="100"
-                outlined
-                tile
+              <v-card class="koumokuTitle titleOrange pa-1" outlined tile
                 >業務日誌</v-card
               >
               <v-checkbox
                 class="ma-0 pa-0 mr-2"
+                hide-details
                 v-model="rirekiDataSelect.kan"
                 :label="'表示する'"
                 style="width: 200px"
@@ -783,7 +703,6 @@
                   class="koumokuTitle titleOrange pa-1 ml-1"
                   outlined
                   tile
-                  width="100"
                   v-if="dispPeerCounselor"
                 >
                   ﾋﾟｱｶｳﾝｾﾗｰ
@@ -796,10 +715,9 @@
                   <v-btn
                     v-for="n in PeerCounselorItem"
                     :key="n.val"
-                    small
                     outlined
                     height="25"
-                    color="primary"
+                    color="secondary"
                   >
                     {{ n.name }}
                   </v-btn>
@@ -812,17 +730,13 @@
                 class="rowStyle_Input mt-1 mb-1"
                 v-if="dispSyoyou"
               >
-                <v-card
-                  class="koumokuTitle titleOrange pa-1"
-                  width="100"
-                  outlined
-                  tile
-                >
+                <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
                   所要時間
                 </v-card>
                 <input
-                  class="syoyoujikan ml-1"
-                  style="width: 50px"
+                  class="border ml-1"
+                  style="width: 50px; text-align: right"
+                  type="text"
                   @input="numbervalidate"
                   v-model="rirekiDataSelect.syoyo"
                 />
@@ -831,7 +745,6 @@
                   class="koumokuTitle titleOrange pa-1"
                   outlined
                   tile
-                  width="100"
                   v-if="dispRank"
                   >ランク</v-card
                 >
@@ -843,10 +756,9 @@
                   <v-btn
                     v-for="n in RankItem"
                     :key="n.val"
-                    small
                     outlined
                     height="25"
-                    color="primary"
+                    color="secondary"
                   >
                     {{ n.name }}
                   </v-btn>
@@ -878,7 +790,7 @@
           </v-container>
           <v-container no-gutters fluid class="container pa-0"></v-container>
         </v-col>
-        <v-col class="rightArea mt-1">
+        <v-col class="rightArea mt-1 mb-2">
           <!-- 右側エリア -->
           <v-container no-gutters fluid class="container ma-0 pa-0 mt-1">
             <v-row no-gutters>
@@ -902,12 +814,18 @@
           </v-container>
           <v-container no-gutters fluid class="container ma-0 pa-0">
             <v-tabs-items v-model="rightTab">
-              <v-tab-item value="User" eager transition="none">
+              <v-tab-item
+                class="pa-0 pb-1"
+                value="User"
+                eager
+                transition="none"
+              >
                 <user-list
                   ref="user_list"
-                  class="pa-1 ml-1"
+                  class="pt-1 ml-1"
                   :dispAddDaicho="true"
                   :dispHideBar="false"
+                  :headerheight="200"
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
                 >
@@ -1251,10 +1169,8 @@ const HIDE_NAME = {
   hideitem: 'hideitem', // ﾋﾟｱｶｳﾝｾﾗｰ・ランク・所要時間
 };
 const NAIYO_HEIGHT = {
-  height1: '125px',
-  height2: '150px',
-  height3: '175px',
-  height4: '300px',
+  height1: 75,
+  height2: 150,
 };
 const STYLE_BLOCK = 'block';
 const STYLE_FLEX = 'flex';
@@ -2490,26 +2406,27 @@ export default {
       this.windowheight = window.innerHeight;
       let el = document.getElementById(INPUT_ID.Naiyo);
       let elTxt = document.getElementsByTagName('textarea')[0];
-      if (window.innerHeight <= 850) {
-        if (
-          this.kbnTab == this.kbnItem[1].hrefval &&
-          this.kihonInfo.keikakuSoudanObj.kasanumu == this.kasanUmuItem[1].val
-        ) {
-          el.style.height = NAIYO_HEIGHT.height1;
-          elTxt.style.height = NAIYO_HEIGHT.height1;
-        } else {
-          if (this.kbnTab == this.kbnItem[0].hrefval) {
-            el.style.height = NAIYO_HEIGHT.height2;
-            elTxt.style.height = NAIYO_HEIGHT.height2;
-          } else {
-            el.style.height = NAIYO_HEIGHT.height3;
-            elTxt.style.height = NAIYO_HEIGHT.height3;
-          }
-        }
+      let tmp = 0;
+      let minheight = 0;
+      let defheight = 720;
+      if (this.kbnTab == this.kbnItem[0].hrefval) {
+        tmp = this.windowheight - (defheight - NAIYO_HEIGHT.height2);
+        minheight = NAIYO_HEIGHT.height2;
+      } else if (
+        this.kbnTab == this.kbnItem[1].hrefval &&
+        this.kihonInfo.keikakuSoudanObj.kasanumu == this.kasanUmuItem[1].val
+      ) {
+        tmp = this.windowheight - (defheight - NAIYO_HEIGHT.height1);
+        minheight = NAIYO_HEIGHT.height1;
       } else {
-        el.style.height = NAIYO_HEIGHT.height4;
-        elTxt.style.height = NAIYO_HEIGHT.height4;
+        tmp = this.windowheight - (defheight - NAIYO_HEIGHT.height2);
+        minheight = NAIYO_HEIGHT.height2;
       }
+      if (tmp < minheight) {
+        tmp = minheight;
+      }
+      el.style.height = tmp + 'px';
+      elTxt.style.height = tmp + 'px';
     },
     setTaiouData() {
       this.taiouYmd = dayjs(this.rirekiDataSelect.taiouYmdf);
@@ -2645,8 +2562,8 @@ div#uketukeTouroku {
   .rightArea {
     min-width: 420px;
     max-width: 420px;
-    min-height: 500px;
-    height: 82vh;
+    min-height: 520px;
+    max-height: 1080px;
     border: thin solid;
     border-color: green;
 
@@ -2665,7 +2582,7 @@ div#uketukeTouroku {
     #kihonIcrnGrid {
       color: $font_color;
       font-size: $cell_fontsize;
-      height: 75vh;
+      height: 73vh;
       background: $grid_background;
       // max-width: 100%;
       .wj-header {

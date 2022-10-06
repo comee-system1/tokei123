@@ -23,17 +23,27 @@
           サービス
         </v-card>
         <v-btn-toggle dense mandatory v-model="onService" height="20">
-          <v-btn small v-for="val in service" :key="val.id" height="20">{{
-            val.name
-          }}</v-btn>
+          <v-btn
+            small
+            v-for="val in service"
+            :key="val.id"
+            height="20"
+            class="body-2"
+            >{{ val.name }}</v-btn
+          >
         </v-btn-toggle>
         <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
           対象者
         </v-card>
         <v-btn-toggle dense mandatory v-model="onTarget">
-          <v-btn small v-for="val in target" :key="val.id" height="20">{{
-            val.name
-          }}</v-btn>
+          <v-btn
+            small
+            v-for="val in target"
+            :key="val.id"
+            height="20"
+            class="body-2"
+            >{{ val.name }}</v-btn
+          >
         </v-btn-toggle>
         <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
           市区町村
@@ -189,11 +199,11 @@
           icon
           small
           @click="contactDialog = false"
-          class="mt-2 dialog_close"
+          class="mt-1 dialog_close"
           ><v-icon dark small> mdi-close </v-icon>
         </v-btn>
       </v-card>
-      <v-card class="pa-2" tile flat>
+      <v-card class="pa-2 common_dialog" tile flat>
         <div class="history_menu pa-2" v-bind:class="{ 'is-active': open }">
           <wj-flex-grid
             id="serviceHistoryGrid"
@@ -229,8 +239,8 @@
             ></wj-flex-grid-column>
           </wj-flex-grid>
         </div>
-        <v-card class="d-flex justify-start common_dialog" flat tile>
-          <v-card outlined tile dark class="dialog_label"> 利用者名 </v-card>
+        <v-card class="d-flex justify-start dialog_back" flat tile>
+          <v-card outlined tile class="dialog_label_blue"> 利用者名 </v-card>
           <v-card
             width="650"
             class="text-caption lightYellow"
@@ -804,6 +814,7 @@ div#keiyakuHokoku {
   }
 }
 div#keiyakuGrid {
+  font-size: 12px;
   .wj-header {
     font-weight: normal;
 

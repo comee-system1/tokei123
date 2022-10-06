@@ -24,7 +24,6 @@
             <v-row no-gutters class="rowStyle" style="position: relative">
               <v-card
                 class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
-                width="100"
                 outlined
                 tile
               >
@@ -41,12 +40,11 @@
               </v-card>
               <v-card
                 class="koumokuTitle pa-1"
-                width="100"
                 outlined
                 tile
                 style="
                   position: absolute;
-                  left: 380px;
+                  left: 376px;
                   background: #008000;
                   color: white;
                 "
@@ -56,7 +54,7 @@
               <v-card
                 class="koumokuData ml-1"
                 width="125"
-                style="text-align: center; position: absolute; left: 480px"
+                style="text-align: center; position: absolute; left: 476px"
                 tile
                 outlined
               >
@@ -90,9 +88,7 @@
               <v-btn
                 v-for="n in inputList"
                 :key="n.val"
-                small
                 color="secondary"
-                dark
                 outlined
                 width="25"
                 height="20"
@@ -173,7 +169,6 @@
                   <v-btn
                     elevation="2"
                     icon
-                    small
                     absolute
                     top
                     right
@@ -284,7 +279,6 @@
               <v-btn
                 v-for="n in kekkaList"
                 :key="n.val"
-                small
                 color="secondary"
                 dark
                 outlined

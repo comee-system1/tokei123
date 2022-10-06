@@ -5,11 +5,10 @@
         <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           表示月
         </v-card>
-
         <v-card
           class="pl-1"
           width="140"
-          height="24"
+          height="21"
           outlined
           tile
           @click="inputCalendarClick(0)"
@@ -25,18 +24,15 @@
         <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFilters"
-          class="customCombobox"
-          :itemsSource="tantousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox"
           v-model="selTantousya"
-          :itemClicked="onTantousyaClicked"
+          @change="onTantousyaClicked"
         >
-        </wj-menu>
+          <option v-for="val in tantousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain ml-1" outlined tile>
           対象者
         </v-card>
@@ -52,7 +48,8 @@
             color="secondary"
             dark
             outlined
-            height="24"
+            height="21"
+            class="body-2"
           >
             {{ n.name }}
           </v-btn>
@@ -70,6 +67,8 @@
             dark
             outlined
             @click="taisyousyaYoteiListClick(n.val)"
+            height="21"
+            class="body-2"
           >
             {{ n.name }}
           </v-btn>
@@ -603,6 +602,8 @@ export default {
       headerColumn4: ['開催日', '完\n了'],
       headerColumn5: ['作成日', '計\n画', '計\n画\n週\n間', '同\n意'],
       headerColumn6: ['モ\nニ\n継\n続\n中', '担当者'],
+      // 各ヘッダの数を足した変数
+      // 各ヘッダにタイトル名を表記する為
       headerPlus12: 0,
       headerPlus123: 0,
       headerPlus1234: 0,
@@ -648,9 +649,7 @@ export default {
       alert('受給者証登録ボタンへ押下');
       return false;
     },
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
-    },
+
     filterInitializedkeikakuIcrn: function (filter) {
       this.filterkeikakuIcrn = filter;
     },
@@ -909,10 +908,10 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-    onTantousyaClicked(s) {
-      s.header = s.selectedItem.name;
-      this.selTantousya = s.selectedItem.name;
-      this.selTantousyaVal = s.selectedItem.val;
+    onTantousyaClicked() {
+      let key = this.selTantousya;
+      this.selTantousya = this.tantousyaList[key].name;
+      this.selTantousyaVal = key;
       this.userFilter();
     },
 
@@ -1109,42 +1108,6 @@ div#keikakuLists {
     }
   }
 
-  div.customCombobox {
-    position: relative;
-    &.customCombobox {
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 21px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 8px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -3px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 25px !important;
-    }
-  }
   .v-input--selection-controls .v-input__slot > .v-label {
     font-size: 12px;
   }

@@ -652,6 +652,7 @@ export default {
 @import '@/assets/scss/common.scss';
 #serviceGrid,
 #kadaiGrid {
+  font-size: 12px;
   .wj-header {
     font-weight: normal;
     background: $view_Title_background_Blue;

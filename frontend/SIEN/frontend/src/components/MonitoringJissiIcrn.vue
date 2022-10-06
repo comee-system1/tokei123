@@ -1,8 +1,10 @@
 <template>
   <div id="monitoringJissiIcrn">
     <v-container class="pa-1" fluid>
-      <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示月 </v-card>
+      <v-row no-gutters class="rowStyle">
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示月
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
@@ -17,6 +19,7 @@
             outlined
             width="125px"
             height="100%"
+            class="btnymd"
             >{{ getYm() }}
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
@@ -24,7 +27,7 @@
           </v-btn>
           <v-btn
             elevation="0"
-            class="pa-0 ml-1"
+            class="btnymd pa-0 ml-1"
             height="100%"
             x-small
             tile
@@ -34,7 +37,7 @@
           </v-btn>
           <v-btn
             elevation="0"
-            class="pa-0 ml-1"
+            class="btnymd pa-0 ml-1"
             height="100%"
             x-small
             tile
@@ -43,19 +46,22 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn class="itemBtn ml-1" :loading="loading" @click="searchClicked()">
+        <v-btn
+          class="ml-1"
+          height="100%"
+          :loading="loading"
+          @click="searchClicked()"
+        >
           検索
         </v-btn>
-        <v-btn
-          class="itemBtn ml-1"
-          style="width: 25px"
-          @click="filterClrclick()"
-        >
+        <v-btn class="ml-1" height="100%" width="25" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile> 絞込 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          絞込
+        </v-card>
         <v-btn-toggle
           class="flex-wrap ml-1"
           v-model="siborikomiIndex"
@@ -64,7 +70,6 @@
           <v-btn
             v-for="n in siborikomiList"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
@@ -74,12 +79,13 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 様式 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          様式
+        </v-card>
         <v-btn-toggle class="flex-wrap ml-1" v-model="yousikiIndex" mandatory>
           <v-btn
             v-for="n in yousikiList"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
@@ -89,7 +95,9 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 担当者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          担当者
+        </v-card>
         <wj-menu
           id="comboFilters"
           class="customCombobox ml-1"
@@ -203,7 +211,7 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'sakuseiymd',
+          dataname: 'rksymdD',
           title: '作成日',
           kbntitle: 'サービス等利用計画',
           chutitl: '',
@@ -211,7 +219,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'yousiki',
+          dataname: 'yoshikiName',
           title: '様\n式',
           kbntitle: 'サービス等利用計画',
           chutitl: '',
@@ -597,6 +605,12 @@ export default {
         ) {
           e.cell.style.borderRight = '1px solid';
         }
+        e.cell.style.borderTop = ' double 4px black';
+        if (e.col <= 4) {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+        }
       }
 
       if (e.panel == flexGrid.cells) {
@@ -868,9 +882,6 @@ div#monitoringJissiIcrn {
   min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
-  .rowStyle {
-    height: 20px;
-  }
 
   #load_dialog {
     position: fixed;
@@ -886,29 +897,6 @@ div#monitoringJissiIcrn {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
   .hosokuTitle {
     color: $font_color;
     display: flex;
@@ -922,22 +910,13 @@ div#monitoringJissiIcrn {
     }
   }
 
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-    width: 75px;
-  }
-
   #yoteisyaIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 100%;
-    height: 72vh;
+    height: 80vh;
     min-height: 450px;
+    z-index: 2;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -990,16 +969,6 @@ div#monitoringJissiIcrn {
       color: blue;
       border-color: lightgray;
     }
-    .wj-glyph-filter {
-      // background-repeat: no-repeat;
-      // background-position: bottom right;
-      margin-top: 20px;
-      margin-left: 3px;
-      margin-right: 1px;
-      width: 5px;
-      height: 5px;
-      // border: none;
-    }
   }
 
   div.customCombobox {
@@ -1041,9 +1010,7 @@ div#monitoringJissiIcrn {
       height: 20px !important;
     }
   }
-  .v-input--selection-controls .v-input__slot > .v-label {
-    font-size: 14px;
-  }
+
   .miman {
     padding: 0;
     position: relative;
@@ -1076,23 +1043,5 @@ div#monitoringJissiIcrn {
   left: 70px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 </style>

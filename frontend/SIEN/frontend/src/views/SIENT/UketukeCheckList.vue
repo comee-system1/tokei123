@@ -1,8 +1,10 @@
 <template>
   <div id="uketukeCheckList">
-    <v-container no-gutters fluid class="container ml-1 pa-0">
-      <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile> 表示期間 </v-card>
+    <v-container no-gutters fluid class="container pa-1">
+      <v-row no-gutters class="rowStyle">
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示期間
+        </v-card>
         <v-card
           class="ml-1"
           color="transparent"
@@ -17,17 +19,16 @@
             outlined
             width="160px"
             height="100%"
+            class="btnymd"
             >{{ getYmd(0) }}
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
           </v-btn>
         </v-card>
-        <v-card class="rirekikoumokuTitleMini ml-1 pa-1 pb-2" outlined tile>
-          ～
-        </v-card>
+        <label class="ml-1 mr-1">～</label>
         <v-card
-          class="ml-1"
+          class="btnymd ml-1"
           color="transparent"
           height="100%"
           style="border: none; margin-top: -1px"
@@ -40,13 +41,14 @@
             outlined
             width="160px"
             height="100%"
+            class="btnymd"
             >{{ getYmd(1) }}
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
           </v-btn>
         </v-card>
-        <v-btn class="itemBtn ml-1" @click="inputCalendarClick(2)">
+        <v-btn class="ml-1" height="100%" @click="inputCalendarClick(2)">
           月指定
         </v-btn>
       </v-row>
@@ -67,7 +69,9 @@
           v-if="false"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力区分 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          入力区分
+        </v-card>
         <wj-menu
           id="comboFiltersInput"
           class="customCombobox mr-1"
@@ -80,7 +84,9 @@
           :itemClicked="onInputClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 市区町村 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          市区町村
+        </v-card>
         <wj-menu
           id="comboFiltersSikuchoson"
           class="customCombobox mr-1"
@@ -93,7 +99,9 @@
           :itemClicked="onSikuchosonClicked"
         >
         </wj-menu>
-        <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 担当者 </v-card>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          担当者
+        </v-card>
         <wj-menu
           id="comboFiltersTantousya"
           class="customCombobox mr-1"
@@ -106,25 +114,25 @@
           :itemClicked="onTantousyaClicked"
         >
         </wj-menu>
-        <v-btn class="itemBtn mr-1" @click="searchclick()"> 検索 </v-btn>
-        <v-btn
-          class="itemBtn mr-1"
-          style="width: 25px"
-          @click="filterClrclick()"
-        >
+        <v-btn class="mr-1" height="100%" @click="searchclick()"> 検索 </v-btn>
+        <v-btn class="mr-1" width="25" height="100%" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1" style="position: relative">
-        <v-card class="koumokuTitle pa-1" outlined tile> ソート </v-card>
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          ソート
+        </v-card>
         <v-btn-toggle class="flex-wrap ml-1" v-model="sort1Index" mandatory>
           <v-btn
             v-for="n in sort1List"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
+            height="20"
+            width="50"
+            min-width="50"
             @click="sortClicked"
           >
             {{ n.name }}
@@ -139,21 +147,32 @@
           <v-btn
             v-for="n in sort2List"
             :key="n.val"
-            small
             color="secondary"
             dark
             outlined
+            height="20"
             @click="sortClicked"
           >
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle pa-1 ml-7" outlined tile> 詳細表示 </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" v-model="selSyousaiDispUmuIndex">
+        <v-card
+          class="koumokuTitle titleMain pa-1"
+          style="position: absolute; left: 466px"
+          outlined
+          tile
+        >
+          詳細表示
+        </v-card>
+        <v-btn-toggle
+          class="flex-wrap ml-1"
+          style="position: absolute; left: 566px"
+          v-model="selSyousaiDispUmuIndex"
+        >
           <v-btn
             v-for="n in syousaiDispList"
             :key="n.val"
-            small
+            height="20"
             outlined
             @click="grdDispChangeclick()"
           >
@@ -161,73 +180,13 @@
           </v-btn>
         </v-btn-toggle>
         <v-spacer></v-spacer>
-        <v-card class="countTitle pa-1 mr-3" outlined tile>
+        <v-card class="countTitle titleOrange pa-1" outlined tile>
           相談件数:
           <span>{{ 0 }} </span>
           件
         </v-card>
       </v-row>
-      <!-- いったん非表示 -->
-      <v-row no-gutters class="rowStyleMini mt-1" v-if="false">
-        <v-card
-          class="koumokuTitleExp"
-          color="transparent"
-          height="100%"
-          outlined
-          tile
-          @click="searchAddClicked"
-        >
-          <div class="float-left">
-            <v-icon small color="red" v-if="!dispSearchAdd"> mdi-plus </v-icon>
-            <v-icon small color="red" v-else> mdi-minus </v-icon>
-            検索条件設定
-          </div>
-        </v-card>
-      </v-row>
-      <v-row no-gutters class="rowStyle mt-1" v-if="dispSearchAdd">
-        <v-card class="koumokuTitle pa-1" outlined tile> 年齢 </v-card>
-        <wj-menu
-          id="comboFiltersAge"
-          class="customCombobox ml-1"
-          :itemsSource="ageList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selAge"
-          :itemClicked="onAgeClicked"
-        >
-        </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile>
-          障害支援区分
-        </v-card>
-        <wj-menu
-          id="comboFiltersShougaiSienKbn"
-          class="customCombobox ml-1"
-          :itemsSource="shougaiSienKbnList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selShougaiSienKbn"
-          :itemClicked="onShougaiSienKbnClicked"
-        >
-        </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile> 障害区分 </v-card>
-        <wj-menu
-          id="comboFiltersShougaiKbn"
-          class="customCombobox ml-1"
-          :itemsSource="shougaiKbnList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selShougaiKbn"
-          :itemClicked="onShougaiKbnClicked"
-        >
-        </wj-menu>
-        <v-btn class="itemBtn ml-1" @click="searchclick()"> 検索 </v-btn>
-      </v-row>
+
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
           id="icrnGrid"
@@ -898,86 +857,16 @@ div#uketukeCheckList {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
-  min-width: 1350px !important;
+  // min-width: 1350px !important;
   max-width: 1920px;
   width: auto;
-  span#selectUserExamNumber,
-  span#selectUserText {
-    min-width: 150px;
-    display: block;
-  }
+
   .leftArea {
     min-width: 275px;
     max-width: 275px;
     min-height: 450px;
     width: 275px;
     // border: thin solid;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-  .koumokuTitleExp {
-    color: blue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    text-align: center;
-    border: none;
-    background: white;
-  }
-
-  .koumokuTitleExp:after {
-    content: '';
-    width: 900px;
-    flex-grow: 1;
-    height: 1px; /* 線の太さ */
-    background: gray; /* 線の色 */
-    margin: 0 1em; /* 文字と線の余白 */
-  }
-
-  .koumokuData {
-    color: $font_color;
-    display: flex;
-    align-items: center;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_read {
-    color: $font_color;
-    width: 150px;
-    height: 100%;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuData_input {
-    color: $font_color;
-    width: 350px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Input_background;
-    padding-top: 2px;
-    padding-left: 2px;
-  }
-
-  .koumokuData_c {
-    width: 280px;
-    text-align: center;
-    background: $view_Data_Read_background;
-    border: none;
   }
 
   .countTitle {
@@ -997,51 +886,12 @@ div#uketukeCheckList {
     }
   }
 
-  .rowStyle {
-    height: 20px;
-  }
-  .rowStyleMini {
-    height: 15px;
-  }
-  .rirekikoumokuTitleMini {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 25px;
-    height: 25px;
-    text-align: center;
-    background: $white;
-    border: none;
-  }
-  .v-btn {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-  }
-
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-    width: 75px;
-  }
-  .v-btn-toggle > .v-btn {
-    width: 50px;
-    height: 20px;
-  }
   #icrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-
+    height: 78vh;
+    width: 100%;
+    min-width: 1250px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1095,11 +945,7 @@ div#uketukeCheckList {
       border-color: lightgray;
     }
   }
-  #icrnGrid {
-    height: 78vh;
-    width: 98%;
-    min-width: 1250px;
-  }
+
   div.customCombobox {
     position: relative;
     width: 125px !important;
@@ -1175,17 +1021,17 @@ div#uketukeCheckList {
 }
 #uketukeCheckListdatepickermonth {
   position: fixed !important;
-  top: 70px;
-  left: 750px;
+  top: 20px;
+  left: 450px;
 }
 #uketukeCheckListdatepicker1 {
   position: fixed !important;
-  top: 70px;
-  left: 400px;
+  top: 20px;
+  left: 100px;
 }
 #uketukeCheckListdatepicker2 {
   position: fixed !important;
-  top: 70px;
-  left: 600px;
+  top: 20px;
+  left: 300px;
 }
 </style>

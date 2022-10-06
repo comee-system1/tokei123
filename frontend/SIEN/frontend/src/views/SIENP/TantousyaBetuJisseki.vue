@@ -1,161 +1,131 @@
 <template>
   <div id="tantousyaBetuJisseki">
     <v-container no-gutters fluid class="container pa-1">
-      <v-row no-gutters>
-        <v-container no-gutters fluid class="container pa-0">
-          <v-row no-gutters class="rowStyle mt-1">
-            <v-card
-              class="koumokuTitle titleMain pa-1"
-              width="100"
-              outlined
-              tile
-            >
-              表示期間
-            </v-card>
-            <v-card
-              class="ml-1"
-              color="transparent"
-              height="100%"
-              style="border: none; margin-top: -1px"
-              outlined
-              tile
-            >
-              <v-btn
-                @click="inputCalendarClick(0)"
-                tile
-                outlined
-                width="125px"
-                height="100%"
-                class="btnymd pa-0 mr-1"
-                >{{ getYm(0) }}
-                <div class="float-right">
-                  <v-icon small>mdi-calendar-month</v-icon>
-                </div>
-              </v-btn>
-              <v-btn
-                elevation="0"
-                class="btnymd pa-0 mr-1"
-                height="100%"
-                x-small
-                tile
-                @click="inputCalendarClick(1)"
-              >
-                <v-icon>mdi-arrow-left-bold</v-icon>
-              </v-btn>
-              <v-btn
-                elevation="0"
-                class="btnymd pa-0 mr-1"
-                height="100%"
-                x-small
-                tile
-                @click="inputCalendarClick(2)"
-              >
-                <v-icon>mdi-arrow-right-bold</v-icon>
-              </v-btn>
-            </v-card>
-            <v-btn class="itemBtn mr-1" height="20" @click="searchClicked()">
-              検索
-            </v-btn>
-            <v-btn
-              class="itemBtn mr-1"
-              width="25"
-              height="20"
-              @click="filterClrclick()"
-            >
-              <v-icon small>mdi-filter-off</v-icon>
-            </v-btn>
-          </v-row>
-          <v-row no-gutters class="rowStyle mt-1">
-            <v-card
-              class="koumokuTitle titleMain pa-1 mr-1"
-              width="100"
-              outlined
-              tile
-            >
-              様式
-            </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="selYousiki">
-              <v-btn
-                v-for="n in yousikiList"
-                :key="n.val"
-                small
-                outlined
-                height="20"
-                width="25"
-                @click="grdDispChangeclick(1)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-            <v-card
-              class="koumokuTitle titleMain pa-1 mr-1"
-              width="100"
-              outlined
-              tile
-            >
-              担当者
-            </v-card>
-            <wj-menu
-              id="comboFiltersInput"
-              class="customCombobox mr-1"
-              :itemsSource="tantouist"
-              :initialized="initComboFilters"
-              :isRequired="true"
-              selectedValuePath="val"
-              displayMemberPath="name"
-              v-model="selTantouId"
-            >
-              <!-- :itemClicked="onInputClicked" -->
-            </wj-menu>
-            <v-card
-              class="koumokuTitle titleMain pa-1 mr-1"
-              width="100"
-              outlined
-              tile
-            >
-              表示内容
-            </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="selDispNaiyouIndex">
-              <v-btn
-                v-for="n in dispNaiyouList"
-                :key="n.val"
-                height="20"
-                small
-                outlined
-              >
-                <!-- @click="grdDispChangeclick(1)" -->
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-row>
-          <v-row class="ma-0 mt-1" no-gutters>
-            <wj-flex-grid
-              id="tantousyaBetuJissekiicrnGrid"
-              :headersVisibility="'Column'"
-              :autoGenerateColumns="false"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowPinning="false"
-              :allowMerging="'AllHeaders'"
-              :allowResizing="true"
-              :allowSorting="false"
-              :allowDragging="false"
-              :selectionMode="'Row'"
-              :isReadOnly="true"
-              :initialized="onInitializeIcrnGrid"
-              :formatItem="onFormatItemIcrn"
-              :itemsSourceChanging="onItemsSourceChanging"
-              :itemsSourceChanged="onItemsSourceChanged"
-              :itemsSource="viewData"
-            >
-              <wj-flex-grid-filter
-                :initialized="filterInitialized"
-                :filterApplied="filterApplied"
-                :showFilterIcons="false"
-              />
-            </wj-flex-grid>
-          </v-row>
-        </v-container>
+      <v-row no-gutters class="rowStyle">
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+          表示期間
+        </v-card>
+        <v-card
+          class="ml-1"
+          color="transparent"
+          height="100%"
+          style="border: none; margin-top: -1px"
+          outlined
+          tile
+        >
+          <v-btn
+            @click="inputCalendarClick(0)"
+            tile
+            outlined
+            width="125px"
+            height="100%"
+            class="btnymd pa-0 mr-1"
+            >{{ getYm(0) }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+          <v-btn
+            elevation="0"
+            class="btnymd pa-0 mr-1"
+            height="100%"
+            x-small
+            tile
+            @click="inputCalendarClick(1)"
+          >
+            <v-icon>mdi-arrow-left-bold</v-icon>
+          </v-btn>
+          <v-btn
+            elevation="0"
+            class="btnymd pa-0 mr-1"
+            height="100%"
+            x-small
+            tile
+            @click="inputCalendarClick(2)"
+          >
+            <v-icon>mdi-arrow-right-bold</v-icon>
+          </v-btn>
+        </v-card>
+        <v-btn class="itemBtn mr-1" height="20" @click="searchClicked()">
+          検索
+        </v-btn>
+        <v-btn
+          class="itemBtn mr-1"
+          width="25"
+          height="20"
+          @click="filterClrclick()"
+        >
+          <v-icon small>mdi-filter-off</v-icon>
+        </v-btn>
+      </v-row>
+      <v-row no-gutters class="rowStyle mt-1">
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          様式
+        </v-card>
+        <v-btn-toggle class="flex-wrap mr-1" v-model="selYousiki">
+          <v-btn
+            v-for="n in yousikiList"
+            :key="n.val"
+            outlined
+            height="20"
+            width="50"
+            min-width="50"
+            @click="grdDispChangeclick(1)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          担当者
+        </v-card>
+        <wj-menu
+          id="comboFiltersInput"
+          class="customCombobox mr-1"
+          :itemsSource="tantouist"
+          :initialized="initComboFilters"
+          :isRequired="true"
+          selectedValuePath="val"
+          displayMemberPath="name"
+          v-model="selTantouId"
+        >
+          <!-- :itemClicked="onInputClicked" -->
+        </wj-menu>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+          表示内容
+        </v-card>
+        <v-btn-toggle class="flex-wrap mr-1" v-model="selDispNaiyouIndex">
+          <v-btn v-for="n in dispNaiyouList" :key="n.val" height="20" outlined>
+            <!-- @click="grdDispChangeclick(1)" -->
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+      </v-row>
+      <v-row no-gutters class="ma-0 mt-1">
+        <wj-flex-grid
+          id="tantousyaBetuJissekiicrnGrid"
+          :headersVisibility="'Column'"
+          :autoGenerateColumns="false"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowMerging="'AllHeaders'"
+          :allowResizing="true"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'Row'"
+          :isReadOnly="true"
+          :initialized="onInitializeIcrnGrid"
+          :formatItem="onFormatItemIcrn"
+          :itemsSourceChanging="onItemsSourceChanging"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="viewData"
+        >
+          <wj-flex-grid-filter
+            :initialized="filterInitialized"
+            :filterApplied="filterApplied"
+            :showFilterIcons="false"
+          />
+        </wj-flex-grid>
       </v-row>
     </v-container>
     <v-dialog
