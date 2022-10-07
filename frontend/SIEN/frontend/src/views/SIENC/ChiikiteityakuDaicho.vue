@@ -421,7 +421,6 @@ export default {
             item: _self.basicView[ht.row]['name'],
           });
           _self.komokuView = komokuView;
-          console.log(_self.komokuView);
           _self.itemFlexGrid.itemsSource = [];
           _self.itemFlexGrid.itemsSource = _self.komokuView;
           flexGrid.refresh();
@@ -444,12 +443,24 @@ export default {
       flexGrid.columnHeaders.rows[0].allowMerging = true;
 
       let _self = this;
+      let komokuView = [];
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell && ht.col == 6) {
           _self.assesmentView[ht.row]['select'] =
             _self.assesmentView[ht.row]['select'] == '〇' ? '' : '〇';
+
+          komokuView = _self.komokuView;
+          let sort = komokuView.length + 1;
+          komokuView.push({
+            sort: sort,
+            item: _self.assesmentView[ht.row]['status2'],
+          });
+
+          _self.itemFlexGrid.itemsSource = [];
+          _self.itemFlexGrid.itemsSource = _self.komokuView;
           flexGrid.refresh();
+          _self.itemFlexGrid.refresh();
         }
       });
 
