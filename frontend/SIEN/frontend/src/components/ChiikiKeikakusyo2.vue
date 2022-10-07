@@ -92,106 +92,14 @@
           </v-row>
 
           <v-tabs-items v-model="inputTypemodel">
-            <v-tab-item value="tab-1" :eager="true"> aaaaaaaaaaaa </v-tab-item>
-            <v-tab-item value="tab-2" :eager="true"> sssssssssss </v-tab-item>
             <v-tab-item value="tab-0" :eager="true">
-              <div class="mt-1">
-                <v-app-bar flat height="24" class="titleBlueDark">
-                  <v-app-bar-title class="text-caption"
-                    >利用者の状況</v-app-bar-title
-                  >
-                </v-app-bar>
-                <table class="table mt-1">
-                  <tr>
-                    <th>氏名</th>
-                    <td>東経真奈美</td>
-                    <th>生年月日</th>
-                    <td>平成9年10月5日</td>
-                    <th>年齢</th>
-                    <td>24歳</td>
-                  </tr>
-                  <tr>
-                    <th rowspan="2">住所</th>
-                    <td colspan="3" rowspan="2" style="vertical-align: top">
-                      aaa
-                    </td>
-                    <th>電話番号</th>
-                    <td>000</td>
-                  </tr>
-                  <tr>
-                    <th>FAX番号</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>障害・疾患名</th>
-                    <td></td>
-                    <th>障害支援区分</th>
-                    <td>区分4</td>
-                    <th>性別</th>
-                    <td>女</td>
-                  </tr>
-                </table>
-              </div>
-              <div class="mt-1">
-                <v-app-bar flat height="24" class="titleBlueDark">
-                  <v-app-bar-title class="text-caption"
-                    >施設・病院情報</v-app-bar-title
-                  >
-                </v-app-bar>
-                <table class="table mt-1">
-                  <tr>
-                    <th>施設・病院名</th>
-                    <td class="wide"></td>
-                    <th>担当者名</th>
-                    <td></td>
-                  </tr>
-                  <tr></tr>
-                  <tr>
-                    <th rowspan="2">住所</th>
-                    <td rowspan="2" style="vertical-align: top">
-                      984-0052<br />aaa<br />aaa
-                    </td>
-                    <th>電話番号</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>ＦＡＸ番号</th>
-                    <td></td>
-                  </tr>
-                </table>
-              </div>
-              <div class="mt-1">
-                <v-app-bar flat height="24" class="titleBlueDark">
-                  <v-app-bar-title class="text-caption"
-                    >アセスメント</v-app-bar-title
-                  >
-                </v-app-bar>
-                <v-app-bar flat height="24" class="titleBlue mt-1">
-                  <v-app-bar-title class="caption"
-                    >1.利用者の心身の状況</v-app-bar-title
-                  >
-                </v-app-bar>
-                <v-textarea
-                  class="mt-1"
-                  rows="2"
-                  no-resize
-                  outlined
-                  hide-details="false"
-                ></v-textarea>
-                <v-app-bar flat height="24" class="titleBlue">
-                  <v-app-bar-title class="caption"
-                    >2.利用者の置かれている環境</v-app-bar-title
-                  >
-                </v-app-bar>
-                <v-textarea
-                  class="mt-1"
-                  rows="2"
-                  no-resize
-                  outlined
-                  hide-details="false"
-                  :value="value"
-                ></v-textarea>
-              </div>
+              <ChiikiKeikakusyo2Zentai> </ChiikiKeikakusyo2Zentai>
+            </v-tab-item>
+            <v-tab-item value="tab-1" :eager="true">
+              <ChiikiKeikakusyo2Ikou> </ChiikiKeikakusyo2Ikou>
+            </v-tab-item>
+            <v-tab-item value="tab-2" :eager="true">
+              <ChiikiKeikakusyo2Kadai> </ChiikiKeikakusyo2Kadai>
             </v-tab-item>
           </v-tabs-items>
           <v-row dense class="ma-2" justify="space-between">
@@ -201,11 +109,11 @@
             <v-col cols="7">
               <v-card class="d-flex justify-end" flat tile>
                 <v-card
+                  class="koumokuTitle titleOrange mt-1 wMin"
                   outlined
                   tile
-                  width="60"
-                  class="text-center text-caption label pt-1"
-                  >完了
+                >
+                  完了
                 </v-card>
                 <v-card elevation="0" width="30" class="text-center mt-1">
                   <input type="checkbox" />
@@ -245,9 +153,16 @@
 <script>
 import dayjs from 'dayjs';
 import UserList from './UserList.vue';
+import ChiikiKeikakusyo2Zentai from './ChiikiKeikakusyo2Zentai.vue';
+import ChiikiKeikakusyo2Ikou from './ChiikiKeikakusyo2Ikou.vue';
+import ChiikiKeikakusyo2Kadai from './ChiikiKeikakusyo2Kadai.vue';
+
 export default {
   components: {
     UserList,
+    ChiikiKeikakusyo2Zentai,
+    ChiikiKeikakusyo2Ikou,
+    ChiikiKeikakusyo2Kadai,
   },
   computed: {
     styles() {
@@ -330,6 +245,7 @@ div#chiikiKeikakusyo2 {
   color: $font_color;
   font-size: 12px;
   font-family: 'メイリオ';
+  height: 100% !important;
 
   div.mSizeCommonTab {
     .v-tabs-bar .v-tab:not(.v-tab--active) {

@@ -40,8 +40,14 @@
     //背景色
     .dialog_back {
         background-color: $light-white;
+    }
 
+    .dialog_back_blue {
+        background-color: $view_Title_background_Blue;
+    }
 
+    .dialog_border {
+        border: 2px solid $view_Title_background_Main;
     }
 
 
@@ -62,6 +68,20 @@
             text-align: center;
         }
 
+        &.wdLong {
+            width: 640px;
+            text-align: center;
+        }
+
+        &.wdMdl {
+            width: 320px;
+            text-align: center;
+        }
+
+        &.wdShort {
+            width: 120px;
+            text-align: center;
+        }
 
 
 
@@ -92,6 +112,13 @@
         background-color: $view_Title_font_color;
         height: 25px;
         width: 185px;
+    }
+
+    .dialog_text_field_mdl {
+        background-color: $view_Title_font_color;
+        height: 23px;
+        width: 320px;
+        text-align: center;
     }
 
 

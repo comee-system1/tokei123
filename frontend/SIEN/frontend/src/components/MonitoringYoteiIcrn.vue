@@ -81,26 +81,24 @@
         </v-tooltip>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFilters"
-          class="customCombobox ml-1"
-          :itemsSource="tantousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTantousya"
-          :itemClicked="onTantousyaClicked"
+          @change="onTantousyaClicked"
+          style="width: 150px"
         >
-        </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          <option v-for="val in tantousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対象者
         </v-card>
         <v-btn-toggle
-          class="flex-wrap ml-1"
+          class="flex-wrap mr-1"
           v-model="taisyousyaIndex"
           mandatory
         >
@@ -117,7 +115,7 @@
           </v-btn>
         </v-btn-toggle>
         <v-btn-toggle
-          class="flex-wrap ml-1"
+          class="flex-wrap mr-1"
           v-model="taisyousyaYoteiIndex"
           multiple
           v-if="taisyousyaIndex == 1"
@@ -136,26 +134,24 @@
         </v-btn-toggle>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           市区町村
         </v-card>
-        <wj-menu
-          id="comboFiltersSikuchoson"
-          class="customCombobox ml-1"
-          :itemsSource="sikuchosonList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selSikuchoson"
-          :itemClicked="onSikuchosonClicked"
+          @change="onSikuchosonClicked"
+          style="width: 150px"
         >
-        </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          <option v-for="val in sikuchosonList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           絞込
         </v-card>
         <v-btn-toggle
-          class="flex-wrap ml-1"
+          class="flex-wrap mr-1"
           v-model="siborikomiIndex"
           mandatory
         >
@@ -176,7 +172,7 @@
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-          <span class="miman mr-1" style="width: 80px">18歳未満</span>
+          <span class="under18 mr-1" style="width: 80px">18歳未満</span>
         </v-card>
         <v-spacer></v-spacer>
         <v-card class="koumokuTitle titleOrange pa-1 ml-1" outlined tile>
@@ -251,7 +247,6 @@
 
 <script>
 import Vue from 'vue';
-import moment from 'moment';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
@@ -822,7 +817,7 @@ export default {
 
         if (tmpitem.agebk < 18) {
           if (e.col == 1 && tmpitem.isfirst) {
-            wjCore.addClass(e.cell, 'miman');
+            wjCore.addClass(e.cell, 'under18');
           }
           // if (tmpitem.agebk == 17 && 11 <= e.col && e.col <= 29) {
           //   let tmpym = this.dispYmList[e.col - 11];
@@ -967,18 +962,11 @@ export default {
     siborikomiClicked() {
       this.userFilter();
     },
-    taisyousyaClicked(s) {
-      this.selTantousya = this.selectCmb(s);
+    taisyousyaClicked() {
+      this.selTantousya = this.tantousyaList[this.selTantousya].val;
     },
-    onSikuchosonClicked(s) {
-      this.selJigyoKbn = this.selectCmb(s);
-    },
-    selectCmb(s) {
-      s.header = s.selectedItem.name;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-      return s.selectedValue;
+    onSikuchosonClicked() {
+      this.selSikuchoson = this.sikuchosonList[this.selSikuchoson].val;
     },
     userFilter() {
       let tmpviewdata = [];
@@ -1057,7 +1045,7 @@ export default {
       }
     },
     monthSelect() {
-      this.kikanYm = moment(this.picker);
+      this.kikanYm = dayjs(this.picker);
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -1175,64 +1163,6 @@ div#monitoringYotei {
       height: 3px;
     }
   }
-
-  div.customCombobox {
-    position: relative;
-    width: 125px !important;
-    height: 20px !important;
-    &.customCombobox {
-      width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 17px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 5px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -5px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
-
-  .miman {
-    padding: 0;
-    position: relative;
-    width: auto;
-    height: 20px;
-    background: $grid_background;
-  }
-  .miman::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-top: 10px solid green;
-    border-left: 10px solid transparent;
-  }
 }
 
 .v-picker {
@@ -1245,8 +1175,8 @@ div#monitoringYotei {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 70px;
+  top: 70px;
+  left: 100px;
   width: 300px;
   max-width: 300px;
 

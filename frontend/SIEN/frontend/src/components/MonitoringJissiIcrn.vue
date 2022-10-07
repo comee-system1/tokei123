@@ -59,11 +59,11 @@
         </v-btn>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           絞込
         </v-card>
         <v-btn-toggle
-          class="flex-wrap ml-1"
+          class="flex-wrap mr-1"
           v-model="siborikomiIndex"
           mandatory
         >
@@ -79,10 +79,10 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           様式
         </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" v-model="yousikiIndex" mandatory>
+        <v-btn-toggle class="flex-wrap mr-1" v-model="yousikiIndex" mandatory>
           <v-btn
             v-for="n in yousikiList"
             :key="n.val"
@@ -95,27 +95,25 @@
             {{ n.name }}
           </v-btn>
         </v-btn-toggle>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFilters"
-          class="customCombobox ml-1"
-          :itemsSource="tantousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTantousya"
-          :itemClicked="onTantousyaClicked"
+          @change="onTantousyaClicked"
+          style="width: 150px"
         >
-        </wj-menu>
+          <option v-for="val in tantousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-          <span class="miman mr-1" style="width: 80px">18歳未満</span>
+          <span class="under18 mr-1" style="width: 80px">18歳未満</span>
         </v-card>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
@@ -629,7 +627,7 @@ export default {
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (e.col == 1 && tmpitem.age < 18) {
-          wjCore.addClass(e.cell, 'miman');
+          wjCore.addClass(e.cell, 'under18');
         }
         if (tmpitem.chusi == '○' || tmpitem.enki == '○') {
           if (11 <= e.col && e.col <= 20) {
@@ -648,9 +646,7 @@ export default {
         }
       }
     },
-    onTantousyaClicked(s) {
-      this.selTantousya = this.selectCmb(s);
-    },
+
     searchClicked() {
       // 初期データ読込
       this.setViewData(true);
@@ -677,84 +673,6 @@ export default {
         this.userFilter();
       }
     },
-    createdemodata() {
-      let result = [];
-      let ymd;
-      for (let i = 1; i <= 100; i++) {
-        let d = new Date('2022', Number('12') - 1, '01');
-        if (i < 20 && i < 30) {
-          d = new Date('2022', Number('12') - 1, '11');
-        } else if (i < 30 && i < 40) {
-          d = new Date('2022', Number('12') - 1, '21');
-        } else {
-          d = new Date('2022', Number('12') - 1, '31');
-        }
-        ymd = d;
-
-        result.push({
-          codebk: String(1000000 + i),
-          code: String(1000000 + i),
-          name: '東経 ' + i + '太郎',
-          sichoson: '新東経西市',
-          sakuseiymd: ymd,
-          yousiki: '者',
-          yoteiMonth: 'xx月',
-          endMonth: '○',
-          chusi: '',
-          enki: '',
-          riyu: '',
-          jikaiMonth: '',
-          jissiYmd: ymd,
-          jissi: '●',
-          syukankeikaku: '●',
-          doui: '☑',
-          henkou: '●',
-          kousin: '●',
-          nextMonth: ymd,
-          serviceend: '○',
-          kaigiYmd: ymd,
-          kasan: '○',
-          tantousya: '五文字太郎',
-          age: 100,
-        });
-
-        if (i == 1) {
-          result[i - 1].enki = '○';
-          result[i - 1].riyu = '自己都合';
-          result[i - 1].jikaiMonth = 'xx月';
-          result[i - 1].jissiYmd = '';
-          result[i - 1].jissi = '';
-          result[i - 1].syukankeikaku = '';
-          result[i - 1].doui = '';
-          result[i - 1].henkou = '';
-          result[i - 1].kousin = '';
-          result[i - 1].nextMonth = '';
-          result[i - 1].serviceend = '';
-          result[i - 1].kaigiYmd = '';
-          result[i - 1].kasan = '';
-        }
-        if (i == 2) {
-          result[i - 1].chusi = '○';
-          result[i - 1].riyu = '自己都合';
-          result[i - 1].jikaiMonth = '-';
-          result[i - 1].jissiYmd = '';
-          result[i - 1].jissi = '';
-          result[i - 1].syukankeikaku = '';
-          result[i - 1].doui = '';
-          result[i - 1].henkou = '';
-          result[i - 1].kousin = '';
-          result[i - 1].nextMonth = '';
-          result[i - 1].serviceend = '';
-          result[i - 1].kaigiYmd = '';
-          result[i - 1].kasan = '';
-        }
-        if (i == 3) {
-          result[i - 1].yousiki = '児';
-          result[i - 1].age = 17;
-        }
-      }
-      this.viewdatayoteisyaAll = result;
-    },
     onAlphabetical() {
       this.userFilter();
     },
@@ -765,15 +683,8 @@ export default {
       this.yousikiIndex = id;
       this.userFilter();
     },
-    taisyousyaClicked(s) {
-      this.selTantousya = this.selectCmb(s);
-    },
-    selectCmb(s) {
-      s.header = s.selectedItem.name;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-      return s.selectedValue;
+    onTantousyaClicked() {
+      this.selTantousya = this.tantousyaList[this.selTantousya].val;
     },
     userFilter() {
       let tmpviewdata = [];
@@ -970,63 +881,6 @@ div#monitoringJissiIcrn {
       border-color: lightgray;
     }
   }
-
-  div.customCombobox {
-    position: relative;
-    width: 125px !important;
-    height: 20px !important;
-    &.customCombobox {
-      width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 17px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 8px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -5px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
-
-  .miman {
-    padding: 0;
-    position: relative;
-    width: auto;
-    background: $grid_background;
-  }
-  .miman::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-top: 10px solid green;
-    border-left: 10px solid transparent;
-  }
 }
 
 .v-picker {
@@ -1039,8 +893,8 @@ div#monitoringJissiIcrn {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 70px;
+  top: 70px;
+  left: 100px;
   width: 300px;
   max-width: 300px;
 }

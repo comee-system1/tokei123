@@ -57,6 +57,11 @@ const GRD_COL_WIDTH = {
     Naiyou: 310, //25文字幅
 }
 
+const JIGYO_KBN_NAME = {
+    KIHON: 'Kihonsoudan',
+    KEIKAKU: 'Keikakusoudan',
+    CHIIKI: 'Chiikisoudan',
+};
 const JIGYOKBN = {
     Kihon: {
         val: 0,
@@ -104,4 +109,5 @@ export default {
     JIGYOKBN,
     KEIKAKUJIGYOKBN,
     CHIIKIJIGYOKBN,
+    JIGYO_KBN_NAME
 }

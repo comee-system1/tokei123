@@ -1,8 +1,8 @@
 <template>
   <div id="assessmentInput">
-    <v-container no-gutters fluid class="container pa-0">
+    <v-container no-gutters fluid class="container pa-1">
       <v-row no-gutters>
-        <v-col class="leftArea ml-1">
+        <v-col class="leftArea">
           <!-- 左側エリア -->
           <user-list
             ref="user_list"
@@ -12,110 +12,72 @@
           >
           </user-list>
         </v-col>
-        <v-col class="rightArea" style="width: 700px; min-width: 700px">
+        <v-col class="rightArea ml-2 pr-1 pb-1">
           <!-- 中央エリア -->
-          <v-row no-gutters class="rowStyle mt-1 mb-1">
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
-              利用者名
-            </v-card>
-            <v-card class="koumokuData mr-1 pa-1" tile outlined>
-              {{ userInfo.names }}
-            </v-card>
-            <v-layout class="right">
-              <v-btn class="itemBtn mr-1" @click="copyClicked()">
-                前回ｺﾋﾟｰ
-              </v-btn>
-              <v-btn class="itemBtn mr-1" v-on:click.stop="drawer = !drawer">
-                履歴参照
-              </v-btn>
-              <v-navigation-drawer
-                v-model="drawer"
-                fixed
-                temporary
-                right
-                hide-overlay
-                :width="200"
-                :min-width="200"
-                style="font-size: 12px"
+          <v-row no-gutters class="rowStyle_Dark pa-1 pl-0 mb-1">
+            <v-row no-gutters class="rowStyle" style="position: relative">
+              <v-card
+                class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
+                outlined
+                tile
               >
-                <v-list class="pa-0 ma-0" dense>
-                  <v-card
-                    class="koumokuTitle_c pa-1"
-                    style="background: lightgray; min-width: 200px"
-                    outlined
-                    tile
-                    :height="30"
-                  >
-                    履歴参照
-                    <v-btn
-                      elevation="2"
-                      icon
-                      small
-                      absolute
-                      top
-                      right
-                      v-on:click.stop="drawer = !drawer"
-                      class="closeBtn mr-3"
-                      color="secondary"
-                      ><v-icon dark small> mdi-close </v-icon></v-btn
-                    >
-                  </v-card>
-                  <template v-for="item in rirekiList">
-                    <v-list-item
-                      class="pa-0 ma-0"
-                      dense
-                      :key="`first-${item.index}`"
-                      @click="rirekiClicked(item)"
-                    >
-                      <v-list-item-content class="pa-0 pl-2 ma-0">
-                        <table>
-                          <tr>
-                            <td width="10%" align="center">{{ item.no }}</td>
-                            <td width="40%" align="center">{{ item.day }}</td>
-                            <td width="10%" align="left">
-                              {{ item.kanryou }}
-                            </td>
-                            <td width="40%" align="left">
-                              {{ item.tantou }}
-                            </td>
-                          </tr>
-                        </table>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider :key="`second-${item.index}`" />
-                  </template>
-                </v-list>
-              </v-navigation-drawer>
-            </v-layout>
+                利用者名
+              </v-card>
+              <v-card
+                class="koumokuData border mr-1 pb-1 pl-1 pt-0"
+                tile
+                outlined
+                width="200"
+              >
+                {{ userInfo.riyocodeD }} {{ userInfo.names }}
+              </v-card>
+            </v-row>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1">
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 入力 </v-card>
+            <v-card
+              class="koumokuTitle titleMain pa-1 ml-1 mr-1"
+              width="50"
+              outlined
+              tile
+            >
+              入力
+            </v-card>
             <v-btn-toggle class="flex-wrap mr-1" v-model="selInput">
               <v-btn
                 v-for="n in inputList"
                 :key="n.val"
-                small
                 outlined
                 height="20"
+                width="40"
+                min-width="40"
                 @click="inputChangeclick(1)"
               >
                 {{ n.name }}
               </v-btn>
             </v-btn-toggle>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile> 種類 </v-card>
-            <wj-menu
-              id="comboFilters"
-              class="customCombobox mr-1"
-              :itemsSource="kindList"
-              :initialized="initComboFilters"
-              :isRequired="true"
-              selectedValuePath="val"
-              displayMemberPath="name"
-              v-model="selKind"
-              :itemClicked="onKindClicked"
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="50"
+              outlined
+              tile
             >
-            </wj-menu>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+              種類
+            </v-card>
+            <select
+              class="customSelectBox mr-1"
+              v-model="selKind"
+              @change="onKindClicked"
+            >
+              <option v-for="val in kindList" :key="val.val" :value="val.val">
+                {{ val.name }}
+              </option>
+            </select>
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="75"
+              outlined
+              tile
+            >
               作成日
             </v-card>
             <v-card
@@ -132,21 +94,84 @@
                 outlined
                 width="160px"
                 height="100%"
+                class="btnymd"
                 >{{ getYmd(0) }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-btn>
             </v-card>
-            <v-card class="koumokuTitle pa-1 mr-1" outlined tile>
+            <v-card
+              class="koumokuTitle titleMain pa-1 mr-1"
+              width="75"
+              outlined
+              tile
+            >
               作成者
             </v-card>
-            <v-card class="koumokuData mr-1 pa-1" tile outlined> </v-card>
+            <v-card class="koumokuData pa-1" width="100" tile outlined>
+            </v-card>
+            <v-spacer></v-spacer>
+            <v-btn class="mr-1" height="100%" @click="copyClicked()">
+              前回ｺﾋﾟｰ
+            </v-btn>
+            <v-btn height="100%" v-on:click.stop="drawer = !drawer">
+              履歴参照
+            </v-btn>
+            <v-navigation-drawer
+              v-model="drawer"
+              fixed
+              temporary
+              right
+              hide-overlay
+              :width="200"
+              :min-width="200"
+              style="font-size: 14px"
+            >
+              <v-list class="pa-0 ma-0" dense>
+                <v-card class="drawerTitle pa-1" outlined tile :height="30">
+                  履歴参照
+                  <v-btn
+                    elevation="2"
+                    icon
+                    absolute
+                    top
+                    right
+                    height="20"
+                    width="20"
+                    v-on:click.stop="drawer = !drawer"
+                    class="mt-1"
+                    color="secondary"
+                    ><v-icon dark small> mdi-close </v-icon></v-btn
+                  >
+                </v-card>
+                <template v-for="item in rirekiList">
+                  <v-list-item
+                    class="pa-0 ma-0"
+                    dense
+                    :key="`first-${item.index}`"
+                    @click="rirekiClicked(item)"
+                  >
+                    <v-list-item-content class="pa-0 pl-2 ma-0">
+                      <table>
+                        <tr>
+                          <td width="10%" align="center">{{ item.no }}</td>
+                          <td width="40%" align="center">{{ item.day }}</td>
+                          <td width="10%" align="left">{{ item.kanryou }}</td>
+                          <td width="40%" align="left">{{ item.tantou }}</td>
+                        </tr>
+                      </table>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider :key="`second-${item.index}`" />
+                </template>
+              </v-list>
+            </v-navigation-drawer>
           </v-row>
 
           <v-row no-gutters>
             <wj-flex-grid
-              id="icrnGrid"
+              id="assessmentInputIcrnGrid"
               :headersVisibility="'None'"
               :autoGenerateColumns="false"
               :allowAddNew="false"
@@ -168,11 +193,14 @@
             </wj-flex-grid>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-btn class="itemBtn mr-1" @click="copyClicked()"> クリア </v-btn>
-            <v-btn class="itemBtn mr-1" @click="copyClicked()"> 削除 </v-btn>
-            <v-layout class="right">
-              <v-btn class="itemBtn mr-1" @click="copyClicked()"> 登録 </v-btn>
-            </v-layout>
+            <v-btn class="mr-1" height="20" @click="copyClicked()">
+              クリア
+            </v-btn>
+            <v-btn class="mr-1" height="20" @click="copyClicked()">
+              削除
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn height="20" @click="copyClicked()"> 登録 </v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -546,12 +574,8 @@ export default {
     copyClicked(kbn) {
       console.log(kbn);
     },
-    onKindClicked(s) {
-      s.header = this.kindList[s.selectedIndex].name;
-      this.selKind = s.selectedValue;
-      this.setViewData(true);
-      let f = document.activeElement;
-      f.blur();
+    onKindClicked() {
+      this.selKind = this.kindList[this.selKind].val;
     },
   },
 };
@@ -562,10 +586,9 @@ export default {
 div#assessmentInput {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   // min-width: 1050px !important;
   // max-width: 1920px;
-  // min-width: 1266px !important;
+  min-width: 1330px !important;
   // width: auto;
   .leftArea {
     min-width: 275px;
@@ -574,83 +597,16 @@ div#assessmentInput {
     width: 275px;
   }
   .rightArea {
-    width: 700px;
-    min-width: 700px;
-  }
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 75px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-  .koumokuData {
-    color: $font_color;
-    display: flex;
-    align-items: center;
-    width: auto;
-    min-width: 200px;
-    height: 100%;
-    text-align: left;
-    background: $view_Data_Read_background;
-    border: none;
-  }
-  .koumokuTitle_c {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-width: 300px;
-    height: 20px;
-    text-align: center;
-    background: $view_Title_background;
+    width: 1030px;
+    min-width: 1030px;
+    max-width: 1030px;
   }
 
-  .rowStyle {
-    height: 20px;
-  }
-  .right {
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-  }
-  .v-btn {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-  }
-  .closeBtn {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-  .itemBtn {
-    font-size: 14px;
-    background: $btn_background;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    min-height: 19px;
-    height: 19px;
-    width: 75px;
-  }
-  #icrnGrid {
+  #assessmentInputIcrnGrid {
     min-height: 520px;
     height: 80vh;
-    width: 1050px;
-    min-width: 1050px;
+    width: 100%;
+    min-width: 1000px;
     color: $font_color;
     font-size: $cell_fontsize;
 

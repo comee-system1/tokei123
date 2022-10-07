@@ -200,40 +200,14 @@ import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
 //let w = ['mon', 'thu', 'web', 'the', 'fri', 'sat', 'sun'];
 //let wk = '';
-let x = 330;
+//let x = 330;
 let startY = 0;
+let startX = 0;
 let endY = 0;
 let startWeekPos = 0;
 let endWeekPos = 0;
 
-function mouseDragGetWeek() {
-  x = 330;
-}
-function mouseDragBackgroundColor(elem, e, newDiv) {
-  let cy = 0;
-  let y = 140;
-  for (let i = 0; i < 36; i++) {
-    if (e.clientY >= y && e.clientY < y + 15) {
-      cy = y;
-      startY = y;
-    }
-    newDiv.style.top = cy - 50 + 'px';
-    y = y + 15;
-  }
-  let cx = 0;
-  for (let i = 0; i <= 7; i++) {
-    if (e.clientX >= x && e.clientX < x + 110) {
-      cx = x;
-    }
-    newDiv.style.left = cx + 'px';
-    x = x + 110;
-  }
-  if (cx && cy) {
-    elem.appendChild(newDiv);
-  }
-}
 export default {
-  mouseDragBackgroundColor,
   components: {
     FullCalendar, // make the <FullCalendar> tag available
     UserList,
@@ -321,25 +295,29 @@ export default {
     let elem = document.getElementById('fullCalendar');
     let newDiv = document.createElement('div');
     let _self = this;
-    let startX = '';
+
     elem.addEventListener('mousedown', function (e) {
       if (_self.eventSelected.length != 0) {
         newDiv = document.createElement('div');
         _self.moveFlag = true;
         newDiv.className = 'cls';
+
+        newDiv.style.left = e.clientX + 'px';
+        newDiv.style.top = e.clientY - 50 + 'px';
+        elem.appendChild(newDiv);
+
         startX = e.clientX;
-        mouseDragGetWeek(e);
-        mouseDragBackgroundColor(elem, e, newDiv);
+        startY = e.clientY;
       }
     });
+
     elem.addEventListener('mousemove', function (e) {
       if (_self.moveFlag == true && _self.eventSelected.length != 0) {
-        mouseDragGetWeek(e);
-        // let client_w = e.clientX;
-        newDiv.style.width = parseInt(e.clientX - startX) + 50 + 'px';
+        newDiv.style.width = parseInt(e.clientX - startX) + 'px';
         newDiv.style.height = parseInt(e.clientY - startY) + 'px';
       }
     });
+
     elem.addEventListener('mouseup', function (e) {
       endY = e.clientY;
       _self.moveFlag = false;

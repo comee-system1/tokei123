@@ -337,79 +337,70 @@
     </v-overlay>
     <!-- 計画案 利用者同意・署名ダイアログ-->
     <v-dialog width="400" v-model="doui_dialog">
-      <v-card elevation="2" class="pa-5 keikakulist_dialog">
-        <v-toolbar-title class="text-subtitle-1 text-center"
-          >計画案 利用者同意・署名</v-toolbar-title
+      <v-card elevation="2" class="common_dialog">
+        <v-card-title class="dialog_title"
+          >計画案 利用者同意・署名</v-card-title
         >
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
           @click="header_dialog_close"
-          class="mt-3 mr-2"
-          color="secondary"
+          class="dialog_close"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-        <v-row no-gutters class="mt-2">
-          <v-col cols="3"><label>利用者名</label></v-col>
-          <v-col cols="*">
-            <v-text-field
+        <div class="common_dialog pa-1">
+          <v-row no-gutters class="rowStyle_input">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >利用者名</v-card
+            >
+            <v-card
               outlined
-              value=""
-              class="pa-0 ma-0 text-input readonly"
-              hide-details="false"
-              height="24"
-              readonly
+              tile
               v-model="doui_dialog_input.riyosya"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="mt-1">
-          <v-col cols="3"><label>同意日</label></v-col>
-          <v-col cols="4">
-            <v-text-field
+              class="titleYellow wdMdl"
+              >{{ doui_dialog_input.riyosya }}</v-card
+            >
+          </v-row>
+          <v-row no-gutters class="mt-1 rowStyle_input">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >同意日</v-card
+            >
+            <v-card
               outlined
-              class="pa-0 ma-0 text-input"
-              hide-details="false"
-              readonly
-              @click="datepicker_doui_dialog = true"
-              append-icon="mdi-calendar-month"
+              tile
               v-model="doui_dialog_input.douibi"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="mt-1">
-          <v-col cols="3"><label>区分</label></v-col>
-          <v-col cols="*">
-            <v-btn-toggle v-model="select_doui_man">
+              class="wdMdl"
+              >{{ doui_dialog_input.douibi }}</v-card
+            >
+          </v-row>
+
+          <v-row no-gutters class="mt-1 rowStyle_input">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >区分</v-card
+            >
+            <v-btn-toggle v-model="select_doui_man" class="ml-1">
               <v-btn small elevation="0" v-for="val in doui_man" :key="val">{{
                 val
               }}</v-btn>
             </v-btn-toggle>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="mt-2">
-          <v-col cols="3"><label>署名</label></v-col>
-          <v-col cols="*">
-            <v-text-field
-              outlined
-              value=""
-              class="pa-0 ma-0 text-input"
-              hide-details="false"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters justify="space-between" class="mt-3">
-          <v-col cols="3">
-            <v-btn small>削除</v-btn>
-          </v-col>
-          <v-col cols="3" align="right">
-            <v-btn small>登録</v-btn>
-          </v-col>
-        </v-row>
+          </v-row>
+          <v-row no-gutters class="mt-1 rowStyle_input">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >署名</v-card
+            >
+            <input type="text" outlined tile class="dialog_text_field_mdl" />
+          </v-row>
+
+          <v-row no-gutters justify="space-between" class="mt-3">
+            <v-col cols="3">
+              <v-btn small>削除</v-btn>
+            </v-col>
+            <v-col cols="3" align="right">
+              <v-btn small>登録</v-btn>
+            </v-col>
+          </v-row>
+        </div>
       </v-card>
     </v-dialog>
 
@@ -429,59 +420,53 @@
 
     <!-- 計画案 提出ダイアログ-->
     <v-dialog width="400" v-model="teisyutu_dialog">
-      <v-card elevation="2" class="pa-5 keikakulist_dialog">
-        <v-toolbar-title class="text-subtitle-1 text-center"
-          >計画案 提出</v-toolbar-title
-        >
+      <v-card elevation="2" class="common_dialog">
+        <v-card-title class="dialog_title">計画案 提出</v-card-title>
         <v-btn
           elevation="2"
           icon
           small
-          absolute
-          top
-          right
           @click="header_dialog_close"
-          class="mt-3 mr-2"
-          color="secondary"
+          class="dialog_close"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
-        <v-row no-gutters class="mt-2">
-          <v-col cols="3"><label>利用者名</label></v-col>
-          <v-col cols="*">
-            <v-text-field
+        <div class="common_dialog pa-1">
+          <v-row no-gutters class="rowStyle_input">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >利用者名</v-card
+            >
+            <v-card
               outlined
-              value=""
-              class="pa-0 ma-0 text-input readonly"
-              hide-details="false"
-              height="24"
-              readonly
+              class="titleYellow wdMdl"
               v-model="teisyutu_dialog_input.riyosya"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="mt-1">
-          <v-col cols="3"><label>提出日</label></v-col>
-          <v-col cols="4">
-            <v-text-field
+              >{{ teisyutu_dialog_input.riyosya }}</v-card
+            >
+          </v-row>
+          <v-row no-gutters class="rowStyle_input mt-1">
+            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+              >提出日</v-card
+            >
+
+            <v-card
               outlined
-              class="pa-0 ma-0 text-input"
-              hide-details="false"
-              readonly
+              tile
+              class="wdMdl"
               @click="datepicker_teisyutu_dialog = true"
               append-icon="mdi-calendar-month"
               v-model="teisyutu_dialog_input.teisyutubi"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+              >{{ teisyutu_dialog_input.teisyutubi }}</v-card
+            >
+          </v-row>
 
-        <v-row no-gutters justify="space-between" class="mt-3">
-          <v-col cols="3">
-            <v-btn small>削除</v-btn>
-          </v-col>
-          <v-col cols="3" align="right">
-            <v-btn small>登録</v-btn>
-          </v-col>
-        </v-row>
+          <v-row no-gutters justify="space-between" class="mt-3">
+            <v-col cols="3">
+              <v-btn small>削除</v-btn>
+            </v-col>
+            <v-col cols="3" align="right">
+              <v-btn small>登録</v-btn>
+            </v-col>
+          </v-row>
+        </div>
       </v-card>
     </v-dialog>
 
@@ -1169,52 +1154,5 @@ div#keikakuListGrid {
   height: 0;
   border-top: 10px solid green;
   border-left: 10px solid transparent;
-}
-
-// 利用者同意署名ダイアログ
-.keikakulist_dialog {
-  font-size: 12px;
-  min-height: 24px;
-
-  .text-input {
-    font-size: 12px;
-    .v-input__slot {
-      min-height: 24px;
-      padding: 0px 4px !important;
-    }
-    fieldset {
-      max-height: 32px;
-    }
-    input {
-      padding: 0px 4px;
-    }
-    &.readonly {
-      background-color: $light_yellow;
-    }
-  }
-
-  .v-input__append-inner {
-    position: absolute;
-
-    right: 14px;
-    top: -10px;
-    width: 12px;
-    .v-input__icon {
-      height: 12px;
-      width: 12px;
-      i {
-        font-size: 16px;
-      }
-    }
-  }
-
-  label {
-    background-color: $view_Title_background;
-    width: 80px;
-    display: block;
-    height: 24px;
-    text-align: center;
-    padding-top: 4px;
-  }
 }
 </style>

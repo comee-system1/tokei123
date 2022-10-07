@@ -129,48 +129,39 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
-        <wj-menu
-          id="comboFiltersTaiousya"
-          class="customCombobox mr-1"
-          :itemsSource="taiousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTaiousya"
-          :itemClicked="onTaiousyaClicked"
+          @change="onTaiousyaClicked"
         >
-        </wj-menu>
+          <option v-for="val in taiousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
-        <wj-menu
-          id="comboFiltersInput"
-          class="customCombobox mr-1"
-          :itemsSource="inputList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox wShort mr-1"
           v-model="selInputKbn"
-          :itemClicked="onInputClicked"
+          @change="onInputClicked"
         >
-        </wj-menu>
+          <option v-for="val in inputList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ランク
         </v-card>
-        <wj-menu
-          id="comboFiltersRank"
-          class="customCombobox mr-1"
-          :itemsSource="rankList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox wShort mr-1"
           v-model="selRank"
-          :itemClicked="onRankClicked"
+          @change="onRankClicked"
         >
-        </wj-menu>
+          <option v-for="val in rankList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <v-card class="gridTitle pa-0 ma-0" outlined tile>
@@ -308,6 +299,7 @@ export default {
         { val: 1, name: '宇都宮' },
       ],
       rankList: [
+        { val: 0, name: '指定なし' },
         { val: 1, name: 'A' },
         { val: 2, name: 'B' },
         { val: 3, name: 'C' },
@@ -565,26 +557,14 @@ export default {
         }
       }
     },
-    onTaiousyaClicked(s) {
-      s.header = this.taiousyaList[s.selectedIndex].name;
-      this.selTaiousya = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onTaiousyaClicked() {
+      this.selTaiousya = this.taiousyaList[this.selTaiousya].val;
     },
-    onInputClicked(s) {
-      s.header = this.inputList[s.selectedIndex].name;
-      this.selInputKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onInputClicked() {
+      this.selInputKbn = this.inputList[this.selInputKbn].val;
     },
-    onRankClicked(s) {
-      s.header = this.rankList[s.selectedIndex].name;
-      this.selRank = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onRankClicked() {
+      this.selRank = this.rankList[this.selRank].val;
     },
     searchClicked() {
       // 初期データ読込
@@ -777,10 +757,6 @@ export default {
 div#soudanCount {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
-  // overflow-x: scroll;
-  // width: 1366px !important;
-  // min-width: 1266px !important;
   max-width: 1920px;
   width: auto;
 
@@ -861,46 +837,6 @@ div#soudanCount {
       background: $view_Title_background_Orange_Dark;
     }
   }
-
-  div.customCombobox {
-    position: relative;
-    // width: 300px !important;
-    height: 20px !important;
-    &.customCombobox {
-      // width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 18px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 5px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -6px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
 }
 .v-picker {
   z-index: 10;
@@ -912,8 +848,8 @@ div#soudanCount {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 150px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 
@@ -939,8 +875,8 @@ div#soudanCount {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 100px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 }
@@ -948,8 +884,8 @@ div#soudanCount {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 270px;
+  top: 70px;
+  left: 350px;
   width: 300px;
   max-width: 300px;
 }

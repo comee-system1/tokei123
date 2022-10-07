@@ -1,55 +1,92 @@
 <template>
-  <div id="listsArea">
-    <v-row dense v-for="value in note" :key="value.key">
-      <v-col cols="2" class="text-center valign text-caption">
-        <v-card
-          class="pa-1 lightGreen"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-          relative
+  <div>
+    <div class="mt-1">
+      <v-app-bar flat height="24" class="titleBlueDark">
+        <v-app-bar-title class="text-caption">利用者の状況</v-app-bar-title>
+      </v-app-bar>
+      <table class="table mt-1">
+        <tr>
+          <th>氏名</th>
+          <td>東経真奈美</td>
+          <th>生年月日</th>
+          <td>平成9年10月5日</td>
+          <th>年齢</th>
+          <td>24歳</td>
+        </tr>
+        <tr>
+          <th rowspan="2">住所</th>
+          <td colspan="3" rowspan="2" style="vertical-align: top">aaa</td>
+          <th>電話番号</th>
+          <td>000</td>
+        </tr>
+        <tr>
+          <th>FAX番号</th>
+          <td></td>
+        </tr>
+        <tr>
+          <th>障害・疾患名</th>
+          <td></td>
+          <th>障害支援区分</th>
+          <td>区分4</td>
+          <th>性別</th>
+          <td>女</td>
+        </tr>
+      </table>
+    </div>
+    <div class="mt-1">
+      <v-app-bar flat height="24" class="titleBlueDark">
+        <v-app-bar-title class="text-caption">施設・病院情報</v-app-bar-title>
+      </v-app-bar>
+      <table class="table mt-1">
+        <tr>
+          <th>施設・病院名</th>
+          <td class="wide"></td>
+          <th>担当者名</th>
+          <td></td>
+        </tr>
+        <tr></tr>
+        <tr>
+          <th rowspan="2">住所</th>
+          <td rowspan="2" style="vertical-align: top">
+            984-0052<br />aaa<br />aaa
+          </td>
+          <th>電話番号</th>
+          <td></td>
+        </tr>
+        <tr>
+          <th>ＦＡＸ番号</th>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+    <div class="mt-1">
+      <v-app-bar flat height="24" class="titleBlueDark">
+        <v-app-bar-title class="text-caption">アセスメント</v-app-bar-title>
+      </v-app-bar>
+      <v-app-bar flat height="24" class="titleBlue mt-1">
+        <v-app-bar-title class="caption">1.利用者の心身の状況</v-app-bar-title>
+      </v-app-bar>
+      <v-textarea
+        class="mt-1"
+        rows="2"
+        no-resize
+        outlined
+        hide-details="false"
+      ></v-textarea>
+      <v-app-bar flat height="24" class="titleBlue">
+        <v-app-bar-title class="caption"
+          >2.利用者の置かれている環境</v-app-bar-title
         >
-          <label>{{ value.title }}</label>
-        </v-card>
-      </v-col>
-      <v-col cols="10" class="mr-0 text-caption">
-        <v-card
-          class="pa-1 editarea mx-auto"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-          @click="editText(value.key)"
-        >
-          <div>{{ value.value }}</div>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-dialog v-model="editTextDialog" max-width="1150">
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="editTextDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ note[notekey].title }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="editTextSave"> 保存 </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-list three-line subheader class="pa-2">
-          <v-textarea
-            outlined
-            v-model="inputs"
-            :style="textstyles"
-            class="keikakuideaTextarea mt-0"
-            hide-details="false"
-          ></v-textarea>
-        </v-list>
-      </v-card>
-    </v-dialog>
+      </v-app-bar>
+      <v-textarea
+        class="mt-1"
+        rows="2"
+        no-resize
+        outlined
+        hide-details="false"
+        :value="value"
+      ></v-textarea>
+    </div>
   </div>
 </template>
 
@@ -101,6 +138,12 @@ export default {
         minHeight: '100vh',
       };
     },
+    styles() {
+      // ブラウザの高さ
+      return {
+        '--height': window.innerHeight - this.headerheight + 'px',
+      };
+    },
   },
   methods: {
     /******************************
@@ -136,26 +179,6 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-#listsArea {
-  color: $font_color;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  width: 100%;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  .editarea {
-    overflow: hidden;
-    overflow-y: scroll;
-    //width: 890px;
-    width: 100%;
-    div {
-      width: 860px;
-    }
-  }
-}
 .keikakuideaTextarea {
   fieldset {
     border: none;
@@ -168,12 +191,5 @@ export default {
 }
 .lightGreen {
   background-color: $view_Title_background_Green !important;
-  label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-  }
 }
 </style>

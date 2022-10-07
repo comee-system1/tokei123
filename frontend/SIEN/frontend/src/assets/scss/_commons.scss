@@ -116,6 +116,10 @@ html {
     background: transparent !important;
 }
 
+.titleYellow {
+    background-color: $light_yellow !important;
+}
+
 .titleTranceparent {
     border: none !important;
     background: $view_Title_background_none !important;
@@ -128,7 +132,31 @@ html {
     text-align: left;
     background: $view_Data_Read_background !important;
     border: none;
+
+    &.border {
+        border: 1px solid;
+        border-color: $view_Border_Blue;
+    }
 }
+.under18 {
+    padding: 0;
+    position: relative;
+    width: auto;
+    height: 20px;
+    background: $grid_background;
+    border: 1px solid;
+    border-color: $light-gray;
+  }
+  .under18::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 10px solid green;
+    border-left: 10px solid transparent;
+  }
 
 /**********************
 * input系設定
@@ -287,6 +315,17 @@ div.mSizeCommonTab {
     -moz-appearance: menulist;
     -webkit-appearance: menulist;
     display: block;
+
+    &.wShort {
+        width: 100px;
+    }
+
+    &.hHigh {
+        height: 25px;
+    }
+    &.bgWhite{
+        background-color: $white;
+    }
 
     &:focus {
         outline: none;

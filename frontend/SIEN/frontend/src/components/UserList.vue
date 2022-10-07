@@ -48,19 +48,20 @@
           <v-col cols="*" style="height: 100%">
             <div align="right">
               <label class="mr-1">サービス歴</label>
-              <wj-menu
-                id="comboFilters1"
-                class="customCombobox"
-                :itemsSource="svcRirekiList"
-                :initialized="initComboFilters"
-                :isRequired="true"
-                selectedValuePath="val"
-                displayMemberPath="name"
+              <select
+                class="customSelectBox mr-1"
                 v-model="selSvcRireki"
-                :itemClicked="onSvcRirekiClicked"
+                @change="onSvcRirekiClicked"
                 style="width: 150px"
               >
-              </wj-menu>
+                <option
+                  v-for="val in svcRirekiList"
+                  :key="val.id"
+                  :value="val.id"
+                >
+                  {{ val.name }}
+                </option>
+              </select>
             </div>
           </v-col>
         </v-row>
@@ -103,21 +104,17 @@
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
-          <v-col cols="*">
-            <label class="titleGlay pl-1 pr-1">担当者</label>
-            <wj-menu
-              id="comboFilters2"
-              class="customCombobox"
-              :itemsSource="tantouList"
-              :initialized="initComboFilters"
-              :isRequired="true"
-              selectedValuePath="val"
-              displayMemberPath="name"
-              v-model="selTantou"
-              :itemClicked="onTantouClicked"
-            >
-            </wj-menu>
-          </v-col>
+          <label class="titleGlay pl-1 pr-1">担当者</label>
+          <select
+            class="customSelectBox bgWhite mr-1"
+            v-model="selTantou"
+            @change="onTantouClicked"
+            style="width: 200px"
+          >
+            <option v-for="val in tantouList" :key="val.id" :value="val.id">
+              {{ val.name }}
+            </option>
+          </select>
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
@@ -223,7 +220,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
@@ -371,19 +369,11 @@ export default {
         combo.header = combo.selectedItem.name;
       }
     },
-    onSvcRirekiClicked(s) {
-      s.header = this.svcRirekiList[s.selectedIndex].name;
-      this.selSvcRireki = s.selectedValue;
-      this.userFilter();
-      let f = document.activeElement;
-      f.blur();
+    onSvcRirekiClicked() {
+      this.selSvcRireki = this.svcRirekiList[this.selSvcRireki].id;
     },
-    onTantouClicked(s) {
-      s.header = this.tantouList[s.selectedIndex].name;
-      this.selTantou = s.selectedValue;
-      this.userFilter();
-      let f = document.activeElement;
-      f.blur();
+    onTantouClicked() {
+      this.selTantou = this.tantouList[this.selTantou].id;
     },
     siborikomiUser(siborikomiType) {
       this.selDispKbn = siborikomiType;
@@ -599,7 +589,7 @@ export default {
     },
     getYoteiYm() {
       if (!this.yoteiYm) {
-        this.yoteiYm = moment();
+        this.yoteiYm = dayjs();
         this.pickerYoteiYm =
           this.yoteiYm.year() +
           '-' +
@@ -622,7 +612,7 @@ export default {
     },
     monthSelect() {
       let split = this.pickerYoteiYm.split('-');
-      this.yoteiYm = moment({
+      this.yoteiYm = dayjs({
         years: split[0],
         months: Number(split[1]) - 1,
         days: 1,

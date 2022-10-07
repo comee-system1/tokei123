@@ -46,15 +46,8 @@
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn class="itemBtn mr-1" height="20" @click="searchClicked()">
-          検索
-        </v-btn>
-        <v-btn
-          class="itemBtn mr-1"
-          width="25"
-          height="20"
-          @click="filterClrclick()"
-        >
+        <v-btn class="mr-1" height="20" @click="searchClicked()"> 検索 </v-btn>
+        <v-btn class="mr-1" width="25" height="20" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
@@ -78,18 +71,16 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFiltersInput"
-          class="customCombobox mr-1"
-          :itemsSource="tantouist"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTantouId"
+          @change="onTantousyaClicked"
+          style="width: 150px"
         >
-          <!-- :itemClicked="onInputClicked" -->
-        </wj-menu>
+          <option v-for="val in tantouist" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示内容
         </v-card>
@@ -325,7 +316,10 @@ export default {
         { val: 2, name: '障害児' },
       ],
       selTantouId: 0,
-      tantouist: [{ val: 0, name: '全部' }],
+      tantouist: [
+        { val: 0, name: '全部' },
+        { val: 1, name: 'テスト' },
+      ],
       selDispNaiyouIndex: 0,
       dispNaiyouList: [
         { val: 0, name: '全部' },
@@ -509,6 +503,9 @@ export default {
         this.userFilter();
       }
     },
+    onTantousyaClicked() {
+      this.selTantouId = this.tantouist[this.selTantouId].val;
+    },
     userFilter() {
       let tmpviewdata = this.viewDataAll.concat();
       // // 絞込１
@@ -632,7 +629,6 @@ export default {
 div#tantousyaBetuJisseki {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   min-width: 1300px !important;
   max-width: 1920px;
   width: auto;
@@ -693,52 +689,12 @@ div#tantousyaBetuJisseki {
       border-color: lightgray;
     }
   }
-
-  .customCombobox {
-    position: relative;
-    // width: 300px !important;
-    height: 20px !important;
-    &.customCombobox {
-      // width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 18px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 5px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -6px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
 }
 
 #tantousyaBetuJissekidatepicker1 {
-  position: absolute;
-  margin-top: 40px;
-
+  position: fixed !important;
+  top: 70px;
+  left: 100px;
   width: auto;
   .v-picker {
     z-index: 10;
@@ -746,11 +702,5 @@ div#tantousyaBetuJisseki {
   .v-picker__title {
     display: none !important;
   }
-}
-
-#tantousyaBetuJissekidatepicker1 {
-  position: fixed !important;
-  top: 70px;
-  left: 400px;
 }
 </style>

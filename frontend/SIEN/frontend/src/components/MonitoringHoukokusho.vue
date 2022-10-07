@@ -30,11 +30,10 @@
                 利用者名
               </v-card>
               <v-card
-                class="koumokuData mr-1 pb-1 pl-1 pt-0"
+                class="koumokuData border mr-1 pb-1 pl-1 pt-0"
                 tile
                 outlined
                 width="200"
-                style="border: 1px solid; border-color: #0000aa"
               >
                 {{ userData.riyocodeD }} {{ userData.names }}
               </v-card>
@@ -143,14 +142,10 @@
               担当者名
             </v-card>
             <v-spacer></v-spacer>
-            <v-btn class="itemBtn mr-1" height="20" @click="copyClicked()">
+            <v-btn class="mr-1" height="20" @click="copyClicked()">
               前回ｺﾋﾟｰ
             </v-btn>
-            <v-btn
-              class="itemBtn"
-              height="20"
-              v-on:click.stop="drawer = !drawer"
-            >
+            <v-btn class="" height="20" v-on:click.stop="drawer = !drawer">
               履歴参照
             </v-btn>
             <v-navigation-drawer
@@ -245,7 +240,7 @@
 
           <v-row class="ma-0 mt-1" no-gutters>
             <wj-flex-grid
-              id="icrnGrid"
+              id="monitoringHoukokushoicrnGrid"
               :headersVisibility="'Column'"
               :autoGenerateColumns="false"
               :imeEnabled="true"
@@ -345,12 +340,7 @@
               tile
             >
             </v-card>
-            <v-btn
-              class="itemBtn"
-              :loading="loading"
-              height="20"
-              @click="searchClicked()"
-            >
+            <v-btn :loading="loading" height="20" @click="searchClicked()">
               登録
             </v-btn>
           </v-row>
@@ -379,7 +369,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="monitoringHoukokushoDatepicker"
+        id="monitoringHoukokushoDatepickerKanryouYm"
         type="month"
         v-model="pickerKanryou"
         locale="jp-ja"
@@ -394,7 +384,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="monitoringHoukokushoDatepicker"
+        id="monitoringHoukokushoDatepickerKanryouYmd"
         type="date"
         v-model="pickerKanryou"
         locale="jp-ja"
@@ -508,7 +498,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="monitoringHoukokushoDatepicker"
+        id="monitoringHoukokushoDatepickerDoui"
         type="date"
         v-model="pickerDoui"
         locale="jp-ja"
@@ -1090,7 +1080,6 @@ export default {
 div#monitoringHoukokusho {
   // color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
   min-width: 1330px !important;
@@ -1126,7 +1115,7 @@ div#monitoringHoukokusho {
     text-align: center;
   }
 
-  #icrnGrid {
+  #monitoringHoukokushoicrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     // width: auto;
@@ -1221,8 +1210,62 @@ div#monitoringHoukokusho {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
+  top: 100px;
   left: 500px;
+  width: 300px;
+  max-width: 300px;
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(7)
+    .v-btn__content {
+    color: blue;
+  }
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(1)
+    .v-btn__content {
+    color: red;
+  }
+}
+#monitoringHoukokushoDatepickerKanryouYm,
+#monitoringHoukokushoDatepickerKanryouYmd {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 300px;
+  left: 830px;
+  width: 300px;
+  max-width: 300px;
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(7)
+    .v-btn__content {
+    color: blue;
+  }
+
+  .v-date-picker-table.v-date-picker-table--date
+    > table
+    > tbody
+    tr
+    td:nth-child(1)
+    .v-btn__content {
+    color: red;
+  }
+}
+#monitoringHoukokushoDatepickerDoui {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 330px;
+  left: 600px;
   width: 300px;
   max-width: 300px;
 

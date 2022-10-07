@@ -13,6 +13,7 @@ import KeikakuLists from '../views/SIENP/KeikakuLists.vue'
 import AssessmentInput from '../views/SIENP/AssessmentInput.vue'
 import KeiyakuHokoku from '../views/SIENP/KeiyakuHokoku.vue'
 import ChiikiIkoSienKeikaku from '../views/SIENC/ChiikiIkoSienKeikaku.vue'
+import ChiikiteityakuDaicho from '../views/SIENC/ChiikiteityakuDaicho.vue'
 
 const TitleSoudansien = "相談支援";
 const TitleSoudansienSyukei = "相談支援＞集計表";
@@ -126,6 +127,14 @@ const routes = [
         component: ChiikiIkoSienKeikaku,
         meta: {
             title: TitleChiikiSoudan,
+        },
+    },
+    {
+        path: '/ChiikiteityakuDaicho',
+        name: '地域定着台帳様式設定',
+        component: ChiikiteityakuDaicho,
+        meta: {
+            title: "マスタ",
         },
     },
 

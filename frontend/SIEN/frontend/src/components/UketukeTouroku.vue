@@ -74,16 +74,6 @@
                 >
                   <v-icon>mdi-arrow-right-bold</v-icon>
                 </v-btn>
-                <v-btn
-                  elevation="0"
-                  class="btnymd pa-0 ml-1"
-                  height="100%"
-                  width="85"
-                  min-width="85"
-                  tile
-                  @click="searchClick()"
-                  >利用者検索
-                </v-btn>
               </v-card>
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1">
@@ -162,7 +152,7 @@
               <!-- CP -->
               <v-tabs-items v-model="kbnTab" transition="none">
                 <!-- transition="false" -->
-                <v-tab-item value="Kihonsoudan">
+                <v-tab-item :value="sysConst.JIGYO_KBN_NAME.KIHON">
                   <v-container
                     no-gutters
                     fluid
@@ -957,26 +947,28 @@
                     style="height: 25px"
                   >
                     <v-card
-                      class="koumokuTitle titleMain pa-1"
+                      class="koumokuTitle titleMain pa-1 mr-1"
                       width="50"
                       outlined
                       tile
                     >
                       項目
                     </v-card>
-                    <wj-menu
-                      id="comboFilters"
-                      class="customCombobox ml-1"
-                      :itemsSource="RirekiKoumokuList"
-                      :initialized="initComboFilters"
-                      :isRequired="true"
-                      selectedValuePath="val"
-                      displayMemberPath="name"
+                    <select
+                      class="customSelectBox hHigh mr-1"
                       v-model="selRirekiKoumoku"
-                      :itemClicked="onRirekiKoumokuClicked"
-                      style="width: 250px"
+                      @change="onRirekiKoumokuClicked"
+                      style="width: 280px"
                     >
-                    </wj-menu>
+                      <option
+                        v-for="val in RirekiKoumokuList"
+                        :key="val.val"
+                        :value="val.val"
+                      >
+                        {{ val.name }}
+                      </option>
+                    </select>
+                    <v-spacer></v-spacer>
                     <v-btn
                       class="ml-1"
                       width="50"
@@ -1061,7 +1053,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="datepicker"
+        id="uketukeTourokuDatepickerSym"
         type="month"
         v-model="pickersym"
         locale="jp-ja"
@@ -1076,7 +1068,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="datepicker"
+        id="uketukeTourokuDatepickerEym"
         type="month"
         v-model="pickereym"
         locale="jp-ja"
@@ -1187,6 +1179,7 @@ export default {
   components: { UserList },
   data() {
     return {
+      sysConst: sysConst,
       tantouData: {
         name: '大正　雅夫',
         code: '1111111',
@@ -1207,20 +1200,20 @@ export default {
         {
           val: 0,
           name: '基本相談',
-          href: '#Kihonsoudan',
-          hrefval: 'Kihonsoudan',
+          href: '#' + sysConst.JIGYO_KBN_NAME.KIHON,
+          hrefval: sysConst.JIGYO_KBN_NAME.KIHON,
         },
         {
           val: 1,
           name: '計画相談',
-          href: '#Keikakusoudan',
-          hrefval: 'Keikakusoudan',
+          href: '#' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
+          hrefval: sysConst.JIGYO_KBN_NAME.KEIKAKU,
         },
         {
           val: 2,
           name: '地域相談',
-          href: '#Chiikisoudan',
-          hrefval: 'Chiikisoudan',
+          href: '#' + sysConst.JIGYO_KBN_NAME.CHIIKI,
+          hrefval: sysConst.JIGYO_KBN_NAME.CHIIKI,
         },
       ],
       dispUserName: '',
@@ -1995,9 +1988,6 @@ export default {
         document.getElementById(id).focus();
       }
     },
-    searchClick() {
-      // ユーザ検索実行
-    },
     // クリア
     clrClicked(kbn) {
       if (kbn == 0) {
@@ -2140,11 +2130,8 @@ export default {
         ''
       );
     },
-    onRirekiKoumokuClicked(s) {
-      s.header = this.RirekiKoumokuList[s.selectedIndex].name;
-      this.selRirekiKoumoku = s.selectedValue;
-      let f = document.activeElement;
-      f.blur();
+    onRirekiKoumokuClicked() {
+      this.selRirekiKoumoku = this.RirekiKoumokuList[this.selRirekiKoumoku].val;
     },
     rirekiSearchClicked(symd, eymd, riid) {
       if (!symd && !eymd && !riid) {
@@ -2644,7 +2631,7 @@ div#uketukeTouroku {
   margin-top: 20px;
   position: fixed !important;
   top: 130px;
-  left: 390px;
+  left: 250px;
   width: 300px;
   max-width: 300px;
 
@@ -2666,41 +2653,14 @@ div#uketukeTouroku {
     color: red;
   }
 }
-div.customCombobox {
-  position: relative;
-  width: 300px !important;
-  height: 25px !important;
-  &.customCombobox {
-    width: 160px !important;
-    div {
-      text-align: left;
-    }
-  }
-
-  .wj-btn.wj-btn-default {
-    border-left: none !important;
-  }
-  &:hover {
-    background-color: #e1e1e1;
-  }
-  &:focus {
-    background-color: #fff;
-  }
-  div * {
-    height: 21px !important;
-    padding: 0;
-    span {
-      height: 21px !important;
-      margin-top: 8px;
-    }
-    &.wj-form-control {
-      position: absolute;
-      top: -3px;
-      width: 100%;
-    }
-  }
-  input {
-    height: 25px !important;
-  }
+#uketukeTourokuDatepickerSym,
+#uketukeTourokuDatepickerEym {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 150px;
+  left: 820px;
+  width: 300px;
+  max-width: 300px;
 }
 </style>

@@ -53,67 +53,44 @@
         </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile v-if="false">
-          事業区分
-        </v-card>
-        <wj-menu
-          id="comboFiltersJigyoKbn"
-          class="customCombobox mr-1"
-          :itemsSource="jigyoKbnList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
-          v-model="selJigyoKbn"
-          :itemClicked="onJigyoKbnClicked"
-          v-if="false"
-        >
-        </wj-menu>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
-        <wj-menu
-          id="comboFiltersInput"
-          class="customCombobox mr-1"
-          :itemsSource="inputList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selInputKbn"
-          :itemClicked="onInputClicked"
+          @change="onInputClicked"
+          style="width: 150px"
         >
-        </wj-menu>
+          <option v-for="val in inputList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           市区町村
         </v-card>
-        <wj-menu
-          id="comboFiltersSikuchoson"
-          class="customCombobox mr-1"
-          :itemsSource="sikuchosonList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox wShort mr-1"
           v-model="selSikuchoson"
-          :itemClicked="onSikuchosonClicked"
+          @change="onSikuchosonClicked"
         >
-        </wj-menu>
+          <option v-for="val in sikuchosonList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFiltersTantousya"
-          class="customCombobox mr-1"
-          :itemsSource="tantousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTantousya"
-          :itemClicked="onTantousyaClicked"
+          @change="onTantousyaClicked"
+          style="width: 150px"
         >
-        </wj-menu>
+          <option v-for="val in tantousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-btn class="mr-1" height="100%" @click="searchclick()"> 検索 </v-btn>
         <v-btn class="mr-1" width="25" height="100%" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
@@ -189,7 +166,7 @@
 
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
-          id="icrnGrid"
+          id="uketukeCheckListIcrnGrid"
           :headersVisibility="'Column'"
           :autoGenerateColumns="false"
           :allowAddNew="false"
@@ -480,9 +457,6 @@ export default {
       selTantousya: 0,
       sort1Index: 0,
       sort2Index: 0,
-      selAge: 0,
-      selShougaiSienKbn: 0,
-      selShougaiKbn: 0,
       selSyousaiDispUmuIndex: 0,
       viewDataAll: [],
       viewData: [],
@@ -583,7 +557,6 @@ export default {
     },
     filterApplied(e) {
       this.grdAutoSizeRow(e.grid);
-      console.log(e);
     },
     grdAutoSizeRow(flexGrid) {
       // 初期選択を解除
@@ -614,48 +587,9 @@ export default {
           this.viewDataAll = result;
           this.userFilter();
         });
-        // this.viewDataAll = this.loadData(false);
       } else {
         this.userFilter();
       }
-    },
-    loadData() {
-      let result = [];
-      for (let i = 0; i < 100; i++) {
-        let d = new Date('2020', Number('8') - 1, '01');
-        if (i < 20 && i < 30) {
-          d = new Date('2020', Number('8') - 1, '11');
-        } else if (i < 30 && i < 40) {
-          d = new Date('2020', Number('8') - 1, '21');
-        } else {
-          d = new Date('2020', Number('8') - 1, '31');
-        }
-        result.push({
-          day: d,
-          time: '10:00',
-          name: '東経 ' + i + '太郎',
-          age: 100,
-          sex: '○○',
-          sichoson: 'かすみがうら',
-          syougaisienkbn: 'X',
-          syougaikbn1: '知的',
-          syougaikbn2: '精神',
-          syougaikbn3: '視覚',
-          setai: '家族と同居',
-          honnin: '○○○○○○',
-          nyuukyokbn: '基',
-          sinki: '○',
-          houhou: '来所',
-          kankei: '本人',
-          naiyou: '（初回問い合わせ）',
-          naiyouDetail:
-            'あいうえおあいうえおあいうえおあいうえおあいうえお\nかきくけこかきくけこかきくけこかきくけこかきくけこかきくけこ',
-          rank: 'A',
-          syoyoujikan: 'xxx',
-          taiousya: '宇都宮',
-        });
-      }
-      return result;
     },
     userFilter() {
       let tmpviewdata = this.viewDataAll.concat();
@@ -804,34 +738,16 @@ export default {
         this.datepicker_dialog_month = false;
       }
     },
-    selectCmb(s) {
-      s.header = s.selectedItem.name;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
-      return s.selectedValue;
+    onInputClicked() {
+      this.selInputKbn = this.inputList[this.selInputKbn].val;
     },
-    onJigyoKbnClicked(s) {
-      this.selJigyoKbn = this.selectCmb(s);
+    onSikuchosonClicked() {
+      this.selSikuchoson = this.sikuchosonList[this.selSikuchoson].val;
     },
-    onInputClicked(s) {
-      this.selJigyoKbn = this.selectCmb(s);
+    onTantousyaClicked() {
+      this.selTantousya = this.tantousyaList[this.selTantousya].val;
     },
-    onSikuchosonClicked(s) {
-      this.selJigyoKbn = this.selectCmb(s);
-    },
-    onTantousyaClicked(s) {
-      this.selTantousya = this.selectCmb(s);
-    },
-    onAgeClicked(s) {
-      this.selAge = this.selectCmb(s);
-    },
-    onShougaiSienKbnClicked(s) {
-      this.selShougaiSienKbn = this.selectCmb(s);
-    },
-    onShougaiKbnClicked(s) {
-      this.selShougaiKbn = this.selectCmb(s);
-    },
+
     sortClicked() {
       this.setViewData(false);
     },
@@ -856,8 +772,7 @@ export default {
 div#uketukeCheckList {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
-  // min-width: 1350px !important;
+  min-width: 1300px;
   max-width: 1920px;
   width: auto;
 
@@ -866,7 +781,6 @@ div#uketukeCheckList {
     max-width: 275px;
     min-height: 450px;
     width: 275px;
-    // border: thin solid;
   }
 
   .countTitle {
@@ -886,7 +800,7 @@ div#uketukeCheckList {
     }
   }
 
-  #icrnGrid {
+  #uketukeCheckListIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     height: 78vh;
@@ -943,46 +857,6 @@ div#uketukeCheckList {
     .wj-filter-on {
       color: blue;
       border-color: lightgray;
-    }
-  }
-
-  div.customCombobox {
-    position: relative;
-    width: 125px !important;
-    height: 18px !important;
-    &.customCombobox {
-      // width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 18px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 6px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -5px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 16px !important;
     }
   }
 }

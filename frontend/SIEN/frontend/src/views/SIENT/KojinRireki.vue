@@ -1,162 +1,154 @@
 <template>
   <div id="kojinRireki">
-    <v-container no-gutters fluid class="container mt-1 pa-0">
+    <v-container no-gutters fluid class="pa-1">
       <v-row no-gutters>
-        <v-col class="leftArea ml-1">
+        <v-col class="leftArea pb-1">
           <!-- 左側エリア -->
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
-            style="height: 100%"
           >
           </user-list>
         </v-col>
-        <v-col class="centerArea ml-2">
+        <v-col class="ml-1 pa-1 pt-0" style="min-width: 700px">
           <!-- 中央エリア -->
-          <v-container no-gutters fluid class="container pa-0">
-            <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
-              <v-row no-gutters class="rowStyle" style="position: relative">
-                <v-card
-                  class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
-                  outlined
-                  tile
-                >
-                  利用者名
-                </v-card>
-                <v-card
-                  class="koumokuData mr-1 pb-1 pl-1 pt-0"
-                  tile
-                  outlined
-                  width="200"
-                  style="border: 1px solid; border-color: #0000aa"
-                >
-                  {{ userInfo.names }}
-                </v-card>
-              </v-row>
+          <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
+            <v-row no-gutters class="rowStyle" style="position: relative">
+              <v-card
+                class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
+                outlined
+                tile
+              >
+                利用者名
+              </v-card>
+              <v-card
+                class="koumokuData border mr-1 pb-1 pl-1 pt-0"
+                tile
+                outlined
+                width="200"
+              >
+                {{ userInfo.names }}
+              </v-card>
             </v-row>
+          </v-row>
 
-            <v-row no-gutters class="rowStyle mt-1">
-              <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
-                表示期間
-              </v-card>
-              <v-card
-                class="ml-1"
-                color="transparent"
-                height="100%"
-                style="border: none; margin-top: -1px"
-                outlined
-                tile
-              >
-                <v-btn
-                  @click="inputCalendarClick(0)"
-                  tile
-                  outlined
-                  width="160px"
-                  height="100%"
-                  class="btnymd pa-0"
-                  >{{ getYmd(0) }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-btn>
-              </v-card>
-              <label class="mr-1">～</label>
-              <v-card
-                class="mr-1"
-                color="transparent"
-                height="100%"
-                style="border: none; margin-top: -1px"
-                outlined
-                tile
-              >
-                <v-btn
-                  @click="inputCalendarClick(1)"
-                  tile
-                  outlined
-                  width="160px"
-                  height="100%"
-                  class="btnymd pa-0"
-                  >{{ getYmd(1) }}
-                  <div class="float-right">
-                    <v-icon small>mdi-calendar-month</v-icon>
-                  </div>
-                </v-btn>
-              </v-card>
+          <v-row no-gutters class="rowStyle mt-1">
+            <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+              表示期間
+            </v-card>
+            <v-card
+              class="ml-1"
+              color="transparent"
+              height="100%"
+              style="border: none; margin-top: -1px"
+              outlined
+              tile
+            >
               <v-btn
-                class="itemBtn mr-1"
-                height="20"
-                @click="inputCalendarClick(2)"
-              >
-                月指定
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                width="160px"
+                height="100%"
+                class="btnymd pa-0"
+                >{{ getYmd(0) }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
               </v-btn>
-              <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
-                詳細表示
-              </v-card>
-              <v-btn-toggle
-                class="flex-wrap mr-1"
-                v-model="selSyousaiDispUmuIndex"
+            </v-card>
+            <label class="mr-1">～</label>
+            <v-card
+              class="mr-1"
+              color="transparent"
+              height="100%"
+              style="border: none; margin-top: -1px"
+              outlined
+              tile
+            >
+              <v-btn
+                @click="inputCalendarClick(1)"
+                tile
+                outlined
+                width="160px"
+                height="100%"
+                class="btnymd pa-0"
+                >{{ getYmd(1) }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
+            </v-card>
+            <v-btn class="mr-1" height="20" @click="inputCalendarClick(2)">
+              月指定
+            </v-btn>
+            <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+              詳細表示
+            </v-card>
+            <v-btn-toggle
+              class="flex-wrap mr-1"
+              v-model="selSyousaiDispUmuIndex"
+            >
+              <v-btn
+                v-for="n in syousaiDispList"
+                :key="n.val"
+                outlined
+                height="20"
+                width="35"
+                min-width="35"
+                @click="grdDispChangeclick(n.val)"
               >
-                <v-btn
-                  v-for="n in syousaiDispList"
-                  :key="n.val"
-                  outlined
-                  height="20"
-                  width="35"
-                  min-width="35"
-                  @click="grdDispChangeclick(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-row>
-            <v-row no-gutters class="rowStyle mt-1 ml-1">
-              <v-card class="koumokuTitle titleMain pa-1" outlined tile>
-                表示内容
-              </v-card>
-              <v-btn-toggle class="flex-wrap ml-1" v-model="selDispNaiyouIndex">
-                <v-btn
-                  v-for="n in dispNaiyouList"
-                  :key="n.val"
-                  outlined
-                  height="20"
-                  :width="n.width"
-                  :min-width="n.width"
-                  @click="grdNaiyouclick(n.val)"
-                >
-                  {{ n.name }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-row>
-            <v-row class="ma-0 mt-1" no-gutters>
-              <wj-flex-grid
-                id="icrnGrid"
-                :headersVisibility="'Column'"
-                :autoGenerateColumns="false"
-                :allowAddNew="false"
-                :allowDelete="false"
-                :allowPinning="false"
-                :allowMerging="'AllHeaders'"
-                :allowResizing="true"
-                :allowSorting="false"
-                :allowDragging="false"
-                :selectionMode="'Row'"
-                :isReadOnly="true"
-                :initialized="onInitializeIcrnGrid"
-                :formatItem="onFormatItemIcrn"
-                :itemsSourceChanging="onItemsSourceChanging"
-                :itemsSourceChanged="onItemsSourceChanged"
-                :itemsSource="viewData"
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+          </v-row>
+          <v-row no-gutters class="rowStyle mt-1 ml-1">
+            <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+              表示内容
+            </v-card>
+            <v-btn-toggle class="flex-wrap ml-1" v-model="selDispNaiyouIndex">
+              <v-btn
+                v-for="n in dispNaiyouList"
+                :key="n.val"
+                outlined
+                height="20"
+                :width="n.width"
+                :min-width="n.width"
+                @click="grdNaiyouclick(n.val)"
               >
-                <wj-flex-grid-filter
-                  :initialized="filterInitialized"
-                  :filterApplied="filterApplied"
-                  :showFilterIcons="false"
-                />
-              </wj-flex-grid>
-            </v-row>
-          </v-container>
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <wj-flex-grid
+              id="kojinRirekiIcrnGrid"
+              :headersVisibility="'Column'"
+              :autoGenerateColumns="false"
+              :allowAddNew="false"
+              :allowDelete="false"
+              :allowPinning="false"
+              :allowMerging="'AllHeaders'"
+              :allowResizing="true"
+              :allowSorting="false"
+              :allowDragging="false"
+              :selectionMode="'Row'"
+              :isReadOnly="true"
+              :initialized="onInitializeIcrnGrid"
+              :formatItem="onFormatItemIcrn"
+              :itemsSourceChanging="onItemsSourceChanging"
+              :itemsSourceChanged="onItemsSourceChanged"
+              :itemsSource="viewData"
+            >
+              <wj-flex-grid-filter
+                :initialized="filterInitialized"
+                :filterApplied="filterApplied"
+                :showFilterIcons="false"
+              />
+            </wj-flex-grid>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -259,6 +251,7 @@ export default {
       ],
       headerList: [
         {
+          dispkbn: 0,
           dataname: 'ymdD',
           title: '日付',
           chutitle: '',
@@ -267,6 +260,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'kojin_naiiyou',
           title: '内容',
           chutitle: '',
@@ -275,6 +269,7 @@ export default {
           align: 'left',
         },
         {
+          dispkbn: 1,
           dataname: 'keikakusakusei',
           title: '様\n式',
           chutitle: '',
@@ -283,6 +278,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'P_tantousyakaigi',
           title: '担\n会\n議',
           chutitle: '',
@@ -291,6 +287,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jyukyukoufu',
           title: '障\n害\n者',
           chutitle: '',
@@ -299,6 +296,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jyukyukoufu',
           title: '障\n害\n児',
           chutitle: '',
@@ -307,6 +305,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jyukyukoufu',
           title: '地\n域\n相',
           chutitle: '',
@@ -315,6 +314,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jissi',
           title: '予定\n月',
           chutitle: '',
@@ -323,6 +323,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jissi',
           title: '終\n期\n月',
           chutitle: '',
@@ -331,6 +332,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'kbn',
           title: '区分',
           chutitle: '中止・延期',
@@ -339,6 +341,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'kbn',
           title: '理由',
           chutitle: '中止・延期',
@@ -347,6 +350,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jikaiyotei',
           title: '実\n施',
           chutitle: '',
@@ -355,6 +359,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jikaiyotei',
           title: '週\n間',
           chutitle: '',
@@ -363,6 +368,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jikaiyotei',
           title: '変\n更',
           chutitle: '案',
@@ -371,6 +377,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'jikaiyotei',
           title: '更\n新',
           chutitle: '案',
@@ -379,6 +386,7 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'M_tantousyakaigi',
           title: '担\n会\n議',
           chutitle: '',
@@ -387,6 +395,34 @@ export default {
           align: 'center',
         },
         {
+          dispkbn: 2,
+          dataname: 'sdnhourk',
+          title: '内容',
+          chutitle: '',
+          kbntitle: '地域相談支援',
+          width: '3*',
+          align: 'left',
+        },
+        {
+          dispkbn: 2,
+          dataname: 'sdnhourk',
+          title: '担当者\n会議',
+          chutitle: '',
+          kbntitle: '地域相談支援',
+          width: '2*',
+          align: 'left',
+        },
+        {
+          dispkbn: 2,
+          dataname: 'sdnhourk',
+          title: '支\n援',
+          chutitle: '',
+          kbntitle: '地域相談支援',
+          width: '1*',
+          align: 'left',
+        },
+        {
+          dispkbn: 0,
           dataname: 'sdnhourk',
           title: '方法',
           chutitle: '',
@@ -395,6 +431,7 @@ export default {
           align: 'left',
         },
         {
+          dispkbn: 0,
           dataname: 'naiyo',
           title: '内容',
           chutitle: '',
@@ -403,6 +440,7 @@ export default {
           align: 'left',
         },
         {
+          dispkbn: 0,
           dataname: 'kasankoumoku',
           title: '加算項目',
           chutitle: '',
@@ -411,6 +449,7 @@ export default {
           align: 'left',
         },
         {
+          dispkbn: 0,
           dataname: 'tanto',
           title: '担当者',
           chutitle: '',
@@ -464,6 +503,7 @@ export default {
       viewDataAll: [],
       viewData: [],
       filter: {},
+      inputRef: this.getDispKbn(),
     };
   },
   created: function () {
@@ -502,6 +542,17 @@ export default {
       for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
+
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          if (this.headerList[colIndex].dispkbn == 1) {
+            col.visible = false;
+          }
+        } else {
+          if (this.headerList[colIndex].dispkbn == 2) {
+            col.visible = false;
+          }
+        }
+
         col.wordWrap = true;
         col.binding = this.headerList[colIndex].dataname;
         col.header = this.headerList[colIndex].title;
@@ -591,6 +642,9 @@ export default {
             sysConst.COLOR.viewTitleBackgroundGreen;
         } else if (e.col < 16) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        } else if (e.col < 19) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
         } else {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundOrange;
@@ -604,7 +658,7 @@ export default {
           (e.row == 1 && e.col == 3) ||
           (e.row == 1 && e.col == 6) ||
           (e.row == 1 && e.col == 15) ||
-          (e.row == 1 && e.col == 17)
+          (e.row == 1 && e.col == 18)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -856,6 +910,16 @@ export default {
     filterClrclick() {
       this.filter.clear();
     },
+    getDispKbn() {
+      this.inputRef = sysConst.JIGYO_KBN_NAME.KIHON;
+      var urlparam = location.search.substring(1);
+      if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+        this.inputRef = sysConst.JIGYO_KBN_NAME.KEIKAKU;
+      } else if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI) {
+        this.inputRef = sysConst.JIGYO_KBN_NAME.CHIIKI;
+      }
+      return this.inputRef;
+    },
   },
 };
 </script>
@@ -865,24 +929,21 @@ export default {
 div#kojinRireki {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   min-width: 1300px !important;
-  // max-width: 1920px;
-  // width: auto;
 
   .leftArea {
     min-width: 275px;
     max-width: 275px;
     width: 275px;
-    // border: thin solid;
+    height: 100%;
   }
 
-  #icrnGrid {
+  #kojinRirekiIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    height: 78vh;
-    width: 77vw;
-    min-width: 900px;
+    height: 80vh;
+    width: 100%;
+    min-width: 1030px;
 
     .wj-header {
       // ヘッダのみ縦横中央寄せ
@@ -895,10 +956,7 @@ div#kojinRireki {
       font-weight: normal;
       line-height: 110%;
     }
-    .wj-cell-maker {
-      width: 15px;
-      height: 15px;
-    }
+
     .wj-cell {
       padding: 2px;
     }

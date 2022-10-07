@@ -95,7 +95,6 @@ export default {
 div#monitoringParent {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
   // min-width: 1350px !important;

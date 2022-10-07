@@ -135,49 +135,40 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
-        <wj-menu
-          id="comboFiltersTaiousya"
-          class="customCombobox mr-1"
-          :itemsSource="taiousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox wShort mr-1"
           v-model="selTaiousya"
-          :itemClicked="onTaiousyaClicked"
+          @change="onTaiousyaClicked"
         >
-        </wj-menu>
+          <option v-for="val in taiousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
-        <wj-menu
-          id="comboFiltersInput"
-          class="customCombobox mr-1"
-          :itemsSource="inputList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selInputKbn"
-          :itemClicked="onInputClicked"
+          @change="onInputClicked"
+          style="width: 150px"
         >
-        </wj-menu>
+          <option v-for="val in inputList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ランク
         </v-card>
-        <wj-menu
-          id="comboFiltersRank"
-          class="customCombobox mr-1"
-          :itemsSource="rankList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox wShort mr-1"
           v-model="selRank"
-          :itemClicked="onRankClicked"
+          @change="onRankClicked"
         >
-        </wj-menu>
-
+          <option v-for="val in rankList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
         <v-btn class="mr-1" width="25" height="20" @click="filterClrclick()">
           <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
@@ -308,80 +299,140 @@ export default {
     return {
       uketukeHeaderList: [
         {
+          dispkbn: 0,
           dataname: 'ymdD',
           title: '対応日',
           width: '1.5*',
           align: 'center',
         },
         {
+          dispkbn: 0,
           dataname: 'jikan',
           title: '開始\n時間',
           width: '1*',
           align: 'center',
         },
         {
+          dispkbn: 0,
           dataname: 'rname',
           title: '利用者名',
           width: '3*',
           align: 'left',
         },
         {
+          dispkbn: 1,
           dataname: 'jigyouKbnD',
           title: '事業\n区分',
           width: '0.5*',
           align: 'center',
         },
-        { dataname: 'syokai', title: '新\n規', width: '0.5*', align: 'center' },
-        { dataname: 'kasanD', title: '加\n算', width: '0.5*', align: 'center' },
         {
+          dispkbn: 2,
+          dataname: 'nkbnD',
+          title: '入\n区',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 2,
+          dataname: 'jigyouKbnD',
+          title: '対\n面',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'syokai',
+          title: '新\n規',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'kasanD',
+          title: '加\n算',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 0,
           dataname: 'sdnhourk',
           title: '支援方法',
           width: '1.5*',
           align: 'left',
         },
         {
+          dispkbn: 0,
           dataname: 'sdnnam',
           title: '関係相談者',
           width: '3*',
           align: 'left',
         },
         {
+          dispkbn: 2,
+          dataname: 'kasanrk',
+          title: '加算項目',
+          width: '1.5*',
+          align: 'left',
+        },
+        {
+          dispkbn: 1,
           dataname: 'daicskmkrk',
           title: '支援項目',
           width: '2*',
           align: 'left',
         },
         {
+          dispkbn: 2,
+          dataname: 'TODO',
+          title: '委託先',
+          width: '2*',
+          align: 'left',
+        },
+        {
+          dispkbn: 2,
+          dataname: 'ejikan',
+          title: '終了\n時間',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 0,
           dataname: 'naiyo',
           title: '内容',
           width: '5*',
           align: 'left',
         },
         {
+          dispkbn: 1,
           dataname: 'peermark',
           title: 'ピ\nア',
           width: '0.5*',
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'ranknm',
           title: 'ラ\nン\nク',
           width: '0.5*',
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'syoyo',
           title: '所要\n時間',
           width: '1*',
           align: 'center',
         },
         {
+          dispkbn: 1,
           dataname: 'kanD',
           title: '日\n誌',
           width: '0.5*',
           align: 'center',
         },
         {
+          dispkbn: 0,
           dataname: 'taiousya',
           title: '対応者',
           width: '1*',
@@ -542,6 +593,17 @@ export default {
       for (let colIndex = 0; colIndex < headerlist.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
+
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          if (headerlist[colIndex].dispkbn == 1) {
+            col.visible = false;
+          }
+        } else {
+          if (headerlist[colIndex].dispkbn == 2) {
+            col.visible = false;
+          }
+        }
+
         col.wordWrap = true;
         col.binding = headerlist[colIndex].dataname;
         col.header = headerlist[colIndex].title;
@@ -599,7 +661,7 @@ export default {
       if (e.panel == flexGrid.columnHeaders) {
         if (e.col < 3) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
-        } else if (e.col < 7) {
+        } else if (e.col < 10) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
         } else {
@@ -626,7 +688,7 @@ export default {
         }
       }
       e.cell.style.borderRight = '';
-      if (e.col == 2 || e.col == 6) {
+      if (e.col == 2 || e.col == 9) {
         e.cell.style.borderRight = '1px solid';
       }
     },
@@ -638,32 +700,22 @@ export default {
         this.drawer = false;
       }
     },
-    onTaiousyaClicked(s) {
-      s.header = this.taiousyaList[s.selectedIndex].name;
-      this.selTaiousya = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onTaiousyaClicked() {
+      this.selTaiousya = this.taiousyaList[this.selTaiousya].val;
     },
-    onInputClicked(s) {
-      s.header = this.inputList[s.selectedIndex].name;
-      this.selInputKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onInputClicked() {
+      this.selInputKbn = this.inputList[this.selInputKbn].val;
     },
-    onRankClicked(s) {
-      s.header = this.rankList[s.selectedIndex].name;
-      this.selRank = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onRankClicked() {
+      this.selRank = this.rankList[this.selRank].val;
     },
     getDispKbn() {
-      this.inputRef = 'Kihonsoudan';
+      this.inputRef = sysConst.JIGYO_KBN_NAME.KIHON;
       var urlparam = location.search.substring(1);
-      if (urlparam == 'ref=Keikakusoudan') {
-        this.inputRef = 'Keikakusoudan';
+      if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+        this.inputRef = sysConst.JIGYO_KBN_NAME.KEIKAKU;
+      } else if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI) {
+        this.inputRef = sysConst.JIGYO_KBN_NAME.CHIIKI;
       }
       return this.inputRef;
     },
@@ -1011,46 +1063,6 @@ div#uketukeIcrn {
       border-color: lightgray;
     }
   }
-
-  div.customCombobox {
-    position: relative;
-    width: 125px !important;
-    height: 18px !important;
-    &.customCombobox {
-      // width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 18px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 6px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -5px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 16px !important;
-    }
-  }
 }
 .v-picker {
   z-index: 10;
@@ -1062,8 +1074,8 @@ div#uketukeIcrn {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 150px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 
@@ -1089,8 +1101,8 @@ div#uketukeIcrn {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 100px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 }
@@ -1098,8 +1110,8 @@ div#uketukeIcrn {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 270px;
+  top: 70px;
+  left: 350px;
   width: 300px;
   max-width: 300px;
 }

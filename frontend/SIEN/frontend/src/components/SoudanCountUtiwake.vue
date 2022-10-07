@@ -125,41 +125,35 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           入力区分
         </v-card>
-        <wj-menu
-          id="comboFiltersInput"
-          class="customCombobox ml-1"
-          :itemsSource="inputList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selInputKbn"
-          :itemClicked="onInputClicked"
+          @change="onInputClicked"
         >
-        </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          <option v-for="val in inputList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対応者
         </v-card>
-        <wj-menu
-          id="comboFiltersTaiousya"
-          class="customCombobox ml-1"
-          :itemsSource="taiousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTaiousya"
-          :itemClicked="onTaiousyaClicked"
+          @change="onTaiousyaClicked"
         >
-        </wj-menu>
-        <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+          <option v-for="val in taiousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示内容
         </v-card>
         <v-btn-toggle
-          class="flex-wrap ml-1"
+          class="flex-wrap mr-1"
           v-model="selDispGridIndex"
           mandatory
         >
@@ -176,18 +170,14 @@
           </v-btn>
         </v-btn-toggle>
         <v-card
-          class="koumokuTitle titleMain pa-1 ml-1"
+          class="koumokuTitle titleMain pa-1 mr-1"
           width="100"
           outlined
           tile
         >
           集計内容
         </v-card>
-        <v-btn-toggle
-          class="flex-wrap ml-1"
-          style="margin-right: 5px"
-          v-model="selSyukeiIndex"
-        >
+        <v-btn-toggle class="flex-wrap mr-1" v-model="selSyukeiIndex">
           <v-btn
             v-for="n in syukeiList"
             :key="n.val"
@@ -750,19 +740,11 @@ export default {
         }
       }
     },
-    onTaiousyaClicked(s) {
-      s.header = this.taiousyaList[s.selectedIndex].name;
-      this.selTaiousya = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onTaiousyaClicked() {
+      this.selTaiousya = this.taiousyaList[this.selTaiousya].val;
     },
-    onInputClicked(s) {
-      s.header = this.inputList[s.selectedIndex].name;
-      this.selInputKbn = s.selectedValue;
-      this.setViewData(false);
-      let f = document.activeElement;
-      f.blur();
+    onInputClicked() {
+      this.selInputKbn = this.inputList[this.selInputKbn].val;
     },
     searchClicked() {
       // 初期データ読込
@@ -1143,45 +1125,6 @@ div#soudanCountUtiwake {
       background: $view_Title_background_Orange_Dark;
     }
   }
-  div.customCombobox {
-    position: relative;
-    // width: 300px !important;
-    height: 20px !important;
-    &.customCombobox {
-      // width: 160px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 250px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 18px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 5px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        top: -6px;
-        width: 100%;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
 }
 // .v-picker {
 //   z-index: 10;
@@ -1193,8 +1136,8 @@ div#soudanCountUtiwake {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 100px;
-  left: 150px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 
@@ -1220,8 +1163,8 @@ div#soudanCountUtiwake {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 100px;
+  top: 70px;
+  left: 200px;
   width: 300px;
   max-width: 300px;
 }
@@ -1229,8 +1172,8 @@ div#soudanCountUtiwake {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
-  top: 120px;
-  left: 270px;
+  top: 70px;
+  left: 350px;
   width: 300px;
   max-width: 300px;
 }

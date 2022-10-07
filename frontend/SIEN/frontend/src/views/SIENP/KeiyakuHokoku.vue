@@ -198,15 +198,33 @@
           elevation="2"
           icon
           small
-          @click="contactDialog = false"
+          @click="
+            contactDialog = false;
+            open = false;
+          "
           class="mt-1 dialog_close"
-          ><v-icon dark small> mdi-close </v-icon>
+          ><v-icon dark> mdi-close </v-icon>
         </v-btn>
       </v-card>
       <v-card class="pa-2 common_dialog" tile flat>
-        <div class="history_menu pa-2" v-bind:class="{ 'is-active': open }">
+        <!-- 履歴参照 -->
+        <div class="history_menu pa-2" :class="{ 'is-active': open }">
+          <div class="history_title">
+            <label>サービス履歴参照</label>
+            <v-btn
+              elevation="2"
+              icon
+              x-small
+              v-on:click="open = !open"
+              @click="contactDialog = false"
+              class="history_close"
+              ><v-icon dark x-small> mdi-close </v-icon>
+            </v-btn>
+          </div>
+
           <wj-flex-grid
             id="serviceHistoryGrid"
+            class="mt-1"
             :selectionMode="'Row'"
             :headersVisibility="'Column'"
             :alternatingRowStep="0"
@@ -239,148 +257,91 @@
             ></wj-flex-grid-column>
           </wj-flex-grid>
         </div>
-        <v-card class="d-flex justify-start dialog_back" flat tile>
-          <v-card outlined tile class="dialog_label_blue"> 利用者名 </v-card>
-          <v-card
-            width="650"
-            class="text-caption lightYellow"
-            elevation="0"
-            outlined
-            tile
-            >{{ userName }}
+        <v-row no-gutters class="rowStyle_Dark mb-3 mt-1 pa-1">
+          <v-card class="koumokuTitle titleBlueDark" outlined tile>
+            利用者名
           </v-card>
-        </v-card>
-        <v-card class="d-flex justify-start mt-1 common_dialog" flat tile>
-          <v-card outlined tile class="dialog_label"> 相談事業者 </v-card>
-          <v-card
-            width="140"
-            class="text-caption lightYellow text-center"
-            elevation="0"
-            outlined
-            tile
-            >{{ jyukyusyaCode }}
+          <v-card elevation="0" outlined tile class="lightYellow" width="675">
+            {{ userName }}
           </v-card>
-          <v-card
-            width="510"
-            class="text-caption lightYellow"
-            elevation="0"
-            outlined
-            tile
-            >{{ jyukyusyaJigyosyo }}
-          </v-card>
-        </v-card>
-        <v-card class="d-flex justify-start mt-1 common_dialog" flat tile>
-          <v-card outlined tile class="dialog_label"> サービス内容 </v-card>
-          <v-card
-            width="40"
-            class="text-caption lightYellow text-center"
-            elevation="0"
-            outlined
-            tile
-            >{{ serviceNumber }}
-          </v-card>
-          <v-card
-            width="610"
-            class="text-caption lightYellow"
-            elevation="0"
-            outlined
-            tile
-            >{{ serviceDetail }}
-          </v-card>
-        </v-card>
-        <div class="pa-4 bgColor mt-1">
-          <v-card
-            class="d-flex justify-start mt-1"
-            flat
-            tile
-            color="transparent"
-          >
-            <v-card
-              elevation="0"
-              width="120"
-              class="text-center label text-caption"
-              color="transparent"
-              dark
-            >
-              受給者番号
+        </v-row>
+        <div class="ml-1 mb-2">
+          <v-row class="rowStyle_input mb-1" dense>
+            <v-card outlined tile class="koumokuTitle titleBlueDark">
+              相談事業者
             </v-card>
-            <v-card
-              width="140"
-              class="text-caption lightYellow text-center"
-              elevation="0"
-              outlined
-              tile
+            <v-card class="text-center" outlined tile width="100" elevation="0"
               >{{ jyukyusyaBango }}
             </v-card>
-          </v-card>
-          <v-card
-            class="d-flex justify-start mt-1"
-            flat
-            tile
-            color="transparent"
-          >
-            <v-card
-              elevation="0"
-              width="120"
-              class="text-center label text-caption"
-              color="transparent"
-              dark
-            >
+            <v-card outlined tile width="580" elevation="0"
+              >{{ jyukyusyaJigyosyo }}
+            </v-card>
+          </v-row>
+          <v-row class="rowStyle_input mb-1" dense>
+            <v-card outlined tile class="koumokuTitle titleBlueDark">
+              サービス内容
+            </v-card>
+            <v-card class="text-center" outlined tile width="50" elevation="0"
+              >{{ serviceNumber }}
+            </v-card>
+            <v-card outlined tile width="630" elevation="0"
+              >{{ serviceDetail }}
+            </v-card>
+          </v-row>
+        </div>
+
+        <div class="common_dialog dialog_back_blue pa-4">
+          <v-row class="mt-1" no-gutters>
+            <v-card elevation="0" outlined tile class="koumokuTitle titleMain">
+              受給者番号
+            </v-card>
+            <v-card elevation="0" outlined tile class="wdShort ml-1"
+              >{{ jyukyusyaBango }}
+            </v-card>
+          </v-row>
+
+          <v-row class="mt-1" no-gutters>
+            <v-card elevation="0" outlined tile class="koumokuTitle titleMain">
               支給決定障害者<br />(保護者)
             </v-card>
             <v-card
-              width="300"
-              height="24"
-              class="text-caption lightYellow"
               elevation="0"
               outlined
               tile
-              >{{ jyukyusyaBango }}
+              class="wdLong pa-3 ml-1 text-left"
+              >{{ hogosya }}
             </v-card>
-          </v-card>
-          <v-card
-            class="d-flex justify-start mt-1"
-            flat
-            tile
-            color="transparent"
-          >
+          </v-row>
+
+          <v-row class="mt-1 mb-1" no-gutters>
             <v-card
               elevation="0"
-              width="120"
-              class="text-center label text-caption"
-              color="transparent"
-              dark
+              outlined
+              tile
+              class="koumokuTitle titleMain pa-3"
             >
               児童氏名
             </v-card>
             <v-card
-              width="300"
-              height="24"
-              class="text-caption lightYellow"
               elevation="0"
               outlined
               tile
+              class="rowStyle_input wdLong pa-3 ml-1 text-left"
               >{{ jidosimei }}
             </v-card>
-          </v-card>
+          </v-row>
         </div>
-        <div class="pa-4 bgBorder mt-1 common_dialog">
-          <v-card class="d-flex justify-start mt-1" flat tile>
+        <div class="dialog_border common_dialog">
+          <v-row class="mt-1 ml-1" no-gutters>
             <v-card
               elevation="0"
-              width="120"
-              class="text-center label text-caption"
+              outlined
+              tile
+              class="koumokuTitle titleMain mr-1"
             >
               契約締結
             </v-card>
-            <v-card
-              width="140"
-              class="text-caption text-center"
-              elevation="0"
-              outlined
-              tile
-              color="primary"
-              dark
+            <v-card elevation="0" outlined tile class="koumokuTitle titleMain"
               >契約期間始期
             </v-card>
             <v-card
@@ -392,33 +353,26 @@
               @click="onDatepicker(3)"
             >
               {{ keiyakukaisi }}
-
               <div class="float-right">
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-card>
-            <v-card elevation="0" tile class="label text-caption ml-auto">
-              <v-btn class="func_btn" small v-on:click="open = !open"
+            <v-row class="pa-3">
+              <v-btn class="func_btn ml-auto" small v-on:click="open = !open"
                 >履歴参照</v-btn
               >
-            </v-card>
-          </v-card>
-          <v-card class="d-flex justify-start mt-1" flat tile>
+            </v-row>
+          </v-row>
+          <v-row class="mt-1 ml-1" no-gutters>
             <v-card
-              elevation="0"
-              width="120"
-              class="text-center label text-caption"
-            >
-              契約終了
-            </v-card>
-            <v-card
-              width="140"
-              class="text-caption text-center"
               elevation="0"
               outlined
               tile
-              color="primary"
-              dark
+              class="koumokuTitle titleMain mr-1"
+            >
+              契約終了
+            </v-card>
+            <v-card elevation="0" outlined tile class="koumokuTitle titleMain"
               >契約期間終期
             </v-card>
             <v-card
@@ -435,23 +389,14 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-card>
-          </v-card>
-          <v-card class="d-flex justify-start mt-1" flat tile>
+          </v-row>
+          <v-row class="mt-1 ml-1 mr-1" no-gutters>
+            <v-card elevation="0" height="80" width="104"> &nbsp; </v-card>
             <v-card
-              elevation="0"
-              width="120"
-              class="text-center label text-caption"
-            >
-              &nbsp;
-            </v-card>
-            <v-card
-              width="140"
-              class="text-caption text-center pt-6"
               elevation="0"
               outlined
               tile
-              color="primary"
-              dark
+              class="koumokuTitle titleMain pa-1"
               height="80"
               >終了理由
             </v-card>
@@ -464,8 +409,8 @@
               name="syuryoriyu"
               height="80"
             ></v-textarea>
-          </v-card>
-          <v-row>
+          </v-row>
+          <v-row class="pa-5">
             <v-col><v-btn class="func_btn" small>削除</v-btn></v-col>
             <v-col class="text-end"
               ><v-btn class="func_btn" small>登録</v-btn></v-col
@@ -558,6 +503,7 @@ export default {
       userName: '',
       jyukyusyaCode: '',
       jyukyusyaBango: '',
+      hogosya: '',
       jyukyusyaJigyosyo: '',
       serviceNumber: '',
       serviceDetail: '',
@@ -679,8 +625,8 @@ export default {
       viewData.push({
         city: '東経市',
         code: '1000061',
-        name: '熊本 忠雄',
-        kana: 'ｸﾏﾓﾄﾀﾀﾞｵ',
+        name: '長崎 千秋',
+        kana: 'ﾅｶﾞｻｷﾁｱｷ',
         jyukyusyaBango: '1102580123',
         jyukyusyaJigyosyo: '相談支援事業所 ひなぎく',
         hogosya: '長崎 和夫',
@@ -690,7 +636,7 @@ export default {
         print: '',
         serviceNumber: 52,
         serviceDetail: '計画相談支援',
-        jidosimei: '',
+        jidosimei: '長崎 千秋',
       });
       viewData.push({
         city: '東経市',
@@ -700,7 +646,7 @@ export default {
         jyukyusyaCode: '1100000123',
         jyukyusyaBango: '1102698712',
         jyukyusyaJigyosyo: '相談支援事業所 ひなぎく',
-        hogosya: '',
+        hogosya: '宮崎 太一',
         keiyakukaisi: '',
         keiyakusyuryo: '',
         syuryoriyu: '',
@@ -751,6 +697,7 @@ export default {
           _self.jyukyusyaCode = tmpitem.jyukyusyaCode;
           _self.jyukyusyaBango = tmpitem.jyukyusyaBango;
           _self.jyukyusyaJigyosyo = tmpitem.jyukyusyaJigyosyo;
+          _self.hogosya = tmpitem.hogosya;
           _self.serviceNumber = tmpitem.serviceNumber;
           _self.serviceDetail = tmpitem.serviceDetail;
           _self.jidosimei = tmpitem.jidosimei;
@@ -835,12 +782,6 @@ div#serviceHistoryGrid {
   font-family: 'メイリオ';
   height: var(--height);
 }
-.bgColor {
-  background-color: $grid_selected_background;
-}
-.bgBorder {
-  border: 2px solid $grid_selected_background;
-}
 
 /*----------------------------
 * メニュー本体
@@ -857,6 +798,32 @@ div#serviceHistoryGrid {
   align-items: center;
   justify-content: top;
   background: $view_Title_background;
+}
+
+/*----------------------------
+* メニュー内タイトル・ボタン
+*----------------------------*/
+.history_title {
+  width: 280px;
+  height: 30px;
+  text-align: center;
+  color: $view_Title_font_color_Main;
+  background-color: $view_Title_background_Main;
+  position: relative;
+
+  label {
+    line-height: 30px;
+  }
+
+  .v-btn {
+    &.history_close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      color: $grid_selected_color;
+      background-color: $view_Title_font_color_Main;
+    }
+  }
 }
 
 /*----------------------------

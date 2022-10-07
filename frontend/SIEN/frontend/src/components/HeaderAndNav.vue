@@ -86,6 +86,7 @@
       <div class="d-flex align-center">
         <v-app-bar-nav-icon
           height="25px"
+          width="25"
           @click="drawer = !drawer"
         ></v-app-bar-nav-icon>
         <!-- <v-toolbar-title>{{ pageTitle }}</v-toolbar-title> -->
@@ -156,6 +157,7 @@
 
 <script>
 import PankuzuList from './PankuzuList';
+import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
@@ -218,7 +220,7 @@ export default {
             },
             {
               name: '個人履歴参照',
-              link: '/KojinRireki',
+              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.KIHON,
             },
             {
               name: '支援計画',
@@ -235,7 +237,7 @@ export default {
           lists: [
             {
               name: '相談受付',
-              link: '/UketukeIcrn/?ref=Keikakusoudan',
+              link: '/UketukeIcrn/?ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
             },
             {
               name: '契約報告書',
@@ -259,7 +261,7 @@ export default {
             },
             {
               name: '個人履歴',
-              link: '/KojinRireki',
+              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
             },
             {
               name: '担当者別実績表',
@@ -279,7 +281,7 @@ export default {
           lists: [
             {
               name: '相談受付',
-              link: '/TemporaryPage',
+              link: '/UketukeIcrn/?ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI,
             },
             {
               name: '地域移行予定・実績一覧',
@@ -303,9 +305,18 @@ export default {
             },
             {
               name: '個人履歴',
-              link: '/TemporaryPage',
+              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI,
             },
-            { name: 'マスタ', link: '/TemporaryPage' },
+            {
+              name: 'マスタ',
+              link: '/TemporaryPage',
+              sublists: [
+                {
+                  name: '地域定着台帳様式設定',
+                  link: '/ChiikiteityakuDaicho',
+                },
+              ],
+            },
           ],
         },
       ],
@@ -333,8 +344,12 @@ export default {
     this.$emit('parent-ymd-select', this.returndata);
   },
   watch: {
-    $route() {
+    $route(to, from) {
       this.pageTitle = this.$route.name;
+      if (to.fullPath != from.fullPath && to.path == from.path) {
+        // 同じ画面で違うパラメータの場合のみ再読み込みを行う
+        location.reload();
+      }
     },
   },
   methods: {
