@@ -301,7 +301,7 @@ export default {
             },
             {
               name: '地域定着台帳',
-              link: '/TemporaryPage',
+              link: '/ChiikiteityakuDaicho',
             },
             {
               name: '個人履歴',
@@ -313,7 +313,7 @@ export default {
               sublists: [
                 {
                   name: '地域定着台帳様式設定',
-                  link: '/ChiikiteityakuDaicho',
+                  link: '/ChiikiteityakuDaichoMst',
                 },
               ],
             },
