@@ -80,12 +80,13 @@
                   >主な日常生活等</v-btn
                 >
               </v-row>
-
-              <FullCalendar
-                ref="fullCalendar"
-                id="fullCalendar"
-                :options="calendarOptions"
-              />
+              <div style="overflow: auto" :style="{ width: calendarWidth }">
+                <FullCalendar
+                  ref="fullCalendar"
+                  id="fullCalendar"
+                  :options="calendarOptions"
+                />
+              </div>
               <v-row no-gutters class="rowStyle mb-1 mt-1 body-2 justify-end">
                 <v-card outlined tile class="koumokuTitle wMin titleOrange"
                   >完了
@@ -112,22 +113,55 @@
               </v-row>
             </v-col>
             <v-col :style="{ 'max-width': inputAreaWidth }" class="pl-1">
-              <div class="mt-1">
-                <v-btn small height="20" class="body-2 wfull">前回コピー</v-btn>
-                <v-btn small height="20" class="body-2 mt-1 wfull"
-                  >履歴参照</v-btn
-                >
-              </div>
+              <v-row no-gutters>
+                <v-btn small height="20" class="body-2">前回コピー</v-btn>
+                <v-btn small height="20" class="body-2 ml-2">履歴参照</v-btn>
+              </v-row>
+
               <wj-flex-grid
-                id="keikakuLifeGrid"
+                v-show="toggled == 'life'"
                 class="mt-1"
-                :selectionMode="3"
                 :headersVisibility="1"
-                :alternatingRowStep="0"
                 :autoGenerateColumns="false"
                 :allowResizing="false"
                 :allowDragging="false"
-                :allowSorting="false"
+                :selectionMode="'0'"
+                :initialized="onInitializeMainLife"
+              >
+                <wj-flex-grid-column
+                  :header="'主な日常生活の活動'"
+                  align="left"
+                  width="*"
+                  wordWrap="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+
+              <wj-flex-grid
+                v-show="toggled == 'life'"
+                class="mt-1"
+                :headersVisibility="1"
+                :autoGenerateColumns="false"
+                :allowResizing="false"
+                :allowDragging="false"
+                :selectionMode="'0'"
+                :initialized="onInitializeMainWeek"
+              >
+                <wj-flex-grid-column
+                  :header="'週単位以外のサービス'"
+                  align="left"
+                  width="*"
+                  wordWrap="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+
+              <wj-flex-grid
+                v-show="toggled == 'week'"
+                id="keikakuLifeGrid"
+                class="mt-1"
+                :headersVisibility="1"
+                :autoGenerateColumns="false"
+                :allowResizing="false"
+                :allowDragging="false"
                 :showBandedRows="false"
                 :initialized="onInitializeLife"
                 :itemsSourceChanged="changeInitializeLife"
@@ -143,15 +177,13 @@
               </wj-flex-grid>
 
               <wj-flex-grid
+                v-show="toggled == 'week'"
                 class="mt-1"
                 id="keikakuFukusiGrid"
-                :selectionMode="3"
                 :headersVisibility="1"
-                :alternatingRowStep="0"
                 :autoGenerateColumns="false"
                 :allowResizing="false"
                 :allowDragging="false"
-                :allowSorting="false"
                 :showBandedRows="false"
                 :initialized="onInitializeFukusi"
                 :itemsSourceChanged="changeInitializeFukusi"
@@ -198,9 +230,6 @@ import Draggable from '@fullcalendar/interaction';
 import UserList from './UserList.vue';
 import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
-//let w = ['mon', 'thu', 'web', 'the', 'fri', 'sat', 'sun'];
-//let wk = '';
-//let x = 330;
 let startY = 0;
 let startX = 0;
 let endY = 0;
@@ -222,7 +251,7 @@ export default {
       onFukusiGrid: '',
       leftWidth: '280px',
       rightWidth: '80%',
-      rightWidth2: '12%',
+      calendarWidth: '100%',
       userName: '',
       datepicker_dialog: false,
       picker: '',
@@ -281,6 +310,7 @@ export default {
         },
       },
       headerheight: 60,
+      mainLifeView: [{ mainLife: 'aaaa' }],
     };
   },
   computed: {
@@ -670,11 +700,15 @@ export default {
         });
       }
     },
+
     /****************
      * 入力内容
      *****************/
     onClickInput(type) {
       this.toggled = type;
+      this.calendarWidth = type == 'life' ? '660px' : '100%';
+      this.calendarAreaWidth = type == 'life' ? '660px' : '800px';
+      this.inputAreaWidth = type == 'life' ? '330px' : '200px';
     },
     /***********************
      * 登録ボタン
@@ -723,6 +757,13 @@ export default {
           _self.onFukusiGrid.select(-1, -1);
         }
       });
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+        }
+      });
     },
     onInitializeFukusi(flexGrid) {
       let _self = this;
@@ -734,6 +775,14 @@ export default {
           _self.onLifeGrid.select(-1, -1);
         }
       });
+
+      flexGrid.formatItem.addHandler(function (s, e) {
+        if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+        }
+      });
     },
     changeInitializeLife(flexGrid) {
       flexGrid.select(-1, -1);
@@ -741,6 +790,26 @@ export default {
     changeInitializeFukusi(flexGrid) {
       flexGrid.select(-1, -1);
     },
+
+    /***********************
+     * 主な日常生活の活動
+     *************************/
+    onInitializeMainLife(flexGrid) {
+      let str = '自分ではテレビをつけっぱなしで一人でいることが多いが';
+      flexGrid.cells.rows.insert(0, new wjGrid.Row());
+      flexGrid.cells.setCellData(0, 0, str);
+      flexGrid.rows.defaultSize = 240;
+    },
+
+    /***********************
+     * 週単位以外のサービス
+     *************************/
+    onInitializeMainWeek(flexGrid) {
+      flexGrid.cells.rows.insert(0, new wjGrid.Row());
+      flexGrid.cells.setCellData(0, 0, 'fffff');
+      flexGrid.rows.defaultSize = 240;
+    },
+
     /*****************************
      * 入力内容切替
      *************************/
@@ -755,8 +824,6 @@ export default {
 
 div#keikakuWeek {
   color: $font_color;
-  font-size: 12px;
-  font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
   min-width: 1266px !important;
@@ -914,12 +981,10 @@ div#keikakuFukusiGrid,
 div#keikakuLifeGrid {
   width: 98%;
   color: $font_color;
-  font-size: 12px;
-  font-family: 'メイリオ';
 }
 #fullCalendar {
   //   position: relative;
-  //width: 800px;
+  width: 780px;
 }
 .wfull {
   width: 98%;
