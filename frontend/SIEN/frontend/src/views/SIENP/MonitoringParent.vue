@@ -1,8 +1,8 @@
 <template>
   <div id="monitoringParent">
     <div class="commonTab">
-      <v-container no-gutters fluid class="pa-0">
-        <v-tabs height="20" hide-slider v-model="tab">
+      <v-container no-gutters fluid class="pa-0 pt-1">
+        <v-tabs height="24" hide-slider v-model="tab">
           <v-tab
             v-for="item in menuItem"
             :key="item.val"

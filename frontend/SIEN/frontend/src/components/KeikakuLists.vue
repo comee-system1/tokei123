@@ -351,14 +351,14 @@
         >
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card class="koumokuTitle titleBlueDark wd-70" outlined tile
               >利用者名</v-card
             >
             <v-card
               outlined
               tile
               v-model="doui_dialog_input.riyosya"
-              class="titleYellow wdMdl"
+              class="titleYellow wdMdl ml-1 dialog_border_blue"
               >{{ doui_dialog_input.riyosya }}</v-card
             >
           </v-row>
@@ -370,9 +370,13 @@
               outlined
               tile
               v-model="doui_dialog_input.douibi"
-              class="wdMdl"
-              >{{ doui_dialog_input.douibi }}</v-card
-            >
+              class="wdMdl ml-1"
+              @click="datepicker_teisyutu_dialog = true"
+              >{{ doui_dialog_input.douibi }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
           </v-row>
 
           <v-row no-gutters class="mt-1 rowStyle_input">
@@ -380,16 +384,26 @@
               >区分</v-card
             >
             <v-btn-toggle v-model="select_doui_man" class="ml-1">
-              <v-btn small elevation="0" v-for="val in doui_man" :key="val">{{
-                val
-              }}</v-btn>
+              <v-btn
+                height="25"
+                small
+                elevation="0"
+                v-for="val in doui_man"
+                :key="val"
+                >{{ val }}</v-btn
+              >
             </v-btn-toggle>
           </v-row>
           <v-row no-gutters class="mt-1 rowStyle_input">
             <v-card class="koumokuTitle titleBlue wd-70" outlined tile
               >署名</v-card
             >
-            <input type="text" outlined tile class="dialog_text_field_mdl" />
+            <input
+              type="text"
+              outlined
+              tile
+              class="dialog_text_field_mdl ml-1"
+            />
           </v-row>
 
           <v-row no-gutters justify="space-between" class="mt-3">
@@ -432,12 +446,12 @@
         >
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card class="koumokuTitle titleBlueDark wd-70" outlined tile
               >利用者名</v-card
             >
             <v-card
               outlined
-              class="titleYellow wdMdl"
+              class="titleYellow wdMdl dialog_border_blue ml-1"
               v-model="teisyutu_dialog_input.riyosya"
               >{{ teisyutu_dialog_input.riyosya }}</v-card
             >
@@ -450,12 +464,14 @@
             <v-card
               outlined
               tile
-              class="wdMdl"
+              class="wdMdl ml-1"
               @click="datepicker_teisyutu_dialog = true"
-              append-icon="mdi-calendar-month"
               v-model="teisyutu_dialog_input.teisyutubi"
-              >{{ teisyutu_dialog_input.teisyutubi }}</v-card
-            >
+              >{{ teisyutu_dialog_input.teisyutubi }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-card>
           </v-row>
 
           <v-row no-gutters justify="space-between" class="mt-3">

@@ -7,6 +7,7 @@
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
+            :headerheight="40"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
@@ -714,8 +715,8 @@ export default {
           pJigyoid: 43,
           pIntcode: this.userInfo.riid,
           pSrhym: this.startymd.format('YYYYMMDD'),
+          pSrheym: this.endymd.format('YYYYMMDD'),
         };
-        // pErhym: this.endymd.format('YYYYMMDD'), console.log(params);
         getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
           console.log(12345);
           console.log(result);

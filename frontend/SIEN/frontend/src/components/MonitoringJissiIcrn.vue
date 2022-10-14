@@ -15,6 +15,7 @@
         >
           <v-btn
             @click="inputCalendarClick(0)"
+            elevation="2"
             tile
             outlined
             width="125px"
@@ -26,24 +27,24 @@
             </div>
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
             class="btnymd pa-0 ml-1"
             height="100%"
-            x-small
             tile
             @click="inputCalendarClick(1)"
           >
             <v-icon>mdi-arrow-left-bold</v-icon>
+            前月
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
             class="btnymd pa-0 ml-1"
             height="100%"
-            x-small
             tile
             @click="inputCalendarClick(2)"
           >
             <v-icon>mdi-arrow-right-bold</v-icon>
+            翌月
           </v-btn>
         </v-card>
         <v-btn
@@ -52,17 +53,37 @@
           :loading="loading"
           @click="searchClicked()"
         >
+          <v-icon small>mdi-magnify</v-icon>
           検索
-        </v-btn>
-        <v-btn class="ml-1" height="100%" width="25" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
         </v-btn>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           絞込
         </v-card>
-        <v-btn-toggle
+        <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+          <div
+            v-for="item in siborikomiList"
+            :key="item.val"
+            class="radioInline"
+          >
+            <input
+              type="radio"
+              :id="'rbMoniJissisiborikomi-' + item.val"
+              v-model="siborikomiIndex"
+              :value="item.val"
+              @change="siborikomiClicked"
+            />
+            <label
+              :for="'rbMoniJissisiborikomi-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+        </v-card>
+
+        <!-- <v-btn-toggle
           class="flex-wrap mr-1"
           v-model="siborikomiIndex"
           mandatory
@@ -78,11 +99,29 @@
           >
             {{ n.name }}
           </v-btn>
-        </v-btn-toggle>
+        </v-btn-toggle> -->
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           様式
         </v-card>
-        <v-btn-toggle class="flex-wrap mr-1" v-model="yousikiIndex" mandatory>
+        <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+          <div v-for="item in yousikiList" :key="item.val" class="radioInline">
+            <input
+              type="radio"
+              :id="'rbMoniJissiyousiki-' + item.val"
+              v-model="yousikiIndex"
+              :value="item.val"
+              @change="siborikomiClicked"
+            />
+            <label
+              :for="'rbMoniJissiyousiki-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+        </v-card>
+
+        <!-- <v-btn-toggle class="flex-wrap mr-1" v-model="yousikiIndex" mandatory>
           <v-btn
             v-for="n in yousikiList"
             :key="n.val"
@@ -94,7 +133,7 @@
           >
             {{ n.name }}
           </v-btn>
-        </v-btn-toggle>
+        </v-btn-toggle> -->
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
@@ -115,6 +154,10 @@
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           <span class="under18 mr-1" style="width: 80px">18歳未満</span>
         </v-card>
+        <v-btn class="ml-1" height="100%" width="25" @click="filterClrclick()">
+          <v-icon small>mdi-filter-off</v-icon>
+          解除
+        </v-btn>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -226,7 +269,7 @@ export default {
         },
         {
           dataname: 'yoteiM',
-          title: '予定\n月',
+          title: '予\n定\n月',
           kbntitle: 'モニタリング報告書',
           chutitl: '',
           width: '1*',
@@ -331,7 +374,7 @@ export default {
         },
         {
           dataname: 'serviceend',
-          title: 'サ\n|\nビ\nス終\n了',
+          title: 'サ\n|\nビ\nス\n終\n了',
           kbntitle: '',
           chutitl: '',
           width: '1*',
@@ -568,14 +611,21 @@ export default {
     onFormatItemyoteisyaIcrn(flexGrid, e) {
       e.cell.style.borderBottom = '';
       e.cell.style.borderRight = '';
-      if (
-        e.panel == flexGrid.columnHeaders &&
-        ((e.row == 0 && e.col == 0) ||
-          (e.row == 0 && e.col == 3) ||
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.col < 3) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        } else if (e.col < 5) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        }
+        if (
+          (e.row == 0 && e.col == 0) ||
           (e.row == 0 && e.col == 5) ||
           (e.row == 0 && e.col == 19) ||
           (e.row >= 1 && e.col == 2) ||
-          (e.row >= 1 && e.col == 4) ||
           (e.row >= 1 && e.col == 6) ||
           (e.row == 1 && e.col == 7) ||
           (e.row == 2 && e.col == 10) ||
@@ -583,9 +633,13 @@ export default {
           (e.row == 2 && e.col == 12) ||
           (e.row >= 1 && e.col == 20) ||
           e.col == 14 ||
-          e.col == 18)
-      ) {
-        e.cell.style.borderRight = '1px solid';
+          e.col == 18
+        ) {
+          e.cell.style.borderRight = '1px solid';
+        }
+        if ((e.row == 0 && e.col == 3) || (e.row >= 1 && e.col == 4)) {
+          e.cell.style.borderRight = '3px double black ';
+        }
       }
 
       if (e.panel == flexGrid.columnFooters) {
@@ -593,7 +647,6 @@ export default {
           e.cell.style.borderRight = 'None';
         }
         if (
-          e.col == 4 ||
           e.col == 6 ||
           e.col == 10 ||
           e.col == 12 ||
@@ -602,6 +655,9 @@ export default {
           e.col == 20
         ) {
           e.cell.style.borderRight = '1px solid';
+        }
+        if (e.col == 4) {
+          e.cell.style.borderRight = '3px double black ';
         }
         e.cell.style.borderTop = ' double 4px black';
         if (e.col <= 4) {
@@ -614,7 +670,6 @@ export default {
       if (e.panel == flexGrid.cells) {
         if (
           e.col == 2 ||
-          e.col == 4 ||
           e.col == 6 ||
           e.col == 10 ||
           e.col == 12 ||
@@ -623,6 +678,9 @@ export default {
           e.col == 20
         ) {
           e.cell.style.borderRight = '1px solid';
+        }
+        if (e.col == 4) {
+          e.cell.style.borderRight = '3px double black ';
         }
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
@@ -825,13 +883,15 @@ div#monitoringJissiIcrn {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 100%;
-    height: 80vh;
+    height: 79vh;
     min-height: 450px;
     z-index: 2;
+    background: $grid_background;
+    border: 1px solid gray;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
-      font-size: $cell_fontsize;
+
       display: flex;
       justify-content: center;
       align-items: center;

@@ -1058,16 +1058,16 @@ div#soudanCountUtiwake {
   #soudanCountUtiwakeGrid,
   #sienNaiyouGridUtiwake {
     color: $font_color;
-    font-size: $cell_fontsize;
     width: 100%;
     min-width: 1250px;
     height: 77vh;
     background: $grid_background;
     z-index: 0;
+    font-size: $cell_fontsize;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
-      font-size: $cell_fontsize;
+
       display: flex;
       justify-content: center;
       align-items: center;

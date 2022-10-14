@@ -10,7 +10,7 @@
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
-            :dispHideBar="false"
+            :dispHideBar="true"
             :dispSvcReki="false"
             :dispYoteiYm="true"
             @child-select="setUserSelectPoint"
@@ -57,7 +57,7 @@
                 tile
                 outlined
               >
-                {{ keikakuYmd }}
+                {{ viewdataAll.mymdD }}
               </v-card>
               <v-spacer></v-spacer>
               <v-card class="koumokuTitle titleOrange pa-1 mr-1" outlined tile>
@@ -69,7 +69,7 @@
                 v-model="viewdataAll.doui"
                 @change="douiCheck()"
               />
-              <v-card class="koumokuData pa-1" width="125" outlined tile>
+              <v-card class="koumokuData" width="125" outlined tile>
                 {{ getDouisya }}
               </v-card>
             </v-row>
@@ -88,6 +88,7 @@
                 v-for="n in inputList"
                 :key="n.val"
                 color="secondary"
+                elevation="1"
                 outlined
                 width="25"
                 height="20"
@@ -116,9 +117,10 @@
                 @click="inputCalendarClick(0)"
                 tile
                 outlined
+                elevation="2"
                 width="150px"
                 height="100%"
-                class="btnymd pa-0 mb-1"
+                class="btnymd pa-0"
                 >{{ getYmd() }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
@@ -136,7 +138,7 @@
             <v-card
               class="koumokuData pb-1 pl-1 pt-0"
               tile
-              width="125"
+              width="165"
               outlined
             >
               担当者名
@@ -204,7 +206,7 @@
                 総合的な援助の方針
               </v-card>
               <v-textarea
-                class="ma-0 pa-0"
+                class="inputarea ma-0 pa-0"
                 no-resize
                 v-model="viewdataAll.housin"
                 auto-grow
@@ -215,7 +217,6 @@
                 dense
                 outlined
                 background-color="yellow lighten-5"
-                style="font-size: 14px; height: auto"
               ></v-textarea>
             </div>
             <div style="width: 50%">
@@ -223,7 +224,7 @@
                 全体の状況
               </v-card>
               <v-textarea
-                class="ma-0 pa-0"
+                class="inputarea ma-0 pa-0"
                 no-resize
                 v-model="viewdataAll.jyoukyou"
                 auto-grow
@@ -232,7 +233,6 @@
                 flat
                 dense
                 outlined
-                style="font-size: 14px; height: auto"
               ></v-textarea>
               <!-- <font-family: monospace> ⇐等幅フォント -->
             </div>
@@ -251,7 +251,7 @@
               :allowResizing="true"
               :allowSorting="false"
               :allowDragging="false"
-              :selectionMode="'Cell'"
+              :selectionMode="'Row'"
               :initialized="onInitializeIcrnGrid"
               :showMarquee="true"
               :formatItem="onFormatItem"
@@ -270,7 +270,29 @@
             >
               結果
             </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
+            <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+              <div
+                v-for="item in kekkaList"
+                :key="item.val"
+                class="radioInline"
+              >
+                <input
+                  type="radio"
+                  :id="'rbMoniHoukokuKekka-' + item.val"
+                  v-model="kekkaIndex"
+                  :value="item.val"
+                  @change="kekkaClicked(item.val)"
+                />
+                <label
+                  :for="'rbMoniHoukokuKekka-' + item.val"
+                  class="customRadio mr-2"
+                >
+                  <span>{{ item.name }}</span>
+                </label>
+              </div>
+            </v-card>
+
+            <!-- <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
               <v-btn
                 v-for="n in kekkaList"
                 :key="n.val"
@@ -282,7 +304,7 @@
               >
                 {{ n.name }}
               </v-btn>
-            </v-btn-toggle>
+            </v-btn-toggle> -->
             <v-layout class="rowStyle" v-if="kekkaIndex == 3">
               <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
                 ｻｰﾋﾞｽ終了日
@@ -290,6 +312,7 @@
               <v-btn
                 @click="inputCalendarClick(8)"
                 tile
+                elevation="2"
                 outlined
                 width="150px"
                 height="100%"
@@ -306,6 +329,7 @@
               </v-card>
               <v-btn
                 @click="inputCalendarClick(9)"
+                elevation="2"
                 tile
                 outlined
                 width="150px"
@@ -524,6 +548,8 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import UserList from '../components/UserList.vue';
+import { getConnect } from '@connect/getConnect';
+
 export default {
   components: { UserList },
   data() {
@@ -670,12 +696,13 @@ export default {
         },
       ],
       drawer: false,
+      mainGrid: {},
     };
   },
   mounted() {},
   computed: {
     getDouisya() {
-      return wjCore.escapeHtml(this.viewdataAll.douiName);
+      return wjCore.escapeHtml(this.viewdataAll.syomei);
     },
     getHousin() {
       return wjCore.escapeHtml(this.viewdataAll.housin);
@@ -689,20 +716,30 @@ export default {
      * ユーザー一覧コンポーネントの開閉ボタンを押下
      */
     changeLeftArea() {
-      // let doc = document.getElementsByClassName('rightArea')[0];
-      // if (this.moveLeft == true) {
-      //   this.moveLeft = false;
-      //   // doc.style.minWidth = '78%';
-      //   // doc.style.maxWidth = '78%';
-      //   this.leftWidth = '280px';
-      // } else {
-      //   this.moveLeft = true;
-      //   // doc.style.minWidth = '97%';
-      //   // doc.style.maxWidth = '97%';
-      //   this.leftWidth = '14px';
-      // }
+      let doc = document.getElementsByClassName('rightArea')[0];
+      let font = '';
+      if (this.moveLeft == true) {
+        this.moveLeft = false;
+        doc.style.minWidth = '700px';
+        doc.style.width = '700px';
+        this.leftWidth = '280px';
+        font = '14px';
+      } else {
+        this.moveLeft = true;
+        doc.style.minWidth = '95%';
+        doc.style.width = '95%';
+        this.leftWidth = '10px';
+        font = '17.5px';
+      }
+      let inputarea = document.getElementsByClassName('inputarea');
+      for (let i = 0; i < inputarea.length; i++) {
+        inputarea[i].style.fontSize = font;
+      }
+      this.mainGrid.refresh();
+      this.mainGrid.autoSizeRows();
     },
     onInitializeIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
@@ -814,6 +851,11 @@ export default {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
         }
       } else if (e.panel == flexGrid.cells) {
+        if (this.moveLeft == true) {
+          e.cell.style.fontSize = '15.5px';
+        } else {
+          e.cell.style.fontSize = '12px';
+        }
         e.cell.style.backgroundColor = '';
         if (e.col == 0) {
           e.cell.style.backgroundColor = sysConst.COLOR.gridSelectedColor;
@@ -861,11 +903,38 @@ export default {
     setViewData() {
       this.screenFlag = true;
       this.loading = true;
-      this.createdemodata();
+      let params = {
+        uniqid: 1,
+        traceid: 123,
+        keitype: 1,
+        jigyoid: 43,
+        intcode: this.userData.riid,
+      };
+      // cntid: 1,
+      console.log(params);
+      getConnect('/moni', params).then((result) => {
+        console.log(12345);
+        console.log(result);
+        if (result.length > 0) {
+          this.viewdataAll = result[0];
+          this.pickerDoui =
+            this.viewdataAll.mymd.slice(0, 4) +
+            '-' +
+            this.viewdataAll.mymd.slice(4, 6) +
+            '-' +
+            this.viewdataAll.mymd.substring(6, 8);
+          this.douiYmd = dayjs(this.pickerDoui);
+        } else {
+          this.viewdataAll = {};
+        }
+        this.screenFlag = false;
+        this.loading = false;
+        this.createdemodata();
+      });
     },
     createdemodata() {
-      this.keikakuYmd = '2022年12月12日';
       let result = {};
+      result.mymdD = '2022年12月12日';
       result.doui = false;
       result.douiName = '';
       result.douiKbnIndex = 1;
@@ -1061,9 +1130,7 @@ export default {
       if (!this.userData.names) {
         return;
       }
-      if (this.viewdataAll.doui) {
-        this.douiInputflg = true;
-      }
+      this.douiInputflg = true;
     },
     header_dialog_close() {
       this.douiInputflg = false;
@@ -1089,6 +1156,11 @@ div#monitoringHoukokusho {
   .rightArea {
     min-width: 700px;
     width: 700px;
+
+    .inputarea {
+      font-size: 14px;
+      height: auto;
+    }
   }
 
   #load_dialog {
@@ -1122,10 +1194,11 @@ div#monitoringHoukokusho {
     // min-width: 1250px;
     height: 55vh;
     // min-height: 300px;
+    background: $grid_background;
+    border: 1px solid gray;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
-      font-size: $cell_fontsize;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1179,6 +1252,7 @@ div#monitoringHoukokusho {
     border-color: transparent;
     width: 20px;
     color: $black !important;
+    font-size: $cell_fontsize !important;
     &:hover {
       background-color: $light-gray;
     }

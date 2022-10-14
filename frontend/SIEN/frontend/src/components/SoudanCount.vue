@@ -781,7 +781,6 @@ div#soudanCount {
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
-      font-size: $cell_fontsize;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -797,6 +796,7 @@ div#soudanCount {
     }
     .wj-cell:not(.wj-header) {
       background: $grid_background;
+      font-size: $cell_fontsize;
     }
     .wj-cells
       .wj-row:hover

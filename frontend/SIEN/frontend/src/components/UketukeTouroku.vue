@@ -14,7 +14,8 @@
               <v-col cols="*">
                 <v-card class="ml-1 pa-1" style="border: none" tile outlined>
                   <div align="right">
-                    <font class="hissu"><b>*</b></font
+                    <font :style="{ color: sysConst.COLOR.hissu_Color }"
+                      ><b>*</b></font
                     >:必須項目
                   </div>
                 </v-card>
@@ -22,7 +23,7 @@
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1">
               <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
-                対応日<span class="mandatoryMark"> * </span>
+                対応日<span class="requiredMark"> * </span>
               </v-card>
               <v-card
                 class="ml-1"
@@ -78,7 +79,7 @@
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1">
               <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
-                利用者名<span class="mandatoryMark"> * </span>
+                利用者名<span class="requiredMark"> * </span>
               </v-card>
               <input
                 id="uketukeTourokuUser"
@@ -93,7 +94,7 @@
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1 mb-1">
               <v-card class="koumokuTitle titleBlue pa-1" outlined tile>
-                開始時間<span class="mandatoryMark"> * </span>
+                開始時間<span class="requiredMark"> * </span>
               </v-card>
               <input
                 class="ml-1 border"
@@ -127,7 +128,7 @@
             <!-- <v-row no-gutters class="rowStyle_Input" style="display: none"> -->
             <v-row no-gutters class="rowStyle_Input mt-1" style="display: none">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
-                事業区分<span class="mandatoryMark"> * </span>
+                事業区分<span class="requiredMark"> * </span>
               </v-card>
               <v-tabs
                 class="ml-1"
@@ -165,7 +166,7 @@
                         outlined
                         tile
                       >
-                        入力区分<span class="mandatoryMark"> * </span>
+                        入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
@@ -233,7 +234,7 @@
                         outlined
                         tile
                       >
-                        入力区分<span class="mandatoryMark"> * </span>
+                        入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
@@ -257,7 +258,7 @@
                         outlined
                         tile
                       >
-                        加算有無<span class="mandatoryMark"> * </span>
+                        加算有無<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
@@ -389,7 +390,7 @@
                         outlined
                         tile
                       >
-                        終了時間<span class="mandatoryMark"> * </span>
+                        終了時間<span class="requiredMark"> * </span>
                       </v-card>
                       <input
                         class="ml-1 border"
@@ -435,7 +436,7 @@
                         outlined
                         tile
                       >
-                        入力区分<span class="mandatoryMark"> * </span>
+                        入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
@@ -459,7 +460,7 @@
                         outlined
                         tile
                       >
-                        加算有無<span class="mandatoryMark"> * </span>
+                        加算有無<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
@@ -634,7 +635,7 @@
             <v-divider class="btmborder mt-1"></v-divider>
             <v-row no-gutters class="rowStyle_Input mt-1">
               <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
-                支援項目<span class="mandatoryMark"> * </span>
+                支援項目<span class="requiredMark"> * </span>
               </v-card>
               <input
                 id="uketukeTourokuSienkoumoku"
@@ -659,7 +660,7 @@
                 tile
               >
                 内容
-                <span class="mandatoryMark"> * </span>
+                <span class="requiredMark"> * </span>
               </v-card>
               <v-textarea
                 id="uketukeTourokuNaiyoTxt"
@@ -2469,7 +2470,6 @@ div#uketukeTouroku {
   background: $white;
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
   // overflow-x: scroll;
   // width: 1366px !important;
   min-width: 1050px !important;
@@ -2533,17 +2533,6 @@ div#uketukeTouroku {
 
     .v-input__slot {
       padding-left: 0px;
-    }
-
-    .mandatoryMark {
-      position: absolute;
-      color: $Hissu_Color;
-      top: 0;
-      left: 0;
-      font-weight: bold;
-    }
-    .hissu {
-      color: $Hissu_Color;
     }
   }
   .rightArea {

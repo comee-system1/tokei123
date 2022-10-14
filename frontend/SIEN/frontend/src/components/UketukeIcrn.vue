@@ -8,7 +8,6 @@
         left
         width="90"
         min-width="90"
-        style="min-height: 1000px"
       >
         <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
@@ -677,7 +676,7 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
-        if (e.col == 9) {
+        if (e.col == 14) {
           e.cell.innerHTML =
             '<font color="blue">' +
             wjCore.escapeHtml(tmpitem.cskmknm) +
@@ -964,12 +963,8 @@ export default {
 div#uketukeIcrn {
   color: $font_color;
   font-size: 14px;
-  font-family: 'メイリオ';
-  // overflow-x: scroll;
-  // width: 1366px !important;
   min-width: 1266px !important;
   max-width: 1920px;
-  // width: auto;
 
   #load_dialog {
     position: fixed;

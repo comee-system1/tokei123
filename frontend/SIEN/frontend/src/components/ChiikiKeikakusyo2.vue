@@ -72,8 +72,8 @@
               <v-btn small class="ml-1" height="20">履歴参照</v-btn>
             </v-card>
           </v-row>
-          <v-row no-gutters class="rowStyle mb-1 mt-1">
-            <div>
+          <v-row no-gutters class="rowStyle mb-1">
+            <v-col>
               <v-tabs
                 v-model="inputTypemodel"
                 class="mSizeCommonTab"
@@ -88,20 +88,32 @@
                   {{ value.value }}</v-tab
                 >
               </v-tabs>
-            </div>
+            </v-col>
+            <v-col class="text-end">
+              <v-btn-toggle tile v-if="inputTypemodel == 'tab-2'">
+                <v-btn small @click="rowSort('view')">順変更</v-btn>
+                <v-btn small @click="rowAdd('view')">行追加</v-btn>
+                <v-btn small @click="rowDelete('view')">行削除</v-btn>
+              </v-btn-toggle>
+            </v-col>
           </v-row>
 
-          <v-tabs-items v-model="inputTypemodel">
-            <v-tab-item value="tab-0" :eager="true">
-              <ChiikiKeikakusyo2Zentai> </ChiikiKeikakusyo2Zentai>
-            </v-tab-item>
-            <v-tab-item value="tab-1" :eager="true">
-              <ChiikiKeikakusyo2Ikou> </ChiikiKeikakusyo2Ikou>
-            </v-tab-item>
-            <v-tab-item value="tab-2" :eager="true">
-              <ChiikiKeikakusyo2Kadai> </ChiikiKeikakusyo2Kadai>
-            </v-tab-item>
-          </v-tabs-items>
+          <div class="mt-2">
+            <div id="scrollbody">
+              <chiikiKeikakusyo2Zentai
+                ref="childzentai"
+                v-if="inputTypemodel == 'tab-0'"
+              ></chiikiKeikakusyo2Zentai>
+              <chiikiKeikakusyo2Ikou
+                ref="childikou"
+                v-if="inputTypemodel == 'tab-1'"
+              ></chiikiKeikakusyo2Ikou>
+              <chiikiKeikakusyo2Kadai
+                ref="childkadai"
+                v-if="inputTypemodel == 'tab-2'"
+              ></chiikiKeikakusyo2Kadai>
+            </div>
+          </div>
           <v-row dense class="ma-2" justify="space-between">
             <v-col cols="4">
               <v-btn small>削除</v-btn>
@@ -235,6 +247,16 @@ export default {
       this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
       this.datepicker_dialog = false;
     },
+
+    rowSort(type) {
+      this.$refs.childkadai.rowSort(type);
+    },
+    rowAdd(type) {
+      this.$refs.childkadai.rowAdd(type);
+    },
+    rowDelete(type) {
+      this.$refs.childkadai.rowDelete(type);
+    },
   },
 };
 </script>
@@ -251,6 +273,9 @@ div#chiikiKeikakusyo2 {
     .v-tabs-bar .v-tab:not(.v-tab--active) {
       color: #777 !important;
       background-color: $white !important;
+    }
+    .v-tabs-bar {
+      height: 24px !important;
     }
     .v-slide-group__content {
       background-color: $white !important;

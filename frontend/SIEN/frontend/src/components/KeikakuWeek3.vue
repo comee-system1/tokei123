@@ -10,7 +10,7 @@
           >
           </user-list>
         </v-col>
-        <v-col :style="{ 'max-width': rightWidth }" class="pr-1">
+        <v-col :style="{ 'max-width': rightWidth }">
           <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
@@ -87,6 +87,22 @@
                   :options="calendarOptions"
                 />
               </div>
+              <v-row v-show="toggled == 'life'" no-gutters>
+                <v-col cols="2" align="center" class="pa-2 pt-10 titleLabel"
+                  >サービス提供によって実現する生活の全体像</v-col
+                >
+                <v-col cols="10">
+                  <v-textarea
+                    outlined
+                    tile
+                    rows="8"
+                    no-resize
+                    class="text-caption"
+                    hide-details="false"
+                    :value="active_text"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
               <v-row no-gutters class="rowStyle mb-1 mt-1 body-2 justify-end">
                 <v-card outlined tile class="koumokuTitle wMin titleOrange"
                   >完了
@@ -117,42 +133,44 @@
                 <v-btn small height="20" class="body-2">前回コピー</v-btn>
                 <v-btn small height="20" class="body-2 ml-2">履歴参照</v-btn>
               </v-row>
-
-              <wj-flex-grid
-                v-show="toggled == 'life'"
-                class="mt-1"
-                :headersVisibility="1"
-                :autoGenerateColumns="false"
-                :allowResizing="false"
-                :allowDragging="false"
-                :selectionMode="'0'"
-                :initialized="onInitializeMainLife"
-              >
-                <wj-flex-grid-column
-                  :header="'主な日常生活の活動'"
-                  align="left"
-                  width="*"
-                  wordWrap="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-
-              <wj-flex-grid
-                v-show="toggled == 'life'"
-                class="mt-1"
-                :headersVisibility="1"
-                :autoGenerateColumns="false"
-                :allowResizing="false"
-                :allowDragging="false"
-                :selectionMode="'0'"
-                :initialized="onInitializeMainWeek"
-              >
-                <wj-flex-grid-column
-                  :header="'週単位以外のサービス'"
-                  align="left"
-                  width="*"
-                  wordWrap="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
+              <div class="textarea mt-1" v-show="toggled == 'life'">
+                <v-row no-gutters class="rowStyle mb-1 body-2">
+                  <v-card
+                    class="koumokuTitle titleLabel"
+                    style="width: 100%"
+                    outlined
+                    tile
+                  >
+                    主な日常生活の活動
+                  </v-card>
+                </v-row>
+                <v-textarea
+                  outlined
+                  tile
+                  class="text-caption"
+                  hide-details="false"
+                  :value="active_text"
+                  id="active_textarea"
+                ></v-textarea>
+                <v-row no-gutters class="rowStyle mb-1 mt-1 body-2">
+                  <v-card
+                    class="koumokuTitle titleLabel"
+                    style="width: 100%"
+                    outlined
+                    tile
+                  >
+                    週単位以外のサービス
+                  </v-card>
+                </v-row>
+                <v-textarea
+                  outlined
+                  tile
+                  class="text-caption"
+                  hide-details="false"
+                  :value="service_text"
+                  id="service_textarea"
+                ></v-textarea>
+              </div>
 
               <wj-flex-grid
                 v-show="toggled == 'week'"
@@ -243,7 +261,7 @@ export default {
   },
   data() {
     return {
-      calendarAreaWidth: '800px',
+      calendarAreaWidth: '860px',
       inputAreaWidth: '200px',
       toggled: 'week',
       moveFlag: false,
@@ -251,7 +269,7 @@ export default {
       onFukusiGrid: '',
       leftWidth: '280px',
       rightWidth: '80%',
-      calendarWidth: '100%',
+      calendarWidth: '840px',
       userName: '',
       datepicker_dialog: false,
       picker: '',
@@ -310,7 +328,9 @@ export default {
         },
       },
       headerheight: 60,
-      mainLifeView: [{ mainLife: 'aaaa' }],
+      active_text:
+        '・自分ではテレビをつけっぱなしで一人でいることが多いが、編み物や衣類や手紙、書類の整理等を行うようになった',
+      service_text: '相談支援事業所とサークルや教室を見学予定',
     };
   },
   computed: {
@@ -318,6 +338,8 @@ export default {
       // ブラウザの高さ
       return {
         '--height': window.innerHeight - this.headerheight + 'px',
+        '--heightText':
+          (window.innerHeight - this.headerheight) / 2 - 80 + 'px',
       };
     },
   },
@@ -630,6 +652,14 @@ export default {
         document.getElementById('keikakuWeek').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
+      if (document.getElementById('active_textarea') != null) {
+        document.getElementById('active_textarea').style.height =
+          (window.innerHeight - this.headerheight) / 2 - 60 + 'px';
+      }
+      if (document.getElementById('service_textarea') != null) {
+        document.getElementById('service_textarea').style.height =
+          (window.innerHeight - this.headerheight) / 2 - 60 + 'px';
+      }
     },
 
     handleEventMouseEnter() {
@@ -706,9 +736,11 @@ export default {
      *****************/
     onClickInput(type) {
       this.toggled = type;
-      this.calendarWidth = type == 'life' ? '660px' : '100%';
-      this.calendarAreaWidth = type == 'life' ? '660px' : '800px';
-      this.inputAreaWidth = type == 'life' ? '330px' : '200px';
+      this.calendarWidth = type == 'life' ? '800px' : '100%';
+      this.calendarAreaWidth = type == 'life' ? '800px' : '860px';
+      this.inputAreaWidth = type == 'life' ? '264px' : '200px';
+
+      this.calendarOptions.contentHeight = type == 'life' ? '60vh' : '78vh';
     },
     /***********************
      * 登録ボタン
@@ -792,16 +824,6 @@ export default {
     },
 
     /***********************
-     * 主な日常生活の活動
-     *************************/
-    onInitializeMainLife(flexGrid) {
-      let str = '自分ではテレビをつけっぱなしで一人でいることが多いが';
-      flexGrid.cells.rows.insert(0, new wjGrid.Row());
-      flexGrid.cells.setCellData(0, 0, str);
-      flexGrid.rows.defaultSize = 240;
-    },
-
-    /***********************
      * 週単位以外のサービス
      *************************/
     onInitializeMainWeek(flexGrid) {
@@ -826,9 +848,10 @@ div#keikakuWeek {
   color: $font_color;
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1266px !important;
-  max-width: 1266px;
+  min-width: 1366px !important;
+  max-width: 1366px;
   width: auto;
+  overflow: auto;
   .input_form {
     border: 1px solid #ccc;
   }
@@ -984,7 +1007,7 @@ div#keikakuLifeGrid {
 }
 #fullCalendar {
   //   position: relative;
-  width: 780px;
+  width: 840px;
 }
 .wfull {
   width: 98%;
@@ -998,5 +1021,15 @@ div#keikakuLifeGrid {
   top: 0;
   left: 0;
   z-index: 10;
+}
+div.textarea {
+  textarea {
+    padding-right: 5px !important;
+    height: var(--heightText);
+  }
+}
+.titleLabel {
+  background-color: $view_Data_Input_background !important;
+  border: 1px solid $light-gray;
 }
 </style>

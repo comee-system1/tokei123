@@ -113,7 +113,7 @@ html {
 
 .titleGlay {
     color: $white !important;
-    background: transparent !important;
+    background: $view_Title_background_Gray !important;
 }
 
 .titleYellow {
@@ -138,6 +138,7 @@ html {
         border-color: $view_Border_Blue;
     }
 }
+
 .under18 {
     padding: 0;
     position: relative;
@@ -146,8 +147,9 @@ html {
     background: $grid_background;
     border: 1px solid;
     border-color: $light-gray;
-  }
-  .under18::after {
+}
+
+.under18::after {
     content: '';
     position: absolute;
     top: 0;
@@ -156,7 +158,16 @@ html {
     height: 0;
     border-top: 10px solid green;
     border-left: 10px solid transparent;
-  }
+}
+
+.requiredMark {
+    position: absolute;
+    color: $Hissu_Color;
+    top: 0;
+    left: 0;
+    font-weight: bold;
+}
+
 
 /**********************
 * input系設定
@@ -212,6 +223,7 @@ input:disabled {
     border-color: $light-gray;
     color: $font_color;
     height: 100%;
+    margin-top: -2px
 }
 
 .v-btn {
@@ -253,17 +265,26 @@ a {
 * Tab系設定
 ***********************/
 div.commonTab {
-    .v-tab--active {
-        background: white;
+    .v-tab {
+        white-space: normal;
+        margin-left: 12px;
+        border: 1px solid $light-gray;
+        background-color: $light-white;
+        margin-bottom: 4px;
+        color: $font_color !important;
+        border-radius: 4px;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
     }
 
-    .theme--light.v-tabs>.v-tabs-bar .v-tab:not(.v-tab--active) {
-        color: $white;
-        background-color: $tab_background !important;
+    .v-tab--active {
+        color: $view_Title_font_color_Green !important;
+        background: $view_Title_background_Green !important;
+        border: 1px solid $view_Title_font_color_Green;
+        font-weight: bold;
     }
 
     .v-slide-group__content {
-        background-color: $tab_background !important;
+        border-bottom: 1px solid $tab_background;
     }
 }
 
@@ -315,16 +336,18 @@ div.mSizeCommonTab {
     -moz-appearance: menulist;
     -webkit-appearance: menulist;
     display: block;
+    background-color: $white;
 
     &.wShort {
         width: 100px;
     }
 
+    &.wLong {
+        width: 315px;
+    }
+
     &.hHigh {
         height: 25px;
-    }
-    &.bgWhite{
-        background-color: $white;
     }
 
     &:focus {
@@ -337,6 +360,89 @@ div.mSizeCommonTab {
     }
 }
 
+/**********************
+* ラジオボタン系設定
+***********************/
+div.radioInline {
+    display: inline-block;
+
+    .customRadio {
+        position: relative;
+        display: inline-block;
+        padding-left: 5px;
+        top: -1px;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    input[type="radio"] {
+        cursor: pointer;
+    }
+
+    input[type="radio"]:checked {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+
+            span {
+                color: $view_Title_background_Main;
+                font-weight: bold;
+            }
+        }
+
+
+    }
+}
+
+/**********************
+* チェックボックス系設定
+***********************/
+div.checkboxInline {
+    display: inline-block;
+
+    .customCheckbox {
+        position: relative;
+        display: inline-block;
+        padding-left: 5px;
+        top: -1px;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+        cursor: pointer;
+    }
+
+    input[type="checkbox"]:checked {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+            span {
+                color: $view_Title_font_color_Orange;
+                font-weight: bold;
+            }
+        }
+    }
+
+    input[type="checkbox"]:disabled {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+            span {
+                color: $gray;
+                font-weight: normal;
+            }
+        }
+
+
+    }
+}
 
 
 

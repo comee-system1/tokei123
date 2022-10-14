@@ -27,7 +27,8 @@ const COLOR = {
     separateBorderColor: '1px solid',
     viewTitleBackground: '#4169E1',
     viewTitleFontColor: 'white',
-    viewTitleBackgroundBlue: 'aliceblue',
+    viewTitleBackgroundBlue: '#F0F6FF',
+    viewTitleBackgroundBlueDark: '#1F4E79',
     viewTitleFontColorBlue: 'midnightblue',
     viewTitleBackgroundGreenDark: '#CBFFD3',
     viewTitleBackgroundGreen: '#E6FFE9',
@@ -36,6 +37,7 @@ const COLOR = {
     viewTitleBackgroundOrange: '#FFEFD5',
     viewTitleFontColorOrange: 'saddlebrown',
     viewHosokuBackground: 'lightgoldenrodyellow',
+    hissu_Color: '#ce3e47',
 };
 
 const FORMAT = {

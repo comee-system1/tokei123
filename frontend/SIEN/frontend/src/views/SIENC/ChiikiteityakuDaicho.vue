@@ -175,6 +175,7 @@ export default {
       leftWidth: '280px',
       rightWidth: '78.5%',
       viewdata: [],
+      userName: '',
     };
   },
   methods: {
@@ -184,7 +185,6 @@ export default {
     setUserSelectPoint(row) {
       this.userName = row.names;
     },
-
     changeLeftArea() {
       if (this.moveLeft == true) {
         this.moveLeft = false;

@@ -2,7 +2,10 @@
   <div
     id="user-list_scrollbar"
     :style="styles"
-    :class="{ 'pr-5': dispHideBar === true, 'pr-2': dispHideBar === false }"
+    :class="{
+      'pr-5': dispHideBar === true && this.switchAreaLeftFlag == true,
+      'pr-2': dispHideBar === false,
+    }"
     class="pl-1 pr-1"
   >
     <div
@@ -93,7 +96,8 @@
                 color="secondary"
                 dark
                 :height="20"
-                :width="25"
+                width="25"
+                min-width="40"
                 outlined
                 @click="siborikomiYoteisya(n.val)"
               >
@@ -106,10 +110,10 @@
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <label class="titleGlay pl-1 pr-1">担当者</label>
           <select
-            class="customSelectBox bgWhite mr-1"
+            class="customSelectBox mr-1"
             v-model="selTantou"
             @change="onTantouClicked"
-            style="width: 200px"
+            style="width: 115px"
           >
             <option v-for="val in tantouList" :key="val.id" :value="val.id">
               {{ val.name }}
@@ -119,8 +123,9 @@
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <wj-combo-box
+            class="pa-0"
             :textChanged="onTextChangedUser"
-            style="width: 100%; height: 20px"
+            style="width: 160px; height: 20px"
             placeholder="カナ検索"
           ></wj-combo-box>
         </v-row>
@@ -167,6 +172,7 @@
           :allowResizing="false"
           :allowDragging="false"
           :allowSorting="false"
+          :showMarquee="true"
           :formatItem="onFormatItem"
         >
           <wj-flex-grid-column
@@ -265,7 +271,7 @@ export default {
       animtype: '0',
       switchAreaFlag: true,
       switchAreaRightFlag: false,
-      switchAreaLeftFlag: false,
+      switchAreaLeftFlag: true,
       userDispList: [
         { val: 0, name: '台帳', width: 45 },
         { val: 1, name: '本日予定者', width: 85 },
@@ -547,7 +553,7 @@ export default {
         var ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
           //選択した要素の取得
-          _self.$emit('child-select', flexGrid.rows[ht._row].dataItem);
+          _self.$emit('child-select', flexGrid.rows[ht._row].dataItem); //親要素の処理を実行
         }
       });
       this.userGrid = flexGrid;
@@ -759,7 +765,7 @@ div#user-list_scrollbar {
     height: 100%;
     background-color: $black;
     position: absolute;
-    left: 265px;
+    left: 270px;
     z-index: 1;
     &.switchAreaRight {
       animation: switchAreaRightMove $seconds forwards;
@@ -787,7 +793,7 @@ div#user-list_scrollbar {
   }
   @keyframes switchAreaLeftMove {
     from {
-      transform: translateX(-265px);
+      transform: translateX(-270px);
     }
     to {
       transform: translateX(0);
@@ -798,7 +804,7 @@ div#user-list_scrollbar {
       transform: translateX(0px);
     }
     to {
-      transform: translateX(-265px);
+      transform: translateX(-270px);
     }
   }
   @keyframes rotate-right {

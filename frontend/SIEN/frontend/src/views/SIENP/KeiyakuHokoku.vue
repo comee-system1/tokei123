@@ -22,32 +22,50 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
           サービス
         </v-card>
-        <v-btn-toggle dense mandatory v-model="onService" height="20">
-          <v-btn
-            small
-            v-for="val in service"
-            :key="val.id"
-            height="20"
-            class="body-2"
-            >{{ val.name }}</v-btn
-          >
-        </v-btn-toggle>
+        <v-card elevation="0" tile outlined class="pl-1" height="20">
+          <div v-for="val in service" :key="val.id" class="radioInline">
+            <input
+              type="radio"
+              :id="'service-' + val.id"
+              v-model="services"
+              :value="val.id"
+            />
+            <label :for="'service-' + val.id" class="customRadio mr-2">
+              <span>{{ val.name }}</span>
+            </label>
+          </div>
+        </v-card>
         <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
           対象者
         </v-card>
-        <v-btn-toggle dense mandatory v-model="onTarget">
-          <v-btn
-            small
-            v-for="val in target"
-            :key="val.id"
-            height="20"
-            class="body-2"
-            >{{ val.name }}</v-btn
-          >
-        </v-btn-toggle>
+
+        <v-card elevation="0" tile outlined class="pl-1" height="20">
+          <div v-for="val in target" :key="val.id" class="radioInline">
+            <input
+              type="radio"
+              :id="'target-' + val.id"
+              v-model="targets"
+              :value="val.id"
+            />
+            <label :for="'target-' + val.id" class="customRadio mr-2">
+              <span>{{ val.name }}</span>
+            </label>
+          </div>
+        </v-card>
+
         <v-card class="koumokuTitle titleMain pa-1 mr-1 ml-1" outlined tile>
           市区町村
         </v-card>
+        <select
+          class="customSelectBox"
+          v-model="onCity"
+          @change="selectedCityChanged"
+        >
+          <option v-for="val in cities" :key="val.id" :value="val.id">
+            {{ val.name }}
+          </option>
+        </select>
+        <!--
         <wj-menu
           :itemClicked="selectedCityChanged"
           selectedValuePath="id"
@@ -59,6 +77,7 @@
             val.name
           }}</wj-menu-item>
         </wj-menu>
+-->
       </v-row>
       <v-row no-gutters class="rowStyle mb-1 mt-1">
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
@@ -215,7 +234,6 @@
               elevation="2"
               icon
               x-small
-              v-on:click="open = !open"
               @click="contactDialog = false"
               class="history_close"
               ><v-icon dark x-small> mdi-close </v-icon>
@@ -331,7 +349,7 @@
             </v-card>
           </v-row>
         </div>
-        <div class="dialog_border common_dialog">
+        <div class="dialog_border_blue common_dialog">
           <v-row class="mt-1 ml-1" no-gutters>
             <v-card
               elevation="0"
@@ -450,6 +468,8 @@ export default {
   data: function () {
     return {
       filter: '',
+      services: 1,
+      targets: 1,
       onService: '',
       contactDialog: false,
       datepicker_dialog: false,
@@ -581,9 +601,9 @@ export default {
       this.filter.defaultFilterType = wjcGridFilter.FilterType.Condition;
       this.filter.showSortButtons = true;
     },
-    selectedCityChanged(s) {
-      s.header = this.cities[s.selectedIndex].name;
-      this.onCity = this.cities[s.selectedIndex].id;
+    selectedCityChanged() {
+      console.log(this.onCity);
+      this.userFilter();
     },
     onAlphabetical() {
       this.userFilter();

@@ -10,8 +10,8 @@
           >
           </user-list>
         </v-col>
-        <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
+        <v-col :style="{ 'max-width': rightWidth }" class="ml-1">
+          <v-row no-gutters class="rowStyle_Dark my-1">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
@@ -28,7 +28,7 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters class="rowStyle mb-1 mt-1">
+          <v-row no-gutters class="rowStyle my-1">
             <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
               入力
             </v-card>
@@ -159,6 +159,7 @@
                 binding="value1"
                 width="10*"
                 :wordWrap="true"
+                :multiLine="true"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="title2"
@@ -168,6 +169,8 @@
               <wj-flex-grid-column
                 binding="value2"
                 width="6*"
+                :wordWrap="true"
+                :multiLine="true"
               ></wj-flex-grid-column>
             </wj-flex-grid>
           </v-row>
@@ -190,58 +193,73 @@
                 :allowDragging="false"
                 :isReadOnly="false"
                 :autoRowHeights="true"
-                :initialized="onInitializeGrdAssesJyokyo"
+                :selectionMode="'None'"
+                :initialized="onInitializeGrdAsses"
                 :itemsSource="viewdataAssesJyokyo"
                 class="mb-0"
               >
                 <wj-flex-grid-column
-                  binding="value"
+                  binding="jyokyo"
                   width="*"
                   :wordWrap="true"
                   :multiLine="true"
                 ></wj-flex-grid-column>
               </wj-flex-grid>
             </v-row>
-            <v-app-bar flat height="24" class="titleBlue mt-1">
-              <v-app-bar-title class="caption"
-                >2.利用者の置かれている環境</v-app-bar-title
+            <v-row no-gutters class="mt-1">
+              <wj-flex-grid
+                id="grdAssesKankyo"
+                :alternatingRowStep="0"
+                :headersVisibility="'Column'"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowPinning="false"
+                :allowResizing="false"
+                :allowSorting="false"
+                :allowDragging="false"
+                :isReadOnly="false"
+                :autoRowHeights="true"
+                :selectionMode="'None'"
+                :initialized="onInitializeGrdAsses"
+                :itemsSource="viewdataAssesKankyo"
+                class="mb-0"
               >
-            </v-app-bar>
-            <v-textarea
-              class="mt-1"
-              rows="2"
-              no-resize
-              outlined
-              hide-details="false"
-            ></v-textarea>
+                <wj-flex-grid-column
+                  binding="kankyo"
+                  width="*"
+                  :wordWrap="true"
+                  :multiLine="true"
+                ></wj-flex-grid-column>
+              </wj-flex-grid>
+            </v-row>
+            <v-row dense class="ma-2" justify="space-between">
+              <v-col cols="4">
+                <v-btn small>削除</v-btn>
+              </v-col>
+              <v-col cols="7">
+                <v-card class="d-flex justify-end" flat tile>
+                  <v-card
+                    class="koumokuTitle titleOrange mt-1 wMin"
+                    outlined
+                    tile
+                  >
+                    完了
+                  </v-card>
+                  <v-card elevation="0" width="30" class="text-center mt-1">
+                    <input type="checkbox" />
+                  </v-card>
+                  <v-card
+                    class="lightYellow pl-1 pt-1 ml-1"
+                    width="140"
+                    outlined
+                    tile
+                  >
+                  </v-card>
+                  <v-btn small class="ml-3">登録</v-btn>
+                </v-card>
+              </v-col>
+            </v-row>
           </div>
-          <v-row dense class="ma-2" justify="space-between">
-            <v-col cols="4">
-              <v-btn small>削除</v-btn>
-            </v-col>
-            <v-col cols="7">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card
-                  class="koumokuTitle titleOrange mt-1 wMin"
-                  outlined
-                  tile
-                >
-                  完了
-                </v-card>
-                <v-card elevation="0" width="30" class="text-center mt-1">
-                  <input type="checkbox" />
-                </v-card>
-                <v-card
-                  class="lightYellow pl-1 pt-1 ml-1"
-                  width="140"
-                  outlined
-                  tile
-                >
-                </v-card>
-                <v-btn small class="ml-3">登録</v-btn>
-              </v-card>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -347,7 +365,7 @@ export default {
         {
           title1: '住　所',
           value1:
-            '999-9999\n宮城県あああああああああああああああああ\nいいいいいいいいいいいい',
+            '999-9999 宮城県あああああああああああああああああいいいいいいいいいいいい',
           title2: '電話番号',
           value2: '4',
         },
@@ -358,7 +376,12 @@ export default {
       ],
       viewdataAssesJyokyo: [
         {
-          value: 'aaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+          jyokyo: 'aaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        },
+      ],
+      viewdataAssesKankyo: [
+        {
+          kankyo: 'aaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
         },
       ],
     };
@@ -450,9 +473,13 @@ export default {
 
       flexGrid.mergeManager = this.createMerge(mergeRanges);
     },
-    onInitializeGrdAssesJyokyo(flexGrid) {
+    onInitializeGrdAsses(flexGrid) {
       let headerpanel = flexGrid.columnHeaders;
-      headerpanel.setCellData(0, 0, '1.利用者の心身の状況');
+      if (flexGrid.hostElement.id == 'grdAssesJyokyo') {
+        headerpanel.setCellData(0, 0, '1.利用者の心身の状況');
+      } else if (flexGrid.hostElement.id == 'grdAssesKankyo') {
+        headerpanel.setCellData(0, 0, '2.利用者の置かれている環境');
+      }
 
       flexGrid.itemFormatter = function (panel, r, c, cell) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -461,7 +488,7 @@ export default {
           cell.style.backgroundColor = sysConst.COLOR.gridHeaderBlueBackground;
         } else if (panel.cellType == wjGrid.CellType.Cell) {
           cell.style.textAlign = 'left';
-          cell.innerHTML = '<div class="v-center">' + cell.innerHTML + '</div>';
+          cell.style.backgroundColor = sysConst.COLOR.lightYellow;
         }
       };
     },

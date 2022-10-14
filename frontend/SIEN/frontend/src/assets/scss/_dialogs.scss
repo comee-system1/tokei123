@@ -4,7 +4,7 @@
 .common_dialog {
     background-color: $view_Title_font_color; //white
     position: relative;
-    font-size: $cell_fontsize;
+    font-size: $dialog_title_fontsize;
 
     //タイトルデザイン
     .v-card__title {
@@ -46,7 +46,7 @@
         background-color: $view_Title_background_Blue;
     }
 
-    .dialog_border {
+    .dialog_border_blue {
         border: 2px solid $view_Title_background_Main;
     }
 
@@ -74,7 +74,7 @@
         }
 
         &.wdMdl {
-            width: 320px;
+            width: 310px;
             text-align: center;
         }
 
@@ -82,10 +82,6 @@
             width: 120px;
             text-align: center;
         }
-
-
-
-
     }
 
     //セレクトデザイン
@@ -117,10 +113,9 @@
     .dialog_text_field_mdl {
         background-color: $view_Title_font_color;
         height: 23px;
-        width: 320px;
+        width: 310px;
         text-align: center;
     }
-
 
 
 }

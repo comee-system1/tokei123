@@ -16,7 +16,7 @@
           <v-btn
             @click="inputCalendarClick(0)"
             tile
-            outlined
+            elevation="2"
             width="125px"
             height="100%"
             class="btnymd"
@@ -26,23 +26,23 @@
             </div>
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
+            tile
             class="btnymd pa-0 ml-1"
             height="100%"
-            x-small
-            tile
             @click="inputCalendarClick(1)"
           >
             <v-icon>mdi-arrow-left-bold</v-icon>
+            前月
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
+            tile
             class="btnymd pa-0 ml-1"
             height="100%"
-            x-small
-            tile
             @click="inputCalendarClick(2)"
           >
+            翌月
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
@@ -52,13 +52,18 @@
           :loading="loading"
           @click="searchClicked()"
         >
+          <v-icon small>mdi-magnify</v-icon>
           検索
         </v-btn>
-        <v-btn class="ml-1" width="25" height="100%" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
-        </v-btn>
+
         <v-spacer></v-spacer>
-        <v-tooltip bottom color="primary" min-width="150" style="z-index: 10">
+        <v-tooltip
+          bottom
+          dark
+          color="secondary"
+          min-width="150"
+          style="z-index: 10"
+        >
           <template v-slot:activator="{ on, attrs }">
             <v-card
               v-bind="attrs"
@@ -97,41 +102,49 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           対象者
         </v-card>
-        <v-btn-toggle
-          class="flex-wrap mr-1"
-          v-model="taisyousyaIndex"
-          mandatory
-        >
-          <v-btn
-            v-for="n in taisyousyaList"
-            :key="n.val"
-            color="secondary"
-            dark
-            outlined
-            height="20"
-            @click="taisyousyaClicked"
+        <v-card elevation="0" tile outlined class="pl-1" height="100%">
+          <div
+            v-for="item in taisyousyaList"
+            :key="'rbMoniYoteitaisyo-' + item.val"
+            class="radioInline"
+            style="width: 70px"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-        <v-btn-toggle
-          class="flex-wrap mr-1"
-          v-model="taisyousyaYoteiIndex"
-          multiple
-          v-if="taisyousyaIndex == 1"
-        >
-          <v-btn
-            v-for="n in taisyousyaYoteiList"
-            :key="n.val"
-            color="primary  "
-            dark
-            outlined
-            height="20"
-            @click="taisyousyaClicked"
+            <input
+              type="radio"
+              :id="'rbMoniYoteitaisyo-' + item.val"
+              v-model="taisyousyaIndex"
+              :value="item.val"
+            />
+            <label
+              :for="'rbMoniYoteitaisyo-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label class="mr-1">【</label>
+          <div
+            v-for="item in taisyousyaYoteiList"
+            :key="'cbMoniYoteitaisyoYotei-' + item.val"
+            class="checkboxInline"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
+            <input
+              type="checkbox"
+              :id="'cbMoniYoteitaisyoYotei-' + item.val"
+              :value="item.val"
+              v-model="taisyousyaYoteiIndex"
+              :disabled="taisyousyaIndex != 1"
+              @change="taisyousyaClicked"
+            />
+            <label
+              :for="'cbMoniYoteitaisyoYotei-' + item.val"
+              class="customCheckbox mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label>】</label>
+        </v-card>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
@@ -150,23 +163,28 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           絞込
         </v-card>
-        <v-btn-toggle
-          class="flex-wrap mr-1"
-          v-model="siborikomiIndex"
-          mandatory
-        >
-          <v-btn
-            v-for="n in siborikomiList"
-            :key="n.val"
-            color="secondary"
-            dark
-            outlined
-            height="20"
-            @click="siborikomiClicked"
+        <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+          <div
+            v-for="item in siborikomiList"
+            :key="item.val"
+            class="radioInline"
+            style="width: 70px"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
+            <input
+              type="radio"
+              :id="'rbMoniYoteisiborikomi-' + item.val"
+              v-model="siborikomiIndex"
+              :value="item.val"
+              @change="siborikomiClicked"
+            />
+            <label
+              :for="'rbMoniYoteisiborikomi-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+        </v-card>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
@@ -174,14 +192,20 @@
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
           <span class="under18 mr-1" style="width: 80px">18歳未満</span>
         </v-card>
+        <v-btn class="ml-1" width="25" height="100%" @click="filterClrclick()">
+          <v-icon small>mdi-filter-off</v-icon>
+          解除
+        </v-btn>
         <v-spacer></v-spacer>
-        <v-card class="koumokuTitle titleOrange pa-1 ml-1" outlined tile>
-          入力
+        <v-card class="koumokuTitle titleGlay pa-1 mr-1" outlined tile>
+          予定入力
         </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" color="primary">
+
+        <v-btn-toggle class="flex-wrap" color="primary">
           <v-btn
             v-for="n in inputList"
             :key="n.val"
+            elevation="1"
             color="secondary"
             dark
             outlined
@@ -281,7 +305,7 @@ export default {
         },
         {
           dataname: 'age',
-          title: '年\n齢',
+          title: '年齢',
           kbntitle: '',
           width: '2*',
           minwidth: 20,
@@ -289,7 +313,7 @@ export default {
         },
         {
           dataname: 'birthMonth',
-          title: '誕\n生\n月',
+          title: '誕生\n月',
           kbntitle: '',
           width: '2*',
           minwidth: 20,
@@ -523,7 +547,7 @@ export default {
       selTantousya: 0,
       taisyousyaList: [
         { val: 0, name: '全員' },
-        { val: 1, name: '今月対象者' },
+        { val: 1, name: '予定者' },
       ],
       taisyousyaYoteiList: [
         { val: 1, name: '通常月' },
@@ -532,7 +556,7 @@ export default {
         { val: 4, name: '翌月終期月' },
       ],
       taisyousyaIndex: 1,
-      taisyousyaYoteiIndex: [0, 1, 2, 3],
+      taisyousyaYoteiIndex: [],
       selSikuchoson: 0,
       sikuchosonList: [
         { val: 0, name: '指定なし' },
@@ -542,12 +566,13 @@ export default {
       ],
       siborikomiIndex: 0,
       siborikomiList: [
-        { val: 0, name: '指定なし' },
+        { val: 0, name: '全員' },
         { val: 1, name: '実施済' },
         { val: 2, name: '未実施' },
         { val: 3, name: '延期者' },
         { val: 4, name: '中止者' },
       ],
+      inputIndex: [],
       inputList: [
         { val: 1, name: '中止・延期' },
         { val: 2, name: '予定外追加' },
@@ -574,12 +599,13 @@ export default {
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
   },
   methods: {
     calculateWindowHeight() {
       if (document.getElementById(GRID_ID.Keikaku) != null) {
         document.getElementById(GRID_ID.Keikaku).style.height =
-          window.innerHeight - 220 + 'px';
+          window.innerHeight - 160 + 'px';
       }
     },
     initComboFilters(combo) {
@@ -776,14 +802,28 @@ export default {
       e.cell.style.backgroundColor = '';
 
       if (e.panel == flexGrid.columnHeaders) {
-        if (e.row == 0 && e.col == 8) {
+        if (e.col < 5) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        } else if (e.col < 8) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        }
+        if (
+          e.col == 4 ||
+          (e.row == 0 && e.col == 5) ||
+          (e.row == 1 && e.col == 7) ||
+          (e.row == 0 && e.col == 8) ||
+          (e.row == 0 && e.col == 8) ||
+          (e.row >= 1 && e.col == 10) ||
+          (e.row == 0 && e.col >= 11)
+        ) {
           e.cell.style.borderRight = '1px solid';
         }
-        if (e.row >= 1 && e.col == 10) {
-          e.cell.style.borderRight = '1px solid';
-        }
-        if (e.row == 0 && e.col >= 11) {
-          e.cell.style.borderRight = '1px solid';
+        if ((e.row == 0 && e.col == 8) || (e.row == 1 && e.col == 10)) {
+          e.cell.style.borderRight = '3px double black ';
         }
         // 12月の次の右線を太くする
         if (e.col > 11 && e.row >= 1) {
@@ -869,8 +909,11 @@ export default {
         }
       }
       if (e.panel != flexGrid.columnHeaders) {
-        if (e.col == 10) {
+        if (e.col == 4 || e.col == 7) {
           e.cell.style.borderRight = '1px solid black ';
+        }
+        if (e.col == 10 || (e.panel == flexGrid.columnFooters && e.col == 0)) {
+          e.cell.style.borderRight = '3px double black ';
         }
         if (e.col > 10) {
           let tmpym = this.dispYmList[e.col - 11];
@@ -961,6 +1004,11 @@ export default {
     },
     siborikomiClicked() {
       this.userFilter();
+    },
+    inputClicked() {
+      if (this.inputIndex.length > 1) {
+        this.inputIndex.shift();
+      }
     },
     taisyousyaClicked() {
       this.selTantousya = this.tantousyaList[this.selTantousya].val;
@@ -1101,10 +1149,10 @@ div#monitoringYotei {
     color: $font_color;
     font-size: $cell_fontsize;
     width: 100%;
-    // min-width: 1250px;
-    height: 75vh;
     min-height: 400px;
     z-index: 2;
+    background: $grid_background;
+    border: 1px solid gray;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;

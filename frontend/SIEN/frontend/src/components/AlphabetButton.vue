@@ -1,7 +1,6 @@
 <template>
   <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
     <v-btn
-      small
       outlined
       v-for="(n, k) in alphabet"
       :key="n"
