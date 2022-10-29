@@ -2,7 +2,7 @@
   <v-app>
     <v-main>
       <HeaderAndNav></HeaderAndNav>
-      <router-view :key="$route.fullPath">></router-view>
+      <router-view :key="$route.fullPath" :keycloak="keycloak">></router-view>
     </v-main>
   </v-app>
 </template>
@@ -22,9 +22,7 @@ export default {
     HeaderAndNav,
   },
   data() {
-    return {
-      selectedData: {},
-    };
+    return {};
   },
   methods: {},
 };
