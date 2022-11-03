@@ -4,7 +4,7 @@
         ${msg("loginProfileTitle")}
     <#elseif section = "form">
         <form id="kc-update-profile-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
-
+<!--
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
                     <label for="secretquestion" class="${properties.kcLabelClass!}">${msg("secretQuestion")}</label>
@@ -21,8 +21,8 @@
                     <input type="text" id="secretanswer" name="user.attributes.secretanswer" value="" />
                 </div>
             </div>
-
-            <#--  <#if user.editUsernameAllowed>
+-->
+            <#if user.editUsernameAllowed>
                 <div class="${properties.kcFormGroupClass!}">
                     <div class="${properties.kcLabelWrapperClass!}">
                         <label for="username" class="${properties.kcLabelClass!}">${msg("username")}</label>
@@ -95,7 +95,7 @@
                         </span>
                     </#if>
                 </div>
-            </div>  -->
+            </div>
 
             <div class="${properties.kcFormGroupClass!}">
                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
