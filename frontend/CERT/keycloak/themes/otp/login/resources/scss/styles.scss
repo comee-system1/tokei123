@@ -1,0 +1,47 @@
+$bgColor: #eee;
+
+body {
+    background: $bgColor;
+    font-family: 'メイリオ',
+        'Meiryo',
+        sans-serif;
+    font-size: 14px;
+
+}
+
+
+h2 {
+    text-align: center;
+    color: #646D79;
+    font-size: 20px;
+    margin: 0;
+    padding-bottom: 20px;
+    font-weight: bold;
+
+}
+
+h3 {
+    text-align: center;
+    color: #333333;
+    font-size: 16px;
+    margin: 20px 0px;
+    font-weight: bold;
+
+}
+
+
+#kc-content {
+    width: 300px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+}
+
+input[type=password],
+input[type=text] {
+    border: 1px solid $bgColor;
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+}
