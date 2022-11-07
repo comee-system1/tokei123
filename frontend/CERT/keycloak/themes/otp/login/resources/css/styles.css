@@ -6,7 +6,7 @@ body {
 
 h2 {
   text-align: center;
-  color: #646D79;
+  color: #646d79;
   font-size: 20px;
   margin: 0;
   padding-bottom: 20px;
@@ -19,11 +19,58 @@ h3 {
   margin: 20px 0px;
   font-weight: bold; }
 
+#kc-accountback,
 #kc-content {
   width: 300px;
   margin: 0 auto;
   background-color: #fff;
-  padding: 30px; }
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.5); }
+  #kc-accountback.mt,
+  #kc-content.mt {
+    margin-top: 20px; }
+
+#kc-login {
+  background-color: #646d79;
+  color: #fff;
+  width: 100%;
+  padding: 10px 0px;
+  border-radius: 5px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.5); }
+  #kc-login:hover {
+    cursor: pointer; }
+
+#kc-accountback {
+  position: relative;
+  background-image: url("../img/human.png");
+  background-repeat: no-repeat;
+  background-position: center left 30px;
+  background-size: 10%;
+  text-align: center; }
+  #kc-accountback a {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    line-height: 60px;
+    text-indent: 20%; }
+
+#kc-bottom-company {
+  width: 232px;
+  position: absolute;
+  bottom: 0;
+  transform: translate(-50%, -50%);
+  top: 100%;
+  left: 50%;
+  height: 92px;
+  background-image: url("../img/company.png");
+  background-repeat: no-repeat;
+  text-indent: -9999px;
+  z-index: -1; }
 
 input[type=password],
 input[type=text] {
@@ -32,5 +79,11 @@ input[type=text] {
   width: 100%;
   height: 30px;
   margin-bottom: 10px; }
+
+.marginHr {
+  margin: 20px 0px; }
+
+.mt-min {
+  margin-top: 10px; }
 
 /*# sourceMappingURL=styles.css.map */

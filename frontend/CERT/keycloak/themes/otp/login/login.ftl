@@ -1,12 +1,12 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
-    <div id="kc-form">
     <#if section = "form">
-      <div id="kc-form-wrapper">
+    <div id="kc-form">
+        <div id="kc-form-wrapper">
             <h2>${msg("loginAccountTitle")}</h2>
             <hr size=1 />
-        <#if realm.password>
-            <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
+            <#if realm.password>
+                <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
                 <h3>${msg("loginKanrisyaTitle")}</h3>
                 <#if !usernameHidden??>
                     <div class="${properties.kcFormGroupClass!}">
@@ -39,8 +39,18 @@
                     </#if>
 
                 </div>
-
-                <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
+                <div class="${properties.kcFormOptionsWrapperClass!}">
+                    <#if realm.resetPasswordAllowed>
+                        <span><a tabindex="5" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
+                    </#if>
+                </div>
+                <hr size=1 class="marginHr" />
+                <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
+                    <input type="hidden" id="id-hidden-input" name="credentialId" <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
+                    <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
+                </div>
+                
+                <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!} mt-min">
                     <div id="kc-form-options">
                         <#if realm.rememberMe && !usernameHidden??>
                             <div class="checkbox">
@@ -53,23 +63,20 @@
                                 </label>
                             </div>
                         </#if>
-                        </div>
-                        <div class="${properties.kcFormOptionsWrapperClass!}">
-                            <#if realm.resetPasswordAllowed>
-                                <span><a tabindex="5" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
-                            </#if>
-                        </div>
-
-                  </div>
-
-                  <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
-                      <input type="hidden" id="id-hidden-input" name="credentialId" <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
-                      <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
-                  </div>
-            </form>
+                    </div>
+                </div>
+                </form>
+            </#if>
         </div>
-    </#if>
     </div>
+    <#elseif section = "accountback" >
+        <#if realm.password>
+            <a href="">${msg("syokuinAccountBackLink")}</a>
+        </#if>
+    <#elseif section = "bottomCompany" >
+        <#if realm.password>
+            <div>company</div>
+        </#if>
     <#elseif section = "info" >
         <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
             <div id="kc-registration-container">
@@ -100,6 +107,7 @@
                 </ul>
             </div>
         </#if>
+
     </#if>
 
 </@layout.registrationLayout>

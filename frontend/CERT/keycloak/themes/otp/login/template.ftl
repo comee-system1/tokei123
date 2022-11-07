@@ -143,7 +143,13 @@
           </#if>
         </div>
       </div>
-
+      <div id="kc-accountback" class="mt">
+        <#nested "accountback">
+      </div>
+      <div id="kc-bottom-company" class="mt">
+        <#nested "bottomCompany">
+      </div>
+      
     </div>
   </div>
 </body>
