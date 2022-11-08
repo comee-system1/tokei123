@@ -71,7 +71,9 @@
     </div>
     <#elseif section = "accountback" >
         <#if realm.password>
+        <div id="kc-accountback" class="mt">
             <a href="">${msg("syokuinAccountBackLink")}</a>
+        </div>
         </#if>
     <#elseif section = "bottomCompany" >
         <#if realm.password>

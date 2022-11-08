@@ -39,7 +39,7 @@
 <body class="${properties.kcBodyClass!}">
 <div class="${properties.kcLoginClass!}">
 
-    <div class="${properties.kcFormCardClass!}">
+    <div class="${properties.kcFormCardClass!} mt-small">
         <header class="${properties.kcFormHeaderClass!}">
             <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
@@ -68,7 +68,7 @@
                     </div>
                 </div>
             <#else>
-                <h1 id="kc-page-title"><#nested "header"></h1>
+                <#--  <h1 id="kc-page-title"><#nested "header"></h1>  -->
             </#if>
         <#else>
             <#if displayRequiredFields>
@@ -91,7 +91,7 @@
                 </div>
             <#else>
                 <#nested "show-username">
-                <div id="kc-username" class="${properties.kcFormGroupClass!}">
+                <#--  <div id="kc-username" class="${properties.kcFormGroupClass!}">
                     <label id="kc-attempted-username">${auth.attemptedUsername}</label>
                     <a id="reset-login" href="${url.loginRestartFlowUrl}" aria-label="${msg("restartLoginTooltip")}">
                         <div class="kc-login-tooltip">
@@ -99,13 +99,12 @@
                             <span class="kc-tooltip-text">${msg("restartLoginTooltip")}</span>
                         </div>
                     </a>
-                </div>
+                </div>  -->
             </#if>
         </#if>
       </header>
       <div id="kc-content">
         <div id="kc-content-wrapper">
-
           <#-- App-initiated actions should not see warning messages about the need to complete the action -->
           <#-- during login.                                                                               -->
           <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
@@ -143,9 +142,7 @@
           </#if>
         </div>
       </div>
-      <div id="kc-accountback" class="mt">
         <#nested "accountback">
-      </div>
       <div id="kc-bottom-company" class="mt">
         <#nested "bottomCompany">
       </div>
