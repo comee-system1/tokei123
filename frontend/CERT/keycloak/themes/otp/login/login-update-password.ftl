@@ -4,6 +4,15 @@
         ${msg("updatePasswordTitle")}
     <#elseif section = "form">
         <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+            <h2>${msg("loginAccountTitle")}</h2>
+            <hr size=1 />
+            <h3>${msg("firstLogin")}</h3>
+            <ul id="forgetNavi" class="half">
+                <li class="active">&nbsp;</li>
+                <li >&nbsp;</li>
+                <li>&nbsp;</li>
+            </ul>
+            <p>${msg("doFirstRegistMessage")}</p>
             <input type="text" id="username" name="username" value="${username}" autocomplete="username"
                    readonly="readonly" style="display:none;"/>
             <input type="password" id="password" name="password" autocomplete="current-password" style="display:none;"/>
@@ -25,10 +34,14 @@
                     </#if>
                 </div>
             </div>
-
+            <ul id="forgetExplain">
+                <li>${msg("forgetEdit1")}</li>
+                <li>${msg("forgetEdit2")}</li>
+                <li>${msg("forgetEdit3")}</li>
+            </ul>
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="password-confirm" class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
+                    <label for="password-confirm" class="${properties.kcLabelClass!}">${msg("passwordNewConfirm")}</label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
                     <input type="password" id="password-confirm" name="password-confirm"
@@ -45,7 +58,7 @@
 
                 </div>
             </div>
-            
+            <hr size=1 class="marginHr"/>            
             <div class="${properties.kcFormGroupClass!}">
                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
                     <div class="${properties.kcFormOptionsWrapperClass!}">
@@ -62,7 +75,7 @@
                         <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}" />
                         <button class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}" type="submit" name="cancel-aia" value="true" />${msg("doCancel")}</button>
                     <#else>
-                        <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}" />
+                        <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doNext")}" />
                     </#if>
                 </div>
             </div>

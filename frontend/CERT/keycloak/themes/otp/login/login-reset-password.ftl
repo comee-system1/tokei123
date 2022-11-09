@@ -4,9 +4,8 @@
         ${msg("emailForgotTitle")}
     <#elseif section = "form">
         <h2>${msg("doForgotPasswordRenew")}</h2>
-        <ul id="forgetNavi">
+        <ul id="forgetNavi" >
             <li class="active">&nbsp;</li>
-            <li>&nbsp;</li>
             <li>&nbsp;</li>
             <li>&nbsp;</li>
             <li>&nbsp;</li>

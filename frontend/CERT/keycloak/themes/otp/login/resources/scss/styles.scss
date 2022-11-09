@@ -2,6 +2,7 @@ $bk: #d0e2fb;
 $gray8: #646d79;
 $white: #fff;
 $blue:#0F74D8;
+$green:#187b51;
 
 body {
     background: $bk;
@@ -47,7 +48,26 @@ h3 {
     }
 }
 
+/**********************
+スクリーンメッセージ
+********************/
+#messageScreen {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
 
+    span {
+        background-color: $white;
+        display: block;
+        width: 400px;
+        margin: 10% auto;
+        padding: 10px;
+    }
+}
 
 #kc-accountback {
     position: relative;
@@ -94,6 +114,15 @@ input[type=text] {
     box-shadow: 0 2px 2px 0 #00000080;
 }
 
+select {
+    border: 1px solid $bk;
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 2px 0 #00000080;
+}
+
 .marginHr {
     margin: 20px 0px;
 }
@@ -130,12 +159,15 @@ input[type=text] {
 ***********/
 #forgetNavi {
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
     margin-bottom: 20px;
+    width: 80%;
+
+
 
     li {
         float: left;
-        width: 15%;
+        width: 20%;
         height: 12px;
         list-style-type: none;
         background-color: #999;
@@ -147,9 +179,29 @@ input[type=text] {
             background-color: $blue;
         }
 
+        &.after {
+            background-color: $green;
+        }
+
         &:first-child {
             margin-left: 3%;
         }
+    }
+
+    &.half {
+        width: 60%;
+
+        li {
+            width: 25%;
+            margin-left: 12%;
+
+            &:first-child {
+                margin-left: 0%;
+
+            }
+        }
+
+
     }
 
     &:after {
@@ -178,8 +230,14 @@ input[type=text] {
         text-align: center;
 
 
+
         &:last-child {
             margin-left: 2%;
+        }
+
+        &.max {
+            width: 100%;
+            margin-left: 1%;
         }
 
         a {
@@ -232,4 +290,44 @@ input[type=text] {
         color: #980fd8;
 
     }
+}
+
+#okbutton {
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    color: $gray8;
+    display: block;
+    width: 150px;
+    height: 40px;
+    margin: 0 auto;
+    background-color: $gray8;
+    color: $white;
+    border-radius: 3px;
+    text-decoration: none;
+    margin-top: 20px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+/*********************
+パスワード再設定用次へボタン
+*********************/
+#kc-form-buttons {
+    input[type=submit] {
+        width: 100%;
+        line-height: 40px;
+        display: block;
+        background-color: $gray8;
+        color: $white;
+        border: none;
+        border-radius: 5px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
 }

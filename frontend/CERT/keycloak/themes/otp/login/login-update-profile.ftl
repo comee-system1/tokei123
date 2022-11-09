@@ -4,25 +4,49 @@
         ${msg("loginProfileTitle")}
     <#elseif section = "form">
         <form id="kc-update-profile-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
-<!--
+            <h2>${msg("loginAccountTitle")}</h2>
+            <hr size=1 />
+            <h3>${msg("firstLogin")}</h3>
+
+            <ul id="forgetNavi" class="half">
+                <li class="after">&nbsp;</li>
+                <li class="active" >&nbsp;</li>
+                <li>&nbsp;</li>
+            </ul>
+
+
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
                     <label for="secretquestion" class="${properties.kcLabelClass!}">${msg("secretQuestion")}</label>
                 </div>
+
+                <!--
                 <div class="${properties.kcInputWrapperClass!}">
-                    <input type="text" id="secretquestion" name="user.attributes.secretquestion" value="" />
+                    <input type="text" id="tel" name="user.attributes.secretquestionText" value="${(user.attributes.secretquestionText!'')}" />
                 </div>
+                -->
+                <select name="user.attributes.secretquestionText" id="secretquestion" >
+                    <option value="testと入力してください">testと入力してください</option>
+                    <option value="所属している会社名は何ですか？">所属している会社名は何ですか？</option>
+                </select>
             </div>
-            <div class="${properties.kcFormGroupClass!}">
+
+            <input type="hidden" id="username" name="username" value="${(user.username!'')}" />
+            <input type="hidden" id="email" name="email" value="${(user.email!'')}" />
+            <input type="hidden" id="firstName" name="firstName" value="${(user.firstName!'')}" />
+            <input type="hidden" id="lastName" name="lastName" value="${(user.lastName!'')}" />
+            <#--  <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
                     <label for="secretanswer" class="${properties.kcLabelClass!}">${msg("secretAnswer")}</label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
                     <input type="text" id="secretanswer" name="user.attributes.secretanswer" value="" />
                 </div>
-            </div>
--->
-            <#if user.editUsernameAllowed>
+            </div>  -->
+
+
+
+            <#--  <#if user.editUsernameAllowed>
                 <div class="${properties.kcFormGroupClass!}">
                     <div class="${properties.kcLabelWrapperClass!}">
                         <label for="username" class="${properties.kcLabelClass!}">${msg("username")}</label>
@@ -94,9 +118,10 @@
                             ${kcSanitize(messagesPerField.get('lastName'))?no_esc}
                         </span>
                     </#if>
-                </div>
-            </div>
-
+                </div>  
+            </div> 
+            -->
+            <hr size=1 class="marginHr"/>
             <div class="${properties.kcFormGroupClass!}">
                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
                     <div class="${properties.kcFormOptionsWrapperClass!}">
