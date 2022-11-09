@@ -12,6 +12,25 @@
             <li>&nbsp;</li>
             <li>&nbsp;</li>
         </ul>
+        
+${auth.getAttemptedUsername()}
+<#assign calculation = auth.getAuthenticationSelections()>
+
+<#if calculation?is_sequence>
+  <#list calculation as c>
+    ${c}
+  </#list>
+<#elseif calculation?is_hash_ex>
+  <#list calculation?keys as key>
+    ${key} - ${calculation[key]}
+  </#list>
+<#elseif calculation?is_string>
+  ${calculation}
+</#if>
+
+
+
+
         <p>${msg("secretAnswerInput")}</p>
         <form id="kc-totp-login-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <div class="${properties.kcFormGroupClass!}">
