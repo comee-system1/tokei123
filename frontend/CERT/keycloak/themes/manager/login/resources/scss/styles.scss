@@ -1,0 +1,348 @@
+$bk: #d0e2fb;
+$gray8: #646d79;
+$red8:#c93328;
+$white: #fff;
+$blue: #0F74D8;
+$green: #187b51;
+
+body {
+    background: $bk;
+    font-family: 'メイリオ',
+        'Meiryo',
+        sans-serif;
+    font-size: 14px;
+
+}
+
+
+h2 {
+    text-align: center;
+    color: $gray8;
+    font-size: 20px;
+    margin: 0;
+    padding-bottom: 20px;
+    font-weight: bold;
+
+}
+
+h3 {
+    text-align: center;
+    color: #333333;
+    font-size: 16px;
+    margin: 20px 0px;
+    font-weight: bold;
+
+}
+
+#input-error-username,
+#input-error {
+    color: $red8;
+    font-weight: bold;
+    display: block;
+    margin-top: -10px;
+}
+
+#kc-accountback,
+#kc-content {
+    width: 300px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .5);
+
+    &.mt {
+        margin-top: 20px;
+    }
+}
+
+/**********************
+スクリーンメッセージ
+********************/
+#messageScreen {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+
+    span {
+        background-color: $white;
+        display: block;
+        width: 400px;
+        margin: 10% auto;
+        padding: 10px;
+    }
+}
+
+#okbutton {
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    color: $gray8;
+    display: block;
+    width: 150px;
+    height: 40px;
+    margin: 0 auto;
+    background-color: $gray8;
+    color: $white;
+    border-radius: 3px;
+    text-decoration: none;
+    margin-top: 20px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+#kc-accountback {
+    position: relative;
+    background-image: url('../img/human.png');
+    background-repeat: no-repeat;
+    background-position: center left 30px;
+    background-size: 10%;
+    text-align: center;
+
+    a {
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        line-height: 60px;
+        text-indent: 20%;
+    }
+}
+
+#kc-bottom-company {
+    width: 232px;
+    position: fixed;
+    transform: translate(-50%, 0%);
+    left: 50%;
+    top: auto;
+    bottom: 0;
+    height: 92px;
+    background-image: url("../img/company.png");
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    z-index: -1;
+}
+
+input[type=password],
+input[type=text] {
+    border: 1px solid $bk;
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 2px 0 #00000080;
+
+    &:focus {
+        outline: none;
+    }
+
+}
+
+select {
+    border: 1px solid $bk;
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 2px 0 #00000080;
+}
+
+.marginHr {
+    margin: 20px 0px;
+}
+
+.mt-min {
+    margin-top: 10px;
+}
+
+.mt-small {
+    margin-top: 20px;
+}
+
+.mt-middle {
+    margin-top: 40px;
+}
+
+/*ログインボタン*/
+#kc-login {
+    background-color: $gray8;
+    color: $white;
+    width: 100%;
+    padding: 6px 0px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px 0 #00000080;
+    border: none;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+/**************
+ナビゲーション
+***********/
+#forgetNavi {
+    padding: 0;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    width: 80%;
+
+
+
+    li {
+        float: left;
+        width: 20%;
+        height: 12px;
+        list-style-type: none;
+        background-color: #999;
+        padding: 0;
+        margin-left: 5%;
+        border-radius: 10px;
+
+        &.active {
+            background-color: $blue;
+        }
+
+        &.after {
+            background-color: $green;
+        }
+
+        &:first-child {
+            margin-left: 3%;
+        }
+    }
+
+    &.half {
+        width: 60%;
+
+        li {
+            width: 25%;
+            margin-left: 12%;
+
+            &:first-child {
+                margin-left: 0%;
+
+            }
+        }
+
+
+    }
+
+    &:after {
+        content: "";
+        clear: both;
+        display: block;
+    }
+
+}
+
+#forgetExplain {
+    font-size: 0.85%;
+    padding: 0;
+    margin-left: 20px;
+}
+
+#forgetButton {
+    padding: 0;
+    margin: 0;
+
+
+    li {
+        float: left;
+        list-style-type: none;
+        width: 48%;
+        text-align: center;
+
+
+
+        &:last-child {
+            margin-left: 2%;
+        }
+
+        &.max {
+            width: 100%;
+            margin-left: 1%;
+        }
+
+        a {
+            text-decoration: none;
+            line-height: 40px;
+            display: block;
+            box-shadow: 0px 1px 1px 0px rgba(125, 125, 125, 0.2);
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
+        input[type=submit] {
+            width: 100%;
+            line-height: 40px;
+            display: block;
+            background-color: $blue;
+            color: $white;
+            border: none;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    &:after {
+        content: "";
+        clear: both;
+        display: block;
+    }
+}
+
+/******************
+ログインフォーム用
+*******************/
+
+
+
+/******************
+認証コード用
+*******************/
+#resend {
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    color: $blue;
+
+    &:hover {
+        cursor: pointer;
+        color: #980fd8;
+
+    }
+}
+
+
+
+/*********************
+パスワード再設定用次へボタン
+*********************/
+#kc-form-buttons {
+    input[type=submit] {
+        width: 100%;
+        line-height: 40px;
+        display: block;
+        background-color: $gray8;
+        color: $white;
+        border: none;
+        border-radius: 5px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+}

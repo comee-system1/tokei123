@@ -1,0 +1,254 @@
+@charset "UTF-8";
+body {
+  background: #d0e2fb;
+  font-family: 'メイリオ', 'Meiryo', sans-serif;
+  font-size: 14px; }
+
+h2 {
+  text-align: center;
+  color: #646d79;
+  font-size: 20px;
+  margin: 0;
+  padding-bottom: 20px;
+  font-weight: bold; }
+
+h3 {
+  text-align: center;
+  color: #333333;
+  font-size: 16px;
+  margin: 20px 0px;
+  font-weight: bold; }
+
+#input-error-username,
+#input-error {
+  color: #c93328;
+  font-weight: bold;
+  display: block;
+  margin-top: -10px; }
+
+#kc-accountback,
+#kc-content {
+  width: 300px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.5); }
+  #kc-accountback.mt,
+  #kc-content.mt {
+    margin-top: 20px; }
+
+/**********************
+スクリーンメッセージ
+********************/
+#messageScreen {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10; }
+  #messageScreen span {
+    background-color: #fff;
+    display: block;
+    width: 400px;
+    margin: 10% auto;
+    padding: 10px; }
+
+#okbutton {
+  border: none;
+  background-color: transparent;
+  text-decoration: underline;
+  color: #646d79;
+  display: block;
+  width: 150px;
+  height: 40px;
+  margin: 0 auto;
+  background-color: #646d79;
+  color: #fff;
+  border-radius: 3px;
+  text-decoration: none;
+  margin-top: 20px; }
+  #okbutton:hover {
+    cursor: pointer; }
+
+#kc-accountback {
+  position: relative;
+  background-image: url("../img/human.png");
+  background-repeat: no-repeat;
+  background-position: center left 30px;
+  background-size: 10%;
+  text-align: center; }
+  #kc-accountback a {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    line-height: 60px;
+    text-indent: 20%; }
+
+#kc-bottom-company {
+  width: 232px;
+  position: fixed;
+  transform: translate(-50%, 0%);
+  left: 50%;
+  top: auto;
+  bottom: 0;
+  height: 92px;
+  background-image: url("../img/company.png");
+  background-repeat: no-repeat;
+  text-indent: -9999px;
+  z-index: -1; }
+
+input[type=password],
+input[type=text] {
+  border: 1px solid #d0e2fb;
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 2px 0 #00000080; }
+  input[type=password]:focus,
+  input[type=text]:focus {
+    outline: none; }
+
+select {
+  border: 1px solid #d0e2fb;
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 2px 0 #00000080; }
+
+.marginHr {
+  margin: 20px 0px; }
+
+.mt-min {
+  margin-top: 10px; }
+
+.mt-small {
+  margin-top: 20px; }
+
+.mt-middle {
+  margin-top: 40px; }
+
+/*ログインボタン*/
+#kc-login {
+  background-color: #646d79;
+  color: #fff;
+  width: 100%;
+  padding: 6px 0px;
+  border-radius: 5px;
+  box-shadow: 0 4px 4px 0 #00000080;
+  border: none; }
+  #kc-login:hover {
+    cursor: pointer; }
+
+/**************
+ナビゲーション
+***********/
+#forgetNavi {
+  padding: 0;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  width: 80%; }
+  #forgetNavi li {
+    float: left;
+    width: 20%;
+    height: 12px;
+    list-style-type: none;
+    background-color: #999;
+    padding: 0;
+    margin-left: 5%;
+    border-radius: 10px; }
+    #forgetNavi li.active {
+      background-color: #0F74D8; }
+    #forgetNavi li.after {
+      background-color: #187b51; }
+    #forgetNavi li:first-child {
+      margin-left: 3%; }
+  #forgetNavi.half {
+    width: 60%; }
+    #forgetNavi.half li {
+      width: 25%;
+      margin-left: 12%; }
+      #forgetNavi.half li:first-child {
+        margin-left: 0%; }
+  #forgetNavi:after {
+    content: "";
+    clear: both;
+    display: block; }
+
+#forgetExplain {
+  font-size: 0.85%;
+  padding: 0;
+  margin-left: 20px; }
+
+#forgetButton {
+  padding: 0;
+  margin: 0; }
+  #forgetButton li {
+    float: left;
+    list-style-type: none;
+    width: 48%;
+    text-align: center; }
+    #forgetButton li:last-child {
+      margin-left: 2%; }
+    #forgetButton li.max {
+      width: 100%;
+      margin-left: 1%; }
+    #forgetButton li a {
+      text-decoration: none;
+      line-height: 40px;
+      display: block;
+      box-shadow: 0px 1px 1px 0px rgba(125, 125, 125, 0.2);
+      border: 1px solid #ccc;
+      color: #333; }
+    #forgetButton li input[type=submit] {
+      width: 100%;
+      line-height: 40px;
+      display: block;
+      background-color: #0F74D8;
+      color: #fff;
+      border: none; }
+      #forgetButton li input[type=submit]:hover {
+        cursor: pointer; }
+  #forgetButton:after {
+    content: "";
+    clear: both;
+    display: block; }
+
+/******************
+ログインフォーム用
+*******************/
+/******************
+認証コード用
+*******************/
+#resend {
+  border: none;
+  background-color: transparent;
+  text-decoration: underline;
+  color: #0F74D8; }
+  #resend:hover {
+    cursor: pointer;
+    color: #980fd8; }
+
+/*********************
+パスワード再設定用次へボタン
+*********************/
+#kc-form-buttons input[type=submit] {
+  width: 100%;
+  line-height: 40px;
+  display: block;
+  background-color: #646d79;
+  color: #fff;
+  border: none;
+  border-radius: 5px; }
+  #kc-form-buttons input[type=submit]:hover {
+    cursor: pointer; }
+
+/*# sourceMappingURL=styles.css.map */
