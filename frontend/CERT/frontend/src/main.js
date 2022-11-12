@@ -12,8 +12,8 @@ import '@grapecity/wijmo.styles/wijmo.css';
 Vue.use(VueLogger);
 let initOptions = {
   url: 'http://localhost:8884/',
-  realm: 'myrealm',
-  clientId: 'app-vue',
+  realm: 'admin99',
+  clientId: 'account',
   onLoad: 'login-required',
   CheckLoginiframe: false
 }
