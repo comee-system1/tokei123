@@ -9,8 +9,6 @@
                 <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
                 <h3>${msg("loginKanrisyaTitle")}</h3>
 
-                
-
                 <#if !usernameHidden??>
                     <div class="${properties.kcFormGroupClass!}">
                         <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("emailScopeConsentText")}</#if></label>

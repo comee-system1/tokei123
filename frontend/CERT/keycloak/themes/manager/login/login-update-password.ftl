@@ -6,14 +6,14 @@
         <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
             <hr size=1 />
-            <h3>${msg("firstLogin")}</h3>
-            <ul id="forgetNavi" class="half">
-                <li class="active">&nbsp;</li>
-                <li >&nbsp;</li>
-                <li>&nbsp;</li>
-            </ul>
-            
+            <h3>${msg("doForgotPasswordRenew")}</h3> 
             <p>${msg("doFirstRegistMessage")}</p>
+            
+            <#if message.type == "error">
+            <div class="alert-${message.type} ${properties.kcAlertClass!} pf-m-<#if message.type = 'error'>danger<#else>${message.type}</#if>">
+                <span class="${properties.kcAlertTitleClass!}">${kcSanitize(message.summary)?no_esc}</span>
+            </div>
+            </#if>
             <input type="text" id="username" name="username" value="${username}" autocomplete="username"
                    readonly="readonly" style="display:none;"/>
             <input type="password" id="password" name="password" autocomplete="current-password" style="display:none;"/>
@@ -29,10 +29,16 @@
                     />
 
                     <#if messagesPerField.existsError('password')>
-                        <span id="input-error-password" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                        <div id="input-error-password" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                             ${kcSanitize(messagesPerField.get('password'))?no_esc}
-                        </span>
+                        </div>
                     </#if>
+
+                    <#if messagesPerField.existsError('minimum-length')>
+                        <div id="input-error-minimum-length" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            ${kcSanitize(messagesPerField.get('invalidPasswordMinLengthMessage'))?no_esc}
+                        </div>
+                    </#if>   
                 </div>
             </div>
             <ul id="forgetExplain">

@@ -3,13 +3,12 @@
     <#if section = "header">
         ${msg("emailForgotTitle")}
     <#elseif section = "form">
-        <h2>${msg("doForgotPasswordRenew")}</h2>
-        <ul id="forgetNavi" >
-            <li class="active">&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-        </ul>
+
+        <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
+        <hr size=1 />
+        <h3>${msg("doForgotPasswordRenew")}</h3> 
+
+
         <ul id="forgetExplain">
             <li>${msg("forgetExplain1")}</li>
             <li>${msg("forgetExplain2")}</li>

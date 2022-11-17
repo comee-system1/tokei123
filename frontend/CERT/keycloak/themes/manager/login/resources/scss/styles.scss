@@ -34,6 +34,12 @@ h3 {
 
 }
 
+.alert-error,
+#input-error-password-length,
+#input-error-password {
+    color: $red8;
+}
+
 #input-error-username,
 #input-error {
     color: $red8;

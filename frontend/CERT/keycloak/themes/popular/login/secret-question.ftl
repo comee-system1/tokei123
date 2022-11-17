@@ -5,38 +5,9 @@
     <#elseif section = "header">
         ${msg("loginTitleHtml",realm.name)}
     <#elseif section = "form">
-        <h2>${msg("doForgotPasswordRenew")}</h2>
-        <ul id="forgetNavi">
-            <li class="after">&nbsp;</li>
-            <li class="active">&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-        </ul>
-        
-
- <#--  <#assign h = client.getAttributes()>
-  <#list h?keys as key>
-    ${client.getAttribute(key)} 000 ${h[key]}
-    <br />
-  </#list>  -->
-<#--  
-
-${auth.getAttemptedUsername()}  -->
-<#-- 
-<#assign calculation = auth.getAuthenticationSelections()>
-
-<#if calculation?is_sequence>
-  <#list calculation as c>
-    ${c}
-  </#list>
-<#elseif calculation?is_hash_ex>
-  <#list calculation?keys as key>
-    ${key} - ${calculation[key]}
-  </#list>
-<#elseif calculation?is_string>
-  ${calculation}
-</#if>  -->
-
+        <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
+        <hr size=1 />
+        <h3>${msg("doForgotPasswordRenew")}</h3> 
         <p>${msg("secretAnswerInput")}</p>
         <form id="kc-totp-login-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <div class="${properties.kcFormGroupClass!}">

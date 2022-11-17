@@ -5,13 +5,11 @@
     <#elseif section = "header">
         ${msg("loginTitleHtml",realm.name)}
     <#elseif section = "form">
-        <h2>${msg("doForgotPasswordRenew")}</h2>
-        <ul id="forgetNavi">
-            <li class="after">&nbsp;</li>
-            <li class="active">&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-        </ul>
+        <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
+        <hr size=1 />
+        <h3>${msg("doForgotPasswordRenew")}</h3> 
+
+
         
 
  <#--  <#assign h = client.getAttributes()>

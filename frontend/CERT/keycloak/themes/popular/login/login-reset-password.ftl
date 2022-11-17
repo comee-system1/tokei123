@@ -3,13 +3,10 @@
     <#if section = "header">
         ${msg("emailForgotTitle")}
     <#elseif section = "form">
-        <h2>${msg("doForgotPasswordRenew")}</h2>
-        <ul id="forgetNavi" >
-            <li class="active">&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-            <li>&nbsp;</li>
-        </ul>
+        <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
+        <hr size=1 />
+        <h3>${msg("doForgotPasswordRenew")}</h3> 
+
         <ul id="forgetExplain">
             <li>${msg("forgetExplain1")}</li>
             <li>${msg("forgetExplain2")}</li>
@@ -19,7 +16,7 @@
         <form id="kc-reset-password-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("emailScopeConsentText")}</#if></label>
+                    <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("emailScopeConsentText")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("emailScopeConsentText")}</#if></label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
                     <input type="text" id="username" name="username" class="${properties.kcInputClass!}" autofocus value="${(auth.attemptedUsername!'')}" aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"/>
