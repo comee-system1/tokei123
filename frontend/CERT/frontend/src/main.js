@@ -10,15 +10,17 @@ import store from "./store/store";
 
 import '@grapecity/wijmo.styles/wijmo.css';
 Vue.use(VueLogger);
+
+
 let initOptions = {
   url: 'http://localhost:8884/',
-  realm: 'admin99',
+  realm: 'general910',
   clientId: 'account',
   onLoad: 'login-required',
   CheckLoginiframe: false
 }
 
-let keycloak = Keycloak(initOptions);
+let keycloak = new Keycloak(initOptions);
 keycloak.init({
   onLoad: initOptions.onLoad,
   checkLoginIframe: initOptions.CheckLoginiframe
@@ -62,10 +64,12 @@ keycloak.init({
   Vue.$log.error("Authenticated Failed");
 });
 
-// new Vue({
-//   router,
-//   vuetify,
-//   commons,
-//   dialogs,
-//   render: h => h(App)
-// }).$mount('#app')
+/*
+new Vue({
+  router,
+  vuetify,
+  commons,
+  dialogs,
+  render: h => h(App)
+}).$mount('#app')
+*/
