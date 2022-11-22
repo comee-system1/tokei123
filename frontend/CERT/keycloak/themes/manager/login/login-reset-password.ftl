@@ -24,8 +24,8 @@
                     <input type="text" id="username" name="username" class="${properties.kcInputClass!}" autofocus value="${(auth.attemptedUsername!'')}" aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"/>
                     <#if messagesPerField.existsError('username')>
                         <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                    <#--  ${kcSanitize(messagesPerField.get('username'))?no_esc}  -->
-                                    ${msg("missingEmailMessage")}
+                            <#--  ${kcSanitize(messagesPerField.get('username'))?no_esc}  -->
+                            ${msg("missingEmailMessage")}
                         </span>
                     </#if>
                 </div>
