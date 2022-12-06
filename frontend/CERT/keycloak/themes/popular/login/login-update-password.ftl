@@ -3,6 +3,17 @@
     <#if section = "header">
         ${msg("updatePasswordTitle")}
     <#elseif section = "form">
+        <script type="text/javascript">
+            let split = document.cookie.split('=');
+            document.cookie = "password-reset=0";
+            let domain = document.domain;
+            let port = location.port;
+            if(split[1] !== "true"){
+                alert("ログイン画面に戻します。");
+                location.href = "http://localhost:8884/realms/general99/account";
+            }
+        </script>
+
         <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
             <hr size=1 />

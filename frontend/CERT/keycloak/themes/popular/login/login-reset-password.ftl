@@ -3,7 +3,12 @@
     <#if section = "header">
         ${msg("emailForgotTitle")}
     <#elseif section = "form">
-
+        <script type="text/javascript">
+            let elem = document.getElementById("passwordSend");
+            elem.addEventListener("click",function(){
+                document.cookie = "password-reset=true";
+            });
+        </script>
         <h2>${msg("loginTitleHtml",(realm.displayName!''))}</h2>
         <hr size=1 />
         <h3>${msg("doForgotPasswordRenew")}</h3> 
@@ -34,7 +39,7 @@
                 <ul id="forgetButton">
                     <li><a href="${url.loginUrl}">${kcSanitize(msg("doCancel"))?no_esc}</a></li>
                     <li>
-                        <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}"/>
+                        <input id="passwordSend" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}"/>
                     </li>
                 </ul>
             </div>
@@ -46,4 +51,5 @@
             ${msg("emailInstruction")}
         </#if>  -->
     </#if>
+
 </@layout.registrationLayout>
