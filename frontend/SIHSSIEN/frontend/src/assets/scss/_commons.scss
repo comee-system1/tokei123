@@ -1,0 +1,649 @@
+@import "common.scss";
+
+html {
+    overflow-x: auto;
+    /* overflow-y: auto; */
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    min-width: 1320px;
+
+    body {
+
+        .v-application {
+            font-family: "メイリオ",
+                sans-serif !important;
+
+            .body-2 {
+                font-family: "メイリオ", sans-serif !important;
+            }
+        }
+
+
+
+    }
+}
+
+.v-application--wrap {
+    min-height: auto !important;
+}
+
+/**********************
+* v-row系設定
+***********************/
+.rowStyle {
+    height: 20px;
+}
+
+.rowStyle_Input {
+    height: 25px;
+}
+
+.rowStyle_Dark {
+    height: 28px;
+    background: $view_Row_background;
+
+    &.tall {
+        height: 32px;
+    }
+
+    &.taller {
+        height: 35px;
+    }
+}
+
+/**********************
+* ラベル系設定
+***********************/
+.koumokuTitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    // min-width: 100px;
+    // max-width: 100px;
+    height: 100%;
+    text-align: center;
+    border: none;
+    font-size: 14px;
+
+
+    &.wMin {
+        width: 60px;
+        min-width: auto;
+        max-width: none;
+    }
+
+    &.wMdl {
+        width: 160px;
+        min-width: auto;
+        max-width: none;
+    }
+
+    &.wLng {
+        width: 180px;
+    }
+
+}
+
+.titleMain {
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Main !important;
+}
+
+.titleBlueDark {
+    color: $view_Title_font_color_Main !important;
+    background: $view_Title_background_Blue_Dark !important;
+}
+
+.titleBlue {
+    color: $view_Title_font_color_Blue !important;
+    background: $view_Title_background_Blue !important;
+
+    &.fblue {
+        color: $view_Title_font_color_Blue !important;
+    }
+
+}
+
+.titleRed {
+    background: $view_Title_background_Red !important;
+}
+
+.titleGreen {
+    color: $view_Title_font_color_Green !important;
+    background: $view_Title_background_Green !important;
+}
+
+.titleOrange {
+    color: $view_Title_font_color_Orange !important;
+    background: $view_Title_background_Orange !important;
+}
+
+.titleGlay {
+    color: $white !important;
+    background: $view_Title_background_Gray !important;
+}
+
+.titleYellow {
+    background-color: $light_yellow !important;
+}
+
+.titleTranceparent {
+    border: none !important;
+    background: $view_Title_background_none !important;
+}
+
+
+.koumokuData {
+    color: $font_color;
+    height: 100%;
+    text-align: left;
+    background: $view_Data_Read_background !important;
+    border: none;
+
+    &.border {
+        border: 1px solid;
+        border-color: $view_Border_Blue;
+    }
+
+    &.h25Padding {
+        padding-left: 2px;
+        padding-top: 2px;
+    }
+
+    &.alignCenter {
+        text-align: center;
+    }
+
+    &.wLng {
+        width: 300px;
+    }
+}
+
+.under18 {
+    padding: 0;
+    position: relative;
+    width: auto;
+    height: 20px;
+    background: $grid_background;
+
+    &.border {
+        border: 1px solid;
+        border-color: $light-gray;
+    }
+
+    &.cell {
+        padding-top: 4px;
+        padding-left: 6px;
+    }
+}
+
+.under18::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 10px solid $view_Under18_Mark;
+    border-left: 10px solid transparent;
+}
+
+.requiredMark {
+    position: absolute;
+    color: $Hissu_Color;
+    top: 0;
+    left: 0;
+    font-weight: bold;
+}
+
+
+/**********************
+* input系設定
+***********************/
+input {
+    color: $font_color;
+    border: thin solid;
+    border-color: $light-gray;
+    height: 100%;
+    text-align: center;
+    padding-left: 2px;
+}
+
+input[type='time'] {
+    width: 75px;
+    height: 100%;
+
+    &.border {
+        border: 1px solid lightgray;
+    }
+}
+
+input[type='text'] {
+    height: 100%;
+    text-align: left;
+    // border: 1px solid lightgray ;
+
+    &.border {
+        border: 1px solid lightgray;
+    }
+
+    &.tlong {
+        width: 448px;
+    }
+
+}
+
+input:focus {
+    border: 1px solid #ff9900 !important;
+    outline: 0;
+}
+
+input:disabled {
+    background: $view_Input_Disabled_background;
+}
+
+.v-textarea textarea {
+    font-size: 14px;
+}
+
+/**********************
+* ボタン系設定
+***********************/
+.btnymd {
+    background-color: $white !important;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 100%;
+    margin-top: -2px
+}
+
+.commonBtn {
+    background: $btn_background;
+    border: 1px solid $light-gray;
+    color: $font_color;
+    height: 100%;
+
+    &:hover {
+        background-color: $light-gray;
+    }
+}
+
+.v-btn {
+    font-size: 14px;
+
+    &.small {
+        font-size: 12px;
+    }
+
+    &.big {
+        font-size: 16px;
+    }
+}
+
+a {
+    &.addBtn {
+        height: 20px;
+        width: 100px;
+        background: $btn_background;
+        border: 1px solid $light-gray;
+        display: block;
+        float: left;
+        color: $font_color !important;
+        text-align: center;
+        border-radius: 3px;
+        padding: 0px 10px 10px 20px;
+        cursor: pointer;
+        background-image: url('../plus_gray_15px.png');
+        background-position: top 2px left 2px;
+        background-repeat: no-repeat;
+
+        &:hover {
+            background-color: $light-gray;
+        }
+    }
+}
+
+/**********************
+* Tab系設定
+***********************/
+div.commonTab {
+    .v-tabs {
+        height: 28px;
+        min-width: 1250px;
+    }
+
+    .wTabShort {
+        width: 600px;
+        min-width: 600px;
+
+        .v-slide-group__content {
+            border-bottom: 1px solid $tab_background;
+            height: 24px;
+            margin-top: 4px;
+            min-width: 500px
+        }
+    }
+
+    .v-tab {
+        white-space: normal;
+        margin-left: 12px;
+        border: 1px solid $light-gray;
+        background-color: $light-white;
+        margin-bottom: 4px;
+        color: $font_color !important;
+        border-radius: 4px;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .v-tab--active {
+        color: $view_Title_font_color_Green !important;
+        background: $view_Title_background_Green !important;
+        border: 1px solid $view_Title_font_color_Green;
+        font-weight: bold;
+    }
+
+    .v-slide-group__content {
+        border-bottom: 1px solid $tab_background;
+        height: 24px;
+        margin-top: 4px;
+        min-width: 1200px
+    }
+}
+
+
+div.mSizeCommonTab {
+    .v-tab--active {
+        background: white;
+    }
+
+    .v-slide-group__wrapper {
+        height: 24px;
+    }
+
+    .v-slide-group__content {
+        height: 24px;
+    }
+
+    a {
+        &.v-tab {
+            margin-left: 12px;
+            margin-bottom: 4px;
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+            border: 1px solid $light-gray;
+
+            &--active {
+                color: $view_Title_font_color_Blue;
+                font-weight: bold;
+                background: $light_yellow;
+                border: 1px solid $light-gray;
+            }
+        }
+    }
+}
+
+
+/**********************
+* ドロワー系設定
+***********************/
+.drawerTitle {
+    font-size: 14px !important;
+    height: 100%;
+    background-color: $view_Title_background_Main !important; //primary
+    color: $view_Title_font_color !important; //white
+    border: none;
+}
+
+/*******************************
+* selectbox設定
+****************************/
+.customSelectBox {
+    width: 200px;
+    border: 1px solid $light-gray;
+    height: 21px;
+    -moz-appearance: menulist;
+    -webkit-appearance: menulist;
+    display: block;
+    background-color: $white;
+
+    &.wShort {
+        width: 100px;
+    }
+
+    &.wLong {
+        width: 300px;
+    }
+
+    &.hHigh {
+        height: 25px;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        background-color: $light-white;
+        cursor: pointer;
+    }
+}
+
+/**********************
+* ラジオボタン系設定
+***********************/
+div.radioInline {
+    display: inline-block;
+
+    .customRadio {
+        position: relative;
+        display: inline-block;
+        padding-left: 5px;
+        top: -1px;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    input[type="radio"] {
+        cursor: pointer;
+    }
+
+    input[type="radio"]:checked {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+
+            span {
+                color: $view_Title_background_Main;
+                font-weight: bold;
+            }
+        }
+    }
+
+    input[type="radio"]:disabled {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+            span {
+                color: $gray;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+/**********************
+* チェックボックス系設定
+***********************/
+div.checkboxInline {
+    display: inline-block;
+
+    .customCheckbox {
+        position: relative;
+        display: inline-block;
+        padding-left: 5px;
+        top: -1px;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+        cursor: pointer;
+    }
+
+    input[type="checkbox"]:checked {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+            span {
+                color: $checkbox_color_check;
+                font-weight: bold;
+            }
+        }
+    }
+
+    input[type="checkbox"]:disabled {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
+
+            span {
+                color: $gray;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+/**********************
+* grid系部品
+***********************/
+.grdBorder {
+    background-color: $grid_Border_Color;
+    width: 2px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/**********************
+* calender系部品
+***********************/
+.v-date-picker-table.v-date-picker-table--date>table>thead tr th:nth-child(7) {
+    color: $font_color_saturday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>tbody tr td:nth-child(7) .v-btn__content {
+    color: $font_color_saturday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>thead tr th:nth-child(1) {
+    color: $font_color_sunday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>tbody tr td:nth-child(1) .v-btn__content {
+    color: $font_color_sunday;
+}
+
+
+
+
+/**********************
+* mixinの残骸　後ほど消す
+***********************/
+
+/* パンくずリスト下の基本情報エリアのスタイル */
+.basic-info {
+    background-color: $selected_color;
+    height: 80px;
+    padding: 0 10px;
+    position: relative;
+}
+
+.basic-info label {
+    color: $font_color;
+    font-size: 14px;
+    margin-left: 10px;
+    margin-right: 20px;
+}
+
+.service-selection-area {
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+#sarvice-combo {
+    width: 500px;
+    font-size: 14px;
+}
+
+.month-selection-area {
+    margin-bottom: 5px;
+}
+
+.month-selection-area label {
+    margin-right: 33px;
+}
+
+.month-selection-area label:nth-child(3) {
+    margin-left: 60px;
+}
+
+.month-selection-area Input {
+    background-color: white;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 4px;
+    height: 30px;
+    padding: 5px;
+}
+
+.input_picker {
+    div>input {
+        border: 1px solid #ccc !important;
+        font-size: 0.85em;
+        border-radius: 3px;
+        display: block;
+        text-align: left;
+        padding: 3px;
+        border-style: solid !important;
+        background: url('@/assets/calender_25px.png') no-repeat right;
+        background-size: 15px 15px;
+        background-position: right 3px center;
+    }
+}
+
+.user-info {
+    width: auto;
+    padding: 4px;
+
+    label:not(.labelhosoku) {
+        display: inline-block;
+        // margin-top: 2px;
+        margin-right: 2px;
+        padding-top: 2px;
+        background: $view_Title_background;
+        border: none;
+        height: 27px;
+        width: 60px;
+        text-align: center;
+    }
+}
+
+div {
+    .customCombobox {
+        height: 20px !important;
+
+        .wj-input {
+            height: 20px !important;
+        }
+    }
+}

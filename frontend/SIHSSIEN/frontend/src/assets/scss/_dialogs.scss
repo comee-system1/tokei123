@@ -1,0 +1,140 @@
+@import "common.scss";
+
+//dialog大枠
+.common_dialog {
+    background-color: $view_Title_font_color; //white
+    position: relative;
+    font-size: $dialog_title_fontsize;
+
+    //タイトルデザイン
+    .v-card__title {
+        &.dialog_title {
+            font-size: $dialog_title_fontsize;
+            background-color: $view_Title_background_Main; //primary
+            color: $view_Title_font_color; //white
+            padding: 11px 9px 11px;
+        }
+    }
+
+    //ボタンデザイン
+    .v-btn {
+        &.dialog_close {
+            color: $grid_selected_color;
+            background-color: $view_Title_font_color; //white
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            left: auto;
+        }
+
+        &.func_btn {
+            color: $grid_selected_color;
+            background-color: $light-white;
+
+            &.ht_min {
+                height: 25px;
+            }
+        }
+    }
+
+    //背景色
+    .dialog_back {
+        background-color: $light-white;
+
+    }
+
+    .dialog_back_blue {
+        background-color: $view_Title_background_Blue;
+    }
+
+    .dialog_border_blue {
+        border: 2px solid $view_Title_background_Main;
+    }
+
+    .dialog_border {
+        border-color: #bbb;
+        border-width: thin;
+    }
+
+    //ラベル調整
+    .v-card {
+        &.dialog_label_none {
+            background-color: $view_Title_background_none;
+        }
+
+        &.gray {
+            background-color: $light-gray;
+        }
+
+        //サイズ調整用
+        &.wr-40 {
+            width: 40px;
+            height: 24px;
+        }
+
+        &.wd-60 {
+            width: 60px;
+            text-align: center;
+        }
+
+        &.wd-65 {
+            width: 65px;
+            text-align: center;
+        }
+
+        &.wd-70 {
+            width: 70px;
+            text-align: center;
+        }
+
+        &.wdLong {
+            width: 640px;
+            text-align: center;
+        }
+
+        &.wdMdl {
+            width: 310px;
+            text-align: center;
+        }
+
+        &.wdShort {
+            width: 120px;
+            text-align: center;
+        }
+    }
+
+    //セレクトデザイン
+    .dialog_select {
+        font-size: $cell_fontsize;
+        width: 300px;
+        height: 25px;
+
+        .v-input__control {
+            min-height: 25px !important;
+            min-width: 100px;
+
+        }
+
+        input {
+            border: none !important;
+            border-style: none;
+
+        }
+
+    }
+
+    .dialog_text_field {
+        background-color: $view_Title_font_color;
+        height: 25px;
+        width: 185px;
+    }
+
+    .dialog_text_field_mdl {
+        background-color: $view_Title_font_color;
+        height: 23px;
+        width: 310px;
+        text-align: center;
+    }
+
+
+}
