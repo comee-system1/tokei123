@@ -1,9 +1,13 @@
 <template>
-  <div id="kojinRireki">
-    <v-container no-gutters fluid class="pa-1">
-      <v-row no-gutters>
-        <v-col>aaa</v-col>
-      </v-row>
+  <div id="kaigokyufumeisai">
+    <header-services
+      @parent-service-select="parentServiceSelect($event, serviceArgument)"
+      @parent-service-change="parentServiceChange($event, serviceArgument)"
+      :registButtonFlag="true"
+      :searchButtonFlag="true"
+      :alertMessageFlag="alertMessageFlag"
+    ></header-services>
+    <v-container no-gutters fluid class="pa-0">
       <v-row no-gutters>
         <v-col class="leftArea pb-1">
           <!-- 左側エリア -->
@@ -27,11 +31,13 @@
 // import dayjs from 'dayjs';
 // import 'dayjs/locale/ja';
 import UserList from '../../components/UserListKyufu.vue';
+import HeaderServices from '../../components/HeaderServices.vue';
 
 export default {
   props: {},
   components: {
     UserList,
+    HeaderServices,
   },
   data() {
     return {};
@@ -54,10 +60,21 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-div#kojinRireki {
+div#kaigokyufumeisai {
   color: $font_color;
   font-size: 14px;
   min-width: 1300px !important;
+
+  .service-selection {
+    label {
+      width: 80px !important;
+      display: inline-block;
+      margin-right: 0px !important;
+      background-color: $deepgreen;
+      color: $white;
+      text-align: center;
+    }
+  }
 
   .leftArea {
     min-width: 275px;
