@@ -20,7 +20,7 @@
           <!-- 下に階層を持たないメニューの場合はクリックで遷移 -->
           <v-list-item
             v-if="!nav_list.lists"
-            :to="nav_list.link"
+            :to="nav_list.link + queryParam"
             :key="nav_list.name"
             class="nav-list-name"
           >
@@ -56,7 +56,7 @@
             <v-list-item
               v-for="(list, index) in nav_list.lists"
               :key="index"
-              :to="list.link"
+              :to="list.link + queryParam"
               class="p-0"
             >
               <v-list-item-content>
@@ -68,7 +68,7 @@
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
                   :key="subindex"
-                  :to="sublist.link"
+                  :to="sublist.link + queryParam"
                   class="sublists"
                 >
                   <v-list-item-content>
@@ -82,7 +82,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="#588C73" flat dark dense height="30px">
+    <v-app-bar app color="#187b51" flat dark dense height="30px">
       <div class="d-flex align-center">
         <v-app-bar-nav-icon
           height="25px"
@@ -140,8 +140,7 @@
           </v-list>
         </v-menu>
       </div>
-      <v-icon>mdi-printer-search</v-icon>
-      <v-icon>mdi-printer</v-icon>
+      <v-icon @click="printExec">mdi-printer</v-icon>
       <v-icon>mdi-file-excel</v-icon>
       <v-icon v-if="isMaximize" @click="maximize">mdi-arrow-collapse</v-icon>
       <v-icon v-if="!isMaximize" @click="maximize">mdi-arrow-expand</v-icon>
@@ -161,6 +160,7 @@ import sysConst from '@/utiles/const';
 export default {
   data() {
     return {
+      queryParam: this.createQueryParam(), //'/?mngid=1234',
       drawer: true,
       isMaximize: false,
       jigyoName: '社会福祉法人東経会',
@@ -220,7 +220,7 @@ export default {
             },
             {
               name: '個人履歴参照',
-              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.KIHON,
+              link: '/KojinRireki/' + sysConst.JIGYO_KBN_NAME.KIHON,
             },
             {
               name: '支援計画',
@@ -237,7 +237,7 @@ export default {
           lists: [
             {
               name: '相談受付',
-              link: '/UketukeIcrn/?ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
+              link: '/KeikakuUketukeIcrn/' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
             },
             {
               name: '契約報告書',
@@ -261,7 +261,7 @@ export default {
             },
             {
               name: '個人履歴',
-              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
+              link: '/KeikakuKojinRireki/' + sysConst.JIGYO_KBN_NAME.KEIKAKU,
             },
             {
               name: '担当者別実績表',
@@ -281,7 +281,7 @@ export default {
           lists: [
             {
               name: '相談受付',
-              link: '/UketukeIcrn/?ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI,
+              link: '/ChiikiUketukeIcrn/' + sysConst.JIGYO_KBN_NAME.CHIIKI,
             },
             {
               name: '地域移行予定・実績一覧',
@@ -305,7 +305,7 @@ export default {
             },
             {
               name: '個人履歴',
-              link: '/KojinRireki/?ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI,
+              link: '/ChiikiKojinRireki/' + sysConst.JIGYO_KBN_NAME.CHIIKI,
             },
             {
               name: 'マスタ',
@@ -340,17 +340,16 @@ export default {
     this.returndata = {
       targetYmd: this.year + this.month + this.date,
     };
-    console.log(this.returndata);
     this.$emit('parent-ymd-select', this.returndata);
   },
   watch: {
-    $route(to, from) {
-      this.pageTitle = this.$route.name;
-      if (to.fullPath != from.fullPath && to.path == from.path) {
-        // 同じ画面で違うパラメータの場合のみ再読み込みを行う
-        location.reload();
-      }
-    },
+    // $route(to, from) {
+    //   this.pageTitle = this.$route.name;
+    //   if (to.fullPath != from.fullPath && to.path == from.path) {
+    //     // 同じ画面で違うパラメータの場合のみ再読み込みを行う
+    //     location.reload();
+    //   }
+    // },
   },
   methods: {
     /**************
@@ -380,6 +379,25 @@ export default {
       } else {
         document.body.style.zoom = 1.5;
       }
+    },
+    createQueryParam() {
+      let uniqid = '/3';
+      if (this.$route.query.mngid) {
+        return uniqid + '/?mngid=' + this.$route.query.mngid;
+      } else {
+        return uniqid + '/?mngid=1234';
+      }
+    },
+    printExec() {
+      // イベントバスを this.$router.app として、イベントをスロー
+      this.$router.app.$emit('print_event_global');
+      /*
+       * 使い方
+       * 各画面のmountedで以下を設定(関数名は固定)
+       *  this.$router.app.$off('print_event_global'); // 消さないと蓄積される
+       *  this.$router.app.$on('print_event_global', this.printExec);
+       *  すると印刷ボタンクリックで各画面内のprintExecメソッドが呼ばれる
+       */
     },
   },
 };
@@ -543,23 +561,5 @@ div#headerAndNav {
   top: 20px;
   left: 100px;
   width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 </style>

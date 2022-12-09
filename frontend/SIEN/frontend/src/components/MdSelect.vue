@@ -2,7 +2,7 @@
   <div id="mdSelect">
     <v-container class="pa-0" fluid>
       <wj-flex-grid
-        id="dateIcrnGrid"
+        id="mdSelectDateIcrnGrid"
         :headersVisibility="'None'"
         :autoGenerateColumns="false"
         :allowAddNew="false"
@@ -179,9 +179,16 @@ export default {
 <style  lang="scss">
 @import '@/assets/scss/common.scss';
 div#mdSelect {
-  #dateIcrnGrid {
+  #mdSelectDateIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
+    width: 75px;
+    min-width: 75px;
+    max-width: 75px;
+    height: auto;
+    min-height: 480px;
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
     .wj-cell {
       padding: 2px;
     }
@@ -216,18 +223,6 @@ div#mdSelect {
       background: $brawn;
       border-radius: 0px;
     }
-  }
-  #dateIcrnGrid {
-    // font-size: 12px;
-    width: 75px;
-    min-width: 75px;
-    max-width: 75px;
-    height: auto;
-    min-height: 480px;
-    // max-height: 550px;
-    .naiyouTitle {
-      color: blue;
-    }
     .wj-cell .v-center {
       position: relative;
       top: 50%;
@@ -235,10 +230,10 @@ div#mdSelect {
       white-space: pre-wrap;
       padding-top: 2px;
       > .saturday {
-        color: blue;
+        color: $font_color_saturday;
       }
       > .sunday {
-        color: red;
+        color: $font_color_sunday;
       }
     }
   }

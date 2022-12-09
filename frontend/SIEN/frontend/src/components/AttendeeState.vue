@@ -1,65 +1,74 @@
 <template>
-  <div id="attendeeState" :style="styles">
-    <v-container class="ml-1 pa-0" style="max-width: 100%">
+  <div id="attendeeState">
+    <v-container class="pa-0" style="max-width: 100%">
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
+        <!-- <v-col class="mr-1" :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
             :dispHideBar="false"
             @child-select="setUserSelectPoint"
           >
           </user-list>
-        </v-col>
+        </v-col> -->
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
-            <v-col cols="12" class="d-flex pa-1">
-              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
-                利用者名
-              </v-card>
-              <v-card
-                elevation="0"
-                outlined
-                tile
-                class="ml-1 pl-1 lightYellow"
-                width="300"
-                height="24"
-              >
-                {{ userName }}
-              </v-card>
-            </v-col>
+          <v-row no-gutters class="rowStyle_Dark pa-1 pl-1 mb-1">
+            <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
+              利用者名
+            </v-card>
+            <v-card
+              class="koumokuData border mr-1 pb-1 pl-1 pt-0"
+              tile
+              outlined
+              width="250"
+            >
+              {{ userName }}
+            </v-card>
           </v-row>
-          <v-row no-gutters class="rowStyle mb-1 mt-1 body-2">
-            <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
+          <v-row no-gutters class="rowStyle mb-1 body-2">
+            <v-card class="koumokuTitle titleMain ml-1 mr-1 wMin" outlined tile>
               入力
             </v-card>
-            <v-card elevation="0" class="pl-1">
-              <v-btn-toggle>
-                <v-btn small height="20" class="body-2">新規</v-btn>
-                <v-btn small height="20" class="body-2">修正</v-btn>
+            <v-card elevation="0" class="mr-1">
+              <v-btn-toggle color="light-blue darken-4">
+                <v-btn small elevation="2" height="20" class="body-2"
+                  >新規</v-btn
+                >
+                <v-btn small elevation="2" height="20" class="body-2"
+                  >修正</v-btn
+                >
               </v-btn-toggle>
             </v-card>
-            <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
+            <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
               作成日
             </v-card>
-
             <v-card
-              class="ml-1 body-2"
-              width="140"
-              height="20"
+              class="mr-1"
+              color="transparent"
+              height="100%"
+              style="border: none"
               outlined
               tile
-              @click="inputCalendarClick(0)"
             >
-              {{ getYm }}
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
+              <v-btn
+                @click="inputCalendarClick(0)"
+                tile
+                outlined
+                elevation="2"
+                width="150px"
+                height="100%"
+                class="btnymd pa-0"
+                >{{ getYm }}
+                <div class="float-right">
+                  <v-icon small>mdi-calendar-month</v-icon>
+                </div>
+              </v-btn>
             </v-card>
-            <v-card class="koumokuTitle titleOrange ml-1 wMin" outlined tile>
+
+            <v-card class="koumokuTitle titleOrange mr-1 wMin" outlined tile>
               作成者
             </v-card>
             <v-card
-              class="lightYellow pl-1 ml-1"
+              class="lightYellow pl-1 mr-1"
               width="140"
               elevation="0"
               tile
@@ -67,25 +76,36 @@
               大正雅夫
             </v-card>
             <v-card class="ml-auto" elevation="0">
-              <v-btn small height="20" class="body-2">利用者基本情報より</v-btn>
-              <v-btn small class="ml-1 body-2" height="20">前回コピー</v-btn>
-              <v-btn small class="ml-1 body-2" height="20">履歴参照</v-btn>
+              <v-btn small elevation="2" height="20" class="body-2"
+                >利用者基本情報より</v-btn
+              >
+              <v-btn small elevation="2" class="ml-1 body-2" height="20"
+                >前回コピー</v-btn
+              >
+              <v-btn small elevation="2" class="ml-1 body-2" height="20"
+                >履歴参照</v-btn
+              >
             </v-card>
           </v-row>
 
-          <div class="mt-1">
-            <v-app-bar flat height="24" class="titleBlue">
+          <div class="mb-1">
+            <v-app-bar flat height="24" class="titleBlue mb-1">
               <v-app-bar-title class="body-2"
                 >1.概要(支援経過・現状と課題等)</v-app-bar-title
               >
             </v-app-bar>
-            <v-textarea class="mt-1" outlined hide-details="false"></v-textarea>
+            <v-textarea
+              outlined
+              no-resize
+              auto-grow
+              hide-details="false"
+            ></v-textarea>
           </div>
-          <div class="mt-1">
-            <v-app-bar flat height="24" class="titleBlue">
+          <div class="mb-1">
+            <v-app-bar flat height="24" class="titleBlue mb-1">
               <v-app-bar-title class="body-2">2.利用者の状況</v-app-bar-title>
             </v-app-bar>
-            <table class="table mt-1 body-2">
+            <table class="table body-2 mb-1">
               <tr>
                 <th>氏名</th>
                 <td>東経真奈美</td>
@@ -113,7 +133,7 @@
                 <td>女</td>
               </tr>
             </table>
-            <table class="table mt-1 body-2">
+            <table class="table mb-1 body-2">
               <tr>
                 <th class="half">家族構成 ※年齢、職業、主たる介護者を記入</th>
                 <th class="half">
@@ -128,11 +148,11 @@
             <div class="mt-1 mb-3">
               <v-card class="d-flex flex-row" flat tile>
                 <v-card elevation="0" tile>
-                  <v-btn small class="body-2">クリア</v-btn>
-                  <v-btn small class="ml-2 body-2">削除</v-btn>
+                  <v-btn small elevation="2" class="body-2">クリア</v-btn>
+                  <v-btn small elevation="2" class="ml-2 body-2">削除</v-btn>
                 </v-card>
                 <v-card elevation="0" tile class="ml-auto">
-                  <v-btn small class="body-2">登録</v-btn>
+                  <v-btn small elevation="2" class="body-2">登録</v-btn>
                 </v-card>
               </v-card>
             </div>
@@ -160,18 +180,13 @@
 
 <script>
 import dayjs from 'dayjs';
-import UserList from './UserList.vue';
+// import UserList from './UserList.vue';
 export default {
   components: {
-    UserList,
+    // UserList,
   },
-  computed: {
-    styles() {
-      // ブラウザの高さ
-      return {
-        '--height': window.innerHeight - this.headerheight + 'px',
-      };
-    },
+  props: {
+    selectedUserObj: Object,
   },
   data() {
     return {
@@ -187,17 +202,29 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
-      headerheight: 100,
+      headerheight: 80,
+      dispUserObj: {},
     };
   },
   mounted() {
+    this.setUserdata(this.selectedUserObj);
     window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
   },
   methods: {
     calculateWindowHeight() {
       if (document.getElementById('attendeeState') != null) {
         document.getElementById('attendeeState').style.height =
           window.innerHeight - this.headerheight + 'px';
+      }
+    },
+    setUserdata(item) {
+      if (item != null) {
+        this.dispUserObj = Object.assign({}, item);
+        this.userName = this.dispUserObj.names;
       }
     },
     /****************
@@ -226,6 +253,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 div#attendeeState {
+  font-size: $default_fontsize;
   color: $font_color;
   min-width: 1266px !important;
   max-width: 1920px;
@@ -234,6 +262,7 @@ div#attendeeState {
   .v-app-bar-title__content {
     width: 100%;
   }
+
   .lightYellow {
     background-color: $light_yellow;
   }

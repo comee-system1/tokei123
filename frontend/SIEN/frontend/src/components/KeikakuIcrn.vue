@@ -291,7 +291,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 // import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.styles/wijmo.css';
@@ -841,6 +842,9 @@ export default {
       document.getElementById(GRID_ID.Yoteisya).style.display = STYLE_NONE;
     });
   },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+  },
   methods: {
     calculateWindowHeight() {
       if (
@@ -1081,7 +1085,7 @@ export default {
         flexGrid.columnHeaders.columns.length > 0
       ) {
         if (this.kikanYm) {
-          let tmpmom = new moment(
+          let tmpmom = new dayjs(
             this.kikanYm.format('YYYY') +
               '-' +
               this.kikanYm.format('MM') +
@@ -1263,7 +1267,7 @@ export default {
 
         if (e.col == 9) {
           e.cell.innerHTML =
-            '<font color="blue">' +
+            '<font color="#276bc5">' +
             wjCore.escapeHtml(tmpitem.title) +
             '</font>' +
             '<div>' +
@@ -1467,7 +1471,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (
@@ -1493,15 +1497,7 @@ export default {
       }
     },
     monthSelect() {
-      let split = this.picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(this.picker);
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -1660,7 +1656,7 @@ div#keikakuIcrn {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -1674,8 +1670,20 @@ div#keikakuIcrn {
     min-height: 400px;
     z-index: 10;
     &.wj-flexgrid [wj-part='root'] {
-      overflow-y: hidden !important;
-      overflow-x: scroll !important;
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 0px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: $brawn;
+      border-radius: 0px;
     }
   }
 
@@ -1754,24 +1762,6 @@ div#keikakuIcrn {
   left: 70px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 .miman {
   padding: 0;

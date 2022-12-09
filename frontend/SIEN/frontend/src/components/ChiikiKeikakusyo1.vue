@@ -1,266 +1,259 @@
 <template>
-  <div id="chiikiKeikakusyo1" :style="styles">
-    <v-container class="ml-1 pa-0" style="max-width: 100%">
-      <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
-          <user-list
-            ref="user_list"
-            :dispHideBar="false"
-            @child-select="setUserSelectPoint"
+  <div id="chiikiKeikakusyo1" style="width: 100%">
+    <v-container class="ml-1 pa-0 pr-2">
+      <v-row no-gutters class="rowStyle_Dark my-1">
+        <v-col cols="12" class="d-flex pa-1">
+          <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
+            利用者名
+          </v-card>
+          <v-card
+            elevation="0"
+            outlined
+            tile
+            class="ml-1 pl-1 lightYellow"
+            width="300"
+            height="20"
           >
-          </user-list>
+            {{ userName }}
+          </v-card>
         </v-col>
-        <v-col :style="{ 'max-width': rightWidth }" class="ml-1">
-          <v-row no-gutters class="rowStyle_Dark my-1">
-            <v-col cols="12" class="d-flex pa-1">
-              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
-                利用者名
-              </v-card>
-              <v-card
-                elevation="0"
-                outlined
-                tile
-                class="ml-1 pl-1 lightYellow"
-                width="300"
-                height="20"
-              >
-                {{ userName }}
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="rowStyle my-1">
-            <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
-              入力
-            </v-card>
-            <v-card elevation="0" class="pl-1">
-              <v-btn-toggle>
-                <v-btn small height="20">新規</v-btn>
-                <v-btn small height="20">修正</v-btn>
-              </v-btn-toggle>
-            </v-card>
-            <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
-              作成日
-            </v-card>
+      </v-row>
+      <v-row no-gutters class="rowStyle my-1">
+        <v-card
+          class="koumokuTitle titleMain wMin pa-1 mr-1 ml-1"
+          outlined
+          tile
+        >
+          入力
+        </v-card>
+        <v-btn-toggle
+          class="flex-wrap mr-1"
+          color="light-blue darken-4"
+          mandatory
+        >
+          <v-btn
+            v-for="n in inputList"
+            :key="n.val"
+            elevation="2"
+            outlined
+            width="25"
+            height="19"
+            @click="inputClicked(n.val)"
+          >
+            {{ n.name }}
+          </v-btn>
+        </v-btn-toggle>
+        <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
+          作成日
+        </v-card>
 
-            <v-card
-              class="ml-1"
-              width="140"
-              height="20"
-              outlined
-              tile
-              @click="inputCalendarClick(0)"
-            >
-              {{ getYm }}
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-card>
-            <v-card class="koumokuTitle titleOrange ml-1 wMin" outlined tile>
-              作成者
-            </v-card>
-            <v-card
-              class="lightYellow pl-1 ml-1"
-              width="140"
-              elevation="0"
-              tile
-            >
-              大正雅夫
-            </v-card>
-            <v-card class="ml-auto" elevation="0">
-              <!-- <v-btn small height="20">利用者基本情報より</v-btn> -->
-              <v-btn small height="20">前回コピー</v-btn>
-              <v-btn small class="ml-1" height="20">履歴参照</v-btn>
-            </v-card>
-          </v-row>
-
-          <v-row no-gutters class="mt-1">
-            <v-app-bar flat height="24" class="titleBlueDark">
-              <v-app-bar-title class="text-caption"
-                >利用者の状況</v-app-bar-title
-              >
-            </v-app-bar>
-            <wj-flex-grid
-              id="grdRiyosyaJyokyo"
-              :alternatingRowStep="0"
-              :headersVisibility="'None'"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowPinning="false"
-              :allowResizing="false"
-              :allowSorting="false"
-              :allowDragging="false"
-              :selectionMode="'None'"
-              :isReadOnly="true"
-              :initialized="onInitializeGrdRiyosyaJyokyo"
-              :itemsSource="viewdataRiyosyaJyokyo"
-              class="mt-1 mb-0"
-            >
-              <wj-flex-grid-column
-                binding="title1"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value1"
-                width="4*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="title2"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value2"
-                width="4*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="title3"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value3"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="title4"
-                width="2*"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value4"
-                width="2*"
-              ></wj-flex-grid-column>
-            </wj-flex-grid>
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <v-app-bar flat height="24" class="titleBlueDark">
-              <v-app-bar-title class="text-caption"
-                >施設・病院情報</v-app-bar-title
-              >
-            </v-app-bar>
-            <wj-flex-grid
-              id="grdSisetuByoinInfo"
-              :alternatingRowStep="0"
-              :headersVisibility="'None'"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowPinning="false"
-              :allowResizing="false"
-              :allowSorting="false"
-              :allowDragging="false"
-              :isReadOnly="false"
-              :initialized="onInitializeGrdSisetuByoinInfo"
-              :itemsSource="viewdataSisetuByoinInfo"
-              class="mt-1 mb-0"
-            >
-              <wj-flex-grid-column
-                binding="title1"
-                width="2*"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value1"
-                width="10*"
-                :wordWrap="true"
-                :multiLine="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="title2"
-                width="2*"
-                :isReadOnly="true"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="value2"
-                width="6*"
-                :wordWrap="true"
-                :multiLine="true"
-              ></wj-flex-grid-column>
-            </wj-flex-grid>
-          </v-row>
-          <div class="mt-1">
-            <v-app-bar flat height="24" class="titleBlueDark">
-              <v-app-bar-title class="text-caption"
-                >アセスメント</v-app-bar-title
-              >
-            </v-app-bar>
-            <v-row no-gutters class="mt-1">
-              <wj-flex-grid
-                id="grdAssesJyokyo"
-                :alternatingRowStep="0"
-                :headersVisibility="'Column'"
-                :allowAddNew="false"
-                :allowDelete="false"
-                :allowPinning="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :allowDragging="false"
-                :isReadOnly="false"
-                :autoRowHeights="true"
-                :selectionMode="'None'"
-                :initialized="onInitializeGrdAsses"
-                :itemsSource="viewdataAssesJyokyo"
-                class="mb-0"
-              >
-                <wj-flex-grid-column
-                  binding="jyokyo"
-                  width="*"
-                  :wordWrap="true"
-                  :multiLine="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </v-row>
-            <v-row no-gutters class="mt-1">
-              <wj-flex-grid
-                id="grdAssesKankyo"
-                :alternatingRowStep="0"
-                :headersVisibility="'Column'"
-                :allowAddNew="false"
-                :allowDelete="false"
-                :allowPinning="false"
-                :allowResizing="false"
-                :allowSorting="false"
-                :allowDragging="false"
-                :isReadOnly="false"
-                :autoRowHeights="true"
-                :selectionMode="'None'"
-                :initialized="onInitializeGrdAsses"
-                :itemsSource="viewdataAssesKankyo"
-                class="mb-0"
-              >
-                <wj-flex-grid-column
-                  binding="kankyo"
-                  width="*"
-                  :wordWrap="true"
-                  :multiLine="true"
-                ></wj-flex-grid-column>
-              </wj-flex-grid>
-            </v-row>
-            <v-row dense class="ma-2" justify="space-between">
-              <v-col cols="4">
-                <v-btn small>削除</v-btn>
-              </v-col>
-              <v-col cols="7">
-                <v-card class="d-flex justify-end" flat tile>
-                  <v-card
-                    class="koumokuTitle titleOrange mt-1 wMin"
-                    outlined
-                    tile
-                  >
-                    完了
-                  </v-card>
-                  <v-card elevation="0" width="30" class="text-center mt-1">
-                    <input type="checkbox" />
-                  </v-card>
-                  <v-card
-                    class="lightYellow pl-1 pt-1 ml-1"
-                    width="140"
-                    outlined
-                    tile
-                  >
-                  </v-card>
-                  <v-btn small class="ml-3">登録</v-btn>
-                </v-card>
-              </v-col>
-            </v-row>
+        <v-card
+          class="ml-1"
+          width="140"
+          height="20"
+          outlined
+          tile
+          @click="inputCalendarClick(0)"
+        >
+          {{ getYm }}
+          <div class="float-right">
+            <v-icon small>mdi-calendar-month</v-icon>
           </div>
-        </v-col>
+        </v-card>
+        <v-card class="koumokuTitle titleOrange ml-1 wMin" outlined tile>
+          作成者
+        </v-card>
+        <v-card class="lightYellow pl-1 ml-1" width="140" elevation="0" tile>
+          大正雅夫
+        </v-card>
+        <v-card class="ml-auto" elevation="0">
+          <v-btn
+            elevation="2"
+            class="mr-1 body-2"
+            height="19"
+            @click="copyClicked()"
+          >
+            前回ｺﾋﾟｰ
+          </v-btn>
+          <v-btn
+            elevation="2"
+            class="mr-1 body-2"
+            height="19"
+            v-on:click.stop="drawer = !drawer"
+          >
+            履歴参照
+          </v-btn>
+        </v-card>
+      </v-row>
+
+      <v-row no-gutters class="mt-1">
+        <v-app-bar flat height="24" class="titleBlueDark">
+          <v-app-bar-title class="text-caption">利用者の状況</v-app-bar-title>
+        </v-app-bar>
+        <wj-flex-grid
+          id="grdRiyosyaJyokyo"
+          :alternatingRowStep="0"
+          :headersVisibility="'None'"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :selectionMode="'None'"
+          :isReadOnly="true"
+          :initialized="onInitializeGrdRiyosyaJyokyo"
+          :itemsSource="viewdataRiyosyaJyokyo"
+          class="mt-1 mb-0"
+        >
+          <wj-flex-grid-column
+            binding="title1"
+            width="2*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value1"
+            width="4*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="title2"
+            width="2*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value2"
+            width="4*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="title3"
+            width="2*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value3"
+            width="2*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="title4"
+            width="2*"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value4"
+            width="2*"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-row>
+      <v-row no-gutters class="mt-1">
+        <v-app-bar flat height="24" class="titleBlueDark">
+          <v-app-bar-title class="text-caption">施設・病院情報</v-app-bar-title>
+        </v-app-bar>
+        <wj-flex-grid
+          id="grdSisetuByoinInfo"
+          :alternatingRowStep="0"
+          :headersVisibility="'None'"
+          :allowAddNew="false"
+          :allowDelete="false"
+          :allowPinning="false"
+          :allowResizing="false"
+          :allowSorting="false"
+          :allowDragging="false"
+          :isReadOnly="false"
+          :initialized="onInitializeGrdSisetuByoinInfo"
+          :itemsSource="viewdataSisetuByoinInfo"
+          class="mt-1 mb-0"
+        >
+          <wj-flex-grid-column
+            binding="title1"
+            width="2*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value1"
+            width="10*"
+            :wordWrap="true"
+            :multiLine="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="title2"
+            width="2*"
+            :isReadOnly="true"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            binding="value2"
+            width="6*"
+            :wordWrap="true"
+            :multiLine="true"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-row>
+      <div class="mt-1">
+        <v-app-bar flat height="24" class="titleBlueDark">
+          <v-app-bar-title class="text-caption">アセスメント</v-app-bar-title>
+        </v-app-bar>
+        <v-row no-gutters class="mt-1">
+          <wj-flex-grid
+            id="grdAssesJyokyo"
+            :alternatingRowStep="0"
+            :headersVisibility="'Column'"
+            :allowAddNew="false"
+            :allowDelete="false"
+            :allowPinning="false"
+            :allowResizing="false"
+            :allowSorting="false"
+            :allowDragging="false"
+            :isReadOnly="false"
+            :autoRowHeights="true"
+            :selectionMode="'None'"
+            :initialized="onInitializeGrdAsses"
+            :itemsSource="viewdataAssesJyokyo"
+            class="mb-0"
+          >
+            <wj-flex-grid-column
+              binding="jyokyo"
+              width="*"
+              :wordWrap="true"
+              :multiLine="true"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-row>
+        <v-row no-gutters class="mt-1">
+          <wj-flex-grid
+            id="grdAssesKankyo"
+            :alternatingRowStep="0"
+            :headersVisibility="'Column'"
+            :allowAddNew="false"
+            :allowDelete="false"
+            :allowPinning="false"
+            :allowResizing="false"
+            :allowSorting="false"
+            :allowDragging="false"
+            :isReadOnly="false"
+            :autoRowHeights="true"
+            :selectionMode="'None'"
+            :initialized="onInitializeGrdAsses"
+            :itemsSource="viewdataAssesKankyo"
+            class="mb-0"
+          >
+            <wj-flex-grid-column
+              binding="kankyo"
+              width="*"
+              :wordWrap="true"
+              :multiLine="true"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-row>
+      </div>
+      <v-row no-gutters class="rowStyle my-2">
+        <v-btn elevation="2" height="19"> 削除 </v-btn>
+        <v-card
+          class="koumokuTitle titleOrange pa-1 mr-1 ml-auto"
+          outlined
+          tile
+          width="50"
+        >
+          完了
+        </v-card>
+        <input type="checkbox" class="mr-1" />
+        <v-card class="koumokuData pa-1 pr-1 mr-1" width="200" outlined tile>
+        </v-card>
+        <v-btn elevation="2" height="19"> 登録 </v-btn>
       </v-row>
     </v-container>
 
@@ -283,7 +276,6 @@
 
 <script>
 import dayjs from 'dayjs';
-import UserList from './UserList.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.styles/wijmo.css';
 import '@grapecity/wijmo.vue2.grid';
@@ -295,21 +287,20 @@ import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 export default {
-  components: {
-    UserList,
-  },
+  components: {},
   computed: {
     styles() {
       // ブラウザの高さ
       return {
         '--height': window.innerHeight - this.headerheight + 'px',
+        '--width': window.innerWidth - 280 + 'px',
       };
     },
   },
   data() {
     return {
       leftWidth: '280px',
-      rightWidth: '78.5%',
+      rightWidth: '100%',
       userName: '',
       picker: '',
       datepicker_dialog: false,
@@ -320,6 +311,10 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      inputList: [
+        { val: 0, name: '新規' },
+        { val: 1, name: '修正' },
+      ],
       headerheight: 100,
       viewdataRiyosyaJyokyo: [
         {
@@ -504,6 +499,11 @@ export default {
         }
       };
       return mm;
+    },
+    inputClicked(kbn) {
+      //dummy code
+      let a = [kbn];
+      a.length = 1;
     },
   },
 };

@@ -29,11 +29,12 @@
                 class="ml-1"
                 color="transparent"
                 height="100%"
-                style="border: none"
+                style="border: none; margin-top: 2px"
                 outlined
                 tile
               >
                 <v-btn
+                  elevation="2"
                   @click="inputCalendarClick()"
                   tile
                   outlined
@@ -46,17 +47,17 @@
                   </div>
                 </v-btn>
                 <v-btn
-                  elevation="0"
+                  elevation="2"
                   class="btnymd pa-0 ml-1"
                   height="100%"
-                  x-small
                   tile
                   @click="calendarClick(1)"
                 >
                   <v-icon>mdi-arrow-left-bold</v-icon>
+                  前日
                 </v-btn>
                 <v-btn
-                  elevation="0"
+                  elevation="2"
                   class="btnymd pa-0 ml-1"
                   height="100%"
                   width="35"
@@ -66,13 +67,12 @@
                   >今日
                 </v-btn>
                 <v-btn
-                  elevation="0"
+                  elevation="2"
                   class="btnymd pa-0 ml-1"
                   height="100%"
-                  x-small
                   tile
                   @click="calendarClick(2)"
-                >
+                  >翌日
                   <v-icon>mdi-arrow-right-bold</v-icon>
                 </v-btn>
               </v-card>
@@ -101,27 +101,29 @@
                 type="time"
                 id="timeinput"
                 name="appt"
-                v-model="rirekiDataSelect.sTime"
+                v-model="selectDataObj.jikan"
               />
               <v-btn
-                elevation="0"
+                elevation="2"
                 class="btnymd pa-0 ml-1"
-                height="100%"
-                width="50"
-                min-width="50"
+                height="23px"
+                style="margin-top: 1px"
                 tile
                 @click="timeClick(0)"
-                >クリア
+              >
+                <v-icon small>mdi-clock-time-four-outline</v-icon>
+                クリア
               </v-btn>
               <v-btn
-                elevation="0"
+                elevation="2"
                 class="btnymd pa-0 ml-1"
-                height="100%"
-                width="50"
-                min-width="50"
+                height="23px"
+                style="margin-top: 1px"
                 tile
                 @click="timeClick(1)"
-                >現時刻
+              >
+                <v-icon small>mdi-clock-time-four-outline</v-icon>
+                現時刻
               </v-btn>
             </v-row>
             <!-- <v-divider class="mt-1"></v-divider> -->
@@ -170,7 +172,7 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="rirekiDataSelect.inputkbn"
+                        v-model="selectDataObj.inputkbn"
                       >
                         <v-btn
                           v-for="n in jigyoKbnItem"
@@ -195,14 +197,14 @@
                       <v-btn-toggle
                         id="uketukeTourokuSyokaibtn"
                         class="flex-wrap ml-1"
-                        v-model="rirekiDataSelect.syokaiflg"
+                        v-model="selectDataObj.syokaiflg"
                       >
                         <v-btn
                           v-for="n in SyokaiorKeizokuItem"
                           :key="n.val"
                           outlined
                           height="25"
-                          v-bind:disabled="rirekiDataSelect.inputkbn == 3"
+                          :disabled="selectDataObj.inputkbn == 3"
                           color="secondary"
                         >
                           {{ n.name }}
@@ -213,9 +215,9 @@
                         width="200px"
                         tile
                         outlined
-                        v-if="kihonInfo.syokaikeizoku == 1"
+                        v-show="selectDataObj.syokaikeizoku == 1"
                       >
-                        初回日：{{ kihonInfo.syokaiymd }}
+                        初回日：{{ selectDataObj.syokaiymd }}
                       </v-card>
                     </v-row>
                   </v-container>
@@ -238,11 +240,12 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="kihonInfo.keikakuSoudanObj.inputkbn"
+                        v-model="selectDataObj.inputkbn"
                       >
                         <v-btn
                           v-for="n in keikakuInputKbnItem"
                           :key="n.val"
+                          :value="n.val"
                           outlined
                           height="25"
                           @click="keikakuInputKbnclick(n.val)"
@@ -262,11 +265,12 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="kihonInfo.keikakuSoudanObj.kasanUmu"
+                        v-model="selectDataObj.kasanUmu"
                       >
                         <v-btn
-                          v-for="n in kasanUmuItem"
+                          v-for="n in getKasanUmu"
                           :key="n.val"
+                          :value="n.val"
                           outlined
                           height="25"
                           @click="KasanUmuclick(n.val, 0)"
@@ -277,10 +281,7 @@
                       </v-btn-toggle>
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.keikakuSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -296,16 +297,13 @@
                         type="text"
                         class="ml-1 border"
                         name="txtsienhouhou_keikaku"
-                        v-model="rirekiDataSelect.sdnhourk"
+                        v-model="selectDataObj.sdnhourk"
                         @click="inputClicked(11)"
                         readonly="readonly"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.keikakuSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -322,16 +320,13 @@
                         class="ml-1 border"
                         style="width: 400px"
                         name="txtkasankoumoku_keikaku"
-                        v-model="kihonInfo.keikakuSoudanObj.kasanname"
+                        v-model="selectDataObj.kasanname"
                         @click="inputClicked(12)"
                         readonly="readonly"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.keikakuSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -348,15 +343,12 @@
                         class="ml-1 border"
                         style="width: 400px"
                         name="txtkikanBasyo"
-                        v-model="kihonInfo.keikakuSoudanObj.kikanbasyoname"
+                        v-model="selectDataObj.kikanbasyoname"
                         @click="inputClicked(13)"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.keikakuSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -373,15 +365,12 @@
                         class="ml-1 border"
                         style="width: 400px"
                         name="txttaiousyamei"
-                        v-model="kihonInfo.keikakuSoudanObj.taiousyameiname"
+                        v-model="selectDataObj.taiousyameiname"
                         @click="inputClicked(14)"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.keikakuSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -397,27 +386,29 @@
                         type="time"
                         id="timeinput"
                         name="appt"
-                        v-model="kihonInfo.keikakuSoudanObj.etime"
+                        v-model="selectDataObj.etime"
                       />
                       <v-btn
-                        elevation="0"
+                        elevation="2"
                         class="btnymd pa-0 ml-1"
-                        height="100%"
-                        width="50"
-                        min-width="50"
+                        height="23px"
+                        style="margin-top: 1px"
                         tile
                         @click="timeClick(2)"
-                        >クリア
+                      >
+                        <v-icon small>mdi-clock-time-four-outline</v-icon>
+                        クリア
                       </v-btn>
                       <v-btn
-                        elevation="0"
+                        elevation="2"
                         class="btnymd pa-0 ml-1"
-                        height="100%"
-                        width="50"
-                        min-width="50"
+                        height="23px"
+                        style="margin-top: 1px"
                         tile
                         @click="timeClick(3)"
-                        >現時刻
+                      >
+                        <v-icon small>mdi-clock-time-four-outline</v-icon>
+                        現時刻
                       </v-btn>
                     </v-row>
                   </v-container>
@@ -440,11 +431,12 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="kihonInfo.inputkbn"
+                        v-model="selectDataObj.inputkbn"
                       >
                         <v-btn
                           v-for="n in chiikiInputKbnItem"
                           :key="n.val"
+                          :value="n.val"
                           outlined
                           height="25"
                           @click="chiikiInputKbnclick(n.val)"
@@ -464,10 +456,10 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="kihonInfo.kasanUmu"
+                        v-model="selectDataObj.kasanUmu"
                       >
                         <v-btn
-                          v-for="n in kasanUmuItem"
+                          v-for="n in getKasanUmu"
                           :key="n.val"
                           outlined
                           height="25"
@@ -479,9 +471,10 @@
                       </v-btn-toggle>
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.chiikiSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
+                      v-show="
+                        selectDataObj.kasanumu != -1 &&
+                        selectDataObj.kasanumu != kasanUmuItem[0].val &&
+                        selectDataObj.kasanumu != kasanUmuItem[2].val
                       "
                       no-gutters
                       class="rowStyle_Input mt-1"
@@ -498,15 +491,16 @@
                         type="text"
                         class="ml-1 border"
                         name="txtsienhouhou_chiiki"
-                        v-model="rirekiDataSelect.sdnhourk"
+                        v-model="selectDataObj.sdnhourk"
                         @click="inputClicked(21)"
                         readonly="readonly"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.chiikiSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
+                      v-show="
+                        selectDataObj.kasanumu != -1 &&
+                        selectDataObj.kasanumu != kasanUmuItem[0].val &&
+                        selectDataObj.kasanumu != kasanUmuItem[2].val
                       "
                       no-gutters
                       class="rowStyle_Input mt-1"
@@ -524,16 +518,13 @@
                         class="ml-1 border"
                         style="width: 400px"
                         name="txtkasankoumoku_chiiki"
-                        v-model="kihonInfo.chiikiSoudanObj.kasanname"
+                        v-model="selectDataObj.kasanname"
                         @click="inputClicked(22)"
                         readonly="readonly"
                       />
                     </v-row>
                     <v-row
-                      v-if="
-                        kihonInfo.chiikiSoudanObj.kasanumu ==
-                        kasanUmuItem[1].val
-                      "
+                      v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
                       no-gutters
                       class="rowStyle_Input mt-1"
                     >
@@ -550,15 +541,60 @@
                         class="ml-1 border"
                         style="width: 400px"
                         name="txtitakusaki"
-                        v-model="kihonInfo.chiikiSoudanObj.itakusakiname"
+                        v-model="selectDataObj.nameD"
                         @click="inputClicked(23)"
                       />
+                    </v-row>
+                    <v-row
+                      v-show="
+                        selectDataObj.kasanumu == kasanUmuItem[3].val ||
+                        selectDataObj.kasanumu == kasanUmuItem[4].val
+                      "
+                      no-gutters
+                      class="rowStyle_Input mt-1"
+                    >
+                      <v-card
+                        class="koumokuTitle titleGreen pa-1"
+                        outlined
+                        tile
+                      >
+                        終了時間<span class="requiredMark"> * </span>
+                      </v-card>
+                      <input
+                        class="ml-1 border"
+                        type="time"
+                        id="timeinput"
+                        name="appt"
+                        v-model="selectDataObj.etime"
+                      />
+                      <v-btn
+                        elevation="2"
+                        class="btnymd pa-0 ml-1"
+                        height="23px"
+                        style="margin-top: 1px"
+                        tile
+                        @click="timeClick(2)"
+                      >
+                        <v-icon small>mdi-clock-time-four-outline</v-icon>
+                        クリア
+                      </v-btn>
+                      <v-btn
+                        elevation="2"
+                        class="btnymd pa-0 ml-1"
+                        height="23px"
+                        style="margin-top: 1px"
+                        tile
+                        @click="timeClick(3)"
+                      >
+                        <v-icon small>mdi-clock-time-four-outline</v-icon>
+                        現時刻
+                      </v-btn>
                     </v-row>
                   </v-container>
                 </v-tab-item>
               </v-tabs-items>
             </v-container>
-            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+            <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 支援方法
               </v-card>
@@ -567,9 +603,10 @@
                 type="text"
                 class="ml-1 border"
                 name="txtsienhouhou"
-                v-model="rirekiDataSelect.sdnhourk"
+                v-model="selectDataObj.sdnhourk"
                 @click="inputClicked(1)"
                 readonly="readonly"
+                :disabled="selectDataObj.inputkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者１
@@ -579,11 +616,12 @@
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki1"
-                v-model="kihonInfo.dousekisya1Obj.name"
+                v-model="selectDataObj.sdnnam1"
                 @click="inputClicked(4)"
+                :disabled="selectDataObj.inputkbn == 3"
               />
             </v-row>
-            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+            <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 関係
               </v-card>
@@ -592,9 +630,10 @@
                 type="text"
                 class="ml-1 border"
                 name="txtkaneki"
-                v-model="rirekiDataSelect.sdnkanrk"
+                v-model="selectDataObj.sdnkanrk"
                 @click="inputClicked(2)"
                 readonly="readonly"
+                :disabled="selectDataObj.inputkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者２
@@ -604,11 +643,12 @@
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki2"
-                v-model="kihonInfo.dousekisya2Obj.name"
+                v-model="selectDataObj.sdnnam2"
                 @click="inputClicked(5)"
+                :disabled="selectDataObj.inputkbn == 3"
               />
             </v-row>
-            <v-row no-gutters class="rowStyle_Input mt-1" v-if="dipCommonFlg">
+            <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 相談者名
               </v-card>
@@ -617,8 +657,9 @@
                 type="text"
                 class="ml-1 border"
                 name="txtsoudansya"
-                v-model="rirekiDataSelect.sdnnam"
+                v-model="selectDataObj.sdnnam"
                 @click="inputClicked(3)"
+                :disabled="selectDataObj.inputkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者３
@@ -628,8 +669,9 @@
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki3"
-                v-model="kihonInfo.dousekisya3Obj.name"
+                v-model="selectDataObj.sdnnam3"
                 @click="inputClicked(6)"
+                :disabled="selectDataObj.inputkbn == 3"
               />
             </v-row>
             <v-divider class="btmborder mt-1"></v-divider>
@@ -643,7 +685,7 @@
                 type="text"
                 class="ml-1 border"
                 name="txtsienkoumoku"
-                v-model="rirekiDataSelect.cskmknm"
+                v-model="selectDataObj.cskmknm"
                 @click="inputClicked(7)"
                 readonly="readonly"
               />
@@ -668,7 +710,7 @@
                 clearable
                 clear-icon="mdi-close-circle"
                 no-resize
-                v-model="rirekiDataSelect.naiyo"
+                v-model="selectDataObj.naiyo"
                 height="100%"
                 hide-details
                 solo
@@ -682,9 +724,9 @@
                 >業務日誌</v-card
               >
               <v-checkbox
-                class="ma-0 pa-0 mr-2"
+                class="ma-0 pa-0 mr-1 ml-1"
                 hide-details
-                v-model="rirekiDataSelect.kan"
+                v-model="selectDataObj.kan"
                 :label="'表示する'"
                 style="width: 200px"
               >
@@ -694,18 +736,19 @@
                   class="koumokuTitle titleOrange pa-1 ml-1"
                   outlined
                   tile
-                  v-if="dispPeerCounselor"
+                  v-show="dispPeerCounselor"
                 >
                   ﾋﾟｱｶｳﾝｾﾗｰ
                 </v-card>
                 <v-btn-toggle
                   class="flex-wrap ml-1"
-                  v-model="rirekiDataSelect.peer"
-                  v-if="dispPeerCounselor"
+                  v-model="selectDataObj.peer"
+                  v-show="dispPeerCounselor"
                 >
                   <v-btn
                     v-for="n in PeerCounselorItem"
                     :key="n.val"
+                    :value="n.val"
                     outlined
                     height="25"
                     color="secondary"
@@ -719,7 +762,7 @@
               <v-row
                 no-gutters
                 class="rowStyle_Input mt-1 mb-1"
-                v-if="dispSyoyou"
+                v-show="dispSyoyou"
               >
                 <v-card class="koumokuTitle titleOrange pa-1" outlined tile>
                   所要時間
@@ -729,24 +772,25 @@
                   style="width: 50px; text-align: right"
                   type="text"
                   @input="numbervalidate"
-                  v-model="rirekiDataSelect.syoyo"
+                  v-model="selectDataObj.syoyoujikan"
                 />
-                <P class="ma-1" v-if="dispRank" style="width: 150px">分</P>
+                <P class="ma-1" v-show="dispRank" style="width: 150px">分</P>
                 <v-card
                   class="koumokuTitle titleOrange pa-1"
                   outlined
                   tile
-                  v-if="dispRank"
+                  v-show="dispRank"
                   >ランク</v-card
                 >
                 <v-btn-toggle
                   class="flex-wrap ml-1"
-                  v-model="rirekiDataSelect.rank"
-                  v-if="dispRank"
+                  v-model="selectDataObj.rank"
+                  v-show="dispRank"
                 >
                   <v-btn
                     v-for="n in RankItem"
                     :key="n.val"
+                    :value="n.val"
                     outlined
                     height="25"
                     color="secondary"
@@ -817,6 +861,7 @@
                   :dispAddDaicho="true"
                   :dispHideBar="false"
                   :headerheight="200"
+                  :grdheight="125"
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
                 >
@@ -902,12 +947,13 @@
                       class="ml-1"
                       color="transparent"
                       height="100%"
-                      style="border: none"
+                      style="border: none; margin-top: 2px"
                       outlined
                       tile
                     >
                       <v-btn
                         @click="inputYmCalendarClick(0)"
+                        elevation="2"
                         tile
                         outlined
                         width="130px"
@@ -924,12 +970,13 @@
                       class="ml-1"
                       color="transparent"
                       height="100%"
-                      style="border: none"
+                      style="border: none; margin-top: 2px"
                       outlined
                       tile
                     >
                       <v-btn
                         @click="inputYmCalendarClick(1)"
+                        elevation="2"
                         tile
                         outlined
                         width="130px"
@@ -1087,11 +1134,10 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import * as wjCore from '@grapecity/wijmo';
-import { mstHouhou } from '@backend/api/MstHouhou';
-import { mstKankei } from '@backend/api/MstKankei';
-import { mstSodantaiou } from '@backend/api/MstSodantaiou';
 import UserList from '../components/UserList.vue';
 import { getConnect } from '@connect/getConnect';
+import { postConnect } from '@connect/postConnect';
+import { putConnect } from '@connect/putConnect';
 
 const DISP_MST_GRD = {
   SienHouhou: 1,
@@ -1156,6 +1202,8 @@ const TITLE_TXT = {
   Dousekisya1: '同席者１',
   Dousekisya2: '同席者２',
   Dousekisya3: '同席者３',
+  Itakusaki: '委託先',
+  Kasan: '加算項目',
 };
 // HTML要素の非表示ID
 const HIDE_NAME = {
@@ -1163,7 +1211,7 @@ const HIDE_NAME = {
 };
 const NAIYO_HEIGHT = {
   height1: 75,
-  height2: 150,
+  height2: 130,
 };
 const STYLE_BLOCK = 'block';
 const STYLE_FLEX = 'flex';
@@ -1219,7 +1267,6 @@ export default {
       ],
       dispUserName: '',
       userInfo: {},
-      kihonInfo: this.getKihonDefaultData(),
       jigyoKbnItem: sysConst.JIGYOKBN,
       keikakuInputKbnItem: sysConst.KEIKAKUJIGYOKBN,
       chiikiInputKbnItem: sysConst.CHIIKIJIGYOKBN,
@@ -1228,8 +1275,8 @@ export default {
         { val: 1, name: '継続' },
       ],
       PeerCounselorItem: [
-        { val: 0, name: '無し' },
-        { val: 1, name: '有り' },
+        { val: 1, name: '無し' },
+        { val: 2, name: '有り' },
       ],
       RankItem: [
         { val: 1, name: 'A' },
@@ -1238,8 +1285,11 @@ export default {
         { val: 4, name: 'D' },
       ],
       kasanUmuItem: [
-        { val: 0, name: '無し' },
-        { val: 1, name: '有り' },
+        { val: 0, name: '無し', kbn: 'all' },
+        { val: 1, name: '有り', kbn: 'all' },
+        { val: 2, name: '対面支援', kbn: 'chiikiIkou' },
+        { val: 3, name: '緊急支援Ⅰ', kbn: 'chiikiTeichaku' },
+        { val: 4, name: '緊急支援Ⅱ', kbn: 'chiikiTeichaku' },
       ],
       rightTab: TAB_NAME.User, // タブの初期状態
       rightItem: [
@@ -1259,9 +1309,9 @@ export default {
       soudansyaMstdata: [],
       SoudansyaMstHerderItem: [
         { dataname: 'codeD', title: 'コード', width: 50, align: 'center' },
-        { dataname: 'nameD', title: '氏名', width: '*', align: 'left' },
-        { dataname: 'tudukigara', title: '続柄', width: 50, align: 'left' },
-        { dataname: 'mimoto', title: '身元', width: 30, align: 'center' },
+        { dataname: 'sdnnamD', title: '氏名', width: '*', align: 'left' },
+        // { dataname: 'tudukigara', title: '続柄', width: 50, align: 'left' },
+        // { dataname: 'mimoto', title: '身元', width: 30, align: 'center' },
         {
           dataname: 'rennrakusaki',
           title: '連絡先',
@@ -1270,9 +1320,9 @@ export default {
         },
       ],
       SienMstHerderItem: [
-        { dataname: 'daicode', title: '大項目', width: 40, align: 'center' },
+        { dataname: 'daicodeD', title: '大項目', width: 40, align: 'center' },
         { dataname: 'dainames', title: '大項目', width: '*', align: 'left' },
-        { dataname: 'tyucode', title: '項目', width: 40, align: 'center' },
+        { dataname: 'tyucodeD', title: '項目', width: 40, align: 'center' },
         { dataname: 'tyunames', title: '項目', width: '*', align: 'left' },
       ],
       selRirekiKoumoku: 0,
@@ -1283,7 +1333,7 @@ export default {
       rirekidata: [],
       RirekiHerderItem: [
         { dataname: 'ymdD', title: '対応日', width: 90, align: 'center' },
-        { dataname: 'naiyo', title: '内容', width: '*', align: 'left' },
+        { dataname: 'naiyoD', title: '内容', width: '*', align: 'left' },
       ],
       kihondata: [],
       KihonHerderItem: [
@@ -1291,12 +1341,15 @@ export default {
         { dataname: 'naiyo', title: '', width: '*', align: 'left' },
       ],
       kankeiDataSelect: {},
-      rirekiDataSelect: {},
+      selectDataObj: this.getKihonDefaultData(),
       dipCommonFlg: true, // 支援方法～同席者３までの表示フラグ
       windowheight: window.innerHeight,
       mstHouhouList: this.getHouhouMst(),
       mstKankeiList: this.getKankeiMst(),
       mstSodantaiouList: this.getSodantaiouMst(),
+      mstItakuList: this.getItakuMst(),
+      mstKasanList: [],
+      mstSoudansyaList: [],
     };
   },
   mounted() {
@@ -1304,23 +1357,47 @@ export default {
     // 空データ作成
     this.setKihonInfo();
   },
-  beforeDestroy: function () {
-    window.removeEventListener('resize', this.handleResize);
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
   },
   created() {
     // 初期ユーザ検索
     this.kbnTab = this.dispTab;
   },
   watch: {
-    selectedData() {
-      // ここでユーザ検索処理する
-    },
-    rirekiData() {
-      // 履歴選択処理
-    },
     selectViewData(newselectViewData) {
       // 登録済みデータ表示処理
       this.setKihonInfo(newselectViewData);
+    },
+  },
+  computed: {
+    // selectedData() {
+    //   // ここでユーザ検索処理する
+    // },
+    // rirekiData() {
+    //   // 履歴選択処理
+    // },
+
+    getKasanUmu() {
+      if (this.kbnTab == this.kbnItem[2].hrefval) {
+        if (
+          this.selectDataObj.inputkbn == sysConst.CHIIKIJIGYOKBN.Keikaku.val
+        ) {
+          return this.kasanUmuItem.filter(
+            (e) => e.kbn == 'all' || e.kbn == 'chiikiIkou'
+          );
+        } else if (
+          this.selectDataObj.inputkbn == sysConst.CHIIKIJIGYOKBN.Syougaiji.val
+        ) {
+          return this.kasanUmuItem.filter(
+            (e) => e.kbn == 'all' || e.kbn == 'chiikiTeichaku'
+          );
+        } else {
+          return this.kasanUmuItem.filter((e) => e.kbn == 'all');
+        }
+      } else {
+        return this.kasanUmuItem.filter((e) => e.kbn == 'all');
+      }
     },
   },
   methods: {
@@ -1328,20 +1405,81 @@ export default {
      * マスタ取得処理
      */
     getHouhouMst() {
-      mstHouhou(true).then((result) => {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+      };
+      getConnect('/MstHouhou', params, 'SIENT').then((result) => {
         this.mstHouhouList = result;
+        this.setClrItem(this.mstHouhouList);
         this.inputClicked(DISP_MST_GRD.User);
       });
     },
     getKankeiMst() {
-      mstKankei(true).then((result) => {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+      };
+      getConnect('/MstKankei', params, 'SIENT').then((result) => {
+        this.setClrItem(result);
         this.mstKankeiList = result;
       });
     },
     getSodantaiouMst() {
-      mstSodantaiou(true).then((result) => {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+      };
+      getConnect('/MstSodanTaiou', params, 'SIENT').then((result) => {
+        this.setClrItemSoudantaiou(result);
         this.mstSodantaiouList = result;
       });
+    },
+    getItakuMst() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      getConnect('/MstItaku', params, 'SIENC').then((result) => {
+        this.setClrItem(result);
+        this.mstItakuList = result;
+      });
+    },
+    getKasanMst(ymd, svc) {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pYmd: ymd,
+        pSvcCode: svc,
+      };
+      getConnect('/MstKasan', params, 'SIENT').then((result) => {
+        this.setClrItem(result);
+        this.mstKasanList = result;
+      });
+    },
+    getMstSodansya() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pIntcode: this.userInfo.riid,
+        pKanid: 0,
+      };
+      getConnect('/MstSodansya', params, 'SIENT').then((result) => {
+        console.log(1212333333);
+        console.log(result);
+        this.setClrItem(result);
+        this.mstSoudansyaList = result;
+      });
+    },
+    setClrItem(list) {
+      list.unshift({ codeD: '', name: 'クリア' });
+    },
+    setClrItemSoudantaiou(list) {
+      list.unshift({ daicodeD: '', dainames: 'クリア' });
     },
     /**************
      * 初期化系
@@ -1355,24 +1493,25 @@ export default {
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        if (this.kihonInfo.inputkbn == sysConst.JIGYOKBN.Renraku.val) {
+        if (this.selectDataObj.inputkbn == sysConst.JIGYOKBN.Renraku.val) {
           return;
         }
         // 選択値を登録画面に渡す
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
+          let mstitem = flexGrid.cells.rows[ht.row].dataItem;
           if (
             this.dispMstGrid == DISP_MST_GRD.SienHouhou ||
             this.dispMstGrid == DISP_MST_GRD.KeikakuSienHouhou ||
             this.dispMstGrid == DISP_MST_GRD.ChiikiSienHouhou
           ) {
-            let sienHouhouObj = flexGrid.cells.rows[ht.row].dataItem;
-            if (sienHouhouObj.id == 0) {
-              this.rirekiDataSelect.sdnhouid = sienHouhouObj.id;
-              this.rirekiDataSelect.sdnhourk = '';
+            let mstitem = flexGrid.cells.rows[ht.row].dataItem;
+            if (mstitem.codeD == '') {
+              this.selectDataObj.sdnhouid = 0;
+              this.selectDataObj.sdnhourk = '';
             } else {
-              this.rirekiDataSelect.sdnhouid = sienHouhouObj.id;
-              this.rirekiDataSelect.sdnhourk = sienHouhouObj.name;
+              this.selectDataObj.sdnhouid = mstitem.sdnhouid;
+              this.selectDataObj.sdnhourk = mstitem.sdnhounm;
             }
 
             if (this.dispMstGrid == DISP_MST_GRD.SienHouhou) {
@@ -1384,28 +1523,30 @@ export default {
             }
           } else if (this.dispMstGrid == DISP_MST_GRD.Kankei) {
             let kankeiObj = flexGrid.cells.rows[ht.row].dataItem;
-            if (kankeiObj.id == 0) {
-              this.rirekiDataSelect.sdnkanid = kankeiObj.id;
-              this.rirekiDataSelect.sdnkanrk = '';
+            if (kankeiObj.codeD == '') {
+              this.selectDataObj.sdnkanid = 0;
+              this.selectDataObj.sdnkanrk = '';
             } else {
-              this.rirekiDataSelect.sdnkanid = kankeiObj.id;
-              this.rirekiDataSelect.sdnkanrk = kankeiObj.name;
+              this.selectDataObj.sdnkanid = kankeiObj.sdnkanid;
+              this.selectDataObj.sdnkanrk = kankeiObj.sdnkannm;
             }
             if (kankeiObj.honninflg == KANKEI_KBN.Honnin) {
-              this.rirekiDataSelect.sdnnam = this.userInfo.names;
+              this.selectDataObj.sdnnam = this.userInfo.names;
               document.getElementById(INPUT_ID.Soudansya).disabled = true;
               document.getElementById(INPUT_ID.Soudansya).style.background =
                 sysConst.COLOR.gridBackground;
               this.inputClicked(DISP_MST_GRD.Douseki1);
             } else {
-              this.kihonInfo.soudansyaObj = {};
               document.getElementById(INPUT_ID.Soudansya).disabled = false;
               document.getElementById(INPUT_ID.Soudansya).style.background =
                 sysConst.COLOR.gridSelectedColor;
               this.inputClicked(DISP_MST_GRD.SoudansyaName);
             }
           } else if (this.dispMstGrid == DISP_MST_GRD.KeikakuKasan) {
+            this.selectDataObj.kasanname = mstitem.name;
             this.inputClicked(DISP_MST_GRD.KeikakuKikanBasyo);
+          } else if (this.dispMstGrid == DISP_MST_GRD.ChiikiItakusaki) {
+            this.inputClicked(DISP_MST_GRD.SienKoumoku);
           } else if (this.dispMstGrid == DISP_MST_GRD.ChiikiKasan) {
             this.inputClicked(DISP_MST_GRD.ChiikiItakusaki);
           }
@@ -1434,27 +1575,24 @@ export default {
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        if (this.kihonInfo.inputkbn == sysConst.JIGYOKBN.Renraku) {
+        if (this.selectDataObj.inputkbn == sysConst.JIGYOKBN.Renraku) {
           return;
         }
         // 選択値を登録画面に渡す
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
+          let item = flexGrid.cells.rows[ht.row].dataItem;
           if (this.dispMstGrid == DISP_MST_GRD.SoudansyaName) {
-            this.kihonInfo.soudansyaObj = flexGrid.cells.rows[ht.row].dataItem;
-
+            this.selectDataObj.sdnnam = item.sdnnam;
             this.inputClicked(DISP_MST_GRD.Douseki1);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki1) {
-            this.kihonInfo.dousekisya1Obj =
-              flexGrid.cells.rows[ht.row].dataItem;
+            this.selectDataObj.sdnnam1 = item.sdnnam;
             this.inputClicked(DISP_MST_GRD.Douseki2);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki2) {
-            this.kihonInfo.dousekisya2Obj =
-              flexGrid.cells.rows[ht.row].dataItem;
+            this.selectDataObj.sdnnam2 = item.sdnnam;
             this.inputClicked(DISP_MST_GRD.Douseki3);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki3) {
-            this.kihonInfo.dousekisya3Obj =
-              flexGrid.cells.rows[ht.row].dataItem;
+            this.selectDataObj.sdnnam3 = item.sdnnam;
             this.inputClicked(DISP_MST_GRD.SienKoumoku);
           }
         }
@@ -1497,20 +1635,19 @@ export default {
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-        if (this.kihonInfo.inputkbn == sysConst.JIGYOKBN.Renraku.val) {
+        if (this.selectDataObj.inputkbn == sysConst.JIGYOKBN.Renraku.val) {
           return;
         }
         // 選択値を登録画面に渡す
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
           let sienKoumokuObj = flexGrid.cells.rows[ht.row].dataItem;
-          console.log(sienKoumokuObj);
           if (sienKoumokuObj.id == 0) {
-            this.rirekiDataSelect.cskmkid = sienKoumokuObj.tyucskmkid;
-            this.rirekiDataSelect.cskmknm = '';
+            this.selectDataObj.cskmkid = sienKoumokuObj.tyucskmkid;
+            this.selectDataObj.cskmknm = '';
           } else {
-            this.rirekiDataSelect.cskmkid = sienKoumokuObj.tyucskmkid;
-            this.rirekiDataSelect.cskmknm = sienKoumokuObj.tyunames;
+            this.selectDataObj.cskmkid = sienKoumokuObj.tyucskmkid;
+            this.selectDataObj.cskmknm = sienKoumokuObj.tyunames;
           }
         }
       });
@@ -1557,7 +1694,7 @@ export default {
         // 選択値を登録画面に渡す
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
-          this.rirekiDataSelect = flexGrid.cells.rows[ht.row].dataItem;
+          this.selectDataObj = flexGrid.cells.rows[ht.row].dataItem;
           this.setTaiouData();
         }
       });
@@ -1630,10 +1767,21 @@ export default {
     },
     onFormatItemmstIcrnGrid(flexGrid, e) {
       if (e.panel == flexGrid.columnHeaders && e.col == 1) {
-        if (this.dispMstGrid == DISP_MST_GRD.SienHouhou) {
+        if (
+          this.dispMstGrid == DISP_MST_GRD.SienHouhou ||
+          this.dispMstGrid == DISP_MST_GRD.KeikakuSienHouhou ||
+          this.dispMstGrid == DISP_MST_GRD.ChiikiSienHouhou
+        ) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.Sienhouhou);
         } else if (this.dispMstGrid == DISP_MST_GRD.Kankei) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.HonninnKankei);
+        } else if (this.dispMstGrid == DISP_MST_GRD.ChiikiItakusaki) {
+          e.panel.setCellData(e.row, e.col, TITLE_TXT.Itakusaki);
+        } else if (
+          this.dispMstGrid == DISP_MST_GRD.KeikakuKasan ||
+          this.dispMstGrid == DISP_MST_GRD.ChiikiKasan
+        ) {
+          e.panel.setCellData(e.row, e.col, TITLE_TXT.Kasan);
         }
       }
     },
@@ -1700,15 +1848,16 @@ export default {
             '<font >' +
             tmpitem.jikan +
             '</font>';
-        } else if (e.col == 1) {
-          e.cell.innerHTML =
-            '<font color="blue">' +
-            tmpitem.cskmknm +
-            '</font>' +
-            '<div>' +
-            wjCore.escapeHtml(e.cell.innerHTML) +
-            '</div>';
         }
+        // else if (e.col == 1) {
+        //   e.cell.innerHTML =
+        //     '<font color="#276bc5">' +
+        //     tmpitem.cskmknm +
+        //     '</font>' +
+        //     '<div>' +
+        //     wjCore.escapeHtml(e.cell.innerHTML) +
+        //     '</div>';
+        // }
       }
     },
     onFormatItemKihonIcrnGrid(flexGrid, e) {
@@ -1720,18 +1869,18 @@ export default {
       if (flexGrid.columns.length == 0) {
         return;
       }
-      if (this.dispMstGrid == DISP_MST_GRD.SoudansyaName) {
-        if (this.kihonInfo.kankeiObj.honninflg != KANKEI_KBN.Kazoku) {
-          flexGrid.getColumn(2).visible = false;
-          flexGrid.getColumn(3).visible = false;
-        } else {
-          flexGrid.getColumn(2).visible = true;
-          flexGrid.getColumn(3).visible = true;
-        }
-      } else {
-        flexGrid.getColumn(2).visible = true;
-        flexGrid.getColumn(3).visible = true;
-      }
+      // if (this.dispMstGrid == DISP_MST_GRD.SoudansyaName) {
+      //   if (this.selectDataObj.honninflg != KANKEI_KBN.Kazoku) {
+      //     flexGrid.getColumn(2).visible = false;
+      //     flexGrid.getColumn(3).visible = false;
+      //   } else {
+      //     flexGrid.getColumn(2).visible = true;
+      //     flexGrid.getColumn(3).visible = true;
+      //   }
+      // } else {
+      //   flexGrid.getColumn(2).visible = true;
+      //   flexGrid.getColumn(3).visible = true;
+      // }
     },
     onItemsSourceChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
@@ -1746,10 +1895,8 @@ export default {
         this.dispUserName =
           String(this.userInfo.riyocode).padStart(7, '0') +
           ' ' +
-          this.userInfo.names +
-          ' (' +
-          this.userInfo.age +
-          '歳）';
+          this.userInfo.names;
+        this.getMstSodansya();
       }
       this.rirekiSearchClicked(
         this.kikanSymd.format('YYYYMMDD'),
@@ -1777,86 +1924,59 @@ export default {
       this.datepicker_dialog = true;
     },
     jigyoKbnclick(kbn) {
-      this.setEnable(kbn == sysConst.JIGYOKBN.Renraku.val);
       if (kbn == 3) {
-        this.rirekiDataSelect.syokaiflg = '';
+        this.selectDataObj.syokaiflg = '';
       }
     },
     keikakuInputKbnclick(kbn) {
-      console.log(kbn);
+      if (kbn == sysConst.KEIKAKUJIGYOKBN.Keikaku.val) {
+        this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 52);
+      } else {
+        this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 55);
+      }
     },
     chiikiInputKbnclick(kbn) {
-      console.log(kbn);
+      if (kbn == sysConst.CHIIKIJIGYOKBN.Keikaku.val) {
+        this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 53);
+      } else {
+        this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 54);
+      }
     },
     setKihonInfo(newselectViewData) {
       // this.kihonInfo = newselectViewData;
       if (!newselectViewData) {
-        this.rirekiDataSelect = this.getNewuketuke();
+        this.selectDataObj = this.getKihonDefaultData();
       } else {
-        this.rirekiDataSelect = newselectViewData;
+        console.log(newselectViewData);
+        this.selectDataObj = newselectViewData;
+        this.setUserSelectPoint({
+          riid: newselectViewData.intcode,
+          riyocode: 0,
+          riyocodeD: '',
+          names: newselectViewData.rname,
+          kana: '',
+          jyukyuno: 0,
+          jyukyunoD: '',
+        });
       }
-      this.setEnable(
-        this.rirekiDataSelect.inputkbn == sysConst.JIGYOKBN.Renraku.val
-      );
+      if (this.selectDataObj.rname != '') {
+        this.dispUserName = this.selectDataObj.rname;
+        this.dispUserName =
+          String(this.selectDataObj.riyocode).padStart(7, '0') +
+          ' ' +
+          this.selectDataObj.rname;
+        this.taiouYmd = dayjs(this.selectDataObj.ymd);
+      } else {
+        this.dispUserName = '';
+      }
+
       this.rirekiSearchClicked(
-        this.rirekiDataSelect.taiouYmd,
-        this.rirekiDataSelect.taiouYmd,
-        this.rirekiDataSelect.intcode
+        this.selectDataObj.taiouYmd,
+        this.selectDataObj.taiouYmd,
+        this.selectDataObj.intcode
       );
     },
-    setEnable(enabled) {
-      const dis = 'disabled';
-      let backcolor = '';
-      let backcolorsoudansya = '';
-      if (enabled) {
-        if (document.getElementById(INPUT_ID.Syokai) != null) {
-          document.getElementById(INPUT_ID.Syokai).setAttribute(dis, enabled);
-        }
-        document.getElementById(INPUT_ID.SienHouhou).setAttribute(dis, enabled);
-        document.getElementById(INPUT_ID.Kankei).setAttribute(dis, enabled);
-        document.getElementById(INPUT_ID.Soudansya).setAttribute(dis, enabled);
-        document
-          .getElementById(INPUT_ID.Dousekisya1)
-          .setAttribute(dis, enabled);
-        document
-          .getElementById(INPUT_ID.Dousekisya2)
-          .setAttribute(dis, enabled);
-        document
-          .getElementById(INPUT_ID.Dousekisya3)
-          .setAttribute(dis, enabled);
-        backcolor = sysConst.COLOR.gridNoneBackground;
-        backcolorsoudansya = sysConst.COLOR.gridNoneBackground;
-      } else {
-        if (document.getElementById(INPUT_ID.Syokai) != null) {
-          document.getElementById(INPUT_ID.Syokai).removeAttribute(dis);
-        }
-        document.getElementById(INPUT_ID.SienHouhou).removeAttribute(dis);
-        document.getElementById(INPUT_ID.Kankei).removeAttribute(dis);
-        document.getElementById(INPUT_ID.Dousekisya1).removeAttribute(dis);
-        document.getElementById(INPUT_ID.Dousekisya2).removeAttribute(dis);
-        document.getElementById(INPUT_ID.Dousekisya3).removeAttribute(dis);
-        if (this.kihonInfo.kankeiObj.honninflg == KANKEI_KBN.Honnin) {
-          document
-            .getElementById(INPUT_ID.Soudansya)
-            .setAttribute(true, enabled);
-          backcolorsoudansya = sysConst.COLOR.gridBackground;
-        } else {
-          document.getElementById(INPUT_ID.Soudansya).removeAttribute(dis);
-          backcolorsoudansya = sysConst.COLOR.gridSelectedColor;
-        }
-        backcolor = sysConst.COLOR.gridSelectedColor;
-      }
-      document.getElementById(INPUT_ID.SienHouhou).style.background = backcolor;
-      document.getElementById(INPUT_ID.Kankei).style.background = backcolor;
-      document.getElementById(INPUT_ID.Soudansya).style.background =
-        backcolorsoudansya;
-      document.getElementById(INPUT_ID.Dousekisya1).style.background =
-        backcolor;
-      document.getElementById(INPUT_ID.Dousekisya2).style.background =
-        backcolor;
-      document.getElementById(INPUT_ID.Dousekisya3).style.background =
-        backcolor;
-    },
+
     /**************
      * 月の選択 ダイアログの日付を押下
      */
@@ -1890,10 +2010,16 @@ export default {
     },
     timeClick(type) {
       if (type == 0) {
-        this.rirekiDataSelect.sTime = '';
-      } else {
+        this.selectDataObj.jikan = '';
+      } else if (type == 1) {
         let mom = new dayjs();
-        this.rirekiDataSelect.sTime = mom.format('HH') + ':' + mom.format('mm');
+        this.selectDataObj.jikan = mom.format('HH:mm');
+        console.log(this.selectDataObj);
+      } else if (type == 2) {
+        this.selectDataObj.etime = '';
+      } else if (type == 3) {
+        let mom = new dayjs();
+        this.selectDataObj.etime = mom.format('HH:mm');
       }
     },
     getYmd() {
@@ -1942,7 +2068,7 @@ export default {
           }
           break;
         case DISP_MST_GRD.SoudansyaName:
-          if (this.kihonInfo.kankeiObj.honninflg != KANKEI_KBN.Kazoku) {
+          if (this.selectDataObj.honninflg != KANKEI_KBN.Kazoku) {
             this.soudansyaMstdata = this.getSoudansyaMstData().filter(
               (x) => !x.isKazoku
             );
@@ -1977,6 +2103,8 @@ export default {
           this.setFocus(INPUT_ID.KeikakuKikanBasyo);
           break;
         case DISP_MST_GRD.ChiikiItakusaki:
+          document.getElementById(GRD_ID.Mst).style.display = STYLE_BLOCK;
+          this.mstdata = this.getMstData(kbn);
           this.setFocus(INPUT_ID.ChiikiItakusaki);
           break;
         case DISP_MST_GRD.User:
@@ -2002,9 +2130,7 @@ export default {
           jyukyunoD: '',
         });
       }
-      // this.kihonInfo = this.getKihonDefaultData();
-      this.rirekiDataSelect = this.getNewuketuke();
-      console.log(this.userInfo);
+      this.selectDataObj = this.getKihonDefaultData();
     },
     // 削除
     delClicked() {
@@ -2013,120 +2139,297 @@ export default {
     // 登録
     addClicked() {
       console.log('addClicked');
+      if (this.selectDataObj.rcnt == 0) {
+        if (confirm('受付登録を実行します。よろしいですか？')) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pIntcode: this.userInfo.riid,
+          };
+          console.log(this.selectDataObj);
+          console.log(this.createPostData());
+          console.log(1111);
+          postConnect('/Uktk', params, 'SIENT', this.createPostData()).then(
+            (result) => {
+              console.log(12345);
+              console.log(result);
+            }
+          );
+        }
+      } else {
+        if (confirm('受付更新を実行します。よろしいですか？')) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pIntcode: this.userInfo.riid,
+            pJigyoid: 62,
+            pOldymd: this.selectDataObj.ymd,
+            pOldrcnt: this.selectDataObj.rcnt,
+          };
+          console.log(1111);
+          console.log(params);
+          console.log(this.selectDataObj);
+          putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(
+            (result) => {
+              console.log(12345);
+              console.log(result);
+            }
+          );
+        }
+      }
+    },
+    createPostData() {
+      let cskbn = 0;
+      if (this.kbnTab == sysConst.JIGYO_KBN_NAME.KIHON) {
+        cskbn = 3;
+      } else if (this.kbnTab == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+        cskbn = 3;
+      } else if (this.kbnTab == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+        cskbn = 3;
+      }
+
+      let doukousya = [];
+      if (this.selectDataObj.sdnnam1.trim().length > 0) {
+        doukousya.push(this.selectDataObj.sdnnam1.trim());
+      }
+      if (this.selectDataObj.sdnnam2.trim().length > 0) {
+        doukousya.push(this.selectDataObj.sdnnam2.trim());
+      }
+      if (this.selectDataObj.sdnnam3.trim().length > 0) {
+        doukousya.push(this.selectDataObj.sdnnam3.trim());
+      }
+
+      let result = {
+        jigyoid: 62,
+        ymd: this.taiouYmd.format('YYYYMMDD'),
+        rcnt: 0,
+        siid: 261,
+        intcode: this.userInfo.riid,
+        jikan: this.selectDataObj.jikan,
+        cskbn: cskbn,
+        cskmkid: this.selectDataObj.cskmkid,
+        kan: this.selectDataObj.kan,
+        nkbn: 1,
+        syoyo: this.selectDataObj.syoyoujikan,
+        rank: this.selectDataObj.rank,
+        peer: this.selectDataObj.peer,
+        sgyjky: 1,
+        naiyo: this.selectDataObj.naiyo,
+        sdntioflg: 1,
+        sdnhouid: this.selectDataObj.sdnhouid,
+        sdnhouchuid: 0,
+        sdnkanid: this.selectDataObj.sdnkanid,
+        sdnkanchuid: 0,
+        sdnnam: this.selectDataObj.sdnkanrk,
+        sdntel: '',
+        dokoflg: doukousya.length == 0 ? 0 : 1,
+        dokosha: doukousya,
+        sdnkeiroid: 0,
+        sykkbn: 0,
+        kasan: 0,
+        homon: 0,
+        kikan: '',
+        tanto: '',
+        basho: '',
+        etime: '',
+        cssaiid: [0],
+        uline: [
+          {
+            kbn: 0,
+            gyo: 0,
+            st: 0,
+            ed: 0,
+          },
+        ],
+      };
+
+      return result;
     },
     getKihonDefaultData() {
       return {
-        inputkbn: -1,
-        syokaikeizoku: -1,
-        syokaiymd: '',
-        kankeiObj: {
-          id: 0,
-          code: '',
-          name: '',
-          nameD: '',
-          codeD: '',
-          ryaku: '',
-          nikeiflg: 0,
-          honninflg: 0,
-        },
-        soudansyaObj: {
-          id: 0,
-          code: '',
-          codeD: '',
-          name: '',
-          tudukigara: '',
-          mimoto: '',
-          rennrakusaki: '',
-          isKazoku: false,
-        },
-        dousekisya1Obj: {
-          id: 0,
-          code: '',
-          codeD: '',
-          name: '',
-          tudukigara: '',
-          mimoto: '',
-          rennrakusaki: '',
-          isKazoku: false,
-        },
-        dousekisya2Obj: {
-          id: 0,
-          code: '',
-          codeD: '',
-          name: '',
-          tudukigara: '',
-          mimoto: '',
-          rennrakusaki: '',
-          isKazoku: false,
-        },
-        dousekisya3Obj: {
-          id: 0,
-          code: '',
-          codeD: '',
-          name: '',
-          tudukigara: '',
-          mimoto: '',
-          rennrakusaki: '',
-          isKazoku: false,
-        },
-        sienKoumokuObj: {
-          daicskmkid: 0,
-          daicode: '',
-          dainames: '',
-          dairyaku: '',
-          daicskbn: '',
-          daicolor: '',
-          daisyukflg: '',
-          tyucskmkid: 0,
-          tyucode: '',
-          tyunames: '',
-          tyuryaku: '',
-          tyucolor: '',
-          tyusyukflg: '',
-        },
-        keikakuSoudanObj: {
-          inputkbn: -1,
-          kasanumu: -1,
-          sienhouhou: 0,
-          sienhouhouname: '',
-          kasan: 0,
-          kasanname: '',
-          kikanbasyo: 0,
-          kikanbasyoname: '',
-          taiousyamei: 0,
-          taiousyameiname: '',
-          stime: '',
-          etime: '',
-        },
-        chiikiSoudanObj: {
-          inputkbn: -1,
-          kasanumu: -1,
-          sienhouhou: 0,
-          sienhouhouname: '',
-          kasan: 0,
-          kasanname: '',
-          itakusaki: 0,
-          itakusakiname: '',
-        },
-        startTime: '',
-        syoyoujikan: '',
+        inputkbn: 0,
+        syokaiflg: 0,
+        jigyoid: 0,
+        ymd: 0,
+        ymdD: '',
+        rcnt: 0,
+        jikan: '',
+        intcode: 0,
+        riyocode: 0,
+        riyocodeD: '',
+        rname: '',
+        rkana: '',
+        sex: 0,
+        sexname: '',
+        birth: 0,
+        age: 0,
+        cskbn: 0,
+        nkbn: 0,
+        dokoflg: 0,
+        dokosha: [],
+        sdntioflg: 0,
+        sdntiork: '',
+        sdnhouid: 0,
+        sdnhourk: '',
+        sdnhouchuid: 0,
+        sdnhouchurk: '',
+        sdnkanid: 0,
+        sdnkanrk: '',
+        sdnkanchuid: 0,
+        sdnkanchurk: '',
+        sdnnam: '',
+        sdnnam1: '',
+        sdnnam2: '',
+        sdnnam3: '',
+        sdntel: '',
+        setaiid: 0,
+        setairk: '',
+        honninid: 0,
+        honninrk: '',
+        kasan: 0,
+        kasanrk: '',
+        homon: 0,
+        kikan: '',
+        tanto: '',
+        basho: '',
+        etime: '',
+        sykkbn: 0,
+        sykkbnkigo: '0',
+        daicskmkid: 0,
+        daicskmkrk: '0',
+        cskmkid: 0,
+        cskmknm: '',
         naiyo: '',
-        peerCounselor: -1,
-        rank: -1,
-        gyoumunissi: false,
+        uline: [],
+        syoyo: 0,
+        rank: 0,
+        ranknm: '',
+        peer: 0,
+        peermark: '',
+        kan: 0,
+        nismark: '',
+        siid: 0,
+        sryaku: '',
+
+        // inputkbn: -1,
+        // syokaikeizoku: -1,
+        // syokaiymd: '',
+        // kankeiObj: {
+        //   id: 0,
+        //   code: '',
+        //   name: '',
+        //   nameD: '',
+        //   codeD: '',
+        //   ryaku: '',
+        //   nikeiflg: 0,
+        //   honninflg: 0,
+        // },
+        // soudansyaObj: {
+        //   id: 0,
+        //   code: '',
+        //   codeD: '',
+        //   name: '',
+        //   tudukigara: '',
+        //   mimoto: '',
+        //   rennrakusaki: '',
+        //   isKazoku: false,
+        // },
+        // dousekisya1Obj: {
+        //   id: 0,
+        //   code: '',
+        //   codeD: '',
+        //   name: '',
+        //   tudukigara: '',
+        //   mimoto: '',
+        //   rennrakusaki: '',
+        //   isKazoku: false,
+        // },
+        // dousekisya2Obj: {
+        //   id: 0,
+        //   code: '',
+        //   codeD: '',
+        //   name: '',
+        //   tudukigara: '',
+        //   mimoto: '',
+        //   rennrakusaki: '',
+        //   isKazoku: false,
+        // },
+        // dousekisya3Obj: {
+        //   id: 0,
+        //   code: '',
+        //   codeD: '',
+        //   name: '',
+        //   tudukigara: '',
+        //   mimoto: '',
+        //   rennrakusaki: '',
+        //   isKazoku: false,
+        // },
+        // sienKoumokuObj: {
+        //   daicskmkid: 0,
+        //   daicode: '',
+        //   dainames: '',
+        //   dairyaku: '',
+        //   daicskbn: '',
+        //   daicolor: '',
+        //   daisyukflg: '',
+        //   tyucskmkid: 0,
+        //   tyucode: '',
+        //   tyunames: '',
+        //   tyuryaku: '',
+        //   tyucolor: '',
+        //   tyusyukflg: '',
+        // },
+        // keikakuSoudanObj: {
+        //   inputkbn: -1,
+        //   kasanumu: -1,
+        //   sienhouhou: 0,
+        //   sienhouhouname: '',
+        //   kasan: 0,
+        //   kasanname: '',
+        //   kikanbasyo: 0,
+        //   kikanbasyoname: '',
+        //   taiousyamei: 0,
+        //   taiousyameiname: '',
+        //   stime: '',
+        //   etime: '',
+        // },
+        // chiikiSoudanObj: {
+        //   inputkbn: -1,
+        //   kasanumu: -1,
+        //   sienhouhou: 0,
+        //   sienhouhouname: '',
+        //   kasan: 0,
+        //   kasanname: '',
+        //   itakusaki: 0,
+        //   itakusakiname: '',
+        // },
+        // itakusaiObj: {
+        //   id: 0,
+        //   code: '',
+        //   codeD: '',
+        //   name: '',
+        //   nameD: '',
+        //   ryaku: '',
+        // },
+        // startTime: '',
+        // syoyoujikan: '',
+        // naiyo: '',
+        // peerCounselor: -1,
+        // rank: -1,
+        // gyoumunissi: false,
       };
     },
     numbervalidate() {
-      if (isNaN(this.kihonInfo.syoyoujikan)) {
-        this.kihonInfo.syoyoujikan = '';
+      if (isNaN(this.selectDataObj.syoyoujikan)) {
+        this.selectDataObj.syoyoujikan = '';
         return;
       }
-      if (String(this.kihonInfo.syoyoujikan).length > 3) {
-        this.kihonInfo.syoyoujikan = Number(
-          String(this.kihonInfo.syoyoujikan).slice(0, 3)
+      if (String(this.selectDataObj.syoyoujikan).length > 3) {
+        this.selectDataObj.syoyoujikan = Number(
+          String(this.selectDataObj.syoyoujikan).slice(0, 3)
         );
       }
-      this.kihonInfo.syoyoujikan = this.kihonInfo.syoyoujikan.replace(
+      this.selectDataObj.syoyoujikan = this.selectDataObj.syoyoujikan.replace(
         /\D/g,
         ''
       );
@@ -2144,12 +2447,12 @@ export default {
         return;
       }
       let params = {
-        uniqid: 1,
+        uniqid: 3,
         traceid: 123,
-        pJigyoid: 43,
+        pJigyoid: 62,
         pIntcode: this.userInfo.riid,
         pSymd: this.kikanSymd.format('YYYYMMDD'),
-        pEymd: this.kikanEymd.format('YYYYMMDD'),
+        pEymd: this.kikanEymd.format('YYYYMM') + 31,
         Dspkbn: 0,
       };
       console.log(params);
@@ -2168,8 +2471,7 @@ export default {
         name: '',
         nameD: 'クリア',
       });
-      let userCount = 10;
-      let name = '';
+
       if (
         kbn == DISP_MST_GRD.SienHouhou ||
         kbn == DISP_MST_GRD.KeikakuSienHouhou ||
@@ -2178,42 +2480,13 @@ export default {
         return this.mstHouhouList;
       } else if (kbn == DISP_MST_GRD.Kankei) {
         return this.mstKankeiList;
+      } else if (kbn == DISP_MST_GRD.ChiikiItakusaki) {
+        return this.mstItakuList;
       } else if (
         kbn == DISP_MST_GRD.KeikakuKasan ||
         kbn == DISP_MST_GRD.ChiikiKasan
       ) {
-        for (let i = 1; i < userCount; i++) {
-          switch (i) {
-            case 1:
-              name = '入院時情報連携加算';
-              break;
-            case 2:
-              name = '退院・退所時加算';
-              break;
-            case 3:
-              name = '医療/保育/教育加算';
-              break;
-            case 4:
-              name = 'サービス提供モニタリング加算';
-              break;
-            case 5:
-              name = '地域体制共同支援加算';
-              break;
-            case 6:
-              name = '初回加算訪問';
-              break;
-            default:
-              name = 'その他' + i;
-              break;
-          }
-          tmpviewdata.push({
-            id: i,
-            codeD: String(i).padStart(7, '0'),
-            name: name,
-            nameD: name,
-            kbn: 0,
-          });
-        }
+        return this.mstKasanList;
       }
 
       return tmpviewdata;
@@ -2225,8 +2498,8 @@ export default {
           id: 0,
           code: 0,
           codeD: '',
-          name: '',
-          nameD: 'クリア',
+          sdnnam: '',
+          sdnnamD: 'クリア',
           tudukigara: '',
           mimoto: '',
           rennrakusaki: '',
@@ -2236,8 +2509,8 @@ export default {
           id: 1,
           code: 1,
           codeD: String(1).padStart(3, '0'),
-          name: '関係者 一郎',
-          nameD: '関係者 一郎',
+          sdnnam: '関係者 一郎',
+          sdnnamD: '関係者 一郎',
           tudukigara: '',
           mimoto: '',
           rennrakusaki: '022-232-1123',
@@ -2247,8 +2520,8 @@ export default {
           id: 2,
           code: 2,
           codeD: String(2).padStart(3, '0'),
-          name: '関係者 次郎太',
-          nameD: '関係者 次郎太',
+          sdnnam: '関係者 次郎太',
+          sdnnamD: '関係者 次郎太',
           tudukigara: '',
           mimoto: '',
           rennrakusaki: '022-232-1124',
@@ -2258,8 +2531,8 @@ export default {
           id: 3,
           code: 1,
           codeD: String(1).padStart(3, '0'),
-          name: '家族 花子',
-          nameD: '家族 花子',
+          sdnnam: '家族 花子',
+          sdnnamD: '家族 花子',
           tudukigara: '母親',
           mimoto: '○',
           rennrakusaki: '022-232-4567',
@@ -2269,8 +2542,8 @@ export default {
           id: 4,
           code: 2,
           codeD: String(2).padStart(3, '0'),
-          name: '家族 太郎',
-          nameD: '家族 太郎',
+          sdnnam: '家族 太郎',
+          sdnnamD: '家族 太郎',
           tudukigara: '兄',
           mimoto: '',
           rennrakusaki: '022-232-6789',
@@ -2361,10 +2634,10 @@ export default {
     KasanUmuclick(kbn, kind) {
       if (kind == 0) {
         // 計画相談
-        this.kihonInfo.keikakuSoudanObj.kasanumu = kbn;
+        this.selectDataObj.kasanumu = kbn;
       } else {
         // 地域相談
-        this.kihonInfo.chiikiSoudanObj.kasanumu = kbn;
+        this.selectDataObj.kasanumu = kbn;
       }
       this.keikakuDispChange();
     },
@@ -2372,20 +2645,19 @@ export default {
       if (this.kbnTab == this.kbnItem[0].hrefval) {
         this.dipCommonFlg = true;
       } else if (this.kbnTab == this.kbnItem[1].hrefval) {
-        if (
-          this.kihonInfo.keikakuSoudanObj.kasanumu == this.kasanUmuItem[1].val
-        ) {
+        if (this.selectDataObj.kasanumu == this.kasanUmuItem[1].val) {
           this.dipCommonFlg = false;
         } else {
           this.dipCommonFlg = true;
         }
       } else if (this.kbnTab == this.kbnItem[2].hrefval) {
         if (
-          this.kihonInfo.chiikiSoudanObj.kasanumu == this.kasanUmuItem[1].val
+          this.selectDataObj.kasanumu == this.kasanUmuItem[0].val ||
+          this.selectDataObj.kasanumu == this.kasanUmuItem[2].val
         ) {
-          this.dipCommonFlg = false;
-        } else {
           this.dipCommonFlg = true;
+        } else {
+          this.dipCommonFlg = false;
         }
       }
       this.handleResize();
@@ -2394,6 +2666,9 @@ export default {
       this.windowheight = window.innerHeight;
       let el = document.getElementById(INPUT_ID.Naiyo);
       let elTxt = document.getElementsByTagName('textarea')[0];
+      if (el == null || elTxt == null) {
+        return;
+      }
       let tmp = 0;
       let minheight = 0;
       let defheight = 720;
@@ -2402,7 +2677,7 @@ export default {
         minheight = NAIYO_HEIGHT.height2;
       } else if (
         this.kbnTab == this.kbnItem[1].hrefval &&
-        this.kihonInfo.keikakuSoudanObj.kasanumu == this.kasanUmuItem[1].val
+        this.selectDataObj.kasanumu == this.kasanUmuItem[1].val
       ) {
         tmp = this.windowheight - (defheight - NAIYO_HEIGHT.height1);
         minheight = NAIYO_HEIGHT.height1;
@@ -2417,48 +2692,7 @@ export default {
       elTxt.style.height = tmp + 'px';
     },
     setTaiouData() {
-      this.taiouYmd = dayjs(this.rirekiDataSelect.taiouYmdf);
-    },
-    getNewuketuke() {
-      let obj = {
-        entpriid: 0,
-        intcode: 0,
-        rcnt: 0,
-        taiouYmd: '',
-        taiouYmdf: {},
-        sTime: '',
-        name: '',
-        cskbn: 0,
-        cskmkid: 0,
-        cskmknm: '',
-        jigyouKbn: '',
-        jigyouKbnD: '',
-        syokai: '',
-        kasan: '',
-        kasanName: '',
-        kikanmei: '',
-        taiousya2: '',
-        sienHouhou: '',
-        sdnhouid: 0,
-        sdnhourk: '',
-        sdnkanid: 0,
-        sdnkanrk: '',
-        kankeiSoudansya: '',
-        sdnnam: '',
-        soudanKoumoku: '',
-        title: '',
-        naiyo: '',
-        peer: 0,
-        syoyo: 0,
-        rank: 0,
-        ranknm: '',
-        kan: 0,
-        syoyouJikan: '',
-        nissi: '',
-        tanntouid: 0,
-        taiousya: '',
-      };
-      return obj;
+      this.taiouYmd = dayjs(this.selectDataObj.taiouYmdf);
     },
   },
 };
@@ -2489,7 +2723,7 @@ div#uketukeTouroku {
       border-color: $light-gray;
       border-bottom: none;
       height: 25px;
-      // background: blue;
+      // background: $font_color_saturday;
     }
     .v-tab--active {
       color: $white;
@@ -2623,24 +2857,6 @@ div#uketukeTouroku {
   left: 250px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #uketukeTourokuDatepickerSym,
 #uketukeTourokuDatepickerEym {

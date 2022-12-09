@@ -139,14 +139,6 @@
           >
             検索
           </label>
-          <wj-combo-box
-            class="pa-0"
-            height="20"
-            min-height="20"
-            :textChanged="onTextChangedUser"
-            style="width: 115px"
-            placeholder="カナ/漢字/コード"
-          ></wj-combo-box>
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
@@ -720,7 +712,9 @@ div#user-list_scrollbar {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
+      .wj-state-active
+    ) {
     transition: all 0s;
     background: $grid_hover_background;
   }

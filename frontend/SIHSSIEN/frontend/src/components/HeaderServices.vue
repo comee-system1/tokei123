@@ -1,15 +1,15 @@
 <template>
   <v-layout>
     <v-flex md12 class="basicArea" style="position: relative; z-index: 5">
-      <div class="service-selection">
-        <label>サービス</label>
+      <div class="service-selection-area mt-1 mb-0" no-gutters>
+        <label style="height: 25px">サービス</label>
         <v-btn
           elevation="0"
           outlined
           tile
           disabled
           height="25"
-          class="service ml-1"
+          class="service"
           color="red"
           >{{ jigyosyoCode }}</v-btn
         >
@@ -19,13 +19,13 @@
         >
       </div>
 
-      <div class="month-selection mb-0 mt-1">
+      <div class="month-selection-area mt-1 mb-0">
         <label v-if="nenkanRiyouNissuFlag == true">年度</label>
         <label v-else>提供月</label>
         <datepickerYear
           v-if="nenkanRiyouNissuFlag"
           :language="ja"
-          class="service ml-1"
+          class="service"
           :value="defaultYear"
           v-model="defaultYear"
           minimum-view="year"
@@ -37,7 +37,7 @@
           @click="inputCalendarClick('teikyo')"
           tile
           outlined
-          class="service ml-1"
+          class="service"
           height="25"
           >{{ year }}年{{ month }}月
           <div class="float-right">
@@ -67,7 +67,7 @@
           tile
           ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
         >
-        <span style="margin-left: 25px">
+        <span style="margin-left: 25px" v-if="seikyuflag">
           <label>請求月</label>
 
           <v-btn
@@ -114,7 +114,7 @@
           small
           @click="searchButton()"
         >
-          更新
+          検索
         </v-btn>
         <!-- ↓ 請求一覧画面用 -->
         <span v-if="seikyushoflag">
@@ -155,9 +155,15 @@
           <v-btn class="white--text registButton">確定登録</v-btn>
         </v-col>
         <v-col class="ml-5 text-end" cols="1*" v-if="registButtonFlag">
-          <v-btn class="white--text registButton">登録</v-btn>
+          <v-btn class="white--text registButton">作業状況確認</v-btn>
         </v-col>
       </v-row>
+      <div class="alertTitle pa-1 white--text" v-if="alertMessageFlag">
+        ※情報が変更されています。登録を行ってください※
+      </div>
+      <div class="transparent message text-caption">
+        最終登録日:2021.08.08 13:36 (担当者:大正 雅夫)
+      </div>
       <v-dialog
         v-model="header_dialog"
         width="600"
@@ -246,11 +252,13 @@ import datepickerYear from 'vuejs-datepicker';
 import { ja } from 'vuejs-datepicker/dist/locale';
 export default {
   props: {
+    seikyuflag: { type: Boolean },
     jyougengakuFlag: { type: Boolean },
     receptFlag: { type: Boolean },
     searchButtonFlag: { type: Boolean },
     registButtonFlag: { type: Boolean },
     confirmRegistButtonFlag: { type: Boolean },
+    alertMessageFlag: { type: Boolean },
     seikyushoflag: { type: Boolean },
     nenkanRiyouNissuFlag: { type: Boolean }, // 入退院報告書用
   },
@@ -261,10 +269,10 @@ export default {
     return {
       year: dayjs().year(),
       month: dayjs().format('MM'),
-      seikyu_year: dayjs().add(1, 'month').format('YYYY'),
-      seikyu_month: dayjs().add(1, 'month').format('MM'),
+      seikyu_year: dayjs().add(1, 'month').startOf('month').format('YYYY'),
+      seikyu_month: dayjs().add(1, 'month').startOf('month').format('MM'),
       picker: '',
-      header_dialog: false,
+      header_dialog: true,
       datepicker_dialog: false,
       datepickerYear_dialog: false,
       defaultSetting: this.defaultSettings(),
@@ -436,35 +444,77 @@ export default {
         teikyoCode: 35,
         teikyoService: '35 自立生活援助',
       });
+      ////////////////////// 仮データ for 給付明細(簡易)////////////////////////////////////
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 51,
-        teikyoService: '51 計画相談支援(暫定)',
+        teikyoCode: 1,
+        teikyoService: 'A 介護給付費、訓練等給付費等明細書）',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 52,
-        teikyoService: '52 計画相談支援',
+        teikyoCode: 2,
+        teikyoService: 'A-2 特例介護給付費、特例訓練等給付費等明細書）',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 53,
-        teikyoService: '53 地域相談支援（地域移行支援）',
+        teikyoCode: 3,
+        teikyoService: ' B 特例訓練等給付費等明細書',
       });
       data.push({
         uid: uid++,
         jimusyoBango: '111200038' + bango++,
         serviceJigyo: '自立訓練製作所 ひまわり園',
-        teikyoCode: 54,
-        teikyoService: '54 地域相談支援（地域定着支援）',
+        teikyoCode: 4,
+        teikyoService: 'C 計画相談支援給付費明細書',
       });
-
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 5,
+        teikyoService: 'C-2 特例計画相談支援給付費明細書）',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 6,
+        teikyoService: 'D 地域相談支援給付費明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 7,
+        teikyoService: 'E 障害児通所給付費・入所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 8,
+        teikyoService: 'E-2 特例障害児通所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 9,
+        teikyoService: 'F 特例障害児通所給付費等明細書',
+      });
+      data.push({
+        uid: uid++,
+        jimusyoBango: '111200038' + bango++,
+        serviceJigyo: '自立訓練製作所 ひまわり園',
+        teikyoCode: 10,
+        teikyoService: 'F-2 特例障害児通所給付費等明細書',
+      });
       //事業所番号が次のデータと同じ場合に非表示用のフラグを立てる
       let j = -1;
       for (let i = 0; i < data.length; i++) {
@@ -501,9 +551,21 @@ export default {
           serviceJigyo: _self.jimusyo[ht.row].serviceJigyo,
           teikyoService: _self.jimusyo[ht.row].teikyoService,
         };
-
         ls.setlocalStorageEncript('serviceJigyo', teikyoService);
         ls.setlocalStorageEncript('selectRow', _self.jimusyo[ht.row].uid);
+        // 給付明細表示切り替え用
+        ls.setlocalStorageEncript(
+          'jimusyoBango',
+          _self.jimusyo[ht.row].jimusyoBango
+        );
+        ls.setlocalStorageEncript(
+          'serviceJigyo',
+          _self.jimusyo[ht.row].serviceJigyo
+        );
+        ls.setlocalStorageEncript(
+          'selectJigyoCode',
+          _self.jimusyo[ht.row].teikyoCode
+        );
         let returns = {};
         returns = {
           jimusyoBango: _self.jimusyo[ht.row].jimusyoBango,
@@ -701,16 +763,12 @@ export default {
     background-color: $white;
   }
 }
-.service-selection,
-.month-selection {
+.service-selection-area,
+.month-selection-area {
   label {
     width: 80px !important;
     display: inline-block;
     margin-right: 0px !important;
-    background-color: $deepgreen;
-    color: $white;
-    text-align: center;
-    line-height: 1.6;
   }
   .vdp-datepicker {
     display: inline-block;
@@ -821,7 +879,7 @@ export default {
   background-repeat: no-repeat;
   background-position: 50% 50%;
   background-color: #027eb0 !important;
-  width: 94.25px;
+  width: 120.25px;
 }
 
 .seikyusho-status {
@@ -843,7 +901,7 @@ export default {
   padding: 2px 10px;
 }
 
-.month-selection .vdp-datepicker input {
+.month-selection-area .vdp-datepicker input {
   height: 25px;
 }
 </style>

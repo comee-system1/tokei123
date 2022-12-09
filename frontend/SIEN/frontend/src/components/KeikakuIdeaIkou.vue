@@ -1,59 +1,48 @@
 <template>
   <div id="listsArea">
-    <v-row dense v-for="value in note" :key="value.key">
-      <v-col cols="2" class="text-center valign text-caption">
-        <v-card
-          class="pa-1 lightGreen"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-          relative
-        >
-          <label>{{ value.title }}</label>
-        </v-card>
-      </v-col>
-      <v-col cols="10" class="mr-0 text-caption">
-        <v-card
-          class="pa-1 editarea mx-auto"
-          elevation="0"
-          outlined
-          tile
-          height="90"
-          @click="editText(value.key)"
-        >
-          <div>{{ value.value }}</div>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-dialog v-model="editTextDialog" max-width="1150">
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="editTextDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ note[notekey].title }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="editTextSave"> 保存 </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-list three-line subheader class="pa-2">
-          <v-textarea
-            outlined
-            v-model="inputs"
-            :style="textstyles"
-            class="keikakuideaTextarea mt-0"
-            hide-details="false"
-          ></v-textarea>
-        </v-list>
-      </v-card>
-    </v-dialog>
+    <wj-flex-grid
+      id="keikakuIdeaIkouGrid"
+      :headersVisibility="'None'"
+      :autoGenerateColumns="false"
+      :allowAddNew="false"
+      :allowDelete="false"
+      :allowPinning="false"
+      :allowMerging="'None'"
+      :allowResizing="false"
+      :allowSorting="false"
+      :allowDragging="false"
+      :selectionMode="'Cell'"
+      :showMarquee="true"
+      :imeEnabled="true"
+      :alternatingRowStep="0"
+      :initialized="onInitialize"
+      :itemsSourceChanged="onItemsSourceChanged"
+      :formatItem="onFormatItem"
+      :itemsSource="viewData"
+      :autoRowHeights="true"
+    >
+      <wj-flex-grid-column
+        binding="title"
+        :width="200"
+        :isReadOnly="true"
+        :wordWrap="true"
+        :multiLine="true"
+        align="center"
+      ></wj-flex-grid-column>
+      <wj-flex-grid-column
+        binding="value"
+        width="*"
+        :wordWrap="true"
+        :multiLine="true"
+        align="left"
+      ></wj-flex-grid-column>
+    </wj-flex-grid>
   </div>
 </template>
 
 <script>
+import * as wjGrid from '@grapecity/wijmo.grid';
+import sysConst from '@/utiles/const';
 export default {
   props: {},
   components: {},
@@ -91,6 +80,9 @@ export default {
       keikakuKubunModel: '',
       editTextDialog: false,
       headerheight: 300,
+      viewData: [],
+      userdrawer: true,
+      mainGrid: {},
     };
   },
   created() {},
@@ -103,6 +95,71 @@ export default {
     },
   },
   methods: {
+    grdRefresh(userDispflg) {
+      this.userdrawer = userDispflg;
+      this.mainGrid.refresh();
+      this.mainGrid.autoSizeRows();
+    },
+    onInitialize(flexGrid) {
+      this.mainGrid = flexGrid;
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          if (ht.col == 1) {
+            // 完全編集モードへ移行
+            flexGrid.startEditing(true);
+          }
+        }
+      });
+      flexGrid.cellEditEnded.addHandler((flexGrid) => {
+        flexGrid.beginUpdate();
+        flexGrid.autoSizeRows();
+        flexGrid.endUpdate();
+      });
+      this.createViewData();
+    },
+    createViewData() {
+      let result = [];
+      for (let i = 0; i < this.note.length; i++) {
+        result.push({
+          title: this.note[i].title,
+          value: this.note[i].value,
+        });
+      }
+      this.viewData = result;
+    },
+    onItemsSourceChanged(flexGrid) {
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      flexGrid.beginUpdate();
+      flexGrid.autoSizeRows();
+      flexGrid.endUpdate();
+    },
+    onFormatItem(flexGrid, e) {
+      if (e.panel == flexGrid.cells) {
+        if (e.col == 1) {
+          if (this.userdrawer) {
+            e.cell.style.fontSize = '12px';
+          } else {
+            e.cell.style.fontSize = '16.2px';
+          }
+        }
+        e.cell.style.textAlign = '';
+        e.cell.style.justifyContent = '';
+        e.cell.style.alignItems = '';
+        e.cell.style.backgroundColor = '';
+        if (e.col == 0) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        }
+      }
+    },
+    getGrid() {
+      return this.mainGrid;
+    },
     /******************************
      * 入力内容切替ボタンを押下
      */
@@ -131,6 +188,34 @@ export default {
     registButton() {
       alert('意向登録ボタン');
     },
+    setViewData(viewData) {
+      console.log(viewData);
+
+      this.viewData = [
+        {
+          key: 0,
+          title: '利用者及び家族の生活に対する意向(希望する生活)\n',
+          value: viewData.iko != undefined ? viewData.iko : '',
+        },
+        {
+          key: 1,
+          title: '\n総合方針\n\n',
+          value: viewData.housin != undefined ? viewData.housin : '',
+        },
+        {
+          key: 2,
+          title: '\n長期目標\n\n',
+          value:
+            viewData.chokimokuhyo != undefined ? viewData.chokimokuhyo : '',
+        },
+        {
+          key: 3,
+          title: '\n短期目標\n\n',
+          value:
+            viewData.tankimokuhyo != undefined ? viewData.tankimokuhyo : '',
+        },
+      ];
+    },
   },
 };
 </script>
@@ -153,6 +238,21 @@ export default {
     width: 100%;
     div {
       width: 860px;
+    }
+  }
+
+  #keikakuIdeaIkouGrid {
+    font-size: 12px;
+    height: 100%;
+    max-height: 100%;
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
+    .wj-cell {
+      padding: 2px;
+      display: flex;
+    }
+    &.wj-flexgrid [wj-part='root'] {
+      overflow-y: scroll !important;
     }
   }
 }

@@ -32,7 +32,7 @@
             background-color: $light-white;
 
             &.ht_min {
-                height: 20px;
+                height: 25px;
             }
         }
     }
@@ -40,6 +40,7 @@
     //背景色
     .dialog_back {
         background-color: $light-white;
+
     }
 
     .dialog_back_blue {
@@ -50,6 +51,10 @@
         border: 2px solid $view_Title_background_Main;
     }
 
+    .dialog_border {
+        border-color: #bbb;
+        border-width: thin;
+    }
 
     //ラベル調整
     .v-card {
@@ -57,10 +62,24 @@
             background-color: $view_Title_background_none;
         }
 
+        &.gray {
+            background-color: $light-gray;
+        }
+
         //サイズ調整用
         &.wr-40 {
             width: 40px;
             height: 24px;
+        }
+
+        &.wd-60 {
+            width: 60px;
+            text-align: center;
+        }
+
+        &.wd-65 {
+            width: 65px;
+            text-align: center;
         }
 
         &.wd-70 {

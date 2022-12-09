@@ -9,7 +9,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none; margin-top: -1px"
+          style="border: none"
           outlined
           tile
         >
@@ -17,6 +17,7 @@
             @click="inputCalendarClick(0)"
             tile
             outlined
+            elevation="2"
             width="160px"
             height="100%"
             class="btnymd"
@@ -28,10 +29,9 @@
         </v-card>
         <label class="ml-1 mr-1">～</label>
         <v-card
-          class="btnymd ml-1"
           color="transparent"
           height="100%"
-          style="border: none; margin-top: -1px"
+          style="border: none"
           outlined
           tile
         >
@@ -39,6 +39,7 @@
             @click="inputCalendarClick(1)"
             tile
             outlined
+            elevation="2"
             width="160px"
             height="100%"
             class="btnymd"
@@ -48,8 +49,17 @@
             </div>
           </v-btn>
         </v-card>
-        <v-btn class="ml-1" height="100%" @click="inputCalendarClick(2)">
+        <v-btn
+          class="ml-1"
+          elevation="2"
+          height="19"
+          @click="inputCalendarClick(2)"
+        >
           月指定
+        </v-btn>
+        <v-btn class="ml-1" height="19" @click="searchclick()">
+          <v-icon dense>mdi-magnify</v-icon>
+          検索
         </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
@@ -91,48 +101,56 @@
             {{ val.name }}
           </option>
         </select>
-        <v-btn class="mr-1" height="100%" @click="searchclick()"> 検索 </v-btn>
-        <v-btn class="mr-1" width="25" height="100%" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
-        </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1" style="position: relative">
-        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           ソート
         </v-card>
-        <v-btn-toggle class="flex-wrap ml-1" v-model="sort1Index" mandatory>
-          <v-btn
-            v-for="n in sort1List"
-            :key="n.val"
-            color="secondary"
-            dark
-            outlined
-            height="20"
-            width="50"
-            min-width="50"
-            @click="sortClicked"
+        <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+          <div
+            v-for="item in sort1List"
+            :key="'rbUketukeCheckSort1-' + item.val"
+            class="radioInline"
+            style="width: 70px"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-        <v-btn-toggle
-          class="flex-wrap ml-1"
-          v-model="sort2Index"
-          mandatory
-          v-if="sort1Index == 1"
-        >
-          <v-btn
-            v-for="n in sort2List"
-            :key="n.val"
-            color="secondary"
-            dark
-            outlined
-            height="20"
-            @click="sortClicked"
+            <input
+              type="radio"
+              :id="'rbUketukeCheckSort1-' + item.val"
+              v-model="sort1Index"
+              :value="item.val"
+              @change="sortClicked"
+            />
+            <label
+              :for="'rbUketukeCheckSort1-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label class="mr-1">【</label>
+          <div
+            v-for="item in sort2List"
+            :key="'rbUketukeCheckSort2-' + item.val"
+            class="radioInline"
+            style="width: 70px"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
+            <input
+              type="radio"
+              :id="'rbUketukeCheckSort2-' + item.val"
+              v-model="sort2Index"
+              :value="item.val"
+              :disabled="sort1Index != 1"
+              @change="sortClicked"
+            />
+            <label
+              :for="'rbUketukeCheckSort2-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label>】</label>
+        </v-card>
         <v-card
           class="koumokuTitle titleMain pa-1"
           style="position: absolute; left: 466px"
@@ -141,21 +159,63 @@
         >
           詳細表示
         </v-card>
-        <v-btn-toggle
+        <v-card
+          elevation="0"
+          tile
+          outlined
+          class="pl-1 mr-1"
+          height="100%"
+          style="position: absolute; left: 570px"
+        >
+          <div
+            v-for="item in syousaiDispList"
+            :key="item.val"
+            class="radioInline"
+          >
+            <input
+              type="radio"
+              :id="'rbcheckListsyousaiDisp-' + item.val"
+              v-model="selSyousaiDispUmuIndex"
+              :value="item.val"
+              @change="grdDispChangeclick()"
+            />
+            <label
+              :for="'rbcheckListsyousaiDisp-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+        </v-card>
+
+        <!-- <v-btn-toggle
           class="flex-wrap ml-1"
           style="position: absolute; left: 566px"
           v-model="selSyousaiDispUmuIndex"
+          color="light-blue darken-4"
         >
           <v-btn
             v-for="n in syousaiDispList"
             :key="n.val"
-            height="20"
+            height="19"
             outlined
+            elevation="2"
             @click="grdDispChangeclick()"
           >
             {{ n.name }}
           </v-btn>
-        </v-btn-toggle>
+        </v-btn-toggle> -->
+        <v-btn
+          class="ml-1"
+          height="19"
+          width="25"
+          @click="filterClrclick()"
+          elevation="2"
+          style="position: absolute; left: 700px"
+        >
+          <v-icon dense>mdi-filter-off</v-icon>
+          解除
+        </v-btn>
         <v-spacer></v-spacer>
         <v-card class="countTitle titleOrange pa-1" outlined tile>
           相談件数:
@@ -243,11 +303,11 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import * as wjCore from '@grapecity/wijmo';
+// import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { getConnect } from '../../../../connect/getConnect';
+import { getConnect } from '../../connect/getConnect';
+import printUtil from '@/utiles/printUtil';
 const STYLE_DEFAULT = '';
-const STYLE_BORDER_SOLID = '1px solid black';
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -415,7 +475,8 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'naiyo',
+          dataname: 'naiyoD',
+          dataname2: 'cskmknm',
           title: '内容',
           width: sysConst.GRD_COL_WIDTH.Naiyou,
           align: 'left',
@@ -462,9 +523,30 @@ export default {
       viewData: [],
       dispSearchAdd: false,
       filter: {},
+      mainGrid: [],
+      thickList: [0, 1, 6, 9, 11, 15, 18],
     };
   },
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
+  },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('uketukeCheckListIcrnGrid') != null) {
+        document.getElementById('uketukeCheckListIcrnGrid').style.height =
+          window.innerHeight - 130 + 'px';
+      }
+    },
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
+    },
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
@@ -472,6 +554,7 @@ export default {
       this.filter = filter;
     },
     onInitializeIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
         this.filter.showFilterIcons = true;
@@ -517,39 +600,57 @@ export default {
         return;
       }
 
+      if (e.panel == flexGrid.columnHeaders) {
+        if (e.col < 12) {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        } else if (e.col < 16) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        } else if (e.col < 19) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrange;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        }
+      }
       if (e.panel == flexGrid.cells) {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
-          e.cell.innerHTML =
-            '<font color="blue">' +
-            wjCore.escapeHtml(tmpitem.cskmknm) +
-            '</font>' +
-            '<div>' +
-            wjCore.escapeHtml(e.cell.innerHTML) +
-            '</div>';
-        }
+        // if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
+        //   e.cell.innerHTML =
+        //     '<font color="#276bc5">' +
+        //     wjCore.escapeHtml(tmpitem.cskmknm) +
+        //     '</font>' +
+        //     '<div>' +
+        //     wjCore.escapeHtml(e.cell.innerHTML) +
+        //     '</div>';
+        // }
         if (e.col == 10) {
           if (tmpitem.setairk.length == 0) {
-            e.cell.innerHTML = '<font color="red">※未入力</font>';
+            e.cell.innerHTML = '<font color="#c93328">※未入力</font>';
           }
         }
       }
+
       if (
-        e.col == 0 ||
-        e.col == 1 ||
-        e.col == 6 ||
-        (e.panel == flexGrid.columnHeaders && e.col == 7) ||
-        e.col == 9 ||
-        e.col == 11 ||
-        e.col == 15
+        this.thickList.find((element) => {
+          return element == e.col;
+        }) != undefined
       ) {
-        e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        e.cell.style.borderRight =
+          '1px solid ' + sysConst.COLOR.gridBorderColor;
       }
     },
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
+      if (flexGrid.columns.length > 0) {
+        if (this.selSyousaiDispUmuIndex == 1) {
+          flexGrid.columns[16].binding = this.headerList[16].dataname;
+        } else {
+          flexGrid.columns[16].binding = this.headerList[16].dataname2;
+        }
+      }
       flexGrid.endUpdate();
     },
     onItemsSourceChanged(flexGrid) {
@@ -561,21 +662,19 @@ export default {
     grdAutoSizeRow(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-      if (this.selSyousaiDispUmuIndex == 1) {
-        flexGrid.beginUpdate();
-        flexGrid.autoSizeRows();
-        flexGrid.endUpdate();
-      }
+      flexGrid.beginUpdate();
+      flexGrid.autoSizeRows();
+      flexGrid.endUpdate();
     },
     grdDispChangeclick() {
-      this.setViewData(false);
+      this.setViewData(true);
     },
     setViewData(isAll) {
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pSymd: this.startymd.format('YYYYMMDD'),
           pEymd: this.endymd.format('YYYYMMDD'),
           Dspkbn: 0,
@@ -763,6 +862,13 @@ export default {
     filterClrclick() {
       this.filter.clear();
     },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示期間：' + this.getYmd(0) + '～' + this.getYmd(1);
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('チェックリスト', printUtil.DIRECTION.landscape);
+    },
   },
 };
 </script>
@@ -775,13 +881,6 @@ div#uketukeCheckList {
   min-width: 1300px;
   max-width: 1920px;
   width: auto;
-
-  .leftArea {
-    min-width: 275px;
-    max-width: 275px;
-    min-height: 450px;
-    width: 275px;
-  }
 
   .countTitle {
     color: $font_color;
@@ -796,16 +895,22 @@ div#uketukeCheckList {
     background: $view_Title_background;
     border: none;
     > span {
-      color: red;
+      color: $font_color_sunday;
     }
   }
 
   #uketukeCheckListIcrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    height: 78vh;
     width: 100%;
     min-width: 1250px;
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
+    min-height: 500px;
+    &.wj-flexgrid [wj-part='root'] {
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+    }
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -855,7 +960,7 @@ div#uketukeCheckList {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -873,24 +978,6 @@ div#uketukeCheckList {
   }
   .v-picker__title {
     display: none !important;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
   }
 }
 #uketukeCheckListdatepickermonth {

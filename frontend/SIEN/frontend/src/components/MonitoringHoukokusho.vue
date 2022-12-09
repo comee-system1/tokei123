@@ -1,108 +1,76 @@
 <template>
   <div id="monitoringHoukokusho">
-    <v-container class="pa-1" fluid>
+    <v-container class="pa-0" fluid>
       <v-row no-gutters>
-        <v-col
-          :style="{ 'max-width': leftWidth }"
-          style="height: 100%"
-          class="mr-2"
-        >
-          <user-list
-            ref="user_list"
-            :dispAddDaicho="false"
-            :dispHideBar="true"
-            :dispSvcReki="false"
-            :dispYoteiYm="true"
-            @child-select="setUserSelectPoint"
-            @child-user="getSelectUserChildComponent"
-            @childLeftArea="changeLeftArea"
-          >
-          </user-list>
-        </v-col>
         <v-col class="rightArea pa-0">
           <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
             <v-row no-gutters class="rowStyle" style="position: relative">
-              <v-card
-                class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
-                outlined
-                tile
-              >
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    elevation="2"
+                    class="mr-1 ml-1"
+                    height="19"
+                    @click="userdrawerCliked"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon v-if="userdrawer" dense
+                      >mdi-account-arrow-left-outline</v-icon
+                    >
+                    <v-icon v-else dense
+                      >mdi-account-arrow-right-outline</v-icon
+                    >
+                    選択
+                  </v-btn>
+                </template>
+                <span>利用者選択欄の表示有無を切替えます</span>
+              </v-tooltip>
+              <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
               </v-card>
               <v-card
-                class="koumokuData border mr-1 pb-1 pl-1 pt-0"
+                class="koumokuData border mr-1 pl-1"
                 tile
                 outlined
-                width="200"
+                width="250"
               >
-                {{ userData.riyocodeD }} {{ userData.names }}
-              </v-card>
-              <v-card
-                class="koumokuTitle pa-1"
-                outlined
-                tile
-                style="
-                  position: absolute;
-                  left: 376px;
-                  background: #008000;
-                  color: white;
-                "
-              >
-                計画作成日
-              </v-card>
-              <v-card
-                class="koumokuData ml-1"
-                width="125"
-                style="text-align: center; position: absolute; left: 476px"
-                tile
-                outlined
-              >
-                {{ viewdataAll.mymdD }}
-              </v-card>
-              <v-spacer></v-spacer>
-              <v-card class="koumokuTitle titleOrange pa-1 mr-1" outlined tile>
-                同意署名欄
-              </v-card>
-              <input
-                type="checkbox"
-                class="mr-1"
-                v-model="viewdataAll.doui"
-                @change="douiCheck()"
-              />
-              <v-card class="koumokuData" width="125" outlined tile>
-                {{ getDouisya }}
+                {{ userData.riyocode }} {{ userData.names }}
               </v-card>
             </v-row>
           </v-row>
-          <v-row no-gutters class="rowStyle mt-1">
+          <v-row no-gutters class="rowStyle mt-1 mb-1">
             <v-card
-              class="koumokuTitle titleMain pa-1 mr-1 ml-1"
-              width="50"
+              class="koumokuTitle titleMain wMin pa-1 mr-1 ml-1"
               outlined
               tile
             >
               入力
             </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" mandatory>
+            <v-btn-toggle
+              class="flex-wrap mr-1"
+              color="light-blue darken-4"
+              mandatory
+            >
               <v-btn
                 v-for="n in inputList"
                 :key="n.val"
-                color="secondary"
-                elevation="1"
+                elevation="2"
                 outlined
                 width="25"
-                height="20"
+                height="19"
                 @click="inputClicked(n.val)"
               >
                 {{ n.name }}
               </v-btn>
             </v-btn-toggle>
-            <v-card
-              class="koumokuTitle titleMain pa-1 mr-1"
-              width="60"
-              outlined
-              tile
-            >
+            <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+              計画作成日
+            </v-card>
+            <v-card class="koumokuData mr-1 pl-1" width="125" tile outlined>
+              {{ viewdataAll.krekiymdD }}
+            </v-card>
+            <v-card class="koumokuTitle titleMain wMin pa-1 mr-1" outlined tile>
               実施日
             </v-card>
             <v-card
@@ -127,27 +95,38 @@
                 </div>
               </v-btn>
             </v-card>
+            <v-spacer></v-spacer>
             <v-card
-              class="koumokuTitle titleMain pa-1 mr-1"
-              width="60"
+              class="koumokuTitle wMin titleOrange pa-1 mr-1"
               outlined
               tile
             >
-              担当者
+              同意
             </v-card>
-            <v-card
-              class="koumokuData pb-1 pl-1 pt-0"
-              tile
-              width="165"
-              outlined
-            >
-              担当者名
+            <input
+              type="checkbox"
+              class="mr-1"
+              v-model="viewdataAll.doui_ymdD"
+              @change="douiCheck()"
+            />
+            <v-card class="koumokuData pl-1" width="125" outlined tile>
+              {{ getDouisya }}
             </v-card>
             <v-spacer></v-spacer>
-            <v-btn class="mr-1" height="20" @click="copyClicked()">
+            <v-btn
+              elevation="2"
+              class="mr-1"
+              height="19"
+              @click="copyClicked()"
+            >
               前回ｺﾋﾟｰ
             </v-btn>
-            <v-btn class="" height="20" v-on:click.stop="drawer = !drawer">
+            <v-btn
+              elevation="2"
+              class="mr-1"
+              height="19"
+              v-on:click.stop="drawer = !drawer"
+            >
               履歴参照
             </v-btn>
             <v-navigation-drawer
@@ -174,7 +153,8 @@
                     v-on:click.stop="drawer = !drawer"
                     class="mt-1"
                     color="secondary"
-                    ><v-icon dark small> mdi-close </v-icon></v-btn
+                  >
+                    <v-icon dark small> mdi-close </v-icon></v-btn
                   >
                 </v-card>
                 <template v-for="item in rirekiList">
@@ -200,67 +180,68 @@
               </v-list>
             </v-navigation-drawer>
           </v-row>
-          <v-row no-gutters class="mt-1">
-            <div style="width: 50%">
-              <v-card class="koumokuTitle_c titleGreen pa-1" outlined tile>
-                総合的な援助の方針
-              </v-card>
-              <v-textarea
-                class="inputarea ma-0 pa-0"
-                no-resize
-                v-model="viewdataAll.housin"
-                auto-grow
-                hide-details
-                readonly
-                solo
-                flat
-                dense
-                outlined
-                background-color="yellow lighten-5"
-              ></v-textarea>
-            </div>
-            <div style="width: 50%">
-              <v-card class="koumokuTitle_c titleBlue pa-1" outlined tile>
-                全体の状況
-              </v-card>
-              <v-textarea
-                class="inputarea ma-0 pa-0"
-                no-resize
-                v-model="viewdataAll.jyoukyou"
-                auto-grow
-                hide-details
-                solo
-                flat
-                dense
-                outlined
-              ></v-textarea>
-              <!-- <font-family: monospace> ⇐等幅フォント -->
-            </div>
-          </v-row>
+          <div class="scrollbody">
+            <v-row no-gutters>
+              <div style="width: 50%">
+                <v-card class="koumokuTitle_c titleGreen pa-1" outlined tile>
+                  総合的な援助の方針
+                </v-card>
+                <v-textarea
+                  class="inputarea ma-0 pa-0"
+                  no-resize
+                  v-model="viewdataAll.hoshin"
+                  auto-grow
+                  hide-details
+                  readonly
+                  solo
+                  flat
+                  dense
+                  outlined
+                  background-color="yellow lighten-5"
+                ></v-textarea>
+              </div>
+              <div style="width: 50%">
+                <v-card class="koumokuTitle_c titleBlue pa-1" outlined tile>
+                  全体の状況
+                </v-card>
+                <v-textarea
+                  class="inputarea ma-0 pa-0"
+                  no-resize
+                  v-model="viewdataAll.zentaijokyo"
+                  auto-grow
+                  hide-details
+                  solo
+                  flat
+                  dense
+                  outlined
+                ></v-textarea>
+              </div>
+            </v-row>
 
-          <v-row class="ma-0 mt-1" no-gutters>
-            <wj-flex-grid
-              id="monitoringHoukokushoicrnGrid"
-              :headersVisibility="'Column'"
-              :autoGenerateColumns="false"
-              :imeEnabled="true"
-              :allowAddNew="false"
-              :allowDelete="false"
-              :allowPinning="false"
-              :allowMerging="'AllHeaders'"
-              :allowResizing="true"
-              :allowSorting="false"
-              :allowDragging="false"
-              :selectionMode="'Row'"
-              :initialized="onInitializeIcrnGrid"
-              :showMarquee="true"
-              :formatItem="onFormatItem"
-              :itemsSourceChanging="onItemsSourceChanging"
-              :itemsSourceChanged="onItemsSourceChanged"
-              :itemsSource="viewdataAll.viewdata"
-            >
-            </wj-flex-grid>
-          </v-row>
+            <v-row class="ma-0 mt-1" no-gutters>
+              <wj-flex-grid
+                id="monitoringHoukokushoicrnGrid"
+                :headersVisibility="'Column'"
+                :autoGenerateColumns="false"
+                :imeEnabled="true"
+                :allowAddNew="false"
+                :allowDelete="false"
+                :allowPinning="false"
+                :allowMerging="'AllHeaders'"
+                :allowResizing="true"
+                :allowSorting="false"
+                :allowDragging="false"
+                :selectionMode="'Cell'"
+                :initialized="onInitializeIcrnGrid"
+                :showMarquee="true"
+                :formatItem="onFormatItem"
+                :itemsSourceChanging="onItemsSourceChanging"
+                :itemsSourceChanged="onItemsSourceChanged"
+                :itemsSource="viewdataAll.monidetail"
+              >
+              </wj-flex-grid>
+            </v-row>
+          </div>
           <v-row no-gutters class="rowStyle mt-1">
             <v-card
               class="koumokuTitle titleMain pa-1 mr-1"
@@ -291,20 +272,6 @@
                 </label>
               </div>
             </v-card>
-
-            <!-- <v-btn-toggle class="flex-wrap mr-1" v-model="kekkaIndex" mandatory>
-              <v-btn
-                v-for="n in kekkaList"
-                :key="n.val"
-                color="secondary"
-                dark
-                outlined
-                height="20"
-                @click="kekkaClicked(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle> -->
             <v-layout class="rowStyle" v-if="kekkaIndex == 3">
               <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
                 ｻｰﾋﾞｽ終了日
@@ -359,12 +326,17 @@
             />
             <v-card
               class="koumokuData pa-1 pr-1 mr-1"
-              width="100"
+              width="200"
               outlined
               tile
             >
             </v-card>
-            <v-btn :loading="loading" height="20" @click="searchClicked()">
+            <v-btn
+              elevation="2"
+              :loading="loading"
+              height="19"
+              @click="searchClicked()"
+            >
               登録
             </v-btn>
           </v-row>
@@ -476,7 +448,7 @@
           </v-card>
           <v-btn-toggle
             class="flex-wrap mr-1"
-            v-model="viewdataAll.douiKbnIndex"
+            v-model="viewdataAll.syomeikbn"
             mandatory
           >
             <v-btn
@@ -505,7 +477,7 @@
           <input
             class="pl-1"
             type="text"
-            v-model="viewdataAll.douiSyomei"
+            v-model="viewdataAll.syomei"
             style="width: 200px; border: 1px solid lightgray"
           />
         </v-row>
@@ -547,11 +519,16 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import UserList from '../components/UserList.vue';
+// import UserList from '../components/UserList.vue';
 import { getConnect } from '@connect/getConnect';
 
 export default {
-  components: { UserList },
+  props: {
+    selectedUserObj: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       jyoukyouwidth: 500,
@@ -563,74 +540,74 @@ export default {
           dataname: 'jissi',
           title: '実施',
           kbntitle: '',
-          width: '2*',
+          width: 25,
           align: 'center',
         },
         {
-          dataname: 'mokuhyo',
+          dataname: 'shienmokuhyo',
           title: '支援目標',
           kbntitle: '',
-          width: '10*',
+          width: '8*',
           align: 'left',
         },
         {
-          dataname: 'jiki',
+          dataname: 'tasseijiki',
           title: '達成時期',
           kbntitle: '',
           width: '5*',
           align: 'left',
         },
         {
-          dataname: 'jyoukyou',
+          dataname: 'servicejokyo',
           title: 'サービス提供状況\n(事業所からの聞取り)',
           kbntitle: '',
-          width: '12*',
+          width: '10*',
           align: 'left',
         },
         {
-          dataname: 'manzokudo',
+          dataname: 'honninkanso',
           title: '本人の感想・満足度',
           kbntitle: '',
           width: '10*',
           align: 'left',
         },
         {
-          dataname: 'tasseikan',
+          dataname: 'shientassei',
           title: '支援目標の達成感\n(ニーズの充足度)',
           kbntitle: '',
           width: '10*',
           align: 'left',
         },
         {
-          dataname: 'kaiketuhouhou',
+          dataname: 'kongokadai',
           title: '今後の課題\n・解決方法',
           kbntitle: '',
           width: '10*',
           align: 'left',
         },
         {
-          dataname: 'kinddisp',
+          // dataname: 'h_syu',
           kbntitle: '計画変更の必要性',
           title: '種類',
           width: '4.5*',
           align: 'center',
         },
         {
-          dataname: 'ryoudisp',
+          // dataname: 'h_ryo',
           kbntitle: '計画変更の必要性',
           title: '量',
           width: '4.5*',
           align: 'center',
         },
         {
-          dataname: 'syukandisp',
+          // dataname: 'h_week',
           kbntitle: '計画変更の必要性',
           title: '週間',
           width: '4.5*',
           align: 'center',
         },
         {
-          dataname: 'other',
+          dataname: 'sonotaryui',
           title: 'その他の留意事項',
           kbntitle: '',
           width: '10*',
@@ -695,11 +672,19 @@ export default {
           tantou: '担当三',
         },
       ],
+      userdrawer: true,
       drawer: false,
       mainGrid: {},
     };
   },
-  mounted() {},
+  mounted() {
+    this.setUserdata(this.selectedUserObj);
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+  },
   computed: {
     getDouisya() {
       return wjCore.escapeHtml(this.viewdataAll.syomei);
@@ -712,26 +697,58 @@ export default {
     },
   },
   methods: {
+    calculateWindowHeight() {
+      if (
+        document.getElementsByClassName('scrollbody') != null &&
+        document.getElementsByClassName('scrollbody')[0] != null
+      ) {
+        document.getElementsByClassName('scrollbody')[0].style.height =
+          window.innerHeight - 160 + 'px';
+      }
+    },
     /*******************************
      * ユーザー一覧コンポーネントの開閉ボタンを押下
      */
-    changeLeftArea() {
-      let doc = document.getElementsByClassName('rightArea')[0];
+    // changeLeftArea() {
+    //   let doc = document.getElementsByClassName('rightArea')[0];
+    //   let font = '';
+    //   if (this.moveLeft == true) {
+    //     this.moveLeft = false;
+    //     doc.style.minWidth = '700px';
+    //     doc.style.width = '700px';
+    //     this.leftWidth = '275px';
+    //     font = '14px';
+    //   } else {
+    //     this.moveLeft = true;
+    //     doc.style.minWidth = '95%';
+    //     doc.style.width = '95%';
+    //     this.leftWidth = '10px';
+    //     font = '17.5px';
+    //   }
+    //   let inputarea = document.getElementsByClassName('inputarea');
+    //   for (let i = 0; i < inputarea.length; i++) {
+    //     inputarea[i].style.fontSize = font;
+    //   }
+    //   this.mainGrid.refresh();
+    //   this.mainGrid.autoSizeRows();
+    // },
+    userdrawerCliked() {
+      this.userdrawer = !this.userdrawer;
+      let doc = document.getElementById('monitoringHoukokusho');
       let font = '';
-      if (this.moveLeft == true) {
-        this.moveLeft = false;
-        doc.style.minWidth = '700px';
-        doc.style.width = '700px';
-        this.leftWidth = '280px';
+      if (this.userdrawer) {
+        doc.style.minWidth = '1040px';
+        doc.style.maxWidth = '1040px';
+        doc.style.width = '1040px';
         font = '14px';
       } else {
-        this.moveLeft = true;
-        doc.style.minWidth = '95%';
-        doc.style.width = '95%';
-        this.leftWidth = '10px';
-        font = '17.5px';
+        doc.style.minWidth = '1320px';
+        doc.style.maxWidth = '1320px';
+        doc.style.width = '1320px';
+        font = '18px';
       }
-      let inputarea = document.getElementsByClassName('inputarea');
+      this.$emit('userDispChange', this.userdrawer);
+      let inputarea = document.getElementsByTagName('textarea');
       for (let i = 0; i < inputarea.length; i++) {
         inputarea[i].style.fontSize = font;
       }
@@ -758,22 +775,26 @@ export default {
           }
           if (tmpitem.jissi && e.target.tagName == 'BUTTON') {
             if (ht.col == 7) {
-              tmpitem.kind = e.target.value;
+              tmpitem.h_syu = e.target.value;
             }
             if (ht.col == 8) {
-              tmpitem.ryou = e.target.value;
+              tmpitem.h_ryo = e.target.value;
             }
             if (ht.col == 9) {
-              tmpitem.syukan = e.target.value;
+              tmpitem.h_week = e.target.value;
             }
             flexGrid.refreshRange(
               new wjGrid.CellRange(ht.row, ht.col, ht.row, ht.col)
             );
           }
         }
+        // 完全編集モードへ移行
+        flexGrid.startEditing(true);
+        flexGrid.imeEnabled = true;
       });
 
       flexGrid.beginningEdit.addHandler((s, e) => {
+        // 編集不可列の設定
         if (e.col == 1 || e.col == 2) {
           e.cancel = true;
           return;
@@ -788,6 +809,12 @@ export default {
         flexGrid.beginUpdate();
         flexGrid.autoSizeRows();
         flexGrid.endUpdate();
+      });
+      flexGrid.pasting.addHandler((s, e) => {
+        // 編集モード時以外のペーストを禁止する
+        // selectionmodeがcell以外の場合に、選択範囲全てにペーストしてしまうから。
+        e.cancel = true;
+        return;
       });
 
       // ヘッダの追加と設定
@@ -851,10 +878,10 @@ export default {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
         }
       } else if (e.panel == flexGrid.cells) {
-        if (this.moveLeft == true) {
-          e.cell.style.fontSize = '15.5px';
-        } else {
+        if (this.userdrawer) {
           e.cell.style.fontSize = '12px';
+        } else {
+          e.cell.style.fontSize = '15.5px';
         }
         e.cell.style.backgroundColor = '';
         if (e.col == 0) {
@@ -866,14 +893,14 @@ export default {
           if (7 <= e.col && e.col <= 9) {
             let chkval = 0;
             if (e.col == 7) {
-              chkval = tmpitem.kind;
+              chkval = tmpitem.h_syu;
             } else if (e.col == 8) {
-              chkval = tmpitem.ryou;
+              chkval = tmpitem.h_ryo;
             } else if (e.col == 9) {
-              chkval = tmpitem.syukan;
+              chkval = tmpitem.h_week;
             }
 
-            if (chkval == 0) {
+            if (chkval == 2) {
               e.cell.innerHTML =
                 "<button class='grdbtn' value='0' style='border-color:red'>無</button><button class='grdbtn' value='1'>有</button>";
             } else {
@@ -893,97 +920,68 @@ export default {
       }
       e.cell.style.borderRight = '';
       if (e.col == 2) {
-        e.cell.style.borderRight = '1px solid';
+        e.cell.style.borderRight =
+          '1px solid ' + sysConst.COLOR.gridBorderColor;
       }
     },
     searchClicked() {
       // 初期データ読込
       this.setViewData();
     },
+    setDataFromYoteiList(item, ymItem) {
+      this.userData.riid = item.intcode;
+      this.userData.riyocode = item.rcodeD;
+      this.userData.names = item.rname;
+      console.log(ymItem);
+      this.setViewData();
+    },
     setViewData() {
       this.screenFlag = true;
       this.loading = true;
       let params = {
-        uniqid: 1,
+        uniqid: 3,
         traceid: 123,
         keitype: 1,
-        jigyoid: 43,
+        jigyoid: 62,
         intcode: this.userData.riid,
+        cntid: 1,
       };
       // cntid: 1,
       console.log(params);
       getConnect('/moni', params).then((result) => {
         console.log(12345);
         console.log(result);
-        if (result.length > 0) {
-          this.viewdataAll = result[0];
+        this.createViewData(result);
+        this.screenFlag = false;
+        this.loading = false;
+      });
+    },
+    createViewData(apiresult) {
+      if (apiresult.length > 0) {
+        this.viewdataAll = apiresult[0];
+        if (apiresult[0].doui_ymd != undefined) {
           this.pickerDoui =
+            this.viewdataAll.doui_ymd.slice(0, 4) +
+            '-' +
+            this.viewdataAll.doui_ymd.slice(4, 6) +
+            '-' +
+            this.viewdataAll.doui_ymd.substring(6, 8);
+          this.douiYmd = dayjs(this.pickerDoui);
+        }
+        if (apiresult[0].mymd != undefined) {
+          this.picker =
             this.viewdataAll.mymd.slice(0, 4) +
             '-' +
             this.viewdataAll.mymd.slice(4, 6) +
             '-' +
             this.viewdataAll.mymd.substring(6, 8);
-          this.douiYmd = dayjs(this.pickerDoui);
-        } else {
-          this.viewdataAll = {};
+          this.kikanYmd = dayjs(this.picker);
         }
-        this.screenFlag = false;
-        this.loading = false;
-        this.createdemodata();
-      });
-    },
-    createdemodata() {
-      let result = {};
-      result.mymdD = '2022年12月12日';
-      result.doui = false;
-      result.douiName = '';
-      result.douiKbnIndex = 1;
-      result.douiSyomei = '';
-      result.housin =
-        '本人の希望する生活の実現と安心した地<br>域での生活を構築する';
-      result.jyoukyou =
-        '公的なサービス導入により生活が安定。一人で買い物に行くようになるなどの生活意欲が向上してきている。事務所や近隣住民、商店などとの関係も良好で、買い物に行くと転院がお財布から必要な金額を取りレシートを入れてくれるようになり、銀行でも本人が行くと職員が来てくれるようになったので、一人での外出が増えている';
-
-      result.kanryou = false;
-      result.viewdata = [];
-      for (let i = 0; i < 5; i++) {
-        result.viewdata.push({
-          jissi: true,
-          mokuhyo: '',
-          jiki: '6か月',
-          jyoukyou: 'たち<br>つてと',
-          manzokudo: 'なにぬねの',
-          tasseikan: 'はひふへほ',
-          kaiketuhouhou: 'まみむめも',
-          kind: i % 2,
-          kind1: '有',
-          kind2: '無',
-          ryou: i % 2,
-          ryou1: '有',
-          ryou2: '無',
-          syukan: i % 2,
-          syukan1: '有',
-          syukan2: '無',
-          other: 'らりるれろ',
-        });
-        if (i == 0) {
-          result.viewdata[i].mokuhyo =
-            '体制を整えることで、緊急事態に対応できるようにする';
-          result.viewdata[i].jyoukyou =
-            '月に1～2回は電話があるが、電話で話せば落ち着くことが多い。実際に訪問するのは月1回あるかどうか。';
-        }
-        if (i == 1) {
-          result.viewdata[i].mokuhyo =
-            '食事や入浴を安心してきちんと行えるようになる';
-        }
-        if (i == 2) {
-          result.viewdata[i].mokuhyo =
-            '地域のルールに従ったゴミの出し方を覚える';
-        }
+      } else {
+        this.viewdataAll = {};
       }
-
-      this.viewdataAll = result;
     },
+
     getYmd() {
       if (!this.kikanYmd) {
         this.kikanYmd = dayjs();
@@ -1041,6 +1039,7 @@ export default {
           '-' +
           this.douiYmd.format('DD');
       }
+
       return (
         this.douiYmd.format('YYYY') +
         '年' +
@@ -1113,6 +1112,15 @@ export default {
 
       this.setViewData();
     },
+    setUserdata(item) {
+      console.log(item);
+      if (item != null && item.riid != undefined) {
+        // ユーザ選択処理はここで行う
+        this.userData = item;
+
+        this.setViewData();
+      }
+    },
     getSelectUserChildComponent(data) {
       this.userList = data;
     },
@@ -1149,9 +1157,10 @@ div#monitoringHoukokusho {
   font-size: 14px;
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1330px !important;
-  max-width: 1330px;
+  min-width: 1040px !important;
+  max-width: 1040px;
   height: 100%;
+  width: 98vw;
   // width: auto;
   .rightArea {
     min-width: 700px;
@@ -1186,16 +1195,26 @@ div#monitoringHoukokusho {
     height: 20px;
     text-align: center;
   }
+  .scrollbody {
+    padding: 3px;
+    border: 1px solid;
+    border-color: $light-gray;
+    min-height: 400px;
+    height: 500px;
+    overflow-y: scroll;
+  }
 
   #monitoringHoukokushoicrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     // width: auto;
     // min-width: 1250px;
-    height: 55vh;
-    // min-height: 300px;
+    // height: 52vh;
     background: $grid_background;
-    border: 1px solid gray;
+    border: 1px solid $grid_Border_Color;
+    // &.wj-flexgrid [wj-part='root'] {
+    //   overflow-y: scroll !important;
+    // }
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1205,6 +1224,7 @@ div#monitoringHoukokusho {
       text-align: center;
       font-weight: normal;
       line-height: 110%;
+      padding: 4px;
     }
     // .wj-cell {
     //   padding: 2px;
@@ -1212,9 +1232,18 @@ div#monitoringHoukokusho {
     .wj-cell:not(.wj-header) {
       background: $grid_background;
     }
+    .wj-state-active {
+      background: white;
+      color: $font_color;
+    }
+    .wj-grid-editor {
+      background: white;
+      color: $font_color;
+    }
+
     .wj-cells
       .wj-row:hover
-      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active):not(.wj-grid-editor) {
       transition: all 0s;
       background: $grid_hover_background;
     }
@@ -1240,7 +1269,7 @@ div#monitoringHoukokusho {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -1251,7 +1280,7 @@ div#monitoringHoukokusho {
     border-radius: 50%;
     border-color: transparent;
     width: 20px;
-    color: $black !important;
+    color: $font_color !important;
     font-size: $cell_fontsize !important;
     &:hover {
       background-color: $light-gray;
@@ -1288,24 +1317,6 @@ div#monitoringHoukokusho {
   left: 500px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #monitoringHoukokushoDatepickerKanryouYm,
 #monitoringHoukokushoDatepickerKanryouYmd {
@@ -1316,23 +1327,6 @@ div#monitoringHoukokusho {
   left: 830px;
   width: 300px;
   max-width: 300px;
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #monitoringHoukokushoDatepickerDoui {
   position: absolute;
@@ -1342,23 +1336,5 @@ div#monitoringHoukokusho {
   left: 600px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 </style>

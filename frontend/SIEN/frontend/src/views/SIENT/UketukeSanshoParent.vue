@@ -2,7 +2,7 @@
   <div id="UketukeSansho">
     <div class="commonTab">
       <v-container no-gutters fluid class="pa-0">
-        <v-tabs height="20" hide-slider v-model="tab">
+        <v-tabs hide-slider v-model="tab">
           <v-tab
             v-for="item in menuItem"
             :key="item.val"
@@ -16,13 +16,13 @@
       <v-container no-gutters fluid class="pa-0">
         <v-tabs-items v-model="tab">
           <v-tab-item value="Sansyo" transition="none">
-            <UketukeIcrn></UketukeIcrn>
+            <UketukeIcrn ref="uketukeIcrn"></UketukeIcrn>
           </v-tab-item>
           <v-tab-item value="SoudanCount" transition="none">
-            <SoudanCount></SoudanCount>
+            <SoudanCount ref="soudanCount"></SoudanCount>
           </v-tab-item>
           <v-tab-item value="SoudanCountUtiwake" transition="none">
-            <SoudanCountUtiwake></SoudanCountUtiwake>
+            <SoudanCountUtiwake ref="soudanCountUtiwake"></SoudanCountUtiwake>
           </v-tab-item>
           <v-tab-item value="RiyouCheck" transition="none">
             Tab 5 Content
@@ -58,6 +58,9 @@ export default {
       ],
     };
   },
+  beforeDestroy() {
+    this.$router.app.$off('print_event_global');
+  },
   watch: {
     selectedData() {
       // 子供に受け渡すだけ
@@ -65,7 +68,21 @@ export default {
   },
   methods: {
     tabsChange(hrefval) {
+      this.$router.app.$off('print_event_global');
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
+      if (hrefval == this.menuItem[0].hrefval) {
+        if (this.$refs.uketukeIcrn != null) {
+          this.$refs.uketukeIcrn.setPrintEvent();
+        }
+      } else if (hrefval == this.menuItem[1].hrefval) {
+        if (this.$refs.soudanCount != null) {
+          this.$refs.soudanCount.setPrintEvent();
+        }
+      } else if (hrefval == this.menuItem[2].hrefval) {
+        if (this.$refs.soudanCountUtiwake != null) {
+          this.$refs.soudanCountUtiwake.setPrintEvent();
+        }
+      }
     },
   },
 };

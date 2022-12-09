@@ -1,6 +1,6 @@
 <template>
   <div id="monitoringYotei">
-    <v-container class="pa-1" fluid>
+    <v-container class="pa-0" fluid>
       <v-row no-gutters class="rowStyle">
         <v-card class="koumokuTitle titleMain pa-1" outlined tile>
           表示月
@@ -48,11 +48,11 @@
         </v-card>
         <v-btn
           class="ml-1"
-          height="100%"
+          height="19"
           :loading="loading"
           @click="searchClicked()"
         >
-          <v-icon small>mdi-magnify</v-icon>
+          <v-icon dense>mdi-magnify</v-icon>
           検索
         </v-btn>
 
@@ -60,12 +60,13 @@
         <v-tooltip
           bottom
           dark
-          color="secondary"
+          color="blue-grey lighten-5"
           min-width="150"
           style="z-index: 10"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-card
+              elevation="2"
               v-bind="attrs"
               v-on="on"
               class="koumokuTitle titleGreen pa-1 ml-1"
@@ -76,10 +77,15 @@
               記号説明
             </v-card>
           </template>
-          <v-layout wrap v-for="hanrei in hanreiList" :key="hanrei.val">
+          <v-layout
+            wrap
+            v-for="hanrei in hanreiList"
+            :key="hanrei.val"
+            style="color: #333"
+          >
             {{ hanrei.name }}
           </v-layout>
-          <v-layout>
+          <v-layout style="color: #333">
             <span style="background: pink">&emsp;</span>
             ：未実施
           </v-layout>
@@ -190,10 +196,10 @@
         <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
         </alphabet-button>
         <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-          <span class="under18 mr-1" style="width: 80px">18歳未満</span>
+          <span class="under18 border mr-1" style="width: 80px">18歳未満</span>
         </v-card>
-        <v-btn class="ml-1" width="25" height="100%" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
+        <v-btn class="ml-1" width="25" height="19" @click="filterClrclick()">
+          <v-icon dense>mdi-filter-off</v-icon>
           解除
         </v-btn>
         <v-spacer></v-spacer>
@@ -201,13 +207,16 @@
           予定入力
         </v-card>
 
-        <v-btn-toggle class="flex-wrap" color="primary">
+        <v-btn-toggle
+          class="flex-wrap"
+          v-model="inputIndex"
+          color="light-blue darken-4"
+        >
           <v-btn
             v-for="n in inputList"
             :key="n.val"
+            :value="n.val"
             elevation="1"
-            color="secondary"
-            dark
             outlined
             height="20"
           >
@@ -215,7 +224,7 @@
           </v-btn>
         </v-btn-toggle>
       </v-row>
-      <v-row class="ma-0 mt-1 mr-1" no-gutters style="width: 100%">
+      <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
           id="monitoringYoteiGrid"
           :headersVisibility="'Column'"
@@ -259,6 +268,104 @@
       >
       </v-date-picker>
     </v-dialog>
+    <v-dialog v-model="enkiInputflg" persistent width="350">
+      <v-card class="common_dialog">
+        <v-card-title class="dialog_title"> 延期・中止登録 </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="enkiInputflg = false"
+          class="dialog_close mt-1"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <div class="pa-1">
+          <v-row no-gutters class="rowStyle_Input mb-1">
+            <v-card
+              class="koumokuTitle titleBlueDark pa-1 mr-1"
+              outlined
+              tile
+              width="100"
+            >
+              利用者名
+            </v-card>
+            <v-card class="koumokuData h25Padding" tile outlined width="200">
+              {{ enkiObject.name }}
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="rowStyle_Input mb-1">
+            <v-card
+              class="koumokuTitle titleBlue pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
+              予定月
+            </v-card>
+            <v-card
+              class="koumokuData alignCenter h25Padding"
+              tile
+              outlined
+              width="100"
+            >
+              {{ enkiObject.yoteiym }}
+            </v-card>
+          </v-row>
+          <v-row no-gutters class="rowStyle_Input mb-1">
+            <v-card
+              class="koumokuTitle titleBlue pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
+              区分
+            </v-card>
+            <v-btn-toggle
+              class="flex-wrap mr-1"
+              v-model="enkiObject.kbn"
+              mandatory
+            >
+              <v-btn
+                v-for="n in enkiList"
+                :key="n.val"
+                color="secondary"
+                dark
+                outlined
+                width="25"
+                height="25"
+              >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
+          </v-row>
+          <v-row no-gutters class="rowStyle_Input mb-1">
+            <v-card
+              class="koumokuTitle titleBlue pa-1 mr-1"
+              width="100"
+              outlined
+              tile
+            >
+              理由
+            </v-card>
+            <input
+              class="pl-1"
+              type="text"
+              style="width: 200px; border: 1px solid lightgray"
+              v-model="enkiObject.riyu"
+            />
+          </v-row>
+          <v-row no-gutters class="rowStyle_Input">
+            <v-btn class="mr-1" height="25" @click="copyClicked()">
+              削除
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn class="mr-1" height="25" @click="copyClicked()">
+              登録
+            </v-btn>
+          </v-row>
+        </div>
+      </v-card>
+    </v-dialog>
     <v-overlay class="text-center" id="load_dialog" v-show="screenFlag">
       <v-progress-circular
         v-show="screenFlag"
@@ -291,23 +398,23 @@ export default {
           dataname: 'rcodeD',
           title: 'コード',
           kbntitle: '',
-          width: '3*',
-          minwidth: 50,
+          width: 70,
+          minwidth: 40,
           align: 'center',
         },
         {
           dataname: 'rname',
           title: '利用者名',
           kbntitle: '',
-          width: '5*',
-          minwidth: 150,
+          width: '2.5*',
+          minwidth: 100,
           align: 'left',
         },
         {
           dataname: 'age',
           title: '年齢',
           kbntitle: '',
-          width: '2*',
+          width: 40,
           minwidth: 20,
           align: 'right',
         },
@@ -315,7 +422,7 @@ export default {
           dataname: 'birthMonth',
           title: '誕生\n月',
           kbntitle: '',
-          width: '2*',
+          width: 40,
           minwidth: 20,
           align: 'right',
         },
@@ -323,15 +430,15 @@ export default {
           dataname: 'shichoName',
           title: '市区\n町村',
           kbntitle: '',
-          width: '2*',
-          minwidth: 80,
+          width: '1.2*',
+          minwidth: 70,
           align: 'left',
         },
         {
           dataname: 'keikakuYmdFmt',
           title: '作成日',
           kbntitle: 'サービス等利用計画作成',
-          width: '2*',
+          width: '1.5*',
           minwidth: 80,
           align: 'center',
         },
@@ -339,7 +446,7 @@ export default {
           dataname: 'yoshikiName',
           title: '様式',
           kbntitle: 'サービス等利用計画作成',
-          width: '2*',
+          width: 40,
           minwidth: 20,
           align: 'center',
         },
@@ -347,15 +454,15 @@ export default {
           dataname: 'keikakuSinm',
           title: '担当者',
           kbntitle: 'サービス等利用計画作成',
-          width: '2*',
-          minwidth: 100,
+          width: 70,
+          minwidth: 70,
           align: 'left',
         },
         {
           dataname: 'rksymdFmt',
           title: '開始日',
           kbntitle: 'モニタリング期間',
-          width: '2*',
+          width: '1.5*',
           minwidth: 80,
           align: 'center',
         },
@@ -363,7 +470,7 @@ export default {
           dataname: 'rkeymdFmt',
           title: '終了日',
           kbntitle: 'モニタリング期間',
-          width: '2*',
+          width: '1.5*',
           minwidth: 80,
           align: 'center',
         },
@@ -371,8 +478,8 @@ export default {
           dataname: 'moniKikan',
           title: '期間',
           kbntitle: 'モニタリング期間',
-          width: '1.5*',
-          minwidth: 50,
+          width: 50,
+          minwidth: 40,
           align: 'right',
         },
         {
@@ -428,7 +535,7 @@ export default {
           title: '7',
           kbntitle: '1年月',
           width: 40,
-          minwidth: 40,
+          minwidth: 45,
           align: 'center',
         },
         {
@@ -471,62 +578,62 @@ export default {
           minwidth: 40,
           align: 'center',
         },
-        {
-          dataname: 'ym13',
-          title: '13',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym14',
-          title: '14',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym15',
-          title: '15',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym16',
-          title: '16',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym17',
-          title: '17',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym18',
-          title: '18',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
-        {
-          dataname: 'ym19',
-          title: '19',
-          kbntitle: '2年月',
-          width: 40,
-          minwidth: 40,
-          align: 'center',
-        },
+        // {
+        //   dataname: 'ym13',
+        //   title: '13',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym14',
+        //   title: '14',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym15',
+        //   title: '15',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym16',
+        //   title: '16',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym17',
+        //   title: '17',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym18',
+        //   title: '18',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
+        // {
+        //   dataname: 'ym19',
+        //   title: '19',
+        //   kbntitle: '2年月',
+        //   width: 40,
+        //   minwidth: 40,
+        //   align: 'center',
+        // },
       ],
       viewdatakeikakuAll: [],
       viewdatakeikaku: [],
@@ -572,7 +679,7 @@ export default {
         { val: 3, name: '延期者' },
         { val: 4, name: '中止者' },
       ],
-      inputIndex: [],
+      inputIndex: 0,
       inputList: [
         { val: 1, name: '中止・延期' },
         { val: 2, name: '予定外追加' },
@@ -595,17 +702,26 @@ export default {
         { val: 9, name: '変：サービス終了' },
         { val: 10, name: '―：予定なし' },
       ],
+      enkiList: [
+        { val: 1, name: '延期' },
+        { val: 2, name: '中止' },
+      ],
+      enkiInputflg: false,
+      enkiObject: { intcode: 0, name: '', yoteiym: '', kbn: 0, riyu: '' },
     };
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
   },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+  },
   methods: {
     calculateWindowHeight() {
       if (document.getElementById(GRID_ID.Keikaku) != null) {
         document.getElementById(GRID_ID.Keikaku).style.height =
-          window.innerHeight - 160 + 'px';
+          window.innerHeight - 180 + 'px';
       }
     },
     initComboFilters(combo) {
@@ -630,6 +746,45 @@ export default {
         this.filterkeikakuIcrn.showFilterIcons = false;
       });
 
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          if (ht.col >= 11) {
+            let targetItem = tmpitem.moniYoteiList.find(
+              (e) => e.ym === this.dispYmList[ht.col - 11]
+            );
+            console.log(targetItem);
+            if (this.inputIndex == 0) {
+              if (
+                confirm(
+                  'モニタリング報告書入力画面へ移動します。よろしいですか？'
+                )
+              ) {
+                this.$emit('moni-select', tmpitem, targetItem);
+                return;
+              }
+            } else if (this.inputIndex == 1) {
+              if (
+                (targetItem.yoteiKbn == 1 || targetItem.yoteiKbn == 4) &&
+                targetItem.jissekiKbn == 0
+              ) {
+                this.enkiObject.intcode = tmpitem.intcode;
+                this.enkiObject.name = tmpitem.rname;
+                this.enkiObject.yoteiym =
+                  targetItem.ym.slice(0, 4) +
+                  '年' +
+                  targetItem.ym.slice(4, 6) +
+                  '月';
+                this.enkiObject.kbn = 0;
+                this.enkiObject.riyu = '';
+                this.enkiInputflg = true;
+              }
+            }
+          }
+        }
+      });
+
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -642,7 +797,7 @@ export default {
       flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.alternatingRowStep = 0;
-      flexGrid.frozenColumns = 11;
+      // flexGrid.frozenColumns = 11;
       // ヘッダ文字列の設定
       for (
         let colIndex = 0;
@@ -699,13 +854,20 @@ export default {
     setKeikakuYm(flexGrid) {
       if (flexGrid.columnHeaders.columns.length > 0) {
         if (this.kikanYm) {
+          // let tmpmom = new dayjs(
+          //   this.kikanYm.format('YYYY') +
+          //     '-' +
+          //     this.kikanYm.format('MM') +
+          //     '-' +
+          //     this.kikanYm.format('DD')
+          // ).subtract(1, 'years');
           let tmpmom = new dayjs(
             this.kikanYm.format('YYYY') +
               '-' +
               this.kikanYm.format('MM') +
               '-' +
               this.kikanYm.format('DD')
-          ).subtract(1, 'years');
+          ).subtract(5, 'month');
           if (
             this.dispYmList.length > 0 &&
             this.dispYmList[0] == tmpmom.format('YYYY') + tmpmom.format('MM')
@@ -732,6 +894,7 @@ export default {
               tmpmom.format('M月')
             );
             tmpmom = tmpmom.add(1, 'months');
+
             index++;
           }
         }
@@ -818,18 +981,21 @@ export default {
           (e.row == 0 && e.col == 8) ||
           (e.row == 0 && e.col == 8) ||
           (e.row >= 1 && e.col == 10) ||
-          (e.row == 0 && e.col >= 11)
+          (e.row == 0 && e.col == 11)
         ) {
-          e.cell.style.borderRight = '1px solid';
+          e.cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.gridBorderColor;
         }
         if ((e.row == 0 && e.col == 8) || (e.row == 1 && e.col == 10)) {
-          e.cell.style.borderRight = '3px double black ';
+          e.cell.style.borderRight =
+            '3px double ' + sysConst.COLOR.gridBorderColor;
         }
         // 12月の次の右線を太くする
         if (e.col > 11 && e.row >= 1) {
           let tmpym = this.dispYmList[e.col - 11];
           if (Number(tmpym.slice(4, 6)) == 12) {
-            e.cell.style.borderRight = '1px solid';
+            e.cell.style.borderRight =
+              '1px solid ' + sysConst.COLOR.gridBorderColor;
           }
           if (e.panel == flexGrid.cells) {
             let tmpitem = e.panel.rows[e.row].dataItem;
@@ -845,9 +1011,12 @@ export default {
           let tmpym = this.dispYmList[e.col - 11];
           if (tmpym == this.kikanYm.format('YYYYMM')) {
             if (e.row == 1) {
-              e.cell.style.borderRight = '1px solid blue';
-              e.cell.style.borderLeft = '1px solid blue';
-              e.cell.style.borderTop = '1px solid blue';
+              e.cell.style.borderRight =
+                '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+              e.cell.style.borderLeft =
+                '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+              e.cell.style.borderTop =
+                '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
             }
           }
         }
@@ -855,7 +1024,7 @@ export default {
       if (e.panel == flexGrid.cells) {
         let tmpitem = e.panel.rows[e.row].dataItem;
 
-        if (tmpitem.agebk < 18) {
+        if (Number(tmpitem.age) < 18) {
           if (e.col == 1 && tmpitem.isfirst) {
             wjCore.addClass(e.cell, 'under18');
           }
@@ -883,21 +1052,39 @@ export default {
             e.cell.style.borderRight = '';
             e.cell.style.borderBottom = 0;
           } else {
-            e.cell.style.borderTop = '1px solid';
+            e.cell.style.borderTop =
+              '1px solid ' + sysConst.COLOR.gridBorderColor;
           }
         }
         let tmpym = this.dispYmList[e.col - 11];
         if (tmpym == this.kikanYm.format('YYYYMM')) {
-          e.cell.style.borderRight = '1px solid blue';
-          e.cell.style.borderLeft = '1px solid blue';
+          e.cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          e.cell.style.borderLeft =
+            '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+        }
+        // サービス期間外はグレー背景とする
+        if (e.col >= 11) {
+          if (
+            !(
+              Number(tmpitem.rksymd.substring(0, 6)) <= Number(tmpym) &&
+              Number(tmpym) <= Number(tmpitem.rkeymd.substring(0, 6))
+            )
+          ) {
+            e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
+          }
         }
       } else if (e.panel == flexGrid.columnFooters) {
-        e.cell.style.borderTop = ' double 4px black';
+        e.cell.style.borderTop =
+          ' double 4px ' + sysConst.COLOR.gridBorderColor;
         let tmpym = this.dispYmList[e.col - 11];
         if (tmpym == this.kikanYm.format('YYYYMM')) {
-          e.cell.style.borderRight = '1px solid blue';
-          e.cell.style.borderLeft = '1px solid blue';
-          e.cell.style.borderBottom = '1px solid blue';
+          e.cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          e.cell.style.borderLeft =
+            '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          e.cell.style.borderBottom =
+            '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
         }
         if (e.col <= 10) {
           e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
@@ -905,20 +1092,24 @@ export default {
           e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
         }
         if (e.col == 0) {
-          e.cell.style.borderRight = '1px solid';
+          e.cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.gridBorderColor;
         }
       }
       if (e.panel != flexGrid.columnHeaders) {
         if (e.col == 4 || e.col == 7) {
-          e.cell.style.borderRight = '1px solid black ';
+          e.cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.gridBorderColor;
         }
         if (e.col == 10 || (e.panel == flexGrid.columnFooters && e.col == 0)) {
-          e.cell.style.borderRight = '3px double black ';
+          e.cell.style.borderRight =
+            '3px double ' + sysConst.COLOR.gridBorderColor;
         }
         if (e.col > 10) {
           let tmpym = this.dispYmList[e.col - 11];
           if (Number(tmpym.slice(4, 6)) == 12) {
-            e.cell.style.borderRight = '1px solid';
+            e.cell.style.borderRight =
+              '1px solid ' + sysConst.COLOR.gridBorderColor;
           }
         }
       }
@@ -929,24 +1120,18 @@ export default {
     searchClicked() {
       // 初期データ読込
       this.setViewData(true);
-      let rc = this.mainFlexGrid.columnHeaders.getCellBoundingRect(
-        0,
-        this.mainFlexGrid.columns.length - 1,
-        true
-      );
-      this.mainFlexGrid.scrollPosition = new wjCore.Point(-rc.right, 0);
     },
     setViewData(isAll) {
       this.screenFlag = true;
       this.loading = true;
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pDspYm: this.kikanYm.format('YYYYMM'),
-          pSym: this.kikanYm.format('YYYYMM'),
-          pEym: this.kikanYm.format('YYYYMM'),
+          pSym: this.dispYmList[0],
+          pEym: this.dispYmList[this.dispYmList.length - 1],
         };
         getConnect('/moniYoteiView', params).then((result) => {
           console.log(11111);
@@ -964,12 +1149,14 @@ export default {
         let obj1 = Vue.util.extend({}, el);
         obj1.rcode = String(el.rcode);
         obj1.rcodeD = obj1.rcode.padStart(7, '0');
-        obj1.birthMonth = el.birth.substring(4, 6);
+        obj1.birthMonth = Number(el.birth.substring(4, 6));
         obj1.mymdFmt = this.getFmtDate(el.mymd);
         obj1.rksymdFmt = this.getFmtDate(el.rksymd);
         obj1.rkeymdFmt = this.getFmtDate(el.rkeymd);
         obj1.keikakuYmdFmt = this.getFmtDate(el.keikakuYmd);
+        obj1.isfirst = true;
         let obj2 = Vue.util.extend({}, obj1);
+        obj2.isfirst = false;
 
         let index = 1;
         this.dispYmList.forEach((el) => {
@@ -1005,10 +1192,13 @@ export default {
     siborikomiClicked() {
       this.userFilter();
     },
-    inputClicked() {
-      if (this.inputIndex.length > 1) {
-        this.inputIndex.shift();
-      }
+    inputClicked(kbn) {
+      this.inputIndex = kbn;
+      // // チェックボックス一個のみの処理
+      // if (this.inputIndex.length > 1) {
+      //   this.inputIndex.shift();
+      //   console.log(this.inputIndex);
+      // }
     },
     taisyousyaClicked() {
       this.selTantousya = this.tantousyaList[this.selTantousya].val;
@@ -1116,8 +1306,7 @@ div#monitoringYotei {
   // width: 1366px !important;
   min-width: 1266px !important;
   max-width: 1920px;
-  width: auto;
-
+  width: 100%;
   #load_dialog {
     position: fixed;
     top: 0;
@@ -1141,7 +1330,7 @@ div#monitoringYotei {
     text-align: center;
     border: none;
     > .premonth {
-      background: #ffcccc;
+      background: #fac4db;
     }
   }
 
@@ -1152,7 +1341,11 @@ div#monitoringYotei {
     min-height: 400px;
     z-index: 2;
     background: $grid_background;
-    border: 1px solid gray;
+    border: 1px solid $grid_Border_Color;
+    &.wj-flexgrid [wj-part='root'] {
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+    }
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1202,7 +1395,7 @@ div#monitoringYotei {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
     .wj-glyph-filter {
@@ -1227,24 +1420,6 @@ div#monitoringYotei {
   left: 100px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 
 // .touroku_dialogs {

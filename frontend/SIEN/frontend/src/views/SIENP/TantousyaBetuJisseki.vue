@@ -15,6 +15,7 @@
         >
           <v-btn
             @click="inputCalendarClick(0)"
+            elevation="2"
             tile
             outlined
             width="125px"
@@ -26,44 +27,49 @@
             </div>
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
             class="btnymd pa-0 mr-1"
             height="100%"
-            x-small
             tile
             @click="inputCalendarClick(1)"
           >
             <v-icon>mdi-arrow-left-bold</v-icon>
+            前月
           </v-btn>
           <v-btn
-            elevation="0"
+            elevation="2"
             class="btnymd pa-0 mr-1"
             height="100%"
-            x-small
             tile
             @click="inputCalendarClick(2)"
           >
+            翌月
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn class="mr-1" height="20" @click="searchClicked()"> 検索 </v-btn>
-        <v-btn class="mr-1" width="25" height="20" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
+        <v-btn class="mr-1" height="19" @click="searchClicked()">
+          <v-icon dense>mdi-magnify</v-icon>
+          検索
         </v-btn>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           様式
         </v-card>
-        <v-btn-toggle class="flex-wrap mr-1" v-model="selYousiki">
+        <v-btn-toggle
+          class="flex-wrap mr-1"
+          color="light-blue darken-4"
+          v-model="selYousiki"
+        >
           <v-btn
             v-for="n in yousikiList"
             :key="n.val"
+            elevation="2"
             outlined
-            height="20"
+            height="19"
             width="50"
             min-width="50"
-            @click="grdDispChangeclick(1)"
+            @click="onYousikiClicked(n.val)"
           >
             {{ n.name }}
           </v-btn>
@@ -84,14 +90,33 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示内容
         </v-card>
-        <v-btn-toggle class="flex-wrap mr-1" v-model="selDispNaiyouIndex">
-          <v-btn v-for="n in dispNaiyouList" :key="n.val" height="20" outlined>
-            <!-- @click="grdDispChangeclick(1)" -->
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
+        <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+          <div
+            v-for="item in dispNaiyouList"
+            :key="item.val"
+            class="radioInline"
+          >
+            <input
+              type="radio"
+              :id="'rbTansousyabetuJissekiDispNaiyou-' + item.val"
+              v-model="selDispNaiyouIndex"
+              :value="item.val"
+              @change="grdDispChangeclick()"
+            />
+            <label
+              :for="'rbTansousyabetuJissekiDispNaiyou-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+        </v-card>
+        <v-btn class="ml-1" height="19" width="25" @click="filterClrclick()">
+          <v-icon small>mdi-filter-off</v-icon>
+          解除
+        </v-btn>
       </v-row>
-      <v-row no-gutters class="ma-0 mt-1">
+      <v-row no-gutters class="ma-0 mt-1" style="position: relative">
         <wj-flex-grid
           id="tantousyaBetuJissekiicrnGrid"
           :headersVisibility="'Column'"
@@ -117,6 +142,16 @@
             :showFilterIcons="false"
           />
         </wj-flex-grid>
+        <p
+          id="tantousyaBetuJissekiBorder1"
+          class="grdBorder"
+          v-show="false"
+        ></p>
+        <p
+          id="tantousyaBetuJissekiBorder2"
+          class="grdBorder"
+          v-show="false"
+        ></p>
       </v-row>
     </v-container>
     <v-dialog
@@ -144,9 +179,10 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { getConnect } from '../../../../connect/getConnect';
+import { getConnect } from '../../connect/getConnect';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
+const FIX_KASAN_KEY = 'kasan';
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -160,47 +196,47 @@ export default {
       },
       headerList: [
         {
-          dataname: 'tantou',
+          dataname: 'sinm',
           title: '担当者',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
-          dataname: 'code',
+          dataname: 'rcodeD',
           title: 'コード',
           chutitle: '',
           kbntitle: '',
-          width: '2*',
+          width: 70,
           align: 'center',
         },
         {
-          dataname: 'name',
+          dataname: 'rname',
           title: '利用者名',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: sysConst.GRD_COL_WIDTH.UserName,
           align: 'left',
         },
         {
-          dataname: 'keiyakuteiketu',
+          dataname: 'keiyakuYmdD',
           title: '契約\n締結',
           chutitle: '',
           kbntitle: '',
-          width: '1*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
-          dataname: 'ansakuseiymd',
+          dataname: 'anYmdD',
           title: '作成日',
           chutitle: '計画案',
           kbntitle: '計画作成',
-          width: '1*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
-          dataname: 'yousiki',
+          dataname: 'yoshikiName',
           title: '様\n式',
           chutitle: '計画案',
           kbntitle: '計画作成',
@@ -208,7 +244,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'doui',
+          dataname: 'anDouiYmdD',
           title: '同\n意',
           chutitle: '計画案',
           kbntitle: '計画作成',
@@ -216,7 +252,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'teisyutu',
+          dataname: 'teiYmdD',
           title: '提\n出',
           chutitle: '計画案',
           kbntitle: '計画作成',
@@ -224,23 +260,23 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'tantousyakaigi',
+          dataname: 'anKaigiYmdD',
           title: '担当者\n会議',
           chutitle: '',
           kbntitle: '計画作成',
-          width: '2*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
-          dataname: 'keikakusakuseiymd',
+          dataname: 'keikakuYmdD',
           title: '作成日',
           chutitle: '計画',
           kbntitle: '計画作成',
-          width: '2*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
-          dataname: 'keikakudoui',
+          dataname: 'keikakuDouiYmdD',
           title: '同\n意',
           chutitle: '計画',
           kbntitle: '計画作成',
@@ -248,15 +284,15 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'jissiymd',
+          dataname: 'moniYmdD',
           title: '実施日',
           chutitle: '報告書',
           kbntitle: 'モニタリング',
-          width: '2*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
         {
-          dataname: 'monitoringdoui',
+          dataname: 'moniDouiFlgD',
           title: '同\n意',
           chutitle: '報告書',
           kbntitle: 'モニタリング',
@@ -264,7 +300,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'syuukituki',
+          dataname: 'moniShukiFlgD',
           title: '終\n期\n月',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -272,7 +308,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'keizoku',
+          dataname: 'moniKeizokuFlgD',
           title: '継\n続',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
@@ -280,7 +316,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'henkou',
+          dataname: 'noMoniHenkoFlgD',
           title: '変\n更',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
@@ -288,7 +324,7 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'kousin',
+          dataname: 'moniKoshinFlgD',
           title: '更\n新',
           chutitle: '案作成',
           kbntitle: 'モニタリング',
@@ -296,14 +332,15 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'monitoringtantousyakaigi',
+          dataname: 'moniKaigiYmdD',
           title: '担当者\n会議',
           chutitle: '',
           kbntitle: 'モニタリング',
-          width: '2*',
+          width: sysConst.GRD_COL_WIDTH.Ymd,
           align: 'center',
         },
       ],
+      dispHeaderList: [],
       userListComponentDatas: [], // ユーザー一覧データ
       userInfo: {}, // ユーザ一覧から選択した値
       targetYm: '',
@@ -330,9 +367,23 @@ export default {
       viewDataAll: [],
       viewData: [],
       filter: {},
+      mainGrid: {},
     };
   },
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+  },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('tantousyaBetuJissekiicrnGrid') != null) {
+        document.getElementById('tantousyaBetuJissekiicrnGrid').style.height =
+          window.innerHeight - 110 + 'px';
+      }
+    },
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
@@ -340,6 +391,7 @@ export default {
       this.filter = filter;
     },
     onInitializeIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
         this.filter.showFilterIcons = true;
@@ -347,26 +399,55 @@ export default {
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filter.showFilterIcons = false;
       });
-      flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(2, new wjGrid.Row());
+
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
+      flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
+      flexGrid.columnFooters.rows[0].allowMerging = false;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
+      flexGrid.frozenColumns = 3;
+      this.createGrdHeader(flexGrid);
+    },
+    createGrdHeader(flexGrid) {
+      flexGrid.columns.length = 0;
+
+      this.dispHeaderList = this.headerList.concat();
+      if (
+        this.viewDataAll.kasanTitleList != undefined &&
+        this.viewDataAll.kasanTitleList.length > 0
+      ) {
+        this.viewDataAll.kasanTitleList.forEach((element) => {
+          this.dispHeaderList.push({
+            dataname: FIX_KASAN_KEY + element.kasan,
+            title: element.ryaku,
+            chutitle: element.ryaku,
+            kbntitle: '加算項目',
+            width: sysConst.GRD_COL_WIDTH.Ymd,
+            align: 'center',
+          });
+        });
+      }
+
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+      for (
+        let colIndex = 0;
+        colIndex < this.dispHeaderList.length;
+        colIndex++
+      ) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
-        col.binding = this.headerList[colIndex].dataname;
-        col.header = this.headerList[colIndex].title;
-        col.width = this.headerList[colIndex].width;
-        col.align = this.headerList[colIndex].align;
+        col.binding = this.dispHeaderList[colIndex].dataname;
+        col.header = this.dispHeaderList[colIndex].title;
+        col.width = this.dispHeaderList[colIndex].width;
+        col.align = this.dispHeaderList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
         if (colIndex == 4 || colIndex == 7) {
@@ -381,83 +462,125 @@ export default {
         flexGrid.columnHeaders.setCellData(
           0,
           colIndex,
-          !this.headerList[colIndex].kbntitle
-            ? this.headerList[colIndex].title
-            : this.headerList[colIndex].kbntitle
+          !this.dispHeaderList[colIndex].kbntitle
+            ? this.dispHeaderList[colIndex].title
+            : this.dispHeaderList[colIndex].kbntitle
         );
         flexGrid.columnHeaders.setCellData(
           1,
           colIndex,
-          !this.headerList[colIndex].chutitle
-            ? this.headerList[colIndex].title
-            : this.headerList[colIndex].chutitle
+          !this.dispHeaderList[colIndex].chutitle
+            ? this.dispHeaderList[colIndex].title
+            : this.dispHeaderList[colIndex].chutitle
         );
         flexGrid.columnHeaders.setCellData(
           2,
           colIndex,
-          this.headerList[colIndex].title
+          this.dispHeaderList[colIndex].title
         );
+        if (colIndex == 2) {
+          flexGrid.columnFooters.setCellData(0, colIndex, '合計');
+        }
       }
-      flexGrid.endUpdate();
     },
     onFormatItemIcrn(flexGrid, e) {
-      if (flexGrid.columns.length == 0) {
-        return;
-      }
+      e.cell.style.borderBottom = STYLE_DEFAULT;
+      e.cell.style.borderRight = STYLE_DEFAULT;
       if (e.panel == flexGrid.cells) {
-        e.cell.style.borderBottom = STYLE_DEFAULT;
-        e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-
         if (e.row < flexGrid.rows.length - 1) {
-          let tmpitempre = e.panel.rows[e.row + 1].dataItem;
-          if (tmpitem.ymd.substring(0, 6) != tmpitempre.ymd.substring(0, 6)) {
+          let nexttmpitem = e.panel.rows[e.row + 1].dataItem;
+          if (tmpitem.siid == nexttmpitem.siid) {
+            if (e.col < 3) {
+              e.cell.style.borderBottom = 'none';
+            }
+          } else {
             e.cell.style.borderBottom = STYLE_BORDER_SOLID;
           }
         }
-        if (
-          e.col == 0 ||
-          e.col == 1 ||
-          e.col == 2 ||
-          e.col == 3 ||
-          e.col == 10
-        ) {
-          e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        if (e.row > 0 && e.col < 3) {
+          let pretmpitem = e.panel.rows[e.row - 1].dataItem;
+          if (tmpitem.siid == pretmpitem.siid) {
+            e.cell.innerHTML = '';
+          }
         }
-      } else {
+
+        // if (e.row < flexGrid.rows.length - 1) {
+        //   let tmpitempre = e.panel.rows[e.row + 1].dataItem;
+        //   if (tmpitem.ymd.substring(0, 6) != tmpitempre.ymd.substring(0, 6)) {
+        //     e.cell.style.borderBottom = STYLE_BORDER_SOLID;
+        //   }
+        // }
+        if (e.col == 2 || e.col == 10 || e.col == 17) {
+          e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        } else {
+          if (e.col > 17 && (e.col - this.headerList.length + 1) % 5 == 0) {
+            e.cell.style.borderRight = STYLE_BORDER_SOLID;
+          }
+        }
+      } else if (e.panel == flexGrid.columnHeaders) {
+        if (e.col == 3) {
+          this.setBorderPos(e, 'tantousyaBetuJissekiBorder1');
+        }
+        if (e.col == 11) {
+          this.setBorderPos(e, 'tantousyaBetuJissekiBorder2');
+        }
         if (e.col < 3) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundOrange;
         } else if (e.col < 11) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
-        } else if (e.col < 19) {
+        } else if (e.col < 18) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
         } else {
           e.cell.style.backgroundColor =
-            sysConst.COLOR.viewTitleBackgroundOrange;
+            sysConst.COLOR.viewTitleBackgroundYellow;
         }
         if (
-          (e.row == 0 && e.col == 0) ||
-          (e.row == 0 && e.col == 1) ||
           (e.row == 0 && e.col == 2) ||
-          (e.row == 0 && e.col == 3) ||
           (e.row == 0 && e.col == 4) ||
+          (e.row == 0 && e.col == 11) ||
           (e.row == 1 && e.col == 9) ||
-          (e.row == 2 && e.col == 10)
+          (e.row == 1 && e.col == 17) ||
+          (e.row == 2 && e.col == 10) ||
+          (e.row == 2 && e.col == 17)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        } else {
+          if (e.col > 17 && (e.col - this.headerList.length + 1) % 5 == 0) {
+            e.cell.style.borderRight = STYLE_BORDER_SOLID;
+          }
         }
         // if (e.col == 1 || e.col == 3 || e.col == 5 || e.col == 9) {
         //   e.cell.style.borderRight = STYLE_BORDER_SOLID;
         // } else if (e.row == 0 && (e.col == 2 || e.col == 6)) {
         //   e.cell.style.borderRight = STYLE_BORDER_SOLID;
         // }
+      } else if (e.panel == flexGrid.columnFooters) {
+        e.cell.style.borderTop =
+          ' double 4px ' + sysConst.COLOR.gridBorderColor;
+        if (e.col < 3) {
+          e.cell.style.backgroundColor = e.cell.style.backgroundColor =
+            sysConst.COLOR.gridTotalBackground;
+        } else {
+          e.cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+        }
+        if (e.col == 2 || e.col == 10 || e.col == 17) {
+          e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        } else {
+          if (e.col > 17 && (e.col - this.headerList.length + 1) % 5 == 0) {
+            e.cell.style.borderRight = STYLE_BORDER_SOLID;
+          }
+        }
       }
     },
+    setBorderPos(e, name) {
+      let el = document.getElementById(name);
+      el.style.left = e.panel.getCellBoundingRect(e.row, e.col).left - 5 + 'px';
+    },
     onItemsSourceChanging(flexGrid) {
-      flexGrid.beginUpdate();
-      flexGrid.endUpdate();
+      this.createGrdHeader(flexGrid);
     },
     onItemsSourceChanged(flexGrid) {
       this.grdAutoSizeRow(flexGrid);
@@ -472,9 +595,23 @@ export default {
       flexGrid.autoSizeRows();
       flexGrid.endUpdate();
     },
-    grdDispChangeclick(kbn) {
-      console.log(kbn);
-      this.setViewData(false);
+
+    grdDispChangeclick() {
+      this.mainGrid.beginUpdate();
+      for (let col = 0; col < this.mainGrid.columns.length; col++) {
+        this.mainGrid.columns[col].visible = true;
+        if (this.selDispNaiyouIndex == 1 && 10 < col) {
+          this.mainGrid.columns[col].visible = false;
+        } else if (
+          this.selDispNaiyouIndex == 2 &&
+          ((3 <= col && col <= 10) || 17 < col)
+        ) {
+          this.mainGrid.columns[col].visible = false;
+        } else if (this.selDispNaiyouIndex == 3 && 3 <= col && col <= 17) {
+          this.mainGrid.columns[col].visible = false;
+        }
+      }
+      this.mainGrid.endUpdate();
     },
     searchClicked() {
       // 初期データ読込
@@ -483,31 +620,53 @@ export default {
     setViewData(isAll) {
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
-          pIntcode: this.userInfo.riid,
-          pSymd: this.targetYm.format('YYYYMMDD'),
-          pEymd: this.targetYm.format('YYYYMMDD'),
-          Dspkbn: 0,
+          pJigyoid: 62,
+          pSym: this.targetYm.format('YYYYMM'),
         };
         console.log(params);
-        getConnect('/Uktk', params, 'SIENT').then((result) => {
+        getConnect('/TantobetsuJisseki', params, 'SIENP').then((result) => {
           console.log(12345);
           console.log(result);
-          this.viewDataAll = result;
+          this.viewDataAll = this.createKasanColData(result);
           this.userFilter();
+
           this.screenFlag = false;
         });
       } else {
         this.userFilter();
       }
     },
+    createKasanColData(apiresult) {
+      let tmpviewdata = apiresult.jissekiList;
+      for (let index = 0; index < tmpviewdata.length; index++) {
+        let tmpkasanlist = tmpviewdata[index].kasanList;
+        for (let kasan = 0; kasan < tmpkasanlist.length; kasan++) {
+          tmpviewdata[index][FIX_KASAN_KEY + tmpkasanlist[kasan].kasan] =
+            tmpkasanlist[kasan].ymd.slice(0, 4) +
+            '/' +
+            tmpkasanlist[kasan].ymd.slice(4, 6) +
+            '/' +
+            tmpkasanlist[kasan].ymd.substring(6, 8);
+        }
+      }
+      return apiresult;
+    },
     onTantousyaClicked() {
       this.selTantouId = this.tantouist[this.selTantouId].val;
+      this.userFilter();
+    },
+    onYousikiClicked(kbn) {
+      this.selYousiki = kbn;
+      this.userFilter();
     },
     userFilter() {
-      let tmpviewdata = this.viewDataAll.concat();
+      let tmpviewdata = this.viewDataAll.jissekiList.concat();
+
+      if (this.selYousiki > 0) {
+        tmpviewdata = tmpviewdata.filter((x) => x.yoshiki == this.selYousiki);
+      }
       // // 絞込１
       // if (this.selUser == 1) {
       //   // 今月入所
@@ -635,9 +794,11 @@ div#tantousyaBetuJisseki {
   #tantousyaBetuJissekiicrnGrid {
     color: $font_color;
     font-size: $cell_fontsize;
-    height: 82vh;
     width: 100%;
     min-width: 1050px;
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
+    min-height: 500px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -685,7 +846,7 @@ div#tantousyaBetuJisseki {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }

@@ -1,9 +1,11 @@
 <template>
   <v-container no-gutters fluid class="pa-0">
-    <v-row no-gutters class="commonTab" style="width: 100%">
+    <v-row no-gutters>
       <v-col>
-        <v-card class="d-flex flex-row" flat tile>
-          <v-tabs height="20" hide-slider v-model="tab">
+        {{ keycloak.tokenParsed.realm_access }}\
+        <div>AAA:::{{ animal }}</div>
+        <v-card class="commonTab d-flex flex-row" flat tile>
+          <v-tabs hide-slider class="wTabShort" v-model="tab">
             <v-tab
               v-for="item in menuItem"
               :key="item.val"
@@ -13,24 +15,29 @@
               {{ item.name }}
             </v-tab>
           </v-tabs>
-          <v-card id="yousikiLabel" tile v-if="yousikiLabel" class="body-2"
-            >様式</v-card
+          <v-card
+            id="yousikiLabel"
+            tile
+            v-if="yousikiLabel"
+            class="body-2 mt-1"
           >
-          <v-tabs height="20" v-model="subtab">
+            様式
+          </v-card>
+          <v-tabs v-model="subtab" class="wTabShort" hide-slider>
             <v-tab
               v-for="yosikiValue in yosikiArray"
               :key="yosikiValue.key"
               @change="tabsYosikiChange(yosikiValue.key)"
-              >{{ yosikiValue.name }}</v-tab
             >
+              {{ yosikiValue.name }}
+            </v-tab>
           </v-tabs>
         </v-card>
       </v-col>
     </v-row>
-
     <v-tabs-items v-model="tab">
-      <v-tab-item value="KeikakuIcrn" :eager="true">
-        <KeikakuIcrn></KeikakuIcrn>
+      <v-tab-item value="KeikakuLists" :eager="true">
+        <KeikakuLists></KeikakuLists>
       </v-tab-item>
       <v-tab-item value="state" :eager="true">
         <AttendeeState></AttendeeState>
@@ -53,7 +60,7 @@
 
 <script>
 import ls from '@/utiles/localStorage';
-import KeikakuIcrn from '../../components/KeikakuLists.vue';
+import KeikakuLists from '../../components/KeikakuLists.vue';
 import AttendeeState from '../../components/AttendeeState.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
 import KeikakuPlan from '../../components/KeikakuPlan.vue';
@@ -61,11 +68,9 @@ import KeikakuWeek from '../../components/KeikakuWeek.vue';
 import KeikakuWeek3 from '../../components/KeikakuWeek3.vue';
 
 export default {
-  // props: {
-  //   selectedData: Object, // 検索条件等
-  // },
+  props: ['keycloak'],
   components: {
-    KeikakuIcrn, //SoudanCount, SoudanCountUtiwake
+    KeikakuLists, //SoudanCount, SoudanCountUtiwake
     AttendeeState,
     KeikakuIdea,
     KeikakuPlan,
@@ -99,6 +104,7 @@ export default {
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
+      animal: this.$store.state.animal,
       subtab: 0,
       ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
@@ -127,7 +133,7 @@ export default {
         },
       ],
       menuItem: [
-        { name: '計画一覧', href: '#KeikakuIcrn', hrefval: 'KeikakuIcrn' },
+        { name: '計画一覧', href: '#KeikakuLists', hrefval: 'KeikakuLists' },
 
         {
           name: '申請者の状況',

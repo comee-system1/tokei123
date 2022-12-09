@@ -1,17 +1,9 @@
 <template>
-  <div id="chiikiKeikakusyo2" :style="styles">
-    <v-container class="ml-1 pa-0" style="max-width: 100%">
+  <div id="chiikiKeikakusyo2" style="width: 100%">
+    <v-container class="ml-1 pa-0 pr-2">
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
-          <user-list
-            ref="user_list"
-            :dispHideBar="false"
-            @child-select="setUserSelectPoint"
-          >
-          </user-list>
-        </v-col>
-        <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark mb-1 mt-1">
+        <v-col class="ml-1">
+          <v-row no-gutters class="rowStyle_Dark my-1">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
@@ -28,16 +20,27 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row no-gutters class="rowStyle mb-1 mt-1">
+          <v-row no-gutters class="rowStyle my-1">
             <v-card class="koumokuTitle titleMain mr-1 wMin" outlined tile>
               入力
             </v-card>
-            <v-card elevation="0" class="pl-1">
-              <v-btn-toggle>
-                <v-btn small height="20">新規</v-btn>
-                <v-btn small height="20">修正</v-btn>
-              </v-btn-toggle>
-            </v-card>
+            <v-btn-toggle
+              class="flex-wrap mr-1"
+              color="light-blue darken-4"
+              mandatory
+            >
+              <v-btn
+                v-for="n in inputList"
+                :key="n.val"
+                elevation="2"
+                outlined
+                width="25"
+                height="19"
+                @click="inputClicked(n.val)"
+              >
+                {{ n.name }}
+              </v-btn>
+            </v-btn-toggle>
             <v-card class="koumokuTitle titleMain mr-1 ml-1 wMin" outlined tile>
               作成日
             </v-card>
@@ -67,16 +70,29 @@
               大正雅夫
             </v-card>
             <v-card class="ml-auto" elevation="0">
-              <!-- <v-btn small height="20">利用者基本情報より</v-btn> -->
-              <v-btn small height="20">前回コピー</v-btn>
-              <v-btn small class="ml-1" height="20">履歴参照</v-btn>
+              <v-btn
+                elevation="2"
+                class="mr-1 body-2"
+                height="19"
+                @click="copyClicked()"
+              >
+                前回ｺﾋﾟｰ
+              </v-btn>
+              <v-btn
+                elevation="2"
+                class="mr-1 body-2"
+                height="19"
+                v-on:click.stop="drawer = !drawer"
+              >
+                履歴参照
+              </v-btn>
             </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1">
             <v-col>
               <v-tabs
                 v-model="inputTypemodel"
-                class="mSizeCommonTab"
+                class="mSizeCommonTab mb-1"
                 color="rgba(255, 0, 0, 0)"
               >
                 <v-tab
@@ -84,21 +100,31 @@
                   :key="value.key"
                   active-class="act"
                   :href="'#tab-' + value.key"
+                  elevation="2"
                 >
                   {{ value.value }}</v-tab
                 >
               </v-tabs>
             </v-col>
-            <v-col class="text-end">
-              <v-btn-toggle tile v-if="inputTypemodel == 'tab-2'">
-                <v-btn small @click="rowSort('view')">順変更</v-btn>
-                <v-btn small @click="rowAdd('view')">行追加</v-btn>
-                <v-btn small @click="rowDelete('view')">行削除</v-btn>
-              </v-btn-toggle>
-            </v-col>
+            <v-spacer></v-spacer>
+            <v-btn-toggle
+              tile
+              v-if="inputTypemodel == 'tab-2'"
+              style="height: 20px"
+            >
+              <v-btn height="20" elevation="2" @click="rowSort('view')"
+                >順変更</v-btn
+              >
+              <v-btn height="20" elevation="2" @click="rowAdd('view')"
+                >行追加</v-btn
+              >
+              <v-btn height="20" elevation="2" @click="rowDelete('view')"
+                >行削除</v-btn
+              >
+            </v-btn-toggle>
           </v-row>
 
-          <div class="mt-2">
+          <div class="mt-0">
             <div id="scrollbody">
               <chiikiKeikakusyo2Zentai
                 ref="childzentai"
@@ -114,34 +140,22 @@
               ></chiikiKeikakusyo2Kadai>
             </div>
           </div>
-          <v-row dense class="ma-2" justify="space-between">
-            <v-col cols="4">
-              <v-btn small>削除</v-btn>
-            </v-col>
-            <v-col cols="7">
-              <v-card class="d-flex justify-end" flat tile>
-                <v-card
-                  class="koumokuTitle titleOrange mt-1 wMin"
-                  outlined
-                  tile
-                >
-                  完了
-                </v-card>
-                <v-card elevation="0" width="30" class="text-center mt-1">
-                  <input type="checkbox" />
-                </v-card>
-                <v-card
-                  class="lightYellow pl-1 pt-1 ml-1"
-                  width="140"
-                  outlined
-                  tile
-                >
-                </v-card>
-                <v-btn small class="ml-3">登録</v-btn>
-              </v-card>
-            </v-col>
-          </v-row>
         </v-col>
+      </v-row>
+      <v-row no-gutters class="rowStyle my-2">
+        <v-btn elevation="2" height="19"> 削除 </v-btn>
+        <v-card
+          class="koumokuTitle titleOrange pa-1 mr-1 ml-auto"
+          outlined
+          tile
+          width="50"
+        >
+          完了
+        </v-card>
+        <input type="checkbox" class="mr-1" />
+        <v-card class="koumokuData pa-1 pr-1 mr-1" width="200" outlined tile>
+        </v-card>
+        <v-btn elevation="2" height="19" @click="regist()"> 登録 </v-btn>
       </v-row>
     </v-container>
 
@@ -164,14 +178,12 @@
 
 <script>
 import dayjs from 'dayjs';
-import UserList from './UserList.vue';
 import ChiikiKeikakusyo2Zentai from './ChiikiKeikakusyo2Zentai.vue';
 import ChiikiKeikakusyo2Ikou from './ChiikiKeikakusyo2Ikou.vue';
 import ChiikiKeikakusyo2Kadai from './ChiikiKeikakusyo2Kadai.vue';
 
 export default {
   components: {
-    UserList,
     ChiikiKeikakusyo2Zentai,
     ChiikiKeikakusyo2Ikou,
     ChiikiKeikakusyo2Kadai,
@@ -200,6 +212,10 @@ export default {
         '日',
       headerheight: 100,
       value: 'ssss\nddddd\nfff',
+      inputList: [
+        { val: 0, name: '新規' },
+        { val: 1, name: '修正' },
+      ],
 
       inputTypemodel: 'tab-1',
       inputType: [
@@ -257,6 +273,16 @@ export default {
     rowDelete(type) {
       this.$refs.childkadai.rowDelete(type);
     },
+    inputClicked(kbn) {
+      //dummy code
+      let a = [kbn];
+      a.length = 1;
+    },
+    regist() {
+      if (this.inputTypemodel == 'tab-0') {
+        this.$refs.childzentai.regist();
+      }
+    },
   },
 };
 </script>
@@ -269,16 +295,9 @@ div#chiikiKeikakusyo2 {
   font-family: 'メイリオ';
   height: 100% !important;
 
-  div.mSizeCommonTab {
-    .v-tabs-bar .v-tab:not(.v-tab--active) {
-      color: #777 !important;
-      background-color: $white !important;
-    }
-    .v-tabs-bar {
-      height: 24px !important;
-    }
+  div.commonTab {
     .v-slide-group__content {
-      background-color: $white !important;
+      border-bottom: 0px;
     }
   }
 
@@ -287,32 +306,6 @@ div#chiikiKeikakusyo2 {
   }
   .lightYellow {
     background-color: $light_yellow;
-  }
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    border-top: 1px solid #ccc;
-    border-left: 1px solid #ccc;
-    font-size: 12px;
-    th {
-      background-color: $view_Title_background_Blue;
-      text-align: center;
-      padding: 4px;
-      font-weight: normal;
-      border-right: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
-      width: 80px;
-    }
-    td {
-      background-color: $grid_background;
-      border-right: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
-      padding: 4px;
-      width: 160px;
-      &.wide {
-        width: 400px;
-      }
-    }
   }
 }
 .v-textarea.v-text-field--enclosed.v-text-field--outlined:not(.v-input--dense)

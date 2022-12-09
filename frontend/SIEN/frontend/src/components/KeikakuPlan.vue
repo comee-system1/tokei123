@@ -1,8 +1,8 @@
 <template>
   <div id="keikakuPlan">
-    <v-container class="ml-1 pa-0" style="max-width: 100%">
+    <v-container class="pa-0" style="max-width: 100%">
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
+        <!-- <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
             :dispHideBar="false"
@@ -10,7 +10,7 @@
             @child-select="setUserSelectPoint"
           >
           </user-list>
-        </v-col>
+        </v-col> -->
         <v-col :style="{ 'max-width': rightWidth }">
           <div class="mt-1">
             <v-card class="d-flex flex-row" flat tile>
@@ -33,7 +33,7 @@
                 width="140"
                 height="20"
               >
-                {{ userName }}
+                {{ selectName }}
               </v-card>
               <v-card class="justify-end ml-auto d-flex flex-row" elevation="0">
                 <v-card elevation="0" tile width="20" class="text-center pt-1">
@@ -277,16 +277,17 @@
 <script>
 import moment from 'moment';
 
-import UserList from './UserList.vue';
+// import UserList from './UserList.vue';
 import keikakuPlanIkou from './keikakuPlanIkou.vue';
 import keikakuPlanKadai from './keikakuPlanKadai.vue';
 // import { keikaku } from '@backend/api/Keikaku';
 export default {
   props: {
     dispHideBar: Boolean,
+    selectedUserObj: Object,
   },
   components: {
-    UserList,
+    // UserList,
     keikakuPlanIkou,
     keikakuPlanKadai,
   },
@@ -323,17 +324,25 @@ export default {
         { id: 1, name: 'サービス等利用計画2' },
       ],
       keikakuKubunModel: '',
+      headerheight: 80,
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.setUserdata(this.selectedUserObj);
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+  },
   computed: {
-    styles() {
-      // ブラウザの高さ
-      return {
-        '--height': window.innerHeight - this.headerheight + 'px',
-      };
-    },
+    // styles() {
+    //   // ブラウザの高さ
+    //   return {
+    //     '--height': window.innerHeight - this.headerheight + 'px',
+    //   };
+    // },
     textstyles() {
       return {
         minHeight: '100vh',
@@ -341,6 +350,17 @@ export default {
     },
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('keikakuPlan') != null) {
+        document.getElementById('keikakuPlan').style.height =
+          window.innerHeight - this.headerheight + 'px';
+      }
+    },
+    setUserdata(item) {
+      if (item != null) {
+        this.selectName = item.names;
+      }
+    },
     /****************
      * ユーザー一覧を押下
      */

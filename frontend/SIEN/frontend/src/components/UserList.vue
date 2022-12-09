@@ -29,7 +29,9 @@
     >
       <v-col>
         <v-row no-gutters class="rowStyle ml-1" v-if="dispAddDaicho">
-          <v-btn style="width: 100px" @click="addClicked"> 台帳新規登録 </v-btn>
+          <v-btn style="width: 100px" height="20" @click="addClicked">
+            台帳新規登録
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn-toggle class="flex-wrap ma-0" v-model="selDispKbn" mandatory>
             <v-btn
@@ -39,6 +41,7 @@
               dark
               :width="n.width"
               :min-width="n.width"
+              height="20"
               outlined
               @click="siborikomiUser(n.val)"
             >
@@ -71,7 +74,11 @@
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters v-show="dispYoteiYm">
           <v-col cols="*" style="height: 100%">
-            <label class="titleGlay pl-1 pr-1">予定月</label>
+            <label
+              class="titleGlay pl-1 pr-1"
+              style="width: 45px; text-align: center"
+              >予定月</label
+            >
             <v-btn
               @click="inputCalendarClick()"
               tile
@@ -108,7 +115,11 @@
         </v-row>
 
         <v-row class="rowStyle mt-1 mr-1" no-gutters>
-          <label class="titleGlay pl-1 pr-1">担当者</label>
+          <label
+            class="titleGlay pl-1 pr-1"
+            style="width: 45px; text-align: center"
+            >担当者</label
+          >
           <select
             class="customSelectBox mr-1"
             v-model="selTantou"
@@ -121,16 +132,24 @@
           </select>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters>
+        <v-row class="rowStyle pa-0 mt-1 mr-1" no-gutters>
+          <label
+            class="titleGlay pl-1 pr-1"
+            style="width: 45px; text-align: center; height: 20px"
+          >
+            検索
+          </label>
           <wj-combo-box
             class="pa-0"
+            height="20"
+            min-height="20"
             :textChanged="onTextChangedUser"
-            style="width: 160px; height: 20px"
-            placeholder="カナ検索"
+            style="width: 115px"
+            placeholder="カナ/漢字/コード"
           ></wj-combo-box>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters justify="center">
+        <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
             <v-btn
               v-for="n in sortSelList"
@@ -148,7 +167,13 @@
           </v-btn-toggle>
         </v-row>
         <div class="rowStyle mt-1" no-gutters>
-          <v-btn-toggle class="flex-wrap ma-0" v-model="alphaSearch" mandatory>
+          <alphabet-button
+            id="alpCommon"
+            ref="alp"
+            @onAlphabetical="onAlphabetical"
+          >
+          </alphabet-button>
+          <!-- <v-btn-toggle class="flex-wrap ma-0" v-model="alphaSearch" mandatory>
             <v-btn
               outlined
               v-for="(n, k) in alphabet"
@@ -158,7 +183,7 @@
               @click="onAlphabet(k)"
               >{{ n }}</v-btn
             >
-          </v-btn-toggle>
+          </v-btn-toggle> -->
         </div>
 
         <wj-flex-grid
@@ -204,6 +229,16 @@
             :isReadOnly="true"
             align="center"
           ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="完"
+            binding="moniKanryo"
+            width="0.5*"
+            :word-wrap="false"
+            :allowResizing="false"
+            :isReadOnly="true"
+            :visible="dispGrdMoniKanryo"
+            align="center"
+          ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-col>
     </v-row>
@@ -233,8 +268,8 @@ import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '@connect/getConnect';
-
-let uniqid = 1; // 現在は1のみapiが実行する
+import AlphabetButton from '@/components/AlphabetButton.vue';
+let uniqid = 3; // 現在は1のみapiが実行する
 let traceid = 123;
 
 const keySort = 'keyval00003';
@@ -263,7 +298,16 @@ export default {
       type: Number,
       default: 80,
     },
+    grdheight: {
+      type: Number,
+      default: 105,
+    },
+    dispGrdMoniKanryo: {
+      type: Boolean,
+      default: false,
+    },
   },
+  components: { AlphabetButton },
   data() {
     return {
       userListWidth: '280px',
@@ -330,16 +374,19 @@ export default {
       this.sortSearch = Number(ls.getlocalStorageEncript(keySort));
       this.alphaSearch = Number(ls.getlocalStorageEncript(keyAlp));
     });
-
     window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
   },
   computed: {
     // バインドするスタイルを生成
     styles() {
       // ブラウザの高さ
       return {
-        '--height':
-          window.innerHeight - (parseInt(this.headerheight) + 125) + 'px',
+        // '--height':
+        //   window.innerHeight - (parseInt(this.headerheight) + 125) + 'px',
         '--width': this.userListWidth,
       };
     },
@@ -349,8 +396,12 @@ export default {
       if (document.getElementById('user-list_scrollbar') != null) {
         document.getElementById('user-list_scrollbar').style.height =
           window.innerHeight - this.headerheight + 'px';
+      }
+      if (document.getElementById('userListGrid') != null) {
         document.getElementById('userListGrid').style.height =
-          window.innerHeight - (parseInt(this.headerheight) + 125) + 'px';
+          window.innerHeight -
+          (parseInt(this.headerheight) + parseInt(this.grdheight)) +
+          'px';
       }
     },
     switched() {
@@ -367,13 +418,6 @@ export default {
       }
 
       this.$emit('childLeftArea', this.message);
-    },
-    initComboFilters(combo) {
-      if (combo.hostElement.id == 'comboFilters1') {
-        combo.header = combo.selectedItem.name;
-      } else if (combo.hostElement.id == 'comboFilters2') {
-        combo.header = combo.selectedItem.name;
-      }
     },
     onSvcRirekiClicked() {
       this.selSvcRireki = this.svcRirekiList[this.selSvcRireki].id;
@@ -393,6 +437,9 @@ export default {
       ls.setlocalStorageEncript(keySort, sortType);
       this.sortSearch = sortType;
 
+      this.userFilter();
+    },
+    onAlphabetical() {
       this.userFilter();
     },
     onAlphabet(key) {
@@ -429,64 +476,67 @@ export default {
         data = array;
       }
 
-      let alpval = this.alphaSearch;
-      if (alpval > 0) {
-        let get = [];
-        data.forEach(function (value) {
-          switch (alpval) {
-            case 1:
-              if (value.kana.match(/^[ｱ-ｵ]/)) {
-                get.push(value);
-              }
-              break;
-            case 2:
-              if (value.kana.match(/^[ｶ-ｺ]/)) {
-                get.push(value);
-              }
-              break;
-            case 3:
-              if (value.kana.match(/^[ｻ-ｿ]/)) {
-                get.push(value);
-              }
-              break;
-            case 4:
-              if (value.kana.match(/^[ﾀ-ﾄ]/)) {
-                get.push(value);
-              }
-              break;
-            case 5:
-              if (value.kana.match(/^[ﾅ-ﾉ]/)) {
-                get.push(value);
-              }
-              break;
-            case 6:
-              if (value.kana.match(/^[ﾊ-ﾎ]/)) {
-                get.push(value);
-              }
-              break;
-            case 7:
-              if (value.kana.match(/^[ﾏ-ﾓ]/)) {
-                get.push(value);
-              }
-              break;
-            case 8:
-              if (value.kana.match(/^[ﾔ-ﾖ]/)) {
-                get.push(value);
-              }
-              break;
-            case 9:
-              if (value.kana.match(/^[ﾗ-ﾛ]/)) {
-                get.push(value);
-              }
-              break;
-            case 10:
-              if (value.kana.match(/^[ﾜ-ﾝ]/)) {
-                get.push(value);
-              }
-              break;
-          }
-        });
-        data = get;
+      // let alpval = this.alphaSearch;
+      // if (alpval > 0) {
+      //   let get = [];
+      //   data.forEach(function (value) {
+      //     switch (alpval) {
+      //       case 1:
+      //         if (value.kana.match(/^[ｱ-ｵ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 2:
+      //         if (value.kana.match(/^[ｶ-ｺ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 3:
+      //         if (value.kana.match(/^[ｻ-ｿ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 4:
+      //         if (value.kana.match(/^[ﾀ-ﾄ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 5:
+      //         if (value.kana.match(/^[ﾅ-ﾉ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 6:
+      //         if (value.kana.match(/^[ﾊ-ﾎ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 7:
+      //         if (value.kana.match(/^[ﾏ-ﾓ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 8:
+      //         if (value.kana.match(/^[ﾔ-ﾖ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 9:
+      //         if (value.kana.match(/^[ﾗ-ﾛ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //       case 10:
+      //         if (value.kana.match(/^[ﾜ-ﾝ]/)) {
+      //           get.push(value);
+      //         }
+      //         break;
+      //     }
+      //   });
+      //   data = get;
+      // }
+      if (document.getElementById('alpCommon') != null) {
+        data = this.$refs.alp.alphabetFilter(data, 'kana');
       }
 
       if (this.dispYoteiYm && this.selDispYoteisya) {
@@ -640,16 +690,11 @@ div#user-list_scrollbar {
   font-family: 'メイリオ';
   padding: 0;
   width: var(--width);
-  background: #778899;
+  background: $view_Title_background_Gray;
   #userListGrid {
-    height: var(--height);
-  }
-  .rowStyle {
-    height: 20px !important;
-  }
-  .v-btn {
-    // width: 150px;
-    height: 20px !important;
+    // height: var(--height);
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
   }
   .wj-cell {
     padding: 2px;
@@ -657,9 +702,10 @@ div#user-list_scrollbar {
   }
   .wj-cell:not(.wj-header) {
     background: $grid_background;
-    &:nth-child(3) {
-      background-color: $white;
-    }
+  }
+  .wj-state-active {
+    background: $grid_selected_background;
+    color: $font_color;
   }
   .wj-header {
     // ヘッダのみ縦横中央寄せ
@@ -674,7 +720,7 @@ div#user-list_scrollbar {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
     transition: all 0s;
     background: $grid_hover_background;
   }
@@ -688,6 +734,7 @@ div#user-list_scrollbar {
     background: $grid_selected_background;
     color: $font_color;
   }
+
   .wj-tooltip.hdr-tip {
     background: black;
     color: lightblue;
@@ -711,49 +758,10 @@ div#user-list_scrollbar {
     border-radius: 0px;
   }
 
-  div.customCombobox {
-    position: relative;
-    width: 200px !important;
-    height: 20px !important;
-    &.customCombobox {
-      width: 220px !important;
-      div {
-        text-align: left;
-      }
-    }
-    &#comboFiltersKasan {
-      width: 150px !important;
-    }
-    .wj-btn.wj-btn-default {
-      border-left: none !important;
-    }
-    &:hover {
-      background-color: #e1e1e1;
-    }
-    &:focus {
-      background-color: #fff;
-    }
-    div * {
-      height: 17px !important;
-      // padding: 0;
-      span {
-        // height: 21px !important;
-        margin-top: 8px;
-      }
-      &.wj-form-control {
-        position: absolute;
-        // top: -3px;
-        width: 100%;
-        padding: 2px;
-        padding-top: 4px;
-      }
-    }
-    input {
-      height: 20px !important;
-    }
-  }
   .wj-control .wj-input-group .wj-form-control {
     height: 20px !important;
+    min-height: 20px !important;
+    padding: 0;
   }
   .wj-control .wj-template,
   .wj-control .wj-input {

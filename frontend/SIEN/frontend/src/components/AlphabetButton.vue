@@ -4,10 +4,10 @@
       outlined
       v-for="(n, k) in alphabet"
       :key="n"
-      :width="25"
-      :height="25"
-      p-0
-      style="min-width: auto"
+      :width="23"
+      :min-width="23"
+      :height="20"
+      class="pa-0"
       @click="onAlphabet(k)"
     >
       {{ n }}

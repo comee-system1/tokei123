@@ -2,14 +2,14 @@
   <div id="keikakuWeek">
     <v-container class="ml-1 pa-0" style="max-width: 100%">
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
+        <!-- <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
             :dispHideBar="false"
             @child-select="setUserSelectPoint"
           >
           </user-list>
-        </v-col>
+        </v-col> -->
         <v-col :style="{ 'max-width': rightWidth }" class="pr-1">
           <v-row no-gutters class="mt-1">
             <v-card class="d-flex justify-start" flat tile>
@@ -345,15 +345,15 @@ import moment from 'moment';
 //import dayjs from 'dayjs';
 
 import * as wjGrid from '@grapecity/wijmo.grid';
-import UserList from './UserList.vue';
+// import UserList from './UserList.vue';
 //import * as wjcCore from '@grapecity/wijmo';
 export default {
   props: {
     dispHideBar: Boolean,
   },
-  components: {
-    UserList,
-  },
+  // components: {
+  //   UserList,
+  // },
   data() {
     return {
       dialogTitle: '',

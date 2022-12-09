@@ -1,8 +1,8 @@
 <template>
   <div id="monitoringParent">
     <div class="commonTab">
-      <v-container no-gutters fluid class="pa-0 pt-1">
-        <v-tabs height="24" hide-slider v-model="tab">
+      <v-container no-gutters fluid class="pa-0">
+        <v-tabs hide-slider v-model="tab">
           <v-tab
             v-for="item in menuItem"
             :key="item.val"
@@ -14,19 +14,59 @@
         </v-tabs>
       </v-container>
       <v-container no-gutters fluid class="pa-0">
-        <v-tabs-items v-model="tab">
-          <v-tab-item value="KeikakuIcrn" transition="none">
-            <KeikakuIcrn></KeikakuIcrn>
-          </v-tab-item>
-          <v-tab-item value="Houkokusyo" transition="none">
-            <MonitoringHoukokusho></MonitoringHoukokusho>
-          </v-tab-item>
-          <v-tab-item value="SyukanKeikaku" transition="none">
-            <MonitoringSyukanKeikaku></MonitoringSyukanKeikaku>
-          </v-tab-item>
-          <v-tab-item value="MonitoringJissiIcrn" transition="none">
-            <MonitoringJissiIcrn></MonitoringJissiIcrn>
-          </v-tab-item>
+        <v-tabs-items v-model="tab" class="pa-1">
+          <v-layout no-gutters>
+            <v-col
+              no-gutters
+              class="pa-0 mr-1"
+              :style="{ 'max-width': leftWidth }"
+              v-show="
+                (tab == 'Houkokusyo' && userdrawer) || tab == 'SyukanKeikaku'
+              "
+            >
+              <user-list
+                ref="user_list"
+                :dispHideBar="false"
+                :dispAddDaicho="false"
+                :dispSvcReki="false"
+                :dispYoteiYm="true"
+                :dispGrdMoniKanryo="true"
+                :grdheight="125"
+                @child-select="setUserSelectPoint"
+              >
+              </user-list>
+            </v-col>
+            <v-col no-gutters class="pa-0">
+              <v-tab-item value="KeikakuIcrn" transition="none">
+                <KeikakuIcrn @moni-select="moniSelect"></KeikakuIcrn>
+              </v-tab-item>
+              <v-tab-item value="Houkokusyo" transition="none" eager>
+                <MonitoringHoukokusho
+                  :selectedUserObj="selectedUserObj"
+                  @userDispChange="userdrawer = $event"
+                  ref="Houkokusyo"
+                >
+                </MonitoringHoukokusho>
+              </v-tab-item>
+              <v-tab-item value="SyukanKeikaku" transition="none">
+                <MonitoringSyukanKeikaku
+                  :selectedUserObj="selectedUserObj"
+                  ref="SyukanKeikaku"
+                >
+                </MonitoringSyukanKeikaku>
+              </v-tab-item>
+              <v-tab-item value="SampleCaleandar" transition="none">
+                <SampleCaleandar
+                  :selectedUserObj="selectedUserObj"
+                  ref="SyukanKeikaku"
+                >
+                </SampleCaleandar>
+              </v-tab-item>
+              <v-tab-item value="MonitoringJissiIcrn" transition="none">
+                <MonitoringJissiIcrn></MonitoringJissiIcrn>
+              </v-tab-item>
+            </v-col>
+          </v-layout>
         </v-tabs-items>
       </v-container>
     </div>
@@ -39,6 +79,8 @@ import KeikakuIcrn from '../../components/MonitoringYoteiIcrn.vue';
 import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
 import MonitoringHoukokusho from '../../components/MonitoringHoukokusho.vue';
 import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
+import SampleCaleandar from '../../components/MonitoringSampleCaleandar.vue';
+import UserList from '../../components/UserList.vue';
 
 export default {
   props: {
@@ -49,9 +91,12 @@ export default {
     MonitoringJissiIcrn,
     MonitoringHoukokusho,
     MonitoringSyukanKeikaku,
+    SampleCaleandar,
+    UserList,
   },
   data: function () {
     return {
+      leftWidth: '280px',
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
       menuItem: [
         {
@@ -74,7 +119,14 @@ export default {
           href: '#MonitoringJissiIcrn',
           hrefval: 'MonitoringJissiIcrn',
         },
+        {
+          name: 'サンプルカレンダー',
+          href: '#SampleCaleandar',
+          hrefval: 'SampleCaleandar',
+        },
       ],
+      selectedUserObj: {},
+      userdrawer: true,
     };
   },
   watch: {
@@ -85,19 +137,35 @@ export default {
   methods: {
     tabsChange(hrefval) {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
+      this.tab = hrefval;
+      if (this.selectedUserObj != null) {
+        this.setUserSelectPoint(this.selectedUserObj);
+      }
+    },
+    /****************
+     * ユーザー一覧を押下
+     */
+    setUserSelectPoint(row) {
+      this.selectedUserObj = row;
+
+      if (this.tab == 'Houkokusyo') {
+        if (this.$refs.Houkokusyo != undefined) {
+          this.$refs.Houkokusyo.setUserdata(row);
+        }
+      }
+      if (this.tab == 'SyukanKeikaku') {
+        if (this.$refs.SyukanKeikaku != undefined) {
+          this.$refs.SyukanKeikaku.setUserdata(row);
+        }
+      }
+    },
+    moniSelect(item, ymItem) {
+      // v-tabにeagerが必要
+      this.tabsChange(this.menuItem[1].hrefval);
+      this.$refs.Houkokusyo.setDataFromYoteiList(item, ymItem);
     },
   },
 };
 </script>
 
-<style  lang="scss">
-@import '@/assets/scss/common.scss';
-div#monitoringParent {
-  color: $font_color;
-  font-size: 14px;
-  // overflow-x: scroll;
-  // width: 1366px !important;
-  // min-width: 1350px !important;
-  max-width: 1920px;
-}
-</style>
+<style lang="scss"></style>

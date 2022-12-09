@@ -7,7 +7,7 @@
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
-            :headerheight="40"
+            :headerheight="60"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
@@ -36,19 +36,20 @@
           </v-row>
 
           <v-row no-gutters class="rowStyle mt-1">
-            <v-card class="koumokuTitle titleMain pa-1 ml-1" outlined tile>
+            <v-card class="koumokuTitle titleMain pa-1 ml-1 mr-1" outlined tile>
               表示期間
             </v-card>
             <v-card
-              class="ml-1"
+              class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none; margin-top: -1px"
+              style="border: none"
               outlined
               tile
             >
               <v-btn
                 @click="inputCalendarClick(0)"
+                elevation="2"
                 tile
                 outlined
                 width="160px"
@@ -65,63 +66,82 @@
               class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none; margin-top: -1px"
+              style="border: none"
               outlined
               tile
             >
               <v-btn
                 @click="inputCalendarClick(1)"
+                elevation="2"
                 tile
                 outlined
                 width="160px"
                 height="100%"
-                class="btnymd pa-0"
+                class="btnymd"
                 >{{ getYmd(1) }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
               </v-btn>
             </v-card>
-            <v-btn class="mr-1" height="20" @click="inputCalendarClick(2)">
+            <v-btn
+              class="mr-1"
+              elevation="2"
+              height="19"
+              @click="inputCalendarClick(2)"
+            >
               月指定
             </v-btn>
             <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
               詳細表示
             </v-card>
-            <v-btn-toggle
-              class="flex-wrap mr-1"
-              v-model="selSyousaiDispUmuIndex"
-            >
-              <v-btn
-                v-for="n in syousaiDispList"
-                :key="n.val"
-                outlined
-                height="20"
-                width="35"
-                min-width="35"
-                @click="grdDispChangeclick(n.val)"
+            <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+              <div
+                v-for="item in syousaiDispList"
+                :key="item.val"
+                class="radioInline"
               >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
+                <input
+                  type="radio"
+                  :id="'rbkojinrirekisyousaiDisp-' + item.val"
+                  v-model="selSyousaiDispUmuIndex"
+                  :value="item.val"
+                  @change="grdDispChangeclick(n.val)"
+                />
+                <label
+                  :for="'rbkojinrirekisyousaiDisp-' + item.val"
+                  class="customRadio mr-2"
+                >
+                  <span>{{ item.name }}</span>
+                </label>
+              </div>
+            </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1 ml-1">
-            <v-card class="koumokuTitle titleMain pa-1" outlined tile>
+            <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
               表示内容
             </v-card>
-            <v-btn-toggle class="flex-wrap ml-1" v-model="selDispNaiyouIndex">
-              <v-btn
-                v-for="n in dispNaiyouList"
-                :key="n.val"
-                outlined
-                height="20"
-                :width="n.width"
-                :min-width="n.width"
-                @click="grdNaiyouclick(n.val)"
+            <v-card elevation="0" tile outlined class="pl-1 mr-1" height="100%">
+              <div
+                v-for="item in dispNaiyouList"
+                :key="item.val"
+                class="radioInline"
               >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
+                <input
+                  type="radio"
+                  :id="'rbkojinrirekidispNaiyou-' + item.val"
+                  v-model="selDispNaiyouIndex"
+                  :value="item.val"
+                  @change="grdNaiyouclick(n.val)"
+                />
+                <label
+                  :for="'rbkojinrirekidispNaiyou-' + item.val"
+                  class="customRadio mr-2"
+                >
+                  <span>{{ item.name }}</span>
+                </label>
+              </div>
+            </v-card>
           </v-row>
           <v-row class="mt-1" no-gutters>
             <wj-flex-grid
@@ -205,9 +225,10 @@ import 'dayjs/locale/ja';
 import UserList from '../../components/UserList.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
-import * as wjCore from '@grapecity/wijmo';
+// import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { getConnect } from '../../../../connect/getConnect';
+import { getConnect } from '../../connect/getConnect';
+import printUtil from '@/utiles/printUtil';
 // const STR_MARU = '○';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
@@ -263,6 +284,7 @@ export default {
         {
           dispkbn: 1,
           dataname: 'kojin_naiiyou',
+          dataname2: 'cskmknm',
           title: '内容',
           chutitle: '',
           kbntitle: '計画作成',
@@ -317,7 +339,7 @@ export default {
         {
           dispkbn: 1,
           dataname: 'jissi',
-          title: '予定\n月',
+          title: '予\n定\n月',
           chutitle: '',
           kbntitle: 'モニタリング',
           width: '1.5*',
@@ -505,10 +527,19 @@ export default {
       viewData: [],
       filter: {},
       inputRef: this.getDispKbn(),
+      mainGrid: {},
+      thickList: [2, 9],
     };
   },
-  created: function () {
-    // 初期ユーザ検索
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+    this.$router.app.$off('print_event_global');
+    this.$router.app.$on('print_event_global', this.printExec);
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
   },
   watch: {
     selectedData() {
@@ -516,10 +547,17 @@ export default {
     },
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('kojinRirekiIcrnGrid') != null) {
+        document.getElementById('kojinRirekiIcrnGrid').style.height =
+          window.innerHeight - 140 + 'px';
+      }
+    },
     filterInitialized: function (filter) {
       this.filter = filter;
     },
     onInitializeIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
         this.filter.showFilterIcons = true;
@@ -610,15 +648,15 @@ export default {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (this.selSyousaiDispUmuIndex == 1 && e.col == 3) {
-          e.cell.innerHTML =
-            '<font color="blue">' +
-            wjCore.escapeHtml(tmpitem.cskmknm) +
-            '</font>' +
-            '<div>' +
-            wjCore.escapeHtml(e.cell.innerHTML) +
-            '</div>';
-        }
+        // if (this.selSyousaiDispUmuIndex == 1 && e.col == 3) {
+        //   e.cell.innerHTML =
+        //     '<font color="#276bc5">' +
+        //     wjCore.escapeHtml(tmpitem.cskmknm) +
+        //     '</font>' +
+        //     '<div>' +
+        //     wjCore.escapeHtml(e.cell.innerHTML) +
+        //     '</div>';
+        // }
         if (e.row < flexGrid.rows.length - 1) {
           let tmpitempre = e.panel.rows[e.row + 1].dataItem;
           if (tmpitem.ymd.substring(0, 6) != tmpitempre.ymd.substring(0, 6)) {
@@ -673,6 +711,13 @@ export default {
 
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
+      if (flexGrid.columns.length > 0) {
+        if (this.selSyousaiDispUmuIndex == 1) {
+          flexGrid.columns[3].binding = this.headerList[16].dataname;
+        } else {
+          flexGrid.columns[3].binding = this.headerList[16].dataname2;
+        }
+      }
       flexGrid.endUpdate();
     },
     onItemsSourceChanged(flexGrid) {
@@ -710,9 +755,9 @@ export default {
     setViewData(isAll) {
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pIntcode: this.userInfo.riid,
           pSrhym: this.startymd.format('YYYYMMDD'),
           pSrheym: this.endymd.format('YYYYMMDD'),
@@ -913,13 +958,17 @@ export default {
     },
     getDispKbn() {
       this.inputRef = sysConst.JIGYO_KBN_NAME.KIHON;
-      var urlparam = location.search.substring(1);
-      if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+      if (this.$route.params.kind == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
         this.inputRef = sysConst.JIGYO_KBN_NAME.KEIKAKU;
-      } else if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI) {
+      } else if (this.$route.params.kind == sysConst.JIGYO_KBN_NAME.CHIIKI) {
         this.inputRef = sysConst.JIGYO_KBN_NAME.CHIIKI;
       }
       return this.inputRef;
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      printUtil.printExec('相談一覧', printUtil.DIRECTION.landscape);
     },
   },
 };
@@ -945,7 +994,13 @@ div#kojinRireki {
     height: 80vh;
     width: 100%;
     min-width: 1030px;
-
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
+    min-height: 450px;
+    &.wj-flexgrid [wj-part='root'] {
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+    }
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -991,7 +1046,7 @@ div#kojinRireki {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -1009,24 +1064,6 @@ div#kojinRireki {
   }
   .v-picker__title {
     display: none !important;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
   }
 }
 #kojinRirekidatepickermonth {

@@ -1,99 +1,102 @@
 <template>
   <div id="chiikiKeikakuList">
-    <v-container class="mt-1 ml-1 pa-0" :style="styles" style="max-width: 100%">
-      <v-row no-gutters class="rowStyle mt-1">
-        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+    <v-container
+      no-gutters
+      class="pa-0 px-1"
+      :style="styles"
+      style="max-width: 100%"
+    >
+      <v-row no-gutters class="rowStyle">
+        <v-card class="koumokuTitle titleMain pa-1" outlined tile>
           表示月
         </v-card>
         <v-card
           class="ml-1"
           color="transparent"
-          height="20"
-          style="border: none"
+          height="100%"
+          style="border: none; top: 1px"
           outlined
           tile
         >
           <v-btn
             @click="inputCalendarClick(0)"
+            elevation="2"
             tile
             outlined
             width="125px"
             height="100%"
+            class="btnymd"
             >{{ getYm() }}
             <div class="float-right">
               <v-icon small>mdi-calendar-month</v-icon>
             </div>
           </v-btn>
           <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="20"
-            x-small
+            elevation="2"
+            class="btnymd pa-0 ml-1"
+            height="100%"
             tile
             @click="inputCalendarClick(1)"
           >
             <v-icon>mdi-arrow-left-bold</v-icon>
+            前月
           </v-btn>
           <v-btn
-            elevation="0"
-            class="pa-0 ml-1"
-            height="20"
-            x-small
+            elevation="2"
+            class="btnymd pa-0 ml-1"
+            height="100%"
             tile
             @click="inputCalendarClick(2)"
           >
+            翌月
             <v-icon>mdi-arrow-right-bold</v-icon>
           </v-btn>
         </v-card>
-        <v-btn class="itemBtn ml-1" :loading="loading" @click="searchClicked()">
-          検索
-        </v-btn>
         <v-btn
-          class="itemBtn ml-1"
-          style="width: 25px"
-          @click="filterClrclick()"
+          class="ml-1"
+          height="19"
+          :loading="loading"
+          @click="searchClicked()"
         >
-          <v-icon small>mdi-filter-off</v-icon>
+          <v-icon dense>mdi-magnify</v-icon>
+          検索
         </v-btn>
       </v-row>
       <v-row class="rowStyle mt-1" no-gutters>
-        <v-card class="koumokuTitle pa-1" outlined tile height="20">
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           担当者
         </v-card>
-        <wj-menu
-          id="comboFilters"
-          class="customCombobox ml-1"
-          :itemsSource="tantousyaList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selTantousya"
-          :itemClicked="onTantousyaClicked"
+          @change="onTantousyaClicked"
+          style="width: 150px"
         >
-        </wj-menu>
-        <v-card class="koumokuTitle pa-1 ml-1" outlined tile height="20">
+          <option v-for="val in tantousyaList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
+        <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           市区町村
         </v-card>
-        <wj-menu
-          id="comboFilters"
-          class="customCombobox ml-1"
-          :itemsSource="sikuchosonList"
-          :initialized="initComboFilters"
-          :isRequired="true"
-          selectedValuePath="val"
-          displayMemberPath="name"
+        <select
+          class="customSelectBox mr-1"
           v-model="selSikuchoson"
-          :itemClicked="onSikuchosonClicked"
+          @change="onSikuchosonClicked"
+          style="width: 150px"
         >
-        </wj-menu>
+          <option v-for="val in sikuchosonList" :key="val.val" :value="val.val">
+            {{ val.name }}
+          </option>
+        </select>
       </v-row>
-
-      <v-row class="mt-1" no-gutters>
-        <v-col cols="*" style="max-width: 330px">
-          <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
-          </alphabet-button>
-        </v-col>
+      <v-row class="rowStyle mt-1" no-gutters>
+        <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
+        </alphabet-button>
+        <v-btn class="ml-15" height="19" width="25" @click="filterClrclick()">
+          <v-icon dense>mdi-filter-off</v-icon>
+          解除
+        </v-btn>
       </v-row>
       <v-row class="ma-0 mt-1" no-gutters>
         <wj-flex-grid
@@ -329,7 +332,6 @@ export default {
         { val: 3, name: '伊藤' },
       ],
       selTantousya: 0,
-      selTantousyaVal: '',
       sikuchosonList: [
         { val: 0, name: '指定なし' },
         { val: 1, name: '東経市' },
@@ -337,7 +339,6 @@ export default {
         { val: 3, name: '港区' },
       ],
       selSikuchoson: 0,
-      selSikuchosonVal: '',
       loading: false,
       headerColumn1: ['コード', '利用者名', '年\n齢', '市区町村'],
       headerColumn2: ['開始日', '終了日'],
@@ -637,16 +638,12 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-    onTantousyaClicked(s) {
-      s.header = s.selectedItem.name;
-      this.selTantousya = s.selectedItem.name;
-      this.selTantousyaVal = s.selectedItem.val;
+    onTantousyaClicked() {
+      this.selTantousya = this.tantousyaList[this.selTantousya].val;
       this.userFilter();
     },
-    onSikuchosonClicked(s) {
-      s.header = s.selectedItem.name;
-      this.selSikuchoson = s.selectedItem.name;
-      this.selSikuchosonVal = s.selectedItem.val;
+    onSikuchosonClicked() {
+      this.selSikuchoson = this.sikuchosonList[this.selSikuchoson].val;
       this.userFilter();
     },
 
@@ -659,20 +656,20 @@ export default {
       tmpviewdata = this.viewdataAll.concat();
       tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
 
-      if (this.selTantousya && this.selTantousyaVal) {
+      if (this.selTantousya) {
         let array = [];
         for (let i = 0; i < tmpviewdata.length; i++) {
-          if (tmpviewdata[i].tanto == this.selTantousya) {
+          if (tmpviewdata[i].tantoid == this.selTantousya) {
             array.push(tmpviewdata[i]);
           }
         }
         tmpviewdata = array;
       }
 
-      if (this.selSikuchoson && this.selSikuchosonVal) {
+      if (this.selSikuchoson) {
         let array = [];
         for (let i = 0; i < tmpviewdata.length; i++) {
-          if (tmpviewdata[i].sityo == this.selSikuchoson) {
+          if (tmpviewdata[i].sityoid == this.selSikuchoson) {
             array.push(tmpviewdata[i]);
           }
         }
@@ -752,30 +749,6 @@ div#chiikiKeikakuList {
     margin: 0;
   }
 
-  .ymd,
-  .v-btn:not(.addbtn, .itemBtn) {
-    font-size: 14px;
-    background-color: $white;
-    border: thin solid;
-    border-color: $light-gray;
-    color: $font_color;
-    height: 100%;
-  }
-
-  .koumokuTitle {
-    color: $font_color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 100%;
-    text-align: center;
-    background: $view_Title_background;
-    border: none;
-  }
-
   .itemBtn {
     font-size: 14px;
     background: $btn_background;
@@ -793,8 +766,8 @@ div#chiikiKeikakuList {
         text-align: left;
       }
     }
-    &#comboFiltersKasan {
-      width: 250px !important;
+    &#comboFilters {
+      width: 205px !important;
     }
     .wj-btn.wj-btn-default {
       border-left: none !important;

@@ -2,20 +2,42 @@
   <div id="assessmentInput">
     <v-container no-gutters fluid class="container pa-1">
       <v-row no-gutters>
-        <v-col class="leftArea">
+        <v-col class="leftArea mr-2" style="height: 100%" v-show="userdrawer">
           <!-- 左側エリア -->
           <user-list
             ref="user_list"
             :dispAddDaicho="false"
+            :headerheight="60"
             @child-select="setUserSelectPoint"
             @child-user="getSelectUserChildComponent"
           >
           </user-list>
         </v-col>
-        <v-col class="rightArea ml-2 pr-1 pb-1">
+        <v-col class="rightArea pa-0">
           <!-- 中央エリア -->
           <v-row no-gutters class="rowStyle_Dark pa-1 pl-0 mb-1">
             <v-row no-gutters class="rowStyle" style="position: relative">
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    elevation="2"
+                    class="mr-1 ml-1"
+                    height="19"
+                    @click="userdrawerCliked"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon v-if="userdrawer" dense
+                      >mdi-account-arrow-left-outline</v-icon
+                    >
+                    <v-icon v-else dense
+                      >mdi-account-arrow-right-outline</v-icon
+                    >
+                    選択
+                  </v-btn>
+                </template>
+                <span>利用者選択の表示を切替えます</span>
+              </v-tooltip>
               <v-card
                 class="koumokuTitle titleBlueDark pa-1 mr-1 ml-1"
                 outlined
@@ -42,14 +64,18 @@
             >
               入力
             </v-card>
-            <v-btn-toggle class="flex-wrap mr-1" v-model="selInput">
+            <v-btn-toggle
+              class="flex-wrap mr-1"
+              v-model="selInput"
+              color="light-blue darken-4"
+            >
               <v-btn
                 v-for="n in inputList"
                 :key="n.val"
                 outlined
-                height="20"
-                width="40"
-                min-width="40"
+                elevation="2"
+                width="25"
+                height="19"
                 @click="inputChangeclick(1)"
               >
                 {{ n.name }}
@@ -64,7 +90,7 @@
               種類
             </v-card>
             <select
-              class="customSelectBox mr-1"
+              class="customSelectBox wShort mr-1"
               v-model="selKind"
               @change="onKindClicked"
             >
@@ -84,12 +110,13 @@
               class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none; margin-top: -1px"
+              style="border: none"
               outlined
               tile
             >
               <v-btn
                 @click="inputCalendarClick(0)"
+                elevation="2"
                 tile
                 outlined
                 width="160px"
@@ -109,13 +136,22 @@
             >
               作成者
             </v-card>
-            <v-card class="koumokuData pa-1" width="100" tile outlined>
+            <v-card class="koumokuData pa-1" width="150" tile outlined>
             </v-card>
             <v-spacer></v-spacer>
-            <v-btn class="mr-1" height="100%" @click="copyClicked()">
+            <v-btn
+              class="mr-1"
+              elevation="2"
+              height="100%"
+              @click="copyClicked()"
+            >
               前回ｺﾋﾟｰ
             </v-btn>
-            <v-btn height="100%" v-on:click.stop="drawer = !drawer">
+            <v-btn
+              height="100%"
+              elevation="2"
+              v-on:click.stop="drawer = !drawer"
+            >
               履歴参照
             </v-btn>
             <v-navigation-drawer
@@ -193,14 +229,26 @@
             </wj-flex-grid>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1">
-            <v-btn class="mr-1" height="20" @click="copyClicked()">
+            <v-btn
+              class="mr-1"
+              elevation="2"
+              height="20"
+              @click="copyClicked()"
+            >
               クリア
             </v-btn>
-            <v-btn class="mr-1" height="20" @click="copyClicked()">
+            <v-btn
+              class="mr-1"
+              elevation="2"
+              height="20"
+              @click="copyClicked()"
+            >
               削除
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn height="20" @click="copyClicked()"> 登録 </v-btn>
+            <v-btn height="20" elevation="2" @click="copyClicked()">
+              登録
+            </v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -230,7 +278,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { getConnect } from '../../../../connect/getConnect';
+import { getConnect } from '../../connect/getConnect';
 // const STR_MARU = '○';
 // const STYLE_DEFAULT = '';
 // const STYLE_BORDER_SOLID = '1px solid black';
@@ -292,6 +340,7 @@ export default {
       viewData: [],
       drawer: false,
       maingrid: {},
+      userdrawer: true,
     };
   },
   methods: {
@@ -577,6 +626,17 @@ export default {
     onKindClicked() {
       this.selKind = this.kindList[this.selKind].val;
     },
+    userdrawerCliked() {
+      this.userdrawer = !this.userdrawer;
+      let doc = document.getElementsByClassName('rightArea')[0];
+      if (this.userdrawer) {
+        doc.style.minWidth = '700px';
+        doc.style.width = '700px';
+      } else {
+        doc.style.minWidth = '95%';
+        doc.style.width = '95%';
+      }
+    },
   },
 };
 </script>
@@ -609,7 +669,8 @@ div#assessmentInput {
     min-width: 1000px;
     color: $font_color;
     font-size: $cell_fontsize;
-
+    background: $grid_background;
+    border: 1px solid $grid_Border_Color;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -660,7 +721,7 @@ div#assessmentInput {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -704,24 +765,6 @@ div#assessmentInput {
   }
   .v-picker__title {
     display: none !important;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
   }
 }
 </style>

@@ -1,31 +1,63 @@
 <template>
   <div id="keikakuLists">
-    <v-container class="mt-1 ml-1 pa-0" :style="styles" style="max-width: 100%">
-      <v-row no-gutters class="rowStyle mb-1 mt-1">
+    <v-container class="pa-0" :style="styles" style="max-width: 100%">
+      <v-row no-gutters class="rowStyle mb-1">
         <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           表示月
         </v-card>
         <v-card
-          class="pl-1"
-          width="140"
-          height="21"
+          class="mr-1"
+          color="transparent"
+          height="100%"
+          style="border: none"
           outlined
           tile
-          @click="inputCalendarClick(0)"
         >
-          {{ getYm() }}
-          <div class="float-right">
-            <v-icon small>mdi-calendar-month</v-icon>
-          </div>
+          <v-btn
+            @click="inputCalendarClick(0)"
+            elevation="2"
+            tile
+            outlined
+            width="125px"
+            height="100%"
+            class="btnymd"
+            >{{ getYm() }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+          <v-btn
+            elevation="2"
+            class="btnymd pa-0 ml-1"
+            height="100%"
+            tile
+            @click="inputCalendarClick(1)"
+          >
+            <v-icon>mdi-arrow-left-bold</v-icon>
+            前月
+          </v-btn>
+          <v-btn
+            elevation="2"
+            class="btnymd pa-0 ml-1"
+            height="100%"
+            tile
+            @click="inputCalendarClick(2)"
+          >
+            翌月
+            <v-icon>mdi-arrow-right-bold</v-icon>
+          </v-btn>
         </v-card>
-        <v-btn height="20" class="ml-2">検索開始</v-btn>
+        <v-btn class="mr-1" height="19" @click="searchClicked()">
+          <v-icon dense>mdi-magnify</v-icon>
+          検索
+        </v-btn>
       </v-row>
-      <v-row class="rowStyle mt-2" no-gutters>
+      <v-row class="rowStyle mb-1" no-gutters>
         <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           担当者
         </v-card>
         <select
-          class="customSelectBox"
+          class="customSelectBox mr-1"
           v-model="selTantousya"
           @change="onTantousyaClicked"
         >
@@ -33,67 +65,91 @@
             {{ val.name }}
           </option>
         </select>
-        <v-card class="koumokuTitle titleMain ml-1" outlined tile>
+        <v-card class="koumokuTitle titleMain mr-1" outlined tile>
           対象者
         </v-card>
-        <v-btn-toggle
-          class="flex-wrap ml-1"
-          v-model="taisyousyaIndex"
-          mandatory
+        <v-card
+          elevation="0"
+          tile
+          outlined
+          class="pl-1"
+          height="100%"
+          width="450"
         >
-          <v-btn
-            v-for="n in taisyousyaList"
-            :key="n.val"
-            small
-            color="secondary"
-            dark
-            outlined
-            height="21"
-            class="body-2"
+          <div
+            v-for="item in taisyousyaList"
+            :key="'rbKeikakuListstaisyo-' + item.val"
+            class="radioInline"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-        <v-btn-toggle
-          class="flex-wrap ml-1"
-          multiple
-          v-if="taisyousyaIndex == 1"
-        >
-          <v-btn
-            v-for="n in taisyousyaYoteiList"
-            :key="n.val"
-            small
-            color="primary  "
-            dark
-            outlined
-            @click="taisyousyaYoteiListClick(n.val)"
-            height="21"
-            class="body-2"
+            <input
+              type="radio"
+              :id="'rbKeikakuListstaisyo-' + item.val"
+              v-model="taisyousyaIndex"
+              :value="item.val"
+            />
+            <label
+              :for="'rbKeikakuListstaisyo-' + item.val"
+              class="customRadio mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label class="mr-1">【</label>
+          <div
+            v-for="item in taisyousyaYoteiList"
+            :key="'cbKeikakuListstaisyoYotei-' + item.val"
+            class="checkboxInline"
           >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
+            <input
+              type="checkbox"
+              :id="'cbKeikakuListstaisyoYotei-' + item.val"
+              :value="item.val"
+              v-model="taisyousyaYoteiIndex"
+              :disabled="taisyousyaIndex != 1"
+              @change="taisyousyaYoteiListClick"
+            />
+            <label
+              :for="'cbKeikakuListstaisyoYotei-' + item.val"
+              class="customCheckbox mr-2"
+            >
+              <span>{{ item.name }}</span>
+            </label>
+          </div>
+          <label>】</label>
+        </v-card>
       </v-row>
 
-      <v-row class="mt-1" no-gutters>
-        <v-col cols="*" style="max-width: 330px">
+      <v-row class="rowStyle mb-1" no-gutters>
+        <v-col cols="*" style="max-width: 230px">
           <alphabet-button ref="alp" @onAlphabetical="onAlphabetical">
           </alphabet-button>
         </v-col>
-        <v-col style="max-width: 130px">
-          <v-card class="hosokuTitle pa-1 ml-5" outlined tile>
-            <span class="miman mr-1" style="width: 80px">18歳未満</span>
+        <v-col style="max-width: 330px; height: 100%">
+          <v-card class="hosokuTitle" outlined tile>
+            <span class="under18 border mr-1" style="width: 80px">
+              18歳未満
+            </span>
+            <v-btn
+              class="ml-1"
+              width="25"
+              height="19"
+              @click="filterClrclick()"
+            >
+              <v-icon dense>mdi-filter-off</v-icon>
+              解除
+            </v-btn>
           </v-card>
         </v-col>
         <v-col cols="3" style="text-align: right">
           <v-btn @click="onClickJyukyusya" height="20">受給者証登録へ</v-btn>
         </v-col>
       </v-row>
-      <v-row class="ma-0 mt-1" no-gutters>
+      <v-row class="ma-0" no-gutters>
         <wj-flex-grid
           id="keikakuListGrid"
           :headersVisibility="'Column'"
           :autoGenerateColumns="false"
+          :alternatingRowStep="0"
           :allowAddNew="false"
           :allowDelete="false"
           :allowPinning="false"
@@ -107,13 +163,16 @@
           :itemsSource="viewdata"
           :style="{ 'font-size': gridFontSize }"
         >
-          <wj-flex-grid-filter></wj-flex-grid-filter>
+          <wj-flex-grid-filter
+            :initialized="filterInitializedkeikakuIcrn"
+            :showFilterIcons="false"
+          ></wj-flex-grid-filter>
           <wj-flex-grid-column
-            :binding="'riyocode'"
+            :binding="'riyocodeD'"
             align="center"
             valign="middle"
             format="g"
-            width="3*"
+            width="2*"
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
@@ -153,7 +212,7 @@
             :binding="'sakuseikubun'"
             align="center"
             valign="middle"
-            width="1*"
+            width="1.5*"
             :allowResizing="false"
             :isReadOnly="true"
             aggregate="Cnt"
@@ -299,13 +358,13 @@
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
-            aggregate="Sum"
+            aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
             :binding="'tanto'"
             align="center"
             valign="middle"
-            width="3*"
+            width="2*"
             :allowResizing="false"
             :isReadOnly="true"
           ></wj-flex-grid-column>
@@ -351,27 +410,38 @@
         >
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
-            <v-card class="koumokuTitle titleBlueDark wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlueDark wd-70"
+              outlined
+              tile
               >利用者名</v-card
             >
             <v-card
               outlined
               tile
               v-model="doui_dialog_input.riyosya"
-              class="titleYellow wdMdl ml-1 dialog_border_blue"
+              height="25"
+              class="ml-1 dialog_border_blue koumokuData wLng"
               >{{ doui_dialog_input.riyosya }}</v-card
             >
           </v-row>
           <v-row no-gutters class="mt-1 rowStyle_input">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlue wd-70"
+              outlined
+              tile
               >同意日</v-card
             >
             <v-card
               outlined
               tile
               v-model="doui_dialog_input.douibi"
-              class="wdMdl ml-1"
-              @click="datepicker_teisyutu_dialog = true"
+              class="ml-1 pl-1"
+              width="150"
+              height="25"
+              @click="datepicker_doui_dialog = true"
               >{{ doui_dialog_input.douibi }}
               <div class="float-right">
                 <v-icon small>mdi-calendar-month</v-icon>
@@ -380,12 +450,16 @@
           </v-row>
 
           <v-row no-gutters class="mt-1 rowStyle_input">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlue wd-70"
+              outlined
+              tile
               >区分</v-card
             >
             <v-btn-toggle v-model="select_doui_man" class="ml-1">
               <v-btn
-                height="25"
+                height="24"
                 small
                 elevation="0"
                 v-for="val in doui_man"
@@ -395,7 +469,11 @@
             </v-btn-toggle>
           </v-row>
           <v-row no-gutters class="mt-1 rowStyle_input">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlue wd-70"
+              outlined
+              tile
               >署名</v-card
             >
             <input
@@ -403,16 +481,14 @@
               outlined
               tile
               class="dialog_text_field_mdl ml-1"
+              style="height: 25px; width: 200px"
             />
           </v-row>
 
-          <v-row no-gutters justify="space-between" class="mt-3">
-            <v-col cols="3">
-              <v-btn small>削除</v-btn>
-            </v-col>
-            <v-col cols="3" align="right">
-              <v-btn small>登録</v-btn>
-            </v-col>
+          <v-row no-gutters class="mt-1 rowStyle_input">
+            <v-btn elevation="2" height="24">削除</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn elevation="2" height="24">登録</v-btn>
           </v-row>
         </div>
       </v-card>
@@ -446,18 +522,27 @@
         >
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
-            <v-card class="koumokuTitle titleBlueDark wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlueDark wd-70"
+              outlined
+              tile
               >利用者名</v-card
             >
             <v-card
               outlined
-              class="titleYellow wdMdl dialog_border_blue ml-1"
+              height="25"
+              class="ml-1 dialog_border_blue koumokuData wLng"
               v-model="teisyutu_dialog_input.riyosya"
               >{{ teisyutu_dialog_input.riyosya }}</v-card
             >
           </v-row>
           <v-row no-gutters class="rowStyle_input mt-1">
-            <v-card class="koumokuTitle titleBlue wd-70" outlined tile
+            <v-card
+              height="25"
+              class="koumokuTitle titleBlue wd-70"
+              outlined
+              tile
               >提出日</v-card
             >
 
@@ -465,6 +550,8 @@
               outlined
               tile
               class="wdMdl ml-1"
+              width="150"
+              height="25"
               @click="datepicker_teisyutu_dialog = true"
               v-model="teisyutu_dialog_input.teisyutubi"
               >{{ teisyutu_dialog_input.teisyutubi }}
@@ -474,13 +561,10 @@
             </v-card>
           </v-row>
 
-          <v-row no-gutters justify="space-between" class="mt-3">
-            <v-col cols="3">
-              <v-btn small>削除</v-btn>
-            </v-col>
-            <v-col cols="3" align="right">
-              <v-btn small>登録</v-btn>
-            </v-col>
+          <v-row no-gutters class="mt-1 rowStyle_input">
+            <v-btn elevation="2" height="24">削除</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn elevation="2" height="24">登録</v-btn>
           </v-row>
         </div>
       </v-card>
@@ -503,7 +587,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 // import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.styles/wijmo.css';
@@ -519,12 +604,12 @@ import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import { getConnect } from '@connect/getConnect';
+import printUtil from '@/utiles/printUtil';
 
 export default {
   components: { AlphabetButton },
   data() {
     return {
-      mainGrid: [],
       // 計画案 利用者同意・署名ダイアログ用
       doui_dialog: false,
       datepicker_doui_dialog: false,
@@ -610,8 +695,10 @@ export default {
       headerPlus1234: 0,
       headerPlus12345: 0,
       headerPlus123456: 0,
-      headerheight: 200,
+      headerheight: 160,
       checkicon: ['□', '☑'],
+      mainGrid: [],
+      thickList: [4, 11, 12, 13, 14, 16, 19, 20, 21],
     };
   },
   created() {
@@ -623,6 +710,11 @@ export default {
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
   },
   computed: {
     // バインドするスタイルを生成
@@ -643,6 +735,10 @@ export default {
           window.innerHeight - this.headerheight + 'px';
       }
     },
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
+    },
     /***************************
      * 受給者証登録へボタン
      */
@@ -655,127 +751,165 @@ export default {
       this.filterkeikakuIcrn = filter;
     },
     onInitialize(flexGrid) {
-      let array = [];
-      let params = {
-        uniqid: 1,
-        traceid: 1,
-        pJigyoid: 43,
-        pSym: 201901,
-      };
-      return getConnect(this.$route.path + 'View', params).then((result) => {
-        array = result;
-        this.viewdata = array;
-        this.viewdataAll = array;
-        let _self = this;
-        this.mainGrid = flexGrid;
-        this.createHeader(flexGrid);
-        this.createFooter(flexGrid);
-
-        this.createMerge(flexGrid);
-        // クリックイベント
-        flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
-          let ht = flexGrid.hitTest(e);
-          let hPage = flexGrid.hitTest(e.pageX, e.pageY);
-          if (ht.panel == flexGrid.cells) {
-            // 作成日を押下
-            if (hPage.col === 7) {
-              if (
-                confirm(
-                  'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
-                )
-              ) {
-                alert('ok');
-              }
-            }
-            // 同意を押下
-            let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
-            if (hPage.col === 12) {
-              _self.select_doui_key = tmpitem.riyocode;
-              _self.doui_dialog = true;
-              _self.settingDouidialog();
-            }
-            // 提出を押下
-            if (hPage.col === 13) {
-              _self.select_teisyutu_key = tmpitem.riyocode;
-              _self.teisyutu_dialog = true;
-              _self.settingTeisyutudialog();
+      flexGrid.beginUpdate();
+      let _self = this;
+      this.mainGrid = flexGrid;
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        _self.filterkeikakuIcrn.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        _self.filterkeikakuIcrn.showFilterIcons = false;
+      });
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        let hPage = flexGrid.hitTest(e.pageX, e.pageY);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          // 作成日を押下
+          if (hPage.col === 7) {
+            if (
+              confirm(
+                'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
+              )
+            ) {
+              this.$emit('an-select', tmpitem);
+              return;
             }
           }
-        });
+          // 同意を押下
 
-        flexGrid.itemFormatter = function (panel, r, c, cell) {
-          if (panel.cellType == wjGrid.CellType.ColumnHeader) {
-            if (r <= 1) {
-              cell.style.borderBottom = 0;
-            }
-            if (c >= 0 && c <= 4) {
-              cell.style.backgroundColor =
-                sysConst.COLOR.viewTitleBackgroundOrangeDark;
-            }
-            if (c >= 5 && c <= 16) {
-              cell.style.backgroundColor =
-                sysConst.COLOR.viewTitleBackgroundBlue;
-            }
-            if (c >= 17 && c <= 22) {
-              cell.style.backgroundColor =
-                sysConst.COLOR.viewTitleBackgroundGreen;
+          if (hPage.col === 12) {
+            _self.select_doui_key = tmpitem.riyocode;
+            _self.doui_dialog = true;
+            _self.settingDouidialog();
+          }
+          // 提出を押下
+          if (hPage.col === 13) {
+            _self.select_teisyutu_key = tmpitem.riyocode;
+            _self.teisyutu_dialog = true;
+            _self.settingTeisyutudialog();
+          }
+        }
+      });
+
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        cell.style.borderTop = '';
+        cell.style.borderBottom = '';
+        cell.style.borderRight = '';
+        cell.style.borderLeft = '';
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          // if (r <= 1) {
+          //   cell.style.borderBottom = 0;
+          // }
+          if (c >= 0 && c <= 4) {
+            cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundOrangeDark;
+          }
+          if (c >= 5 && c <= 16) {
+            cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+          }
+          if (c >= 17 && c <= 22) {
+            cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundGreen;
+          }
+
+          if (
+            (r == 0 && (c == 13 || c == 14 || c == 21)) ||
+            (r == 1 && (c == 12 || c == 20))
+          ) {
+            cell.style.borderRight =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+            cell.style.borderLeft =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+            cell.style.borderTop =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.ColumnFooter) {
+          if (c > 1) {
+            cell.style.textAlign = 'right';
+            cell.style.justifyContent = 'right';
+            cell.style.alignItems = 'right';
+          }
+          cell.style.borderTop =
+            ' double 4px ' + sysConst.COLOR.gridBorderColor;
+          if (c <= 3) {
+            cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
+          } else {
+            cell.style.backgroundColor = sysConst.COLOR.gridBackground;
+          }
+          if (c == 12 || c == 13 || c == 14 || c == 20 || c == 21) {
+            cell.style.borderRight =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+            cell.style.borderLeft =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+            cell.style.borderBottom =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          }
+        }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          let tmpitem = panel.rows[r].dataItem;
+          if (tmpitem.age <= 18) {
+            if (c == 1) {
+              wjCore.addClass(cell, 'under18 cell');
             }
           }
-          if (panel.cellType == wjGrid.CellType.ColumnFooter) {
-            if (c > 1) {
-              cell.style.textAlign = 'right';
-              cell.style.justifyContent = 'right';
-              cell.style.alignItems = 'right';
-            }
+          if (c == 1 || c == 4 || c == 22) {
+            cell.style.textAlign = 'left';
+          }
+
+          if (c == 2 || c == 3) {
+            cell.style.textAlign = 'right';
+          }
+          if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
             cell.style.backgroundColor = sysConst.COLOR.lightYellow;
           }
-          if (panel.cellType == wjGrid.CellType.Cell) {
-            let tmpitem = panel.rows[r].dataItem;
-            if (tmpitem.age <= 18) {
-              if (c == 1) {
-                wjCore.addClass(cell, 'miman');
-              }
-            }
-            if (c == 1 || c == 4 || c == 22) {
-              cell.style.textAlign = 'left';
-            }
 
-            if (c == 2 || c == 3) {
-              cell.style.textAlign = 'right';
-            }
-            if (c <= 11 || (c >= 15 && c <= 19) || c >= 21) {
-              cell.style.backgroundColor = sysConst.COLOR.lightYellow;
-            }
-
-            // 同意カラム
-            if (c == 12 || c == 13) {
-              cell.innerHTML = _self.checkicon[tmpitem.doui_an];
-            }
-            // 支給決定@カラム確認中
-            if (c == 14) {
-              if (tmpitem.doui_an == 1) {
-                cell.innerHTML = '☑';
-              } else {
-                cell.innerHTML = '□';
-              }
-            }
-            // サービス等利用計画
-            if (c == 20) {
-              cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+          // 同意カラム
+          if (c == 12 || c == 13) {
+            cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+          }
+          // 支給決定@カラム確認中
+          if (c == 14) {
+            if (tmpitem.doui_an == 1) {
+              cell.innerHTML = '☑';
+            } else {
+              cell.innerHTML = '□';
             }
           }
+          // サービス等利用計画
+          if (c == 20) {
+            cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+          }
+          if (c == 12 || c == 13 || c == 14 || c == 20 || c == 21) {
+            cell.style.borderRight =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+            cell.style.borderLeft =
+              '1px solid ' + sysConst.COLOR.viewTitleBackgroundMain;
+          }
+        }
 
-          if (c == _self.headerPlus1234) {
-            cell.style.borderLeftStyle = 'double';
-          }
-          if (c == _self.headerPlus12345) {
-            cell.style.borderLeftStyle = 'double';
-          }
-        };
-      });
+        if (c == 4) {
+          cell.style.borderRight =
+            '1px solid ' + sysConst.COLOR.gridBorderColor;
+        }
+        if (c == _self.headerPlus1234) {
+          cell.style.borderLeftStyle = 'double';
+          cell.style.borderLeftColor = sysConst.COLOR.gridBorderColor;
+        }
+        if (c == _self.headerPlus12345) {
+          cell.style.borderLeftStyle = 'double';
+          cell.style.borderLeftColor = sysConst.COLOR.gridBorderColor;
+        }
+      };
+
+      this.createHeader(flexGrid);
+      this.createFooter(flexGrid);
+      this.createMerge(flexGrid);
     },
     onItemsSourceChanged(flexGrid) {
-      flexGrid.beginUpdate();
       flexGrid.autoSizeRows(0, this.viewdata.length, false);
       flexGrid.endUpdate();
     },
@@ -786,13 +920,12 @@ export default {
     },
     createHeader(flexGrid) {
       var panel = flexGrid.columnHeaders;
-      flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
-      flexGrid.columnHeaders.rows[1].height = 80;
+      flexGrid.columnHeaders.rows[1].height = 60;
       for (let i = 0; i < this.headerColumn1.length; i++) {
         let name = this.headerColumn1[i];
         panel.setCellData(0, i, name);
-        panel.setCellData(2, i, ' ');
+        panel.setCellData(1, i, name);
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -801,8 +934,8 @@ export default {
       let no = 0;
       for (let i = this.headerColumn1.length; i < this.headerPlus12; i++) {
         let name = this.headerColumn2[no];
+        panel.setCellData(0, i, 'サービス等利用計画(案)');
         panel.setCellData(1, i, name);
-        panel.setCellData(2, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -812,7 +945,7 @@ export default {
       for (let i = this.headerPlus12; i < this.headerPlus123; i++) {
         let name = this.headerColumn3[no];
         panel.setCellData(0, i, name);
-        panel.setCellData(2, i, ' ');
+        panel.setCellData(1, i, name);
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -822,31 +955,29 @@ export default {
       no = 0;
       for (let i = this.headerPlus123; i < this.headerPlus1234; i++) {
         let name = this.headerColumn4[no];
+        panel.setCellData(0, i, '担当者会議');
         panel.setCellData(1, i, name);
-        panel.setCellData(2, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
         no++;
       }
-
       panel.setCellData(0, this.headerPlus1234, 'サービス等利用計画');
       no = 0;
       for (let i = this.headerPlus1234; i < this.headerPlus12345; i++) {
         let name = this.headerColumn5[no];
+        panel.setCellData(0, i, 'サービス等利用計画');
         panel.setCellData(1, i, name);
-        panel.setCellData(2, i, ' ');
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
         no++;
       }
-
       no = 0;
       for (let i = this.headerPlus12345; i < this.headerPlus123456; i++) {
         let name = this.headerColumn6[no];
         panel.setCellData(0, i, name);
-        panel.setCellData(2, i, ' ');
+        panel.setCellData(1, i, name);
         let col = flexGrid.columns[i];
         col.wordWrap = true;
         col.multiLine = true;
@@ -936,7 +1067,23 @@ export default {
       }
       this.userFilter();
     },
-
+    searchClicked() {
+      this.search();
+    },
+    search() {
+      let params = {
+        uniqid: 3,
+        traceid: 1,
+        pJigyoid: 62,
+        pSym: this.kikanYm.format('YYYYMM'),
+      };
+      return getConnect('/KeikakuListsView', params, 'SIENP').then((result) => {
+        console.log(result);
+        let array = result;
+        this.viewdata = array;
+        this.viewdataAll = array;
+      });
+    },
     userFilter() {
       let tmpviewdata = [];
       tmpviewdata = this.viewdataAll.concat();
@@ -969,7 +1116,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (
@@ -995,15 +1142,7 @@ export default {
       }
     },
     monthSelect() {
-      let split = this.picker.split('-');
-      this.kikanYm = moment({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      this.kikanYm = dayjs(this.picker);
       this.viewdata = [];
       this.datepicker_dialog = false;
     },
@@ -1013,13 +1152,13 @@ export default {
     },
 
     douiSelect() {
-      this.doui_dialog_input.douibi = moment(this.doui_picker).format(
+      this.doui_dialog_input.douibi = dayjs(this.doui_picker).format(
         'YYYY年MM月DD日'
       );
       this.datepicker_doui_dialog = false;
     },
     teisyutuSelect() {
-      this.teisyutu_dialog_input.teisyutubi = moment(
+      this.teisyutu_dialog_input.teisyutubi = dayjs(
         this.teisyutu_picker
       ).format('YYYY年MM月DD日');
       this.datepicker_teisyutu_dialog = false;
@@ -1032,13 +1171,13 @@ export default {
     settingDouidialog() {
       // alert(this.select_doui_key);
       this.doui_dialog_input.riyosya = '100011 東経 わかめ';
-      this.doui_dialog_input.douibi = moment().format('YYYY年MM月DD日');
+      this.doui_dialog_input.douibi = dayjs().format('YYYY年MM月DD日');
     },
     // 提出ダイアログの選択初期データ表記
     settingTeisyutudialog() {
       // alert(this.select_doui_key);
       this.teisyutu_dialog_input.riyosya = '100011 東経 わかめ';
-      this.teisyutu_dialog_input.teisyutubi = moment().format('YYYY年MM月DD日');
+      this.teisyutu_dialog_input.teisyutubi = dayjs().format('YYYY年MM月DD日');
     },
 
     onFontsize() {
@@ -1052,6 +1191,16 @@ export default {
       this.mainGrid.itemsSource = this.viewdata;
       this.mainGrid.endUpdate();
     },
+    filterClrclick() {
+      this.filterkeikakuIcrn.clear();
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示月：' + this.getYm();
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('計画一覧', printUtil.DIRECTION.landscape);
+    },
   },
 };
 </script>
@@ -1064,11 +1213,11 @@ div#keikakuLists {
   color: $font_color;
   font-family: 'メイリオ';
   font-size: 14px;
-  .wj-right {
-    &.wj-elem-filter {
-      float: none;
-    }
-  }
+  // .wj-right {
+  //   &.wj-elem-filter {
+  //     float: none;
+  //   }
+  // }
   .wj-cell {
     font-weight: normal;
 
@@ -1081,7 +1230,22 @@ div#keikakuLists {
       }
     }
   }
-
+  &.wj-flexgrid [wj-part='root'] {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: $brawn;
+    border-radius: 0px;
+  }
   #load_dialog {
     position: fixed;
     top: 0;
@@ -1115,11 +1279,17 @@ div#keikakuLists {
 }
 
 div#keikakuListGrid {
+  font-family: 'メイリオ';
+  font-size: 12px;
   width: 100%;
   height: var(--height);
-
+  z-index: 2;
+  background: $grid_background;
+  border: 1px solid $grid_Border_Color;
+  min-height: 450px;
   .wj-header {
     font-weight: normal;
+    line-height: 110%;
   }
 }
 
@@ -1136,39 +1306,5 @@ div#keikakuListGrid {
   left: 100px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
-}
-.miman {
-  padding: 0;
-  position: relative;
-  width: auto;
-  height: 20px;
-}
-.miman::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-top: 10px solid green;
-  border-left: 10px solid transparent;
 }
 </style>

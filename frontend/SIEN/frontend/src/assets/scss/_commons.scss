@@ -5,7 +5,7 @@ html {
     /* overflow-y: auto; */
     overscroll-behavior-y: none;
     overscroll-behavior-x: none;
-
+    min-width: 1320px;
 
     body {
 
@@ -40,10 +40,14 @@ html {
 
 .rowStyle_Dark {
     height: 28px;
-    background: #C2EEFF;
+    background: $view_Row_background;
 
     &.tall {
         height: 32px;
+    }
+
+    &.taller {
+        height: 35px;
     }
 }
 
@@ -101,6 +105,10 @@ html {
 
 }
 
+.titleRed {
+    background: $view_Title_background_Red !important;
+}
+
 .titleGreen {
     color: $view_Title_font_color_Green !important;
     background: $view_Title_background_Green !important;
@@ -137,6 +145,19 @@ html {
         border: 1px solid;
         border-color: $view_Border_Blue;
     }
+
+    &.h25Padding {
+        padding-left: 2px;
+        padding-top: 2px;
+    }
+
+    &.alignCenter {
+        text-align: center;
+    }
+
+    &.wLng {
+        width: 300px;
+    }
 }
 
 .under18 {
@@ -145,8 +166,16 @@ html {
     width: auto;
     height: 20px;
     background: $grid_background;
-    border: 1px solid;
-    border-color: $light-gray;
+
+    &.border {
+        border: 1px solid;
+        border-color: $light-gray;
+    }
+
+    &.cell {
+        padding-top: 4px;
+        padding-left: 6px;
+    }
 }
 
 .under18::after {
@@ -156,7 +185,7 @@ html {
     right: 0;
     width: 0;
     height: 0;
-    border-top: 10px solid green;
+    border-top: 10px solid $view_Under18_Mark;
     border-left: 10px solid transparent;
 }
 
@@ -211,7 +240,11 @@ input:focus {
 }
 
 input:disabled {
-    background: $view_Data_Read_background;
+    background: $view_Input_Disabled_background;
+}
+
+.v-textarea textarea {
+    font-size: 14px;
 }
 
 /**********************
@@ -224,6 +257,17 @@ input:disabled {
     color: $font_color;
     height: 100%;
     margin-top: -2px
+}
+
+.commonBtn {
+    background: $btn_background;
+    border: 1px solid $light-gray;
+    color: $font_color;
+    height: 100%;
+
+    &:hover {
+        background-color: $light-gray;
+    }
 }
 
 .v-btn {
@@ -265,6 +309,23 @@ a {
 * Tab系設定
 ***********************/
 div.commonTab {
+    .v-tabs {
+        height: 28px;
+        min-width: 1250px;
+    }
+
+    .wTabShort {
+        width: 600px;
+        min-width: 600px;
+
+        .v-slide-group__content {
+            border-bottom: 1px solid $tab_background;
+            height: 24px;
+            margin-top: 4px;
+            min-width: 500px
+        }
+    }
+
     .v-tab {
         white-space: normal;
         margin-left: 12px;
@@ -285,6 +346,9 @@ div.commonTab {
 
     .v-slide-group__content {
         border-bottom: 1px solid $tab_background;
+        height: 24px;
+        margin-top: 4px;
+        min-width: 1200px
     }
 }
 
@@ -298,11 +362,16 @@ div.mSizeCommonTab {
         height: 24px;
     }
 
+    .v-slide-group__content {
+        height: 24px;
+    }
+
     a {
         &.v-tab {
+            margin-left: 12px;
+            margin-bottom: 4px;
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
             border: 1px solid $light-gray;
-            margin-left: 1px;
-            margin-bottom: 1px;
 
             &--active {
                 color: $view_Title_font_color_Blue;
@@ -343,7 +412,7 @@ div.mSizeCommonTab {
     }
 
     &.wLong {
-        width: 315px;
+        width: 300px;
     }
 
     &.hHigh {
@@ -391,8 +460,19 @@ div.radioInline {
                 font-weight: bold;
             }
         }
+    }
 
+    input[type="radio"]:disabled {
+        +label {
+            &:before {
+                background: $view_Title_background_Main;
+            }
 
+            span {
+                color: $gray;
+                font-weight: normal;
+            }
+        }
     }
 }
 
@@ -422,7 +502,7 @@ div.checkboxInline {
             }
 
             span {
-                color: $view_Title_font_color_Orange;
+                color: $checkbox_color_check;
                 font-weight: bold;
             }
         }
@@ -439,12 +519,39 @@ div.checkboxInline {
                 font-weight: normal;
             }
         }
-
-
     }
 }
 
+/**********************
+* grid系部品
+***********************/
+.grdBorder {
+    background-color: $grid_Border_Color;
+    width: 2px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 
+/**********************
+* calender系部品
+***********************/
+.v-date-picker-table.v-date-picker-table--date>table>thead tr th:nth-child(7) {
+    color: $font_color_saturday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>tbody tr td:nth-child(7) .v-btn__content {
+    color: $font_color_saturday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>thead tr th:nth-child(1) {
+    color: $font_color_sunday;
+}
+
+.v-date-picker-table.v-date-picker-table--date>table>tbody tr td:nth-child(1) .v-btn__content {
+    color: $font_color_sunday;
+}
 
 
 

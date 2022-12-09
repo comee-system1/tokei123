@@ -463,12 +463,31 @@ export default {
             _self.assesmentView[ht.row]['select'] == '〇' ? '' : '〇';
 
           komokuView = _self.komokuView;
-          let sort = komokuView.length + 1;
-          komokuView.push({
-            sort: sort,
-            item: _self.assesmentView[ht.row]['status2'],
-          });
+          // let sort = komokuView.length + 1;
+          // komokuView.push({
+          //   sort: sort,
+          //   item: _self.assesmentView[ht.row]['status2'],
+          // });
 
+          let sort = 0;
+          if (_self.assesmentView[ht.row]['select'] == '〇') {
+            sort = komokuView.length + 1;
+            komokuView.push({
+              sort: sort,
+              item: _self.assesmentView[ht.row]['status3'],
+            });
+          } else {
+            komokuView = komokuView.filter((value) => {
+              return value.item != _self.assesmentView[ht.row]['status3'];
+            });
+            console.log(komokuView);
+
+            // 並び順の再配置
+            for (let i = 0; i < komokuView.length; i++) {
+              komokuView[i].sort = i + 1;
+            }
+          }
+          _self.komokuView = komokuView;
           _self.itemFlexGrid.itemsSource = [];
           _self.itemFlexGrid.itemsSource = _self.komokuView;
           flexGrid.refresh();

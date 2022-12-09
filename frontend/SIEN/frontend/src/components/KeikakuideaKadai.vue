@@ -5,14 +5,27 @@
       :headersVisibility="'Column'"
       :initialized="onInitialized"
       :itemsSource="viewData"
-      :allowDragging="'Both'"
+      :allowAddNew="false"
+      :allowDelete="false"
+      :allowPinning="false"
+      :allowMerging="'None'"
+      :allowResizing="false"
+      :allowSorting="false"
+      :allowDragging="false"
+      :alternatingRowStep="0"
+      :formatItem="onFormatItem"
+      :imeEnabled="true"
+      :selectionMode="'Cell'"
+      :showMarquee="true"
       :autoRowHeights="true"
+      :itemsSourceChanged="onItemsSourceChanged"
     >
       <wj-flex-grid-column
         header="順位"
         binding="sort"
         :width="40"
         :isReadOnly="true"
+        align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'解決すべき課題\n(本人のニーズ)'"
@@ -21,6 +34,7 @@
         :allowResizing="true"
         :wordWrap="true"
         :multiLine="true"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="支援目標"
@@ -30,6 +44,7 @@
         :multiLine="true"
         :allowResizing="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="達成時期"
@@ -38,6 +53,7 @@
         :word-wrap="false"
         :allowResizing="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
 
       <wj-flex-grid-column
@@ -47,6 +63,7 @@
         :wordWrap="true"
         :multiLine="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'課題のための本人\nの役割'"
@@ -56,6 +73,7 @@
         :multiLine="true"
         :allowResizing="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'評価\n時期'"
@@ -65,6 +83,7 @@
         :word-wrap="false"
         :allowResizing="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="その他留意事項"
@@ -73,6 +92,7 @@
         :wordWrap="true"
         :multiLine="true"
         format="d"
+        align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="削除"
@@ -81,6 +101,8 @@
         :word-wrap="false"
         :allowResizing="true"
         format="d"
+        align="center"
+        :isReadOnly="true"
       ></wj-flex-grid-column>
     </wj-flex-grid>
 
@@ -263,7 +285,6 @@ export default {
     return {
       viewData: [],
       onflexGrid: [],
-      viewDataLength: 0,
       editTextDialog: false,
       serviceData: [],
       serviceDataLength: 0,
@@ -280,6 +301,8 @@ export default {
         '重度障害者等包括支援',
       ],
       sortEditFlag: false,
+      userdrawer: true,
+      mainGrid: {},
     };
   },
   created() {},
@@ -291,6 +314,27 @@ export default {
      */
     registButton() {
       alert('課題登録ボタン');
+    },
+    setViewData(viewData) {
+      console.log(viewData);
+
+      let array = [];
+      if (viewData.keikakudetail != undefined) {
+        for (let i = 0; i < viewData.keikakudetail.length; i++) {
+          array.push({
+            sort: viewData.keikakudetail[i].koban,
+            resolve: viewData.keikakudetail[i].kadai,
+            sien: viewData.keikakudetail[i].shienmokuhyo,
+            tassei: viewData.keikakudetail[i].tasseijiki,
+            service: viewData.keikakudetail[i].fukushiservice,
+            task: viewData.keikakudetail[i].yakuwari,
+            hyoka: viewData.keikakudetail[i].hyokajiki,
+            other: viewData.keikakudetail[i].ryuijiko,
+            edit: '',
+          });
+        }
+      }
+      this.viewData = array;
     },
     /************************
      * 順変更
@@ -320,7 +364,9 @@ export default {
       }
       // 課題支援配列に追加
       if (type == 'view') {
-        this.createData(this.viewData.length + 1);
+        let ar = this.viewData.concat();
+        ar.push({});
+        this.viewData = ar;
       }
     },
     /************************
@@ -336,11 +382,16 @@ export default {
     },
     delcheck(array) {
       for (let i = 0; i < array.length; i++) {
-        if (array[i].edit === true) {
+        if (array[i].edit == '○') {
           delete array[i];
         }
       }
       return array;
+    },
+    grdRefresh(userDispflg) {
+      this.userdrawer = userDispflg;
+      this.mainGrid.refresh();
+      this.mainGrid.autoSizeRows();
     },
     /*******************************
      * 福祉サービス等のダイアログ
@@ -368,10 +419,10 @@ export default {
           var idx = weeklyKey.findIndex(({ key }) => key === ht.col);
           let type = weeklyKey[idx].type;
           let icon = '';
-          if (_self.serviceData[ht.row][type] === '〇') {
+          if (_self.serviceData[ht.row][type] === '○') {
             icon = '';
           } else {
-            icon = '〇';
+            icon = '○';
           }
           flexGrid.setCellData(ht.row, ht.col, icon);
           _self.serviceData[ht.row][type] = icon;
@@ -380,7 +431,7 @@ export default {
           let count_week = 0;
           for (let i = 0; i < weeklyKey.length; i++) {
             let w = weeklyKey[i].type;
-            if (_self.serviceData[ht.row][w] == '〇') {
+            if (_self.serviceData[ht.row][w] == '○') {
               count_week++;
             }
           }
@@ -431,6 +482,7 @@ export default {
         e.cell.style.textAlign = 'center';
         e.cell.style.justifyContent = 'center';
         e.cell.style.alignItems = 'center';
+
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (e.panel.cellType == wjGrid.CellType.Cell) {
           if (e.col == 1 || e.col == 2 || e.col == 18) {
@@ -537,13 +589,37 @@ export default {
       };
       flexGrid.mergeManager = mm;
     },
-
+    getGrid() {
+      return this.mainGrid;
+    },
     /*******************************
      * 一覧
      */
     onInitialized(flexGrid) {
+      this.mainGrid = flexGrid;
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          if (ht.col == 8) {
+            if (ht.panel.getCellData(ht.row, ht.col) == '○') {
+              ht.panel.setCellData(ht.row, ht.col, ' ');
+            } else {
+              ht.panel.setCellData(ht.row, ht.col, '○');
+            }
+          } else {
+            // 完全編集モードへ移行
+            flexGrid.startEditing(true);
+          }
+        }
+      });
+      flexGrid.cellEditEnded.addHandler((flexGrid) => {
+        flexGrid.beginUpdate();
+        flexGrid.autoSizeRows();
+        flexGrid.endUpdate();
+      });
+
       this.onflexGrid = flexGrid;
-      this.createData();
       this.createHeader(flexGrid);
       this.createFormat(flexGrid);
 
@@ -573,6 +649,18 @@ export default {
         }
       });
     },
+    onFormatItem(flexGrid, e) {
+      if (e.panel == flexGrid.cells) {
+        if (this.userdrawer) {
+          e.cell.style.fontSize = '12px';
+        } else {
+          e.cell.style.fontSize = '16.5px';
+        }
+      }
+    },
+    onItemsSourceChanged(flexGrid) {
+      flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+    },
 
     createServiceData(cnt = 3) {
       this.serviceData = [];
@@ -587,7 +675,7 @@ export default {
           one: 5,
           mon: '',
           tue: '',
-          wed: '〇',
+          wed: '○',
           thr: '',
           fri: '',
           sat: '',
@@ -616,32 +704,27 @@ export default {
     editTextSave() {
       this.editTextDialog = false;
     },
-    createData(cnt = 5) {
-      let array = [];
-      for (let i = 0; i < cnt; i++) {
-        array.push({
-          sort: i + 1,
-          resolve: i + '現在の生活を考え直し特に母親との関係をよくしたい',
-          sien: i + '現自分の生活について両親と話し合えるようになる',
-          tassei: '6ヶ月',
-          service: '現在の生活について一緒に考え、家族との仲介役を果たす',
-          task: '無理がない生活を考え直しそのために両親に理解してもらえる',
-          hyoka: '6ヶ月',
-          other: '自立の考え方が焦点となる本人の意思を大切にしていく',
-          edit: false,
-        });
-      }
-      this.viewData = array;
-      this.viewDataLength = array.length;
-    },
+
     createHeader(flexGrid) {
       flexGrid.columnHeaders.rows[0].height = 50;
     },
     createFormat(flexGrid) {
       flexGrid.formatItem.addHandler(function (s, e) {
-        e.cell.style.textAlign = 'center';
-        e.cell.style.justifyContent = 'center';
-        e.cell.style.alignItems = 'center';
+        if (e.panel == flexGrid.cells) {
+          if (e.col == 0 || e.col == 3 || e.col == 6 || e.col == 8) {
+            e.cell.style.textAlign = 'center';
+            e.cell.style.justifyContent = 'center';
+            e.cell.style.alignItems = '';
+          } else {
+            e.cell.style.textAlign = '';
+            e.cell.style.justifyContent = '';
+            e.cell.style.alignItems = '';
+          }
+        } else {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
+        }
       });
     },
   },
@@ -650,9 +733,19 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
+
+#kadaiGrid {
+  height: 100%;
+  max-height: 100%;
+}
 #serviceGrid,
 #kadaiGrid {
   font-size: 12px;
+  background: $grid_background;
+  border: 1px solid $grid_Border_Color;
+  &.wj-flexgrid [wj-part='root'] {
+    overflow-y: scroll !important;
+  }
   .wj-header {
     font-weight: normal;
     background: $view_Title_background_Blue;
@@ -664,16 +757,15 @@ export default {
   }
 
   .wj-cell {
+    padding: 2px;
     display: flex;
-    &.wj-header {
-      align-items: center;
-    }
+
     &:first-child.wj-state-selected {
       background: transparent;
       color: initial;
     }
 
-    text-align: left !important;
+    // text-align: left !important;
   }
 }
 .v-dialog--fullscreen {

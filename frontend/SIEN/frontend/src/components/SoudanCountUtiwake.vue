@@ -1,14 +1,13 @@
 <template>
   <div id="soudanCountUtiwake">
-    <v-container class="pa-1" fluid style="min-height: 89vh">
+    <v-container class="pa-1" fluid>
       <v-navigation-drawer
         class="blue lighten-5"
         v-model="drawer"
         absolute
         left
-        width="90"
-        min-width="90"
-        style="min-height: 1000px"
+        width="100"
+        min-width="100"
       >
         <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
@@ -88,7 +87,8 @@
             >
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
-            <v-btn height="20" v-on:click.stop="drawer = !drawer">
+            <v-btn elevation="2" height="18" v-on:click.stop="drawer = !drawer">
+              <v-icon dense>mdi-calendar-expand-horizontal</v-icon>
               日付選択
             </v-btn>
           </span>
@@ -293,8 +293,7 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
-// import { mstHouhou } from '@backend/api/MstHouhou';
-// import { mstKankei } from '@backend/api/MstKankei';
+
 import MdSelect from '../components/MdSelect.vue';
 import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
@@ -466,11 +465,26 @@ export default {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       document.getElementById(GRID_ID.Sien).style.display = STYLE_NONE;
+      window.addEventListener('resize', this.calculateWindowHeight);
+      this.calculateWindowHeight();
     });
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
   },
   methods: {
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
+    calculateWindowHeight() {
+      if (document.getElementById(GRID_ID.Soudan) != null) {
+        document.getElementById(GRID_ID.Soudan).style.height =
+          window.innerHeight - 160 + 'px';
+        document.getElementById(GRID_ID.Sien).style.height =
+          window.innerHeight - 160 + 'px';
+      }
+    },
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
     onInitializeSoudanCountUtiwakeGrid(flexGrid) {
       flexGrid.beginUpdate();
@@ -971,6 +985,13 @@ export default {
     },
     dateSelect() {
       this.kikanYmd = dayjs(this.pickerYmd);
+      let tmp =
+        this.kikanYmd.format('YYYY') +
+        '-' +
+        this.kikanYmd.format('MM') +
+        '-' +
+        this.kikanYmd.format('DD');
+      this.$refs.mdselect.setYm(tmp);
       this.datepickerYmd_dialog = false;
     },
     monthSelect(kbn) {
@@ -1025,6 +1046,7 @@ div#soudanCountUtiwake {
   // width: 1366px !important;
   min-width: 1266px !important;
   max-width: 1920px;
+  min-height: 500px;
   width: auto;
 
   #load_dialog {
@@ -1042,7 +1064,7 @@ div#soudanCountUtiwake {
   }
 
   .gridTitle {
-    color: mediumblue;
+    color: $font_color_saturday;
     width: 500px;
     min-width: 100px;
     max-width: 500px;
@@ -1060,10 +1082,11 @@ div#soudanCountUtiwake {
     color: $font_color;
     width: 100%;
     min-width: 1250px;
-    height: 77vh;
     background: $grid_background;
+    border: 1px solid $grid_Border_Color;
     z-index: 0;
     font-size: $cell_fontsize;
+    min-height: 450px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1140,24 +1163,6 @@ div#soudanCountUtiwake {
   left: 200px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #soudanCountUtiwakeDatepickerS {
   position: absolute;

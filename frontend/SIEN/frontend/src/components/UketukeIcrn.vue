@@ -6,8 +6,8 @@
         v-model="drawer"
         absolute
         left
-        width="90"
-        min-width="90"
+        width="100"
+        min-width="100"
       >
         <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
@@ -29,8 +29,8 @@
         <MdSelect class="ma-1" ref="mdselect" @dateSelect="setMd"></MdSelect>
       </v-navigation-drawer>
       <v-row no-gutters class="rowStyle mb-1 mt-0">
-        <div style="width: 90px" v-show="drawer"></div>
-        <v-card elevation="2">
+        <div style="width: 100px" v-show="drawer"></div>
+        <v-card elevation="3">
           <a class="addBtn" @click="addClick">新規登録</a>
         </v-card>
       </v-row>
@@ -38,11 +38,16 @@
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示単位
         </v-card>
-        <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
+        <v-btn-toggle
+          class="flex-wrap mr-1"
+          color="light-blue darken-4"
+          v-model="dispIndex"
+          mandatory
+        >
           <v-btn
             v-for="n in dispList"
             :key="n.val"
-            color="secondary"
+            elevation="2"
             outlined
             width="50"
             height="20"
@@ -64,6 +69,7 @@
             <v-btn
               @click="inputCalendarClick(0)"
               class="btnymd mr-1"
+              elevation="2"
               tile
               outlined
               width="150px"
@@ -75,26 +81,27 @@
             </v-btn>
 
             <v-btn
-              elevation="0"
+              elevation="2"
               class="btnymd pa-0 mr-1"
               height="100%"
-              x-small
               tile
               @click="inputCalendarClick(1)"
             >
               <v-icon>mdi-arrow-left-bold</v-icon>
+              前日
             </v-btn>
             <v-btn
-              elevation="0"
+              elevation="2"
               class="btnymd pa-0 mr-1"
               height="100%"
-              x-small
               tile
               @click="inputCalendarClick(2)"
             >
+              翌日
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
-            <v-btn height="20" v-on:click.stop="drawer = !drawer">
+            <v-btn elevation="2" height="18" v-on:click.stop="drawer = !drawer">
+              <v-icon dense>mdi-calendar-expand-horizontal</v-icon>
               日付選択
             </v-btn>
           </span>
@@ -124,7 +131,8 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="mr-1 pa-1" height="20" @click="searchClicked()">
+            <v-btn class="ml-1" height="19" @click="searchClicked()">
+              <v-icon dense>mdi-magnify</v-icon>
               検索
             </v-btn>
           </span>
@@ -168,12 +176,13 @@
             {{ val.name }}
           </option>
         </select>
-        <v-btn class="mr-1" width="25" height="20" @click="filterClrclick()">
-          <v-icon small>mdi-filter-off</v-icon>
+        <v-btn class="ml-1" height="19" width="25" @click="filterClrclick()">
+          <v-icon dense>mdi-filter-off</v-icon>
+          解除
         </v-btn>
         <v-spacer></v-spacer>
         <v-card class="countTitle pa-1" outlined tile>
-          実人数: <span>{{ viewdata.length }} </span>人
+          実人数: <span>{{ getJituninzu }} </span>人
         </v-card>
       </v-row>
       <v-row class="ma-0" no-gutters>
@@ -257,9 +266,7 @@
     </v-overlay>
     <v-dialog v-model="tourokuScreenFlag" width="1070" eager>
       <v-card class="common_dialog pb-1">
-        <v-card-title class="dialog_title">
-          モニタリング 利用者同意・署名
-        </v-card-title>
+        <v-card-title class="dialog_title"> 受付登録 </v-card-title>
         <v-btn
           elevation="2"
           icon
@@ -288,6 +295,7 @@ import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import UketukeTouroku from '../components/UketukeTouroku.vue';
 import MdSelect from '../components/MdSelect.vue';
+import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
 const GRD_ID = {
   Uketuke: 'uketukeIcrnGrid',
@@ -362,7 +370,7 @@ export default {
         },
         {
           dispkbn: 0,
-          dataname: 'sdnnam',
+          dataname: 'sdnkanrk',
           title: '関係相談者',
           width: '3*',
           align: 'left',
@@ -397,7 +405,7 @@ export default {
         },
         {
           dispkbn: 0,
-          dataname: 'naiyo',
+          dataname: 'naiyoD',
           title: '内容',
           width: '5*',
           align: 'left',
@@ -425,83 +433,20 @@ export default {
         },
         {
           dispkbn: 1,
-          dataname: 'kanD',
+          dataname: 'nismark',
           title: '日\n誌',
           width: '0.5*',
           align: 'center',
         },
         {
           dispkbn: 0,
-          dataname: 'taiousya',
+          dataname: 'sryaku',
           title: '対応者',
           width: '1*',
           align: 'left',
         },
       ],
-      uketukeKasanHeaderList: [
-        { dataname: 'taiouYmd', title: '対応日', width: 120, align: 'center' },
-        {
-          dataname: 'sTime',
-          title: '開始\n時間',
-          width: 50,
-          align: 'center',
-        },
-        {
-          dataname: 'eTime',
-          title: '終了\n時間',
-          width: 50,
-          align: 'center',
-        },
-        { dataname: 'name', title: '利用者名', width: '*', align: 'left' },
-        {
-          dataname: 'jigyouKbnD',
-          title: '事業\n区分',
-          width: 50,
-          align: 'center',
-        },
-        {
-          dataname: 'sienHouhou',
-          title: '支援\n方法',
-          width: 50,
-          align: 'center',
-        },
-        {
-          dataname: 'kasanName',
-          title: '加算項目',
-          width: '*',
-          align: 'left',
-        },
-        {
-          dataname: 'kikanmei',
-          title: '機関名・場所\n委託先',
-          width: '*',
-          align: 'left',
-        },
-        {
-          dataname: 'taiousya2',
-          title: '対応者氏名',
-          width: '*',
-          align: 'left',
-        },
-        {
-          dataname: 'naiyou',
-          title: '内容',
-          width: 310,
-          align: 'left',
-        },
-        {
-          dataname: 'nissi',
-          title: '日\n誌',
-          width: 20,
-          align: 'center',
-        },
-        {
-          dataname: 'taiousya',
-          title: '対応者',
-          width: 70,
-          align: 'left',
-        },
-      ],
+
       taiousyaList: [
         { val: 0, name: '指定なし' },
         { val: 1, name: '宇都宮' },
@@ -552,10 +497,45 @@ export default {
         { val: 1, name: '月指定' },
       ],
       inputRef: this.getDispKbn(),
+      mainGrid: [],
+      thickList: [2, 9],
     };
   },
-
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
+  },
+  computed: {
+    getJituninzu() {
+      return Array.from(
+        this.viewdata.reduce(
+          (map, currentitem) => map.set(currentitem.intcode, currentitem),
+          new Map()
+        )
+      ).length;
+    },
+  },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById(GRD_ID.Uketuke) != null) {
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
+          document.getElementById(GRD_ID.Uketuke).style.height =
+            window.innerHeight - 150 + 'px';
+        } else {
+          document.getElementById(GRD_ID.Uketuke).style.height =
+            window.innerHeight - 130 + 'px';
+        }
+      }
+    },
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
+    },
     initComboFilters(combo) {
       combo.header = combo.selectedItem.name;
     },
@@ -563,6 +543,7 @@ export default {
       this.filter = filter;
     },
     onInitializeUketukeIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       flexGrid.beginUpdate();
       // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
@@ -676,18 +657,27 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
-        if (e.col == 14) {
+        if (e.col == 9) {
           e.cell.innerHTML =
-            '<font color="blue">' +
-            wjCore.escapeHtml(tmpitem.cskmknm) +
-            '</font>' +
-            '<div>' +
             wjCore.escapeHtml(e.cell.innerHTML) +
-            '</div>';
+            ' ' +
+            wjCore.escapeHtml(tmpitem.sdnnam);
         }
+        // if (e.col == 14) {
+        //   e.cell.innerHTML =
+        //     '<font color="#276bc5">' +
+        //     wjCore.escapeHtml(tmpitem.cskmknm) +
+        //     '</font>' +
+        //     '<div>' +
+        //     wjCore.escapeHtml(e.cell.innerHTML) +
+        //     '</div>';
+        // }
       }
       e.cell.style.borderRight = '';
-      if (e.col == 2 || e.col == 9) {
+      let thisckCol = this.thickList.filter(function (colindex) {
+        return colindex == e.col;
+      });
+      if (thisckCol.length > 0) {
         e.cell.style.borderRight = '1px solid';
       }
     },
@@ -710,10 +700,9 @@ export default {
     },
     getDispKbn() {
       this.inputRef = sysConst.JIGYO_KBN_NAME.KIHON;
-      var urlparam = location.search.substring(1);
-      if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+      if (this.$route.params.kind == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
         this.inputRef = sysConst.JIGYO_KBN_NAME.KEIKAKU;
-      } else if (urlparam == 'ref=' + sysConst.JIGYO_KBN_NAME.CHIIKI) {
+      } else if (this.$route.params.kind == sysConst.JIGYO_KBN_NAME.CHIIKI) {
         this.inputRef = sysConst.JIGYO_KBN_NAME.CHIIKI;
       }
       return this.inputRef;
@@ -731,9 +720,9 @@ export default {
       this.screenFlag = true;
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pSymd: this.targetYmd,
           pEymd: this.targetYmd,
           Dspkbn: 0,
@@ -921,7 +910,16 @@ export default {
     },
     dateSelect() {
       this.kikanYmd = dayjs(this.pickerYmd);
+      let tmp =
+        this.kikanYmd.format('YYYY') +
+        '-' +
+        this.kikanYmd.format('MM') +
+        '-' +
+        this.kikanYmd.format('DD');
+      this.targetYmd = this.kikanYmd.format('YYYYMMDD');
+      this.$refs.mdselect.setYm(tmp);
       this.datepickerYmd_dialog = false;
+      this.setViewData(true);
     },
     monthSelect(kbn) {
       if (kbn == 0) {
@@ -953,6 +951,18 @@ export default {
     },
     filterClrclick() {
       this.filter.clear();
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示単位：' + this.dispList[this.dispIndex].name + ' ';
+      if (this.dispIndex == 0) {
+        sub1 += this.getYmd();
+      } else {
+        sub1 += this.getYm(0) + '～' + this.getYm(1);
+      }
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('相談一覧', printUtil.DIRECTION.landscape);
     },
   },
 };
@@ -993,7 +1003,7 @@ div#uketukeIcrn {
     background: $view_Hosoku_background;
     border: none;
     > span {
-      color: red;
+      color: $font_color_sunday;
     }
   }
 
@@ -1002,8 +1012,13 @@ div#uketukeIcrn {
     font-size: $cell_fontsize;
     width: 100%;
     min-width: 1050px !important;
-    height: 80vh;
     background: $grid_background;
+    border: 1px solid $grid_Border_Color;
+    min-height: 450px;
+    &.wj-flexgrid [wj-part='root'] {
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+    }
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -1054,7 +1069,7 @@ div#uketukeIcrn {
       border-radius: 0px;
     }
     .wj-filter-on {
-      color: blue;
+      color: $font_color_saturday;
       border-color: lightgray;
     }
   }
@@ -1073,24 +1088,6 @@ div#uketukeIcrn {
   left: 200px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #uketukeIcrnDatepickerS {
   position: absolute;

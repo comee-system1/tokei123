@@ -1,17 +1,17 @@
 <template>
   <div id="keikakuWeek" :style="styles">
-    <v-container class="ml-1 pa-0" style="max-width: 100%">
+    <v-container class="pa-0" style="max-width: 100%">
       <v-row no-gutters>
-        <v-col :style="{ 'max-width': leftWidth }">
+        <!-- <v-col :style="{ 'max-width': leftWidth }">
           <user-list
             ref="user_list"
             :dispHideBar="false"
             @child-select="setUserSelectPoint"
           >
           </user-list>
-        </v-col>
+        </v-col> -->
         <v-col :style="{ 'max-width': rightWidth }">
-          <v-row no-gutters class="rowStyle_Dark tall mb-1 mt-1 body-2">
+          <v-row no-gutters class="rowStyle_Dark tall mb-1 body-2">
             <v-col cols="12" class="d-flex pa-1">
               <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
                 利用者名
@@ -245,7 +245,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import Draggable from '@fullcalendar/interaction';
-import UserList from './UserList.vue';
+// import UserList from './UserList.vue';
 import dayjs from 'dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
 let startY = 0;
@@ -257,7 +257,7 @@ let endWeekPos = 0;
 export default {
   components: {
     FullCalendar, // make the <FullCalendar> tag available
-    UserList,
+    // UserList,
   },
   data() {
     return {

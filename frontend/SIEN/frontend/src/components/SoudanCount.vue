@@ -1,14 +1,13 @@
 <template>
   <div id="soudanCount">
-    <v-container class="pa-1" fluid style="min-height: 90vh">
+    <v-container class="pa-1" fluid>
       <v-navigation-drawer
         class="blue lighten-5"
         v-model="drawer"
         absolute
         left
-        :width="90"
-        :min-width="90"
-        style="min-height: 1000px"
+        :width="100"
+        :min-width="100"
       >
         <v-card class="drawerTitle pa-1" outlined tile :height="30">
           日付選択
@@ -89,7 +88,8 @@
             >
               <v-icon>mdi-arrow-right-bold</v-icon>
             </v-btn>
-            <v-btn height="20" v-on:click.stop="drawer = !drawer">
+            <v-btn elevation="2" height="18" v-on:click.stop="drawer = !drawer">
+              <v-icon dense>mdi-calendar-expand-horizontal</v-icon>
               日付選択
             </v-btn>
           </span>
@@ -169,7 +169,7 @@
         </v-card>
         <wj-flex-grid
           id="soudanCountGrid"
-          :headersVisibility="'All'"
+          :headersVisibility="'Column'"
           :autoGenerateColumns="false"
           :allowAddNew="false"
           :allowDelete="false"
@@ -178,7 +178,7 @@
           :allowResizing="false"
           :allowSorting="false"
           :allowDragging="false"
-          :selectionMode="'Row'"
+          :selectionMode="'Cell'"
           :isReadOnly="true"
           :initialized="onInitializeSoudanCountGrid"
           :formatItem="onFormatItemSoudanCount"
@@ -192,7 +192,7 @@
         </v-card>
         <wj-flex-grid
           id="sienNaiyouGrid"
-          :headersVisibility="'All'"
+          :headersVisibility="'Column'"
           :autoGenerateColumns="false"
           :allowAddNew="false"
           :allowDelete="false"
@@ -201,7 +201,7 @@
           :allowResizing="false"
           :allowSorting="false"
           :allowDragging="false"
-          :selectionMode="'Row'"
+          :selectionMode="'Cell'"
           :isReadOnly="true"
           :initialized="onInitializesienNaiyouGrid"
           :formatItem="onFormatItemsienNaiyou"
@@ -266,6 +266,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
 import MdSelect from '../components/MdSelect.vue';
+import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
 const BORDER_SOLID = '1px solid';
@@ -332,14 +333,24 @@ export default {
         { val: 0, name: '日指定' },
         { val: 1, name: '月指定' },
       ],
+      mainGrid: {},
+      mainGrid2: {},
+      thickList: [2, 9],
     };
   },
-
+  mounted() {
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    this.$router.app.$off('print_event_global');
+  },
   methods: {
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
     onInitializeSoudanCountGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       flexGrid.beginUpdate();
       // // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -348,7 +359,6 @@ export default {
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.RowHigh;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[1].height = 130;
-      flexGrid.rowHeaders.columns[0].width = 0;
       flexGrid.alternatingRowStep = 0;
       flexGrid.endUpdate();
       let tmp =
@@ -382,6 +392,7 @@ export default {
       }
     },
     onInitializesienNaiyouGrid(flexGrid) {
+      this.mainGrid2 = flexGrid;
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -390,7 +401,6 @@ export default {
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.RowHigh;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 2;
       flexGrid.columnHeaders.rows[1].height = 130;
-      flexGrid.rowHeaders.columns[0].width = 0;
       flexGrid.alternatingRowStep = 0;
       flexGrid.endUpdate();
     },
@@ -432,13 +442,6 @@ export default {
     onItemsSourceChanged(flexGrid) {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
-      if (flexGrid.hostElement.id == 'soudanCountGrid') {
-        flexGrid.rowHeaders.setCellData(0, 0, '回数');
-        flexGrid.rowHeaders.setCellData(1, 0, '人数');
-      } else {
-        flexGrid.rowHeaders.setCellData(0, 0, '件数');
-        flexGrid.rowHeaders.setCellData(1, 0, '人数');
-      }
     },
     onFormatItemSoudanCount(flexGrid, e) {
       if (flexGrid.columns.length == 0) {
@@ -497,6 +500,10 @@ export default {
             sysConst.COLOR.viewTitleBackgroundGreen;
         }
       } else if (e.panel == flexGrid.cells) {
+        if (e.col == 0) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreenDark;
+        }
         if (e.row == flexGrid.rows.length - 1) {
           e.cell.style.borderBottom = NONE;
         }
@@ -530,12 +537,6 @@ export default {
       if (e.panel == flexGrid.columnHeaders) {
         if (e.row == 0) {
           e.cell.style.borderRight = BORDER_SOLID;
-          if (e.col == 1) {
-            e.cell.style.writingMode = V_RL;
-            e.cell.style.textAlign = ALI_LEFT;
-            e.cell.style.justifyContent = ALI_LEFT;
-            e.cell.style.alignItems = ALI_LEFT;
-          }
         } else if (e.row == 1) {
           // 縦書きで右から左へ
           e.cell.style.paddingTop = PAD_TOP;
@@ -552,6 +553,10 @@ export default {
             sysConst.COLOR.viewTitleBackgroundOrange;
         }
       } else if (e.panel == flexGrid.cells) {
+        if (e.col == 0) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrangeDark;
+        }
         if (e.row == flexGrid.rows.length - 1) {
           e.cell.style.borderBottom = NONE;
         }
@@ -575,9 +580,9 @@ export default {
       this.selectedYmd = null;
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pTaisyo: 1,
           pSymd: this.targetYmd,
           pEymd: this.targetYmd,
@@ -597,7 +602,16 @@ export default {
           params.pEymd = this.targetEYm;
         }
         getConnect('/SyukeiKensu', params, 'SIENT').then((result) => {
+          console.log(999);
+          console.log(result);
           this.jyoukyouViewAllList = result.filter((x) => x.kbn == 1);
+          this.jyoukyouViewAllList.unshift({
+            kaisu_list: '回数',
+            kbn: 1,
+            ninzu_list: '人数',
+            title_list1: ' ',
+            title_list2: ' ',
+          });
           let tmplist = [{}, {}];
           for (let i = 0; i < this.jyoukyouViewAllList.length; i++) {
             tmplist[0]['col' + i] = this.jyoukyouViewAllList[i].kaisu_list;
@@ -605,6 +619,13 @@ export default {
           }
 
           this.naiyouViewAllList = result.filter((x) => x.kbn == 2);
+          this.naiyouViewAllList.unshift({
+            kaisu_list: '件数',
+            kbn: 1,
+            ninzu_list: '人数',
+            title_list1: ' ',
+            title_list2: ' ',
+          });
           let tmplist2 = [{}, {}];
           for (let i = 0; i < this.naiyouViewAllList.length; i++) {
             tmplist2[0]['col' + i] = this.naiyouViewAllList[i].kaisu_list;
@@ -716,6 +737,13 @@ export default {
     },
     dateSelect() {
       this.kikanYmd = dayjs(this.pickerYmd);
+      let tmp =
+        this.kikanYmd.format('YYYY') +
+        '-' +
+        this.kikanYmd.format('MM') +
+        '-' +
+        this.kikanYmd.format('DD');
+      this.$refs.mdselect.setYm(tmp);
       this.datepickerYmd_dialog = false;
     },
     monthSelect(kbn) {
@@ -748,6 +776,11 @@ export default {
         this.drawer = false;
       }
     },
+    printExec() {
+      printUtil.setGridList([this.mainGrid, this.mainGrid2]);
+      printUtil.setThickRightVLineList(this.thickList);
+      printUtil.printExec('相談一覧', printUtil.DIRECTION.landscape, true);
+    },
   },
 };
 </script>
@@ -757,11 +790,13 @@ export default {
 div#soudanCount {
   color: $font_color;
   font-size: 14px;
+  min-height: 570px;
+  max-height: 570px;
   max-width: 1920px;
   width: auto;
 
   .gridTitle {
-    color: mediumblue;
+    color: $font_color_saturday;
     width: 500px;
     min-width: 100px;
     max-width: 500px;
@@ -778,6 +813,7 @@ div#soudanCount {
     width: 100%;
     min-height: 200px;
     background: $grid_background;
+    border: 1px solid $grid_Border_Color;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
@@ -798,12 +834,12 @@ div#soudanCount {
       background: $grid_background;
       font-size: $cell_fontsize;
     }
-    .wj-cells
-      .wj-row:hover
-      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
-      transition: all 0s;
-      background: $grid_hover_background;
-    }
+    // .wj-cells
+    //   .wj-row:hover
+    //   .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    //   transition: all 0s;
+    //   background: $grid_hover_background;
+    // }
 
     .wj-cells .wj-cell.wj-state-multi-selected {
       background: $grid_selected_background;
@@ -852,24 +888,6 @@ div#soudanCount {
   left: 200px;
   width: 300px;
   max-width: 300px;
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(7)
-    .v-btn__content {
-    color: blue;
-  }
-
-  .v-date-picker-table.v-date-picker-table--date
-    > table
-    > tbody
-    tr
-    td:nth-child(1)
-    .v-btn__content {
-    color: red;
-  }
 }
 #soudanCountDatepickerS {
   position: absolute;

@@ -1,8 +1,8 @@
 <template>
   <div id="chiikiIkoSienKeikaku">
-    <div class="commonTab">
-      <v-container no-gutters fluid class="pa-0">
-        <v-tabs height="20" hide-slider v-model="tab">
+    <v-container no-gutters fluid class="pa-0">
+      <v-row no-gutters>
+        <v-tabs class="commonTab" hide-slider height="32" v-model="tab">
           <v-tab
             v-for="item in menuItem"
             :key="item.val"
@@ -12,26 +12,43 @@
             {{ item.name }}
           </v-tab>
         </v-tabs>
-      </v-container>
-      <v-container no-gutters fluid class="pa-0">
-        <v-tabs-items v-model="tab">
-          <v-tab-item value="ChiikiKeikakuList">
-            <ChiikiKeikakuList></ChiikiKeikakuList>
-          </v-tab-item>
-          <v-tab-item value="ChiikiKeikakusyo1">
-            <ChiikiKeikakusyo1></ChiikiKeikakusyo1>
-          </v-tab-item>
-          <v-tab-item value="ChiikiKeikakusyo2">
-            <ChiikiKeikakusyo2></ChiikiKeikakusyo2>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-container>
-    </div>
+      </v-row>
+      <v-row no-gutters>
+        <div :style="{ width: leftWidth }" v-if="tab != 'ChiikiKeikakuList'">
+          <user-list
+            ref="user_list"
+            :dispHideBar="false"
+            @child-select="setUserSelectPoint"
+          >
+          </user-list>
+        </div>
+        <div
+          :style="
+            tab == 'ChiikiKeikakuList'
+              ? 'width: 100%'
+              : 'width: calc(100% - 280px)'
+          "
+        >
+          <v-tabs-items v-model="tab">
+            <v-tab-item value="ChiikiKeikakuList" transition="none">
+              <ChiikiKeikakuList></ChiikiKeikakuList>
+            </v-tab-item>
+            <v-tab-item value="ChiikiKeikakusyo1" transition="none">
+              <ChiikiKeikakusyo1></ChiikiKeikakusyo1>
+            </v-tab-item>
+            <v-tab-item value="ChiikiKeikakusyo2" transition="none">
+              <ChiikiKeikakusyo2></ChiikiKeikakusyo2>
+            </v-tab-item>
+          </v-tabs-items>
+        </div>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script>
 import ls from '@/utiles/localStorage';
+import UserList from '../../components/UserList.vue';
 import ChiikiKeikakuList from '../../components/ChiikiKeikakuList.vue';
 import ChiikiKeikakusyo1 from '../../components/ChiikiKeikakusyo1.vue';
 import ChiikiKeikakusyo2 from '../../components/ChiikiKeikakusyo2.vue';
@@ -41,6 +58,7 @@ export default {
   //   selectedData: Object, // 検索条件等
   // },
   components: {
+    UserList,
     ChiikiKeikakuList,
     ChiikiKeikakusyo1,
     ChiikiKeikakusyo2,
@@ -48,6 +66,7 @@ export default {
   computed: {},
   data: function () {
     return {
+      leftWidth: '280px',
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
       menuItem: [
         {
@@ -74,6 +93,12 @@ export default {
     },
   },
   methods: {
+    /****************
+     * ユーザー一覧を押下
+     */
+    setUserSelectPoint(row) {
+      this.userName = row.names;
+    },
     tabsChange(hrefval) {
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
     },

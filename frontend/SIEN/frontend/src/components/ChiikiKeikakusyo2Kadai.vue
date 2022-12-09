@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="chiikikadaiArea" class="mt-1" :style="styles">
     <wj-flex-grid
       id="grdChiikiKadai"
       :headersVisibility="'Column'"
@@ -7,7 +7,6 @@
       :itemsSource="viewData"
       :allowDragging="'Both'"
       :autoRowHeights="true"
-      :style="styles"
     >
       <wj-flex-grid-column
         header="順位"
@@ -100,8 +99,8 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('grdChiikiKadai') != null) {
-        document.getElementById('grdChiikiKadai').style.height =
+      if (document.getElementById('chiikikadaiArea') != null) {
+        document.getElementById('chiikikadaiArea').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
     },
@@ -256,7 +255,7 @@ export default {
 
 <style lang="scss">
 @import '@/assets/scss/common.scss';
-#serviceGrid,
+#chiikikadaiArea,
 #grdChiikiKadai {
   font-size: 12px;
   height: var(--height);
