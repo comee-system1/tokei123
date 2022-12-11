@@ -1,6 +1,6 @@
 <template>
   <div
-    id="user-list_scrollbar"
+    id="user-kyufumeisai_scrollbar"
     :style="styles"
     :class="{
       'pr-5': dispHideBar === true && this.switchAreaLeftFlag == true,
@@ -55,7 +55,7 @@
             <div align="right">
               <label class="mr-1">サービス歴</label>
               <select
-                class="customSelectBox mr-1"
+                class="customkyufuSelectBox mr-1"
                 v-model="selSvcRireki"
                 @change="onSvcRirekiClicked"
                 style="width: 150px"
@@ -114,34 +114,72 @@
           </v-col>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters>
-          <label
-            class="titleGlay pl-1 pr-1"
-            style="width: 45px; text-align: center"
-            >担当者</label
-          >
-          <select
-            class="customSelectBox mr-1"
-            v-model="selTantou"
-            @change="onTantouClicked"
-            style="width: 115px"
-          >
-            <option v-for="val in tantouList" :key="val.id" :value="val.id">
-              {{ val.name }}
-            </option>
-          </select>
+        <v-row class="rowStyle mt-1 mr-1 d-flex flex-row" no-gutters>
+          <v-col cols="2">
+            <label
+              class="titleGlay pl-1 pr-1"
+              style="width: 45px; text-align: center"
+              >利用者</label
+            >
+          </v-col>
+          <v-col cols="10" class="relative">
+            <div class="triangle">▼</div>
+            <select
+              class="mr-2 customkyufuSelectBox"
+              v-model="selTantou"
+              @change="onTantouClicked"
+            >
+              <option v-for="val in tantouList" :key="val.id" :value="val.id">
+                {{ val.name }}
+              </option>
+            </select>
+          </v-col>
         </v-row>
 
         <v-row class="rowStyle pa-0 mt-1 mr-1" no-gutters>
-          <label
-            class="titleGlay pl-1 pr-1"
-            style="width: 45px; text-align: center; height: 20px"
-          >
-            検索
-          </label>
+          <v-col cols="2">
+            <label
+              class="titleGlay pl-1 pr-1"
+              style="width: 45px; text-align: center; height: 20px"
+            >
+              検索
+            </label>
+          </v-col>
+          <v-col cols="10" class="relative">
+            <div class="triangle">🔍</div>
+            <input type="text" v-model="searchText" class="searchText" />
+          </v-col>
+        </v-row>
+        <v-row class="rowStyle pa-0 mt-1 mr-1" no-gutters>
+          <v-col cols="2">
+            <label
+              class="titleGlay pl-1 pr-1"
+              style="width: 45px; text-align: center; height: 20px"
+            >
+              選択
+            </label>
+          </v-col>
+          <v-col cols="6">
+            <v-btn-toggle v-model="toggle_select" class="toggle_select">
+              <v-btn> 確定 </v-btn>
+              <v-btn> 印刷 </v-btn>
+            </v-btn-toggle>
+          </v-col>
+          <v-col cols="4" class="relative">
+            <div class="triangle">▼</div>
+            <select
+              class="mr-2 customkyufuSelectBox customSelectLift"
+              v-model="allSelect"
+              @change="onTantouClicked"
+            >
+              <option v-for="val in allList" :key="val.id" :value="val.id">
+                {{ val.name }}
+              </option>
+            </select>
+          </v-col>
         </v-row>
 
-        <v-row class="rowStyle mt-1 mr-1" no-gutters>
+        <!-- <v-row class="rowStyle mt-1 mr-1" no-gutters>
           <v-btn-toggle class="flex-wrap" v-model="sortSearch" mandatory>
             <v-btn
               v-for="n in sortSelList"
@@ -157,7 +195,7 @@
               {{ n.name }}
             </v-btn>
           </v-btn-toggle>
-        </v-row>
+        </v-row> -->
         <div class="rowStyle mt-1" no-gutters>
           <alphabet-button
             id="alpCommon"
@@ -165,17 +203,6 @@
             @onAlphabetical="onAlphabetical"
           >
           </alphabet-button>
-          <!-- <v-btn-toggle class="flex-wrap ma-0" v-model="alphaSearch" mandatory>
-            <v-btn
-              outlined
-              v-for="(n, k) in alphabet"
-              :key="k"
-              :width="24"
-              style="min-width: auto; padding: 9px; height: 10px"
-              @click="onAlphabet(k)"
-              >{{ n }}</v-btn
-            >
-          </v-btn-toggle> -->
         </div>
 
         <wj-flex-grid
@@ -232,6 +259,20 @@
             align="center"
           ></wj-flex-grid-column>
         </wj-flex-grid>
+
+        <v-row class="rowStyle mt-1 mr-1 d-flex flex-row" no-gutters>
+          <v-col cols="2">
+            <label
+              class="titleGlay pl-1 pr-1"
+              style="width: 45px; text-align: center"
+              >確定</label
+            >
+          </v-col>
+          <v-col cols="10">
+            <v-btn x-small>一括解除</v-btn>
+            <v-btn x-small class="ml-1">登録</v-btn>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-dialog
@@ -240,7 +281,7 @@
       class="datepicker_dialogs"
     >
       <v-date-picker
-        id="user-list_scrollbar_Datepicker"
+        id="user-kyufumeisai_scrollbar_Datepicker"
         type="month"
         v-model="pickerYoteiYm"
         locale="jp-ja"
@@ -259,10 +300,10 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-import { getConnect } from '@connect/getConnect';
+// import { getConnect } from '@connect/getConnect';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-let uniqid = 3; // 現在は1のみapiが実行する
-let traceid = 123;
+// let uniqid = 3; // 現在は1のみapiが実行する
+// let traceid = 123;
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
@@ -337,7 +378,7 @@ export default {
       ],
       selTantou: 0,
       tantouList: [
-        { id: 0, name: '指定なし' },
+        { id: 0, name: '全員' },
         { id: 1, name: '担当者A' },
         { id: 2, name: '担当者B' },
         { id: 3, name: '担当者C' },
@@ -348,6 +389,8 @@ export default {
         { val: 1, name: 'カナ順', width: 70 },
         { val: 2, name: '受給者番号順', width: 100 },
       ],
+      allSelect: 0,
+      allList: [{ id: 0, name: '全選択/全解除' }],
       hdrTips: new Tooltip({
         position: PopupPosition.RightTop,
         showAtMouse: true,
@@ -358,6 +401,7 @@ export default {
       pickerYoteiYm: '',
       yoteiYm: '',
       datepickerYoteiYm_dialog: false,
+      searchText: '',
     };
   },
   mounted() {
@@ -385,14 +429,15 @@ export default {
   },
   methods: {
     calculateWindowHeight() {
-      if (document.getElementById('user-list_scrollbar') != null) {
-        document.getElementById('user-list_scrollbar').style.height =
+      if (document.getElementById('user-kyufumeisai_scrollbar') != null) {
+        document.getElementById('user-kyufumeisai_scrollbar').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
       if (document.getElementById('userListGrid') != null) {
         document.getElementById('userListGrid').style.height =
           window.innerHeight -
-          (parseInt(this.headerheight) + parseInt(this.grdheight)) +
+          (parseInt(this.headerheight) + parseInt(this.grdheight)) -
+          30 +
           'px';
       }
     },
@@ -468,65 +513,6 @@ export default {
         data = array;
       }
 
-      // let alpval = this.alphaSearch;
-      // if (alpval > 0) {
-      //   let get = [];
-      //   data.forEach(function (value) {
-      //     switch (alpval) {
-      //       case 1:
-      //         if (value.kana.match(/^[ｱ-ｵ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 2:
-      //         if (value.kana.match(/^[ｶ-ｺ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 3:
-      //         if (value.kana.match(/^[ｻ-ｿ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 4:
-      //         if (value.kana.match(/^[ﾀ-ﾄ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 5:
-      //         if (value.kana.match(/^[ﾅ-ﾉ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 6:
-      //         if (value.kana.match(/^[ﾊ-ﾎ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 7:
-      //         if (value.kana.match(/^[ﾏ-ﾓ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 8:
-      //         if (value.kana.match(/^[ﾔ-ﾖ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 9:
-      //         if (value.kana.match(/^[ﾗ-ﾛ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 10:
-      //         if (value.kana.match(/^[ﾜ-ﾝ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //     }
-      //   });
-      //   data = get;
-      // }
       if (document.getElementById('alpCommon') != null) {
         data = this.$refs.alp.alphabetFilter(data, 'kana');
       }
@@ -602,7 +588,7 @@ export default {
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 1;
       flexGrid.alternatingRowStep = 0;
-
+      /*
       let params = [];
 
       params = {
@@ -615,11 +601,22 @@ export default {
         eymd: '20220901',
       };
 
+
       return getConnect('/userListPrint', params).then((result) => {
         _self.usersData = result.icrn_inf;
         _self.userDataSelect = result;
         this.userFilter();
       });
+*/
+      // テスト用
+      let usersViewData = [];
+      for (let i = 1; i < 100; i++) {
+        usersViewData.push({
+          riyocode: '0000000' + i,
+          names: '佐藤タロウ' + i,
+        });
+      }
+      _self.usersViewData = usersViewData;
     },
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.Cell) {
@@ -677,7 +674,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/common.scss';
 
-div#user-list_scrollbar {
+div#user-kyufumeisai_scrollbar {
   font-size: 12px;
   font-family: 'メイリオ';
   padding: 0;
@@ -688,6 +685,34 @@ div#user-list_scrollbar {
     background: $grid_background;
     border: 1px solid $grid_Border_Color;
   }
+  .relative {
+    position: relative;
+  }
+  .triangle {
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: 0;
+    margin-right: 4px;
+    z-index: 10;
+  }
+  .searchText,
+  .customkyufuSelectBox {
+    display: block;
+    background-color: $white;
+    width: 100%;
+    &.customSelectLift {
+      width: 100%;
+      font-size: 11px;
+    }
+  }
+
+  .toggle_select {
+    button {
+      height: 21px;
+    }
+  }
+
   .wj-cell {
     padding: 2px;
     padding-top: 1px;
@@ -712,9 +737,7 @@ div#user-list_scrollbar {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
-      .wj-state-active
-    ) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
     transition: all 0s;
     background: $grid_hover_background;
   }
@@ -850,7 +873,7 @@ div#user-list_scrollbar {
     }
   }
 }
-#user-list_scrollbar_Datepicker {
+#user-kyufumeisai_scrollbar_Datepicker {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
