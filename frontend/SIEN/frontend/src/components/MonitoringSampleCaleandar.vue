@@ -102,17 +102,18 @@ export default {
       viewport: '0 0 800 600',
       rects: [
         {
-          x: 100,
-          y: 80,
-          width: 50,
-          height: 20,
-          xText: 25,
-          yText: 10,
+          x: 100, // 初期値x
+          y: 80, // 初期値y
+          width: 50, // 横幅
+          height: 20, // 高さ
+          xText: 25, // テキストの位置x
+          yText: 10, // テキストの位置y
           id: 'green',
           color: 'green',
           stroke: 'black',
           text: '起床',
         },
+        /*
         {
           x: 200,
           y: 80,
@@ -125,6 +126,7 @@ export default {
           stroke: 'black',
           text: '起床',
         },
+        */
         {
           x: 150,
           y: 60,
@@ -175,6 +177,19 @@ export default {
       this.isResize = false;
       this.beforeMouseX = null;
       this.beforeMouseY = null;
+
+      // データ配列のリフォームを行う
+      // 時間重複チェック
+      //console.log(this.rects);
+      this.rects.forEach((value) => {
+        console.log('base=>' + value.y);
+        this.rects.forEach((value2) => {
+          //if (key != key2) {
+
+          console.log('check=>' + value2.y);
+          //}
+        });
+      });
       e.preventDefault();
     },
     // move中は前回まで動かした差分を取りながら座標を変化させていく
@@ -194,6 +209,7 @@ export default {
         }
         this.beforeMouseY = mouseY;
         tempY = dy + Number(this.rects[this.selectIdx].height);
+        if (tempY < 20) tempY = 20;
         this.rects[this.selectIdx].height = tempY;
       }
       // ドラッグの条件判定
