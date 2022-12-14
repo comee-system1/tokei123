@@ -71,7 +71,7 @@
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1">
-      <v-col>
+      <v-col cols="*">
         <svg
           viewbox="viewport"
           style="border: 1px solid gray; width: 800px; height: 440px"
@@ -156,24 +156,60 @@
           </text>
         </svg>
       </v-col>
-      <v-col class="ml-2">
+      <v-col class="ml-2" style="width: 100px">
+        <v-card class="d-flex text-caption" id="lifeRadio" elevation="0">
+          <div v-for="val in lifeRadio" :key="val">
+            <input
+              type="radio"
+              :id="'radio_' + val.id"
+              name="radio"
+              v-model="radio"
+              :value="val.id"
+            />
+            <label :for="'radio_' + val.id">{{ val.value }}</label>
+          </div>
+        </v-card>
         <wj-flex-grid
+          id="gridLife"
           :autoSearch="true"
           :headersVisibility="'Column'"
           :selectionMode="3"
-          :initialized="onInitializedUser"
-          :itemsSourceChanged="onItemsSourceChanged"
-          :itemsSource="usersViewData"
+          :initialized="onInitializedLife"
+          :itemsSourceChanged="onInitializedLifeChanged"
+          :itemsSource="lifeViewData"
           :allowResizing="false"
           :allowDragging="false"
           :allowSorting="false"
           :showMarquee="true"
-          :formatItem="onFormatItem"
         >
           <wj-flex-grid-column
             header="日常生活"
-            binding="riyocode"
-            width="2*"
+            binding="life"
+            width="*"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+        <wj-flex-grid
+          class="mt-3"
+          id="serviceLife"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :selectionMode="3"
+          :initialized="onInitializedLife"
+          :itemsSourceChanged="onInitializedLifeChanged"
+          :itemsSource="serviceViewData"
+          :allowResizing="false"
+          :allowDragging="false"
+          :allowSorting="false"
+          :showMarquee="true"
+        >
+          <wj-flex-grid-column
+            header="福祉サービス"
+            binding="service"
+            width="*"
             :word-wrap="false"
             :allowResizing="true"
             :isReadOnly="true"
@@ -205,6 +241,13 @@ import 'dayjs/locale/ja';
 export default {
   data() {
     return {
+      radio: 1,
+      lifeRadio: [
+        { id: 1, value: '項目選択' },
+        { id: 2, value: 'フリー入力' },
+      ],
+      serviceViewData: [],
+      lifeViewData: [],
       userName: '',
       createDate: dayjs().format('YYYY年M月DD日'),
       startDate: dayjs().format('YYYY年M月'),
@@ -339,6 +382,28 @@ export default {
     document.removeEventListener('mousemove', this.mouseMove);
   },
   methods: {
+    /**********************
+     * 日常生活のgrid
+     */
+    onInitializedLife() {
+      let lifeViewData = [];
+      lifeViewData.push({ life: '起床' });
+      lifeViewData.push({ life: '就寝' });
+      lifeViewData.push({ life: '洗顔・歯磨き' });
+      lifeViewData.push({ life: '朝食' });
+      lifeViewData.push({ life: '昼食' });
+      this.lifeViewData = lifeViewData;
+
+      let serviceViewData = [];
+      serviceViewData.push({ service: 'ヘルパー' });
+      serviceViewData.push({ service: '生活サポート' });
+      serviceViewData.push({ service: '地域活動支援センター' });
+      serviceViewData.push({ service: '生活介護' });
+      serviceViewData.push({ service: '就労移行支援' });
+      this.serviceViewData = serviceViewData;
+    },
+    onInitializedLifeChanged() {},
+
     /****************
      * ユーザー一覧を押下
      */
@@ -531,6 +596,29 @@ export default {
       span {
         color: $view_Title_background_Main;
       }
+    }
+  }
+  #lifeRadio {
+    div {
+      position: relative;
+      width: 80px;
+    }
+    label {
+      position: absolute;
+      top: 1px;
+    }
+  }
+  #serviceLife,
+  #gridLife {
+    .wj-header {
+      background-color: $light_yellow;
+      &.wj-cell {
+        text-align: center;
+      }
+    }
+    .wj-cell {
+      font-size: 11px;
+      text-align: left;
     }
   }
 }
