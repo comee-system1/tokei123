@@ -179,6 +179,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import printUtil from '@/utiles/printUtil';
 import { getConnect } from '../../connect/getConnect';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
@@ -367,15 +368,18 @@ export default {
       viewDataAll: [],
       viewData: [],
       filter: {},
-      mainGrid: {},
+      mainGrid: [],
+      thickList: [2, 9],
     };
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
+    this.setPrintEvent();
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
   },
   methods: {
     calculateWindowHeight() {
@@ -384,9 +388,11 @@ export default {
           window.innerHeight - 110 + 'px';
       }
     },
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
+
     filterInitialized: function (filter) {
       this.filter = filter;
     },
@@ -429,7 +435,7 @@ export default {
             title: element.ryaku,
             chutitle: element.ryaku,
             kbntitle: '加算項目',
-            width: sysConst.GRD_COL_WIDTH.Ymd,
+            width: 50,
             align: 'center',
           });
         });
@@ -644,8 +650,8 @@ export default {
         let tmpkasanlist = tmpviewdata[index].kasanList;
         for (let kasan = 0; kasan < tmpkasanlist.length; kasan++) {
           tmpviewdata[index][FIX_KASAN_KEY + tmpkasanlist[kasan].kasan] =
-            tmpkasanlist[kasan].ymd.slice(0, 4) +
-            '/' +
+            // tmpkasanlist[kasan].ymd.slice(0, 4) +
+            // '/' +
             tmpkasanlist[kasan].ymd.slice(4, 6) +
             '/' +
             tmpkasanlist[kasan].ymd.substring(6, 8);
@@ -778,6 +784,13 @@ export default {
     },
     filterClrclick() {
       this.filter.clear();
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示期間：' + this.getYm(0) + ' ';
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('担当者別実施一覧', printUtil.DIRECTION.landscape);
     },
   },
 };

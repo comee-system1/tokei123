@@ -94,9 +94,64 @@
               <v-btn small elevation="2" height="19" class="ml-1 body-2"
                 >前回コピー</v-btn
               >
-              <v-btn small elevation="2" height="19" class="ml-1 body-2"
+              <v-btn
+                small
+                elevation="2"
+                height="19"
+                class="ml-1 body-2"
+                v-on:click.stop="drawer = !drawer"
                 >履歴参照</v-btn
               >
+              <v-navigation-drawer
+                v-model="drawer"
+                fixed
+                temporary
+                right
+                hide-overlay
+                :width="200"
+                :min-width="200"
+                style="font-size: 14px"
+              >
+                <v-list class="pa-0 ma-0" dense>
+                  <v-card class="drawerTitle pa-1" outlined tile :height="30">
+                    履歴参照
+                    <v-btn
+                      elevation="2"
+                      icon
+                      absolute
+                      top
+                      right
+                      height="20"
+                      width="20"
+                      v-on:click.stop="drawer = !drawer"
+                      class="mt-1"
+                      color="secondary"
+                    >
+                      <v-icon dark small> mdi-close </v-icon></v-btn
+                    >
+                  </v-card>
+                  <template v-for="item in rirekiList">
+                    <v-list-item
+                      class="pa-0 ma-0"
+                      dense
+                      :key="`first-${item.index}`"
+                      @click="rirekiClicked(item)"
+                    >
+                      <v-list-item-content class="pa-0 pl-2 ma-0">
+                        <table>
+                          <tr>
+                            <td width="10%" align="center">{{ item.no }}</td>
+                            <td width="40%" align="center">{{ item.day }}</td>
+                            <td width="10%" align="left">{{ item.kanryou }}</td>
+                            <td width="40%" align="left">{{ item.tantou }}</td>
+                          </tr>
+                        </table>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-divider :key="`second-${item.index}`" />
+                  </template>
+                </v-list>
+              </v-navigation-drawer>
             </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1">
@@ -348,6 +403,30 @@ export default {
       headerheightbody: 240,
       userdrawer: true,
       viewdata: {},
+      drawer: false,
+      rirekiList: [
+        {
+          index: 0,
+          no: 3,
+          day: '2020/01/01',
+          kanryou: '☐',
+          tantou: '担当小',
+        },
+        {
+          index: 1,
+          no: 2,
+          day: '2019/01/01',
+          kanryou: '☑',
+          tantou: '担当次',
+        },
+        {
+          index: 2,
+          no: 1,
+          day: '2018/01/01',
+          kanryou: '☑',
+          tantou: '担当三',
+        },
+      ],
     };
   },
   created() {},
@@ -506,6 +585,9 @@ export default {
     },
     setDataFromKeikauList(anItem) {
       console.log(anItem);
+    },
+    rirekiClicked(item) {
+      console.log(item);
     },
     printExec() {
       this.inputTypemodel = 'tab-2';

@@ -386,6 +386,7 @@ import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import { getConnect } from '@connect/getConnect';
+import printUtil from '@/utiles/printUtil';
 const GRID_ID = {
   Keikaku: 'monitoringYoteiGrid',
 };
@@ -578,62 +579,6 @@ export default {
           minwidth: 40,
           align: 'center',
         },
-        // {
-        //   dataname: 'ym13',
-        //   title: '13',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym14',
-        //   title: '14',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym15',
-        //   title: '15',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym16',
-        //   title: '16',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym17',
-        //   title: '17',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym18',
-        //   title: '18',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
-        // {
-        //   dataname: 'ym19',
-        //   title: '19',
-        //   kbntitle: '2年月',
-        //   width: 40,
-        //   minwidth: 40,
-        //   align: 'center',
-        // },
       ],
       viewdatakeikakuAll: [],
       viewdatakeikaku: [],
@@ -688,7 +633,6 @@ export default {
       loading: false,
       addStatus: false,
       mainFlexGrid: [],
-      subFlexGrid: [],
       hanreiList: [
         { val: 0, name: '（上段）' },
         { val: 1, name: '○：予定' },
@@ -708,14 +652,17 @@ export default {
       ],
       enkiInputflg: false,
       enkiObject: { intcode: 0, name: '', yoteiym: '', kbn: 0, riyu: '' },
+      thickList: [2, 9],
     };
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
+    this.setPrintEvent();
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
   },
   methods: {
     calculateWindowHeight() {
@@ -724,9 +671,11 @@ export default {
           window.innerHeight - 180 + 'px';
       }
     },
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
+
     filterInitializedkeikakuIcrn: function (filter) {
       this.filterkeikakuIcrn = filter;
       let fil = [];
@@ -1047,7 +996,7 @@ export default {
           let pretmpitem = e.panel.rows[e.row - 1].dataItem;
           if (tmpitem.intcode == pretmpitem.intcode) {
             if (e.col < 11) {
-              e.cell.style.color = 'transparent';
+              e.cell.innerHTML = '';
             }
             e.cell.style.borderRight = '';
             e.cell.style.borderBottom = 0;
@@ -1292,6 +1241,14 @@ export default {
     },
     filterClrclick() {
       this.filterkeikakuIcrn.clear();
+    },
+    printExec() {
+      printUtil.setGridList([this.mainFlexGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示月:' + this.getYm() + ' ';
+      printUtil.setSubTitleList([sub1]);
+      // printUtil.printExec('予定一覧', printUtil.DIRECTION.landscape);
+      printUtil.printExec2();
     },
   },
 };

@@ -40,6 +40,7 @@
                 width="25"
                 height="19"
                 class="body-2"
+                @click="getPostData()"
                 >新規</v-btn
               >
               <v-btn
@@ -129,8 +130,10 @@
               </div>
               <wj-flex-grid
                 id="rirekiSansyoGrid"
+                class="mt-1"
                 :initialized="onInitializedRireki"
                 :itemsSource="rirekiView"
+                :itemsSourceChanged="onInitializedChangedRireki"
                 :selectionMode="'Row'"
                 :headersVisibility="'Column'"
                 :alternatingRowStep="0"
@@ -215,7 +218,7 @@
                 @click="inputCalendarClick(2)"
                 class="mr-1"
               >
-                {{ openYmd }}
+                {{ opnYmd }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
                 </div>
@@ -277,6 +280,7 @@
                 <wj-flex-grid
                   id="tantoKaigiGrid"
                   :initialized="onInitialized"
+                  :itemsSource="tantoKaigiViewData"
                   :autoClipboard="false"
                   :selectionMode="'1'"
                   :headersVisibility="'0'"
@@ -422,7 +426,9 @@
             <v-btn elevation="2" height="19" class="mr-10">クリア</v-btn>
             <v-btn elevation="2" height="19">削除</v-btn>
             <v-spacer></v-spacer>
-            <v-btn elevation="2" height="19">登録</v-btn>
+            <v-btn elevation="2" height="19" @click="putTantokaigi()"
+              >登録</v-btn
+            >
           </v-card>
         </v-col>
       </v-row>
@@ -700,6 +706,9 @@ import AlphabetButton from '@/components/AlphabetButton.vue';
 import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { getConnect } from '../../connect/getConnect';
+import { postConnect } from '../../connect/postConnect';
+import { putConnect } from '../../connect/putConnect';
+// import func from 'vue-editor-bridge';
 // import { connect } from 'http2';
 //import { filter } from 'vue/types/umd';
 const maxRowCnt = 15; // 最大15行
@@ -727,12 +736,17 @@ export default {
 
       // APIデータ取得
       userName: '',
+      intCode: 0,
       basho: '',
       sTime: '',
       eTime: '',
       kadai: '',
       shussekiList: '',
       naiyoGyoList: '',
+      cntID: 0,
+      kaigiKbn: 0,
+      annCntID: 0,
+      moniCntID: 0,
 
       getYmd:
         dayjs().format('YYYY') +
@@ -748,7 +762,7 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
-      openYmd:
+      opnYmd:
         dayjs().format('YYYY') +
         '年' +
         dayjs().format('MM') +
@@ -761,6 +775,7 @@ export default {
       flexGridSelected: [],
       flexGridAttendView: [],
       flexGridAttend: [],
+      tantoKaigiViewData: [],
       selectedAttendView: [],
       rowNum: 0,
       rirekiView: [],
@@ -801,6 +816,7 @@ export default {
       inputSyokusyuDisabled: false,
       inputNameDisabled: false,
       closeCheckConfirmFlg: false,
+      selectedAttendList: [],
     };
   },
 
@@ -824,85 +840,88 @@ export default {
      ****************************/
     //利用者名 出力
     setUserSelectPoint(row) {
+      if (this.userName && this.userName != row.names) {
+        this.dataClear();
+      }
       this.userName = row.names;
-      // APIデータ取得
-      this.setViewData();
+      this.intCode = row.riid;
+      this.getTantoReki();
     },
+    dataClear() {
+      this.getYmd = dayjs().format('YYYY年MM月DD日');
+      this.mkYmd = dayjs().format('YYYY年MM月DD日');
+      this.opnYmd = dayjs().format('YYYY年MM月DD日');
+      this.sTime = '';
+      this.eTime = '';
+      this.basho = '';
+      this.kadai = '';
+
+      // 出席者一覧
+      for (let i = 0; i < 6; i++) {
+        for (let r = 0; r < 5; r++) {
+          this.flexGridAttendView.setCellData(r, i, '', false, true);
+        }
+      }
+      // 検討項目/内容/結論
+      let consider = [];
+      consider.push({
+        no: 1,
+        kentoKmk: '',
+        kentoNaiyo: '',
+        ketsuron: '',
+      });
+      this.considerView = consider;
+
+      // 会議出席者選択のgrid
+      let attendees = [];
+      for (let i = 0; i < 15; i++) {
+        attendees.push({
+          num: i + 1,
+          syokusyu: '',
+          name: '',
+        });
+      }
+      this.selectedAttendList = attendees;
+      this.selectedAttendView = this.selectedAttendList;
+      this.rowNum = 0;
+    },
+
     /*****************************
-     * #rirekiSansyoGrid
+     * 履歴参照
      *****************************/
     rirekiClose() {
       this.drawer = false;
     },
-    onInitializedRireki(flexGrid) {
+    onInitializedChangedRireki(flexGrid) {
       flexGrid.select(-1, -1);
-
-      /*
-      let rireki = [];
-      // Grid作成
-      rireki.push({
+    },
+    onInitializedRireki(flexGrid) {
+      // 空grid作成
+      let tmp = [];
+      tmp.push({
         mkYmd: '',
         opnYmd: '',
         kanryoChk: '',
         kanryoYmd: '',
         siName: '',
       });
-      this.rirekiView = rireki;
-      */
+      this.rirekiView = tmp;
 
-      let params = {
-        uniqid: 3,
-        traceid: 123,
-        pSvcKbn: 1,
-        pJigyoid: 62,
-        pIntcode: 537,
-      };
-      getConnect('/TantokaigiReki', params, 'SIENP').then((result) => {
-        console.log(result);
-        if (result) {
-          for (let i = 0; i < result.length; i++) {
-            if (
-              result[i].length != 0 &&
-              dayjs(result[i].mkYmd, 'YYYY/MM/DD').isValid()
-            ) {
-              result[i].mkYmd = dayjs(result[i].mkYmd).format('YYYY/MM/DD');
-            }
-            if (
-              result[i].length != 0 &&
-              dayjs(result[i].opnYmd, 'YYYY/MM/DD').isValid()
-            ) {
-              result[i].opnYmd = dayjs(result[i].opnYmd).format('YYYY/MM/DD');
-            }
-            if (
-              result[i].length != 0 &&
-              dayjs(result[i].kanryoYmd, 'YYYY/MM/DD').isValid()
-            ) {
-              result[i].kanryoYmd = dayjs(result[i].kanryoYmd).format(
-                'YYYY/MM/DD'
-              );
-            }
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          // 参照する履歴を選択するためのtmp
+          let tmp = flexGrid.cells.rows[ht.row].dataItem;
+          // ユーザのユニークIDとcntIDを元に担当会議データを取得
+          _self.cntID = tmp.cntID;
 
-            if (result[i].kanryoChk == 0) {
-              result[i].kanryoChk = '未完了';
-            } else {
-              result[i].kanryoChk = 'チェック済み';
-            }
-          }
-          this.rirekiView = result;
-        } else {
-          let rireki = [];
-          // Grid作成
-          rireki.push({
-            mkYmd: '',
-            opnYmd: '',
-            kanryoChk: '',
-            kanryoYmd: '',
-            siName: '',
-          });
-          this.rirekiView = rireki;
+          // 担当会議のデータを取得
+          _self.setViewData();
         }
       });
     },
+
     /*****************************
      * #considerGrid
      * 検討した項目・検討内容・結論
@@ -955,7 +974,6 @@ export default {
      ******************************/
     onSelectedAttend() {
       this.attend_dialog = true;
-      this.setCellPosition(this.flexGridAttendView);
     },
 
     /***********************
@@ -1034,23 +1052,12 @@ export default {
       this.flexGridSelected = flexGrid;
       let selectedAttendView = [];
 
-      // Grid作成
-      let leftGrid = [];
-      for (let i = 0; i < 15; i++) {
-        leftGrid.push({
-          num: i + 1,
-          syokusyu: '',
-          name: '',
-        });
-      }
-      this.selectedAttendView = leftGrid;
-
       // No(Num)順
       selectedAttendView.sort((a, b) => {
         return a.num < b.num ? -1 : 1;
       });
 
-      //初期値を左寄せ
+      // grid style
       flexGrid.formatItem.addHandler(function (s, e) {
         if (e.panel == s.cells) {
           e.cell.style.textAlign = 'left';
@@ -1058,6 +1065,20 @@ export default {
           e.cell.style.alignItems = 'left';
         }
       });
+
+      let attendees = this.selectedAttendList;
+      this.selectedAttendView = attendees;
+      if (attendees.length == 0) {
+        // Grid作成
+        for (let i = 0; i < 15; i++) {
+          attendees.push({
+            num: i + 1,
+            syokusyu: '',
+            name: '',
+          });
+        }
+      }
+      this.selectedAttendView = attendees;
 
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         this.closeCheckConfirmFlg = true;
@@ -1144,9 +1165,7 @@ export default {
     onSyokusyuClicked() {
       let key = this.selSyokusyu;
       this.selSyokusyu = this.syokusyuList[key].val;
-      console.log(this.selSyokusyu);
       this.selSyokusyuval = this.syokusyuList[key].syokusyu;
-      console.log(this.selSyokusyuval);
       this.userFilter();
     },
     /*******************
@@ -1336,6 +1355,25 @@ export default {
       this.closeCheckConfirmFlg = true;
     },
 
+    setShussekiData() {
+      let tmp = this.selectedAttendView.slice();
+      // 出席者一覧へ登録
+      let c = 0; // Column座標変数
+      let r = 0; // Row座標変数
+      let _self = this;
+      tmp.map(function (value) {
+        _self.flexGridAttendView.setCellData(r, c, value.syokusyu, false, true);
+        _self.flexGridAttendView.setCellData(r, c + 1, value.name, false, true);
+
+        c = c + 2;
+        if (c == 6) {
+          // grid2行目
+          r += 1;
+          c = 0;
+        }
+      });
+    },
+
     /****************
      * 設定ボタン
      ****************/
@@ -1346,6 +1384,7 @@ export default {
       // 選択した会議出席者を取得
       let tmp = this.selectedAttendView.slice();
 
+      // 職種と氏名をtmpDataにプッシュ
       let tmpData = [];
       for (let i = 0; i < tmp.length; i++) {
         if (tmp[i].name || tmp[i].syokusyu) {
@@ -1378,26 +1417,8 @@ export default {
         alert('1件も登録されていません。');
         return false;
       }
-      // 出席者一覧へ登録
-      let c = 0; // Column座標変数
-      let r = 0; // Row座標変数
-      let _self = this;
-
-      tmp.map(function (value) {
-        _self.flexGridAttendView.setCellData(r, c, value.syokusyu, false, true);
-        _self.flexGridAttendView.setCellData(r, c + 1, value.name, false, true);
-
-        c = c + 2;
-        if (c == 6) {
-          // grid2行目
-          r += 1;
-          c = 0;
-        }
-      });
-      // デフォルト値を更新
-      this.selectedAttendView = JSON.parse(
-        JSON.stringify(this.selectedAttendView)
-      );
+      // 出席者一覧に反映
+      this.setShussekiData();
 
       this.rowNum = 0;
       // クローズチェックフラグ
@@ -1496,19 +1517,85 @@ export default {
     /*************
      * API取得
      *************/
-    setViewData() {
+    // 履歴参照 GET
+    getTantoReki() {
       let params = {
         uniqid: 3,
         traceid: 123,
         pSvcKbn: 1,
         pJigyoid: 62,
-        pIntcode: 537,
-        pCntId: 1,
+        pIntcode: this.intCode,
+      };
+      getConnect('/TantokaigiReki', params, 'SIENP').then((result) => {
+        for (let i = 0; i < result.length; i++) {
+          if (
+            result[i].length != 0 &&
+            dayjs(result[i].mkYmd, 'YYYY/MM/DD').isValid()
+          ) {
+            result[i].mkYmd = dayjs(result[i].mkYmd).format('YYYY/MM/DD');
+          }
+          if (
+            result[i].length != 0 &&
+            dayjs(result[i].opnYmd, 'YYYY/MM/DD').isValid()
+          ) {
+            result[i].opnYmd = dayjs(result[i].opnYmd).format('YYYY/MM/DD');
+          }
+          if (
+            result[i].length != 0 &&
+            dayjs(result[i].kanryoYmd, 'YYYY/MM/DD').isValid()
+          ) {
+            result[i].kanryoYmd = dayjs(result[i].kanryoYmd).format(
+              'YYYY/MM/DD'
+            );
+          }
+        }
+        this.rirekiView = result;
+      });
+    },
+    // 履歴参照 POST
+    getPostData() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      let mkYmd = this.mkYmd.replaceAll('/', '');
+      let opnYmd = this.opnYmd.replaceAll('/', '');
+
+      let inputParams = {
+        svcKbn: 1,
+        jigyoid: 62,
+        kaigiKbn: this.kaigiKbn,
+        intcode: this.intCode,
+        mkYmd: mkYmd,
+        opnYmd: opnYmd,
+        siid: this.siid,
+        annCntID: this.annCntID,
+        moniCntID: this.moniCntID,
+      };
+      postConnect('/TantokaigiReki', params, 'SIENP', inputParams).then(
+        (result) => {
+          if (result.okflg == true) {
+            this.rirekiView = [];
+          } else {
+            alert(result.msg);
+          }
+        }
+      );
+    },
+    // 担当会議 GET
+    setViewData() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pSvcKbn: 1,
+        pIntcode: this.intCode,
+        pCntId: this.cntID,
       };
       getConnect('/Tantokaigi', params, 'SIENP').then((result) => {
         // 会議内容
-        this.openYmd = dayjs(result[0].info.opnYmd).format('YYYY年MM月DD日');
         this.mkYmd = dayjs(result[0].info.mkYmd).format('YYYY年MM月DD日');
+        this.opnYmd = dayjs(result[0].info.opnYmd).format('YYYY年MM月DD日');
         this.sTime = result[0].info.sTime;
         this.eTime = result[0].info.eTime;
         this.basho = result[0].info.basho;
@@ -1516,27 +1603,30 @@ export default {
 
         // 出席者一覧
         this.shussekiList = result[0].shussekiList;
+
         let attendees = [];
         for (let i = 0; i < 15; i++) {
           attendees.push({
+            num: i + 1,
             syokusyu: this.shussekiList[i] ? this.shussekiList[i].siYakuNm : '',
             name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
           });
         }
-        this.selectedAttendView = '';
-        this.selectedAttendView = attendees;
-        this.registSelect();
+        this.selectedAttendList = attendees;
+        this.selectedAttendView = this.selectedAttendList;
+        // 出席者一覧へ反映
+        this.setShussekiData();
 
         // 検討項目/内容・結論
         this.naiyoGyoList = result[0].naiyoGyoList;
         let considerView = [];
 
+        // 検討項目/内容/結論
         for (let i = 0; i < this.naiyoGyoList.length; i++) {
           let kentoKmk = '';
           let kentoNaiyo = '';
           let ketsuron = '';
           let list = this.naiyoGyoList[i].naiyoList;
-          // 区分ごとに内容を振り分け
           for (let j = 0; j < list.length; j++) {
             if (list[j].kbn == 1) {
               kentoKmk = list[j].naiyo;
@@ -1559,33 +1649,94 @@ export default {
         this.considerView = considerView;
       });
     },
+    // 担当会議 PUT
+    putTantokaigi() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      let inputParams = {
+        svcKbn: 1,
+        jigyoid: 62,
+        intCode: this.intCode,
+        info: [
+          {
+            mkYmd: this.mkYmd,
+            opnYmd: this.opnYmd,
+            sTime: this.sTime,
+            eTime: this.eTime,
+            basho: this.basho,
+          },
+        ],
+        shussekiList: [
+          {
+            siYakuNm: this.syokusyu,
+            siNm: this.name,
+          },
+        ],
+        naiyoGyoList: [
+          {
+            cnt: this.cntID,
+            naiyoList: [
+              {
+                kbn: 1,
+                naiyo:
+                  '家族や訪問看護以外の人と関わる時間を持ちたい。\r\n・定期的に通える場所ができ、生活にメリハリをつけたい。',
+              },
+            ],
+          },
+        ],
+      };
+      putConnect('TantoKaigi', params, 'SIENP', inputParams).then((result) => {
+        console.log(result);
+      });
+    },
     dispalyChange() {
       this.onDisplayFlag = this.onDisplayFlag ? false : true;
       this.offDisplayFlag = this.offDisplayFlag ? false : true;
       this.display = this.onDisplayFlag ? '↑縮小' : '↓拡大';
     },
+    /*****************************
+     * カレンダー機能
+     *****************************/
     inputCalendarClick(calendarType) {
-      this.picker =
-        dayjs().format('YYYY') +
-        '-' +
-        dayjs().format('MM') +
-        '-' +
-        dayjs().format('DD');
+      if (calendarType == 0) {
+        // 計画案作成日
+        this.picker = this.dateFormatChange(this.getYmd);
+      }
+      if (calendarType == 1) {
+        // 作成日
+        this.picker = this.dateFormatChange(this.mkYmd);
+      }
+      if (calendarType == 2) {
+        // 開催日
+        this.picker = this.dateFormatChange(this.opnYmd);
+      }
       this.datepicker_dialog = true;
       this.calendarType = calendarType;
     },
+    // YYYY年MM月DD日の形式へ変更
     monthSelect() {
+      // 計画案作成日
       if (this.calendarType == 0) {
         this.getYmd = dayjs(this.picker).format('YYYY年MM月DD日');
       }
+      // 作成日
       if (this.calendarType == 1) {
         this.mkYmd = dayjs(this.picker).format('YYYY年MM月DD日');
       }
+      // 開催日
       if (this.calendarType == 2) {
-        this.openYmd = dayjs(this.picker).format('YYYY年MM月DD日');
+        this.opnYmd = dayjs(this.picker).format('YYYY年MM月DD日');
       }
-      this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
+    },
+    dateFormatChange(dateString) {
+      let year = dateString.slice(0, 4);
+      let month = dateString.slice(5, 7);
+      let day = dateString.slice(8, 10);
+      let date = year + '-' + month + '-' + day;
+      return date;
     },
   },
 };
@@ -1667,6 +1818,15 @@ div.rirekiTitle {
       color: $grid_selected_color;
       background-color: $view_Title_font_color_Main;
     }
+  }
+}
+div#rirekiSansyoGrid {
+  color: $font_color;
+  font-size: 12px;
+  font-family: 'メイリオ';
+  height: var(--height);
+  .wj-header {
+    font-weight: normal;
   }
 }
 

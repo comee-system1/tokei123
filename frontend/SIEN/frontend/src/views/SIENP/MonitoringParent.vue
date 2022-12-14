@@ -21,7 +21,9 @@
               class="pa-0 mr-1"
               :style="{ 'max-width': leftWidth }"
               v-show="
-                (tab == 'Houkokusyo' && userdrawer) || tab == 'SyukanKeikaku'
+                (tab == 'Houkokusyo' && userdrawer) ||
+                tab == 'SyukanKeikaku' ||
+                tab == 'SampleCaleandar'
               "
             >
               <user-list
@@ -38,7 +40,10 @@
             </v-col>
             <v-col no-gutters class="pa-0">
               <v-tab-item value="KeikakuIcrn" transition="none">
-                <KeikakuIcrn @moni-select="moniSelect"></KeikakuIcrn>
+                <KeikakuIcrn
+                  ref="KeikakuIcrn"
+                  @moni-select="moniSelect"
+                ></KeikakuIcrn>
               </v-tab-item>
               <v-tab-item value="Houkokusyo" transition="none" eager>
                 <MonitoringHoukokusho
@@ -55,15 +60,17 @@
                 >
                 </MonitoringSyukanKeikaku>
               </v-tab-item>
-              <v-tab-item value="SampleCaleandar" transition="none">
+              <v-tab-item value="SampleCaleandar" transition="none" eager>
                 <SampleCaleandar
                   :selectedUserObj="selectedUserObj"
-                  ref="SyukanKeikaku"
+                  ref="SampleCalendar"
                 >
                 </SampleCaleandar>
               </v-tab-item>
               <v-tab-item value="MonitoringJissiIcrn" transition="none">
-                <MonitoringJissiIcrn></MonitoringJissiIcrn>
+                <MonitoringJissiIcrn
+                  ref="MonitoringJissiIcrn"
+                ></MonitoringJissiIcrn>
               </v-tab-item>
             </v-col>
           </v-layout>
@@ -136,10 +143,21 @@ export default {
   },
   methods: {
     tabsChange(hrefval) {
+      this.$router.app.$off('print_event_global');
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
       this.tab = hrefval;
       if (this.selectedUserObj != null) {
         this.setUserSelectPoint(this.selectedUserObj);
+      }
+      if (this.tab == 'KeikakuIcrn') {
+        if (this.$refs.KeikakuIcrn != undefined) {
+          this.$refs.KeikakuIcrn.setPrintEvent();
+        }
+      }
+      if (this.tab == 'MonitoringJissiIcrn') {
+        if (this.$refs.MonitoringJissiIcrn != undefined) {
+          this.$refs.MonitoringJissiIcrn.setPrintEvent();
+        }
       }
     },
     /****************
@@ -156,6 +174,11 @@ export default {
       if (this.tab == 'SyukanKeikaku') {
         if (this.$refs.SyukanKeikaku != undefined) {
           this.$refs.SyukanKeikaku.setUserdata(row);
+        }
+      }
+      if (this.tab == 'SampleCaleandar') {
+        if (this.$refs.SampleCalendar != undefined) {
+          this.$refs.SampleCalendar.setUserdata(row);
         }
       }
     },

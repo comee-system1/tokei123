@@ -525,7 +525,7 @@ export default {
       if (document.getElementById(GRD_ID.Uketuke) != null) {
         if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
           document.getElementById(GRD_ID.Uketuke).style.height =
-            window.innerHeight - 150 + 'px';
+            window.innerHeight - 160 + 'px';
         } else {
           document.getElementById(GRD_ID.Uketuke).style.height =
             window.innerHeight - 130 + 'px';
@@ -535,9 +535,6 @@ export default {
     setPrintEvent() {
       this.$router.app.$off('print_event_global');
       this.$router.app.$on('print_event_global', this.printExec);
-    },
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
     },
     filterInitialized: function (filter) {
       this.filter = filter;
@@ -624,6 +621,7 @@ export default {
     },
     onItemsSourceChanged(flexGrid) {
       this.grdAutoSizeRow(flexGrid);
+      this.screenFlag = false;
     },
     grdAutoSizeRow(flexGrid) {
       // 初期選択を解除
@@ -742,9 +740,15 @@ export default {
         getConnect('/Uktk', params, 'SIENT').then((result) => {
           console.log(12345);
           console.log(result);
-          this.viewdataAll = result;
-          this.userFilter();
-          this.screenFlag = false;
+
+          if (result != undefined) {
+            this.viewdataAll = result;
+            this.userFilter();
+            this.screenFlag = true;
+          } else {
+            alert('検索処理で、エラーが発生しました。');
+            this.screenFlag = false;
+          }
         });
       } else {
         this.userFilter();

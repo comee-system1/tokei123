@@ -493,14 +493,11 @@ import { getConnect } from '../../connect/getConnect';
 import { deleteConnect } from '@/connect/deleteConnect';
 import { postConnect } from '@/connect/postConnect';
 import { putConnect } from '@/connect/putConnect';
+import printUtil from '@/utiles/printUtil';
 
 export default {
   components: {
     AlphabetButton,
-  },
-  mounted() {
-    window.addEventListener('resize', this.calculateWindowHeight);
-    this.calculateWindowHeight();
   },
   computed: {
     styles() {
@@ -621,9 +618,19 @@ export default {
       displayDate: '', // 表示日
       headerheight: 130,
       viewDataDefault: [],
+      mainGrid: [],
+      thickList: [2, 9],
     };
   },
-
+  mounted() {
+    window.addEventListener('resize', this.calculateWindowHeight);
+    this.calculateWindowHeight();
+    this.setPrintEvent();
+  },
+  beforeDestroy() {
+    document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
+  },
   methods: {
     /**********************
      * 契約報告書
@@ -634,6 +641,10 @@ export default {
         document.getElementById('keiyakuGrid').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
+    },
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
     /**********************
      * カレンダー機能
@@ -774,6 +785,7 @@ export default {
      * #keiyakuGrid
      **********************/
     onInitialized(flexGrid) {
+      this.mainGrid = flexGrid;
       // API接続（契約報告書一覧）
       this.keiyakuHoukokuView();
 
@@ -1064,6 +1076,13 @@ export default {
           }
         });
       }
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示日：' + this.getYmDisplay + ' ';
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('契約報告一覧', printUtil.DIRECTION.landscape);
     },
   },
 };

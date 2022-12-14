@@ -1,5 +1,5 @@
 <template>
-  <v-container no-gutters fluid class="pa-0">
+  <v-container no-gutters fluid class="pa-0" style="max-width: 100%">
     <v-row no-gutters>
       <v-col>
         {{ keycloak.tokenParsed.realm_access }}\
@@ -54,6 +54,55 @@
           <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
         </div>
       </v-tab-item>
+      <v-layout no-gutters class="pa-1">
+        <v-col
+          no-gutters
+          class="pa-0 mr-1"
+          :style="{ 'max-width': leftWidth }"
+          v-show="
+            tab == 'state' || (tab == 'idea' && userdrawer) || tab == 'plan'
+          "
+        >
+          <user-list
+            ref="user_list"
+            :dispHideBar="false"
+            @child-select="setUserSelectPoint"
+          >
+          </user-list>
+        </v-col>
+        <v-col no-gutters class="pa-0">
+          <v-tab-item value="KeikakuLists" transition="none">
+            <KeikakuLists @an-select="anSelect"></KeikakuLists>
+          </v-tab-item>
+          <v-tab-item value="state" transition="none">
+            <AttendeeState
+              :selectedUserObj="selectedUserObj"
+              ref="state"
+            ></AttendeeState>
+          </v-tab-item>
+          <v-tab-item value="idea" transition="none">
+            <div v-show="tab == 'idea'">
+              <KeikakuIdea
+                :selectedUserObj="selectedUserObj"
+                @userDispChange="userdrawer = $event"
+                v-show="ideaFlag == 'create'"
+                ref="create"
+              ></KeikakuIdea>
+              <KeikakuWeek3 v-show="ideaFlag == 'weekplan3'"></KeikakuWeek3>
+            </div>
+          </v-tab-item>
+          <v-tab-item value="plan" transition="none">
+            <div v-show="tab == 'plan'">
+              <KeikakuPlan
+                :selectedUserObj="selectedUserObj"
+                v-show="planFlag == 'create'"
+                ref="plan"
+              ></KeikakuPlan>
+              <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
+            </div>
+          </v-tab-item>
+        </v-col>
+      </v-layout>
     </v-tabs-items>
   </v-container>
 </template>
@@ -66,6 +115,7 @@ import KeikakuIdea from '../../components/KeikakuIdea.vue';
 import KeikakuPlan from '../../components/KeikakuPlan.vue';
 import KeikakuWeek from '../../components/KeikakuWeek.vue';
 import KeikakuWeek3 from '../../components/KeikakuWeek3.vue';
+import UserList from '../../components/UserList.vue';
 
 export default {
   props: ['keycloak'],
@@ -76,7 +126,9 @@ export default {
     KeikakuPlan,
     KeikakuWeek,
     KeikakuWeek3,
+    UserList,
   },
+
   mounted() {
     if (this.tab == 'state' || this.tab == 'idea' || this.tab == 'plan') {
       this.yousikiLabel = true;
@@ -103,6 +155,7 @@ export default {
   },
   data: function () {
     return {
+      leftWidth: '280px',
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
       animal: this.$store.state.animal,
       subtab: 0,
@@ -163,15 +216,13 @@ export default {
           hrefval: 'plan',
         },
       ],
+      selectedUserObj: {},
+      userdrawer: true,
     };
-  },
-  watch: {
-    selectedData() {
-      // 子供に受け渡すだけ
-    },
   },
   methods: {
     tabsChange(hrefval) {
+      this.tab = hrefval;
       ls.setlocalStorageEncript(ls.KEY.SansyoTab, hrefval);
       //alert(hrefval);
       this.yousikiLabel = false;
@@ -183,9 +234,37 @@ export default {
         this.yousikiLabel = true;
       }
       this.subtab = 0;
+      if (this.selectedUserObj != null) {
+        this.setUserSelectPoint(this.selectedUserObj);
+      }
     },
     tabsYosikiChange(value) {
       this.ideaFlag = value;
+    },
+    /****************
+     * ユーザー一覧を押下
+     */
+    setUserSelectPoint(row) {
+      this.selectedUserObj = row;
+      if (this.tab == 'state') {
+        if (this.$refs.state != undefined) {
+          this.$refs.state.setUserdata(row);
+        }
+      }
+      if (this.tab == 'idea') {
+        if (this.$refs.create != undefined) {
+          this.$refs.create.setUserdata(row);
+        }
+      }
+      if (this.tab == 'plan') {
+        if (this.$refs.plan != undefined) {
+          this.$refs.plan.setUserdata(row);
+        }
+      }
+    },
+    anSelect(anItem) {
+      this.tabsChange(this.menuItem[2].hrefval);
+      this.$refs.create.setDataFromKeikauList(anItem);
     },
   },
 };

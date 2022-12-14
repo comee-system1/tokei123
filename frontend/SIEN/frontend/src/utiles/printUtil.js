@@ -55,16 +55,18 @@ function printExec(title, dirction, gridJoinPrint = false) {
             doc.append('<div style="page-break-after: always;"></div>') // 強制改ページ
         }
     }
+
     doc.print();
 }
 
 function renderTable(title, flex, isFirstGrd) {
     // start table
-    let tbl = '<table style="border-collapse: collapse " >';
+    let tbl = '<table style="border-collapse: collapse;table-layout: fixed; " >';
     //
     // headers
     tbl += '<thead>';
     if (isFirstGrd) {
+
         tbl += `<tr><th colspan="${flex.columnHeaders.columns.length}"><h2>` + title + `</h2></th></tr>`;
         for (let sub = 0; sub < subTitleList.length; sub++) {
             tbl += `<tr><th colspan="${flex.columnHeaders.columns.length}"><p align="left" style="font-weight: normal;">` + subTitleList[sub] + `</p></th></tr>`;
@@ -81,10 +83,6 @@ function renderTable(title, flex, isFirstGrd) {
     tbl += '<tbody">';
     for (let r = 0; r < flex.rows.length; r++) {
         tbl += renderRow(flex.cells, r, flex);
-    }
-    console.log(flex.columnFooters);
-    for (let r = 0; r < flex.columnFooters.rows.length; r++) {
-        tbl += renderRow(flex.columnFooters, r, flex);
     }
     tbl += '</tbody>';
     //
@@ -103,24 +101,21 @@ function renderRow(panel, r, flex) {
         panel.columns.forEach((col, c) => {
             if (col.renderSize > 0 && col.visible) {
                 // get cell style, content
-                let headerstyle = `width:${col.renderSize}px;height:${panel.rows[r].renderHeight}px;font-size: 12px;border: 1px solid black;padding:2px;white-space:pre-wrap;`;
-                let style = `width:${col.renderSize}px; text-align:${col.getAlignment()};vertical-align:top;font-size: 12px;border: 1px solid black;padding:2px;white-space:pre-wrap; word-wrap:break-word;`;
-                let targetStyle = null;
+                let headerstyle = `min-width:${col.renderSize}px;width:${col.renderSize}px;height:${panel.rows[r].renderHeight}px;font-size: 12px;border: 1px solid black;padding:2px;white-space:pre-wrap;`;
+                let style = `min-width:${col.renderSize}px;width:${col.renderSize}px; text-align:${col.getAlignment()};vertical-align:top;font-size: 12px;border: 1px solid black;padding:2px;white-space:pre-wrap; word-wrap:break-word;`;
                 if (panel.getCellElement(0, c) != null) {
-                    // 表示されていないセルのスタイルは未設定の可能性があるため、先頭行のセルのスタイルを採用する
-                    targetStyle = panel.getCellElement(0, c).style;
-                    if (targetStyle.verticalAlign.length > 0) {
-                        style += `vertical-align:${targetStyle.verticalAlign};`;
+                    if (panel.getCellElement(0, c).style.verticalAlign.length > 0) {
+                        style += `vertical-align:${panel.getCellElement(0, c).style.verticalAlign};`;
                     }
-                    if (targetStyle.textAlign.length > 0) {
-                        style += `text-align:${targetStyle.textAlign};`;
+                    if (panel.getCellElement(0, c).style.textAlign.length > 0) {
+                        style += `text-align:${panel.getCellElement(0, c).style.textAlign};`;
                     }
-                    if (targetStyle.justifyContent.length > 0) {
+                    if (panel.getCellElement(0, c).style.justifyContent.length > 0) {
 
-                        style += `justify-content:${targetStyle.justifyContent};`;
+                        style += `justify-content:${panel.getCellElement(0, c).style.justifyContent};`;
                     }
-                    if (targetStyle.alignItems.length > 0) {
-                        style += `align-items:${targetStyle.alignItems};`;
+                    if (panel.getCellElement(0, c).style.alignItems.length > 0) {
+                        style += `align-items:${panel.getCellElement(0, c).style.alignItems};`;
                     }
                 }
                 let thisckCol = thickRightVLineList.filter(function (colindex) {
@@ -157,6 +152,7 @@ function renderRow(panel, r, flex) {
                             }
                         }
                     }
+
                     if (txt != precoltxt) {
                         for (let c2 = c + 1; c2 < panel.columns.length; c2++) {
                             if (panel.columns[c2].renderSize > 0 && panel.columns[c2].visible) {
@@ -169,6 +165,9 @@ function renderRow(panel, r, flex) {
                             }
                         }
                     }
+                    if (colspan > 1) {
+                        headerstyle += `border-right: 1px solid black;`;
+                    }
                     if (txt != prerowtxt && txt != precoltxt) {
                         let tmptr = `<th `;
                         if (colspan > 1) {
@@ -178,7 +177,7 @@ function renderRow(panel, r, flex) {
                             tmptr += `rowspan="${rowspan}" `;
                         }
                         // 縦書きを反映する
-                        if (targetStyle != null && panel.getCellElement(r, c).style.writingMode == "vertical-rl") {
+                        if (panel.getCellElement(r, c) != null && panel.getCellElement(r, c).style.writingMode == "vertical-rl") {
                             tmptr += `style="${headerstyle}"><span style="writing-mode: vertical-rl;text-align:left">${content}</span></th>`;
                         } else {
                             tmptr += `style="${headerstyle}">${content}</th>`;

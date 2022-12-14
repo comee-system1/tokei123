@@ -16,7 +16,7 @@ export async function putConnect(type, params, folderName = "", inputParams = []
         folder = folderName;
     }
 
-    return await axios.put(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + str + "/" + folder, {
+    return await axios.put(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str, {
         params,
         inputParams
     }).then(function (response) {

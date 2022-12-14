@@ -189,6 +189,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
 export default {
   components: { AlphabetButton },
@@ -400,14 +401,18 @@ export default {
         { val: 2, name: '障害児' },
       ],
       loading: false,
+      mainGrid: [],
+      thickList: [2, 9],
     };
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
+    this.setPrintEvent();
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
+    this.$router.app.$off('print_event_global');
   },
   methods: {
     calculateWindowHeight() {
@@ -416,13 +421,15 @@ export default {
           window.innerHeight - 160 + 'px';
       }
     },
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
+    setPrintEvent() {
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
     },
     filterInitializedyoteisyaIcrn: function (filter) {
       this.filteryoteisyaIcrn = filter;
     },
     onInitializemonitoringJissiIcrnGrid(flexGrid) {
+      this.mainGrid = flexGrid;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
         this.filteryoteisyaIcrn.showFilterIcons = true;
@@ -799,6 +806,13 @@ export default {
     },
     filterClrclick() {
       this.filteryoteisyaIcrn.clear();
+    },
+    printExec() {
+      printUtil.setGridList([this.mainGrid]);
+      printUtil.setThickRightVLineList(this.thickList);
+      let sub1 = '表示月：' + this.getYm() + ' ';
+      printUtil.setSubTitleList([sub1]);
+      printUtil.printExec('実績一覧', printUtil.DIRECTION.landscape);
     },
   },
 };
