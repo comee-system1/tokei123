@@ -191,7 +191,7 @@ export default {
             { name: '施設体制確認', link: '/TemporaryPage' },
             { name: '利用者受給者証一覧', link: '/TemporaryPage' },
             { name: '基本報酬件数算定', link: '/TemporaryPage' },
-            { name: '利用状況一覧', link: '/TemporaryPage' },
+            { name: '利用状況一覧', link: '/RiyoJyokyo' },
             { name: 'レセプト集計', link: '/TemporaryPage' },
             {
               name: '給付明細書',
