@@ -17,7 +17,7 @@ export async function postConnect(type, params, folderName = "", inputParams = [
     }
 
 
-    return await axios.post(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + str + "/" + folder, {
+    return await axios.post(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str, {
         params,
         inputParams
     }).then(function (response) {

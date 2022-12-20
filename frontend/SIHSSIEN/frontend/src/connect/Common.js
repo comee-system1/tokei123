@@ -1,6 +1,6 @@
-const LOG_DOMAIN = "http://localhost";
-const LOG_PORT = "8000";
-const DOMAIN = "http://192.168.30.32";
+const LOG_DOMAIN = process.env.NODE_ENV === 'production' ? '' : 'http://localhost'; //"http://localhost";
+const LOG_PORT = process.env.NODE_ENV === 'production' ? '' : '8000'; //"8000";
+const DOMAIN = process.env.NODE_ENV === 'production' ? '' : 'http://192.168.30.32'; //"";
 const FOLDER = "SIENP";
 const FOLDER_COMMON = "COMMON";
 

@@ -2,7 +2,9 @@
   <v-layout>
     <v-flex md12 class="basicArea" style="position: relative; z-index: 5">
       <div class="service-selection-area mt-1 mb-0" no-gutters>
-        <label style="height: 25px">サービス</label>
+        <label height="25" class="koumokuTitle titleBlueDark label-blue mr-1"
+          >サービス</label
+        >
         <v-btn
           elevation="0"
           outlined
@@ -21,7 +23,9 @@
 
       <div class="month-selection-area mt-1 mb-0">
         <label v-if="nenkanRiyouNissuFlag == true">年度</label>
-        <label v-else>提供月</label>
+        <label v-else class="koumokuTitle titleBlueDark label-blue mr-1"
+          >提供月</label
+        >
         <datepickerYear
           v-if="nenkanRiyouNissuFlag"
           :language="ja"
@@ -68,7 +72,11 @@
           ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
         >
         <span style="margin-left: 25px" v-if="seikyuflag">
-          <label>請求月</label>
+          <label
+            height="25"
+            class="koumokuTitle titleLightGreen label-green mr-1"
+            >請求月</label
+          >
 
           <v-btn
             class="pa-1 service"
@@ -107,7 +115,7 @@
           >
         </span>
 
-        <v-btn
+        <!-- <v-btn
           class="pa-1 ml-3"
           :width="60"
           height="25"
@@ -115,7 +123,7 @@
           @click="searchButton()"
         >
           検索
-        </v-btn>
+        </v-btn> -->
         <!-- ↓ 請求一覧画面用 -->
         <span v-if="seikyushoflag">
           <span v-if="isActive === false">
@@ -145,6 +153,16 @@
         </span>
         <!-- ↑ 請求一覧画面用 -->
       </div>
+      <v-btn
+        id="searchButton"
+        class="pa-1 ml-3 mt-1"
+        :width="60"
+        height="50"
+        small
+        @click="searchButton()"
+      >
+        検索
+      </v-btn>
 
       <v-row
         no-gutters
@@ -737,6 +755,7 @@ export default {
 .basicArea {
   padding: 6px;
   background-color: $time_color_aqua;
+  position: relative;
 }
 .header_dialogs {
   position: fixed !important;
@@ -765,6 +784,7 @@ export default {
 }
 .service-selection-area,
 .month-selection-area {
+  position: relative;
   label {
     width: 80px !important;
     display: inline-block;
@@ -781,6 +801,17 @@ export default {
       background-position: right 5px center;
     }
   }
+  .label-blue {
+    border: solid 2px $view_Title_background_Blue_Dark;
+  }
+  .label-green {
+    border: solid 2px $light_green;
+  }
+}
+#searchButton {
+  position: absolute;
+  top: 5px;
+  left: 630px;
 }
 
 #screen_dialog {

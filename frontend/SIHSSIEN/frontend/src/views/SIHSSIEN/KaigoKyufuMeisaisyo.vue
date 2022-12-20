@@ -40,8 +40,8 @@
               </table>
               <table class="jyukyusyaTable wlong">
                 <tr>
-                  <th>支給決定障害者等氏名</th>
-                  <td>愛知 二郎太</td>
+                  <th class="borderBlue">支給決定障害者等氏名</th>
+                  <td class="borderBlue">愛知 二郎太</td>
                 </tr>
               </table>
             </v-col>
@@ -112,7 +112,7 @@
               :allowDragging="false"
               :allowSorting="false"
               :allowMerging="true"
-              :showMarquee="true"
+              :showMarquee="false"
               :formatItem="onFormatItem"
             >
               <wj-flex-grid-column
@@ -302,14 +302,14 @@ export default {
         }
       });
       flexGrid.columnHeaders.rows[0].height = 0;
-      flexGrid.rowHeaders.columns[0].width = 26;
+      flexGrid.rowHeaders.columns[0].width = 30;
       var panel = flexGrid.columnHeaders;
       flexGrid.columnHeaders.rows.insert(0, new wjGrid.Row());
       panel.setCellData(0, 0, 'サービス内容');
       panel.setCellData(0, 1, 'サービスコード');
       panel.setCellData(0, 7, '単位数');
       panel.setCellData(0, 8, '回数');
-      panel.setCellData(0, 9, 'サービス単位数');
+      panel.setCellData(0, 9, 'ｻｰﾋﾞｽ単位数');
       panel.setCellData(0, 10, '摘要');
 
       let headerRanges = [];
@@ -345,8 +345,7 @@ export default {
     onItemsSourceChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
       var rowPanel = flexGrid.rowHeaders;
-      rowPanel.setCellData(0, 0, '給付絵明細欄');
-      console.log(rowPanel);
+      rowPanel.setCellData(0, 0, '給付費明細欄');
     },
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.Cell) {
@@ -409,6 +408,9 @@ div#kaigokyufumeisai {
         color: $view_Title_font_color_Orange;
         padding: 3px;
       }
+      &.borderBlue {
+        border: solid 3px $view_Title_background_Main;
+      }
     }
     td {
       border-right: 1px solid $gray;
@@ -417,6 +419,9 @@ div#kaigokyufumeisai {
       background-color: $light_yellow;
       &.textAlignLeft {
         text-align: left;
+      }
+      &.borderBlue {
+        border: solid 3px $view_Title_background_Main;
       }
     }
 
@@ -460,9 +465,12 @@ div#kaigokyufumeisai {
     }
   }
   #serviceListGrid {
+    display: flex;
+
     .wj-header {
       background-color: $view_Title_background_Green_Dark;
       color: $green;
+      font-weight: normal;
     }
     .wj-state-multi-selected {
       color: $font_color;
@@ -470,7 +478,9 @@ div#kaigokyufumeisai {
     .vertical-write {
       -ms-writing-mode: tb-rl;
       writing-mode: vertical-rl;
-      text-align: center;
+    }
+    .wj-state-selected {
+      color: $font_color;
     }
   }
 }

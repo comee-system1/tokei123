@@ -166,11 +166,11 @@
             </v-btn-toggle>
           </v-col>
           <v-col cols="4" class="relative">
-            <div class="triangle">▼</div>
+            <label class="triangle">▼</label>
             <select
               class="mr-2 customkyufuSelectBox customSelectLift"
               v-model="allSelect"
-              @change="onTantouClicked"
+              @change="onAllSelect"
             >
               <option v-for="val in allList" :key="val.id" :value="val.id">
                 {{ val.name }}
@@ -196,16 +196,21 @@
             </v-btn>
           </v-btn-toggle>
         </v-row> -->
-        <div class="rowStyle mt-1" no-gutters>
-          <alphabet-button
-            id="alpCommon"
-            ref="alp"
-            @onAlphabetical="onAlphabetical"
-          >
-          </alphabet-button>
-        </div>
-
+        <v-row class="rowStyle mt-1 d-flex" no-gutters>
+          <v-col cols="10">
+            <alphabet-button
+              id="alpCommon"
+              ref="alp"
+              @onAlphabetical="onAlphabetical"
+            >
+            </alphabet-button>
+          </v-col>
+          <v-col>
+            <v-btn x-small>並順</v-btn>
+          </v-col>
+        </v-row>
         <wj-flex-grid
+          class="mt-1"
           id="userListGrid"
           :autoSearch="true"
           :headersVisibility="'Column'"
@@ -219,6 +224,15 @@
           :showMarquee="true"
           :formatItem="onFormatItem"
         >
+          <wj-flex-grid-column
+            header="確"
+            binding="completeFlag"
+            :width="20"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+          ></wj-flex-grid-column>
           <wj-flex-grid-column
             header="コード"
             binding="riyocode"
@@ -258,6 +272,15 @@
             :visible="dispGrdMoniKanryo"
             align="center"
           ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            header="印"
+            binding="print"
+            :width="20"
+            :word-wrap="false"
+            :allowResizing="false"
+            :isReadOnly="true"
+            align="center"
+          ></wj-flex-grid-column>
         </wj-flex-grid>
 
         <v-row class="rowStyle mt-1 mr-1 d-flex flex-row" no-gutters>
@@ -269,7 +292,7 @@
             >
           </v-col>
           <v-col cols="10">
-            <v-btn x-small>一括解除</v-btn>
+            <v-btn x-small @click="allLift()">一括解除</v-btn>
             <v-btn x-small class="ml-1">登録</v-btn>
           </v-col>
         </v-row>
@@ -300,10 +323,10 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-// import { getConnect } from '@connect/getConnect';
+import { getConnect } from '@connect/getConnect';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-// let uniqid = 3; // 現在は1のみapiが実行する
-// let traceid = 123;
+let uniqid = 3; // 現在は1のみapiが実行する
+let traceid = 123;
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
@@ -390,7 +413,11 @@ export default {
         { val: 2, name: '受給者番号順', width: 100 },
       ],
       allSelect: 0,
-      allList: [{ id: 0, name: '全選択/全解除' }],
+      allList: [
+        { id: 0, name: '全選択/全解除' },
+        { id: 1, name: '全選択' },
+        { id: 2, name: '全解除' },
+      ],
       hdrTips: new Tooltip({
         position: PopupPosition.RightTop,
         showAtMouse: true,
@@ -402,6 +429,7 @@ export default {
       yoteiYm: '',
       datepickerYoteiYm_dialog: false,
       searchText: '',
+      toggle_select: 0,
     };
   },
   mounted() {
@@ -431,13 +459,13 @@ export default {
     calculateWindowHeight() {
       if (document.getElementById('user-kyufumeisai_scrollbar') != null) {
         document.getElementById('user-kyufumeisai_scrollbar').style.height =
-          window.innerHeight - this.headerheight + 'px';
+          window.innerHeight - this.headerheight - 60 + 'px';
       }
       if (document.getElementById('userListGrid') != null) {
         document.getElementById('userListGrid').style.height =
           window.innerHeight -
           (parseInt(this.headerheight) + parseInt(this.grdheight)) -
-          30 +
+          100 +
           'px';
       }
     },
@@ -461,6 +489,26 @@ export default {
     },
     onTantouClicked() {
       this.selTantou = this.tantouList[this.selTantou].id;
+    },
+    /*************************
+    全選択/全解除
+    */
+    onAllSelect() {
+      // 全選択
+      let _self = this;
+      let temp = [];
+      this.usersViewData.forEach(function (value, k) {
+        temp[k] = value;
+        if (_self.toggle_select == 0) {
+          temp[k].completeFlag = _self.allSelect == 1 ? '確' : '';
+        }
+        if (_self.toggle_select == 1) {
+          temp[k].print = _self.allSelect == 1 ? '〇' : '';
+        }
+      });
+      this.usersViewData = temp;
+
+      this.allSelect = 0;
     },
     siborikomiUser(siborikomiType) {
       this.selDispKbn = siborikomiType;
@@ -560,7 +608,7 @@ export default {
       if (s) {
         s.selectedIndex = 0; //どの値を選択しても初期状態に戻す
       }
-      this.usersViewData = data.concat();
+      this.usersViewData = data;
 
       this.$emit('child-user', this.usersViewData);
       if (this.sortSearch == 2) {
@@ -582,13 +630,34 @@ export default {
         if (ht.panel == flexGrid.cells) {
           //選択した要素の取得
           _self.$emit('child-select', flexGrid.rows[ht._row].dataItem); //親要素の処理を実行
+
+          // 確カラムを押下
+          if (ht.col == '0') {
+            let temp = _self.usersViewData.slice();
+            if (temp[ht.row].completeFlag) {
+              temp[ht.row].completeFlag = '';
+            } else {
+              temp[ht.row].completeFlag = '確';
+            }
+            _self.usersViewData = temp;
+          }
+          // 印カラムを押下
+          if (ht.col == '4') {
+            let temp = _self.usersViewData.slice();
+            if (temp[ht.row].print) {
+              temp[ht.row].print = '';
+            } else {
+              temp[ht.row].print = '〇';
+            }
+            _self.usersViewData = temp;
+          }
         }
       });
       this.userGrid = flexGrid;
       flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row + 1;
       flexGrid.alternatingRowStep = 0;
-      /*
+
       let params = [];
 
       params = {
@@ -601,26 +670,18 @@ export default {
         eymd: '20220901',
       };
 
-
       return getConnect('/userListPrint', params).then((result) => {
         _self.usersData = result.icrn_inf;
         _self.userDataSelect = result;
         this.userFilter();
       });
-*/
-      // テスト用
-      let usersViewData = [];
-      for (let i = 1; i < 100; i++) {
-        usersViewData.push({
-          riyocode: '0000000' + i,
-          names: '佐藤タロウ' + i,
-        });
-      }
-      _self.usersViewData = usersViewData;
     },
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.Cell) {
-        if (e.col == 1) {
+        // 確カラムの修正
+        if (e.col == 0) {
+          e.cell.style.color = sysConst.COLOR.red;
+        } else if (e.col == 1) {
           e.cell.style.textAlign = 'left';
           this.hdrTips.setTooltip(e.cell, flexGrid.rows[e.row].dataItem.kana);
         } else {
@@ -667,6 +728,17 @@ export default {
       });
       this.datepickerYoteiYm_dialog = false;
     },
+    /**************************
+    一括解除
+    */
+    allLift() {
+      let temp = [];
+      this.usersViewData.forEach(function (value, k) {
+        temp[k] = value;
+        temp[k].completeFlag = '';
+      });
+      this.usersViewData = temp;
+    },
   },
 };
 </script>
@@ -684,6 +756,13 @@ div#user-kyufumeisai_scrollbar {
     // height: var(--height);
     background: $grid_background;
     border: 1px solid $grid_Border_Color;
+    .wj-cell {
+      &:not(.wj-header) {
+        &:first-child {
+          font-weight: bold;
+        }
+      }
+    }
   }
   .relative {
     position: relative;
@@ -704,12 +783,15 @@ div#user-kyufumeisai_scrollbar {
     &.customSelectLift {
       width: 100%;
       font-size: 11px;
+      height: 22px;
+      border-radius: 0.2em;
     }
   }
 
   .toggle_select {
     button {
       height: 21px;
+      font-size: 11px;
     }
   }
 
@@ -737,7 +819,9 @@ div#user-kyufumeisai_scrollbar {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
+      .wj-state-active
+    ) {
     transition: all 0s;
     background: $grid_hover_background;
   }
@@ -881,5 +965,12 @@ div#user-kyufumeisai_scrollbar {
   left: 50px;
   width: 300px;
   max-width: 300px;
+}
+#alpCommon {
+  button {
+    font-size: 8px;
+    width: 20px !important;
+    min-width: 20px !important;
+  }
 }
 </style>

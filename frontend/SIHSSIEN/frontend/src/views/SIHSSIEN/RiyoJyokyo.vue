@@ -51,6 +51,34 @@
         >
         </alphabet-button>
       </v-row>
+      <v-row no-gutters>
+        <wj-flex-grid
+          id="flexViewGrid"
+          :autoSearch="true"
+          :headersVisibility="'Column'"
+          :selectionMode="3"
+          :initialized="onInitialized"
+          :itemsSourceChanged="onItemsSourceChanged"
+          :itemsSource="viewData"
+          :allowResizing="false"
+          :allowDragging="false"
+          :allowSorting="false"
+          :showMarquee="false"
+          :allowMerging="'AllHeaders'"
+          :formatItem="onFormatItem"
+        >
+          <wj-flex-grid-column
+            v-for="val in gridClumns"
+            :key="val.id"
+            :binding="val.binding"
+            :width="val.width"
+            :word-wrap="false"
+            :allowResizing="true"
+            :isReadOnly="true"
+            align="center"
+          ></wj-flex-grid-column>
+        </wj-flex-grid>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -60,6 +88,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import HeaderServices from '../../components/HeaderServices.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
+import * as wijmo from '@grapecity/wijmo';
+import * as wjGrid from '@grapecity/wijmo.grid';
+
 export default {
   props: {},
   components: {
@@ -72,6 +103,7 @@ export default {
       alertMessageFlag: false, // 変更時のアラートメッセージ
       serviceArgument: '', // ヘッダメニューのサービス選択
       filterSelect: '全員', // 絞込SELECTBOX
+      viewData: [], // 表示gridデータ
       filterSelectOption: [
         {
           id: 1,
@@ -85,10 +117,143 @@ export default {
           value: '契約日順',
         },
       ],
+      gridClumns: [
+        // gridデータカラム
+        {
+          id: 1,
+          width: 30,
+          header: '受給者証切れ',
+          binding: 'expired',
+        },
+        {
+          id: 2,
+          width: '3*',
+          header: '受給者番号',
+          binding: 'userNumber',
+        },
+        {
+          id: 3,
+          width: '3*',
+          header: '利用者名',
+          binding: 'userName',
+        },
+        {
+          id: 4,
+          width: '2*',
+          header: '契約日',
+          binding: 'contactDate',
+        },
+        {
+          id: 5,
+          width: 40,
+          header: '予定月',
+          binding: 'planDate',
+        },
+        {
+          id: 6,
+          width: 40,
+          header: '終期月',
+          binding: 'finishDate',
+        },
+        {
+          id: 7,
+          width: 30,
+          header: '様式',
+          binding: 'type',
+        },
+        {
+          id: 8,
+          width: '2*',
+          header: '計画作成日',
+          binding: 'makeDate',
+        },
+        {
+          id: 9,
+          width: '2*',
+          header: 'モニタリング実施日',
+          binding: 'monitorDate',
+        },
+      ],
+      girdClumnsEdit: [
+        {
+          top: '基本報酬',
+          middle: '計画',
+          bottom: 'Ⅰ',
+        },
+        {
+          top: '基本報酬',
+          middle: '計画',
+          bottom: 'Ⅱ',
+        },
+        {
+          top: '基本報酬',
+          middle: 'ﾓﾆﾀﾘﾝｸﾞ',
+          bottom: 'Ⅰ',
+        },
+        {
+          top: '基本報酬',
+          middle: 'ﾓﾆﾀﾘﾝｸﾞ',
+          bottom: 'Ⅱ',
+        },
+        {
+          top: '居宅重複減',
+          middle: 'Ⅰ',
+          bottom: 'Ⅰ',
+        },
+        {
+          top: '居宅重複減',
+          middle: 'Ⅱ',
+          bottom: 'Ⅱ',
+        },
+        {
+          top: '居宅重複減',
+          middle: '予防',
+          bottom: '予防',
+        },
+        {
+          top: '加算項目',
+          middle: '得地加算',
+          bottom: '得地加算',
+        },
+        {
+          top: '加算項目',
+          middle: '初回加算',
+          bottom: '初回加算',
+        },
+        {
+          top: '加算項目',
+          middle: '初回 訪問',
+          bottom: '初回 訪問',
+        },
+        {
+          top: '加算項目',
+          middle: '退院・退所',
+          bottom: '退院・退所',
+        },
+        {
+          top: '加算項目',
+          middle: '医療・保育',
+          bottom: '医療・保育',
+        },
+        {
+          top: '加算項目',
+          middle: '担当者会議',
+          bottom: '担当者会議',
+        },
+      ],
     };
   },
   mounted() {},
-
+  // beforeRouteLeave(to, from, next) {
+  //   const answer = window.confirm(
+  //     '編集中のものは保存されませんが、よろしいですか？'
+  //   );
+  //   if (answer) {
+  //     next();
+  //   } else {
+  //     next(false);
+  //   }
+  // },
   watch: {},
   methods: {
     /*******************************
@@ -127,11 +292,81 @@ export default {
     basicCalc() {
       alert('基本報酬算定');
     },
-    /***********************:
+    /***********************
      *  計画相談支援
      */
     planAdvice() {
       alert('計画相談支援');
+    },
+    /************************
+     * データ表示
+     */
+    onInitialized(flexGrid) {
+      this.createHeader(flexGrid);
+    },
+    /**************
+     * ヘッダ情報の作成
+     */
+    createHeader(flexGrid) {
+      var panel = flexGrid.columnHeaders;
+      panel.rows.insert(1, new wjGrid.Row());
+      panel.rows.insert(2, new wjGrid.Row());
+      // ヘッダカラム指定
+      let i = 0;
+      let col = '';
+      this.gridClumns.forEach(function (value) {
+        if (i == 4 || i == 5) {
+          panel.setCellData(0, i, 'ﾓﾆﾀﾘﾝｸﾞ');
+          panel.setCellData(1, i, value.header);
+          panel.setCellData(2, i, value.header);
+        } else {
+          panel.setCellData(0, i, value.header);
+          panel.setCellData(1, i, value.header);
+          panel.setCellData(2, i, value.header);
+        }
+        col = flexGrid.columns[i];
+        col.allowMerging = true;
+        i++;
+      });
+      flexGrid.columnHeaders.rows[0].allowMerging = true;
+      flexGrid.columnHeaders.rows[1].allowMerging = true;
+      flexGrid.columnHeaders.rows[2].allowMerging = true;
+      let c = 9;
+      this.girdClumnsEdit.forEach(function (value) {
+        flexGrid.columns.insert(c, new wjGrid.Column());
+        panel.setCellData(0, c, value.top);
+        panel.setCellData(1, c, value.middle);
+        panel.setCellData(2, c, value.bottom);
+
+        col = flexGrid.columns[c];
+        col.allowMerging = true;
+        col.multiLine = true;
+        col.wordWrap = true;
+        col.width = 30;
+        c++;
+      });
+
+      flexGrid.columnHeaders.rows.defaultSize = 38;
+    },
+    /************************
+     * データ表示
+     */
+    onItemsSourceChanged() {},
+    /************************
+     * 表示フォーマット
+     */
+    onFormatItem(flexGrid, e) {
+      if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+        if (e.col == 0 || e.col == 6) {
+          wijmo.addClass(e.cell, 'verticalCustom');
+        }
+        if (e.row == 1 && (e.col == 4 || e.col == 5)) {
+          wijmo.addClass(e.cell, 'verticalCustom');
+        }
+        // if (e.row == 1 && e.col >= 9) {
+        //   wijmo.addClass(e.cell, 'verticalCustom');
+        // }
+      }
     },
   },
 };
@@ -168,6 +403,19 @@ div#RiyoJyokyo {
   .v-btn {
     &.button {
       height: 21px;
+    }
+  }
+
+  #flexViewGrid {
+    .verticalCustom {
+      writing-mode: vertical-rl;
+    }
+    .wj-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-weight: normal;
     }
   }
 }

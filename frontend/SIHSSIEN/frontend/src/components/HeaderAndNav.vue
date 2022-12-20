@@ -236,6 +236,7 @@ export default {
     };
     this.$emit('parent-ymd-select', this.returndata);
   },
+
   watch: {
     // $route(to, from) {
     //   this.pageTitle = this.$route.name;

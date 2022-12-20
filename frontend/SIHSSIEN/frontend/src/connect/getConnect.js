@@ -15,7 +15,7 @@ export async function getConnect(type, params, folderName = "") {
     } else {
         folder = folderName;
     }
-    return await axios.get(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + str + "/" + param + "/" + folder).then(function (response) {
+    return await axios.get(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "/" + param).then(function (response) {
         return response.data.response;
     }).catch(function (error) {
         console.log("api接続用サーバーに接続失敗。BACKENDの実行確認");
