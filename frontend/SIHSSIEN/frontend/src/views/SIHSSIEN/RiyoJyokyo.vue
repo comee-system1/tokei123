@@ -72,7 +72,7 @@
             :key="val.id"
             :binding="val.binding"
             :width="val.width"
-            :word-wrap="false"
+            :word-wrap="true"
             :allowResizing="true"
             :isReadOnly="true"
             align="center"
@@ -127,19 +127,19 @@ export default {
         },
         {
           id: 2,
-          width: '3*',
+          width: 100,
           header: '受給者番号',
           binding: 'userNumber',
         },
         {
           id: 3,
-          width: '3*',
+          width: 120,
           header: '利用者名',
           binding: 'userName',
         },
         {
           id: 4,
-          width: '2*',
+          width: 100,
           header: '契約日',
           binding: 'contactDate',
         },
@@ -163,13 +163,13 @@ export default {
         },
         {
           id: 8,
-          width: '2*',
+          width: 120,
           header: '計画作成日',
           binding: 'makeDate',
         },
         {
           id: 9,
-          width: '2*',
+          width: 90,
           header: 'モニタリング実施日',
           binding: 'monitorDate',
         },
@@ -227,18 +227,68 @@ export default {
         },
         {
           top: '加算項目',
-          middle: '退院・退所',
-          bottom: '退院・退所',
+          middle: '退院 退所',
+          bottom: '退院 退所',
         },
         {
           top: '加算項目',
-          middle: '医療・保育',
-          bottom: '医療・保育',
+          middle: '医療 保育',
+          bottom: '医療 保育',
         },
         {
           top: '加算項目',
           middle: '担当者会議',
           bottom: '担当者会議',
+        },
+        {
+          top: '加算項目',
+          middle: '入院時情',
+          bottom: 'Ⅰ',
+        },
+        {
+          top: '加算項目',
+          middle: '入院時情',
+          bottom: 'Ⅱ',
+        },
+        {
+          top: '加算項目',
+          middle: '居宅介護',
+          bottom: '訪会',
+        },
+        {
+          top: '加算項目',
+          middle: '居宅介護',
+          bottom: '情報',
+        },
+        {
+          top: '加算項目',
+          middle: 'モニタリン',
+          bottom: 'モニタリン',
+        },
+        {
+          top: '加算項目',
+          middle: '集中支援加',
+          bottom: '訪問',
+        },
+        {
+          top: '加算項目',
+          middle: '集中支援加',
+          bottom: '会議開',
+        },
+        {
+          top: '加算項目',
+          middle: '集中支援加',
+          bottom: '会議参',
+        },
+        {
+          top: '加算項目',
+          middle: '地域生活支',
+          bottom: '地域生活支',
+        },
+        {
+          top: '加算項目',
+          middle: '地域体制強',
+          bottom: '地域体制強',
         },
       ],
     };
@@ -303,6 +353,16 @@ export default {
      */
     onInitialized(flexGrid) {
       this.createHeader(flexGrid);
+
+      let viewData = [];
+      viewData.push({
+        expired: '1',
+        userNumber: '11000000158',
+        col_9: '〇',
+      });
+      this.viewData = viewData;
+
+      flexGrid.frozenColumns = 9;
     },
     /**************
      * ヘッダ情報の作成
@@ -342,11 +402,12 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
         col.wordWrap = true;
-        col.width = 30;
+        col.width = 32;
+        col.binding = 'col_' + c;
         c++;
       });
 
-      flexGrid.columnHeaders.rows.defaultSize = 38;
+      flexGrid.columnHeaders.rows.defaultSize = 45;
     },
     /************************
      * データ表示
@@ -363,9 +424,16 @@ export default {
         if (e.row == 1 && (e.col == 4 || e.col == 5)) {
           wijmo.addClass(e.cell, 'verticalCustom');
         }
-        // if (e.row == 1 && e.col >= 9) {
-        //   wijmo.addClass(e.cell, 'verticalCustom');
-        // }
+        if (e.row == 1 && e.col >= 9) {
+          let k = e.col - 8;
+          let tmp = this.girdClumnsEdit[k];
+          let middle = tmp ? tmp.middle : '';
+          let bottom = tmp ? tmp.bottom : '';
+          // 2行目と3行目が同じ場合に縦書きのclassを付与
+          if (middle == bottom) {
+            wijmo.addClass(e.cell, 'verticalCustom');
+          }
+        }
       }
     },
   },
@@ -407,6 +475,8 @@ div#RiyoJyokyo {
   }
 
   #flexViewGrid {
+    width: 1266px;
+
     .verticalCustom {
       writing-mode: vertical-rl;
     }
