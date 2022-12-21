@@ -56,7 +56,7 @@
           id="flexViewGrid"
           :autoSearch="true"
           :headersVisibility="'Column'"
-          :selectionMode="3"
+          :selectionMode="0"
           :initialized="onInitialized"
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSource="viewData"
@@ -67,6 +67,10 @@
           :allowMerging="'AllHeaders'"
           :formatItem="onFormatItem"
         >
+          <wj-flex-grid-filter
+            :initialized="filterInitialized"
+            :showFilterIcons="false"
+          ></wj-flex-grid-filter>
           <wj-flex-grid-column
             v-for="val in gridClumns"
             :key="val.id"
@@ -86,11 +90,14 @@
 <script>
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
+import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import HeaderServices from '../../components/HeaderServices.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wijmo from '@grapecity/wijmo';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import '@grapecity/wijmo.vue2.grid.filter';
 
+import sysConst from '@/utiles/const';
 export default {
   props: {},
   components: {
@@ -99,6 +106,7 @@ export default {
   },
   data() {
     return {
+      filtered: [], // フィルターデータ
       serviceViewData: [],
       alertMessageFlag: false, // 変更時のアラートメッセージ
       serviceArgument: '', // ヘッダメニューのサービス選択
@@ -163,7 +171,7 @@ export default {
         },
         {
           id: 8,
-          width: 120,
+          width: 90,
           header: '計画作成日',
           binding: 'makeDate',
         },
@@ -222,18 +230,18 @@ export default {
         },
         {
           top: '加算項目',
-          middle: '初回 訪問',
-          bottom: '初回 訪問',
+          middle: '初回（訪問）',
+          bottom: '初回（訪問）',
         },
         {
           top: '加算項目',
-          middle: '退院 退所',
-          bottom: '退院 退所',
+          middle: '退院・退所',
+          bottom: '退院・退所',
         },
         {
           top: '加算項目',
-          middle: '医療 保育',
-          bottom: '医療 保育',
+          middle: '医療・保育',
+          bottom: '医療・保育',
         },
         {
           top: '加算項目',
@@ -324,11 +332,17 @@ export default {
         this.mainGrid.columns.clear();
       }
     },
+    /*******************
+     * フィルターの指定
+     */
+    filterInitialized(filter) {
+      this.filtered = filter;
+    },
     /*********************
      * フィルターのクリア
      */
     filterClear() {
-      alert('CLEAR');
+      this.filtered.clear();
     },
     /**************************
      * アルファベット
@@ -356,14 +370,65 @@ export default {
 
       let viewData = [];
       viewData.push({
-        expired: '1',
+        expired: '',
         userNumber: '11000000158',
+        userName: '東経四郎',
+        kana: 'ｼﾛｳﾄｳｹｲ',
+        contactDate: '2021/03/15',
+        planDate: '',
+        finishDate: '',
+        type: '者',
+        makeDate: '2021/07/16',
+        monitorDate: '',
         col_9: '〇',
       });
-      this.viewData = viewData;
+      viewData.push({
+        expired: '',
+        userNumber: '11000000142',
+        userName: '東経花子',
+        kana: 'ﾊﾅｺﾄｳｹｲ',
+        contactDate: '2021/12/06',
+        planDate: '',
+        finishDate: '〇',
+        type: '者',
+        makeDate: '2021/07/19',
+        monitorDate: '',
+        col_9: '〇',
+      });
+      viewData.push({
+        expired: '',
+        userNumber: '11000000542',
+        userName: '東経雅子',
+        kana: 'ﾏｻｺﾄｳｹｲ',
+        contactDate: '2021/11/16',
+        planDate: '',
+        finishDate: '〇',
+        type: '者',
+        makeDate: '',
+        monitorDate: '2021/07/19',
+        col_11: '〇',
+      });
+      //this.viewData = viewData;
 
+      this.viewData = new wijmo.CollectionView(viewData);
+      let _self = this;
+      this.viewData.collectionChanged.addHandler(() => {
+        _self.createFooterTotal(flexGrid);
+      });
       flexGrid.frozenColumns = 9;
+
+      this.createFooter(flexGrid);
+      this.createFooterTotal(flexGrid);
+
+      //フィルタ表示切替
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+        this.filtered.showFilterIcons = true;
+      });
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+        this.filtered.showFilterIcons = false;
+      });
     },
+
     /**************
      * ヘッダ情報の作成
      */
@@ -406,8 +471,50 @@ export default {
         col.binding = 'col_' + c;
         c++;
       });
+      flexGrid.columnHeaders.rows[0].height = 40;
+      flexGrid.columnHeaders.rows[1].height = 20;
+      flexGrid.columnHeaders.rows[2].height = 100;
+    },
+    /******************
+     * フッタ情報の作成
+     */
+    createFooter(flexGrid) {
+      var panel = flexGrid.columnFooters;
+      panel.rows.insert(0, new wjGrid.Row());
+      panel.setCellData(0, 2, '合計件数');
+    },
+    createFooterTotal(flexGrid) {
+      var panel = flexGrid.columnFooters;
+      let makeDateTotal = 0;
+      let monitorDateTotal = 0;
+      let temp = this.viewData._view;
+      for (let i = 0; i < temp.length; i++) {
+        makeDateTotal += temp[i].makeDate ? 1 : 0;
+        monitorDateTotal += temp[i].monitorDate ? 1 : 0;
+      }
 
-      flexGrid.columnHeaders.rows.defaultSize = 45;
+      let tempEdit = [];
+      let c = 9;
+      for (let j = 0; j < this.girdClumnsEdit.length; j++) {
+        let cnt = 0;
+        let column = 'col_' + c;
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i][column]) {
+            cnt++;
+          }
+        }
+        tempEdit[column] = cnt ? cnt : '';
+        c++;
+      }
+      console.log(tempEdit);
+      panel.setCellData(0, 7, makeDateTotal);
+      panel.setCellData(0, 8, monitorDateTotal);
+      c = 9;
+      for (let j = 0; j < this.girdClumnsEdit.length; j++) {
+        let column = 'col_' + c;
+        panel.setCellData(0, c, tempEdit[column]);
+        c++;
+      }
     },
     /************************
      * データ表示
@@ -434,6 +541,33 @@ export default {
             wijmo.addClass(e.cell, 'verticalCustom');
           }
         }
+        // フィルターカラムの非表示設定
+        if (e.col == 0 || e.col >= 7) {
+          var Nonefilter = this.filtered.getColumnFilter(e.col);
+          Nonefilter.filterType = 'None';
+        }
+      }
+      if (e.panel.cellType == wjGrid.CellType.Cell) {
+        if (e.col == 2) {
+          e.cell.style.textAlign = 'left';
+        }
+        if (e.col >= 9) {
+          e.cell.style.textAlign = 'center';
+        }
+        if (e.col <= 5) {
+          e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+        }
+      }
+      if (e.panel.cellType == wjGrid.CellType.ColumnFooter) {
+        e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+        if (e.col <= 4) {
+          e.cell.style.borderRight = '0px';
+        } else if (e.col <= 8) {
+          e.cell.style.textAlign = 'right';
+          e.cell.style.justifyContent = 'right';
+          e.cell.style.alignItems = 'right';
+        }
+        wijmo.addClass(e.cell, 'topDoubleBorder');
       }
     },
   },
@@ -479,6 +613,9 @@ div#RiyoJyokyo {
 
     .verticalCustom {
       writing-mode: vertical-rl;
+    }
+    .topDoubleBorder {
+      border-top: 3px double $grid_Border_Color;
     }
     .wj-header {
       display: flex;
