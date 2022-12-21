@@ -83,6 +83,9 @@
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
+      <v-row no-gutters class="mt-1 justify-end">
+        <v-btn small>登録</v-btn>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -106,12 +109,14 @@ export default {
   },
   data() {
     return {
+      flexGrid: [],
       filtered: [], // フィルターデータ
       serviceViewData: [],
       alertMessageFlag: false, // 変更時のアラートメッセージ
       serviceArgument: '', // ヘッダメニューのサービス選択
       filterSelect: '全員', // 絞込SELECTBOX
       viewData: [], // 表示gridデータ
+      viewDataAll: [], // 表示grid全データ
       filterSelectOption: [
         {
           id: 1,
@@ -348,7 +353,14 @@ export default {
      * アルファベット
      */
     onAlphabetical() {
-      alert('alphabet');
+      this.userFilter();
+    },
+    userFilter() {
+      let temp = [];
+      temp = this.viewDataAll.concat();
+      let viewData = this.$refs.alp.alphabetFilter(temp, 'kana');
+      this.viewData = new wijmo.CollectionView(viewData);
+      this.createFooterTotal(this.flexGrid);
     },
     /***********************:
      *  基本報酬算定を反映
@@ -366,6 +378,7 @@ export default {
      * データ表示
      */
     onInitialized(flexGrid) {
+      this.flexGrid = flexGrid;
       this.createHeader(flexGrid);
 
       let viewData = [];
@@ -409,7 +422,7 @@ export default {
         col_11: '〇',
       });
       //this.viewData = viewData;
-
+      this.viewDataAll = viewData;
       this.viewData = new wijmo.CollectionView(viewData);
       let _self = this;
       this.viewData.collectionChanged.addHandler(() => {
@@ -506,7 +519,6 @@ export default {
         tempEdit[column] = cnt ? cnt : '';
         c++;
       }
-      console.log(tempEdit);
       panel.setCellData(0, 7, makeDateTotal);
       panel.setCellData(0, 8, monitorDateTotal);
       c = 9;
@@ -546,6 +558,17 @@ export default {
           var Nonefilter = this.filtered.getColumnFilter(e.col);
           Nonefilter.filterType = 'None';
         }
+        if (e.row == 0) {
+          if (e.col == 6) {
+            wijmo.addClass(e.cell, 'headBorderTopLeft');
+          }
+          if (e.col == 7) {
+            wijmo.addClass(e.cell, 'headBorderTopMiddle');
+          }
+          if (e.col == 8) {
+            wijmo.addClass(e.cell, 'headBorderTopRight');
+          }
+        }
       }
       if (e.panel.cellType == wjGrid.CellType.Cell) {
         if (e.col == 2) {
@@ -556,6 +579,15 @@ export default {
         }
         if (e.col <= 5) {
           e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+        }
+        if (e.col == 6) {
+          wijmo.addClass(e.cell, 'BodyBorderLeft');
+        }
+        if (e.col == 7) {
+          wijmo.addClass(e.cell, 'BodyBorderRight');
+        }
+        if (e.col == 8) {
+          wijmo.addClass(e.cell, 'BodyBorderRight');
         }
       }
       if (e.panel.cellType == wjGrid.CellType.ColumnFooter) {
@@ -568,6 +600,15 @@ export default {
           e.cell.style.alignItems = 'right';
         }
         wijmo.addClass(e.cell, 'topDoubleBorder');
+        if (e.col == 6) {
+          wijmo.addClass(e.cell, 'borderBottomLeft');
+        }
+        if (e.col == 7) {
+          wijmo.addClass(e.cell, 'borderBottomMiddle');
+        }
+        if (e.col == 8) {
+          wijmo.addClass(e.cell, 'borderBottomRight');
+        }
       }
     },
   },
@@ -623,6 +664,36 @@ div#RiyoJyokyo {
       align-items: center;
       text-align: center;
       font-weight: normal;
+    }
+    .headBorderTopLeft {
+      border-top: 2px solid $view_Title_background_Main;
+      border-left: 2px solid $view_Title_background_Main;
+    }
+    .headBorderTopMiddle {
+      border-top: 2px solid $view_Title_background_Main;
+      border-right: 2px solid $view_Title_background_Main;
+    }
+    .headBorderTopRight {
+      border-top: 2px solid $view_Title_background_Main;
+      border-right: 2px solid $view_Title_background_Main;
+    }
+    .BodyBorderLeft {
+      border-left: 2px solid $view_Title_background_Main;
+    }
+    .BodyBorderRight {
+      border-right: 2px solid $view_Title_background_Main;
+    }
+    .borderBottomLeft {
+      border-left: 2px solid $view_Title_background_Main;
+      border-bottom: 2px solid $view_Title_background_Main;
+    }
+    .borderBottomMiddle {
+      border-right: 2px solid $view_Title_background_Main;
+      border-bottom: 2px solid $view_Title_background_Main;
+    }
+    .borderBottomRight {
+      border-right: 2px solid $view_Title_background_Main;
+      border-bottom: 2px solid $view_Title_background_Main;
     }
   }
 }
