@@ -87,10 +87,21 @@
       >
         <wj-flex-grid-column
           v-for="columns in columnArray"
-          :key="columns"
+          :key="`columns-${columns.id}`"
           :header="columns.header"
           :binding="columns.binding"
           :width="columns.width"
+          :word-wrap="false"
+          :allowResizing="true"
+          :isReadOnly="true"
+          align="center"
+        ></wj-flex-grid-column>
+        <wj-flex-grid-column
+          v-for="columnsAuth in columnAuthArray"
+          :key="`columnsAuth-${columnsAuth.id}`"
+          :header="columnsAuth.bottom"
+          :binding="columnsAuth.binding"
+          :width="40"
           :word-wrap="false"
           :allowResizing="true"
           :isReadOnly="true"
@@ -243,6 +254,64 @@ export default {
           header: '選択',
           binding: 'accountSelected',
           width: 40,
+        },
+      ],
+      columnAuthArray: [
+        {
+          id: 1,
+          top: 'メニュー権限',
+          middle: '共通',
+          bottom: '事業者情報',
+          binding: 'column_1',
+        },
+        {
+          id: 2,
+          top: 'メニュー権限',
+          middle: '共通',
+          bottom: '利用者台帳',
+          binding: 'column_2',
+        },
+        {
+          id: 3,
+          top: 'メニュー権限',
+          middle: '共通',
+          bottom: '職員情報',
+          binding: 'column_3',
+        },
+        {
+          id: 4,
+          top: 'メニュー権限',
+          middle: '共通',
+          bottom: '電文作成',
+          binding: 'column_4',
+        },
+        {
+          id: 5,
+          top: 'メニュー権限',
+          middle: 'いるか園',
+          bottom: '生活支援',
+          binding: 'column_5',
+        },
+        {
+          id: 6,
+          top: 'メニュー権限',
+          middle: 'いるか園',
+          bottom: '施設請求',
+          binding: 'column_6',
+        },
+        {
+          id: 7,
+          top: 'メニュー権限',
+          middle: 'GHいるか園',
+          bottom: '施設請求',
+          binding: 'column_7',
+        },
+        {
+          id: 8,
+          top: 'メニュー権限',
+          middle: 'GHいるか園',
+          bottom: 'GH請求',
+          binding: 'column_8',
         },
       ],
     };
