@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import AdminUserList from '../views/admin/UserList.vue'
 import TemploraryPage from '../views/admin/TemploraryPage.vue'
+import AccountsData from '../views/admin/AccountsData.vue'
 
 Vue.use(VueRouter)
 const routes = [{
@@ -13,11 +14,19 @@ const routes = [{
         },
     },
     {
-        path: '/temp',
+        path: '/temp/:id',
         name: 'テンポラリ',
         component: TemploraryPage,
         meta: {
             title: "テンポラリ",
+        },
+    },
+    {
+        path: '/accountsData/:id',
+        name: '',
+        component: AccountsData,
+        meta: {
+            title: "管理者用アカウント管理",
         },
     },
 

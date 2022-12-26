@@ -10,11 +10,13 @@ import store from "./store/store";
 
 import '@grapecity/wijmo.styles/wijmo.css';
 Vue.use(VueLogger);
-
-
+let str = location.href.match(/\/([^/]+)\/?$/)[1];
+if (str.match(/#/)) {
+  str = str.substring(0, str.indexOf('#'));
+}
 let initOptions = {
   url: 'http://localhost:8884/',
-  realm: 'general910',
+  realm: str,
   clientId: 'account',
   onLoad: 'login-required',
   CheckLoginiframe: false
