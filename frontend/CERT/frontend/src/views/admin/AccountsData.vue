@@ -5,6 +5,9 @@
       <select v-model="syozokuGroup" class="selectBox ml-1">
         <option v-for="val in groupArray" :key="val.id">{{ val.value }}</option>
       </select>
+      <v-flex class="text-end">
+        <v-btn small>全事業所一覧参照</v-btn>
+      </v-flex>
     </v-row>
     <v-row no-gutters class="mt-1">
       <label class="labeled">職員</label>
@@ -385,6 +388,20 @@ export default {
         accountStatus: '停止中',
         accountSelected: '',
       });
+      syokuinViewData.push({
+        syokuinCode: '100003',
+        syokuinName: '鎌倉政子',
+        syokusyu: '生活指導',
+        syozokuJigyosyo: '001 障害者施設いるか園',
+        startDate: '2020/00/00',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '〇',
+        accountID: 'tokei1000013312345',
+        accountStatus: '仮登録',
+        accountSelected: '',
+      });
+
       this.syokuinViewData = syokuinViewData;
 
       //フィルタ表示切替
@@ -393,6 +410,13 @@ export default {
       });
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filtered.showFilterIcons = false;
+      });
+
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        // gridをクリックしたイベント
+        let ht = flexGrid.hitTest(e);
+        let tmp = flexGrid.itemsSource[ht.row];
+        console.log(tmp);
       });
     },
     /*******************************
@@ -492,6 +516,9 @@ export default {
         }
         if (e.col == 9 && tmpitem.accountStatus == '停止中') {
           e.cell.style.color = 'red';
+        }
+        if (e.col == 9 && tmpitem.accountStatus == '仮登録') {
+          e.cell.style.color = 'blue';
         }
         if (e.col < this.columnArray.length - 4) {
           wijmo.addClass(e.cell, 'backgroundYellow');
