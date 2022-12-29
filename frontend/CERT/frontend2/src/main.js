@@ -3,6 +3,7 @@ import {
 } from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
+import '@grapecity/wijmo.styles/wijmo.css';
 
 import {
     loadFonts
