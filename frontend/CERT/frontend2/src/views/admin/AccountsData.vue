@@ -89,7 +89,7 @@
     <v-row no-gutters class="mt-2">
       <wj-flex-grid
         id="syokuinListGrid"
-        :autoSearch="true"
+        :autoSearch="false"
         :headersVisibility="'Column'"
         :selectionMode="0"
         :alternating-row-step="0"
@@ -97,23 +97,20 @@
         :itemsSourceChanged="onItemsSourceChanged"
         :itemsSource="syokuinViewData"
         :allowResizing="false"
-        :allowDragging="false"
+        :allowDragging="true"
         :allowSorting="false"
         :allowMerging="'AllHeaders'"
-        :showMarquee="true"
+        :showMarquee="false"
         :formatItem="onFormatItem"
       >
-        <wj-flex-grid-filter
-          :initialized="filterInitialized"
-          :showFilterIcons="false"
-        ></wj-flex-grid-filter>
         <wj-flex-grid-column
           v-for="columns in columnArray"
           :key="`columns-${columns.id}`"
           :binding="columns.binding"
           :width="columns.width"
           :word-wrap="false"
-          :allowResizing="true"
+          :allowResizing="false"
+          :allowDragging="true"
           :isReadOnly="true"
           align="center"
         ></wj-flex-grid-column>
@@ -124,10 +121,15 @@
           :binding="columnsAuth.binding"
           :width="48"
           :word-wrap="false"
-          :allowResizing="true"
+          :allowResizing="false"
+          :allowDragging="true"
           :isReadOnly="true"
           align="center"
         ></wj-flex-grid-column>
+        <wj-flex-grid-filter
+          :initialized="filterInitialized"
+          :showFilterIcons="false"
+        ></wj-flex-grid-filter>
       </wj-flex-grid>
     </v-row>
   </div>
@@ -491,11 +493,11 @@ export default {
 
         // フィルターカラムの非表示設定
         // if (e.col >= 7) {
-        //   var Nonefilter = "";
-        //   if (e.row >= 1) {
-        //     Nonefilter = this.filtered.getColumnFilter(e.col);
-        //     Nonefilter.filterType = "None";
-        //   }
+        var Nonefilter = "";
+        if (e.row == 2) {
+          Nonefilter = this.filtered.getColumnFilter(e.col);
+          Nonefilter.filterType = "None";
+        }
         // }
       }
 
