@@ -100,6 +100,7 @@
         :allowMerging="'AllHeaders'"
         :showMarquee="false"
         :formatItem="onFormatItem"
+        :style="styles"
       >
         <wj-flex-grid-column
           v-for="columns in columnArray"
@@ -131,6 +132,15 @@
         ></wj-flex-grid-filter>
       </wj-flex-grid>
     </v-row>
+    <v-row class="mt-1">
+      <v-col class="text-end">
+        <label class="message"
+          >変更内容を保存する場合は登録を行ってください</label
+        >
+        <v-btn class="ml-2" height="24" elavation="1">キャンセル</v-btn>
+        <v-btn class="ml-16" color="blue" height="24">権限登録</v-btn>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -149,7 +159,18 @@ export default {
     WjFlexGridFilter,
     AlphabetButton,
   },
-  mounted() {},
+  mounted() {
+    this.calculateWindowHeight();
+    window.addEventListener("resize", this.calculateWindowHeight);
+  },
+  computed: {
+    styles() {
+      // ブラウザの高さ
+      return {
+        "--height": window.innerHeight - this.headerheight + "px",
+      };
+    },
+  },
   data() {
     return {
       selSyokuin: "",
@@ -334,9 +355,17 @@ export default {
         { id: 0, text: "クリア" },
       ],
       filtered: {}, // フィルターデータ
+      headerheight: 200,
     };
   },
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById("syokuinListGrid") != null) {
+        document.getElementById("syokuinListGrid").style.height =
+          window.innerHeight - this.headerheight + "px";
+      }
+    },
+
     onAlphabetical() {
       //this.userFilter();
     },
@@ -580,6 +609,14 @@ $height: 24px;
 
 div#accountsData {
   font-size: 12px;
+  label {
+    &.message {
+      background-color: $red !important;
+      color: $white;
+      padding: 5px;
+    }
+  }
+
   #alpCommon {
     height: $height;
   }
