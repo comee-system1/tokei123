@@ -4,13 +4,13 @@ import {
 } from 'vue-router'
 import AccountsData from '../views/admin/AccountsData.vue'
 const routes = [{
-  path: '/accountsData',
-  name: 'AccountsData',
-  component: AccountsData,
-  meta: {
-    title: "管理者用アカウント管理",
+    path: '/accountsData/:client?',
+    name: 'AccountsData',
+    component: AccountsData,
+    meta: {
+      title: "管理者用アカウント管理",
+    },
   },
-},
   // {
   //   path: '/aaa',
   //   name: 'home2',

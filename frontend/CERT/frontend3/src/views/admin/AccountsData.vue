@@ -68,16 +68,14 @@
       </v-col>
       <v-col class="justify-end d-flex">
         <label class="labeled pinked min ml-1">権限入力</label>
-        <v-btn-toggle v-model="authSelected" mandatory class="ml-1">
-          <v-btn
-            elevation="1"
-            class="authSelected"
-            v-for="val in authItem"
-            :key="val.id"
-            small
-            >{{ val.text }}
-          </v-btn>
-        </v-btn-toggle>
+        <v-btn
+          v-for="val in authItem"
+          :key="val.id"
+          height="24"
+          class="ml-1"
+          elevation="1"
+          >{{ val.text }}</v-btn
+        >
         <label class="labeled pinked min ml-1">その他</label>
         <v-btn small class="ml-1" height="24">権限コピー</v-btn>
         <v-btn small class="ml-1" height="24">
@@ -98,7 +96,7 @@
         :itemsSource="syokuinViewData"
         :allowResizing="false"
         :allowDragging="true"
-        :allowSorting="false"
+        :allowSorting="true"
         :allowMerging="'AllHeaders'"
         :showMarquee="false"
         :formatItem="onFormatItem"
@@ -129,6 +127,7 @@
         <wj-flex-grid-filter
           :initialized="filterInitialized"
           :showFilterIcons="false"
+          :filter-columns="this.filterAbled"
         ></wj-flex-grid-filter>
       </wj-flex-grid>
     </v-row>
@@ -158,7 +157,6 @@ export default {
       selFilter: "",
       selected: 0,
       syokuinViewData: [],
-      authSelected: "",
       groupArray: [
         {
           id: 0,
@@ -206,9 +204,10 @@ export default {
         },
         {
           id: 5,
-          value: "メール有",
+          value: "メール",
         },
       ],
+      filterAbled: [],
       columnArray: [
         {
           id: 1,
@@ -254,7 +253,7 @@ export default {
         },
         {
           id: 8,
-          header: "メール有",
+          header: "メール",
           binding: "mailFlag",
           width: 40,
         },
@@ -266,15 +265,9 @@ export default {
         },
         {
           id: 10,
-          header: "状態",
+          header: "利用状況",
           binding: "accountStatus",
-          width: 60,
-        },
-        {
-          id: 11,
-          header: "選択",
-          binding: "accountSelected",
-          width: 40,
+          width: 100,
         },
       ],
       columnAuthArray: [
@@ -340,7 +333,7 @@ export default {
         { id: 2, text: "管理権限" },
         { id: 0, text: "クリア" },
       ],
-      filtered: [], // フィルターデータ
+      filtered: {}, // フィルターデータ
     };
   },
   methods: {
@@ -361,7 +354,7 @@ export default {
         startDate: "2020/00/00",
         endDate: "",
         taisyoku: "",
-        mailFlag: "〇",
+        mailFlag: "有",
         accountID: "tokei100001100063",
         accountStatus: "使用中",
         accountSelected: "",
@@ -374,7 +367,7 @@ export default {
         startDate: "2020/00/00",
         endDate: "",
         taisyoku: "",
-        mailFlag: "〇",
+        mailFlag: "有",
         accountID: "tokei100001100063",
         accountStatus: "使用中",
         accountSelected: "",
@@ -387,7 +380,7 @@ export default {
         startDate: "2020/00/00",
         endDate: "",
         taisyoku: "",
-        mailFlag: "〇",
+        mailFlag: "有",
         accountID: "tokei100001100063",
         accountStatus: "使用中",
         accountSelected: "",
@@ -400,7 +393,7 @@ export default {
         startDate: "2020/00/00",
         endDate: "",
         taisyoku: "",
-        mailFlag: "〇",
+        mailFlag: "有",
         accountID: "tokei1000013312345",
         accountStatus: "停止中",
         accountSelected: "",
@@ -413,13 +406,13 @@ export default {
         startDate: "2020/00/00",
         endDate: "",
         taisyoku: "",
-        mailFlag: "〇",
+        mailFlag: "有",
         accountID: "tokei1000013312345",
         accountStatus: "仮登録",
         accountSelected: "",
       });
       this.syokuinViewData = syokuinViewData;
-
+      flexGrid.frozenColumns = this.columnArray.length;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, "mouseover", () => {
         this.filtered.showFilterIcons = true;
@@ -478,27 +471,18 @@ export default {
     onItemsSourceChanged() {},
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
-        if ((e.col == 6 || e.col == 7 || e.col == 10) && e.row == 1) {
+        if ((e.col == 6 || e.col == 7) && e.row == 1) {
           wijmo.addClass(e.cell, "vertical-write");
         }
         if (e.col >= 0 && e.col <= 6) {
           wijmo.addClass(e.cell, "headeraqua");
         }
-        if (e.col >= 7 && e.col <= 10) {
+        if (e.col >= 7 && e.col <= 9) {
           wijmo.addClass(e.cell, "headerorange");
         }
         if (e.col >= this.columnArray.length) {
           wijmo.addClass(e.cell, "headerpink");
         }
-
-        // フィルターカラムの非表示設定
-        // if (e.col >= 7) {
-        var Nonefilter = "";
-        if (e.row == 2) {
-          Nonefilter = this.filtered.getColumnFilter(e.col);
-          Nonefilter.filterType = "None";
-        }
-        // }
       }
 
       if (e.panel.cellType == wjGrid.CellType.Cell) {
@@ -526,8 +510,12 @@ export default {
 
         // 上下のセルを比べて同じ場合に上のセルの下線を消す
         let tmpitemAfter = [];
+        let tmpBefore = [];
         if (e.panel.rows[e.row + 1]) {
           tmpitemAfter = e.panel.rows[e.row + 1].dataItem;
+        }
+        if (e.panel.rows[e.row - 1]) {
+          tmpBefore = e.panel.rows[e.row - 1].dataItem;
         }
         if (
           tmpitemAfter != null &&
@@ -537,13 +525,34 @@ export default {
             wijmo.addClass(e.cell, "borderBottomNone");
           }
         }
-        if (e.col == 9 && tmpitem.accountStatus == "停止中") {
-          e.cell.style.color = "red";
+
+        if (
+          e.col == 9 &&
+          tmpitem.accountStatus == "使用中" &&
+          tmpBefore != null &&
+          tmpitem.syokuinCode != tmpBefore.syokuinCode
+        ) {
+          wijmo.addClass(e.cell, "setCheckIcon");
         }
-        if (e.col == 9 && tmpitem.accountStatus == "仮登録") {
-          e.cell.style.color = "blue";
+        if (
+          e.col == 9 &&
+          tmpitem.accountStatus == "停止中" &&
+          tmpBefore != null &&
+          tmpitem.syokuinCode != tmpBefore.syokuinCode
+        ) {
+          e.cell.innerHTML = "";
         }
-        if (e.col < this.columnArray.length - 4) {
+
+        if (
+          e.col == 9 &&
+          tmpitem.accountStatus == "仮登録" &&
+          tmpBefore != null &&
+          tmpitem.syokuinCode != tmpBefore.syokuinCode
+        ) {
+          wijmo.addClass(e.cell, "setCheckIconNone");
+        }
+
+        if (e.col < this.columnArray.length - 3) {
           wijmo.addClass(e.cell, "backgroundYellow");
         }
       }
@@ -553,6 +562,11 @@ export default {
      */
     filterInitialized(filter) {
       this.filtered = filter;
+      for (let i = 0; i < this.columnArray.length; i++) {
+        if (i <= 6) {
+          this.filterAbled.push(this.columnArray[i].binding);
+        }
+      }
     },
   },
 };
@@ -562,7 +576,7 @@ export default {
 @import "@/assets/scss/common.scss";
 @import "@grapecity/wijmo.styles/wijmo.css";
 
-$height: 28px;
+$height: 24px;
 
 div#accountsData {
   font-size: 12px;
@@ -576,6 +590,20 @@ div#accountsData {
       }
       &.backgroundYellow {
         background-color: $light-yellow;
+      }
+      &.setCheckIcon {
+        &:before {
+          content: url("../../assets/checkIcon.png");
+          padding-right: 3px;
+          padding-top: 3px;
+        }
+      }
+      &.setCheckIconNone {
+        &:before {
+          content: url("../../assets/checkIconNone.png");
+          padding-right: 3px;
+          padding-top: 3px;
+        }
       }
     }
     .wj-header {
@@ -633,10 +661,7 @@ div#accountsData {
       width: 450px;
     }
   }
-  .authSelected {
-    height: $height !important;
-    line-height: $height;
-  }
+
   .filterHeight {
     height: $height;
   }
