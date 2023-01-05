@@ -4,7 +4,7 @@
       <v-col>
         <label class="labeled">所属事業所</label>
         <select v-model="syozokuGroup" class="selectBox ml-1">
-          <option v-for="val in groupArray" :key="val.id" :value="val.id">
+          <option v-for="val in groupArray" :key="val.id">
             {{ val.value }}
           </option>
         </select>
@@ -15,19 +15,19 @@
     </v-row>
     <v-row no-gutters class="mt-1">
       <label class="labeled">アカウントID</label>
-      <div class="ml-1 boarderArea d-flex">
+      <div class="ml-1 boardArea d-flex">
         <v-card
           class="d-flex ml-1"
-          v-for="(item, syokuinKey) in accountsArray"
+          v-for="(item, syokuinKey) in syokuinArray"
           :key="`syokuin-${syokuinKey}`"
           elevation="0"
         >
           <input
             type="radio"
             :id="'syokuin_' + item.id"
-            :value="item.id"
+            :value="item.value"
             name="syokuin"
-            v-model="selAccount"
+            v-model="selSyokuin"
           />
           <label :for="'syokuin_' + item.id" class="mt-1 ml-1 mr-2">{{
             item.value
@@ -35,8 +35,8 @@
         </v-card>
       </div>
 
-      <label class="labeled ml-1">利用状況</label>
-      <div class="ml-1 boarderArea d-flex">
+      <label class="labeled ml-1">絞込</label>
+      <div class="ml-1 boardArea d-flex wMdle">
         <v-card
           class="ml-1 d-flex"
           v-for="(filters, filterIndex) in filterArray"
@@ -44,35 +44,14 @@
           elevation="0"
         >
           <input
-            type="checkbox"
+            type="radio"
             :id="'filter_' + filters.id"
             :value="filters.value"
-            :name="'filter[' + filters.id + ']'"
+            name="filter"
             v-model="selFilter"
           />
           <label :for="'filter_' + filters.id" class="mt-1 ml-1 mr-2">{{
             filters.value
-          }}</label>
-        </v-card>
-      </div>
-
-      <label class="labeled ml-1">その他絞込</label>
-      <div class="ml-1 boarderArea wMdle d-flex">
-        <v-card
-          class="d-flex ml-1"
-          v-for="(item, otherKey) in otherArray"
-          :key="`other-${otherKey}`"
-          elevation="0"
-        >
-          <input
-            type="radio"
-            :id="'other_' + item.id"
-            :value="item.id"
-            name="other"
-            v-model="selOther"
-          />
-          <label :for="'other_' + item.id" class="mt-1 ml-1 mr-2">{{
-            item.value
           }}</label>
         </v-card>
       </div>
@@ -87,20 +66,13 @@
         >
         </alphabet-button>
       </v-col>
-      <v-col>
-        <label class="accountConfLabel"
-          >アカウント発行要確認新規職員:<span>{{ accountCount }}</span
-          >名</label
-        >
-      </v-col>
       <v-col class="justify-end d-flex">
         <label class="labeled pinked min ml-1">権限入力</label>
         <v-btn
           v-for="val in authItem"
           :key="val.id"
           height="24"
-          @click="authClick(val.id)"
-          :class="{ isActive: authBtnActive[val.id], 'ml-1': true }"
+          class="ml-1"
           elevation="1"
           >{{ val.text }}</v-btn
         >
@@ -165,9 +137,7 @@
         <label class="message"
           >変更内容を保存する場合は登録を行ってください</label
         >
-        <v-btn class="ml-2" height="24" elavation="1" :disabled="activateCancel"
-          >キャンセル</v-btn
-        >
+        <v-btn class="ml-2" height="24" elavation="1">キャンセル</v-btn>
         <v-btn class="ml-16" color="blue" height="24">権限登録</v-btn>
       </v-col>
     </v-row>
@@ -203,70 +173,59 @@ export default {
   },
   data() {
     return {
-      authBtnActive: { 1: true },
-      authBtnSelected: 1, // 権限入力の選択状態
-      selAccount: 1,
-      selOther: 1,
-      syozokuGroup: 1,
-      selFilter: [],
+      selSyokuin: '',
+      syozokuGroup: '',
+      selFilter: '',
       selected: 0,
       syokuinViewData: [],
-      accountCount: 0,
-      activateCancel: true,
       groupArray: [
         {
+          id: 0,
+          value: '',
+        },
+        {
           id: 1,
-          value: '障害者支援施設 いるか園',
-        },
-        {
-          id: 2,
-          value: 'グループホームいるか',
-        },
-        {
-          id: 3,
-          value: '相談支援センターいるか',
+          value: '障害者支援施設',
         },
       ],
-      accountsArray: [
+      syokuinArray: [
         {
           id: 1,
-          value: '全表示',
+          value: '在職者',
         },
         {
           id: 2,
-          value: '発行済',
+          value: '登録者',
         },
         {
           id: 3,
-          value: '未発行',
+          value: '勤務修了者',
+        },
+        {
+          id: 4,
+          value: '全員',
         },
       ],
       filterArray: [
         {
           id: 1,
+          value: '全員',
+        },
+        {
+          id: 2,
+          value: 'アカウント未発行',
+        },
+        {
+          id: 3,
           value: '使用中',
         },
         {
-          id: 2,
-          value: '仮登録',
-        },
-        {
-          id: 3,
+          id: 4,
           value: '停止中',
         },
-      ],
-      otherArray: [
         {
-          id: 1,
-          value: '全表示',
-        },
-        {
-          id: 2,
-          value: 'メール有',
-        },
-        {
-          id: 3,
-          value: '権限未設定',
+          id: 5,
+          value: 'メール',
         },
       ],
       filterAbled: [],
@@ -281,7 +240,7 @@ export default {
           id: 2,
           header: '職員名',
           binding: 'syokuinName',
-          width: 200,
+          width: 160,
         },
         {
           id: 3,
@@ -335,65 +294,65 @@ export default {
       columnAuthArray: [
         {
           id: 1,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: '共通',
           bottom: '事業者情報',
           binding: 'column_1',
         },
         {
           id: 2,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: '共通',
           bottom: '利用者台帳',
           binding: 'column_2',
         },
         {
           id: 3,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: '共通',
           bottom: '職員情報',
           binding: 'column_3',
         },
         {
           id: 4,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: '共通',
           bottom: '電文作成',
           binding: 'column_4',
         },
         {
           id: 5,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: 'いるか園',
           bottom: '生活支援',
           binding: 'column_5',
         },
         {
           id: 6,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: 'いるか園',
           bottom: '施設請求',
           binding: 'column_6',
         },
         {
           id: 7,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: 'GHいるか',
           bottom: '生活支援',
           binding: 'column_7',
         },
         {
           id: 8,
-          top: 'グランドメニュー権限',
+          top: 'メニュー権限',
           middle: 'GHいるか',
           bottom: 'GH請求',
           binding: 'column_8',
         },
       ],
       authItem: [
-        { id: 1, text: '〇 一般権限', value: '〇' },
-        { id: 2, text: '● 管理権限', value: '●' },
-        { id: 0, text: 'クリア', value: '' },
+        { id: 1, text: '一般権限' },
+        { id: 2, text: '管理権限' },
+        { id: 0, text: 'クリア' },
       ],
       filtered: {}, // フィルターデータ
       headerheight: 200,
@@ -428,11 +387,6 @@ export default {
         accountID: 'tokei100001100063',
         accountStatus: '使用中',
         accountSelected: '',
-        column_1: '●',
-        column_2: '●',
-        column_3: '●',
-        column_4: '〇',
-        column_5: '〇',
       });
       syokuinViewData.push({
         syokuinCode: '100001',
@@ -446,11 +400,6 @@ export default {
         accountID: 'tokei100001100063',
         accountStatus: '使用中',
         accountSelected: '',
-        column_1: '●',
-        column_2: '●',
-        column_3: '●',
-        column_4: '〇',
-        column_5: '〇',
       });
       syokuinViewData.push({
         syokuinCode: '100001',
@@ -464,11 +413,6 @@ export default {
         accountID: 'tokei100001100063',
         accountStatus: '使用中',
         accountSelected: '',
-        column_1: '●',
-        column_2: '●',
-        column_3: '●',
-        column_4: '〇',
-        column_5: '〇',
       });
       syokuinViewData.push({
         syokuinCode: '100002',
@@ -482,11 +426,6 @@ export default {
         accountID: 'tokei1000013312345',
         accountStatus: '停止中',
         accountSelected: '',
-        column_1: '',
-        column_2: '',
-        column_3: '',
-        column_4: '',
-        column_5: '',
       });
       syokuinViewData.push({
         syokuinCode: '100003',
@@ -495,22 +434,13 @@ export default {
         syozokuJigyosyo: '001 障害者施設いるか園',
         startDate: '2020/00/00',
         endDate: '',
-        taisyoku: '〇',
+        taisyoku: '',
         mailFlag: '有',
         accountID: 'tokei1000013312345',
         accountStatus: '仮登録',
         accountSelected: '',
-        checkedFlag: true,
-        column_1: '〇',
-        column_2: '',
-        column_3: '',
-        column_4: '',
-        column_5: '●',
-        column_6: '●',
-        column_7: '〇',
       });
       this.syokuinViewData = syokuinViewData;
-      this.getAccountCount();
       flexGrid.frozenColumns = this.columnArray.length;
       //フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
@@ -519,21 +449,14 @@ export default {
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filtered.showFilterIcons = false;
       });
-
-      // グリッド押下時
-      let _self = this;
-      flexGrid.hostElement.addEventListener('click', function (e) {
-        var ht = flexGrid.hitTest(e);
-        if (ht.panel == flexGrid.cells) {
-          // 権限のチェック
-          if (ht.col > _self.columnArray.length - 1) {
-            // 権限入力の選択状態
-            let temp = _self.getAuthSelecteToIdIcon(_self.authBtnSelected);
-            console.log(temp);
-            //_self.syokuinViewData[ht.row]
-          }
-        }
+      /*
+      flexGrid.addEventListener(flexGrid.hostElement, "click", (e) => {
+        // gridをクリックしたイベント
+        let ht = flexGrid.hitTest(e);
+        let tmp = flexGrid.itemsSource[ht.row];
+        console.log(tmp);
       });
+      */
     },
     /*******************************
      * ヘッダ作成
@@ -576,14 +499,14 @@ export default {
     },
     onItemsSourceChanged() {},
     onFormatItem(flexGrid, e) {
-      let accountRowCount = this.columnArray.length - 1;
-
       if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
         if ((e.col == 6 || e.col == 7) && e.row == 1) {
           wijmo.addClass(e.cell, 'vertical-write');
         }
-
-        if (e.col >= 7 && e.col <= accountRowCount) {
+        if (e.col >= 0 && e.col <= 6) {
+          wijmo.addClass(e.cell, 'headeraqua');
+        }
+        if (e.col >= 7 && e.col <= 9) {
           wijmo.addClass(e.cell, 'headerorange');
         }
         if (e.col >= this.columnArray.length) {
@@ -601,12 +524,6 @@ export default {
         if (e.panel.rows[e.row]) {
           tmpitem = e.panel.rows[e.row].dataItem;
         }
-        if (tmpitem.accountStatus == '停止中') {
-          // 利用状況が停止中の場合は列以降をgrayに変更
-          if (e.col > accountRowCount) {
-            wijmo.addClass(e.cell, 'backgroundGray');
-          }
-        }
         let tmpitemBefore = [];
         if (e.panel.rows[e.row - 1]) {
           tmpitemBefore = e.panel.rows[e.row - 1].dataItem;
@@ -619,6 +536,7 @@ export default {
             e.cell.innerHTML = '';
           }
         }
+
         // 上下のセルを比べて同じ場合に上のセルの下線を消す
         let tmpitemAfter = [];
         let tmpBefore = [];
@@ -637,14 +555,8 @@ export default {
           }
         }
 
-        // 職員名に要確認アイコンをつける
-        if (e.col == 1 && tmpitem.checkedFlag) {
-          e.cell.innerHTML += '<span class="checkicon">新規</span>';
-        }
-
-        // 利用状況へ文字前にアイコンを付けるためclass付与
         if (
-          e.col == accountRowCount &&
+          e.col == 9 &&
           tmpitem.accountStatus == '使用中' &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
@@ -652,7 +564,7 @@ export default {
           wijmo.addClass(e.cell, 'setCheckIcon');
         }
         if (
-          e.col == accountRowCount &&
+          e.col == 9 &&
           tmpitem.accountStatus == '停止中' &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
@@ -661,7 +573,7 @@ export default {
         }
 
         if (
-          e.col == accountRowCount &&
+          e.col == 9 &&
           tmpitem.accountStatus == '仮登録' &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
@@ -680,39 +592,10 @@ export default {
     filterInitialized(filter) {
       this.filtered = filter;
       for (let i = 0; i < this.columnArray.length; i++) {
-        if (i < 6) {
+        if (i <= 6) {
           this.filterAbled.push(this.columnArray[i].binding);
         }
       }
-    },
-    /************************
-     * 権限入力クリック
-     */
-    authClick(mine) {
-      // クリア押下時はid:1に戻す
-      if (mine == 0) {
-        mine = 1;
-      }
-      this.authBtnActive = [];
-      this.authBtnActive[mine] = true;
-      this.authBtnSelected = mine; // 権限入力の選択値
-    },
-    /***********************
-     * 選択しているidの値を元に表示されるiconを取得
-     ***********/
-    getAuthSelecteToIdIcon(select) {
-      let temp = this.authItem.find((el) => el.id == select);
-      return temp.value;
-    },
-    /****************************
-     * アカウント発行要確認新規職員
-     */
-    getAccountCount() {
-      // 新規のアイコンが表示されている数
-      let array = this.syokuinViewData.map(function (value) {
-        return value.checkedFlag ? 1 : 0;
-      });
-      this.accountCount = array.reduce((prev, current) => prev + current, 0);
     },
   },
 };
@@ -726,40 +609,14 @@ $height: 24px;
 
 div#accountsData {
   font-size: 12px;
-  min-width: 1366px;
   label {
     &.message {
       background-color: $red !important;
       color: $white;
       padding: 5px;
     }
-    &.accountConfLabel {
-      background-color: $view_Title_background_Orange;
-      height: $height;
-      width: 260px;
-      display: block;
-      text-align: center;
-      line-height: $height;
-    }
   }
-  span {
-    &.checkicon {
-      font-size: 0.85%;
-      display: inline-block;
-      float: right;
-      background-color: $brown;
-      width: 30px;
-      height: 15px;
-      text-align: center;
-      color: $white;
-    }
-  }
-  button {
-    &.isActive {
-      color: $white;
-      background-color: $view_Title_font_color_Blue;
-    }
-  }
+
   #alpCommon {
     height: $height;
   }
@@ -770,9 +627,6 @@ div#accountsData {
       }
       &.backgroundYellow {
         background-color: $light-yellow;
-      }
-      &.backgroundGray {
-        background-color: $selected_color;
       }
       &.setCheckIcon {
         &:before {
@@ -831,14 +685,15 @@ div#accountsData {
     -webkit-appearance: auto;
     &.selectBox {
       height: $height;
-      width: 200px;
+      width: 300px;
       &.short {
         width: 140px;
       }
     }
   }
-  .boarderArea {
-    width: 200px;
+  .boardArea {
+    border: 1px solid $light-gray;
+    width: 300px;
     &.wMdle {
       width: 450px;
     }

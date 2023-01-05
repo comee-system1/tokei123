@@ -3,7 +3,16 @@ import {
   createWebHistory
 } from 'vue-router'
 import AccountsData from '../views/admin/AccountsData.vue'
+import StaffData from '../views/admin/StaffData.vue'
 const routes = [{
+    path: '/StaffData/:client?',
+    name: 'StaffData',
+    component: StaffData,
+    meta: {
+      title: "職員用アカウント管理",
+    },
+  },
+  {
     path: '/accountsData/:client?',
     name: 'AccountsData',
     component: AccountsData,
