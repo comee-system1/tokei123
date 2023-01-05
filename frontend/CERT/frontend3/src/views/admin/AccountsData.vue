@@ -441,7 +441,6 @@ export default {
     },
     onInitialized(flexGrid) {
       this.createHeader(flexGrid);
-
       // itemscourceデータ
       this.syokuinViewData = [];
       let syokuinViewData = [];
@@ -561,6 +560,8 @@ export default {
             // 同じsyokuinCodeのデータを更新
             let syokuinCode = _self.syokuinViewData[ht.row].syokuinCode;
             _self.editSyokuiCodeColumData(syokuinCode, column, tempIcon);
+            // flexGrid.setCellData(tempIcon, ht.row, ht.col);
+            flexGrid.refresh();
           }
         }
       });
