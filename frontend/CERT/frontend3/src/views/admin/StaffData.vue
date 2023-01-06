@@ -1,10 +1,20 @@
 <template>
   <div class="pa-1" id="accountsData">
-    <v-row no-gutters>
+    <v-row no-gutters class="d-flex pt-1 pb-1" id="subTitle">
+      <h2>職員アカウント設定</h2>
+      <label
+        >職員マスタで登録済みの職員に対して、福祉見聞録システムを使用可能にするアカウント発行や、グランドメニューに表示するボタンの設定などができます。</label
+      >
+    </v-row>
+    <v-row no-gutters class="mt-2">
       <v-col>
         <label class="labeled">所属事業所</label>
-        <select v-model="syozokuGroup" class="selectBox ml-1">
-          <option v-for="val in groupArray" :key="val.id">
+        <select
+          v-model="syozokuGroup"
+          class="selectBox ml-1"
+          @change="onSyozokuGroupChange()"
+        >
+          <option v-for="val in groupArray" :key="val.id" :value="val.id">
             {{ val.value }}
           </option>
         </select>
@@ -15,19 +25,20 @@
     </v-row>
     <v-row no-gutters class="mt-1">
       <label class="labeled">アカウントID</label>
-      <div class="ml-1 boardArea d-flex">
+      <div class="ml-1 boarderArea d-flex">
         <v-card
           class="d-flex ml-1"
-          v-for="(item, syokuinKey) in syokuinArray"
+          v-for="(item, syokuinKey) in accountsArray"
           :key="`syokuin-${syokuinKey}`"
           elevation="0"
         >
           <input
             type="radio"
             :id="'syokuin_' + item.id"
-            :value="item.value"
+            :value="item.id"
             name="syokuin"
-            v-model="selSyokuin"
+            v-model="selAccount"
+            @change="onSelAccount()"
           />
           <label :for="'syokuin_' + item.id" class="mt-1 ml-1 mr-2">{{
             item.value
@@ -35,8 +46,8 @@
         </v-card>
       </div>
 
-      <label class="labeled ml-1">絞込</label>
-      <div class="ml-1 boardArea d-flex wMdle">
+      <label class="labeled ml-1">利用状況</label>
+      <div class="ml-1 boarderArea d-flex">
         <v-card
           class="ml-1 d-flex"
           v-for="(filters, filterIndex) in filterArray"
@@ -44,14 +55,36 @@
           elevation="0"
         >
           <input
-            type="radio"
+            type="checkbox"
             :id="'filter_' + filters.id"
-            :value="filters.value"
-            name="filter"
+            :value="filters.id"
             v-model="selFilter"
+            @change="onSelFilter()"
           />
           <label :for="'filter_' + filters.id" class="mt-1 ml-1 mr-2">{{
             filters.value
+          }}</label>
+        </v-card>
+      </div>
+
+      <label class="labeled ml-1">その他絞込</label>
+      <div class="ml-1 boarderArea wMdle d-flex">
+        <v-card
+          class="d-flex ml-1"
+          v-for="(item, otherKey) in otherArray"
+          :key="`other-${otherKey}`"
+          elevation="0"
+        >
+          <input
+            type="radio"
+            :id="'other_' + item.id"
+            :value="item.id"
+            name="other"
+            v-model="selOther"
+            @change="onSelOther()"
+          />
+          <label :for="'other_' + item.id" class="mt-1 ml-1 mr-2">{{
+            item.value
           }}</label>
         </v-card>
       </div>
@@ -66,22 +99,37 @@
         >
         </alphabet-button>
       </v-col>
+      <v-col>
+        <label class="accountConfLabel"
+          >アカウント発行要確認新規職員:<span>{{ accountCount }}</span
+          >名</label
+        >
+      </v-col>
       <v-col class="justify-end d-flex">
         <label class="labeled pinked min ml-1">権限入力</label>
         <v-btn
           v-for="val in authItem"
           :key="val.id"
           height="24"
-          class="ml-1"
+          @click="authClick(val.id)"
+          :class="{ isActive: authBtnActive[val.id], 'ml-1': true }"
           elevation="1"
           >{{ val.text }}</v-btn
         >
         <label class="labeled pinked min ml-1">その他</label>
         <v-btn small class="ml-1" height="24">権限コピー</v-btn>
-        <v-btn small class="ml-1" height="24">
+        <v-btn small class="ml-1" height="24" @click="onsignExplain()">
           <v-icon small color=""> mdi-message-text </v-icon>
           記号説明
         </v-btn>
+        <v-card id="signExplain" v-show="signExplainFlag">
+          <div v-for="(value, index) in explainArray" :key="index">
+            <v-row no-gutters>
+              <div :class="`left ${value.bk}`">{{ value.icon }}</div>
+              <div class="right">:{{ value.text }}</div>
+            </v-row>
+          </div>
+        </v-card>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-2">
@@ -95,8 +143,8 @@
         :itemsSourceChanged="onItemsSourceChanged"
         :itemsSource="syokuinViewData"
         :allowResizing="false"
-        :allowDragging="true"
-        :allowSorting="true"
+        :allowDragging="false"
+        :allowSorting="false"
         :allowMerging="'AllHeaders'"
         :showMarquee="false"
         :formatItem="onFormatItem"
@@ -127,8 +175,6 @@
         ></wj-flex-grid-column>
         <wj-flex-grid-filter
           :initialized="filterInitialized"
-          :showFilterIcons="false"
-          :filter-columns="this.filterAbled"
         ></wj-flex-grid-filter>
       </wj-flex-grid>
     </v-row>
@@ -137,7 +183,9 @@
         <label class="message"
           >変更内容を保存する場合は登録を行ってください</label
         >
-        <v-btn class="ml-2" height="24" elavation="1">キャンセル</v-btn>
+        <v-btn class="ml-2" height="24" elavation="1" :disabled="activateCancel"
+          >キャンセル</v-btn
+        >
         <v-btn class="ml-16" color="blue" height="24">権限登録</v-btn>
       </v-col>
     </v-row>
@@ -162,6 +210,7 @@ export default {
   mounted() {
     this.calculateWindowHeight();
     window.addEventListener('resize', this.calculateWindowHeight);
+    //this.filtered.showFilterIcons = false;
   },
   computed: {
     styles() {
@@ -173,59 +222,76 @@ export default {
   },
   data() {
     return {
-      selSyokuin: '',
-      syozokuGroup: '',
-      selFilter: '',
+      flexGrid: [],
+      signExplainFlag: false,
+      authBtnActive: { 1: true },
+      authBtnSelected: 1, // 権限入力の選択状態
+      selAccount: 1,
+      selOther: 1,
+      syozokuGroup: 999,
+      selFilter: [1, 2, 3],
       selected: 0,
       syokuinViewData: [],
+      accountCount: 0,
+      activateCancel: true,
       groupArray: [
         {
-          id: 0,
+          id: 999,
           value: '',
         },
         {
           id: 1,
-          value: '障害者支援施設',
-        },
-      ],
-      syokuinArray: [
-        {
-          id: 1,
-          value: '在職者',
+          value: '障害者支援施設　いるか園',
         },
         {
           id: 2,
-          value: '登録者',
+          value: 'グループホーム　いるか園',
         },
         {
           id: 3,
-          value: '勤務修了者',
+          value: '総合支援センター　いるか園',
+        },
+      ],
+      accountsArray: [
+        {
+          id: 1,
+          value: '全表示',
         },
         {
-          id: 4,
-          value: '全員',
+          id: 2,
+          value: '発行済',
+        },
+        {
+          id: 3,
+          value: '未発行',
         },
       ],
       filterArray: [
         {
           id: 1,
-          value: '全員',
-        },
-        {
-          id: 2,
-          value: 'アカウント未発行',
-        },
-        {
-          id: 3,
           value: '使用中',
         },
         {
-          id: 4,
-          value: '停止中',
+          id: 2,
+          value: '仮登録',
         },
         {
-          id: 5,
-          value: 'メール',
+          id: 3,
+          value: '停止中',
+        },
+      ],
+      otherArray: [
+        {
+          id: 1,
+          value: '全表示',
+        },
+        {
+          id: 2,
+          value: 'メール有',
+        },
+        {
+          id: 3,
+          value: '権限未設定',
         },
       ],
       filterAbled: [],
@@ -240,7 +306,7 @@ export default {
           id: 2,
           header: '職員名',
           binding: 'syokuinName',
-          width: 160,
+          width: 200,
         },
         {
           id: 3,
@@ -294,68 +360,89 @@ export default {
       columnAuthArray: [
         {
           id: 1,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: '共通',
           bottom: '事業者情報',
-          binding: 'column_1',
+          binding: 'groundAuth.column_1',
         },
         {
           id: 2,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: '共通',
           bottom: '利用者台帳',
-          binding: 'column_2',
+          binding: 'groundAuth.column_2',
         },
         {
           id: 3,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: '共通',
           bottom: '職員情報',
-          binding: 'column_3',
+          binding: 'groundAuth.column_3',
         },
         {
           id: 4,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: '共通',
           bottom: '電文作成',
-          binding: 'column_4',
+          binding: 'groundAuth.column_4',
         },
         {
           id: 5,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: 'いるか園',
           bottom: '生活支援',
-          binding: 'column_5',
+          binding: 'groundAuth.column_5',
         },
         {
           id: 6,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: 'いるか園',
           bottom: '施設請求',
-          binding: 'column_6',
+          binding: 'groundAuth.column_6',
         },
         {
           id: 7,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: 'GHいるか',
           bottom: '生活支援',
-          binding: 'column_7',
+          binding: 'groundAuth.column_7',
         },
         {
           id: 8,
-          top: 'メニュー権限',
+          top: 'グランドメニュー権限',
           middle: 'GHいるか',
           bottom: 'GH請求',
-          binding: 'column_8',
+          binding: 'groundAuth.column_8',
         },
       ],
       authItem: [
-        { id: 1, text: '一般権限' },
-        { id: 2, text: '管理権限' },
-        { id: 0, text: 'クリア' },
+        { id: 1, text: '〇 一般権限', value: '〇' },
+        { id: 2, text: '● 管理権限', value: '●' },
+        { id: 0, text: 'クリア', value: '' },
       ],
       filtered: {}, // フィルターデータ
-      headerheight: 200,
+      headerheight: 240,
+      explainArray: [
+        {
+          icon: '〇',
+          text: 'グランドメニューにボタン表示',
+        },
+        {
+          icon: '●',
+          text: 'ボタン表示＋画面権限設定が編集可能',
+        },
+        {
+          icon: '',
+          text: '勤務終了済職員に対してボタン表示中',
+          bk: 'pinkBackColor',
+        },
+        {
+          icon: '新規',
+          text: '職員マスタ登録後、アカウント必要有無が未登録',
+          bk: 'brownBackColor',
+        },
+      ],
+      searchOption: {}, // 検索条件
     };
   },
   methods: {
@@ -365,98 +452,498 @@ export default {
           window.innerHeight - this.headerheight + 'px';
       }
     },
-
-    onAlphabetical() {
-      //this.userFilter();
+    onSyozokuGroupChange() {
+      let selected = this.syozokuGroup;
+      let temp = this.groupArray.find(function (value) {
+        return value.id == selected ? value : '';
+      });
+      this.searchOption.syozokuGroup = temp.value;
+      this.searched();
     },
-    onInitialized(flexGrid) {
-      this.createHeader(flexGrid);
+    onSelAccount() {
+      let select = this.selAccount;
+      let selected = this.accountsArray.find(function (value) {
+        return value.id == select ? value : '';
+      });
+      this.searchOption.accountSelect = selected.id;
+      this.searched();
+    },
+    onSelFilter() {
+      this.searchOption.selFilter = this.selFilter;
+      this.searched();
+    },
+    onSelOther() {
+      let selOther = this.selOther;
+      let selected = this.otherArray.find(function (value) {
+        return value.id == selOther ? value : '';
+      });
 
+      // 権限未設定を選択時、権限の登録数を保持する
+      if (selected.id == 3) {
+        for (let i = 0; i < this.syokuinViewData.length; i++) {
+          let groundAuth = this.syokuinViewData[i].groundAuth;
+          let cnt = 0;
+          Object.keys(groundAuth).forEach(function (key) {
+            if (groundAuth[key]) {
+              cnt += 1;
+            }
+          });
+          this.syokuinViewData[i].groundAuthFlag = cnt;
+        }
+      }
+      this.searchOption.otherSelect = selected;
+      this.searched();
+    },
+    onAlphabetical() {
+      this.searched();
+    },
+    searched() {
+      let temp = this.syokuinViewData;
+      let result = temp;
+      // 所属事業所検索
+      let syozokuGroup = this.searchOption.syozokuGroup;
+      if (syozokuGroup) {
+        result = temp.filter((value) => value.syozokuJigyosyo === syozokuGroup);
+      }
+      // アカウントID検索
+      if (
+        this.searchOption.accountSelect &&
+        this.searchOption.accountSelect != 1
+      ) {
+        let accountTemp = [];
+
+        for (let i = 0; i < result.length; i++) {
+          // 発行済み
+          if (
+            this.searchOption.accountSelect == 2 &&
+            result[i].accountID.length > 0
+          ) {
+            accountTemp.push(result[i]);
+          }
+          // 未発行
+          if (
+            this.searchOption.accountSelect == 3 &&
+            result[i].accountID.length == 0
+          ) {
+            accountTemp.push(result[i]);
+          }
+        }
+
+        result = accountTemp;
+      }
+
+      // 利用状況
+      let selFilter = this.searchOption.selFilter;
+      if (selFilter && selFilter.length != 0) {
+        let filterTemp = [];
+        for (let i = 0; i < result.length; i++) {
+          // 使用中
+          if (
+            selFilter.indexOf(1) != -1 &&
+            result[i].accountStatus == this.filterArray[0].value
+          ) {
+            filterTemp.push(result[i]);
+          }
+          // 仮登録
+          if (
+            selFilter.indexOf(2) != -1 &&
+            result[i].accountStatus === this.filterArray[1].value
+          ) {
+            filterTemp.push(result[i]);
+          }
+          // 停止中
+          if (
+            selFilter.indexOf(3) != -1 &&
+            result[i].accountStatus === this.filterArray[2].value
+          ) {
+            filterTemp.push(result[i]);
+          }
+        }
+        result = filterTemp;
+      }
+
+      // その他絞込
+      let otherSelect = this.searchOption.otherSelect;
+      if (otherSelect && otherSelect.id != 1) {
+        let otherTemp = [];
+        for (let i = 0; i < result.length; i++) {
+          // メール有
+          if (otherSelect.id == 2 && result[i].mailFlag != '') {
+            otherTemp.push(result[i]);
+          }
+          // 権限未設定
+          if (otherSelect.id == 3 && result[i].groundAuthFlag != 0) {
+            otherTemp.push(result[i]);
+          }
+        }
+        result = otherTemp;
+      }
+
+      // アルファベット検索
+      let tmpviewdata = result.concat();
+      result = this.$refs.alp.alphabetFilter(tmpviewdata, 'rkana');
+
+      this.flexGrid.itemsSource = result;
+    },
+
+    onInitialized(flexGrid) {
+      this.flexGrid = flexGrid;
+      this.createHeader(flexGrid);
       // itemscourceデータ
       this.syokuinViewData = [];
       let syokuinViewData = [];
       syokuinViewData.push({
-        syokuinCode: '100001',
-        syokuinName: '奈良和彦',
+        syokuinCode: '00001',
+        syokuinName: '東経 太郎',
+        rkana: 'ﾀﾛｳﾄｳｹｲ',
+        syokusyu: '施設長',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '有',
+        accountID: 'tokeitaro00001',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '〇',
+          column_5: '〇',
+          column_6: '〇',
+          column_7: '〇',
+          column_8: '〇',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00001',
+        syokuinName: '東経 太郎',
+        rkana: 'ﾀﾛｳﾄｳｹｲ',
+        syokusyu: '施設長',
+        syozokuJigyosyo: 'グループホーム　いるか園',
+        startDate: '2018/04/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '有',
+        accountID: 'tokeitaro00001',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '〇',
+          column_5: '〇',
+          column_6: '〇',
+          column_7: '〇',
+          column_8: '〇',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00001',
+        syokuinName: '東経 太郎',
+        rkana: 'ﾀﾛｳﾄｳｹｲ',
+        syokusyu: '施設長',
+        syozokuJigyosyo: '総合支援センター　いるか園',
+        startDate: '2019/10/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '有',
+        accountID: 'tokeitaro00001',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '〇',
+          column_5: '〇',
+          column_6: '〇',
+          column_7: '〇',
+          column_8: '〇',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00002',
+        syokuinName: '明治 雅夫',
+        rkana: 'ﾒｲｼﾞﾏｻｵ',
         syokusyu: 'サービス管理責任者',
-        syozokuJigyosyo: '001 障害者施設いるか園',
-        startDate: '2020/00/00',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
         endDate: '',
         taisyoku: '',
         mailFlag: '有',
-        accountID: 'tokei100001100063',
+        accountID: 'meijimasao00002',
         accountStatus: '使用中',
-        accountSelected: '',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '',
+          column_5: '●',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
       });
       syokuinViewData.push({
-        syokuinCode: '100001',
-        syokuinName: '奈良和彦',
-        syokusyu: '指導員',
-        syozokuJigyosyo: '001 障害者施設いるか園',
-        startDate: '2020/00/00',
+        syokuinCode: '00002',
+        syokuinName: '明治 雅夫',
+        rkana: 'ﾒｲｼﾞﾏｻｵ',
+        syokusyu: 'サービス管理責任者',
+        syozokuJigyosyo: 'グループホーム　いるか園',
+        startDate: '2018/10/01',
         endDate: '',
         taisyoku: '',
         mailFlag: '有',
-        accountID: 'tokei100001100063',
+        accountID: 'meijimasao00002',
         accountStatus: '使用中',
-        accountSelected: '',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '',
+          column_5: '●',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
       });
       syokuinViewData.push({
-        syokuinCode: '100001',
-        syokuinName: '奈良和彦',
-        syokusyu: '指導員',
-        syozokuJigyosyo: '001 障害者施設いるか園',
-        startDate: '2020/00/00',
+        syokuinCode: '00002',
+        syokuinName: '明治 雅夫',
+        rkana: 'ﾒｲｼﾞﾏｻｵ',
+        syokusyu: 'サービス管理責任者',
+        syozokuJigyosyo: '障害者支援施設　みどり園',
+        startDate: '2019/10/01',
         endDate: '',
         taisyoku: '',
         mailFlag: '有',
-        accountID: 'tokei100001100063',
+        accountID: 'meijimasao00002',
         accountStatus: '使用中',
-        accountSelected: '',
+        groundAuth: {
+          column_1: '●',
+          column_2: '●',
+          column_3: '●',
+          column_4: '',
+          column_5: '●',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
       });
       syokuinViewData.push({
-        syokuinCode: '100002',
-        syokuinName: '平安静香',
-        syokusyu: '事務',
-        syozokuJigyosyo: '001 障害者施設いるか園',
-        startDate: '2020/00/00',
+        syokuinCode: '00003',
+        syokuinName: '昭和　和夫',
+        rkana: 'ｼｮｳﾜｶｽﾞｵ',
+        syokusyu: '事務員',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
         endDate: '',
         taisyoku: '',
         mailFlag: '有',
-        accountID: 'tokei1000013312345',
-        accountStatus: '停止中',
-        accountSelected: '',
+        accountID: 'syowa00003',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '〇',
+          column_2: '〇',
+          column_3: '〇',
+          column_4: '〇',
+          column_5: '●',
+          column_6: '●',
+          column_7: '●',
+          column_8: '●',
+        },
       });
       syokuinViewData.push({
-        syokuinCode: '100003',
-        syokuinName: '鎌倉政子',
-        syokusyu: '生活指導',
-        syozokuJigyosyo: '001 障害者施設いるか園',
-        startDate: '2020/00/00',
+        syokuinCode: '00003',
+        syokuinName: '昭和　和夫',
+        rkana: 'ｼｮｳﾜｶｽﾞｵ',
+        syokusyu: '事務員',
+        syozokuJigyosyo: '障害者支援施設　みどり園',
+        startDate: '2019/04/01',
         endDate: '',
         taisyoku: '',
         mailFlag: '有',
-        accountID: 'tokei1000013312345',
+        accountID: 'syowa00003',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '〇',
+          column_2: '〇',
+          column_3: '〇',
+          column_4: '〇',
+          column_5: '●',
+          column_6: '●',
+          column_7: '●',
+          column_8: '●',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00004',
+        syokuinName: '平成　麗子',
+        rkana: 'ﾍｲｾｲﾚｲｺ',
+        syokusyu: '事務員',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2020/07/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '',
+        accountID: 'heisei00004',
         accountStatus: '仮登録',
-        accountSelected: '',
+        groundAuth: {
+          column_1: '〇',
+          column_2: '〇',
+          column_3: '〇',
+          column_4: '〇',
+          column_5: '〇',
+          column_6: '〇',
+          column_7: '〇',
+          column_8: '〇',
+        },
       });
+      syokuinViewData.push({
+        syokuinCode: '00005',
+        syokuinName: '令和　弘',
+        rkana: 'ﾚｲﾜﾋﾛｼ',
+        syokusyu: '事務員',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '有',
+        accountID: 'reiwa00005',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '〇',
+          column_2: '〇',
+          column_3: '〇',
+          column_4: '〇',
+          column_5: '〇',
+          column_6: '〇',
+          column_7: '〇',
+          column_8: '〇',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00006',
+        syokuinName: '福島　恵子',
+        rkana: 'ｹｲｺﾌｸｼﾏ',
+        syokusyu: '事務員',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '',
+        accountID: '',
+        accountStatus: '停止中',
+        groundAuth: {
+          column_1: '',
+          column_2: '',
+          column_3: '',
+          column_4: '',
+          column_5: '',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
+        checkedFlag: true,
+      });
+      syokuinViewData.push({
+        syokuinCode: '00010',
+        syokuinName: '岐阜　健太',
+        rkana: 'ｷﾞﾌｹﾝﾀ',
+        syokusyu: '看護師',
+        syozokuJigyosyo: '障害者支援施設　いるか園',
+        startDate: '2018/04/01',
+        endDate: '2022/10/15',
+        taisyoku: '',
+        mailFlag: '',
+        accountID: '',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '',
+          column_2: '',
+          column_3: '',
+          column_4: '',
+          column_5: '〇',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
+      });
+      syokuinViewData.push({
+        syokuinCode: '00010',
+        syokuinName: '岐阜　健太',
+        rkana: 'ｷﾞﾌｹﾝﾀ',
+        syokusyu: '看護師',
+        syozokuJigyosyo: '障害者支援施設　みどり園',
+        startDate: '2019/10/01',
+        endDate: '',
+        taisyoku: '',
+        mailFlag: '',
+        accountID: '',
+        accountStatus: '使用中',
+        groundAuth: {
+          column_1: '',
+          column_2: '',
+          column_3: '',
+          column_4: '',
+          column_5: '〇',
+          column_6: '',
+          column_7: '',
+          column_8: '',
+        },
+      });
+
       this.syokuinViewData = syokuinViewData;
+      this.searched();
+      this.getAccountCount();
       flexGrid.frozenColumns = this.columnArray.length;
       //フィルタ表示切替
-      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
-        this.filtered.showFilterIcons = true;
+      // flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+      //   this.filtered.showFilterIcons = true;
+      // });
+      // flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
+      //   this.filtered.showFilterIcons = false;
+      // });
+
+      // グリッド押下時
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        var ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          // 権限のチェック
+          if (ht.col > _self.columnArray.length - 1) {
+            // 権限入力の選択状態
+            let tempIcon = _self.getAuthSelecteToIdIcon(_self.authBtnSelected);
+            // 選択したグランドメニュー権限のカラムの名前
+            let colNumber = ht.col - _self.columnArray.length + 1;
+            let column = 'groundAuth.column_' + colNumber;
+
+            // 選択したデータのsyokuinCodeを取得
+            // 同じsyokuinCodeのデータを更新
+            let syokuinCode = _self.syokuinViewData[ht.row].syokuinCode;
+
+            _self.editSyokuiCodeColumData(syokuinCode, column, tempIcon);
+            // flexGrid.setCellData(tempIcon, ht.row, ht.col);
+            flexGrid.refresh();
+            _self.activateCancel = false; // キャンセルボタン有効
+          }
+        }
       });
-      flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
-        this.filtered.showFilterIcons = false;
-      });
-      /*
-      flexGrid.addEventListener(flexGrid.hostElement, "click", (e) => {
-        // gridをクリックしたイベント
-        let ht = flexGrid.hitTest(e);
-        let tmp = flexGrid.itemsSource[ht.row];
-        console.log(tmp);
-      });
-      */
+    },
+    /*******************
+     * 指定したsyokuinCodeのデータを更新
+     */
+    editSyokuiCodeColumData(syokuinCode, editColumn, icon) {
+      for (let i = 0; i < this.syokuinViewData.length; i++) {
+        // syokuinCodeが選択した物と同じもの
+        // 利用状況が停止中ではない
+        if (
+          this.syokuinViewData[i].syokuinCode == syokuinCode &&
+          this.syokuinViewData[i].accountStatus != this.filterArray[2].value
+        ) {
+          this.syokuinViewData[i][editColumn] = icon;
+        }
+      }
     },
     /*******************************
      * ヘッダ作成
@@ -499,14 +986,14 @@ export default {
     },
     onItemsSourceChanged() {},
     onFormatItem(flexGrid, e) {
+      let accountRowCount = this.columnArray.length - 1;
+
       if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
         if ((e.col == 6 || e.col == 7) && e.row == 1) {
           wijmo.addClass(e.cell, 'vertical-write');
         }
-        if (e.col >= 0 && e.col <= 6) {
-          wijmo.addClass(e.cell, 'headeraqua');
-        }
-        if (e.col >= 7 && e.col <= 9) {
+
+        if (e.col >= 7 && e.col <= accountRowCount) {
           wijmo.addClass(e.cell, 'headerorange');
         }
         if (e.col >= this.columnArray.length) {
@@ -519,11 +1006,27 @@ export default {
           e.cell.style.textAlign = 'left';
         }
 
-        // 上下のセルを比べて同じ場合に下のセルを消す
+        // セルデータを取得
         let tmpitem = [];
         if (e.panel.rows[e.row]) {
           tmpitem = e.panel.rows[e.row].dataItem;
         }
+        // 終了日が登録＋権限が登録されている場合は背景をピンクに変更
+        if (tmpitem.endDate !== '') {
+          if (e.col > accountRowCount) {
+            if (flexGrid.getCellData(e.row, e.col)) {
+              wijmo.addClass(e.cell, 'backgroundPink');
+            }
+          }
+        }
+
+        // 利用状況が停止中の場合は列以降をgrayに変更
+        if (tmpitem.accountStatus == this.filterArray[2].value) {
+          if (e.col > accountRowCount) {
+            wijmo.addClass(e.cell, 'backgroundGray');
+          }
+        }
+        // 上下のセルを比べて同じ場合に下のセルを消す
         let tmpitemBefore = [];
         if (e.panel.rows[e.row - 1]) {
           tmpitemBefore = e.panel.rows[e.row - 1].dataItem;
@@ -536,7 +1039,6 @@ export default {
             e.cell.innerHTML = '';
           }
         }
-
         // 上下のセルを比べて同じ場合に上のセルの下線を消す
         let tmpitemAfter = [];
         let tmpBefore = [];
@@ -555,17 +1057,24 @@ export default {
           }
         }
 
+        // 職員名に要確認アイコンをつける
+        if (e.col == 1 && tmpitem.checkedFlag) {
+          e.cell.innerHTML += '<span class="checkicon">新規</span>';
+        }
+
+        // 利用状況へ文字前にアイコンを付けるためclass付与
+        // 使用中
         if (
-          e.col == 9 &&
-          tmpitem.accountStatus == '使用中' &&
+          e.col == accountRowCount &&
+          tmpitem.accountStatus == this.filterArray[0].value &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
         ) {
           wijmo.addClass(e.cell, 'setCheckIcon');
         }
         if (
-          e.col == 9 &&
-          tmpitem.accountStatus == '停止中' &&
+          e.col == accountRowCount &&
+          tmpitem.accountStatus == this.filterArray[2].value &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
         ) {
@@ -573,8 +1082,8 @@ export default {
         }
 
         if (
-          e.col == 9 &&
-          tmpitem.accountStatus == '仮登録' &&
+          e.col == accountRowCount &&
+          tmpitem.accountStatus == this.filterArray[1].value &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
         ) {
@@ -592,10 +1101,56 @@ export default {
     filterInitialized(filter) {
       this.filtered = filter;
       for (let i = 0; i < this.columnArray.length; i++) {
-        if (i <= 6) {
+        if (i < 6) {
           this.filterAbled.push(this.columnArray[i].binding);
         }
       }
+      filter.filterColumns = this.filterAbled;
+    },
+    /************************
+     * 権限入力クリック
+     */
+    authClick(mine) {
+      // クリア押下時はid:1に戻す
+      if (mine == 0) {
+        // グランドメニュー権限のデータをクリア
+        let editColumn = '';
+        for (let i = 0; i < this.syokuinViewData.length; i++) {
+          for (let c = 0; c < this.columnAuthArray.length; c++) {
+            editColumn = this.columnAuthArray[c].binding;
+            this.syokuinViewData[i][editColumn] = '';
+          }
+        }
+        this.flexGrid.refresh();
+        this.activateCancel = false; // キャンセルボタン有効
+        mine = 1;
+      }
+      this.authBtnActive = [];
+      this.authBtnActive[mine] = true;
+      this.authBtnSelected = mine; // 権限入力の選択値
+    },
+    /***********************
+     * 選択しているidの値を元に表示されるiconを取得
+     ***********/
+    getAuthSelecteToIdIcon(select) {
+      let temp = this.authItem.find((el) => el.id == select);
+      return temp.value;
+    },
+    /****************************
+     * アカウント発行要確認新規職員
+     */
+    getAccountCount() {
+      // 新規のアイコンが表示されている数
+      let array = this.syokuinViewData.map(function (value) {
+        return value.checkedFlag ? 1 : 0;
+      });
+      this.accountCount = array.reduce((prev, current) => prev + current, 0);
+    },
+    /****************
+     * 記号説明ボタン押下
+     */
+    onsignExplain() {
+      this.signExplainFlag = this.signExplainFlag ? false : true;
     },
   },
 };
@@ -609,14 +1164,89 @@ $height: 24px;
 
 div#accountsData {
   font-size: 12px;
+  min-width: 1366px;
+  #subTitle {
+    border-bottom: 1px solid $black;
+    h2 {
+      font-weight: normal;
+    }
+    label {
+      line-height: 28px;
+      margin-left: 20px;
+    }
+  }
+  #signExplain {
+    position: absolute;
+    width: 400px;
+    padding: 10px;
+    z-index: 1000;
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 3px solid $view_Title_background_Main;
+
+    animation-name: fadeInAnime;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+
+    div {
+      margin-top: 1px;
+      &.left {
+        width: 40px;
+        text-align: center;
+      }
+      &.pinkBackColor {
+        background-color: $pink;
+      }
+      &.brownBackColor {
+        background-color: $brown;
+        color: $white;
+      }
+    }
+  }
+  @keyframes fadeInAnime {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   label {
     &.message {
       background-color: $red !important;
       color: $white;
       padding: 5px;
     }
+    &.accountConfLabel {
+      background-color: $view_Title_background_Orange;
+      height: $height;
+      width: 260px;
+      display: block;
+      text-align: center;
+      line-height: $height;
+    }
   }
-
+  span {
+    &.checkicon {
+      font-size: 0.85%;
+      display: inline-block;
+      float: right;
+      background-color: $brown;
+      width: 30px;
+      height: 15px;
+      text-align: center;
+      color: $white;
+    }
+  }
+  button {
+    &.isActive {
+      color: $white;
+      background-color: $view_Title_font_color_Blue;
+    }
+  }
   #alpCommon {
     height: $height;
   }
@@ -627,6 +1257,15 @@ div#accountsData {
       }
       &.backgroundYellow {
         background-color: $light-yellow;
+      }
+      &.backgroundGray {
+        background-color: $selected_color;
+      }
+      &.backgroundPink {
+        background-color: $pink;
+      }
+      &.backgroundWhite {
+        background-color: $white;
       }
       &.setCheckIcon {
         &:before {
@@ -685,15 +1324,14 @@ div#accountsData {
     -webkit-appearance: auto;
     &.selectBox {
       height: $height;
-      width: 300px;
+      width: 400px;
       &.short {
         width: 140px;
       }
     }
   }
-  .boardArea {
-    border: 1px solid $light-gray;
-    width: 300px;
+  .boarderArea {
+    width: 200px;
     &.wMdle {
       width: 450px;
     }

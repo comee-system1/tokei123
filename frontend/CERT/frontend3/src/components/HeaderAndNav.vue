@@ -42,7 +42,7 @@ export default {
     return {
       queryParam: '',
       drawer: false,
-      jigyoName: '管理者用アカウント管理',
+      jigyoName: '社会福祉法人東経会',
       loginName: 'いるか たろう',
 
       listItems: [
