@@ -110,6 +110,29 @@ const CHIIKIJIGYOKBN = {
         name: '地域定着'
     },
 }
+const TOOLTIPMESSAGE =
+    [
+        {
+            icon: "〇",
+            text: "グランドメニューにボタン表示",
+        },
+        {
+            icon: "●",
+            text: "ボタン表示＋画面権限設定が編集可能",
+        },
+        {
+            icon: "",
+            text: "勤務終了済職員に対してボタン表示中",
+            bk: "pinkBackColor",
+        },
+        {
+            icon: "新規",
+            text: "職員マスタ登録後、アカウント必要有無が未登録",
+            bk: "brownBackColor",
+        },
+    ]
+
+
 
 export default {
     COLOR,
@@ -119,5 +142,6 @@ export default {
     JIGYOKBN,
     KEIKAKUJIGYOKBN,
     CHIIKIJIGYOKBN,
-    JIGYO_KBN_NAME
+    JIGYO_KBN_NAME,
+    TOOLTIPMESSAGE
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-1" id="accountsData">
+  <div class="pa-1" id="accountsList">
     <v-row no-gutters class="d-flex pt-1 pb-1" id="subTitle">
       <h2>{{ $route.meta.title }}</h2>
       <label>{{ $route.meta.sub }}</label>
@@ -18,9 +18,18 @@
         </select>
       </v-col>
       <v-col class="text-end">
-        <v-btn height="24" :to="`/allStoreList/${query}`"
-          >全事業所一覧参照</v-btn
-        >
+        <v-btn small class="ml-1" height="24" @click="onsignExplain()">
+          <v-icon small color=""> mdi-message-text </v-icon>
+          記号説明
+        </v-btn>
+        <v-card id="signExplain" v-show="signExplainFlag">
+          <div v-for="(value, index) in explainArray" :key="index">
+            <v-row no-gutters>
+              <div :class="`left ${value.bk}`">{{ value.icon }}</div>
+              <div class="right">:{{ value.text }}</div>
+            </v-row>
+          </div>
+        </v-card>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1">
@@ -45,49 +54,6 @@
           }}</label>
         </v-card>
       </div>
-
-      <label class="labeled ml-1">利用状況</label>
-      <div class="ml-1 boarderArea d-flex">
-        <v-card
-          class="ml-1 d-flex"
-          v-for="(filters, filterIndex) in filterArray"
-          :key="`filter-${filterIndex}`"
-          elevation="0"
-        >
-          <input
-            type="checkbox"
-            :id="'filter_' + filters.id"
-            :value="filters.id"
-            v-model="selFilter"
-            @change="onSelFilter()"
-          />
-          <label :for="'filter_' + filters.id" class="mt-1 ml-1 mr-2">{{
-            filters.value
-          }}</label>
-        </v-card>
-      </div>
-
-      <label class="labeled ml-1">その他絞込</label>
-      <div class="ml-1 boarderArea wMdle d-flex">
-        <v-card
-          class="d-flex ml-1"
-          v-for="(item, otherKey) in otherArray"
-          :key="`other-${otherKey}`"
-          elevation="0"
-        >
-          <input
-            type="radio"
-            :id="'other_' + item.id"
-            :value="item.id"
-            name="other"
-            v-model="selOther"
-            @change="onSelOther()"
-          />
-          <label :for="'other_' + item.id" class="mt-1 ml-1 mr-2">{{
-            item.value
-          }}</label>
-        </v-card>
-      </div>
     </v-row>
 
     <v-row no-gutters class="mt-1 filterHeight">
@@ -98,38 +64,6 @@
           @onAlphabetical="onAlphabetical"
         >
         </alphabet-button>
-      </v-col>
-      <v-col>
-        <label class="accountConfLabel"
-          >アカウント発行要確認新規職員:<span>{{ accountCount }}</span
-          >名</label
-        >
-      </v-col>
-      <v-col class="justify-end d-flex">
-        <label class="labeled pinked min ml-1">権限入力</label>
-        <v-btn
-          v-for="val in authItem"
-          :key="val.id"
-          height="24"
-          @click="authClick(val.id)"
-          :class="{ isActive: authBtnActive[val.id], 'ml-1': true }"
-          elevation="1"
-          >{{ val.text }}</v-btn
-        >
-        <label class="labeled pinked min ml-1">その他</label>
-        <v-btn small class="ml-1" height="24">権限コピー</v-btn>
-        <v-btn small class="ml-1" height="24" @click="onsignExplain()">
-          <v-icon small color=""> mdi-message-text </v-icon>
-          記号説明
-        </v-btn>
-        <v-card id="signExplain" v-show="signExplainFlag">
-          <div v-for="(value, index) in explainArray" :key="index">
-            <v-row no-gutters>
-              <div :class="`left ${value.bk}`">{{ value.icon }}</div>
-              <div class="right">:{{ value.text }}</div>
-            </v-row>
-          </div>
-        </v-card>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-2">
@@ -190,124 +124,12 @@
         </v-card>
       </wj-flex-grid>
     </v-row>
-    <v-row class="mt-1">
-      <v-col class="text-end">
-        <label class="message"
-          >変更内容を保存する場合は登録を行ってください</label
-        >
-        <v-btn class="ml-2" height="24" elavation="1" :disabled="activateCancel"
-          >キャンセル</v-btn
-        >
-        <v-btn class="ml-16" color="blue" height="24">権限登録</v-btn>
-      </v-col>
-    </v-row>
-    <v-dialog width="500" v-model="dialogAccountFlag" id="dialogAccount">
-      <v-card>
-        <v-card-title class="dialog_title">
-          職員アカウント情報
-          <v-btn class="closeButton pa-0" @click="dialogAccountClose()">
-            <v-icon> mdi-close </v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-card class="pa-2" elevation="0">
-          <p>教員アカウントのIDを発行し、システムを利用できる状態にします。</p>
-          <v-row no-gutters class="borderbottom pb-2 mt-1">
-            <label class="tle">職員名</label>
-            <input
-              type="text"
-              class="v-card ml-1 box min pl-1"
-              v-model="dialogSyokuinName"
-            />
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <label class="tle inq">アカウント発行</label>
-            <v-card
-              v-for="val in dialogAccountArray"
-              :key="val.id"
-              class="ml-2"
-              elevation="0"
-            >
-              <input
-                type="radio"
-                name="dialogAccount"
-                v-model="dialogAccount"
-                :id="`dialogAccount_${val.id}`"
-                :value="val.id"
-              />
-              <label class="ml-1" :for="`dialogAccount_${val.id}`">{{
-                val.value
-              }}</label>
-            </v-card>
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <div>
-              <label class="tle inq">ID</label>
-            </div>
-            <div class="questionarea">
-              <input
-                type="text"
-                v-model="dialogAccountID"
-                class="v-card ml-1 box mdl pl-1"
-              />
-              <v-tooltip :text="`${dialogMessageID}`" max-width="420">
-                <template v-slot:activator="{ props }">
-                  <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
-                </template>
-              </v-tooltip>
-
-              <p class="text-caption">半角英数字の4桁～32桁の文字</p>
-            </div>
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <div>
-              <label class="tle">メールアドレス</label>
-            </div>
-            <div class="questionarea">
-              <input
-                type="text"
-                v-model="dialogAccountMail"
-                class="v-card ml-1 box mdl pl-1"
-              />
-              <v-tooltip :text="`${dialogMessageMail}`" max-width="500">
-                <template v-slot:activator="{ props }">
-                  <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
-                </template>
-              </v-tooltip>
-            </div>
-          </v-row>
-          <v-row no-gutters class="mt-1">
-            <div>
-              <label class="tle">利用状態</label>
-            </div>
-            <div class="questionarea">
-              <div :class="`ml-1 questionStatusButton ${useButton}`">
-                利用中
-              </div>
-              <v-tooltip :text="`${dialogMessageUse}`" max-width="540">
-                <template v-slot:activator="{ props }">
-                  <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
-                </template>
-              </v-tooltip>
-            </div>
-          </v-row>
-          <v-row no-gutters class="mt-3">
-            <v-col cols="3">
-              <v-btn class="deleteButton htmin">削除</v-btn>
-            </v-col>
-            <v-col class="text-end">
-              <v-btn class="passwordButton htmin">パスワード再発行</v-btn>
-              <v-btn class="ml-2 registButton htmin">登録</v-btn>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 <script>
 import AlphabetButton from "@/components/AlphabetButton.vue";
 import * as wjGrid from "@grapecity/wijmo.grid";
-import * as wijmo from "@grapecity/wijmo";
+// import * as wijmo from "@grapecity/wijmo";
 import "@grapecity/wijmo.cultures/wijmo.culture.ja";
 import "@grapecity/wijmo.vue2.grid.filter";
 import { WjFlexGrid, WjFlexGridColumn } from "@grapecity/wijmo.vue2.grid";
@@ -427,54 +249,6 @@ export default {
           binding: "syokuinName",
           width: 200,
         },
-        {
-          id: 3,
-          header: "職種",
-          binding: "syokusyu",
-          width: 160,
-        },
-        {
-          id: 4,
-          header: "所属事業所",
-          binding: "syozokuJigyosyo",
-          width: 200,
-        },
-        {
-          id: 5,
-          header: "開始日",
-          binding: "startDate",
-          width: 100,
-        },
-        {
-          id: 6,
-          header: "終了日",
-          binding: "endDate",
-          width: 100,
-        },
-        {
-          id: 7,
-          header: "退職",
-          binding: "taisyoku",
-          width: 40,
-        },
-        {
-          id: 8,
-          header: "メール",
-          binding: "mailFlag",
-          width: 40,
-        },
-        {
-          id: 9,
-          header: "ID",
-          binding: "accountID",
-          width: 140,
-        },
-        {
-          id: 10,
-          header: "利用状況",
-          binding: "accountStatus",
-          width: 100,
-        },
       ],
       columnAuthArray: [
         {
@@ -543,28 +317,6 @@ export default {
       headerheight: 240,
       explainArray: sysConst.TOOLTIPMESSAGE,
       searchOption: {}, // 検索条件
-      dialogAccount: 1,
-      dialogSyokuinName: "",
-      dialogAccountID: "",
-      dialogAccountMail: "",
-      useButton: "",
-      dialogMessageID: `この画面で設定したID名でログインできるようになります。
-      他の職員で設定済みの同じ名前のIDは設定できません。`,
-      dialogMessageMail: `メールアドレスを設定すると、アカウント発行時の仮パスワード通知や、
-      パスワードを忘れた場合に職員本人で再設定することができます。
-      `,
-      dialogMessageUse: "",
-      dialogAccountArray: [
-        {
-          id: 1,
-          value: "有り",
-        },
-        {
-          id: 2,
-          value: "無し",
-        },
-      ],
-      tooltipmessage_mail: false,
     };
   },
   methods: {
@@ -590,32 +342,7 @@ export default {
       this.searchOption.accountSelect = selected.id;
       this.searched();
     },
-    onSelFilter() {
-      this.searchOption.selFilter = this.selFilter;
-      this.searched();
-    },
-    onSelOther() {
-      let selOther = this.selOther;
-      let selected = this.otherArray.find(function (value) {
-        return value.id == selOther ? value : "";
-      });
 
-      // 権限未設定を選択時、権限の登録数を保持する
-      if (selected.id == 3) {
-        for (let i = 0; i < this.syokuinViewData.length; i++) {
-          let groundAuth = this.syokuinViewData[i].groundAuth;
-          let cnt = 0;
-          Object.keys(groundAuth).forEach(function (key) {
-            if (groundAuth[key]) {
-              cnt += 1;
-            }
-          });
-          this.syokuinViewData[i].groundAuthFlag = cnt;
-        }
-      }
-      this.searchOption.otherSelect = selected;
-      this.searched();
-    },
     onAlphabetical(k) {
       this.searched(k);
     },
@@ -1199,7 +926,10 @@ export default {
     onItemsSourceChanged() {},
     onFormatItem(flexGrid, e) {
       let accountRowCount = this.columnArray.length - 1;
-
+      console.log(flexGrid);
+      console.log(e);
+      console.log(accountRowCount);
+      /*
       if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
         if ((e.col == 6 || e.col == 7) && e.row == 1) {
           wijmo.addClass(e.cell, "vertical-write");
@@ -1212,113 +942,10 @@ export default {
           wijmo.addClass(e.cell, "headerpink");
         }
       }
+*/
+      // if (e.panel.cellType == wjGrid.CellType.Cell) {
 
-      if (e.panel.cellType == wjGrid.CellType.Cell) {
-        if (e.col == 1 || e.col == 2 || e.col == 3 || e.col == 8) {
-          e.cell.style.textAlign = "left";
-        }
-
-        // セルデータを取得
-        let tmpitem = [];
-        if (e.panel.rows[e.row]) {
-          tmpitem = e.panel.rows[e.row].dataItem;
-        }
-        // 終了日が登録＋権限が登録されている場合は背景をピンクに変更
-        if (tmpitem.endDate !== "") {
-          if (e.col > accountRowCount) {
-            if (flexGrid.getCellData(e.row, e.col)) {
-              wijmo.addClass(e.cell, "backgroundPink");
-            }
-          }
-        }
-
-        // 利用状況が未登録の場合は列以降をgrayに変更
-        if (tmpitem.accountStatus == "未登録") {
-          if (e.col > accountRowCount) {
-            wijmo.addClass(e.cell, "backgroundGray");
-          }
-        }
-        // 上下のセルを比べて同じ場合に下のセルを消す
-        let tmpitemBefore = [];
-        if (e.panel.rows[e.row - 1]) {
-          tmpitemBefore = e.panel.rows[e.row - 1].dataItem;
-        }
-        if (
-          tmpitemBefore != null &&
-          tmpitem.syokuinCode == tmpitemBefore.syokuinCode
-        ) {
-          if (e.col == 0 || e.col == 1 || e.col >= 7) {
-            e.cell.innerHTML = "";
-          }
-        }
-        // 上下のセルを比べて同じ場合に上のセルの下線を消す
-        let tmpitemAfter = [];
-        let tmpBefore = [];
-        if (e.panel.rows[e.row + 1]) {
-          tmpitemAfter = e.panel.rows[e.row + 1].dataItem;
-        }
-        if (e.panel.rows[e.row - 1]) {
-          tmpBefore = e.panel.rows[e.row - 1].dataItem;
-        }
-        if (
-          tmpitemAfter != null &&
-          tmpitem.syokuinCode == tmpitemAfter.syokuinCode
-        ) {
-          if (e.col == 0 || e.col == 1 || e.col >= 7) {
-            wijmo.addClass(e.cell, "borderBottomNone");
-          }
-        }
-
-        // 職員名に要確認アイコンをつける
-        if (e.col == 1 && tmpitem.checkedFlag) {
-          e.cell.innerHTML += '<span class="checkicon">新規</span>';
-        }
-
-        // 利用状況へ文字前にアイコンを付けるためclass付与
-        // 使用中
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[0].value &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          wijmo.addClass(e.cell, "setCheckIcon");
-          wijmo.addClass(e.cell, "setCheckIconUsing");
-        }
-        // 未登録は空欄
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == "未登録" &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          e.cell.innerHTML = "";
-        }
-        // 仮登録
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[1].value &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          wijmo.addClass(e.cell, "setCheckIcon");
-          wijmo.addClass(e.cell, "setCheckIconNone");
-        }
-        // 停止中
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[2].value &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          wijmo.addClass(e.cell, "setCheckIcon");
-          wijmo.addClass(e.cell, "setCheckIconStop");
-        }
-
-        if (e.col < this.columnArray.length - 3) {
-          wijmo.addClass(e.cell, "backgroundYellow");
-        }
-      }
+      // }
     },
     /*******************
      * フィルターの指定
@@ -1326,34 +953,13 @@ export default {
     filterInitialized(filter) {
       this.filtered = filter;
       for (let i = 0; i < this.columnArray.length; i++) {
-        if (i < 6) {
+        if (i < 2) {
           this.filterAbled.push(this.columnArray[i].binding);
         }
       }
       filter.filterColumns = this.filterAbled;
     },
-    /************************
-     * 権限入力クリック
-     */
-    authClick(mine) {
-      // クリア押下時はid:1に戻す
-      if (mine == 0) {
-        // グランドメニュー権限のデータをクリア
-        let editColumn = "";
-        for (let i = 0; i < this.syokuinViewData.length; i++) {
-          for (let c = 0; c < this.columnAuthArray.length; c++) {
-            editColumn = this.columnAuthArray[c].binding;
-            this.syokuinViewData[i][editColumn] = "";
-          }
-        }
-        this.flexGrid.refresh();
-        this.activateCancel = false; // キャンセルボタン有効
-        mine = 1;
-      }
-      this.authBtnActive = [];
-      this.authBtnActive[mine] = true;
-      this.authBtnSelected = mine; // 権限入力の選択値
-    },
+
     /***********************
      * 選択しているidの値を元に表示されるiconを取得
      ***********/
@@ -1386,112 +992,7 @@ export default {
 @import "@grapecity/wijmo.styles/wijmo.css";
 
 $height: 24px;
-#dialogAccount {
-  font-size: $default_fontsize;
-
-  label {
-    &.tle {
-      background-color: $view_Title_background_Blue;
-      width: 160px;
-      display: inline-block;
-      text-align: center;
-      position: relative;
-      &.inq {
-        &:before {
-          content: "*";
-          color: $red;
-          position: absolute;
-          top: 0;
-          left: 0;
-        }
-      }
-    }
-  }
-  .questionarea {
-    position: relative;
-    .questionIcon {
-      position: absolute;
-      top: 0;
-      left: auto;
-      right: -25px;
-      font-size: 8px;
-      border: 1px solid $gray;
-      padding: 6px;
-      border-radius: 50%;
-      margin-top: 3px;
-      background-color: $black;
-      color: $white;
-    }
-    .questionStatusButton {
-      width: 70px;
-      height: 21px;
-      background-size: 80%;
-      text-indent: -9999px;
-      background-position: 2px 2px;
-      &.useButton {
-        background-image: url("../../assets/usingButton.png");
-      }
-      &.tempButton {
-        background-image: url("../../assets/tempRegistButton.png");
-      }
-      &.stopButton {
-        background-image: url("../../assets/stoppingButton.png");
-      }
-      &.noRegistButton {
-        background-image: url("../../assets/noRegistButton.png");
-      }
-    }
-  }
-  .v-card {
-    &.box {
-      border: 1px solid #ccc;
-      display: inline-block;
-      &.min {
-        width: 200px;
-      }
-      &.mdl {
-        width: 250px;
-      }
-    }
-  }
-  .borderbottom {
-    border-bottom: 1px solid $grid_Border_Color;
-    width: 100%;
-  }
-  .v-card-title {
-    &.dialog_title {
-      background-color: $view_Title_background_Main;
-      color: $white;
-      position: relative;
-      .closeButton {
-        height: $height;
-        min-width: 30px;
-        color: $black;
-        position: absolute;
-        left: auto;
-        right: 10px;
-        top: 10px;
-      }
-    }
-  }
-  .htmin {
-    height: $height;
-    width: 120px;
-    font-size: $cell_fontsize;
-  }
-  .deleteButton {
-    border: 1px solid $red;
-    color: $red;
-  }
-  .passwordButton {
-    border: 1px solid $time_color_header;
-  }
-  .registButton {
-    background-color: $view_Title_background_Main;
-    color: $white;
-  }
-}
-div#accountsData {
+div#accountsList {
   font-size: 12px;
   min-width: 1266px;
 
@@ -1510,10 +1011,11 @@ div#accountsData {
     width: 400px;
     padding: 10px;
     z-index: 1000;
-    margin-top: 30px;
+    margin-top: 20px;
     background: rgba(255, 255, 255, 0.95);
     border: 3px solid $view_Title_background_Main;
-
+    left: auto;
+    right: 0;
     animation-name: fadeInAnime;
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -1544,39 +1046,6 @@ div#accountsData {
     }
   }
 
-  label {
-    &.message {
-      background-color: $red !important;
-      color: $white;
-      padding: 5px;
-    }
-    &.accountConfLabel {
-      background-color: $view_Title_background_Orange;
-      height: $height;
-      width: 260px;
-      display: block;
-      text-align: center;
-      line-height: $height;
-    }
-  }
-  span {
-    &.checkicon {
-      font-size: 0.85%;
-      display: inline-block;
-      float: right;
-      background-color: $brown;
-      width: 30px;
-      height: 15px;
-      text-align: center;
-      color: $white;
-    }
-  }
-  button {
-    &.isActive {
-      color: $white;
-      background-color: $view_Title_font_color_Blue;
-    }
-  }
   #alpCommon {
     height: $height;
   }
