@@ -248,6 +248,7 @@
                 type="text"
                 v-model="dialogAccountID"
                 class="v-card ml-1 box mdl pl-1"
+                :disabled="dialogAccount == 2 ? true : false"
               />
               <v-tooltip :text="`${dialogMessageID}`" max-width="420">
                 <template v-slot:activator="{ props }">
@@ -267,6 +268,7 @@
                 type="text"
                 v-model="dialogAccountMail"
                 class="v-card ml-1 box mdl pl-1"
+                :disabled="dialogAccount == 2 ? true : false"
               />
               <v-tooltip :text="`${dialogMessageMail}`" max-width="500">
                 <template v-slot:activator="{ props }">
@@ -1077,12 +1079,11 @@ export default {
         if (ht.panel == flexGrid.cells) {
           // 利用状況を押下し、状態に応じた職員アカウント情報ダイアログ画面を表示
           if (ht.col == _self.columnArray.length - 1) {
-            console.log(flexGrid.itemsSource[ht.row]);
             let temp = flexGrid.itemsSource[ht.row];
             _self.dialogSyokuinName = temp.syokuinName; // 職員名
             // アカウント発行 未登録の場合は0
             if (temp.accountStatus == "未登録") {
-              _self.dialogAccount = 0;
+              _self.dialogAccount = 2;
             } else {
               _self.dialogAccount = 1;
             }
@@ -1388,7 +1389,9 @@ export default {
 $height: 24px;
 #dialogAccount {
   font-size: $default_fontsize;
-
+  input[type="text"]:disabled {
+    background: $light-gray;
+  }
   label {
     &.tle {
       background-color: $view_Title_background_Blue;
