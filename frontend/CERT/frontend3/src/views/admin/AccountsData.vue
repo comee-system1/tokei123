@@ -63,15 +63,58 @@
       </wj-flex-grid>
     </v-row>
     <v-dialog width="500" v-model="dialogAccountFlag" id="dialogAdmin">
+      <!--結果-->
+      <v-card
+        v-if="dialogResultFlag"
+        :class="{
+          class_result_alert:
+            dialogType == 'edit' || dialogType == 'deleteConf',
+        }"
+      >
+        <h5>{{ dialogResult_message }}</h5>
+      </v-card>
       <!--アラート-->
       <v-card v-if="dialogAlertFlag">
         <v-card
           :class="{
             dialog_title_alert: true,
             class_edit_alert: dialogType == 'edit',
+            class_delete_alert: dialogType == 'delete',
+            class_deleteConf_alert: dialogType == 'deleteConf',
           }"
         >
           <h4>{{ dialog_title_message }}</h4>
+          <!--削除用確認アラート-->
+          <div v-if="dialogType == 'delete' || dialogType == 'deleteConf'">
+            <v-row class="alertArea" no-gutters>
+              <div v-if="dialogType == 'deleteConf'" class="text-center">
+                <p>
+                  ※ 元に戻す場合は、管理者アカウントの再登録が必要になります。
+                </p>
+              </div>
+              <div v-else class="grayBox">
+                <ul>
+                  <li>管理者名</li>
+                  <li>メールアドレス</li>
+                </ul>
+              </div>
+            </v-row>
+            <v-row class="alertArea" no-gutters>
+              <v-col
+                ><v-btn height="24" @click="deleteConfCancel()"
+                  >キャンセル</v-btn
+                ></v-col
+              >
+              <v-col
+                ><v-btn
+                  height="24"
+                  class="deleteButton"
+                  @click="deleteConfRegist()"
+                  >削除</v-btn
+                ></v-col
+              >
+            </v-row>
+          </div>
           <!--編集用確認アラート-->
           <div v-if="dialogType == 'edit'">
             <v-row class="alertArea">
@@ -91,7 +134,7 @@
             </v-row>
           </div>
           <!--編集用確認アラート-->
-          <div v-else class="alertArea mt-3">
+          <div v-if="dialogType == 'new'" class="alertArea mt-3">
             <p>管理者アカウントIDと仮パスワードをメールにて通知します。</p>
             <v-row no-gutters>
               <v-col width="7">ログイン中管理者メールアドレス</v-col>
@@ -151,7 +194,10 @@
 
           <v-row no-gutters class="mt-3">
             <v-col cols="3">
-              <v-btn class="deleteButton htmin" :disabled="deleteDisableFlag"
+              <v-btn
+                class="deleteButton htmin"
+                :disabled="deleteDisableFlag"
+                @click="dialogDelete()"
                 >削除</v-btn
               >
             </v-col>
@@ -200,11 +246,14 @@ export default {
   },
   data() {
     return {
+      flexGrid: {},
+      gridSelectedRow: 0,
       dialogAccountFlag: false,
       deleteDisableFlag: false,
       dialogAlertFlag: false,
       dialogAccountRegistFormFlag: false,
       dialogEditConfFlag: false,
+      dialogResultFlag: false,
       adminViewData: [],
       headerheight: 140,
       dialogAdminName: '',
@@ -213,8 +262,11 @@ export default {
         '登録されたメールアドレスが、管理者システム画面にログインする際のIDとなります。他の管理者で使用しているメールアドレスと重複はできません。',
       dialog_title_message: '',
       dialog_title_new_message: '管理者アカウントを発行しました。',
+      dialog_title_delete_message: `さんの管理者アカウントを削除しますか?
+        削除すると`,
       dialog_title_edit_message: '変更した内容を登録しますか？',
-      dialogType: '', // new/edit/delete
+      dialogResult_message: '',
+      dialogType: '', // new/edit/delete/deleteConf
     };
   },
   methods: {
@@ -225,6 +277,7 @@ export default {
       }
     },
     onInitialized(flexGrid) {
+      this.flexGrid = flexGrid;
       this.adminViewData = [];
       let tmp = [];
       tmp.push({
@@ -256,6 +309,7 @@ export default {
       let _self = this;
       flexGrid.hostElement.addEventListener('click', function (e) {
         var ht = flexGrid.hitTest(e);
+        _self.gridSelectedRow = ht.row;
         if (ht.panel == flexGrid.cells) {
           let temp = flexGrid.itemsSource;
           _self.openDialog('edit', temp[ht.row]);
@@ -284,6 +338,7 @@ export default {
       this.dialogType = type;
       this.dialogAccountRegistFormFlag = true; // アカウント情報新規登録フォーム
       this.dialogEditConfFlag = false;
+      this.dialogResultFlag = false;
       if (type == 'edit') {
         this.deleteDisableFlag = false; // 削除ボタン有効
       } else {
@@ -291,6 +346,41 @@ export default {
       }
       this.dialogAdminName = editdata.adminName;
       this.dialogAdminMail = editdata.mailaddress;
+    },
+    /***********************
+     * ダイアログ削除ボタン
+     */
+    dialogDelete() {
+      this.dialogType = 'delete';
+      this.dialogAccountRegistFormFlag = false;
+      this.dialogAlertFlag = true;
+      let tmp = this.flexGrid.itemsSource[this.gridSelectedRow];
+      let name = tmp.adminName;
+      this.dialog_title_message = `${name}さんの管理者アカウントを削除しますか？
+      削除すると下記の情報が失われ、管理者システムにログインできなくなります。
+      `;
+    },
+    /*************************
+     * ダイアログ削除キャンセル
+     */
+    deleteConfCancel() {
+      this.dialogType = 'edit';
+      this.dialogAccountRegistFormFlag = true;
+      this.dialogAlertFlag = false;
+    },
+    /************************
+     * ダイアログ削除確認
+     */
+    deleteConfRegist() {
+      if (this.dialogType == 'deleteConf') {
+        // すでに削除確認画面の型になっていたときは最後のアラートを表示する
+        this.dialogResultFlag = true;
+        this.dialogAlertFlag = false;
+        this.dialogResult_message = '削除完了しました。';
+      } else {
+        this.dialogType = 'deleteConf';
+        this.dialog_title_message = '本当に削除してもよろしいですか？';
+      }
     },
     /********************
      * ダイアログ登録ボタン
@@ -308,6 +398,7 @@ export default {
       this.dialogAlertFlag = true;
       this.dialog_title_message = this.dialog_title_edit_message;
     },
+
     /************************
      * ダイアログ編集キャンセル
      */
@@ -318,7 +409,9 @@ export default {
      * ダイアログ編集登録
      */
     editConfRegist() {
-      alert('aaaa');
+      this.dialogAlertFlag = false;
+      this.dialogResultFlag = true;
+      this.dialogResult_message = '登録完了しました';
     },
     /*********************
      * ダイアログ
@@ -442,6 +535,48 @@ $height: 24px;
       background-image: url('../../assets/minCheckCircle.png');
       background-repeat: no-repeat;
     }
+    &.class_deleteConf_alert,
+    &.class_delete_alert {
+      border-top: 3px solid $red;
+      h4 {
+        background: none;
+        text-align: left;
+        line-height: normal;
+        width: 95%;
+        margin: 0 auto;
+        white-space: pre-line;
+        height: auto;
+      }
+      .alertArea {
+        .grayBox {
+          padding: 10px;
+          background-color: $light-white;
+          width: 100%;
+          ul {
+            li {
+              margin-left: 20px;
+            }
+          }
+        }
+        .v-col {
+          text-align: center;
+          button {
+            width: 120px;
+          }
+        }
+      }
+    }
+    &.class_deleteConf_alert {
+      h4 {
+        text-align: right;
+        width: 280px;
+        height: 34px;
+        line-height: 34px;
+        margin: 0 auto;
+        background-image: url('../../assets/minAlert.png');
+        background-repeat: no-repeat;
+      }
+    }
     &.class_edit_alert {
       h4 {
         background: none;
@@ -459,7 +594,7 @@ $height: 24px;
     .alertArea {
       width: 95%;
       margin: 0 auto;
-
+      margin-top: 20px;
       .okButton {
         padding: 10px;
         text-align: center;
@@ -470,7 +605,23 @@ $height: 24px;
       }
     }
   }
+  .class_result_alert {
+    height: 80px;
+    line-height: 80px;
+    color: $white;
+    text-align: center;
+    background-color: $green;
+    background-image: url('../../assets/checkCircle.png');
+    background-repeat: no-repeat;
+    background-position: 20% 50%;
+    background-size: 50px 50px;
+    h5 {
+      font-weight: normal;
+      font-size: 1.2rem;
+    }
+  }
 }
+
 div#adminData {
   font-size: 12px;
   min-width: 1266px;

@@ -5,6 +5,7 @@ import {
 import AccountsData from '../views/admin/AccountsData.vue'
 import StaffData from '../views/admin/StaffData.vue'
 import AllStoreList from '../views/admin/AllStoreList.vue'
+import TemploraryPage from '../views/admin/TemploraryPage.vue'
 
 const routes = [{
     path: '/StaffData/:client?',
@@ -31,6 +32,16 @@ const routes = [{
     meta: {
       title: "管理者用アカウント管理",
       sub: "職員マスタで登録済みの職員に対して、福祉見聞録システムを使用可能にするアカウント発行や、グランドメニューに表示するボタンの設定などができます。"
+
+    },
+  },
+  {
+    path: '/temploraryPage/:client?',
+    name: 'Temp',
+    component: TemploraryPage,
+    meta: {
+      title: "temp",
+      sub: "tempstr"
 
     },
   },

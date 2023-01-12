@@ -4,7 +4,7 @@
 
     <p>token</p>
 
-    {{ keycloak.idToken }}
+    {{ keycloak }}
     <hr />
 
     <pre>
@@ -13,11 +13,12 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 
 export default {
   props: ['keycloak'],
   mounted() {
+    /*
     axios
       .get('http://localhost:3000/api/keycloak/list')
       .then(function (response) {
@@ -28,6 +29,7 @@ export default {
         console.log('api接続用サーバーに接続失敗。BACKENDの実行確認');
         console.log(error);
       });
+      */
   },
   methods: {},
 };
