@@ -230,7 +230,10 @@
                 </template>
               </v-tooltip>
             </label>
-            <select v-model="authCopySyokuinFrom">
+            <select
+              v-model="authCopySyokuinFrom"
+              @change="onSelectAuthCopySyokuinFrom()"
+            >
               <option value="" disabled selected style="display: none">
                 職員を選択
               </option>
@@ -259,6 +262,10 @@
               :alternating-row-step="0"
               :initialized="onInitializedCopy"
               :itemsSource="syokuinAuthCopyData"
+              :formatItem="onFormatItemCopy"
+              :allowResizing="false"
+              :allowDragging="false"
+              :allowSorting="false"
             >
               <wj-flex-grid-column
                 :width="40"
@@ -269,23 +276,39 @@
               <wj-flex-grid-column
                 :width="100"
                 header="コード"
-                binding="copyCode"
+                binding="syokuinCode"
                 align="center"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 width="1*"
                 header="職員名"
-                binding="copySyokuinName"
+                binding="syokuinName"
                 align="center"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 width="1*"
                 header="アカウントID"
-                binding="copyAccountID"
+                binding="accountID"
                 align="center"
               ></wj-flex-grid-column>
             </wj-flex-grid>
           </div>
+          <v-row no-gutters class="mt-3 bottombutton">
+            <v-col
+              ><v-btn height="24" @click="authCancelCopy()"
+                >キャンセル</v-btn
+              ></v-col
+            >
+            <v-col class="text-end"
+              ><v-btn
+                height="24"
+                class="doButton"
+                @click="onAuthCopy()"
+                :disabled="copyActiveFlag"
+                >実行</v-btn
+              ></v-col
+            >
+          </v-row>
         </v-card>
       </v-card>
     </v-dialog>
@@ -675,6 +698,8 @@ export default {
       authCopySyokuinFrom: '',
       syokuinSelectCopyData: [],
       syokuinAuthCopyData: [],
+      copyFlexGrid: {},
+      copyActiveFlag: true,
     };
   },
   methods: {
@@ -701,6 +726,12 @@ export default {
     },
     dialogAuthClose() {
       this.authCopyDialogFlag = false;
+    },
+    onSelectAuthCopySyokuinFrom() {
+      this.copyActiveFlag = false;
+    },
+    onAuthCopy() {
+      console.log(this.syokuinAuthCopyData);
     },
     onSyozokuGroupChange() {
       let selected = this.syozokuGroup;
@@ -842,11 +873,38 @@ export default {
       this.flexGrid.itemsSource = result;
     },
     onInitializedCopy(flexGrid) {
-      console.log(flexGrid);
+      this.copyFlexGrid = flexGrid;
       this.syokuinAuthCopyData = this.syokuinSelectCopyData;
+      let _self = this;
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        var ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          if (ht.col == 0) {
+            if (_self.syokuinAuthCopyData[ht.row].copySelected == '〇') {
+              _self.syokuinAuthCopyData[ht.row].copySelected = '';
+            } else {
+              _self.syokuinAuthCopyData[ht.row].copySelected = '〇';
+            }
+          }
+        }
+        flexGrid.refresh();
+      });
     },
     onItemsSourceChangedCopy() {},
-    onFormatItemCopy() {},
+    authCancelCopy() {
+      let tmp = this.syokuinSelectCopyData;
+      for (let i = 0; i < tmp.length; i++) {
+        tmp[i].copySelected = '';
+      }
+      this.copyFlexGrid.refresh();
+    },
+    onFormatItemCopy(flexGrid, e) {
+      if (e.panel.cellType == wjGrid.CellType.Cell) {
+        if (e.col == 2 || e.col == 3) {
+          e.cell.style.textAlign = 'left';
+        }
+      }
+    },
 
     onInitialized(flexGrid) {
       this.flexGrid = flexGrid;
@@ -1590,7 +1648,6 @@ $mwidth: 1366px;
 #authCopyDialog {
   font-size: $default_fontsize;
   padding: 10px;
-
   .v-card-title {
     &.dialog_title {
       background-color: $deepgreen;
@@ -1627,6 +1684,18 @@ $mwidth: 1366px;
     -webkit-appearance: auto;
     padding: 4px;
     border-radius: 5px;
+  }
+  .bottombutton {
+    button {
+      width: 120px;
+      &.doButton {
+        color: $white;
+        background-color: $view_Title_font_color_Blue;
+      }
+    }
+  }
+  #syokuinCopyGrid {
+    max-height: 260px;
   }
 }
 #dialogAccount {
