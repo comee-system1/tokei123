@@ -1,5 +1,9 @@
 <template>
   <div class="pa-1" id="accountsData">
+    <p>KEYCLOCK=>{{ keycloak }}</p>
+    <p>userName=>{{ userName }}</p>
+    <p>color=>{{ color }}</p>
+    <p>idToken=>{{ keycloak.idToken }}</p>
     <v-row no-gutters class="d-flex pt-1 pb-1" id="subTitle">
       <h2>{{ $route.meta.title }}</h2>
       <label>{{ $route.meta.sub }}</label>
@@ -477,7 +481,7 @@ import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 import sysConst from '@/utiles/const';
 
 export default {
-  props: ['keycloak'],
+  props: ['keycloak', 'userName', 'color'],
   components: {
     WjFlexGrid,
     WjFlexGridColumn,

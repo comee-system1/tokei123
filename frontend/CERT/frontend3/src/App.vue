@@ -4,8 +4,8 @@
       <HeaderAndNav></HeaderAndNav>
       <router-view
         :key="$route.fullPath"
-        :fkey="$route.fullPath"
-        :keycloak="keycloakdata"
+        :keycloak="keycloak"
+        :color="color"
         userName="propsTaro"
       ></router-view>
     </v-main>
@@ -13,10 +13,17 @@
 </template>
 
 <script>
-import Keycloak from 'keycloak-js';
+//import Keycloak from 'keycloak-js';
 
 import HeaderAndNav from './components/HeaderAndNav';
 import * as wjcCore from '@grapecity/wijmo';
+
+import '@grapecity/wijmo.styles/wijmo.css';
+import '@grapecity/wijmo.vue2.grid';
+import '@grapecity/wijmo.vue2.grid.grouppanel';
+import '@grapecity/wijmo.vue2.grid.filter';
+import '@grapecity/wijmo.vue2.grid.search';
+import '@grapecity/wijmo.vue2.core';
 
 // wjcCore.setLicenseKey(
 //   '692771655227224#B0hNLbhZmOiI7ckJye0ICbuFkI1pjIEJCLi4TPnNDbxQWaLJkU5tkZ7VGUnRnUG3GcDJXUKZjVrc6azRDb5EmZIREeFRHNroUO8hHSzV6Tjd5UylnVPFXbJVUe7NVeZNWc7YXUElnNRd7cIFmaqtiaalGaxMDaBt4TPZ5LWJ4dYZGOYN5U6sCcr5WM7UGc9IVezkUTmN4QOR5TvIkaHp7Sy86Uq3kSEh4K03iahl4ZX3GV9ZVb9kzbXpXQkt6KrEFStdWOoNnN72Cbwp6M486VYZjd5Y6Zx2mYQpFNShzbHNzcahWbrdVaxMnUaZkRxlmerIEexVXVLpmQ53EMkN4U8YUSl3EOQpnURJVVxZTa9Vna5xUSHl5djplVrNFejtCVDVnbFJETwQ6LUtyVwEVbQJUN4BXSOhGZsJ5QhRXTVh6duZnThp4ZXF4a84mVqhEOJpXaVpVS4YTOMFmclBnNOdGZ5IXRuh5cTlUOTdkWqFmYiojITJCLigjMzQUQERkI0ICSiwCNwMTM6UzMyYTM0IicfJye35XX3JSSwIjUiojIDJCLi86bpNnblRHeFBCI4VWZoNFelxmRg2Wbql6ViojIOJyes4nI5kkTRJiOiMkIsIibvl6cuVGd8VEIgIXZ7VWaWRncvBXZSBybtpWaXJiOi8kI1xSfis4N8gkI0IyQiwiIu3Waz9WZ4hXRgAydvJVa4xWdNBybtpWaXJiOi8kI1xSfiQjR6QkI0IyQiwiIu3Waz9WZ4hXRgACUBx4TgAybtpWaXJiOi8kI1xSfiMzQwIkI0IyQiwiIlJ7bDBybtpWaXJiOi8kI1xSfiUFO7EkI0IyQiwiIu3Waz9WZ4hXRgACdyFGaDxWYpNmbh9WaGBybtpWaXJiOi8kI1tlOiQmcQJCLiczMxEjMwASOxETMxIDMyIiOiQncDJCLiEjLw8CMucjMxIiOiMXbEJCLi8LpnrJvk/IvlrKomPqgjb8gjfrgjf9gjz1gjz0gjDrgjLiOiEmTDJCLiQjMycjMyUTN6EzN7ITO6IiOiQWSiwSfdtlOicGbmJCLiMjdxIDMyIiOiIXZcJ5L'
@@ -28,16 +35,18 @@ wjcCore.setLicenseKey(
 
 export default {
   name: 'App',
-  props: [],
+  props: ['keycloak', 'color'],
   components: {
     HeaderAndNav,
   },
   data() {
-    return {
-      keycloakdata: [],
-    };
+    return {};
   },
-  created() {
+  mounted() {
+    console.log('KEYCLOAK');
+    console.log(this.keycloak);
+    console.log(this.color);
+    /*
     let str = location.href.match(/\/([^/]+)\/?$/)[1];
     if (str.match(/#/)) {
       str = str.substring(0, str.indexOf('#'));
@@ -50,28 +59,26 @@ export default {
       CheckLoginiframe: false,
     };
     const keycloak = new Keycloak(initOptions);
-    let _self = this;
+    this.keycloak = keycloak;
     keycloak
       .init({
         onLoad: initOptions.onLoad,
         checkLoginIframe: initOptions.CheckLoginiframe,
       })
       .then((auth) => {
+        console.log(auth);
         if (!auth) {
           window.location.reload();
         }
-        //console.log(keycloak.refreshToken());
-        _self.keycloakdata = keycloak;
       })
       .catch(() => {
         //  Vue.$log.error("Authenticated Failed");
       });
 
     //Token Refresh
-    /*
     setInterval(() => {
       keycloak
-        .updateToken(70)
+        .updateToken(60)
         .then((refreshed) => {
           if (refreshed) {
             //createApp.$log.info('Token refreshed' + refreshed);
@@ -84,8 +91,8 @@ export default {
           //   Vue.$log.error('Failed to refresh token');
           console.log('Failed to refresh token');
         });
-    }, 6000);
-*/
+    }, 10000);
+    */
   },
   methods: {},
 };
