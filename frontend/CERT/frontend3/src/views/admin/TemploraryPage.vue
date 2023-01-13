@@ -1,23 +1,34 @@
 <template>
   <div>
     <p>secret</p>
-
-    <p>token</p>
-
-    {{ keycloak }}
-    <hr />
-
     <pre>
-    {{ keycloak }}
+    {{ aaa }}
+    {{ userName }}
     </pre>
   </div>
 </template>
 <script>
 //import axios from 'axios';
-
+import { reactive, effect } from 'vue';
 export default {
-  props: ['keycloak'],
+  props: ['keycloak', 'userName'],
+  data() {
+    return {
+      aaa: '',
+    };
+  },
   mounted() {
+    console.log('sss');
+    console.log(this.keycloak);
+    //this.aaa = this.keycloak;
+
+    const reactiveObj = reactive(this.keycloak);
+
+    effect(() => {
+      //reactiveObj.b = reactiveObj.a * 10;
+    });
+    console.log(reactiveObj);
+    this.aaa = reactiveObj;
     /*
     axios
       .get('http://localhost:3000/api/keycloak/list')

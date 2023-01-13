@@ -211,7 +211,13 @@
         <v-btn color="blue" height="24">権限登録</v-btn>
       </div>
     </v-row>
-    <v-dialog width="500" v-model="authCopyDialogFlag" id="authCopyDialog">
+    <v-dialog
+      width="500"
+      v-model="authCopyDialogFlag"
+      id="authCopyDialog"
+      persistent
+      no-click-animation
+    >
       <v-card>
         <v-card-title class="dialog_title">
           権限コピー
@@ -219,6 +225,35 @@
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>
+        <v-card
+          id="authCopyArea"
+          v-if="authCopyAreaConfFlag || authCopyAreaCompleteFlag"
+        >
+          <div
+            class="authCopyArea authCopyArea_Complete"
+            v-if="authCopyAreaCompleteFlag"
+            @click="onCopyAreaComplete()"
+          >
+            <h5>コピー完了しました。</h5>
+          </div>
+          <div class="authCopyArea" v-if="authCopyAreaConfFlag">
+            <p>
+              既に権限が設定されている職員が選択されている場合、内容が上書きされますが実行しますか？
+            </p>
+            <v-row class="mt-3">
+              <v-col class="text-right"
+                ><v-btn height="24" @click="onAuthCopyConfCancel()"
+                  >キャンセル</v-btn
+                ></v-col
+              >
+              <v-col class="text-left"
+                ><v-btn height="24" class="doButton" @click="onAuthCopy()"
+                  >実行</v-btn
+                ></v-col
+              >
+            </v-row>
+          </div>
+        </v-card>
         <v-card class="pa-2" elevation="0">
           <p>コピー元職員から選択した職員に権限をコピーします。</p>
           <div class="mt-3 pb-2 borderbottom">
@@ -267,6 +302,9 @@
               :allowDragging="false"
               :allowSorting="false"
             >
+              <wj-flex-grid-filter
+                :initialized="filterInitializedCopy"
+              ></wj-flex-grid-filter>
               <wj-flex-grid-column
                 :width="40"
                 header="選"
@@ -303,7 +341,7 @@
               ><v-btn
                 height="24"
                 class="doButton"
-                @click="onAuthCopy()"
+                @click="onAuthCopyConf()"
                 :disabled="copyActiveFlag"
                 >実行</v-btn
               ></v-col
@@ -312,7 +350,13 @@
         </v-card>
       </v-card>
     </v-dialog>
-    <v-dialog width="500" v-model="dialogAccountFlag" id="dialogAccount">
+    <v-dialog
+      width="500"
+      v-model="dialogAccountFlag"
+      id="dialogAccount"
+      persistent
+      no-click-animation
+    >
       <v-card>
         <v-card-title class="dialog_title">
           職員アカウント情報
@@ -433,7 +477,7 @@ import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 import sysConst from '@/utiles/const';
 
 export default {
-  props: [],
+  props: ['keycloak'],
   components: {
     WjFlexGrid,
     WjFlexGridColumn,
@@ -441,6 +485,8 @@ export default {
     AlphabetButton,
   },
   mounted() {
+    console.log(this.keycloak);
+
     this.calculateWindowHeight();
     window.addEventListener('resize', this.calculateWindowHeight);
     this.filtered.showFilterIcons = false;
@@ -700,6 +746,8 @@ export default {
       syokuinAuthCopyData: [],
       copyFlexGrid: {},
       copyActiveFlag: true,
+      authCopyAreaConfFlag: false, // 権限コピーの確認
+      authCopyAreaCompleteFlag: false, // 権限コピーの実行終了
     };
   },
   methods: {
@@ -714,6 +762,8 @@ export default {
      */
     authCopyDialog() {
       this.authCopyDialogFlag = true;
+      this.authCopyAreaConfFlag = false;
+      this.authCopyAreaCompleteFlag = false;
       let tmp = this.syokuinViewData;
       const group = tmp.filter((item, index, self) => {
         const nameList = self.map((item) => item['syokuinCode']);
@@ -727,11 +777,76 @@ export default {
     dialogAuthClose() {
       this.authCopyDialogFlag = false;
     },
+    /******************
+     * コピー元職員選択
+     */
     onSelectAuthCopySyokuinFrom() {
+      // コピー元職員をコピー先職員に表示しないようにする
+      let tmp = [];
+      let data = this.syokuinSelectCopyData;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].syokuinCode != this.authCopySyokuinFrom) {
+          tmp.push(data[i]);
+        }
+      }
+      this.syokuinAuthCopyData = [];
+      this.syokuinAuthCopyData = tmp.slice();
+      this.copyFlexGrid.refresh();
       this.copyActiveFlag = false;
     },
+    /***************************
+     * コピー実行確認
+     */
+    onAuthCopyConf() {
+      this.authCopyAreaConfFlag = true;
+    },
+    onAuthCopyConfCancel() {
+      this.authCopyAreaConfFlag = false;
+    },
+    /*************
+     * コピー完了後の実行
+     */
+    onCopyAreaComplete() {
+      // 選択状態を解除
+      this.authCancelCopy();
+      this.authCopySyokuinFrom = '';
+      this.authCopyDialogFlag = false;
+      this.authCopyAreaConfFlag = false;
+    },
+    /***************************
+     * コピー実行
+     */
     onAuthCopy() {
-      console.log(this.syokuinAuthCopyData);
+      // コピー元のデータ
+      let _self = this;
+      let fromSelected = this.syokuinSelectCopyData.find(function (value) {
+        return value.syokuinCode == _self.authCopySyokuinFrom ? value : '';
+      });
+      // 選択されたコピー先職員のデータ
+      let tmp = this.syokuinAuthCopyData.slice();
+      for (let i = 0; i < tmp.length; i++) {
+        if (tmp[i].copySelected) {
+          // 職員一覧にコピーデータを代入
+          this.syokuinViewData.filter(function (value, k) {
+            if (value.syokuinCode == tmp[i].syokuinCode) {
+              _self.syokuinViewData[k].groundAuth = fromSelected.groundAuth;
+              return value;
+            }
+          });
+        }
+      }
+      this.authCopyAreaConfFlag = false;
+      this.authCopyAreaCompleteFlag = true;
+    },
+    /*********************
+     * 権限コピーのフィルタリングアイコン
+     */
+    filterInitializedCopy(filter) {
+      let tmp = [];
+      tmp.push('syokuinCode');
+      tmp.push('syokuinName');
+      tmp.push('accountID');
+      filter.filterColumns = tmp;
     },
     onSyozokuGroupChange() {
       let selected = this.syozokuGroup;
@@ -1645,6 +1760,10 @@ $mwidth: 1366px;
   right: 10px;
   top: 10px;
 }
+%doButton {
+  color: $white;
+  background-color: $view_Title_font_color_Blue;
+}
 #authCopyDialog {
   font-size: $default_fontsize;
   padding: 10px;
@@ -1655,6 +1774,50 @@ $mwidth: 1366px;
       position: relative;
       .closeButton {
         @extend %commonCloseButton;
+      }
+    }
+  }
+  #authCopyArea {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    div {
+      &.authCopyArea {
+        position: absolute;
+        width: 98%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        z-index: 11;
+        padding: 5%;
+        border-top: 4px solid $view_Title_background_Main;
+        background-color: $white;
+        border-radius: 5px;
+        button {
+          width: 120px;
+          margin: 0 auto;
+          &.doButton {
+            @extend %doButton;
+          }
+        }
+        &_Complete {
+          border: none;
+          background-color: $green;
+          text-align: center;
+          background-image: url('../../assets/checkCircle.png');
+          background-position: 20% 50%;
+          h5 {
+            color: $white;
+            font-weight: normal;
+            font-size: 1.25rem;
+          }
+        }
       }
     }
   }
@@ -1689,8 +1852,7 @@ $mwidth: 1366px;
     button {
       width: 120px;
       &.doButton {
-        color: $white;
-        background-color: $view_Title_font_color_Blue;
+        @extend %doButton;
       }
     }
   }
