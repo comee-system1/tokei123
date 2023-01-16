@@ -1,5 +1,6 @@
 import {
-    createApp, h
+    createApp,
+    h
 } from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
@@ -12,7 +13,8 @@ import {
 
 import router from './router'
 import keycloak from 'keycloak-js';
-
+import Vue3Tour from 'vue3-tour'
+import 'vue3-tour/dist/vue3-tour.css'
 
 loadFonts();
 
@@ -39,15 +41,19 @@ kc
         if (!auth) {
             window.location.reload();
         }
-        console.log(kc);
-        console.log(kc.idToken);
+        // console.log(kc);
+        // console.log(kc.idToken);
 
         createApp({
-            render: () => h(App, { color: 'red', keycloak: kc })
-        })
+                render: () => h(App, {
+                    color: 'red',
+                    keycloak: kc
+                })
+            })
             .use(router)
             .use(vuetify)
             .use(commons)
+            .use(Vue3Tour)
             .mount('#app');
 
 
@@ -55,12 +61,3 @@ kc
     .catch(() => {
         //  Vue.$log.error("Authenticated Failed");
     });
-
-
-/*
-createApp(App)
-    .use(router)
-    .use(vuetify)
-    .use(commons)
-*/
-

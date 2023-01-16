@@ -37,13 +37,16 @@ export default {
     const searchURL = new URL(window.location);
     let query = searchURL.pathname.split('/');
     this.queryParam = query[2];
+    this.loginName = this.keycloak.idTokenParsed.name;
   },
+  props: ['keycloak'],
+
   data() {
     return {
       queryParam: '',
       drawer: false,
       jigyoName: '社会福祉法人東経会',
-      loginName: 'いるか たろう',
+      loginName: '',
 
       listItems: [
         {

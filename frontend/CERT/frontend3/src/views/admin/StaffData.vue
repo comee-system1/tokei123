@@ -1,9 +1,5 @@
 <template>
   <div class="pa-1" id="accountsData">
-    <p>KEYCLOCK=>{{ keycloak }}</p>
-    <p>userName=>{{ userName }}</p>
-    <p>color=>{{ color }}</p>
-    <p>idToken=>{{ keycloak.idToken }}</p>
     <v-row no-gutters class="d-flex pt-1 pb-1" id="subTitle">
       <h2>{{ $route.meta.title }}</h2>
       <label>{{ $route.meta.sub }}</label>
@@ -361,7 +357,38 @@
       persistent
       no-click-animation
     >
-      <v-card>
+      <v-card
+        class="class_result_alert"
+        v-if="dialogAccountRegistFinishFlag"
+        id="dialogAccountRegistFinish"
+      >
+        <h5 @click="dialogAccountRegistFinish()">登録完了しました。</h5>
+      </v-card>
+      <v-card
+        v-if="dialogAccountRegistConfFlag"
+        id="dialogAccountRegistConfFlag"
+      >
+        <p>変更した内容を登録しますか？</p>
+        <v-row no-gutters class="mt-3">
+          <v-col
+            ><v-btn
+              height="24"
+              class="cancelButton htmin"
+              @click="dialogRegistCancel()"
+              >キャンセル</v-btn
+            ></v-col
+          >
+          <v-col
+            ><v-btn
+              height="24"
+              class="registButton htmin"
+              @click="dialogRegist()"
+              >登録</v-btn
+            ></v-col
+          >
+        </v-row>
+      </v-card>
+      <v-card v-if="dialogAccountRegistFlag">
         <v-card-title class="dialog_title">
           職員アカウント情報
           <v-btn class="closeButton pa-0" @click="dialogAccountClose()">
@@ -460,7 +487,9 @@
             </v-col>
             <v-col class="text-end">
               <v-btn class="passwordButton htmin">パスワード再発行</v-btn>
-              <v-btn class="ml-2 registButton htmin" @click="disalogRegist()"
+              <v-btn
+                class="ml-2 registButton htmin"
+                @click="dialogAccountRegistConf()"
                 >登録</v-btn
               >
             </v-col>
@@ -489,7 +518,7 @@ export default {
     AlphabetButton,
   },
   mounted() {
-    console.log(this.keycloak);
+    console.log(this.keycloak.idTokenParsed.name);
 
     this.calculateWindowHeight();
     window.addEventListener('resize', this.calculateWindowHeight);
@@ -508,6 +537,9 @@ export default {
     return {
       query: this.$route.params.client,
       dialogAccountFlag: false,
+      dialogAccountRegistFlag: false,
+      dialogAccountRegistConfFlag: false,
+      dialogAccountRegistFinishFlag: false,
       syokuinViewDataFlag: false,
       flexGrid: [],
       signExplainFlag: false,
@@ -1431,6 +1463,9 @@ export default {
             }
 
             _self.dialogAccountFlag = true;
+            _self.dialogAccountRegistFlag = true; // 入力フォーム
+            _self.dialogAccountRegistConfFlag = false; // 入力フォーム確認
+            _self.dialogAccountRegistFinishFlag = false; // 入力フォーム最後
           }
           // 権限のチェック
           if (ht.col > _self.columnArray.length - 1) {
@@ -1451,11 +1486,30 @@ export default {
         }
       });
     },
-
     /************************
      * ダイアログ登録ボタン
      */
-    disalogRegist() {
+    dialogAccountRegistConf() {
+      this.dialogAccountRegistFlag = false;
+      this.dialogAccountRegistConfFlag = true;
+      this.dialogAccountRegistFinishFlag = false;
+    },
+    dialogRegistCancel() {
+      this.dialogAccountRegistFlag = true;
+      this.dialogAccountRegistConfFlag = false;
+      this.dialogAccountRegistFinishFlag = false;
+    },
+    dialogAccountRegistFinish() {
+      this.flexGrid.refresh();
+      this.dialogAccountFlag = false;
+    },
+    /************************
+     * ダイアログ登録実行
+     */
+    dialogRegist() {
+      this.dialogAccountRegistFlag = false;
+      this.dialogAccountRegistConfFlag = false;
+      this.dialogAccountRegistFinishFlag = true;
       let viewData = this.syokuinViewData;
       // コードが同じ人のデータを取得
       let syokuinCode =
@@ -1486,8 +1540,6 @@ export default {
         }
       });
       this.syokuinViewData = viewData;
-      this.flexGrid.refresh();
-      this.dialogAccountFlag = false;
     },
 
     dialogAccountClose() {
@@ -1768,6 +1820,20 @@ $mwidth: 1366px;
   color: $white;
   background-color: $view_Title_font_color_Blue;
 }
+
+%checkCircleImage {
+  border: none;
+  background-color: $green;
+  text-align: center;
+  background-image: url('../../assets/checkCircle.png');
+  background-position: 20% 50%;
+}
+%h5 {
+  color: $white;
+  font-weight: normal;
+  font-size: 1.25rem;
+}
+
 #authCopyDialog {
   font-size: $default_fontsize;
   padding: 10px;
@@ -1811,15 +1877,9 @@ $mwidth: 1366px;
           }
         }
         &_Complete {
-          border: none;
-          background-color: $green;
-          text-align: center;
-          background-image: url('../../assets/checkCircle.png');
-          background-position: 20% 50%;
+          @extend %checkCircleImage;
           h5 {
-            color: $white;
-            font-weight: normal;
-            font-size: 1.25rem;
+            @extend %h5;
           }
         }
       }
@@ -1963,6 +2023,21 @@ $mwidth: 1366px;
   .registButton {
     background-color: $view_Title_background_Main;
     color: $white;
+  }
+
+  #dialogAccountRegistConfFlag {
+    border-top: 3px solid $green;
+    padding: 20px 10px;
+    text-align: center;
+  }
+  #dialogAccountRegistFinish {
+    @extend %checkCircleImage;
+    background-repeat: no-repeat;
+    height: 80px;
+    h5 {
+      @extend %h5;
+      line-height: 80px;
+    }
   }
 }
 div#accountsData {

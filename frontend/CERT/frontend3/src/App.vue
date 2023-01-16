@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <HeaderAndNav></HeaderAndNav>
+      <HeaderAndNav :keycloak="keycloak"></HeaderAndNav>
       <router-view
         :key="$route.fullPath"
         :keycloak="keycloak"
@@ -42,58 +42,7 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-    console.log('KEYCLOAK');
-    console.log(this.keycloak);
-    console.log(this.color);
-    /*
-    let str = location.href.match(/\/([^/]+)\/?$/)[1];
-    if (str.match(/#/)) {
-      str = str.substring(0, str.indexOf('#'));
-    }
-    let initOptions = {
-      url: 'http://localhost:8884/',
-      realm: str,
-      clientId: 'account',
-      onLoad: 'login-required',
-      CheckLoginiframe: false,
-    };
-    const keycloak = new Keycloak(initOptions);
-    this.keycloak = keycloak;
-    keycloak
-      .init({
-        onLoad: initOptions.onLoad,
-        checkLoginIframe: initOptions.CheckLoginiframe,
-      })
-      .then((auth) => {
-        console.log(auth);
-        if (!auth) {
-          window.location.reload();
-        }
-      })
-      .catch(() => {
-        //  Vue.$log.error("Authenticated Failed");
-      });
-
-    //Token Refresh
-    setInterval(() => {
-      keycloak
-        .updateToken(60)
-        .then((refreshed) => {
-          if (refreshed) {
-            //createApp.$log.info('Token refreshed' + refreshed);
-          } else {
-            //createApp.$log.info('Token not refreshed, valid for ' + Math.round(keycloak.tokenParsed.exp + keycloak.timeSkew - new Date().getTime() / 1000) + ' seconds');
-          }
-          // keycloak.clearToken()
-        })
-        .catch(() => {
-          //   Vue.$log.error('Failed to refresh token');
-          console.log('Failed to refresh token');
-        });
-    }, 10000);
-    */
-  },
+  mounted() {},
   methods: {},
 };
 </script>
