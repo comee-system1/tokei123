@@ -358,37 +358,126 @@
       no-click-animation
     >
       <v-card
-        class="class_result_alert"
-        v-if="dialogAccountRegistFinishFlag"
-        id="dialogAccountRegistFinish"
+        v-if="dialogAccountPasswordOpenType == 2"
+        class="dialogAccountPasswordOpen"
       >
-        <h5 @click="dialogAccountRegistFinish()">登録完了しました。</h5>
+        <h4>仮パスワードを発行しました。</h4>
+        <div class="mt-3">
+          <p>
+            アカウントIDと仮パスワードを管理者にメールにて通知します。<br />
+            管理者メールアドレス:
+          </p>
+          <p class="min">
+            ※職員のメールアドレスが設定されている場合、職員にもメールにて通知します。
+          </p>
+          <div class="mt-3 text-center">
+            <v-btn @click="dialogAccountFlag = false">OK</v-btn>
+          </div>
+        </div>
       </v-card>
       <v-card
-        v-if="dialogAccountRegistConfFlag"
-        id="dialogAccountRegistConfFlag"
+        class="class_result_alert"
+        v-else-if="
+          dialogAccountRegistOpenType == 3 || dialogAccountDeleteOpenType == 3
+        "
+        id="dialogAccountRegistFinish"
+        @click="dialogAccountRegistFinish()"
       >
-        <p>変更した内容を登録しますか？</p>
+        <h5 v-if="dialogAccountRegistOpenType == 3">登録完了しました。</h5>
+        <h5 v-if="dialogAccountDeleteOpenType == 3">削除完了しました。</h5>
+      </v-card>
+      <v-card
+        v-else-if="
+          dialogAccountRegistOpenType == 2 ||
+          dialogAccountDeleteOpenType == 1 ||
+          dialogAccountDeleteOpenType == 2 ||
+          dialogAccountPasswordOpenType == 1
+        "
+        id="dialogAccountRegistConf"
+        :class="{
+          red:
+            dialogAccountDeleteOpenType == 1 ||
+            dialogAccountDeleteOpenType == 2,
+        }"
+      >
+        <div v-if="dialogAccountPasswordOpenType == 1">
+          <p>パスワードを再発行しますか？</p>
+          <p>
+            ※仮パスワードがメールにて通知されます。<br />
+            再発行機のログイン時にパスワードを変更してください。
+          </p>
+        </div>
+
+        <p v-if="dialogAccountRegistOpenType == 2">
+          変更した内容を登録しますか？
+        </p>
+        <div v-if="dialogAccountDeleteOpenType == 1">
+          <p>
+            {{ dialogSyokuinName }}さんの職員アカウントIDを削除しますか？
+            <br />
+            削除すると下記の情報が失われ、システムにログインできなくなります。
+          </p>
+          <div class="grayBox mt-3">
+            <ul>
+              <li>職員アカウントID</li>
+              <li>パスワード</li>
+              <li>メールアドレス</li>
+              <li>グランドメニュー権限情報</li>
+            </ul>
+          </div>
+        </div>
+        <div v-else-if="dialogAccountDeleteOpenType == 2">
+          <h4>ほんとに削除してもよろしいですか？</h4>
+          <p class="mt-3">
+            ※元に戻す場合は、管理者アカウントの再登録が必要になります。
+          </p>
+        </div>
         <v-row no-gutters class="mt-3">
           <v-col
             ><v-btn
               height="24"
               class="cancelButton htmin"
-              @click="dialogRegistCancel()"
+              @click="
+                dialogAccountRegistOpenType = 1;
+                dialogAccountDeleteOpenType = 0;
+                dialogAccountPasswordOpenType = 0;
+              "
               >キャンセル</v-btn
             ></v-col
           >
-          <v-col
-            ><v-btn
+          <v-col>
+            <v-btn
+              v-if="dialogAccountPasswordOpenType == 1"
+              height="24"
+              class="registButton htmin"
+              @click="dialogPasswordRest()"
+              >登録</v-btn
+            >
+            <v-btn
+              v-else-if="dialogAccountRegistOpenType == 2"
               height="24"
               class="registButton htmin"
               @click="dialogRegist()"
               >登録</v-btn
-            ></v-col
-          >
+            >
+            <v-btn
+              v-else-if="dialogAccountDeleteOpenType == 1"
+              height="24"
+              class="deleteButton htmin"
+              @click="dialogAccountDeleteOpenType = 2"
+              >削除</v-btn
+            >
+            <v-btn
+              v-else-if="dialogAccountDeleteOpenType == 2"
+              height="24"
+              class="deleteButton htmin"
+              @click="dialogDelete()"
+              >削除</v-btn
+            >
+          </v-col>
         </v-row>
       </v-card>
-      <v-card v-if="dialogAccountRegistFlag">
+      <v-card v-else-if="dialogAccountRegistOpenType == 1">
         <v-card-title class="dialog_title">
           職員アカウント情報
           <v-btn class="closeButton pa-0" @click="dialogAccountClose()">
@@ -483,13 +572,19 @@
           </v-row>
           <v-row no-gutters class="mt-3">
             <v-col cols="3">
-              <v-btn class="deleteButton htmin">削除</v-btn>
+              <v-btn
+                class="deleteButton htmin"
+                @click="dialogAccountDeleteOpenType = 1"
+                >削除</v-btn
+              >
             </v-col>
             <v-col class="text-end">
-              <v-btn class="passwordButton htmin">パスワード再発行</v-btn>
+              <v-btn class="passwordButton htmin" @click="passwordReset()"
+                >パスワード再発行</v-btn
+              >
               <v-btn
                 class="ml-2 registButton htmin"
-                @click="dialogAccountRegistConf()"
+                @click="dialogAccountRegistOpenType = 2"
                 >登録</v-btn
               >
             </v-col>
@@ -537,9 +632,10 @@ export default {
     return {
       query: this.$route.params.client,
       dialogAccountFlag: false,
-      dialogAccountRegistFlag: false,
-      dialogAccountRegistConfFlag: false,
-      dialogAccountRegistFinishFlag: false,
+      dialogAccountRegistOpenType: 0, //1:登録フォーム, 2:登録確認, 3:登録完了
+      dialogAccountDeleteOpenType: 0, //1:削除フォーム, 2:削除確認, 3:削除完了
+      dialogAccountPasswordOpenType: 0, //1:確認フォーム, 2:完了
+
       syokuinViewDataFlag: false,
       flexGrid: [],
       signExplainFlag: false,
@@ -1463,9 +1559,9 @@ export default {
             }
 
             _self.dialogAccountFlag = true;
-            _self.dialogAccountRegistFlag = true; // 入力フォーム
-            _self.dialogAccountRegistConfFlag = false; // 入力フォーム確認
-            _self.dialogAccountRegistFinishFlag = false; // 入力フォーム最後
+            _self.dialogAccountRegistOpenType = 1;
+            _self.dialogAccountDeleteOpenType = 0;
+            _self.dialogAccountPasswordOpenType = 0;
           }
           // 権限のチェック
           if (ht.col > _self.columnArray.length - 1) {
@@ -1479,37 +1575,40 @@ export default {
             // 同じsyokuinCodeのデータを更新
             let syokuinCode = _self.syokuinViewData[ht.row].syokuinCode;
             _self.editSyokuiCodeColumData(syokuinCode, column, tempIcon);
-            // flexGrid.setCellData(tempIcon, ht.row, ht.col);
             flexGrid.refresh();
             _self.activateCancel = false; // キャンセルボタン有効
           }
         }
       });
     },
-    /************************
-     * ダイアログ登録ボタン
-     */
-    dialogAccountRegistConf() {
-      this.dialogAccountRegistFlag = false;
-      this.dialogAccountRegistConfFlag = true;
-      this.dialogAccountRegistFinishFlag = false;
-    },
-    dialogRegistCancel() {
-      this.dialogAccountRegistFlag = true;
-      this.dialogAccountRegistConfFlag = false;
-      this.dialogAccountRegistFinishFlag = false;
-    },
+
     dialogAccountRegistFinish() {
       this.flexGrid.refresh();
       this.dialogAccountFlag = false;
+    },
+    /******************
+     * 削除実行
+     */
+    dialogDelete() {
+      let viewData = this.syokuinViewData;
+      // コードが同じ人のデータを取得
+      let syokuinCode =
+        this.flexGrid.itemsSource[this.gridSelectedRow].syokuinCode;
+      let tmp = [];
+      viewData.filter(function (value) {
+        // 選択したコード以外のデータを取得
+        if (syokuinCode !== value.syokuinCode) {
+          tmp.push(value);
+        }
+      });
+      this.syokuinViewData = tmp;
+      this.dialogAccountDeleteOpenType = 3;
     },
     /************************
      * ダイアログ登録実行
      */
     dialogRegist() {
-      this.dialogAccountRegistFlag = false;
-      this.dialogAccountRegistConfFlag = false;
-      this.dialogAccountRegistFinishFlag = true;
+      this.dialogAccountRegistOpenType = 3;
       let viewData = this.syokuinViewData;
       // コードが同じ人のデータを取得
       let syokuinCode =
@@ -1544,6 +1643,19 @@ export default {
 
     dialogAccountClose() {
       this.dialogAccountFlag = false;
+    },
+    /**********************
+     * パスワード再発行
+     */
+    passwordReset() {
+      this.dialogAccountFlag = true;
+      this.dialogAccountPasswordOpenType = 1;
+    },
+    /**********************
+     * パスワード再発行実行
+     */
+    dialogPasswordRest() {
+      this.dialogAccountPasswordOpenType = 2;
     },
     /**************************
      * dialogで表示している利用状態の変更
@@ -1930,6 +2042,28 @@ $mwidth: 1366px;
 }
 #dialogAccount {
   font-size: $default_fontsize;
+  .dialogAccountPasswordOpen {
+    padding: 20px;
+    h4 {
+      text-align: center;
+      width: 280px;
+      height: 34px;
+      line-height: 34px;
+      margin: 0 auto;
+      display: block;
+      font-weight: normal;
+      background-image: url('../../assets/minCheckCircle.png');
+      background-repeat: no-repeat;
+    }
+    .min {
+      font-size: 0.85em;
+    }
+    button {
+      width: 200px;
+      background-color: $gray;
+      color: $white;
+    }
+  }
   input[type='text']:disabled {
     background: $light-gray;
   }
@@ -2029,10 +2163,33 @@ $mwidth: 1366px;
     color: $white;
   }
 
-  #dialogAccountRegistConfFlag {
+  #dialogAccountRegistConf {
     border-top: 3px solid $green;
     padding: 20px 10px;
     text-align: center;
+    &.red {
+      border-top: 3px solid $red;
+    }
+    h4 {
+      text-align: right;
+      width: 280px;
+      height: 34px;
+      line-height: 34px;
+      margin: 0 auto;
+      background-image: url('../../assets/minAlert.png');
+      background-repeat: no-repeat;
+    }
+    .grayBox {
+      padding: 10px;
+      background-color: $light-white;
+      width: 100%;
+      ul {
+        li {
+          margin-left: 20px;
+          text-align: left;
+        }
+      }
+    }
   }
   #dialogAccountRegistFinish {
     @extend %checkCircleImage;
