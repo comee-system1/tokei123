@@ -1877,7 +1877,11 @@ $mwidth: 1366px;
           }
         }
         &_Complete {
-          @extend %checkCircleImage;
+          border: none;
+          background-color: $green;
+          text-align: center;
+          background-image: url('../../assets/checkCircle.png');
+          background-position: 20% 50%;
           h5 {
             @extend %h5;
           }
