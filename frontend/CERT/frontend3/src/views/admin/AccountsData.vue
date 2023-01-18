@@ -65,20 +65,27 @@
     <v-dialog width="500" v-model="dialogAccountFlag" id="dialogAdmin">
       <!--結果-->
       <v-card
-        v-if="dialogResultFlag"
+        v-if="dialogType == 'deleteFin' || dialogType == 'editFin'"
         :class="{
           class_result_alert:
-            dialogType == 'edit' || dialogType == 'deleteConf',
+            dialogType == 'editFin' || dialogType == 'deleteFin',
         }"
       >
-        <h5>{{ dialogResult_message }}</h5>
+        <h5 @click="dialogAccountFlag = false">{{ dialogResult_message }}</h5>
       </v-card>
       <!--アラート-->
-      <v-card v-if="dialogAlertFlag">
+      <v-card
+        v-if="
+          dialogType == 'newResult' ||
+          dialogType == 'editConf' ||
+          dialogType == 'delete' ||
+          dialogType == 'deleteConf'
+        "
+      >
         <v-card
           :class="{
             dialog_title_alert: true,
-            class_edit_alert: dialogType == 'edit',
+            class_edit_alert: dialogType == 'editConf',
             class_delete_alert: dialogType == 'delete',
             class_deleteConf_alert: dialogType == 'deleteConf',
           }"
@@ -101,7 +108,7 @@
             </v-row>
             <v-row class="alertArea" no-gutters>
               <v-col
-                ><v-btn height="24" @click="deleteConfCancel()"
+                ><v-btn height="24" @click="dialogType = 'edit'"
                   >キャンセル</v-btn
                 ></v-col
               >
@@ -116,10 +123,10 @@
             </v-row>
           </div>
           <!--編集用確認アラート-->
-          <div v-if="dialogType == 'edit'">
+          <div v-if="dialogType == 'editConf'">
             <v-row class="alertArea">
               <v-col
-                ><v-btn height="24" @click="editConfCancel()"
+                ><v-btn height="24" @click="dialogType = 'edit'"
                   >キャンセル</v-btn
                 ></v-col
               >
@@ -133,28 +140,30 @@
               >
             </v-row>
           </div>
-          <!--編集用確認アラート-->
-          <div v-if="dialogType == 'new'" class="alertArea mt-3">
+          <!--新規登録アラート-->
+          <div v-if="dialogType == 'newResult'" class="alertArea mt-3">
             <p>管理者アカウントIDと仮パスワードをメールにて通知します。</p>
             <v-row no-gutters>
               <v-col width="7">ログイン中管理者メールアドレス</v-col>
-              <v-col>:{{ dialogAdminName }}</v-col>
+              <v-col>: {{ adminMailAddress }}</v-col>
             </v-row>
             <v-row no-gutters>
               <v-col width="7">新規管理者メールアドレス</v-col>
-              <v-col>:{{ dialogAdminMail }}</v-col>
+              <v-col>: {{ dialogAdminMail }}</v-col>
             </v-row>
             <v-row no-gutters class="mt-3">
-              <v-btn class="okButton" @click="onDialogAlertOK()">OK</v-btn>
+              <v-btn class="okButton" @click="dialogAccountFlag = false"
+                >OK</v-btn
+              >
             </v-row>
           </div>
         </v-card>
       </v-card>
       <!--管理者アカウント新規登録フォーム-->
-      <v-card v-if="dialogAccountRegistFormFlag">
+      <v-card v-if="dialogType == 'new' || dialogType == 'edit'">
         <v-card-title class="dialog_title">
           管理者アカウント情報
-          <v-btn class="closeButton pa-0" @click="dialogAccountClose()">
+          <v-btn class="closeButton pa-0" @click="dialogAccountFlag = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>
@@ -226,7 +235,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import { WjFlexGrid, WjFlexGridColumn } from '@grapecity/wijmo.vue2.grid';
 import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 export default {
-  props: [],
+  props: ['keycloak'],
   components: {
     WjFlexGrid,
     WjFlexGridColumn,
@@ -250,10 +259,8 @@ export default {
       gridSelectedRow: 0,
       dialogAccountFlag: false,
       deleteDisableFlag: false,
-      dialogAlertFlag: false,
-      dialogAccountRegistFormFlag: false,
-      dialogEditConfFlag: false,
-      dialogResultFlag: false,
+      dialogType: '', // new/newResult/edit/editConf/editFin/delete/deleteConf/deleteFin
+
       adminViewData: [],
       headerheight: 140,
       dialogAdminName: '',
@@ -266,7 +273,7 @@ export default {
         削除すると`,
       dialog_title_edit_message: '変更した内容を登録しますか？',
       dialogResult_message: '',
-      dialogType: '', // new/edit/delete/deleteConf
+      adminMailAddress: this.keycloak.idTokenParsed.email,
     };
   },
   methods: {
@@ -324,21 +331,15 @@ export default {
         }
       }
     },
-    dialogAccountClose() {
-      this.dialogAccountFlag = false;
-      this.dialogAlertFlag = false;
-    },
+
     /*****************
      * 新規登録ボタン
      * グリッドを押下編集
      */
     openDialog(type, editdata = []) {
       this.dialogAccountFlag = true;
-      this.dialogAlertFlag = false;
       this.dialogType = type;
-      this.dialogAccountRegistFormFlag = true; // アカウント情報新規登録フォーム
-      this.dialogEditConfFlag = false;
-      this.dialogResultFlag = false;
+
       if (type == 'edit') {
         this.deleteDisableFlag = false; // 削除ボタン有効
       } else {
@@ -352,30 +353,20 @@ export default {
      */
     dialogDelete() {
       this.dialogType = 'delete';
-      this.dialogAccountRegistFormFlag = false;
-      this.dialogAlertFlag = true;
+
       let tmp = this.flexGrid.itemsSource[this.gridSelectedRow];
       let name = tmp.adminName;
       this.dialog_title_message = `${name}さんの管理者アカウントを削除しますか？
       削除すると下記の情報が失われ、管理者システムにログインできなくなります。
       `;
     },
-    /*************************
-     * ダイアログ削除キャンセル
-     */
-    deleteConfCancel() {
-      this.dialogType = 'edit';
-      this.dialogAccountRegistFormFlag = true;
-      this.dialogAlertFlag = false;
-    },
+
     /************************
      * ダイアログ削除確認
      */
     deleteConfRegist() {
       if (this.dialogType == 'deleteConf') {
-        // すでに削除確認画面の型になっていたときは最後のアラートを表示する
-        this.dialogResultFlag = true;
-        this.dialogAlertFlag = false;
+        this.dialogType = 'deleteFin';
         this.dialogResult_message = '削除完了しました。';
       } else {
         this.dialogType = 'deleteConf';
@@ -386,38 +377,23 @@ export default {
      * ダイアログ登録ボタン
      */
     dialogRegist() {
-      this.dialogAccountRegistFormFlag = false;
-      this.dialogAlertFlag = true;
+      this.dialogType = 'newResult';
       this.dialog_title_message = this.dialog_title_new_message;
     },
     /************************
      * ダイアログ編集確認
      */
     dialogEditConf() {
-      this.dialogAccountRegistFormFlag = false;
-      this.dialogAlertFlag = true;
+      this.dialogType = 'editConf';
       this.dialog_title_message = this.dialog_title_edit_message;
     },
 
     /************************
-     * ダイアログ編集キャンセル
-     */
-    editConfCancel() {
-      this.dialogAccountClose();
-    },
-    /************************
      * ダイアログ編集登録
      */
     editConfRegist() {
-      this.dialogAlertFlag = false;
-      this.dialogResultFlag = true;
+      this.dialogType = 'editFin';
       this.dialogResult_message = '登録完了しました';
-    },
-    /*********************
-     * ダイアログ
-     ************/
-    onDialogAlertOK() {
-      this.dialogAccountFlag = false;
     },
   },
 };

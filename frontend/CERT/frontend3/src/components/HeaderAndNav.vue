@@ -23,11 +23,64 @@
         ></v-app-bar-nav-icon>
       </div>
       <v-toolbar-title>{{ jigyoName }}</v-toolbar-title>
-      <v-btn color="normal" dark text small depressed temporary>
-        <v-icon>mdi-account-circle</v-icon>
-        {{ loginName }}
-      </v-btn>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="normal"
+            dark
+            text
+            small
+            depressed
+            temporary
+            v-bind="props"
+          >
+            <v-icon>mdi-account-circle</v-icon>
+            {{ loginName }}
+          </v-btn>
+        </template>
+
+        <v-list
+          v-for="(item, index) in accountMenu"
+          :key="index"
+          id
+          class="accountMenu"
+        >
+          <v-list-item
+            @click="loginDialogFlag = true"
+            v-if="item.id == 3"
+            height="24"
+          >
+            {{ item.title }}
+          </v-list-item>
+          <v-list-item
+            v-else
+            :to="item.link + '/' + this.queryParam"
+            height="24"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
+    <template>
+      <v-dialog v-model="loginDialogFlag" width="400">
+        <v-card class="loginDialog"
+          >ログアウトします。よろしいですか？
+          <v-row no-gutters class="mt-3">
+            <v-col
+              ><v-btn height="24" @click="loginDialogFlag = false"
+                >キャンセル</v-btn
+              ></v-col
+            >
+            <v-col
+              ><v-btn height="24" class="logout" @click="onLogout()"
+                >ログアウト</v-btn
+              ></v-col
+            >
+          </v-row>
+        </v-card>
+      </v-dialog>
+    </template>
   </div>
 </template>
 
@@ -43,11 +96,11 @@ export default {
 
   data() {
     return {
+      loginDialogFlag: false,
       queryParam: '',
       drawer: false,
       jigyoName: '社会福祉法人東経会',
       loginName: '',
-
       listItems: [
         {
           name: '職員アカウント設定',
@@ -66,10 +119,31 @@ export default {
           },
         },
       ],
+      accountMenu: [
+        {
+          title: '管理者アカウント情報',
+          id: 1,
+          link: '/accountsData',
+        },
+        {
+          title: 'チュートリアル',
+          id: 2,
+          link: '/',
+        },
+        {
+          title: 'ログアウト',
+          id: 3,
+          link: '',
+        },
+      ],
     };
   },
 
-  methods: {},
+  methods: {
+    onLogout() {
+      this.keycloak.logout();
+    },
+  },
 };
 </script>
 
@@ -92,6 +166,32 @@ div#headerAndNav {
     }
     .btn {
       background-color: $white;
+    }
+  }
+}
+div {
+  &.v-list {
+    &.accountMenu {
+      padding: 0;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      div {
+        &.v-list-item-title,
+        &.v-list-item__content {
+          font-size: 0.85rem !important;
+        }
+      }
+    }
+  }
+
+  .loginDialog {
+    font-size: $default_fontsize;
+    background-color: $white;
+    text-align: center;
+    padding: 20px;
+    .logout {
+      color: $red;
+      border: 1px solid $red;
     }
   }
 }

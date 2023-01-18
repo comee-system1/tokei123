@@ -385,27 +385,135 @@
         </v-card>
       </v-card>
     </v-dialog>
-    <ConfirmDialog
-      :message="`変更した内容を登録しますか?`"
-      :width="300"
-      v-if="dialogAccountRegistOpenType == 2"
-      args="accountRegist"
-      @dialogConfirmMethod="dialogConfirmMethod"
-    />
-    <AlertDialog
-      v-if="dialogAccountRegistOpenType == 3"
-      :message="`登録完了しました`"
-      :width="300"
-    />
 
     <v-dialog
       width="500"
       v-model="dialogAccountFlag"
-      class="dialogAccount"
+      id="dialogAccount"
+      persistent
       no-click-animation
-      v-if="dialogAccountRegistOpenType == 1"
     >
-      <v-card>
+      <v-card
+        v-if="dialogAccountPasswordOpenType == 2"
+        class="dialogAccountPasswordOpen"
+      >
+        <h4>仮パスワードを発行しました。</h4>
+        <div class="mt-3">
+          <p>
+            アカウントIDと仮パスワードを管理者にメールにて通知します。<br />
+            管理者メールアドレス:{{ dialogAccountMail }}
+          </p>
+          <p class="min">
+            ※職員のメールアドレスが設定されている場合、職員にもメールにて通知します。
+          </p>
+          <div class="mt-3 text-center">
+            <v-btn @click="dialogAccountFlag = false">OK</v-btn>
+          </div>
+        </div>
+      </v-card>
+      <v-card
+        class="class_result_alert"
+        v-else-if="
+          dialogAccountRegistOpenType == 3 || dialogAccountDeleteOpenType == 3
+        "
+        id="dialogAccountRegistFinish"
+        @click="dialogAccountRegistFinish()"
+      >
+        <h5 v-if="dialogAccountRegistOpenType == 3">登録完了しました。</h5>
+        <h5 v-if="dialogAccountDeleteOpenType == 3">削除完了しました。</h5>
+      </v-card>
+      <v-card
+        v-else-if="
+          dialogAccountRegistOpenType == 2 ||
+          dialogAccountDeleteOpenType == 1 ||
+          dialogAccountDeleteOpenType == 2 ||
+          dialogAccountPasswordOpenType == 1
+        "
+        id="dialogAccountRegistConf"
+        :class="{
+          red:
+            dialogAccountDeleteOpenType == 1 ||
+            dialogAccountDeleteOpenType == 2,
+        }"
+      >
+        <div v-if="dialogAccountPasswordOpenType == 1">
+          <p>パスワードを再発行しますか？</p>
+          <p>
+            ※仮パスワードがメールにて通知されます。<br />
+            再発行機のログイン時にパスワードを変更してください。
+          </p>
+        </div>
+
+        <p v-if="dialogAccountRegistOpenType == 2">
+          変更した内容を登録しますか？
+        </p>
+        <div v-if="dialogAccountDeleteOpenType == 1">
+          <p>
+            {{ dialogSyokuinName }}さんの職員アカウントIDを削除しますか？
+            <br />
+            削除すると下記の情報が失われ、システムにログインできなくなります。
+          </p>
+          <div class="grayBox mt-3">
+            <ul>
+              <li>職員アカウントID</li>
+              <li>パスワード</li>
+              <li>メールアドレス</li>
+              <li>グランドメニュー権限情報</li>
+            </ul>
+          </div>
+        </div>
+        <div v-else-if="dialogAccountDeleteOpenType == 2">
+          <h4>ほんとに削除してもよろしいですか？</h4>
+          <p class="mt-3">
+            ※元に戻す場合は、管理者アカウントの再登録が必要になります。
+          </p>
+        </div>
+        <v-row no-gutters class="mt-3">
+          <v-col
+            ><v-btn
+              height="24"
+              class="cancelButton htmin"
+              @click="
+                dialogAccountRegistOpenType = 1;
+                dialogAccountDeleteOpenType = 0;
+                dialogAccountPasswordOpenType = 0;
+              "
+              >キャンセル</v-btn
+            ></v-col
+          >
+          <v-col>
+            <v-btn
+              v-if="dialogAccountPasswordOpenType == 1"
+              height="24"
+              class="registButton htmin"
+              @click="dialogPasswordRest()"
+              >登録</v-btn
+            >
+            <v-btn
+              v-else-if="dialogAccountRegistOpenType == 2"
+              height="24"
+              class="registButton htmin"
+              @click="dialogRegist()"
+              >登録</v-btn
+            >
+            <v-btn
+              v-else-if="dialogAccountDeleteOpenType == 1"
+              height="24"
+              class="deleteButton htmin"
+              @click="dialogAccountDeleteOpenType = 2"
+              >削除</v-btn
+            >
+            <v-btn
+              v-else-if="dialogAccountDeleteOpenType == 2"
+              height="24"
+              class="deleteButton htmin"
+              @click="dialogDelete()"
+              >削除</v-btn
+            >
+          </v-col>
+        </v-row>
+      </v-card>
+      <v-card v-else-if="dialogAccountRegistOpenType == 1">
         <v-card-title class="dialog_title">
           職員アカウント情報
           <v-btn class="closeButton pa-0" @click="dialogAccountClose()">
@@ -531,9 +639,6 @@ import '@grapecity/wijmo.vue2.grid.filter';
 import { WjFlexGrid, WjFlexGridColumn } from '@grapecity/wijmo.vue2.grid';
 import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 import sysConst from '@/utiles/const';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import AlertDialog from '@/components/AlertDialog.vue';
-
 export default {
   props: ['keycloak', 'userName', 'color'],
   components: {
@@ -541,8 +646,6 @@ export default {
     WjFlexGridColumn,
     WjFlexGridFilter,
     AlphabetButton,
-    ConfirmDialog,
-    AlertDialog,
   },
   mounted() {
     this.calculateWindowHeight();
@@ -1514,17 +1617,6 @@ export default {
       });
     },
 
-    /*********************************
-     * 確認用ダイアログからの戻り関数
-     */
-    dialogConfirmMethod(args = {}) {
-      console.log(args);
-      if (this.dialogAccountRegistOpenType == 2) {
-        // 利用状況の登録処理の実行
-        this.dialogRegist();
-      }
-    },
-
     dialogAccountRegistFinish() {
       this.flexGrid.refresh();
       this.dialogAccountFlag = false;
@@ -1600,7 +1692,6 @@ export default {
     dialogPasswordRest() {
       this.dialogAccountPasswordOpenType = 2;
     },
-
     /**************************
      * dialogで表示している利用状態の変更
      */
@@ -2006,30 +2097,30 @@ $mwidth: 1366px;
     max-height: 260px;
   }
 }
-.dialogAccount {
+#dialogAccount {
   font-size: $default_fontsize;
-  // .dialogAccountPasswordOpen {
-  //   padding: 20px;
-  //   h4 {
-  //     text-align: center;
-  //     width: 280px;
-  //     height: 34px;
-  //     line-height: 34px;
-  //     margin: 0 auto;
-  //     display: block;
-  //     font-weight: normal;
-  //     background-image: url('../../assets/minCheckCircle.png');
-  //     background-repeat: no-repeat;
-  //   }
-  //   .min {
-  //     font-size: 0.85em;
-  //   }
-  //   button {
-  //     width: 200px;
-  //     background-color: $gray;
-  //     color: $white;
-  //   }
-  // }
+  .dialogAccountPasswordOpen {
+    padding: 20px;
+    h4 {
+      text-align: center;
+      width: 280px;
+      height: 34px;
+      line-height: 34px;
+      margin: 0 auto;
+      display: block;
+      font-weight: normal;
+      background-image: url('../../assets/minCheckCircle.png');
+      background-repeat: no-repeat;
+    }
+    .min {
+      font-size: 0.85em;
+    }
+    button {
+      width: 200px;
+      background-color: $gray;
+      color: $white;
+    }
+  }
   input[type='text']:disabled {
     background: $light-gray;
   }
@@ -2129,43 +2220,43 @@ $mwidth: 1366px;
     color: $white;
   }
 
-  // #dialogAccountRegistConf {
-  //   border-top: 3px solid $green;
-  //   padding: 20px 10px;
-  //   text-align: center;
-  //   &.red {
-  //     border-top: 3px solid $red;
-  //   }
-  //   h4 {
-  //     text-align: right;
-  //     width: 280px;
-  //     height: 34px;
-  //     line-height: 34px;
-  //     margin: 0 auto;
-  //     background-image: url('../../assets/minAlert.png');
-  //     background-repeat: no-repeat;
-  //   }
-  //   .grayBox {
-  //     padding: 10px;
-  //     background-color: $light-white;
-  //     width: 100%;
-  //     ul {
-  //       li {
-  //         margin-left: 20px;
-  //         text-align: left;
-  //       }
-  //     }
-  //   }
-  // }
-  // #dialogAccountRegistFinish {
-  //   @extend %checkCircleImage;
-  //   background-repeat: no-repeat;
-  //   height: 80px;
-  //   h5 {
-  //     @extend %h5;
-  //     line-height: 80px;
-  //   }
-  // }
+  #dialogAccountRegistConf {
+    border-top: 3px solid $green;
+    padding: 20px 10px;
+    text-align: center;
+    &.red {
+      border-top: 3px solid $red;
+    }
+    h4 {
+      text-align: right;
+      width: 280px;
+      height: 34px;
+      line-height: 34px;
+      margin: 0 auto;
+      background-image: url('../../assets/minAlert.png');
+      background-repeat: no-repeat;
+    }
+    .grayBox {
+      padding: 10px;
+      background-color: $light-white;
+      width: 100%;
+      ul {
+        li {
+          margin-left: 20px;
+          text-align: left;
+        }
+      }
+    }
+  }
+  #dialogAccountRegistFinish {
+    @extend %checkCircleImage;
+    background-repeat: no-repeat;
+    height: 80px;
+    h5 {
+      @extend %h5;
+      line-height: 80px;
+    }
+  }
 }
 div#accountsData {
   font-size: 12px;
