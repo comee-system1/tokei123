@@ -208,10 +208,7 @@
           height="24"
           elavation="1"
           :disabled="activateCancel"
-          @click="
-            cancelDialogFlag = true;
-            cancelDialogType = 0;
-          "
+          @click="cancelDialogType = 1"
           >キャンセル</v-btn
         >
       </div>
@@ -219,36 +216,24 @@
         <v-btn color="blue" height="24">権限登録</v-btn>
       </div>
     </v-row>
-    <v-dialog
-      width="400"
-      v-model="cancelDialogFlag"
-      id="cancelDialog"
-      persistent
-      no-click-animation
-    >
-      <div
-        id="dialogCancelFinish"
-        v-if="cancelDialogType == 1"
-        @click="cancelDialogFlag = false"
-      >
-        <h5>破棄しました。</h5>
-      </div>
-      <div v-else class="cancelBody">
-        <p>編集内容を破棄しますか？</p>
-        <v-row class="mt-3">
-          <v-col class="text-right"
-            ><v-btn height="24" @click="cancelDialogFlag = false"
-              >キャンセル</v-btn
-            ></v-col
-          >
-          <v-col class="text-left"
-            ><v-btn height="24" class="cancelButton" @click="onCancelAllClear()"
-              >破棄</v-btn
-            ></v-col
-          >
-        </v-row>
-      </div>
-    </v-dialog>
+
+    <ConfirmDialog
+      :message="`編集内容を破棄しますか？`"
+      :width="300"
+      color="red"
+      :leftButton="'キャンセル'"
+      :rightButton="'削除'"
+      v-if="cancelDialogType == 1"
+      args="editCancel"
+      @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
+    />
+    <AlertDialog
+      v-if="cancelDialogType == 2"
+      :message="`破棄しました。`"
+      :width="300"
+    />
+
     <v-dialog
       width="500"
       v-model="authCopyDialogFlag"
@@ -385,12 +370,76 @@
         </v-card>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :message="dialogSyokuinName + `さんの職員アカウントを削除しますか？`"
+      :submessage="`削除すると下記の情報が失われ、管理者システムにログインできなくなります。`"
+      :listBox="{
+        list1: '職員アカウントID',
+        list2: 'パスワード',
+        list3: 'メールアドレス',
+        list4: 'グランドメニュー権限',
+      }"
+      :width="530"
+      color="red"
+      :leftButton="'キャンセル'"
+      :rightButton="'削除'"
+      v-if="dialogAccountDeleteOpenType == 1"
+      args="accountDelete"
+      @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
+    />
+
+    <ConfirmDialog
+      :message="`本当に削除してもよろしいですか？`"
+      alertIcon="alert"
+      :submessage="`※元に戻す場合は、管理者アカウントの再登録が必要になります。`"
+      :width="530"
+      color="red"
+      :leftButton="'キャンセル'"
+      :rightButton="'削除'"
+      v-if="dialogAccountDeleteOpenType == 2"
+      args="accountDeleted"
+      @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
+    />
+    <AlertDialog
+      v-if="dialogAccountDeleteOpenType == 3"
+      :message="`削除完了しました`"
+      :width="300"
+    />
+
+    <ConfirmDialog
+      :message="`パスワードを再発行しますか?`"
+      :submessage="`※仮パスワードがメールにて通知されます。再発行機のログイン時にパスワードを変更してください。`"
+      :width="400"
+      :leftButton="'キャンセル'"
+      :rightButton="'再発行'"
+      v-if="dialogAccountPasswordOpenType == 1"
+      args="passwordReset"
+      @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
+    />
+    <completeDialog
+      v-if="dialogAccountPasswordOpenType == 2"
+      :message="`仮パスワードを発行しました`"
+      :width="600"
+      @dialogCompleteMethod="dialogCompleteMethod"
+      :body="{
+        text1: 'アカウントIDと仮パスワードを管理者にメールにて通知します。 ',
+        text2: '管理者メールアドレス:' + dialogAccountMail,
+        min_text:
+          '※職員のメールアドレスが設定されている場合、職員にもメールにて通知します。',
+      }"
+    />
+
     <ConfirmDialog
       :message="`変更した内容を登録しますか?`"
       :width="300"
       v-if="dialogAccountRegistOpenType == 2"
       args="accountRegist"
       @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
     />
     <AlertDialog
       v-if="dialogAccountRegistOpenType == 3"
@@ -403,7 +452,7 @@
       v-model="dialogAccountFlag"
       class="dialogAccount"
       no-click-animation
-      v-if="dialogAccountRegistOpenType == 1"
+      v-if="dialogAccountRegistOpenType <= 2"
     >
       <v-card>
         <v-card-title class="dialog_title">
@@ -533,6 +582,7 @@ import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 import sysConst from '@/utiles/const';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import AlertDialog from '@/components/AlertDialog.vue';
+import completeDialog from '@/components/completeDialog.vue';
 
 export default {
   props: ['keycloak', 'userName', 'color'],
@@ -543,6 +593,7 @@ export default {
     AlphabetButton,
     ConfirmDialog,
     AlertDialog,
+    completeDialog,
   },
   mounted() {
     this.calculateWindowHeight();
@@ -810,7 +861,6 @@ export default {
       copyFlexGrid: {},
       copyActiveFlag: true,
       authCopyType: 1, // 1:登録フォーム 2:確認 3:登録完了
-      cancelDialogFlag: false,
       cancelDialogType: 0,
     };
   },
@@ -1069,7 +1119,7 @@ export default {
       let state = this.syokuinViewDataDefault;
       this.syokuinViewData = [];
       this.syokuinViewData = JSON.parse(JSON.stringify(state));
-      this.cancelDialogType = 1;
+      this.cancelDialogType = 2;
       this.activateCancel = true;
     },
     onFormatItemCopy(flexGrid, e) {
@@ -1523,6 +1573,49 @@ export default {
         // 利用状況の登録処理の実行
         this.dialogRegist();
       }
+      if (this.dialogAccountPasswordOpenType == 1) {
+        // パスワード再発行実行
+        this.dialogPasswordRest();
+      }
+      if (this.dialogAccountDeleteOpenType == 1) {
+        // 職員アカウント削除確認
+        this.dialogAccountDeleteOpenType = 2;
+      } else if (this.dialogAccountDeleteOpenType == 2) {
+        // 職員アカウント削除
+        this.dialogDelete();
+      }
+
+      if (this.cancelDialogType == 1) {
+        // 編集内容のキャンセル
+        this.onCancelAllClear();
+      }
+    },
+    /*********************************
+     * 確認用ダイアログからの戻り関数(キャンセル)
+     */
+    dialogConfirmCancelMethod(args = {}) {
+      console.log(args);
+      if (this.dialogAccountRegistOpenType == 2) {
+        this.dialogAccountRegistOpenType = 1;
+      }
+      if (this.dialogAccountPasswordOpenType == 1) {
+        this.dialogAccountPasswordOpenType = 0;
+      }
+      if (this.dialogAccountDeleteOpenType <= 2) {
+        this.dialogAccountDeleteOpenType = 0;
+      }
+      if (this.cancelDialogType == 1) {
+        this.cancelDialogType = 0;
+      }
+    },
+    /*********************************
+     * 確認用ダイアログからの戻り関数(キャンセル)
+     */
+    dialogCompleteMethod(args = {}) {
+      console.log(args);
+      if (this.dialogAccountPasswordOpenType == 2) {
+        this.dialogAccountPasswordOpenType = 0;
+      }
     },
 
     dialogAccountRegistFinish() {
@@ -1546,6 +1639,7 @@ export default {
       });
       this.syokuinViewData = tmp;
       this.dialogAccountDeleteOpenType = 3;
+      this.dialogAccountFlag = false;
     },
     /************************
      * ダイアログ登録実行
@@ -1591,13 +1685,13 @@ export default {
      * パスワード再発行
      */
     passwordReset() {
-      this.dialogAccountFlag = true;
       this.dialogAccountPasswordOpenType = 1;
     },
     /**********************
      * パスワード再発行実行
      */
     dialogPasswordRest() {
+      this.dialogAccountFlag = false;
       this.dialogAccountPasswordOpenType = 2;
     },
 
@@ -1881,7 +1975,7 @@ $mwidth: 1366px;
   border: none;
   background-color: $green;
   text-align: center;
-  background-image: url('../../assets/checkCircle.png');
+  background-image: url('@/assets/checkCircle.png');
   background-position: 20% 50%;
 }
 %h5 {
@@ -1889,29 +1983,7 @@ $mwidth: 1366px;
   font-weight: normal;
   font-size: 1.25rem;
 }
-#cancelDialog {
-  font-size: $default_fontsize;
-  #dialogCancelFinish {
-    @extend %checkCircleImage;
-    background-repeat: no-repeat;
-    height: 80px;
-    h5 {
-      @extend %h5;
-      line-height: 80px;
-    }
-  }
-  .cancelBody {
-    background-color: $white;
-    border-top: 3px solid $red;
-    padding: 20px;
-    text-align: center;
-    .cancelButton {
-      border: 1px solid $red;
-      color: $red;
-      width: 100px;
-    }
-  }
-}
+
 #authCopyDialog {
   font-size: $default_fontsize;
   padding: 10px;
@@ -1958,7 +2030,7 @@ $mwidth: 1366px;
           border: none;
           background-color: $green;
           text-align: center;
-          background-image: url('../../assets/checkCircle.png');
+          background-image: url('@/assets/checkCircle.png');
           background-position: 20% 50%;
           h5 {
             @extend %h5;
@@ -2008,28 +2080,7 @@ $mwidth: 1366px;
 }
 .dialogAccount {
   font-size: $default_fontsize;
-  // .dialogAccountPasswordOpen {
-  //   padding: 20px;
-  //   h4 {
-  //     text-align: center;
-  //     width: 280px;
-  //     height: 34px;
-  //     line-height: 34px;
-  //     margin: 0 auto;
-  //     display: block;
-  //     font-weight: normal;
-  //     background-image: url('../../assets/minCheckCircle.png');
-  //     background-repeat: no-repeat;
-  //   }
-  //   .min {
-  //     font-size: 0.85em;
-  //   }
-  //   button {
-  //     width: 200px;
-  //     background-color: $gray;
-  //     color: $white;
-  //   }
-  // }
+
   input[type='text']:disabled {
     background: $light-gray;
   }
@@ -2073,16 +2124,16 @@ $mwidth: 1366px;
       text-indent: -9999px;
       background-position: 2px 2px;
       &.useButton {
-        background-image: url('../../assets/usingButton.png');
+        background-image: url('@/assets/usingButton.png');
       }
       &.tempButton {
-        background-image: url('../../assets/tempRegistButton.png');
+        background-image: url('@/assets/tempRegistButton.png');
       }
       &.stopButton {
-        background-image: url('../../assets/stoppingButton.png');
+        background-image: url('@/assets/stoppingButton.png');
       }
       &.noRegistButton {
-        background-image: url('../../assets/noRegistButton.png');
+        background-image: url('@/assets/noRegistButton.png');
       }
     }
   }
@@ -2128,44 +2179,6 @@ $mwidth: 1366px;
     background-color: $view_Title_background_Main;
     color: $white;
   }
-
-  // #dialogAccountRegistConf {
-  //   border-top: 3px solid $green;
-  //   padding: 20px 10px;
-  //   text-align: center;
-  //   &.red {
-  //     border-top: 3px solid $red;
-  //   }
-  //   h4 {
-  //     text-align: right;
-  //     width: 280px;
-  //     height: 34px;
-  //     line-height: 34px;
-  //     margin: 0 auto;
-  //     background-image: url('../../assets/minAlert.png');
-  //     background-repeat: no-repeat;
-  //   }
-  //   .grayBox {
-  //     padding: 10px;
-  //     background-color: $light-white;
-  //     width: 100%;
-  //     ul {
-  //       li {
-  //         margin-left: 20px;
-  //         text-align: left;
-  //       }
-  //     }
-  //   }
-  // }
-  // #dialogAccountRegistFinish {
-  //   @extend %checkCircleImage;
-  //   background-repeat: no-repeat;
-  //   height: 80px;
-  //   h5 {
-  //     @extend %h5;
-  //     line-height: 80px;
-  //   }
-  // }
 }
 div#accountsData {
   font-size: 12px;
@@ -2271,7 +2284,7 @@ div#accountsData {
       #noListLogo {
         width: 140px;
         height: 140px;
-        background-image: url('../../assets/noList.png');
+        background-image: url('@/assets/noList.png');
         background-size: contain;
         margin: 0 auto;
       }
