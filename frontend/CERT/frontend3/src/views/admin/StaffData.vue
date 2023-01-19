@@ -59,11 +59,15 @@
             :id="'filter_' + filters.id"
             :value="filters.id"
             v-model="selFilter"
+            v-if="filters.id <= 3"
             @change="onSelFilter()"
           />
-          <label :for="'filter_' + filters.id" class="mt-1 ml-1 mr-2">{{
-            filters.value
-          }}</label>
+          <label
+            :for="'filter_' + filters.id"
+            class="mt-1 ml-1 mr-2"
+            v-if="filters.id <= 3"
+            >{{ filters.value }}</label
+          >
         </v-card>
       </div>
 
@@ -90,7 +94,7 @@
       </div>
     </v-row>
 
-    <v-row no-gutters class="mt-1 filterHeight">
+    <v-row no-gutters class="mt-3 filterHeight">
       <v-col>
         <alphabet-button
           id="alpCommon"
@@ -140,7 +144,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row no-gutters class="mt-2">
+    <v-row no-gutters class="mt-1">
       <wj-flex-grid
         id="syokuinListGrid"
         :autoSearch="false"
@@ -234,6 +238,23 @@
       :width="300"
     />
 
+    <ConfirmDialog
+      :message="`既に権限が設定されている職員が選択されている場合、内容が上書きされますが実行しますか？`"
+      :width="400"
+      :leftButton="'キャンセル'"
+      :rightButton="'実行'"
+      v-if="authCopyType == 2"
+      args="editCancel"
+      @dialogConfirmMethod="dialogConfirmMethod"
+      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
+    />
+
+    <AlertDialog
+      v-if="authCopyType == 3"
+      :message="`コピー完了しました。`"
+      :width="300"
+    />
+
     <v-dialog
       width="500"
       v-model="authCopyDialogFlag"
@@ -248,32 +269,6 @@
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>
-        <v-card id="authCopyArea" v-if="authCopyType == 2 || authCopyType == 3">
-          <div
-            class="authCopyArea authCopyArea_Complete"
-            v-if="authCopyType == 3"
-            @click="onCopyAreaComplete()"
-          >
-            <h5>コピー完了しました。</h5>
-          </div>
-          <div class="authCopyArea" v-if="authCopyType == 2">
-            <p>
-              既に権限が設定されている職員が選択されている場合、内容が上書きされますが実行しますか？
-            </p>
-            <v-row class="mt-3">
-              <v-col class="text-right"
-                ><v-btn height="24" @click="authCopyType = 1"
-                  >キャンセル</v-btn
-                ></v-col
-              >
-              <v-col class="text-left"
-                ><v-btn height="24" class="doButton" @click="onAuthCopy()"
-                  >実行</v-btn
-                ></v-col
-              >
-            </v-row>
-          </div>
-        </v-card>
         <v-card class="pa-2" elevation="0">
           <p>コピー元職員から選択した職員に権限をコピーします。</p>
           <div class="mt-3 pb-2 borderbottom">
@@ -354,7 +349,7 @@
           <v-row no-gutters class="mt-3 bottombutton">
             <v-col
               ><v-btn height="24" @click="authCancelCopy()"
-                >キャンセル</v-btn
+                >クリア</v-btn
               ></v-col
             >
             <v-col class="text-end"
@@ -373,7 +368,7 @@
 
     <ConfirmDialog
       :message="dialogSyokuinName + `さんの職員アカウントを削除しますか？`"
-      :submessage="`削除すると下記の情報が失われ、管理者システムにログインできなくなります。`"
+      :submessage="`削除すると下記の情報が失われ、システムにログインできなくなります。`"
       :listBox="{
         list1: '職員アカウントID',
         list2: 'パスワード',
@@ -393,7 +388,7 @@
     <ConfirmDialog
       :message="`本当に削除してもよろしいですか？`"
       alertIcon="alert"
-      :submessage="`※元に戻す場合は、管理者アカウントの再登録が必要になります。`"
+      :submessage="`※元に戻す場合は、職員アカウントの再登録が必要になります。`"
       :width="530"
       color="red"
       :leftButton="'キャンセル'"
@@ -427,7 +422,7 @@
       @dialogCompleteMethod="dialogCompleteMethod"
       :body="{
         text1: 'アカウントIDと仮パスワードを管理者にメールにて通知します。 ',
-        text2: '管理者メールアドレス:' + dialogAccountMail,
+        text2: { title: '管理者メールアドレス', body: dialogAccountMail },
         min_text:
           '※職員のメールアドレスが設定されている場合、職員にもメールにて通知します。',
       }"
@@ -675,6 +670,10 @@ export default {
         {
           id: 3,
           value: '停止中',
+        },
+        {
+          id: 4,
+          value: '未登録',
         },
       ],
       otherArray: [
@@ -938,6 +937,7 @@ export default {
         }
       }
       this.authCopyType = 3;
+      this.authCopyDialogFlag = false;
       this.activateCancel = false; // キャンセルボタン有効
     },
     /*********************
@@ -1388,7 +1388,7 @@ export default {
         mailAddress: '',
         mailFlag: '',
         accountID: '',
-        accountStatus: '未登録',
+        accountStatus: this.filterArray[3].value,
         groundAuth: {
           column_1: '',
           column_2: '',
@@ -1467,20 +1467,65 @@ export default {
           column_2: '',
           column_3: '',
           column_4: '',
-          column_5: '〇',
+          column_5: '',
           column_6: '',
           column_7: '',
           column_8: '',
         },
       });
+
       this.syokuinViewDataDefault = JSON.parse(JSON.stringify(syokuinViewData));
       this.syokuinViewData = JSON.parse(JSON.stringify(syokuinViewData));
       this.searched();
       this.getAccountCount();
       flexGrid.frozenColumns = this.columnArray.length;
       //フィルタ表示切替
-      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', () => {
+      flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', (e) => {
+        // アカウント管理のマウスオーバー
+        var ht = flexGrid.hitTest(e);
+        let statusString = 'accountMouseOverStatus';
+        let authString = 'headerAuthMouseOver';
+        let authBodyString = 'authMouseOver';
+        let headerElem = document.getElementsByClassName(authBodyString);
+        for (let i = 0; i < headerElem.length; i++) {
+          headerElem[i].style.backgroundColor = sysConst.COLOR.white;
+        }
+        if (ht.panel == flexGrid.columnHeaders) {
+          let headerElement = document.elementFromPoint(e.clientX, e.clientY);
+          if (headerElement.className.indexOf(authString) > -1) {
+            // 縦列noを取得
+            let str = headerElement.className;
+            let target = 'headerAuthMouseOverCode--';
+            let bodyTarget = 'authMouseOverBody--';
+            let num = str.substring(str.indexOf(target) + target.length);
+            let elem = document.getElementsByClassName(bodyTarget + num);
+            for (let i = 0; i < elem.length; i++) {
+              elem[i].style.backgroundColor = sysConst.COLOR.dialog_hover;
+            }
+          }
+        }
+
+        let elem = document.getElementsByClassName(statusString);
+        for (let i = 0; i < elem.length; i++) {
+          elem[i].style.backgroundColor = sysConst.COLOR.white;
+        }
+
+        if (ht.panel == flexGrid.cells) {
+          let cellElement = document.elementFromPoint(e.clientX, e.clientY);
+          if (cellElement.className.indexOf(statusString) > -1) {
+            // 職員コードを取得
+            let str = cellElement.className;
+            let target = 'accountMouseOverCode--';
+            let string = str.substring(str.indexOf(target) + target.length);
+            // 指定職員コードのエレメント
+            let elem = document.getElementsByClassName(target + string);
+            for (let i = 0; i < elem.length; i++) {
+              elem[i].style.backgroundColor = sysConst.COLOR.dialog_hover;
+            }
+          }
+        }
         this.filtered.showFilterIcons = true;
+
         // vue3の場合下記記載がないとfiltered機能が動作しない
         setTimeout(() => {
           flexGrid.refresh();
@@ -1502,7 +1547,7 @@ export default {
             let temp = flexGrid.itemsSource[ht.row];
             _self.dialogSyokuinName = temp.syokuinName; // 職員名
             // アカウント発行 未登録の場合は0
-            if (temp.accountStatus == '未登録') {
+            if (temp.accountStatus == this.filterArray[3].value) {
               _self.dialogAccount = 2;
             } else {
               _self.dialogAccount = 1;
@@ -1529,10 +1574,13 @@ export default {
                 _self.filterArray[2].value + '：' + _self.useButtonMessage[2];
             }
             // 未登録
-            if (temp.accountStatus == '未登録') {
+            if (temp.accountStatus == _self.filterArray[3].value) {
               _self.useButton = 'noRegistButton';
               _self.dialogMessageUse =
-                '未登録：' + '：' + _self.useButtonMessage[3];
+                _self.filterArray[3].value +
+                '：' +
+                '：' +
+                _self.useButtonMessage[3];
             }
 
             _self.dialogAccountFlag = true;
@@ -1589,6 +1637,10 @@ export default {
         // 編集内容のキャンセル
         this.onCancelAllClear();
       }
+      if (this.authCopyType == 2) {
+        // 権限コピー実行
+        this.onAuthCopy();
+      }
     },
     /*********************************
      * 確認用ダイアログからの戻り関数(キャンセル)
@@ -1607,9 +1659,12 @@ export default {
       if (this.cancelDialogType == 1) {
         this.cancelDialogType = 0;
       }
+      if (this.authCopyType == 2) {
+        this.authCopyType = 1;
+      }
     },
     /*********************************
-     * 確認用ダイアログからの戻り関数(キャンセル)
+     * 完了ダイアログからの戻り
      */
     dialogCompleteMethod(args = {}) {
       console.log(args);
@@ -1671,7 +1726,7 @@ export default {
           }
           // 未登録
           if (_self.useButton == 'noRegistButton') {
-            viewData[k].accountStatus = '未登録';
+            viewData[k].accountStatus = _self.filterArray[3].value;
           }
         }
       });
@@ -1721,7 +1776,7 @@ export default {
         // 利用状況が未登録ではない
         if (
           this.syokuinViewData[i].syokuinCode == syokuinCode &&
-          this.syokuinViewData[i].accountStatus != '未登録'
+          this.syokuinViewData[i].accountStatus != this.filterArray[3].value
         ) {
           this.syokuinViewData[i][editColumn][num] = icon;
         }
@@ -1781,6 +1836,11 @@ export default {
         if (e.col >= this.columnArray.length) {
           wijmo.addClass(e.cell, 'headerpink');
         }
+
+        if (e.col > accountRowCount) {
+          wijmo.addClass(e.cell, 'headerAuthMouseOver');
+          wijmo.addClass(e.cell, 'headerAuthMouseOverCode--' + e.col);
+        }
       }
 
       if (e.panel.cellType == wjGrid.CellType.Cell) {
@@ -1793,17 +1853,24 @@ export default {
         if (e.panel.rows[e.row]) {
           tmpitem = e.panel.rows[e.row].dataItem;
         }
+        let tmp = [];
         // 終了日が登録＋権限が登録されている場合は背景をピンクに変更
-        if (tmpitem.endDate !== '') {
-          if (e.col > accountRowCount) {
-            if (flexGrid.getCellData(e.row, e.col)) {
-              wijmo.addClass(e.cell, 'backgroundPink');
+        if (e.col > accountRowCount) {
+          let c = 'column_' + (e.col - accountRowCount); // 権限カラム名
+
+          this.syokuinViewData.map(function (value) {
+            if (value.endDate && value.groundAuth[c]) {
+              tmp.push(value.syokuinCode);
             }
+          });
+
+          if (tmpitem.syokuinCode == tmp[0]) {
+            wijmo.addClass(e.cell, 'backgroundPink');
           }
         }
 
         // 利用状況が未登録の場合は列以降をgrayに変更
-        if (tmpitem.accountStatus == '未登録') {
+        if (tmpitem.accountStatus == this.filterArray[3].value) {
           if (e.col > accountRowCount) {
             wijmo.addClass(e.cell, 'backgroundGray');
           }
@@ -1845,44 +1912,55 @@ export default {
         }
 
         // 利用状況へ文字前にアイコンを付けるためclass付与
-        // 使用中
         if (
           e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[0].value &&
           tmpBefore != null &&
           tmpitem.syokuinCode != tmpBefore.syokuinCode
         ) {
-          wijmo.addClass(e.cell, 'setCheckIcon');
-          wijmo.addClass(e.cell, 'setCheckIconUsing');
+          // 使用中
+          if (tmpitem.accountStatus == this.filterArray[0].value) {
+            wijmo.addClass(e.cell, 'setCheckIcon');
+            wijmo.addClass(e.cell, 'setCheckIconUsing');
+          }
+          // 未登録は空欄
+          if (tmpitem.accountStatus == this.filterArray[3].value) {
+            e.cell.innerHTML = '';
+          }
+          // 仮登録
+          if (tmpitem.accountStatus == this.filterArray[1].value) {
+            wijmo.addClass(e.cell, 'setCheckIcon');
+            wijmo.addClass(e.cell, 'setCheckIconNone');
+          }
+          // 停止中
+          if (tmpitem.accountStatus == this.filterArray[2].value) {
+            wijmo.addClass(e.cell, 'setCheckIcon');
+            wijmo.addClass(e.cell, 'setCheckIconStop');
+          }
         }
-        // 未登録は空欄
         if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == '未登録' &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
+          e.col == accountRowCount - 2 ||
+          e.col == accountRowCount - 1 ||
+          e.col == accountRowCount
         ) {
-          e.cell.innerHTML = '';
+          wijmo.addClass(e.cell, 'accountMouseOverStatus');
+          wijmo.addClass(
+            e.cell,
+            'accountMouseOverCode--' + tmpitem.syokuinCode
+          );
         }
-        // 仮登録
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[1].value &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          wijmo.addClass(e.cell, 'setCheckIcon');
-          wijmo.addClass(e.cell, 'setCheckIconNone');
-        }
-        // 停止中
-        if (
-          e.col == accountRowCount &&
-          tmpitem.accountStatus == this.filterArray[2].value &&
-          tmpBefore != null &&
-          tmpitem.syokuinCode != tmpBefore.syokuinCode
-        ) {
-          wijmo.addClass(e.cell, 'setCheckIcon');
-          wijmo.addClass(e.cell, 'setCheckIconStop');
+
+        if (e.col > accountRowCount) {
+          // 下記セルはclassを付与しない
+          // 終了日が登録＋権限が登録されている場合は背景をピンクに変更
+          if (
+            tmpitem.accountStatus != this.filterArray[3].value &&
+            (tmpitem.endDate == '' ||
+              (tmpitem.endDate && !flexGrid.getCellData(e.row, e.col))) &&
+            tmpitem.syokuinCode != tmp[0]
+          ) {
+            wijmo.addClass(e.cell, 'authMouseOver');
+            wijmo.addClass(e.cell, 'authMouseOverBody--' + e.col);
+          }
         }
 
         if (e.col < this.columnArray.length - 3) {
@@ -1968,7 +2046,7 @@ $mwidth: 1366px;
 }
 %doButton {
   color: $white;
-  background-color: $view_Title_font_color_Blue;
+  background-color: $dialog_blue;
 }
 
 %checkCircleImage {
@@ -1997,48 +2075,7 @@ $mwidth: 1366px;
       }
     }
   }
-  #authCopyArea {
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    div {
-      &.authCopyArea {
-        position: absolute;
-        width: 98%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        -ms-transform: translate(-50%, -50%);
-        z-index: 11;
-        padding: 5%;
-        border-top: 4px solid $view_Title_background_Main;
-        background-color: $white;
-        border-radius: 5px;
-        button {
-          width: 120px;
-          margin: 0 auto;
-          &.doButton {
-            @extend %doButton;
-          }
-        }
-        &_Complete {
-          border: none;
-          background-color: $green;
-          text-align: center;
-          background-image: url('@/assets/checkCircle.png');
-          background-position: 20% 50%;
-          h5 {
-            @extend %h5;
-          }
-        }
-      }
-    }
-  }
+
   label {
     display: block;
     position: relative;
@@ -2071,6 +2108,11 @@ $mwidth: 1366px;
       width: 120px;
       &.doButton {
         @extend %doButton;
+
+        &.v-btn--disabled {
+          color: $gray;
+          background-color: $light-gray;
+        }
       }
     }
   }

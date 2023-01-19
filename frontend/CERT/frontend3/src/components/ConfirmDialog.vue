@@ -12,10 +12,10 @@
       <v-row v-if="listBox" class="mt-3">
         <div class="grayBox">
           <ul>
-            <li>{{ listBox.list1 }}</li>
-            <li>{{ listBox.list2 }}</li>
-            <li>{{ listBox.list3 }}</li>
-            <li>{{ listBox.list4 }}</li>
+            <li v-if="listBox.list1">{{ listBox.list1 }}</li>
+            <li v-if="listBox.list2">{{ listBox.list2 }}</li>
+            <li v-if="listBox.list3">{{ listBox.list3 }}</li>
+            <li v-if="listBox.list4">{{ listBox.list4 }}</li>
           </ul>
         </div>
       </v-row>
