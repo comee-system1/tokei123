@@ -171,6 +171,7 @@
                 v-model="dialogAdminMail"
               />
               <v-tooltip
+                class="tooltips"
                 data-html="true"
                 :text="dialogMessageMail"
                 max-width="420"
@@ -483,9 +484,8 @@ $height: 24px;
     border: 1px solid $dialog_red;
     color: $red;
     &.v-btn--disabled {
-      background-color: $light-gray;
-      color: $gray;
-      border: 1px solid $light-gray;
+      color: rgba(var(--v-theme-on-surface), 0.26);
+      background: rgb(var(--v-theme-surface));
     }
   }
   .registButton {

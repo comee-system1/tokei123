@@ -204,7 +204,7 @@
     </v-row>
     <v-row class="mt-3 bottomButtonArea" no-gutters>
       <div class="text-end">
-        <label class="message"
+        <label class="message" v-if="activateCancel == false"
           >変更内容を保存する場合は登録を行ってください</label
         >
         <v-btn
@@ -217,7 +217,9 @@
         >
       </div>
       <div class="text-end">
-        <v-btn color="blue" height="24">権限登録</v-btn>
+        <v-btn class="doButton" :disabled="activateCancel" height="24"
+          >権限登録</v-btn
+        >
       </div>
     </v-row>
 
@@ -274,7 +276,11 @@
           <div class="mt-3 pb-2 borderbottom">
             <label>
               コピー元職員
-              <v-tooltip :text="`${dialogAuthFrom}`" max-width="420">
+              <v-tooltip
+                class="tooltips"
+                :text="`${dialogAuthFrom}`"
+                max-width="420"
+              >
                 <template v-slot:activator="{ props }">
                   <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
                 </template>
@@ -299,7 +305,11 @@
           <div class="mt-3">
             <label>
               コピー先職員
-              <v-tooltip :text="`${dialogAuthTo}`" max-width="420">
+              <v-tooltip
+                :text="`${dialogAuthTo}`"
+                max-width="420"
+                class="tooltips"
+              >
                 <template v-slot:activator="{ props }">
                   <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
                 </template>
@@ -497,7 +507,11 @@
                 class="v-card ml-1 box mdl pl-1"
                 :disabled="dialogAccount == 2 ? true : false"
               />
-              <v-tooltip :text="`${dialogMessageID}`" max-width="420">
+              <v-tooltip
+                :text="`${dialogMessageID}`"
+                max-width="420"
+                class="tooltips"
+              >
                 <template v-slot:activator="{ props }">
                   <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
                 </template>
@@ -517,7 +531,11 @@
                 class="v-card ml-1 box mdl pl-1"
                 :disabled="dialogAccount == 2 ? true : false"
               />
-              <v-tooltip :text="`${dialogMessageMail}`" max-width="500">
+              <v-tooltip
+                :text="`${dialogMessageMail}`"
+                max-width="500"
+                class="tooltips"
+              >
                 <template v-slot:activator="{ props }">
                   <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
                 </template>
@@ -535,7 +553,11 @@
               >
                 利用中
               </div>
-              <v-tooltip :text="`${dialogMessageUse}`" max-width="540">
+              <v-tooltip
+                :text="`${dialogMessageUse}`"
+                max-width="540"
+                class="tooltips"
+              >
                 <template v-slot:activator="{ props }">
                   <v-icon class="questionIcon" v-bind="props">mdi-help</v-icon>
                 </template>
@@ -1479,17 +1501,36 @@ export default {
       this.searched();
       this.getAccountCount();
       flexGrid.frozenColumns = this.columnArray.length;
-      //フィルタ表示切替
+      // フィルタ表示切替
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseover', (e) => {
-        // アカウント管理のマウスオーバー
         var ht = flexGrid.hitTest(e);
-        let statusString = 'accountMouseOverStatus';
-        let authString = 'headerAuthMouseOver';
-        let authBodyString = 'authMouseOver';
-        let headerElem = document.getElementsByClassName(authBodyString);
-        for (let i = 0; i < headerElem.length; i++) {
-          headerElem[i].style.backgroundColor = sysConst.COLOR.white;
+
+        // グランドメニュー権限セルマウスオーバー
+        let groundStatus = 'authMouseOverStatus';
+        let groundElem = document.getElementsByClassName(groundStatus);
+        for (let i = 0; i < groundElem.length; i++) {
+          groundElem[i].style.backgroundColor = sysConst.COLOR.white;
         }
+        if (ht.panel == flexGrid.cells) {
+          let cellElement = document.elementFromPoint(e.clientX, e.clientY);
+          if (cellElement.className.indexOf(groundStatus) > -1) {
+            let str = cellElement.className;
+            let target = 'authMouseOverStatusCode--';
+            let string = str.substring(str.indexOf(target) + target.length);
+            let elem = document.getElementsByClassName(target + string);
+            for (let i = 0; i < elem.length; i++) {
+              elem[i].style.backgroundColor = sysConst.COLOR.dialog_hover;
+            }
+          }
+        }
+
+        // グランドメニュー権限ヘッダmouseover
+        let authString = 'headerAuthMouseOver';
+        // let authBodyString = 'authMouseOver';
+        // let headerElem = document.getElementsByClassName(authBodyString);
+        // for (let i = 0; i < headerElem.length; i++) {
+        //   headerElem[i].style.backgroundColor = sysConst.COLOR.white;
+        // }
         if (ht.panel == flexGrid.columnHeaders) {
           let headerElement = document.elementFromPoint(e.clientX, e.clientY);
           if (headerElement.className.indexOf(authString) > -1) {
@@ -1505,11 +1546,13 @@ export default {
           }
         }
 
+        // アカウント管理のマウスオーバー
+        // セルに付与されたclass名より色を変更する
+        let statusString = 'accountMouseOverStatus';
         let elem = document.getElementsByClassName(statusString);
         for (let i = 0; i < elem.length; i++) {
           elem[i].style.backgroundColor = sysConst.COLOR.white;
         }
-
         if (ht.panel == flexGrid.cells) {
           let cellElement = document.elementFromPoint(e.clientX, e.clientY);
           if (cellElement.className.indexOf(statusString) > -1) {
@@ -1547,7 +1590,7 @@ export default {
             let temp = flexGrid.itemsSource[ht.row];
             _self.dialogSyokuinName = temp.syokuinName; // 職員名
             // アカウント発行 未登録の場合は0
-            if (temp.accountStatus == this.filterArray[3].value) {
+            if (temp.accountStatus == _self.filterArray[3].value) {
               _self.dialogAccount = 2;
             } else {
               _self.dialogAccount = 1;
@@ -1937,6 +1980,7 @@ export default {
             wijmo.addClass(e.cell, 'setCheckIconStop');
           }
         }
+        // アカウント管理用背景色変更用class付与
         if (
           e.col == accountRowCount - 2 ||
           e.col == accountRowCount - 1 ||
@@ -1960,6 +2004,13 @@ export default {
           ) {
             wijmo.addClass(e.cell, 'authMouseOver');
             wijmo.addClass(e.cell, 'authMouseOverBody--' + e.col);
+
+            // グランドメニュー権限セル部分mouseover用class付与
+            wijmo.addClass(e.cell, 'authMouseOverStatus');
+            wijmo.addClass(
+              e.cell,
+              'authMouseOverStatusCode--' + tmpitem.syokuinCode + '_' + e.col
+            );
           }
         }
 
@@ -1985,6 +2036,7 @@ export default {
      */
     authClick(mine) {
       // クリア押下時はid:1に戻す
+      /*
       if (mine == 0) {
         // グランドメニュー権限のデータをクリア
         let editColumn = '';
@@ -1998,6 +2050,7 @@ export default {
         this.activateCancel = false; // キャンセルボタン有効
         mine = 1;
       }
+      */
       this.authBtnActive = [];
       this.authBtnActive[mine] = true;
       this.authBtnSelected = mine; // 権限入力の選択値
@@ -2110,8 +2163,8 @@ $mwidth: 1366px;
         @extend %doButton;
 
         &.v-btn--disabled {
-          color: $gray;
-          background-color: $light-gray;
+          color: rgba(var(--v-theme-on-surface), 0.26);
+          background: rgb(var(--v-theme-surface));
         }
       }
     }
@@ -2313,7 +2366,6 @@ div#accountsData {
   }
   #syokuinListGrid {
     min-width: $mwidth;
-
     position: relative;
     #syokuinViewDataNone {
       position: absolute;
@@ -2343,7 +2395,7 @@ div#accountsData {
         background-color: $selected_color;
       }
       &.backgroundPink {
-        background-color: $pink;
+        background-color: $dialog_pink;
       }
       &.backgroundWhite {
         background-color: $white;
@@ -2406,6 +2458,14 @@ div#accountsData {
           top: 0;
           left: auto;
           right: 10px;
+          &.doButton {
+            @extend %doButton;
+
+            &.v-btn--disabled {
+              color: rgba(var(--v-theme-on-surface), 0.26);
+              background: rgb(var(--v-theme-surface));
+            }
+          }
         }
       }
     }
