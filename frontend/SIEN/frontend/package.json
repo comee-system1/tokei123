@@ -18,7 +18,7 @@
     "@grapecity/wijmo.vue2.all": "^5.20213.834",
     "@types/crypto-js": "^4.1.1",
     "autoprefixer": "^10.4.4",
-    "axios": "^0.26.1",
+    "axios": "^1.2.1",
     "bootstrap": "^5.1.3",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.8.3",

@@ -15,12 +15,12 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon v-if="userdrawer" dense
-                      >mdi-account-arrow-left-outline</v-icon
-                    >
-                    <v-icon v-else dense
-                      >mdi-account-arrow-right-outline</v-icon
-                    >
+                    <v-icon v-if="userdrawer" dense>
+                      mdi-account-arrow-left-outline
+                    </v-icon>
+                    <v-icon v-else dense>
+                      mdi-account-arrow-right-outline
+                    </v-icon>
                     選択
                   </v-btn>
                 </template>
@@ -40,35 +40,14 @@
             </v-row>
           </v-row>
           <v-row no-gutters class="rowStyle mt-1 mb-1">
-            <v-card
-              class="koumokuTitle titleMain wMin pa-1 mr-1 ml-1"
-              outlined
-              tile
-            >
-              入力
+            <v-card elevation="3" height="19" class="mr-1">
+              <a class="addBtn" @click="addClick">新規作成</a>
             </v-card>
-            <v-btn-toggle
-              class="flex-wrap mr-1"
-              color="light-blue darken-4"
-              mandatory
-            >
-              <v-btn
-                v-for="n in inputList"
-                :key="n.val"
-                elevation="2"
-                outlined
-                width="25"
-                height="19"
-                @click="inputClicked(n.val)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
             <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
               計画作成日
             </v-card>
             <v-card class="koumokuData mr-1 pl-1" width="125" tile outlined>
-              {{ viewdataAll.krekiymdD }}
+              {{ viewdataAll.krekiymdD2 }}
             </v-card>
             <v-card class="koumokuTitle titleMain wMin pa-1 mr-1" outlined tile>
               実施日
@@ -77,7 +56,7 @@
               class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none"
+              style="border: none; margin-top: -1px"
               outlined
               tile
             >
@@ -106,7 +85,7 @@
             <input
               type="checkbox"
               class="mr-1"
-              v-model="viewdataAll.doui_ymdD"
+              v-model="viewdataAll.doui"
               @change="douiCheck()"
             />
             <v-card class="koumokuData pl-1" width="125" outlined tile>
@@ -137,47 +116,45 @@
               hide-overlay
               :width="200"
               :min-width="200"
-              style="font-size: 14px"
             >
-              <v-list class="pa-0 ma-0" dense>
-                <v-card class="drawerTitle pa-1" outlined tile :height="30">
-                  履歴参照
-                  <v-btn
-                    elevation="2"
-                    icon
-                    absolute
-                    top
-                    right
-                    height="20"
-                    width="20"
-                    v-on:click.stop="drawer = !drawer"
-                    class="mt-1"
-                    color="secondary"
-                  >
-                    <v-icon dark small> mdi-close </v-icon></v-btn
-                  >
-                </v-card>
-                <template v-for="item in rirekiList">
-                  <v-list-item
-                    class="pa-0 ma-0"
-                    dense
-                    :key="`first-${item.index}`"
-                    @click="rirekiClicked(item)"
-                  >
-                    <v-list-item-content class="pa-0 pl-2 ma-0">
-                      <table>
-                        <tr>
-                          <td width="10%" align="center">{{ item.no }}</td>
-                          <td width="40%" align="center">{{ item.day }}</td>
-                          <td width="10%" align="left">{{ item.kanryou }}</td>
-                          <td width="40%" align="left">{{ item.tantou }}</td>
-                        </tr>
-                      </table>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-divider :key="`second-${item.index}`" />
-                </template>
-              </v-list>
+              <v-card class="drawerTitle pa-1" outlined tile :height="30">
+                履歴参照
+                <v-btn
+                  elevation="2"
+                  icon
+                  absolute
+                  top
+                  right
+                  height="20"
+                  width="20"
+                  v-on:click.stop="drawer = !drawer"
+                  class="mt-1"
+                  color="secondary"
+                >
+                  <v-icon dark small> mdi-close </v-icon></v-btn
+                >
+              </v-card>
+              <v-card tile flat class="pa-1">
+                <wj-flex-grid
+                  id="monitoringHoukokushoRirekiGrid"
+                  :headersVisibility="'Column'"
+                  :autoGenerateColumns="false"
+                  :imeEnabled="true"
+                  :allowAddNew="false"
+                  :allowDelete="false"
+                  :allowPinning="false"
+                  :allowMerging="'AllHeaders'"
+                  :allowResizing="true"
+                  :allowSorting="false"
+                  :allowDragging="false"
+                  :selectionMode="'Row'"
+                  :initialized="onInitializeRirekiGrid"
+                  :showMarquee="true"
+                  :itemsSourceChanged="onItemsSourceChanged"
+                  :itemsSource="rirekiList"
+                >
+                </wj-flex-grid>
+              </v-card>
             </v-navigation-drawer>
           </v-row>
           <div class="scrollbody">
@@ -235,7 +212,6 @@
                 :initialized="onInitializeIcrnGrid"
                 :showMarquee="true"
                 :formatItem="onFormatItem"
-                :itemsSourceChanging="onItemsSourceChanging"
                 :itemsSourceChanged="onItemsSourceChanged"
                 :itemsSource="viewdataAll.monidetail"
               >
@@ -321,15 +297,11 @@
             <input
               type="checkbox"
               class="mr-1"
-              v-model="viewdataAll.kanryou"
+              v-model="viewdataAll.kanryo"
               @change="douiCheck()"
             />
-            <v-card
-              class="koumokuData pa-1 pr-1 mr-1"
-              width="200"
-              outlined
-              tile
-            >
+            <v-card class="koumokuData mr-1" width="200" outlined tile>
+              {{ viewdataAll.kanryoymdD2 }}
             </v-card>
             <v-btn
               elevation="2"
@@ -344,6 +316,116 @@
       </v-row>
     </v-container>
     <!-- ダイアログエリア -->
+    <dialog id="modeless_dialog">
+      <v-card class="common_modeless_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          モニタリング未作成
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="modeless_dialogClose"
+          class="dialog_close mt-1"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="pl-1">
+          モニタリング未作成です。<br />新規作成ボタンから作成してください。
+        </v-row>
+      </v-card>
+    </dialog>
+    <v-dialog v-model="createflg" width="350" persistent>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          モニタリング報告書 新規作成
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="createflg = false"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+            width="100"
+          >
+            利用者名
+          </v-card>
+          <v-card class="koumokuData pl-1" tile outlined width="200">
+            {{ userData.riyocode }} {{ userData.names }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            計画作成日
+          </v-card>
+          <select
+            class="customSelectBox hHigh mr-1"
+            v-model="selMonitoring"
+            style="width: 150px"
+          >
+            <option
+              v-for="val in monitoringList"
+              :key="val.val"
+              :value="val.val"
+            >
+              {{ val.name }}
+            </option>
+          </select>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            実施日
+          </v-card>
+          <v-card
+            class="mr-1"
+            color="transparent"
+            height="100%"
+            style="border: none"
+            outlined
+            tile
+          >
+            <v-btn
+              @click="inputCalendarClick(0)"
+              tile
+              outlined
+              elevation="2"
+              width="150px"
+              height="24"
+              class="btnymd pa-0"
+              style="top: 1px"
+              >{{ getYmd() }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+          </v-card>
+        </v-row>
+
+        <v-row no-gutters class="rowStyle_Input">
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="copyClicked()">
+            新規作成
+          </v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
+
     <v-dialog
       v-model="datepicker_dialog"
       width="200"
@@ -389,7 +471,7 @@
       >
       </v-date-picker>
     </v-dialog>
-    <v-dialog v-model="douiInputflg" width="350">
+    <v-dialog v-model="douiInputflg" width="350" persistent>
       <v-card class="common_dialog pb-1">
         <v-card-title class="dialog_title mb-1">
           モニタリング 利用者同意・署名
@@ -398,7 +480,7 @@
           elevation="2"
           icon
           small
-          @click="header_dialog_close()"
+          @click="header_dialog_close(true)"
           class="dialog_close mt-2"
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
@@ -411,7 +493,7 @@
           >
             利用者名
           </v-card>
-          <v-card class="koumokuData pa-1 pb-3" tile outlined width="200">
+          <v-card class="koumokuData pl-1" tile outlined width="200">
             {{ userData.riyocodeD }} {{ userData.names }}
           </v-card>
         </v-row>
@@ -422,7 +504,7 @@
             outlined
             tile
           >
-            同意日
+            完了日
           </v-card>
           <v-btn
             @click="inputCalendarClick(7)"
@@ -614,6 +696,20 @@ export default {
           align: 'left',
         },
       ],
+      rirekiHeaderList: [
+        {
+          dataname: 'mymdD',
+          title: '実施日',
+          width: '*',
+          align: 'center',
+        },
+        {
+          dataname: 'kanryoymdD',
+          title: '完了日',
+          width: '*',
+          align: 'center',
+        },
+      ],
       viewdataAll: { housin: '', jyoukyou: '', viewdata: [] },
       kikanYmd: '',
       douiYmd: '',
@@ -626,6 +722,7 @@ export default {
       datepickerKanryouYmd_dialog: false,
       datepickerDouiYmd_dialog: false,
       screenFlag: false,
+      createflg: false,
       douiInputflg: false,
       filteryoteisyaIcrn: {},
       targetYmd: '',
@@ -634,10 +731,6 @@ export default {
       douiKbnList: [
         { val: 0, name: '本人' },
         { val: 1, name: '代理人' },
-      ],
-      inputList: [
-        { val: 0, name: '新規' },
-        { val: 1, name: '修正' },
       ],
       kekkaIndex: 0,
       kekkaList: [
@@ -649,32 +742,17 @@ export default {
       loading: false,
       marginDefault: true,
       leftWidth: '275px',
-      rirekiList: [
-        {
-          index: 0,
-          no: 3,
-          day: '2020/01/01',
-          kanryou: '☐',
-          tantou: '担当小',
-        },
-        {
-          index: 1,
-          no: 2,
-          day: '2019/01/01',
-          kanryou: '☑',
-          tantou: '担当次',
-        },
-        {
-          index: 2,
-          no: 1,
-          day: '2018/01/01',
-          kanryou: '☑',
-          tantou: '担当三',
-        },
-      ],
+      rirekiList: [],
       userdrawer: true,
       drawer: false,
       mainGrid: {},
+      monitoringList: [
+        { val: 0, name: '未選択' },
+        { val: 1, name: '担当者A' },
+        { val: 2, name: '担当者B' },
+        { val: 3, name: '担当者C' },
+      ],
+      selMonitoring: 0,
     };
   },
   mounted() {
@@ -764,14 +842,7 @@ export default {
         if (ht.panel == flexGrid.cells) {
           let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
           if (ht.col == 0) {
-            flexGrid.refreshRange(
-              new wjGrid.CellRange(
-                ht.row,
-                3,
-                ht.row,
-                flexGrid.columns.length - 1
-              )
-            );
+            flexGrid.refresh();
           }
           if (tmpitem.jissi && e.target.tagName == 'BUTTON') {
             if (ht.col == 7) {
@@ -857,10 +928,46 @@ export default {
       }
       flexGrid.endUpdate();
     },
-    onItemsSourceChanging(flexGrid) {
+    onInitializeRirekiGrid(flexGrid) {
       flexGrid.beginUpdate();
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          this.setViewData(tmpitem.cntid);
+        }
+      });
+
+      // ヘッダの追加と設定
+      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header;
+      flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
+      flexGrid.alternatingRowStep = 0;
+      // ヘッダ文字列の設定
+      for (
+        let colIndex = 0;
+        colIndex < this.rirekiHeaderList.length;
+        colIndex++
+      ) {
+        flexGrid.columns.insert(colIndex, new wjGrid.Column());
+        let col = flexGrid.columns[colIndex];
+        col.wordWrap = true;
+        col.binding = this.rirekiHeaderList[colIndex].dataname;
+        col.name = this.rirekiHeaderList[colIndex].dataname;
+        col.header = this.rirekiHeaderList[colIndex].title;
+        col.width = this.rirekiHeaderList[colIndex].width;
+        col.align = this.rirekiHeaderList[colIndex].align;
+        col.allowResizing = true;
+        col.isReadOnly = true;
+        flexGrid.columnHeaders.setCellData(
+          0,
+          colIndex,
+          this.rirekiHeaderList[colIndex].title
+        );
+      }
       flexGrid.endUpdate();
     },
+
     onItemsSourceChanged(flexGrid) {
       this.screenFlag = false;
       this.loading = false;
@@ -925,17 +1032,28 @@ export default {
       }
     },
     searchClicked() {
-      // 初期データ読込
-      this.setViewData();
+      // // 初期データ読込
+      // this.setViewData();
+    },
+    modeless_dialogOpen() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.show();
+    },
+    modeless_dialogClose() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.close();
     },
     setDataFromYoteiList(item, ymItem) {
       this.userData.riid = item.intcode;
       this.userData.riyocode = item.rcodeD;
       this.userData.names = item.rname;
+      console.log('ymItem');
+      console.log(item);
       console.log(ymItem);
-      this.setViewData();
+      this.setViewData(ymItem.cntID);
+      this.getRireki();
     },
-    setViewData() {
+    setViewData(targetcntid) {
       this.screenFlag = true;
       this.loading = true;
       let params = {
@@ -944,14 +1062,17 @@ export default {
         keitype: 1,
         jigyoid: 62,
         intcode: this.userData.riid,
-        cntid: 1,
+        cntid: targetcntid,
       };
-      // cntid: 1,
       console.log(params);
       getConnect('/moni', params).then((result) => {
         console.log(12345);
         console.log(result);
-        this.createViewData(result);
+        if (result.length == 0) {
+          this.viewdataAll = {};
+        } else {
+          this.createViewData(result);
+        }
         this.screenFlag = false;
         this.loading = false;
       });
@@ -959,7 +1080,10 @@ export default {
     createViewData(apiresult) {
       if (apiresult.length > 0) {
         this.viewdataAll = apiresult[0];
-        if (apiresult[0].doui_ymd != undefined) {
+        if (
+          apiresult[0].doui_ymd != undefined &&
+          apiresult[0].doui_ymd.length == 8
+        ) {
           this.pickerDoui =
             this.viewdataAll.doui_ymd.slice(0, 4) +
             '-' +
@@ -968,7 +1092,8 @@ export default {
             this.viewdataAll.doui_ymd.substring(6, 8);
           this.douiYmd = dayjs(this.pickerDoui);
         }
-        if (apiresult[0].mymd != undefined) {
+        this.kikanYmd = dayjs();
+        if (apiresult[0].mymd != undefined && apiresult[0].mymd.length == 8) {
           this.picker =
             this.viewdataAll.mymd.slice(0, 4) +
             '-' +
@@ -1109,8 +1234,6 @@ export default {
     setUserSelectPoint(row) {
       // ユーザ選択処理はここで行う
       this.userData = row;
-
-      this.setViewData();
     },
     setUserdata(item) {
       console.log(item);
@@ -1118,8 +1241,47 @@ export default {
         // ユーザ選択処理はここで行う
         this.userData = item;
 
-        this.setViewData();
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+          keitype: 1,
+          jigyoid: 62,
+          intcode: this.userData.riid,
+        };
+        console.log(params);
+        getConnect('/moniSaishinReki', params).then((result) => {
+          console.log(999);
+          console.log(result);
+          if (result.length == 0) {
+            this.viewdataAll = {};
+          } else {
+            this.createViewData(result);
+          }
+        });
+
+        this.getRireki();
       }
+    },
+    getRireki() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        jigyoid: 62,
+        intcode: this.userData.riid,
+      };
+      console.log(params);
+      this.rirekiList = [];
+      this.viewdataAll = {};
+      getConnect('/moniReki', params).then((result) => {
+        console.log('/moniReki');
+        console.log(result);
+        if (result.length == 0) {
+          this.modeless_dialogOpen();
+        } else {
+          this.modeless_dialogClose();
+        }
+        this.rirekiList = result;
+      });
     },
     getSelectUserChildComponent(data) {
       this.userList = data;
@@ -1129,10 +1291,7 @@ export default {
     },
     rirekiClicked(rirekiObj) {
       console.log(rirekiObj);
-      // this.drawer = !this.drawer;
-    },
-    inputClicked(kbn) {
-      console.log(kbn);
+      this.setViewData(rirekiObj.cntid);
     },
     douiCheck() {
       if (!this.userData.names) {
@@ -1140,11 +1299,17 @@ export default {
       }
       this.douiInputflg = true;
     },
-    header_dialog_close() {
+    header_dialog_close(isCancel) {
+      if (isCancel) {
+        this.viewdataAll.doui = 0;
+      }
       this.douiInputflg = false;
     },
     kekkaClicked(index) {
       this.kekkaIndex = index;
+    },
+    addClick() {
+      this.createflg = true;
     },
   },
 };
@@ -1204,7 +1369,8 @@ div#monitoringHoukokusho {
     overflow-y: scroll;
   }
 
-  #monitoringHoukokushoicrnGrid {
+  #monitoringHoukokushoicrnGrid,
+  #monitoringHoukokushoRirekiGrid {
     color: $font_color;
     font-size: $cell_fontsize;
     // width: auto;

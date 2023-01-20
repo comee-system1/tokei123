@@ -16,12 +16,6 @@
 
 <script>
 import UketukeTouroku from '../../components/UketukeTouroku.vue';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
 
 export default {
   props: {

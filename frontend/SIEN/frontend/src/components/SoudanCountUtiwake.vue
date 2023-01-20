@@ -118,10 +118,10 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="mr-1 pa-1" height="20" @click="searchClicked()">
-              検索
-            </v-btn>
           </span>
+          <v-btn class="ml-1 pa-1" height="18" @click="searchClicked()">
+            検索
+          </v-btn>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mt-1">
@@ -420,10 +420,10 @@ export default {
       datepickerYmd_dialog: false,
       datepickerSym_dialog: false,
       datepickerEym_dialog: false,
-      targetYmd: '',
+      targetYmd: dayjs().format('YYYYMMDD'),
       targetSYm: '',
       targetEYm: '',
-      drawer: true,
+      drawer: false,
       dispIndex: 0,
       dispList: [
         { val: 0, name: '日指定' },
@@ -469,6 +469,8 @@ export default {
       this.calculateWindowHeight();
     });
     this.setPrintEvent();
+    // 初期データ読込
+    this.setViewData(true);
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -768,7 +770,7 @@ export default {
       this.selectedYmd = null;
       if (isAll) {
         let params = {
-          uniqid: 1,
+          uniqid: 3,
           traceid: 123,
           pJigyoid: 43,
           pTaisyo: this.selDispGridIndex == 0 ? 1 : 2,

@@ -12,6 +12,15 @@
 <script>
 import HeaderAndNav from './components/HeaderAndNav';
 import * as wjcCore from '@grapecity/wijmo';
+// 下が抜けるとgridがUnknown custom elementエラーとなる
+import '@grapecity/wijmo.cultures/wijmo.culture.ja';
+import '@grapecity/wijmo.styles/wijmo.css';
+import '@grapecity/wijmo.vue2.grid';
+import '@grapecity/wijmo.touch';
+import '@grapecity/wijmo.vue2.grid.grouppanel';
+import '@grapecity/wijmo.vue2.grid.filter';
+import '@grapecity/wijmo.vue2.grid.search';
+import '@grapecity/wijmo.vue2.input';
 
 // 開発用
 // wjcCore.setLicenseKey(
@@ -23,7 +32,6 @@ wjcCore.setLicenseKey(
 );
 export default {
   name: 'App',
-  props: ['keycloak'],
   components: {
     HeaderAndNav,
   },

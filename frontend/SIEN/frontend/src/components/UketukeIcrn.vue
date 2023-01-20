@@ -9,7 +9,13 @@
         width="100"
         min-width="100"
       >
-        <v-card class="drawerTitle pa-1" outlined tile :height="30">
+        <v-card
+          class="drawerTitle pa-1"
+          style="text-align: left"
+          outlined
+          tile
+          :height="30"
+        >
           日付選択
           <v-btn
             elevation="2"
@@ -131,11 +137,11 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="ml-1" height="19" @click="searchClicked()">
-              <v-icon dense>mdi-magnify</v-icon>
-              検索
-            </v-btn>
           </span>
+          <v-btn class="ml-1" height="18" @click="searchClicked()">
+            <v-icon dense>mdi-magnify</v-icon>
+            検索
+          </v-btn>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
@@ -328,8 +334,8 @@ export default {
         },
         {
           dispkbn: 1,
-          dataname: 'jigyouKbnD',
-          title: '事業\n区分',
+          dataname: 'sykkbnkigo',
+          title: '入力\n区分',
           width: '0.5*',
           align: 'center',
         },
@@ -349,18 +355,18 @@ export default {
         },
         {
           dispkbn: 1,
-          dataname: 'syokai',
+          dataname: 'shinkimark',
           title: '新\n規',
           width: '0.5*',
           align: 'center',
         },
-        {
-          dispkbn: 1,
-          dataname: 'kasanD',
-          title: '加\n算',
-          width: '0.5*',
-          align: 'center',
-        },
+        // {
+        //   dispkbn: 1,
+        //   dataname: 'kasanD',
+        //   title: '加\n算',
+        //   width: '0.5*',
+        //   align: 'center',
+        // },
         {
           dispkbn: 0,
           dataname: 'sdnhourk',
@@ -428,8 +434,8 @@ export default {
           dispkbn: 1,
           dataname: 'syoyo',
           title: '所要\n時間',
-          width: '1*',
-          align: 'center',
+          width: '0.5*',
+          align: 'right',
         },
         {
           dispkbn: 1,
@@ -487,10 +493,10 @@ export default {
       screenFlag: false,
       tourokuScreenFlag: false,
       filter: {},
-      targetYmd: '',
+      targetYmd: dayjs().format('YYYYMMDD'),
       targetSYm: '',
       targetEYm: '',
-      drawer: true,
+      drawer: false,
       dispIndex: 0,
       dispList: [
         { val: 0, name: '日指定' },
@@ -498,13 +504,15 @@ export default {
       ],
       inputRef: this.getDispKbn(),
       mainGrid: [],
-      thickList: [2, 9],
+      thickList: [2, 8],
     };
   },
   mounted() {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
     this.setPrintEvent();
+    // 初期データ読込
+    this.setViewData(true);
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -639,7 +647,7 @@ export default {
       if (e.panel == flexGrid.columnHeaders) {
         if (e.col < 3) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
-        } else if (e.col < 10) {
+        } else if (e.col < 9) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
         } else {
@@ -655,11 +663,13 @@ export default {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
-        if (e.col == 9) {
-          e.cell.innerHTML =
-            wjCore.escapeHtml(e.cell.innerHTML) +
-            ' ' +
-            wjCore.escapeHtml(tmpitem.sdnnam);
+        if (e.col == 8) {
+          if (tmpitem.sdnkanid != 2) {
+            e.cell.innerHTML =
+              wjCore.escapeHtml(e.cell.innerHTML) +
+              ' ' +
+              wjCore.escapeHtml(tmpitem.sdnnam);
+          }
         }
         // if (e.col == 14) {
         //   e.cell.innerHTML =
@@ -910,6 +920,10 @@ export default {
           this.kikanYmd.format('MM') +
           '-01';
         this.$refs.mdselect.setYm(tmp);
+        if (kbn == 1 || kbn == 2) {
+          this.targetYmd = this.kikanYmd.format('YYYYMMDD');
+          this.setViewData(true);
+        }
       }
     },
     dateSelect() {
@@ -939,6 +953,8 @@ export default {
     },
     touroku_dialog_close() {
       this.tourokuScreenFlag = false;
+      // データ読込
+      this.setViewData(true);
     },
     jigyoKbnclick(kbn) {
       console.log(kbn);

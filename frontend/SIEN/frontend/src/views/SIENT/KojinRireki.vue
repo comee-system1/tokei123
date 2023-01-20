@@ -43,7 +43,7 @@
               class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none"
+              style="border: none; margin-top: -1px"
               outlined
               tile
             >
@@ -66,7 +66,7 @@
               class="mr-1"
               color="transparent"
               height="100%"
-              style="border: none"
+              style="border: none; margin-top: -1px"
               outlined
               tile
             >
@@ -157,6 +157,7 @@
               :allowDragging="false"
               :selectionMode="'Row'"
               :isReadOnly="true"
+              :alternatingRowStep="0"
               :initialized="onInitializeIcrnGrid"
               :formatItem="onFormatItemIcrn"
               :itemsSourceChanging="onItemsSourceChanging"
@@ -283,6 +284,61 @@ export default {
         },
         {
           dispkbn: 1,
+          dataname: 'jikan',
+          title: '時間',
+          chutitle: '',
+          kbntitle: '',
+          width: '3*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sdntiork',
+          title: '事\n区',
+          chutitle: '',
+          kbntitle: '',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sinki',
+          title: '新\n規',
+          chutitle: '',
+          kbntitle: '',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sdnhourk',
+          title: '支援\n方法',
+          chutitle: '',
+          kbntitle: '',
+          width: '2*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sdnkanrk',
+          title: '関係/相談者',
+          chutitle: '',
+          kbntitle: '',
+          width: '3*',
+          align: 'left',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sinki',
+          title: '支援項目',
+          chutitle: '',
+          kbntitle: '',
+          width: '3*',
+          align: 'left',
+        },
+
+        {
+          dispkbn: 2,
           dataname: 'kojin_naiiyou',
           dataname2: 'cskmknm',
           title: '内容',
@@ -292,7 +348,7 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'keikakusakusei',
           title: '様\n式',
           chutitle: '',
@@ -301,7 +357,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'P_tantousyakaigi',
           title: '担\n会\n議',
           chutitle: '',
@@ -310,7 +366,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jyukyukoufu',
           title: '障\n害\n者',
           chutitle: '',
@@ -319,7 +375,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jyukyukoufu',
           title: '障\n害\n児',
           chutitle: '',
@@ -328,7 +384,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jyukyukoufu',
           title: '地\n域\n相',
           chutitle: '',
@@ -337,7 +393,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jissi',
           title: '予\n定\n月',
           chutitle: '',
@@ -346,7 +402,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jissi',
           title: '終\n期\n月',
           chutitle: '',
@@ -355,7 +411,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'kbn',
           title: '区分',
           chutitle: '中止・延期',
@@ -364,7 +420,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'kbn',
           title: '理由',
           chutitle: '中止・延期',
@@ -373,7 +429,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jikaiyotei',
           title: '実\n施',
           chutitle: '',
@@ -382,7 +438,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jikaiyotei',
           title: '週\n間',
           chutitle: '',
@@ -391,7 +447,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jikaiyotei',
           title: '変\n更',
           chutitle: '案',
@@ -400,7 +456,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'jikaiyotei',
           title: '更\n新',
           chutitle: '案',
@@ -409,7 +465,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 1,
+          dispkbn: 2,
           dataname: 'M_tantousyakaigi',
           title: '担\n会\n議',
           chutitle: '',
@@ -418,7 +474,7 @@ export default {
           align: 'center',
         },
         {
-          dispkbn: 2,
+          dispkbn: 3,
           dataname: 'sdnhourk',
           title: '内容',
           chutitle: '',
@@ -427,7 +483,7 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 2,
+          dispkbn: 3,
           dataname: 'sdnhourk',
           title: '担当者\n会議',
           chutitle: '',
@@ -436,7 +492,7 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 2,
+          dispkbn: 3,
           dataname: 'sdnhourk',
           title: '支\n援',
           chutitle: '',
@@ -445,7 +501,16 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 0,
+          dispkbn: 1,
+          dataname: 'cskmknm',
+          title: '内容',
+          chutitle: '',
+          kbntitle: '',
+          width: sysConst.GRD_COL_WIDTH.Naiyou,
+          align: 'left',
+        },
+        {
+          dispkbn: 4,
           dataname: 'sdnhourk',
           title: '方法',
           chutitle: '',
@@ -454,7 +519,7 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 0,
+          dispkbn: 4,
           dataname: 'naiyo',
           title: '内容',
           chutitle: '',
@@ -463,7 +528,34 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 0,
+          dispkbn: 1,
+          dataname: 'sdntiork',
+          title: 'ピ\nア\nカ',
+          chutitle: '',
+          kbntitle: '',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'sdntiork',
+          title: 'ラ\nン\nク',
+          chutitle: '',
+          kbntitle: '',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'syoyo',
+          title: '所\n要\n時',
+          chutitle: '',
+          kbntitle: '',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 4,
           dataname: 'kasankoumoku',
           title: '加算項目',
           chutitle: '',
@@ -582,12 +674,26 @@ export default {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
 
-        if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
-          if (this.headerList[colIndex].dispkbn == 1) {
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+          if (
+            this.headerList[colIndex].dispkbn == 1 ||
+            this.headerList[colIndex].dispkbn == 3
+          ) {
+            col.visible = false;
+          }
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          if (
+            this.headerList[colIndex].dispkbn == 1 ||
+            this.headerList[colIndex].dispkbn == 2
+          ) {
             col.visible = false;
           }
         } else {
-          if (this.headerList[colIndex].dispkbn == 2) {
+          if (
+            this.headerList[colIndex].dispkbn == 2 ||
+            this.headerList[colIndex].dispkbn == 3 ||
+            this.headerList[colIndex].dispkbn == 4
+          ) {
             col.visible = false;
           }
         }
@@ -673,31 +779,58 @@ export default {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
       } else {
-        if (e.col < 1) {
-          e.cell.style.backgroundColor =
-            sysConst.COLOR.viewTitleBackgroundOrange;
-        } else if (e.col < 7) {
-          e.cell.style.backgroundColor =
-            sysConst.COLOR.viewTitleBackgroundGreen;
-        } else if (e.col < 16) {
-          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
-        } else if (e.col < 19) {
-          e.cell.style.backgroundColor =
-            sysConst.COLOR.viewTitleBackgroundGreen;
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+          if (7 <= e.col && e.col <= 12) {
+            e.cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundGreen;
+          } else if (13 <= e.col && e.col <= 21) {
+            e.cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundBlue;
+          } else {
+            e.cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundOrange;
+          }
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          if (22 <= e.col && e.col <= 24) {
+            e.cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundGreen;
+          } else {
+            e.cell.style.backgroundColor =
+              sysConst.COLOR.viewTitleBackgroundOrange;
+          }
         } else {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundOrange;
         }
+        // if (e.col < 1) {
+        //   e.cell.style.backgroundColor =
+        //     sysConst.COLOR.viewTitleBackgroundOrange;
+        // } else if (e.col < 7) {
+        //   e.cell.style.backgroundColor =
+        //     sysConst.COLOR.viewTitleBackgroundGreen;
+        // } else if (e.col < 16) {
+        //   e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        // } else if (e.col < 19) {
+        //   e.cell.style.backgroundColor =
+        //     sysConst.COLOR.viewTitleBackgroundGreen;
+        // } else {
+        //   e.cell.style.backgroundColor =
+        //     sysConst.COLOR.viewTitleBackgroundOrange;
+        // }
         if (
           (e.row == 0 && e.col == 0) ||
-          (e.row == 0 && e.col == 1) ||
-          (e.row == 0 && e.col == 4) ||
+          // (e.row == 0 && e.col == 1) ||
+          // (e.row == 0 && e.col == 4) ||
           (e.row == 0 && e.col == 7) ||
-          (e.row == 0 && e.col == 16) ||
-          (e.row == 1 && e.col == 3) ||
-          (e.row == 1 && e.col == 6) ||
-          (e.row == 1 && e.col == 15) ||
-          (e.row == 1 && e.col == 18)
+          (e.row == 0 && e.col == 10) ||
+          (e.row == 0 && e.col == 13) ||
+          (e.row == 0 && e.col == 22) ||
+          // (e.row == 1 && e.col == 3) ||
+          // (e.row == 1 && e.col == 6) ||
+          (e.row == 1 && e.col == 9) ||
+          (e.row == 1 && e.col == 12) ||
+          (e.row == 1 && e.col == 21) ||
+          (e.row == 1 && e.col == 24)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -759,10 +892,10 @@ export default {
           traceid: 123,
           pJigyoid: 62,
           pIntcode: this.userInfo.riid,
-          pSrhym: this.startymd.format('YYYYMMDD'),
-          pSrheym: this.endymd.format('YYYYMMDD'),
+          pSymd: this.startymd.format('YYYYMMDD'),
+          pEymd: this.endymd.format('YYYYMMDD'),
         };
-        getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
+        getConnect('/Uktk', params, 'SIENT').then((result) => {
           console.log(12345);
           console.log(result);
           this.viewDataAll = result;
@@ -1015,6 +1148,9 @@ div#kojinRireki {
 
     .wj-cell {
       padding: 2px;
+    }
+    .wj-cell:not(.wj-header) {
+      background: $grid_background;
     }
 
     .wj-cells

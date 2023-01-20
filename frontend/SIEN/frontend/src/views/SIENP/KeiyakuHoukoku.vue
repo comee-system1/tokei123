@@ -19,7 +19,7 @@
             outlined
             width="150px"
             height="100%"
-            class="btnymd"
+            class="btnymd m-2"
             @click="onDatepicker(1)"
             >{{ getYmDisplay }}
             <div class="float-right">
@@ -64,7 +64,7 @@
               name="rdo"
             />
             <label :for="'target_' + val.id" class="customRadio mr-2">
-              {{ val.name }}
+              <span>{{ val.name }}</span>
             </label>
           </div>
         </v-card>

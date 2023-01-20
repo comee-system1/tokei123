@@ -5,10 +5,17 @@ let gridList = [];
 let thickRightVLineList = [];
 let subTitleList = [];
 
+
 const DIRECTION = {
     portrait: 1, // 縦
     landscape: 2, // 横
 };
+
+const SIZE = {
+    A4: 'A4',
+    A3: 'A3',
+};
+let pageSize = SIZE.A4;
 
 function setGridList(list) {
     // 印刷対象のgridを設定
@@ -24,6 +31,11 @@ function setSubTitleList(list) {
     // サブタイトルリスト
     subTitleList = list;
 }
+
+function setPageSize(size) {
+    // サイズ
+    pageSize = size;
+}
 /**************************
  * 印刷実行
  * title : 帳票タイトル
@@ -38,9 +50,9 @@ function printExec(title, dirction, gridJoinPrint = false) {
         title: ''
     });
     if (dirction == DIRECTION.portrait) {
-        doc.append('<style type="text/css">@page { size:portrait;font-family: "メイリオ"; }</style>');
+        doc.append('<style type="text/css">@page { size:' + pageSize + ' portrait;font-family: "メイリオ"; }</style>');
     } else {
-        doc.append('<style type="text/css">@page { size:landscape;font-family: "メイリオ"; }</style>');
+        doc.append('<style type="text/css">@page { size:' + pageSize + ' landscape;font-family: "メイリオ"; }</style>');
     }
     let isFirstGrd = true;
     for (let i = 0; i < gridList.length; i++) {
@@ -66,7 +78,6 @@ function renderTable(title, flex, isFirstGrd) {
     // headers
     tbl += '<thead>';
     if (isFirstGrd) {
-
         tbl += `<tr><th colspan="${flex.columnHeaders.columns.length}"><h2>` + title + `</h2></th></tr>`;
         for (let sub = 0; sub < subTitleList.length; sub++) {
             tbl += `<tr><th colspan="${flex.columnHeaders.columns.length}"><p align="left" style="font-weight: normal;">` + subTitleList[sub] + `</p></th></tr>`;
@@ -83,6 +94,11 @@ function renderTable(title, flex, isFirstGrd) {
     tbl += '<tbody">';
     for (let r = 0; r < flex.rows.length; r++) {
         tbl += renderRow(flex.cells, r, flex);
+    }
+    tbl += '</tbody>';
+    tbl += '<tbody">';
+    for (let r = 0; r < flex.columnFooters.rows.length; r++) {
+        tbl += renderRow(flex.columnFooters, r, flex);
     }
     tbl += '</tbody>';
     //
@@ -206,8 +222,10 @@ function renderRow(panel, r, flex) {
 
 export default {
     DIRECTION,
+    SIZE,
     setGridList,
     setThickRightVLineList,
     setSubTitleList,
+    setPageSize,
     printExec,
 };

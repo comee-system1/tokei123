@@ -77,6 +77,10 @@ const JIGYO_KBN_NAME = {
     KEIKAKU: 'Keikakusoudan',
     CHIIKI: 'Chiikisoudan',
 };
+const TANTOKAIGI_KBN_NAME = {
+    KEIKAKU: 'Keikakusoudan',
+    CHIIKI: 'Chiikisoudan',
+};
 const JIGYOKBN = {
     Kihon: {
         val: 0,
@@ -124,5 +128,6 @@ export default {
     JIGYOKBN,
     KEIKAKUJIGYOKBN,
     CHIIKIJIGYOKBN,
-    JIGYO_KBN_NAME
+    JIGYO_KBN_NAME,
+    TANTOKAIGI_KBN_NAME
 }

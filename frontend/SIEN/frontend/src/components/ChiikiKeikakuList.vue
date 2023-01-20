@@ -121,7 +121,7 @@
             :showFilterIcons="false"
           />
           <wj-flex-grid-column
-            :binding="'riyocode'"
+            :binding="'rcode'"
             align="center"
             valign="middle"
             format="g"
@@ -145,7 +145,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'sityo'"
+            :binding="'shichoName'"
             align="center"
             valign="middle"
             width="3*"
@@ -154,7 +154,7 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'kyufustart'"
+            :binding="'rkSymdD'"
             align="center"
             valign="middle"
             width="3*"
@@ -162,7 +162,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'kyufuend'"
+            :binding="'rkEymdD'"
             align="center"
             valign="middle"
             width="3*"
@@ -170,16 +170,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'asses'"
-            align="center"
-            valign="middle"
-            width="3*"
-            :allowResizing="false"
-            :isReadOnly="true"
-            aggregate="Cnt"
-          ></wj-flex-grid-column>
-          <wj-flex-grid-column
-            :binding="'sakusei'"
+            :binding="'asesYmdD'"
             align="center"
             valign="middle"
             width="3*"
@@ -188,7 +179,16 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'startmonth'"
+            :binding="'keiMymdD'"
+            align="center"
+            valign="middle"
+            width="3*"
+            :allowResizing="false"
+            :isReadOnly="true"
+            aggregate="Cnt"
+          ></wj-flex-grid-column>
+          <wj-flex-grid-column
+            :binding="'keiSymD'"
             align="center"
             valign="middle"
             width="2*"
@@ -196,25 +196,25 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'kan1'"
+            :binding="'kei1ChkD'"
             align="center"
             valign="middle"
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
-            aggregate="Cnt"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'kan2'"
+            :binding="'kei2ChkD'"
             align="center"
             valign="middle"
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
-            aggregate="Cnt"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'doui'"
+            :binding="'keiDouiD'"
             align="center"
             valign="middle"
             width="1*"
@@ -223,7 +223,7 @@
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'jissi'"
+            :binding="'tanKaiYmdD'"
             align="center"
             valign="middle"
             width="3*"
@@ -232,16 +232,16 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'jissikan'"
+            :binding="'tanKaiChkD'"
             align="center"
             valign="middle"
             width="1*"
             :allowResizing="false"
             :isReadOnly="true"
-            aggregate="Cnt"
+            aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'teisyutu'"
+            :binding="'teiChkD'"
             align="center"
             valign="middle"
             width="1*"
@@ -250,7 +250,7 @@
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'tanto'"
+            :binding="'keiSiName'"
             align="center"
             valign="middle"
             width="3*"
@@ -264,7 +264,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ja';
 // import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.styles/wijmo.css';
@@ -282,6 +283,8 @@ import AlphabetButton from '@/components/AlphabetButton.vue';
 import { getConnect } from '@connect/getConnect';
 
 const VIEWID = 'ChiikiKeikakuList';
+
+const LIST_CHECK = { UNCHECKED: '□', CHECKED: '☑' };
 
 export default {
   components: { AlphabetButton },
@@ -464,14 +467,53 @@ export default {
       this.loading = true;
       if (isAll) {
         let params = {
-          uniqid: 1,
-          traceid: 1,
-          pJigyoid: 43,
-          pSym: 202112,
+          uniqid: 3,
+          traceid: 123,
+          pJigyoid: 62,
+          pSym: '202206',
+          pType: 1,
         };
         getConnect('/' + VIEWID + 'View', params, 'SIENC').then((result) => {
-          this.viewdata = result;
-          this.viewdataAll = result;
+          let list = [];
+          result.forEach((el) => {
+            el.rkSymdD =
+              el.rkSymd.length < 8
+                ? null
+                : dayjs(el.rkSymd).format('YYYY/MM/DD');
+            el.rkEymdD =
+              el.rkEymd.length < 8
+                ? null
+                : dayjs(el.rkEymd).format('YYYY/MM/DD');
+            el.asesYmdD =
+              el.asesYmd.length < 8
+                ? null
+                : dayjs(el.asesYmd).format('YYYY/MM/DD');
+            el.keiMymdD =
+              el.keiMymd.length < 8
+                ? null
+                : dayjs(el.keiMymd).format('YYYY/MM/DD');
+            el.keiSymD =
+              el.keiSym.length < 6 ? null : dayjs(el.keiSym).format('YYYY/MM');
+            el.kei1ChkD =
+              el.kei1Chk == 0 ? LIST_CHECK.UNCHECKED : LIST_CHECK.CHECKED;
+            el.kei2ChkD =
+              el.kei2Chk == 0 ? LIST_CHECK.UNCHECKED : LIST_CHECK.CHECKED;
+            el.keiDouiD =
+              el.keiDoui == 0 ? LIST_CHECK.UNCHECKED : LIST_CHECK.CHECKED;
+            el.tanKaiChkD =
+              el.tanKaiChk.length < 8
+                ? LIST_CHECK.UNCHECKED
+                : LIST_CHECK.CHECKED;
+            el.tanKaiYmdD =
+              el.tanKaiYmd.length < 8
+                ? null
+                : dayjs(el.tanKaiYmd).format('YYYY/MM/DD');
+            el.teiChkD =
+              el.teiChk == 0 ? LIST_CHECK.UNCHECKED : LIST_CHECK.CHECKED;
+            list.push(el);
+          });
+          this.viewdata = list;
+          this.viewdataAll = list;
         });
       } else {
         this.userFilter();
@@ -680,7 +722,7 @@ export default {
     },
     getYm() {
       if (!this.kikanYm) {
-        this.kikanYm = moment().startOf('months');
+        this.kikanYm = dayjs().startOf('months');
         this.picker = this.kikanYm.year() + '-' + this.kikanYm.format('MM');
       }
       return (

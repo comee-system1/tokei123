@@ -9,7 +9,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -31,7 +31,7 @@
         <v-card
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -409,13 +409,13 @@ export default {
           align: 'center',
         },
         {
-          dataname: 'sichoson',
+          dataname: 'shichonm',
           title: '市区\n町村',
           width: '2*',
           align: 'left',
         },
         {
-          dataname: 'syougaisienkbn',
+          dataname: 'syogaikbn',
           title: '障\n支\n区',
           width: '1*',
           align: 'center',
@@ -568,7 +568,8 @@ export default {
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.cells.rows.defaultSize = sysConst.GRDROWHEIGHT.Row;
-      flexGrid.columnHeaders.rows[0].height = sysConst.GRDROWHEIGHT.Header * 3;
+      flexGrid.columnHeaders.rows[0].height =
+        sysConst.GRDROWHEIGHT.Header * 2.5;
       // ヘッダ文字列の設定
       for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
@@ -721,49 +722,52 @@ export default {
       //   tmpviewdata = tmpviewdata.concat();
       // }
 
-      // //コード順でソート
-      // if (this.sortSearch == 0) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.id < b.id) {
-      //       return -1;
-      //     }
-      //     if (a.id > b.id) {
-      //       return 1;
-      //     }
-      //     // 二次キーは交付日
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
-      // //利用者名でソート
-      // if (this.sortSearch == 1) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.kana < b.kana) {
-      //       return -1;
-      //     }
-      //     if (a.kana > b.kana) {
-      //       return 1;
-      //     }
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
-      // //受給者番号でソート
-      // if (this.sortSearch == 2) {
-      //   tmpviewdata.sort((a, b) => {
-      //     if (a.nobk < b.nobk) {
-      //       return -1;
-      //     }
-      //     if (a.nobk > b.nobk) {
-      //       return 1;
-      //     }
-      //     if (a.koufuymd !== b.koufuymd) {
-      //       return a.koufuymd - b.koufuymd;
-      //     }
-      //   });
-      // }
+      if (this.sort1Index == 0) {
+        //年月日順でソート
+        if (this.sortSearch == 0) {
+          tmpviewdata.sort((a, b) => {
+            if (a.ymdD < b.ymdD) {
+              return -1;
+            }
+            if (a.ymdD > b.ymdD) {
+              return 1;
+            }
+            // 二次キーは時間
+            if (a.jikan !== b.jikan) {
+              return a.jikan - b.jikan;
+            }
+          });
+        }
+      } else {
+        if (this.sort2List == 0) {
+          //コード順でソート
+          tmpviewdata.sort((a, b) => {
+            if (a.riyocode < b.riyocode) {
+              return -1;
+            }
+            if (a.riyocode > b.riyocode) {
+              return 1;
+            }
+            // 二次キーは交付日
+            if (a.rkana !== b.rkana) {
+              return a.rkana - b.rkana;
+            }
+          });
+        } else {
+          //利用者名でソート
+          tmpviewdata.sort((a, b) => {
+            if (a.rkana < b.rkana) {
+              return -1;
+            }
+            if (a.rkana > b.rkana) {
+              return 1;
+            }
+            if (a.riyocode !== b.riyocode) {
+              return a.riyocode - b.riyocode;
+            }
+          });
+        }
+      }
       this.viewData = tmpviewdata;
     },
     getYmd(outputkbn) {
@@ -920,6 +924,7 @@ div#uketukeCheckList {
       align-items: center;
       text-align: center;
       font-weight: normal;
+      line-height: 110%;
     }
     .wj-cell-maker {
       width: 15px;

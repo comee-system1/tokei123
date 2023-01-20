@@ -9,7 +9,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >

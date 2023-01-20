@@ -21,7 +21,7 @@
                 elevation="0"
                 outlined
                 tile
-                class="pl-1 lightYellow"
+                class="pl-1 lightYellow koumokuData border"
                 width="300"
                 height="24"
               >
@@ -30,62 +30,30 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1 body-2">
-            <v-card class="koumokuTitle titleMain wMin mr-1" outlined tile>
-              入力
+            <v-card elevation="3" class="mr-1">
+              <a class="addBtn" @click="createReki()">新規作成</a>
             </v-card>
-            <v-btn-toggle color="light-blue darken-4">
-              <v-btn
-                elevation="2"
-                outlined
-                width="25"
-                height="19"
-                class="body-2"
-                @click="getPostData()"
-                >新規</v-btn
-              >
-              <v-btn
-                elevation="2"
-                outlined
-                width="25"
-                height="19"
-                class="body-2 mr-1"
-                >修正</v-btn
-              >
-            </v-btn-toggle>
             <v-card class="koumokuTitle titleMain wMin mr-1" outlined tile>
               対象
             </v-card>
-            <v-btn-toggle color="light-blue darken-4">
+            <v-btn-toggle color="light-blue darken-4" v-model="targetOn">
               <v-btn
+                v-for="val in targetList"
+                :key="val.key"
                 elevation="2"
                 outlined
-                width="50"
+                width="80"
                 height="19"
                 class="body-2"
-                >計画案</v-btn
-              >
-              <v-btn
-                elevation="2"
-                outlined
-                width="100"
-                height="19"
-                class="body-2"
-                >モニタリング</v-btn
-              >
-              <v-btn
-                elevation="2"
-                outlined
-                width="50"
-                height="19"
-                class="body-2"
-                >その他</v-btn
+                >{{ val.target }}</v-btn
               >
             </v-btn-toggle>
             <v-card class="koumokuTitle titleMain ml-1" outlined tile>
               計画案作成日
             </v-card>
             <v-card
-              class="pl-1 ml-1"
+              elevation="2"
+              class="pl-1 ml-1 btnymd"
               width="140"
               height="20"
               outlined
@@ -97,11 +65,15 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-card>
-            <v-btn elevation="2" height="19" class="ml-1 body-2"
-              >案履歴参照</v-btn
-            >
             <v-spacer></v-spacer>
-            <v-btn elevation="2" class="mr-1" height="19"> 前回ｺﾋﾟｰ </v-btn>
+            <v-btn
+              elevation="2"
+              class="mr-1"
+              height="19"
+              @click="clickedPreData()"
+            >
+              前回ｺﾋﾟｰ
+            </v-btn>
             <v-btn
               elevation="2"
               class="mr-1"
@@ -112,18 +84,18 @@
             </v-btn>
             <v-navigation-drawer
               v-model="drawer"
-              absolute
+              fixed
               temporary
               right
               style="width: 60%"
             >
-              <div class="rirekiTitle pa-2">
+              <div class="drawerTitle pa-2">
                 <label>履歴参照</label>
                 <v-btn
                   elevation="2"
                   icon
                   x-small
-                  class="rirekiClose"
+                  class="CloseBtn"
                   @click="rirekiClose()"
                   ><v-icon dark x-small> mdi-close</v-icon></v-btn
                 >
@@ -145,6 +117,14 @@
                 :isReadOnly="true"
                 :showBandedRows="false"
               >
+                <wj-flex-grid-column
+                  :header="'ID'"
+                  binding="cntID"
+                  valign="middle"
+                  align="center"
+                  width="1*"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
                 <wj-flex-grid-column
                   :header="'作成日'"
                   binding="mkYmd"
@@ -194,12 +174,13 @@
                 作成日
               </v-card>
               <v-card
+                elevation="2"
                 width="140"
-                height="20"
+                height="19"
                 outlined
                 tile
                 @click="inputCalendarClick(1)"
-                class="mr-1"
+                class="mr-1 btnymd"
               >
                 {{ mkYmd }}
                 <div class="float-right">
@@ -211,12 +192,13 @@
                 開催日
               </v-card>
               <v-card
+                elevation="2"
                 width="140"
                 height="20"
                 outlined
                 tile
                 @click="inputCalendarClick(2)"
-                class="mr-1"
+                class="mr-1 btnymd"
               >
                 {{ opnYmd }}
                 <div class="float-right">
@@ -227,16 +209,30 @@
               <v-card class="koumokuTitle titleBlue mr-1" outlined tile>
                 開催時間
               </v-card>
-              <v-card elevation="0" tile style="background: transparent">
-                <input type="time" v-model="sTime" class="input_text outline" />
-                ～
-                <input type="time" v-model="eTime" class="input_text outline" />
+              <v-card tile style="background: transparent">
+                <input
+                  type="time"
+                  v-model="sTime"
+                  elevation="2"
+                  class="input_text w80 outline"
+                />
               </v-card>
-
-              <v-btn elevation="2" class="ml-auto body-2" height="20"
-                >開催情報最終表示</v-btn
+              ～
+              <v-card tile style="background: transparent">
+                <input
+                  type="time"
+                  v-model="eTime"
+                  elevation="2"
+                  class="input_text w80 outline"
+                />
+              </v-card>
+              <v-btn
+                elevation="2"
+                class="ml-auto body-2"
+                height="20"
+                @click="copiedSaisyu()"
+                >開催情報前回ｺﾋﾟｰ</v-btn
               >
-
               <v-btn
                 elevation="2"
                 height="20"
@@ -330,13 +326,31 @@
               編集
             </v-card>
             <v-btn-toggle color="light-blue darken-4">
-              <v-btn elevation="2" outlined height="19" class="body-2">
+              <v-btn
+                elevation="2"
+                outlined
+                height="19"
+                class="body-2"
+                @click="addLine()"
+              >
                 行追加
               </v-btn>
-              <v-btn elevation="2" outlined height="19" class="body-2">
+              <v-btn
+                elevation="2"
+                outlined
+                height="19"
+                class="body-2"
+                @click="deleteLine()"
+              >
                 行削除
               </v-btn>
-              <v-btn elevation="2" outlined height="19" class="body-2">
+              <v-btn
+                elevation="2"
+                outlined
+                height="19"
+                class="body-2"
+                @click="sortLine()"
+              >
                 順変更
               </v-btn>
             </v-btn-toggle>
@@ -392,6 +406,14 @@
                   :wordWrap="true"
                   :multiLine="true"
                 ></wj-flex-grid-column>
+                <wj-flex-grid-column
+                  header="削除"
+                  binding="dlt"
+                  :width="40"
+                  :wordWrap="true"
+                  :multiLine="true"
+                  :isReadOnly="true"
+                ></wj-flex-grid-column>
               </wj-flex-grid>
             </div>
             <div>
@@ -422,19 +444,152 @@
               </v-card>
             </div>
           </div>
-          <v-card class="d-flex flex-row mt-1" flat>
-            <v-btn elevation="2" height="19" class="mr-10">クリア</v-btn>
-            <v-btn elevation="2" height="19">削除</v-btn>
+          <v-card class="d-flex rowStyle mt-2 pa-1" flat>
+            <v-btn elevation="2" height="19" class="mr-10" @click="cleardata()"
+              >クリア</v-btn
+            >
+            <v-btn elevation="2" height="19" @click="deleteRireki()"
+              >削除</v-btn
+            >
             <v-spacer></v-spacer>
-            <v-btn elevation="2" height="19" @click="putTantokaigi()"
+            <v-card
+              class="koumokuTitle titleOrange mr-1"
+              width="50"
+              height="20"
+              outlined
+              tile
+            >
+              完了
+            </v-card>
+            <input
+              id="checkbox"
+              type="checkbox"
+              class="mr-1 ml-1 mt-1"
+              v-model="kanryoChkBtn"
+              @change="kanryoCheckOpen()"
+            />
+            <v-card
+              width="140"
+              height="20"
+              outlined
+              tile
+              class="koumokuData mr-2 text-center"
+            >
+              {{ kanryoYmd }}
+            </v-card>
+            <v-btn elevation="2" height="19" @click="putTantokaigi('registBtn')"
               >登録</v-btn
             >
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-
-    <!-- 日付 -->
+    <!-- ダイアログエリア -->
+    <!-- 新規作成ダイアログ -->
+    <v-dialog v-model="createRekiFlg" width="350" persistent>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">新規作成</v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          class="dialog_close mt-2"
+          @click="createRekiClose()"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+            width="100"
+          >
+            利用者名
+          </v-card>
+          <v-card
+            class="koumokuData border pa-1 pb-3"
+            elevation="0"
+            tile
+            outlined
+            width="200"
+            height="24"
+          >
+            {{ userName }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            作成日
+          </v-card>
+          <v-btn
+            @click="inputCalendarClick(1)"
+            elevation="2"
+            tile
+            outlined
+            width="150px"
+            height="100%"
+            class="pa-0 mr-1 btnymd"
+            >{{ mkYmd }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            開催日
+          </v-card>
+          <v-btn
+            @click="inputCalendarClick(2)"
+            elevation="2"
+            tile
+            outlined
+            width="150px"
+            height="100%"
+            class="pa-0 mr-1 btnymd"
+            >{{ opnYmd }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card class="koumokuTitle titleMain mr-1 ml-1" outlined tile>
+            対象
+          </v-card>
+          <v-btn-toggle color="light-blue darken-4 pa-1">
+            <v-btn
+              v-for="val in targetList"
+              :key="val.key"
+              @click="selectTargeted(val.kbn)"
+              elevation="2"
+              outlined
+              width="80"
+              height="24"
+              class="body-2"
+              >{{ val.target }}</v-btn
+            >
+          </v-btn-toggle>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input">
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="createNewReki()">
+            登録
+          </v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
+    <!-- 日付ダイアログ -->
     <v-dialog
       v-model="datepicker_dialog"
       width="200"
@@ -449,7 +604,6 @@
       >
       </v-date-picker>
     </v-dialog>
-
     <!-- 出席者選択ダイアログ -->
     <v-dialog v-model="attend_dialog" width="850" persistent no-click-animation>
       <v-card class="common_dialog">
@@ -696,6 +850,88 @@
         </v-row>
       </v-card>
     </v-dialog>
+    <!-- 未作成時用ダイアログ -->
+    <dialog id="modeless_dialog">
+      <v-card class="common_modeless_dialog pb-1">
+        <v-card-title class="dialog_title mb-1"> 履歴未作成 </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="modeless_dialogClose"
+          class="dialog_close mt-1"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="pl-1">
+          履歴がありません。<br />新規作成ボタンから作成してください。
+        </v-row>
+      </v-card>
+    </dialog>
+    <!-- 完了チェックダイアログ -->
+    <v-dialog v-model="kanryoCheckOpenFlg" width="350" class="pa-2" persistent>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          担当者会議 完了チェック
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="kanryoCheckClose()"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+            width="100"
+          >
+            利用者名
+          </v-card>
+          <v-card
+            class="koumokuData pa-1 pb-3"
+            elevation="0"
+            tile
+            outlined
+            width="200"
+            height="24"
+          >
+            {{ userName }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            完了日
+          </v-card>
+          <v-card
+            id="kanryoYmd"
+            @click="inputCalendarClick(3)"
+            elevation="2"
+            tile
+            outlined
+            width="150px"
+            height="100%"
+            class="pb-1 mr-1 btnymd"
+            >{{ kanryoYmd }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input">
+          <v-btn class="mr-1" height="25" @click="kanryoDelbtn()"> 削除 </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="kanryoRegist()"> 登録 </v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -707,12 +943,20 @@ import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { getConnect } from '../../connect/getConnect';
 import { postConnect } from '../../connect/postConnect';
-import { putConnect } from '../../connect/putConnect';
-// import func from 'vue-editor-bridge';
-// import { connect } from 'http2';
-//import { filter } from 'vue/types/umd';
+import { deleteConnect } from '@/connect/deleteConnect';
+import { putConnect } from '@/connect/putConnect';
+
 const maxRowCnt = 15; // 最大15行
 const columnSize = 154; // セルの幅調整
+const svcKbn = {
+  KEIKAKU: 1, // 計画相談
+  CHIIKI: 2, // 地域相談
+};
+const apiTantoKaigi = '/Tantokaigi';
+const apiTantoKaigiSaisyu = '/TantokaigiSaisyu';
+const apiTantoKaigiSaishinReki = '/TantokaigiSaishinReki';
+const apiTantoKaigiReki = '/TantokaigiReki';
+const apiTantoKaigiKanryo = '/TantokaigiKanryo';
 
 export default {
   components: {
@@ -720,6 +964,7 @@ export default {
     AlphabetButton,
   },
   mounted() {
+    this.getDispKbn();
     window.addEventListener('resize', this.calculateWindowHeight);
   },
   data: function () {
@@ -732,7 +977,6 @@ export default {
       picker: '',
       considerView: [],
       display: '↑縮小',
-      open: false,
 
       // APIデータ取得
       userName: '',
@@ -742,11 +986,18 @@ export default {
       eTime: '',
       kadai: '',
       shussekiList: '',
-      naiyoGyoList: '',
       cntID: 0,
+      svcKbn: 0,
       kaigiKbn: 0,
       annCntID: 0,
       moniCntID: 0,
+      kanryoChk: 0, // 未完了
+      kanryoChkBtn: false,
+      targetRow: '',
+
+      // 履歴ドロワー
+      rirekiView: [],
+      drawer: null,
 
       getYmd:
         dayjs().format('YYYY') +
@@ -755,6 +1006,7 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      // 作成日
       mkYmd:
         dayjs().format('YYYY') +
         '年' +
@@ -762,6 +1014,7 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      // 開催日
       opnYmd:
         dayjs().format('YYYY') +
         '年' +
@@ -769,6 +1022,8 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      // 完了日
+      kanryoYmd: '',
       // ダイアログ
       attendView: [],
       attendSelect: [],
@@ -778,8 +1033,14 @@ export default {
       tantoKaigiViewData: [],
       selectedAttendView: [],
       rowNum: 0,
-      rirekiView: [],
-      drawer: null,
+      targetOn: 0,
+      inputRef: this.getDispKbn(),
+
+      targetList: [
+        { key: 0, kbn: 4, target: '計画案' },
+        { key: 1, kbn: 3, target: 'ﾓﾆﾀﾘﾝｸﾞ' },
+        { key: 2, kbn: 9, target: 'その他' },
+      ],
 
       // 事業所セレクト
       selJigyosyo: 0,
@@ -812,6 +1073,9 @@ export default {
       allowDeleteRow: false,
       rowDeleteDisabled: false,
       clickedRow: false,
+      kanryoCheckOpenFlg: false,
+      check: '',
+      createRekiFlg: false,
       // 手入力欄
       inputSyokusyuDisabled: false,
       inputNameDisabled: false,
@@ -821,6 +1085,17 @@ export default {
   },
 
   methods: {
+    getDispKbn() {
+      if (this.$route.params.kind == sysConst.TANTOKAIGI_KBN_NAME.KEIKAKU) {
+        this.inputRef = sysConst.TANTOKAIGI_KBN_NAME.KEIKAKU;
+        this.svcKbn = svcKbn.KEIKAKU;
+      } else if (
+        this.$route.params.kind == sysConst.TANTOKAIGI_KBN_NAME.CHIIKI
+      ) {
+        this.inputRef = sysConst.TANTOKAIGI_KBN_NAME.CHIIKI;
+        this.svcKbn = svcKbn.CHIIKI;
+      }
+    },
     calculateWindowHeight() {
       if (
         document.getElementsByClassName('scrollbody') != null &&
@@ -840,13 +1115,18 @@ export default {
      ****************************/
     //利用者名 出力
     setUserSelectPoint(row) {
+      // 履歴無し
       if (this.userName && this.userName != row.names) {
         this.dataClear();
       }
       this.userName = row.names;
       this.intCode = row.riid;
+      this.getTantoSaishinReki();
       this.getTantoReki();
     },
+    /**************
+     * 空欄を作成
+     **************/
     dataClear() {
       this.getYmd = dayjs().format('YYYY年MM月DD日');
       this.mkYmd = dayjs().format('YYYY年MM月DD日');
@@ -865,7 +1145,7 @@ export default {
       // 検討項目/内容/結論
       let consider = [];
       consider.push({
-        no: 1,
+        cnt: 1,
         kentoKmk: '',
         kentoNaiyo: '',
         ketsuron: '',
@@ -911,10 +1191,9 @@ export default {
       flexGrid.hostElement.addEventListener('click', function (e) {
         let ht = flexGrid.hitTest(e);
         if (ht.cellType == wjGrid.CellType.Cell) {
-          // 参照する履歴を選択するためのtmp
           let tmp = flexGrid.cells.rows[ht.row].dataItem;
-          // ユーザのユニークIDとcntIDを元に担当会議データを取得
           _self.cntID = tmp.cntID;
+          _self.targetRow = ht.row;
 
           // 担当会議のデータを取得
           _self.setViewData();
@@ -923,8 +1202,67 @@ export default {
     },
 
     /*****************************
-     * #considerGrid
+     * 前回コピー
+     *****************************/
+    clickedPreData() {
+      let tmp = this.rirekiView;
+      tmp.sort((a, b) => b.cntID - a.cntID);
+
+      let _self = this;
+      let filteredTmp = tmp.filter(function (val) {
+        return val.cntID < _self.cntID;
+      });
+      if (filteredTmp.length == 0) {
+        alert('履歴がありません。');
+      } else {
+        this.cntID = filteredTmp[0].cntID;
+        this.setViewData(1);
+      }
+    },
+    /*****************************
+     * 開催情報前回ｺﾋﾟｰ
+     *****************************/
+    copiedSaisyu() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pSvcKbn: this.svcKbn,
+        pSiid: this.siid,
+      };
+      getConnect(apiTantoKaigiSaisyu, params, 'COMMON').then((result) => {
+        // データ初期化
+        this.dataClear();
+
+        if (result.info.sTime) {
+          this.sTime = result.info.sTime;
+        }
+        if (result.info.eTime) {
+          this.eTime = result.info.eTime;
+        }
+        if (result.info.basho) {
+          this.basho = result.info.basho;
+        }
+        this.shussekiList = result.shussekiList;
+
+        let attendees = [];
+        for (let i = 0; i < 15; i++) {
+          attendees.push({
+            num: i + 1,
+            syokusyu: this.shussekiList[i] ? this.shussekiList[i].siYakuNm : '',
+            name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
+          });
+        }
+        // 出席者選択内へ反映
+        this.selectedAttendList = attendees;
+        this.selectedAttendView = this.selectedAttendList;
+        // 出席者一覧へ反映
+        this.setShussekiData();
+      });
+    },
+    /*****************************
      * 検討した項目・検討内容・結論
+     * #considerGrid
      *****************************/
     onInitializedConsider(flexGrid) {
       // Grid 初期表示;
@@ -932,20 +1270,45 @@ export default {
       let consider = [];
       // Grid作成
       consider.push({
-        no: 1,
+        cnt: 1,
         kentoKmk: '',
         kentoNaiyo: '',
         ketsuron: '',
       });
       this.considerView = consider;
-
-      // クリックイベント
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
-          // 完全編集モードへ移行
-          flexGrid.startEditing(true);
-          flexGrid.imeEnabled = true;
+          // 順変更
+          if (ht.col == 0) {
+            let cnt = this.considerView.map(function (p) {
+              return p.cnt;
+            });
+            let maxCnt = parseInt(Math.max.apply(null, cnt)) + 1;
+            if (
+              (this.considerView[ht.row].cnt == '' &&
+                (this.considerView[ht.row].kentoKmk ||
+                  this.considerView[ht.row].kentoNaiyo ||
+                  this.considerView[ht.row].ketsuron)) ||
+              (this.considerView[ht.row].cnt == '' &&
+                (this.considerView[ht.row].kentoKmk != '' ||
+                  this.considerView[ht.row].kentoNaiyo != '' ||
+                  this.considerView[ht.row].ketsuron != ''))
+            ) {
+              this.considerView[ht.row].cnt = maxCnt;
+              flexGrid.setCellData(ht.row, 0, maxCnt);
+            }
+          }
+
+          if (ht.col == 4) {
+            if (flexGrid.cells.getCellData(ht.row, ht.col) == '〇') {
+              this.considerView[ht.row].dlt = '';
+              flexGrid.cells.setCellData(ht.row, ht.col, ' ');
+            } else {
+              this.considerView[ht.row].dlt = '〇';
+              flexGrid.cells.setCellData(ht.row, ht.col, '〇');
+            }
+          }
         }
       });
       flexGrid.cellEditEnded.addHandler((flexGrid) => {
@@ -955,11 +1318,10 @@ export default {
       });
 
       flexGrid.formatItem.addHandler(function (s, e) {
-        if (e.panel == s.cells && e.col >= 1) {
-          e.cell.style.textAlign = 'left';
-          e.cell.style.justifyContent = 'left';
-          e.cell.style.alignItems = 'left';
-          e.cell.style.paddingRight = '90px';
+        if (e.panel == s.cells && e.col == 4) {
+          e.cell.style.textAlign = 'center';
+          e.cell.style.justifyContent = 'center';
+          e.cell.style.alignItems = 'center';
         }
         if (e.panel == flexGrid.columnHeaders) {
           e.cell.style.textAlign = 'center';
@@ -968,17 +1330,166 @@ export default {
         }
       });
     },
+    // 行追加
+    addLine() {
+      let line = this.considerView.slice();
+      this.considerView = [];
+      let cnt = parseInt(line.length) + 1;
+      line.push({
+        cnt: cnt,
+        kentoKmk: '',
+        kentoNaiyo: '',
+        ketsuron: '',
+      });
+      this.considerView = line;
+    },
+    // 行削除
+    deleteLine() {
+      let line = this.considerView;
+      let result = line.filter(function (value) {
+        return value.dlt != '〇';
+      });
+      // 行カウントの再設定
+      for (let i = 0; i < result.length; i++) {
+        result[i].cnt = i + 1;
+      }
+      this.considerView = result;
+    },
+    // 順変更
+    sortLine() {
+      let cnt = [];
+      this.considerView.map(function (value, key) {
+        cnt[key] = value;
+        cnt[key].cnt = '';
+      });
+      this.considerView = cnt;
+    },
+    // クリアボタン
+    cleardata() {
+      this.dataClear();
+    },
+    /******************************
+     * 登録ボタン
+     ******************************/
+    putTantokaigi(btnofType = '') {
+      if (confirm('登録します。よろしいですか？')) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+        };
+        let mkYmd = this.mkYmd.replaceAll(/年|月|日/g, '');
+        let opnYmd = this.opnYmd.replaceAll(/年|月|日/g, '');
+        let kanryoYmd = this.kanryoYmd.replaceAll(/年|月|日/g, '');
+
+        // gridから切替
+        let tmp = this.considerView;
+        let naiyoGyoList = [];
+        let cnt = [];
+        // 内容行リスト
+        for (let i = 0; i < tmp.length; i++) {
+          cnt = tmp[i].cnt;
+          naiyoGyoList.push({
+            cnt: cnt,
+            naiyoList: [
+              {
+                kbn: 1,
+                naiyo: tmp[i].kentoKmk,
+              },
+              {
+                kbn: 2,
+                naiyo: tmp[i].kentoNaiyo,
+              },
+              {
+                kbn: 3,
+                naiyo: tmp[i].ketsuron,
+              },
+            ],
+          });
+        }
+        let inputParams = {
+          svcKbn: this.svcKbn,
+          jigyoid: 62,
+          intcode: this.intCode,
+          cntID: this.cntID,
+          info: {
+            mkYmd: mkYmd,
+            opnYmd: opnYmd,
+            sTime: this.sTime,
+            eTime: this.eTime,
+            basho: this.basho,
+          },
+          shussekiList: this.shussekiList,
+          naiyoGyoList: naiyoGyoList,
+          kadai: this.kadai,
+          kanryoYmd: kanryoYmd,
+          kanryoChk: this.kanryoChk,
+        };
+        putConnect(apiTantoKaigi, params, 'COMMON', inputParams).then(
+          (result) => {
+            let order = this.considerView.slice();
+            // 順変更時の並べ替え
+            order.sort((a, b) => {
+              if (a.cnt < b.cnt) {
+                return -1;
+              }
+              if (a.cnt > b.cnt) {
+                return 1;
+              }
+            });
+            if (result.okflg == true) {
+              // alert('登録が完了しました。');
+              // 完了チェック時はtantokaigi/rekiを通さない
+              if (btnofType != 'kanryoRegist' && btnofType != 'registBtn') {
+                this.getTantoReki();
+              } else {
+                if (btnofType == 'kanryoRegist') {
+                  let tmp = this.rirekiView.slice();
+                  tmp[this.targetRow].kanryoChk = '完了済';
+                  let str = this.kanryoYmd.replaceAll(/年|月|日/g, '/');
+                  tmp[this.targetRow].kanryoYmd = str.slice(0, -1);
+                  this.rirekiView = tmp;
+                }
+              }
+              this.kanryoCheckOpenFlg = false;
+            } else {
+              alert(result.msg);
+              this.kanryoCheckOpenFlg = true;
+            }
+            // 並べ替えの反映
+            if (btnofType == 'registBtn') {
+              this.considerView = order;
+            }
+          }
+        );
+      }
+    },
 
     /******************************
-     * ダイアログ表示 出席者選択
+     * 履歴無しのダイアログ表示
      ******************************/
     onSelectedAttend() {
       this.attend_dialog = true;
     },
-
+    modeless_dialogOpen() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.show();
+    },
+    modeless_dialogClose() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.close();
+    },
     /***********************
-     * #TantokaigiGrid
+     * 出席者一覧
      ***********************/
+    setAttendViewData() {
+      // 出席者一覧のグリッドを作成
+      while (this.flexGridAttendView.columns.length < 6) {
+        this.flexGridAttendView.columns.push(new wjGrid.Column());
+      }
+      while (this.flexGridAttendView.rows.length < 5) {
+        this.flexGridAttendView.rows.push(new wjGrid.Row());
+      }
+    },
     onInitialized(flexGrid) {
       // 選択解除
       flexGrid.selectionMode = wjGrid.SelectionMode.None;
@@ -1005,10 +1516,12 @@ export default {
         s.textAlign = 'left';
       };
     },
-
     /******************************
-     * 順変更ボタン
+     * 出席者選択ダイアログ
      *****************************/
+    /*************
+     *順変更ボタン
+     *************/
     editSortSetted() {
       // ボタンの活性・非活性
       this.showDisplay = true;
@@ -1025,10 +1538,9 @@ export default {
       });
       this.selectedAttendView = tmp;
     },
-
-    /****************************
-     * 行削除ボタン
-     ****************************/
+    /*************
+     * 行削除
+     *************/
     rowDelete() {
       // 入力値の空欄化
       this.inputDataEmpty(false);
@@ -1045,9 +1557,10 @@ export default {
       this.flexGridSelected.itemsSource = rowData;
     },
 
-    /***********************
-     * #selectedAttendGrid
-     ***********************/
+    /*********************
+     * 左側グリッド
+     * selectedAttendGrid
+     *********************/
     onInitializedSelected(flexGrid) {
       this.flexGridSelected = flexGrid;
       let selectedAttendView = [];
@@ -1120,7 +1633,7 @@ export default {
     },
 
     /*******************
-     * 手入力値を空欄化
+     * 手入力欄を空欄化
      *******************/
     inputDataEmpty(inputFlg) {
       let atdLeft = this.selectedAttendView.slice();
@@ -1135,18 +1648,10 @@ export default {
         this.inputName = this.selectedAttendView[this.rowNum].name;
       }
     },
-    /******************
-     * 出席者Grid
-     ******************/
-    setAttendViewData() {
-      // 出席者一覧のグリッドを作成
-      while (this.flexGridAttendView.columns.length < 6) {
-        this.flexGridAttendView.columns.push(new wjGrid.Column());
-      }
-      while (this.flexGridAttendView.rows.length < 5) {
-        this.flexGridAttendView.rows.push(new wjGrid.Row());
-      }
-    },
+    /*********************
+     * 右側グリッド
+     * AttendGrid
+     *********************/
     /*************
      * 頭文字検索
      *************/
@@ -1168,9 +1673,6 @@ export default {
       this.selSyokusyuval = this.syokusyuList[key].syokusyu;
       this.userFilter();
     },
-    /*******************
-     * #attendGrid
-     *******************/
     // 絞り込み機能
     userFilter() {
       // 職員一覧のデータを取得（現在は上記に定義）
@@ -1296,9 +1798,8 @@ export default {
     onInitializedSelectedChanged(flexGrid) {
       this.setCellPosition(flexGrid);
     },
-    /***************
-     * セルの位置設定
-     ***************/
+
+    // セルの位置設定
     setCellPosition(flexGrid) {
       if (this.rowNum != this.maxRowCnt - 1) {
         for (let i = this.rowNum; i < this.selectedAttendView.length; i++) {
@@ -1372,11 +1873,19 @@ export default {
           c = 0;
         }
       });
+      let set = [];
+      for (let i = 0; i < tmp.length; i++) {
+        if (tmp[i].name != ' ' && tmp[i].name != '') {
+          set.push({
+            siYakuNm: tmp[i].syokusyu,
+            siNm: tmp[i].name,
+          });
+        }
+      }
+      this.shussekiList = set;
     },
 
-    /****************
-     * 設定ボタン
-     ****************/
+    // 設定ボタン
     registSelect() {
       if (this.showDisplay == true) {
         this.JunKettei();
@@ -1384,7 +1893,6 @@ export default {
       // 選択した会議出席者を取得
       let tmp = this.selectedAttendView.slice();
 
-      // 職種と氏名をtmpDataにプッシュ
       let tmpData = [];
       for (let i = 0; i < tmp.length; i++) {
         if (tmp[i].name || tmp[i].syokusyu) {
@@ -1399,11 +1907,9 @@ export default {
           tmp[i].syokusyu = '';
           tmp[i].name = '';
         }
-        // numを振りなおす
         tmp[i].num = num;
         num++;
       }
-
       // gridへ反映
       this.selectedAttendView = tmp;
 
@@ -1417,18 +1923,14 @@ export default {
         alert('1件も登録されていません。');
         return false;
       }
-      // 出席者一覧に反映
       this.setShussekiData();
 
+      // セル・フラグ
       this.rowNum = 0;
-      // クローズチェックフラグ
       this.closeCheckConfirmFlg = false;
-      // ダイアログを閉じる
       this.attend_dialog = false;
     },
-    /*****************
-     * 順決定ボタン
-     *****************/
+    // 順決定ボタン
     JunKettei() {
       let order = this.selectedAttendView.slice();
       // orderの num プロパティの最大値を取得
@@ -1517,16 +2019,140 @@ export default {
     /*************
      * API取得
      *************/
+    // 最新履歴 GET
+    getTantoSaishinReki() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pSvcKbn: this.svcKbn,
+        pJigyoid: 62,
+        pIntcode: this.intCode,
+      };
+      getConnect(apiTantoKaigiSaishinReki, params, 'COMMON').then((result) => {
+        // データの初期化
+        this.dataClear();
+
+        if (result.cntID == 0) {
+          this.modeless_dialogOpen();
+        } else {
+          // 履歴がある
+          this.modeless_dialogClose();
+
+          // 会議内容
+          if (result.info.mkYmd && dayjs(result.info.mkYmd).isValid()) {
+            this.mkYmd = dayjs(result.info.mkYmd).format('YYYY年MM月DD日');
+          }
+          if (result.info.opnYmd && dayjs(result.info.opnYmd).isValid()) {
+            this.opnYmd = dayjs(result.info.opnYmd).format('YYYY年MM月DD日');
+          }
+
+          if (result.info.sTime) {
+            this.sTime = result.info.sTime;
+          }
+          if (result.info.eTime) {
+            this.eTime = result.info.eTime;
+          }
+          if (result.info.basho) {
+            this.basho = result.info.basho;
+          }
+          if (result.kadai) {
+            this.kadai = result.kadai;
+          }
+
+          // 出席者一覧
+          this.shussekiList = result.shussekiList;
+
+          let attendees = [];
+          for (let i = 0; i < 15; i++) {
+            attendees.push({
+              num: i + 1,
+              syokusyu: this.shussekiList[i]
+                ? this.shussekiList[i].siYakuNm
+                : '',
+              name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
+            });
+          }
+          // 出席者選択内へ反映
+          this.selectedAttendList = attendees;
+          this.selectedAttendView = this.selectedAttendList;
+          // 出席者一覧へ反映
+          this.setShussekiData();
+
+          // 検討項目/内容・結論
+          let tmp = result.naiyoGyoList;
+          let considerView = [];
+          if (tmp == '') {
+            considerView.push({
+              cnt: 1,
+              kentoKmk: '',
+              kentoNaiyo: '',
+              ketsuron: '',
+            });
+            this.considerView = considerView;
+          } else {
+            for (let i = 0; i < tmp.length; i++) {
+              let kentoKmk = '';
+              let kentoNaiyo = '';
+              let ketsuron = '';
+              let list = tmp[i].naiyoList;
+              for (let j = 0; j < list.length; j++) {
+                if (list[j].kbn == 1) {
+                  kentoKmk = list[j].naiyo;
+                }
+                if (list[j].kbn == 2) {
+                  kentoNaiyo = list[j].naiyo;
+                }
+                if (list[j].kbn == 3) {
+                  ketsuron = list[j].naiyo;
+                }
+              }
+              // gridへ反映
+              considerView.push({
+                cnt: tmp[i].cnt,
+                kentoKmk: kentoKmk,
+                kentoNaiyo: kentoNaiyo,
+                ketsuron: ketsuron,
+              });
+            }
+            this.considerView = considerView;
+          }
+          // 完了チェック
+          if (result.kanryoChk == 0) {
+            this.kanryoChkBtn = false;
+            this.kanryoChk = 0;
+            this.kanryoYmd = '';
+          } else {
+            this.kanryoChkBtn = true;
+            this.kanryoChk = 1;
+            if (result.kanryoYmd && dayjs(result.kanryoYmd).isValid()) {
+              this.kanryoYmd = dayjs(result.kanryoYmd).format('YYYY年MM月DD日');
+            }
+          }
+        }
+      });
+    },
     // 履歴参照 GET
     getTantoReki() {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pSvcKbn: 1,
+        pSvcKbn: this.svcKbn,
         pJigyoid: 62,
         pIntcode: this.intCode,
       };
-      getConnect('/TantokaigiReki', params, 'SIENP').then((result) => {
+      getConnect(apiTantoKaigiReki, params, 'COMMON').then((result) => {
+        result.sort((a, b) => b.cntID - a.cntID);
+        // cntIDの最大値を取得
+        let newestReki = Math.max.apply(
+          null,
+          result.map(function (o) {
+            return o.cntID;
+          })
+        );
+
+        this.cntID = newestReki;
+        let kbn = 0;
+        // 履歴参照ダイアログに出力
         for (let i = 0; i < result.length; i++) {
           if (
             result[i].length != 0 &&
@@ -1548,62 +2174,99 @@ export default {
               'YYYY/MM/DD'
             );
           }
-        }
-        this.rirekiView = result;
-      });
-    },
-    // 履歴参照 POST
-    getPostData() {
-      let params = {
-        uniqid: 3,
-        traceid: 123,
-      };
-      let mkYmd = this.mkYmd.replaceAll('/', '');
-      let opnYmd = this.opnYmd.replaceAll('/', '');
-
-      let inputParams = {
-        svcKbn: 1,
-        jigyoid: 62,
-        kaigiKbn: this.kaigiKbn,
-        intcode: this.intCode,
-        mkYmd: mkYmd,
-        opnYmd: opnYmd,
-        siid: this.siid,
-        annCntID: this.annCntID,
-        moniCntID: this.moniCntID,
-      };
-      postConnect('/TantokaigiReki', params, 'SIENP', inputParams).then(
-        (result) => {
-          if (result.okflg == true) {
-            this.rirekiView = [];
+          // 完了チェック
+          if (result[i].kanryoChk == 0) {
+            result[i].kanryoChk = '未完了';
           } else {
-            alert(result.msg);
+            result[i].kanryoChk = '完了済';
+          }
+          this.siid = result[i].siid;
+          this.annCntID = result[i].annCntID;
+          this.moniCntID = result[i].moniCntID;
+
+          // 会議区分
+          this.kaigiKbn = result[i].kaigiKbn;
+          if (newestReki == result[i].cntID) {
+            kbn = result[i].kaigiKbn;
           }
         }
-      );
+        // 履歴参照へ反映
+        this.rirekiView = result;
+        // 対象の活性化
+        if (kbn == 3) {
+          this.targetOn = 1;
+        }
+        if (kbn == 4) {
+          this.targetOn = 0;
+        }
+        if (kbn == 9) {
+          this.targetOn = 2;
+        }
+      });
     },
     // 担当会議 GET
-    setViewData() {
+    setViewData(copyofType = 0) {
       let params = {
         uniqid: 3,
         traceid: 123,
         pJigyoid: 62,
-        pSvcKbn: 1,
+        pSvcKbn: this.svcKbn,
         pIntcode: this.intCode,
         pCntId: this.cntID,
       };
-      getConnect('/Tantokaigi', params, 'SIENP').then((result) => {
+      getConnect(apiTantoKaigi, params, 'COMMON').then((result) => {
         // 会議内容
-        this.mkYmd = dayjs(result[0].info.mkYmd).format('YYYY年MM月DD日');
-        this.opnYmd = dayjs(result[0].info.opnYmd).format('YYYY年MM月DD日');
-        this.sTime = result[0].info.sTime;
-        this.eTime = result[0].info.eTime;
-        this.basho = result[0].info.basho;
-        this.kadai = result[0].kadai;
+        if (copyofType == 0) {
+          // データの初期化
+          this.dataClear();
+          if (result[0].info.mkYmd && dayjs(result[0].info.mkYmd).isValid()) {
+            this.mkYmd = dayjs(result[0].info.mkYmd).format('YYYY年MM月DD日');
+          }
+          if (result[0].info.opnYmd && dayjs(result[0].info.opnYmd).isValid()) {
+            this.opnYmd = dayjs(result[0].info.opnYmd).format('YYYY年MM月DD日');
+          }
+          if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
+            this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
+              'YYYY年MM月DD日'
+            );
+          }
+
+          // 完了チェック
+          // 未完了
+          if (result[0].kanryoChk == 0) {
+            this.kanryoChkBtn = false;
+            this.kanryoChk = 0;
+            this.kanryoYmd = '';
+          } else {
+            // 完了
+            this.kanryoChkBtn = true;
+            this.kanryoChk = 1;
+            if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
+              this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
+                'YYYY年MM月DD日'
+              );
+            }
+          }
+        } else {
+          this.kanryoYmd = '';
+          this.kanryoChkBtn = false;
+        }
+
+        if (result[0].info.sTime) {
+          this.sTime = result[0].info.sTime;
+        }
+        if (result[0].info.eTime) {
+          this.eTime = result[0].info.eTime;
+        }
+        if (result[0].info.basho) {
+          this.basho = result[0].info.basho;
+        }
+        if (result[0].kadai) {
+          this.kadai = result[0].kadai;
+        }
 
         // 出席者一覧
         this.shussekiList = result[0].shussekiList;
-
         let attendees = [];
         for (let i = 0; i < 15; i++) {
           attendees.push({
@@ -1612,84 +2275,73 @@ export default {
             name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
           });
         }
+        // 出席者選択内へ反映
         this.selectedAttendList = attendees;
         this.selectedAttendView = this.selectedAttendList;
         // 出席者一覧へ反映
         this.setShussekiData();
 
         // 検討項目/内容・結論
-        this.naiyoGyoList = result[0].naiyoGyoList;
+        let tmp = result[0].naiyoGyoList;
         let considerView = [];
-
-        // 検討項目/内容/結論
-        for (let i = 0; i < this.naiyoGyoList.length; i++) {
-          let kentoKmk = '';
-          let kentoNaiyo = '';
-          let ketsuron = '';
-          let list = this.naiyoGyoList[i].naiyoList;
-          for (let j = 0; j < list.length; j++) {
-            if (list[j].kbn == 1) {
-              kentoKmk = list[j].naiyo;
-            }
-            if (list[j].kbn == 2) {
-              kentoNaiyo = list[j].naiyo;
-            }
-            if (list[j].kbn == 3) {
-              ketsuron = list[j].naiyo;
-            }
-          }
-          // gridへ反映
+        if (tmp == '') {
           considerView.push({
-            cnt: this.naiyoGyoList[i].cnt,
-            kentoKmk: kentoKmk,
-            kentoNaiyo: kentoNaiyo,
-            ketsuron: ketsuron,
+            cnt: 1,
+            kentoKmk: '',
+            kentoNaiyo: '',
+            ketsuron: '',
           });
+          this.considerView = considerView;
+        } else {
+          for (let i = 0; i < tmp.length; i++) {
+            let kentoKmk = '';
+            let kentoNaiyo = '';
+            let ketsuron = '';
+            let list = tmp[i].naiyoList;
+            for (let j = 0; j < list.length; j++) {
+              if (list[j].kbn == 1) {
+                kentoKmk = list[j].naiyo;
+              }
+              if (list[j].kbn == 2) {
+                kentoNaiyo = list[j].naiyo;
+              }
+              if (list[j].kbn == 3) {
+                ketsuron = list[j].naiyo;
+              }
+            }
+            // gridへ反映
+            considerView.push({
+              cnt: tmp[i].cnt,
+              kentoKmk: kentoKmk,
+              kentoNaiyo: kentoNaiyo,
+              ketsuron: ketsuron,
+            });
+          }
+          this.considerView = considerView;
         }
-        this.considerView = considerView;
       });
     },
-    // 担当会議 PUT
-    putTantokaigi() {
-      let params = {
-        uniqid: 3,
-        traceid: 123,
-      };
-      let inputParams = {
-        svcKbn: 1,
-        jigyoid: 62,
-        intCode: this.intCode,
-        info: [
-          {
-            mkYmd: this.mkYmd,
-            opnYmd: this.opnYmd,
-            sTime: this.sTime,
-            eTime: this.eTime,
-            basho: this.basho,
-          },
-        ],
-        shussekiList: [
-          {
-            siYakuNm: this.syokusyu,
-            siNm: this.name,
-          },
-        ],
-        naiyoGyoList: [
-          {
-            cnt: this.cntID,
-            naiyoList: [
-              {
-                kbn: 1,
-                naiyo:
-                  '家族や訪問看護以外の人と関わる時間を持ちたい。\r\n・定期的に通える場所ができ、生活にメリハリをつけたい。',
-              },
-            ],
-          },
-        ],
-      };
-      putConnect('TantoKaigi', params, 'SIENP', inputParams).then((result) => {
-        console.log(result);
-      });
+    // 履歴削除 DELETE
+    deleteRireki() {
+      if (confirm('履歴を削除します。よろしいですか？')) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+          pSvcKbn: this.svcKbn,
+          pJigyoid: 62,
+          pIntcode: this.intCode,
+          pCntId: this.cntID,
+        };
+        deleteConnect(apiTantoKaigiReki, params, 'COMMON').then((result) => {
+          if (result.okflg == true) {
+            // alert('削除が完了しました。');
+            this.dataClear();
+            this.getTantoReki();
+          } else {
+            alert(result.msg);
+          }
+        });
+      }
     },
     dispalyChange() {
       this.onDisplayFlag = this.onDisplayFlag ? false : true;
@@ -1712,6 +2364,10 @@ export default {
         // 開催日
         this.picker = this.dateFormatChange(this.opnYmd);
       }
+      if (calendarType == 3) {
+        // 完了日
+        this.picker = this.dateFormatChange(this.kanryoYmd);
+      }
       this.datepicker_dialog = true;
       this.calendarType = calendarType;
     },
@@ -1729,14 +2385,146 @@ export default {
       if (this.calendarType == 2) {
         this.opnYmd = dayjs(this.picker).format('YYYY年MM月DD日');
       }
+      // 完了日
+      if (this.calendarType == 3) {
+        this.kanryoYmd = dayjs(this.picker).format('YYYY年MM月DD日');
+      }
       this.datepicker_dialog = false;
     },
     dateFormatChange(dateString) {
-      let year = dateString.slice(0, 4);
-      let month = dateString.slice(5, 7);
-      let day = dateString.slice(8, 10);
-      let date = year + '-' + month + '-' + day;
-      return date;
+      if (dateString.trim().length == 0) {
+        return dayjs().format('YYYY-MM-DD');
+      } else {
+        let year = dateString.slice(0, 4);
+        let month = dateString.slice(5, 7);
+        let day = dateString.slice(8, 10);
+        let date = year + '-' + month + '-' + day;
+        return date;
+      }
+    },
+    /****************
+     * 新規作成
+     *****************/
+    // ダイアログ表示
+    createReki() {
+      this.createRekiFlg = true;
+    },
+    createRekiClose() {
+      this.createRekiFlg = false;
+    },
+    // 対象選択
+    selectTargeted(kbn) {
+      this.kaigiKbn = kbn;
+    },
+    // 登録
+    createNewReki() {
+      if (confirm('新規作成します。よろしいですか？')) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+        };
+        let mkYmd = this.mkYmd.replaceAll(/年|月|日/g, '');
+        let opnYmd = this.opnYmd.replaceAll(/年|月|日/g, '');
+        let inputParams = {
+          svcKbn: this.svcKbn,
+          jigyoid: 62, // 固定
+          kaigiKbn: this.kaigiKbn, // 会議区分
+          intcode: this.intCode,
+          mkYmd: mkYmd,
+          opnYmd: opnYmd,
+          siid: 259, // 固定
+          annCntID: this.annCntID,
+          moniCntID: this.moniCntID,
+        };
+        postConnect(apiTantoKaigiReki, params, 'COMMON', inputParams).then(
+          (result) => {
+            if (result.okflg == true) {
+              // alert('新規登録が完了しました。');
+              this.getTantoSaishinReki();
+              this.getTantoReki();
+            } else {
+              alert(result.msg);
+            }
+          }
+        );
+      }
+      this.createRekiFlg = false;
+    },
+
+    /****************
+     * 完了チェック
+     ****************/
+    kanryoCheckOpen() {
+      this.kanryoCheckOpenFlg = true;
+    },
+    // 登録
+    kanryoRegist() {
+      // 利用者選択
+      if (this.userName) {
+        if (this.kanryoChk == 0 && this.kanryoYmd != '') {
+          this.putTantokaigi('kanryoRegist');
+          this.kanryoChkBtn = true;
+          this.kanryoCheckOpenFlg = false;
+        } else if (this.kanryoYmd == '') {
+          alert('完了日が選択されていません。');
+          this.kanryoChkBtn = false;
+          this.kanryoCheckOpenFlg = false;
+        }
+      }
+    },
+    // ダイアログ閉じる
+    kanryoCheckClose() {
+      if (this.kanryoChk == 1) {
+        this.kanryoChkBtn = true;
+        this.kanryoCheckOpenFlg = false;
+      } else {
+        this.remCheckBtn();
+        this.kanryoCheckOpenFlg = false;
+      }
+    },
+    // 削除
+    kanryoDelbtn() {
+      if (this.userName) {
+        if (confirm('削除してよろしいですか？')) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pSvcKbn: this.svcKbn,
+            pJigyoid: 62,
+            pIntcode: this.intCode,
+            pCntID: this.cntID,
+          };
+          deleteConnect(apiTantoKaigiKanryo, params, 'COMMON').then(
+            (result) => {
+              if (result.okflg == true) {
+                // alert('削除が完了しました。');
+                let tmp = this.rirekiView.slice();
+                tmp[this.targetRow].kanryoChk = '未完了';
+                tmp[this.targetRow].kanryoYmd = '';
+                this.rirekiView = tmp;
+                this.kanryoYmd = '';
+                this.kanryoCheckOpenFlg = false;
+                this.remCheckBtn();
+              } else {
+                alert(result.msg);
+                this.remCheckBtn();
+                this.kanryoCheckOpenFlg = true;
+              }
+            }
+          );
+        }
+      } else {
+        alert('利用者名を選択してください。');
+        this.kanryoCheckOpenFlg = false;
+        this.remCheckBtn();
+      }
+    },
+    // チェックを外す
+    remCheckBtn() {
+      if (this.kanryoChk == 0) {
+        this.kanryoChkBtn = false;
+        this.kanryoYmd = '';
+      }
     },
   },
 };
@@ -1747,7 +2535,7 @@ export default {
 
 div#tantokaigi {
   color: $font_color;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'メイリオ';
   min-width: 1330px !important;
   max-width: 1330px !important;
@@ -1801,7 +2589,7 @@ div#tantokaigi {
   }
 }
 
-div.rirekiTitle {
+div.drawerTitle {
   padding: 4px;
   width: 100%;
   height: 35px;
@@ -1811,7 +2599,7 @@ div.rirekiTitle {
   position: relative;
 
   .v-btn {
-    &.rirekiClose {
+    &.CloseBtn {
       position: absolute;
       top: 6px;
       right: 15px;
@@ -1828,6 +2616,10 @@ div#rirekiSansyoGrid {
   .wj-header {
     font-weight: normal;
   }
+}
+div#sansyo {
+  margin: 10px 10px;
+  text-align: center;
 }
 
 div#selectedAttendGrid {
@@ -1875,6 +2667,9 @@ div#selectedAttendGrid {
   &.w100 {
     width: 100px;
   }
+  &.w80 {
+    width: 80px;
+  }
   &.w60 {
     width: 60px;
   }
@@ -1910,7 +2705,6 @@ div#selectedAttendGrid {
     color: $view_Title_font_color_Blue;
   }
   &.wj-flexgrid [wj-part='root'] {
-    overflow-y: scroll !important;
     overflow-x: hidden !important;
   }
   .wj-cells

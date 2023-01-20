@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+// import KihonJyoho from '@sihmain/views/KihonJyoho.vue'
+// import JyukyuTouroku from '@sihmain/views/JyukyuTouroku.vue'
 import SienTUketukeTourokuParent from '../views/SIENT/UketukeTourokuParent.vue'
 import UketukeSanshoParent from '../views/SIENT/UketukeSanshoParent.vue'
 import KojinRireki from '../views/SIENT/KojinRireki.vue'
 import TantousyaBetuJisseki from '../views/SIENP/TantousyaBetuJisseki.vue'
+import SoudanHoukokusyo from '../views/SIENT/SoudanHoukokusyo.vue'
+import SoudanHoukokusyoJyoukenParent from '../views/SIENT/SoudanHoukokusyoJyoukenParent.vue'
 import UketukeCheckList from '../views/SIENT/UketukeCheckList.vue'
 import MstMenu from '../views/SIENT/MstMenu.vue'
 import SienPUketukeTouroku from '../components/UketukeIcrn.vue'
@@ -17,9 +21,10 @@ import ChiikiIkoSienKeikaku from '../views/SIENC/ChiikiIkoSienKeikaku.vue'
 import ChiikiteityakuDaicho from '../views/SIENC/ChiikiteityakuDaicho.vue'
 import ChiikiteityakuDaichoMst from '../views/SIENC/ChiikiteityakuDaichoMst.vue'
 
-import multiguard from 'vue-router-multiguard';
 
 
+
+// const usedTitle = "利用者台帳";
 const TitleSoudansien = "相談支援";
 const TitleSoudansienSyukei = "相談支援＞集計表";
 const TitleKeikaku = "計画相談支援";
@@ -27,19 +32,26 @@ const TantoKaigiString = "担当者会議";
 const TitleKeiyaku = "契約報告書";
 const TitleChiikiSoudan = "地域相談支援";
 Vue.use(VueRouter)
-const guard1 = function (to, from, next) {
-    console.log('guard1 called');
-
-    // next({
-    //     path: '/',
-    //     name: '仮のページ',
-    //     component: ''
-    // })
-    next();
-}
 
 const routes = [
-
+    // {
+    //     path: '/KihonJyoho/:uniqid',
+    //     name: '基本情報',
+    //     component: KihonJyoho,
+    //     meta: {
+    //         title: usedTitle,
+    //         calender: true
+    //     },
+    // },
+    // {
+    //     path: '/JyukyuTouroku/:uniqid',
+    //     name: '受給者証登録',
+    //     component: JyukyuTouroku,
+    //     meta: {
+    //         title: usedTitle,
+    //         calender: true
+    //     },
+    // },
 
     {
         path: '/SIENT/UketukeTourokuParent/:uniqid',
@@ -82,6 +94,22 @@ const routes = [
         },
     },
     {
+        path: '/SoudanHoukokusyoJyoukenParent/:uniqid',
+        name: '報告書用集計条件設定',
+        component: SoudanHoukokusyoJyoukenParent,
+        meta: {
+            title: TitleSoudansien,
+        },
+    },
+    {
+        path: '/SoudanHoukokusyo/:uniqid',
+        name: '報告書',
+        component: SoudanHoukokusyo,
+        meta: {
+            title: TitleSoudansien,
+        },
+    },
+    {
         path: '/MstMenu/:uniqid',
         name: 'マスタ',
         component: MstMenu,
@@ -114,7 +142,7 @@ const routes = [
         },
     },
     {
-        path: '/TantoKaigi/:uniqid',
+        path: '/TantoKaigi/:kind/:uniqid',
         name: '担当者会議',
         component: TantoKaigi,
         meta: {
@@ -133,7 +161,6 @@ const routes = [
         path: '/KeikakuLists/:uniqid',
         name: '計画作成',
         component: KeikakuLists,
-        beforeEnter: multiguard([guard1]),
         meta: {
             title: TitleKeikaku,
         },

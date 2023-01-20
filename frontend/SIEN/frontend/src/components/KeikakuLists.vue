@@ -9,7 +9,7 @@
           class="mr-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -86,6 +86,7 @@
               :id="'rbKeikakuListstaisyo-' + item.val"
               v-model="taisyousyaIndex"
               :value="item.val"
+              @change="rbtTaisyousyaClick"
             />
             <label
               :for="'rbKeikakuListstaisyo-' + item.val"
@@ -176,7 +177,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'name'"
+            :binding="'rname'"
             align="center"
             valign="middle"
             width="4*"
@@ -192,7 +193,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'birth'"
+            :binding="'birthD'"
             align="center"
             valign="middle"
             width="1*"
@@ -200,7 +201,7 @@
             :isReadOnly="true"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'sityo'"
+            :binding="'shichoName'"
             align="center"
             valign="middle"
             width="3*"
@@ -209,7 +210,7 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'sakuseikubun'"
+            :binding="'moniKbnName'"
             align="center"
             valign="middle"
             width="1.5*"
@@ -271,7 +272,7 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'doui_an'"
+            :binding="'anDoui'"
             align="center"
             valign="middle"
             width="1*"
@@ -352,7 +353,7 @@
             aggregate="Sum"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'monikeizoku'"
+            :binding="'moniKeizokuFlgD'"
             align="center"
             valign="middle"
             width="1*"
@@ -361,7 +362,7 @@
             aggregate="Cnt"
           ></wj-flex-grid-column>
           <wj-flex-grid-column
-            :binding="'tanto'"
+            :binding="'keikakuanSinm'"
             align="center"
             valign="middle"
             width="2*"
@@ -422,7 +423,7 @@
               tile
               v-model="doui_dialog_input.riyosya"
               height="25"
-              class="ml-1 dialog_border_blue koumokuData wLng"
+              class="ml-1 dialog_border_blue koumokuData wLng pl-1"
               >{{ doui_dialog_input.riyosya }}</v-card
             >
           </v-row>
@@ -437,12 +438,12 @@
             <v-card
               outlined
               tile
-              v-model="doui_dialog_input.douibi"
-              class="ml-1 pl-1"
+              v-model="doui_dialog_input.anDouiYmd"
+              class="wdMdl ml-1"
               width="150"
               height="25"
               @click="datepicker_doui_dialog = true"
-              >{{ doui_dialog_input.douibi }}
+              >{{ doui_dialog_input.anDouiYmd }}
               <div class="float-right">
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
@@ -463,8 +464,8 @@
                 small
                 elevation="0"
                 v-for="val in doui_man"
-                :key="val"
-                >{{ val }}</v-btn
+                :key="val.id"
+                >{{ val.name }}</v-btn
               >
             </v-btn-toggle>
           </v-row>
@@ -477,18 +478,23 @@
               >署名</v-card
             >
             <input
+              v-model="doui_dialog_input.syomei"
               type="text"
               outlined
               tile
-              class="dialog_text_field_mdl ml-1"
-              style="height: 25px; width: 200px"
+              class="dialog_text_field_mdl ml-1 pl-1"
+              style="height: 25px; width: 200px; text-align: left"
             />
           </v-row>
 
           <v-row no-gutters class="mt-1 rowStyle_input">
-            <v-btn elevation="2" height="24">削除</v-btn>
+            <v-btn elevation="2" height="24" @click="douiDelClick()">
+              削除
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn elevation="2" height="24">登録</v-btn>
+            <v-btn elevation="2" height="24" @click="douiAddClick()">
+              登録
+            </v-btn>
           </v-row>
         </div>
       </v-card>
@@ -532,7 +538,7 @@
             <v-card
               outlined
               height="25"
-              class="ml-1 dialog_border_blue koumokuData wLng"
+              class="ml-1 dialog_border_blue koumokuData wLng pl-1"
               v-model="teisyutu_dialog_input.riyosya"
               >{{ teisyutu_dialog_input.riyosya }}</v-card
             >
@@ -562,9 +568,13 @@
           </v-row>
 
           <v-row no-gutters class="mt-1 rowStyle_input">
-            <v-btn elevation="2" height="24">削除</v-btn>
+            <v-btn elevation="2" height="24" @click="teisyutsuDelClick()">
+              削除
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn elevation="2" height="24">登録</v-btn>
+            <v-btn elevation="2" height="24" @click="teisyutsuAddClick()">
+              登録
+            </v-btn>
           </v-row>
         </div>
       </v-card>
@@ -602,8 +612,11 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import { getConnect } from '@connect/getConnect';
+import { postConnect } from '@connect/postConnect';
+import { deleteConnect } from '@connect/deleteConnect';
 import printUtil from '@/utiles/printUtil';
 
 export default {
@@ -614,8 +627,11 @@ export default {
       doui_dialog: false,
       datepicker_doui_dialog: false,
       doui_picker: '',
-      doui_man: ['本人', '代理人'],
-      doui_dialog_input: { riyosya: '', douibi: '' },
+      doui_man: [
+        { id: 0, name: '本人' },
+        { id: 1, name: '代理人' },
+      ],
+      doui_dialog_input: { riyosya: '', anDouiYmd: '', syomei: '' },
       select_doui_man: 0,
       select_doui_key: 0,
       // 計画案 提出ダイアログ用
@@ -699,6 +715,7 @@ export default {
       checkicon: ['□', '☑'],
       mainGrid: [],
       thickList: [4, 11, 12, 13, 14, 16, 19, 20, 21],
+      selectedRowItem: {},
     };
   },
   created() {
@@ -771,7 +788,7 @@ export default {
           if (hPage.col === 7) {
             if (
               confirm(
-                'サービス等利用計画(案)作成画面へ移動します。よろしいですか？'
+                'サービス等利用計画(案)作成画面' + messageConst.CONFIRM.MOVE_TO
               )
             ) {
               this.$emit('an-select', tmpitem);
@@ -783,13 +800,13 @@ export default {
           if (hPage.col === 12) {
             _self.select_doui_key = tmpitem.riyocode;
             _self.doui_dialog = true;
-            _self.settingDouidialog();
+            _self.settingDouidialog(tmpitem);
           }
           // 提出を押下
           if (hPage.col === 13) {
             _self.select_teisyutu_key = tmpitem.riyocode;
             _self.teisyutu_dialog = true;
-            _self.settingTeisyutudialog();
+            _self.settingTeisyutudialog(tmpitem);
           }
         }
       });
@@ -868,12 +885,15 @@ export default {
           }
 
           // 同意カラム
-          if (c == 12 || c == 13) {
-            cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+          if (c == 12) {
+            cell.innerHTML = _self.checkicon[tmpitem.anDoui];
+          }
+          if (c == 13) {
+            cell.innerHTML = _self.checkicon[tmpitem.teisyutu];
           }
           // 支給決定@カラム確認中
           if (c == 14) {
-            if (tmpitem.doui_an == 1) {
+            if (tmpitem.ketteiUmu == 1) {
               cell.innerHTML = '☑';
             } else {
               cell.innerHTML = '□';
@@ -881,7 +901,7 @@ export default {
           }
           // サービス等利用計画
           if (c == 20) {
-            cell.innerHTML = _self.checkicon[tmpitem.doui_an];
+            cell.innerHTML = _self.checkicon[tmpitem.doui];
           }
           if (c == 12 || c == 13 || c == 14 || c == 20 || c == 21) {
             cell.style.borderRight =
@@ -1050,21 +1070,23 @@ export default {
     onAlphabetical() {
       this.userFilter();
     },
-
-    taisyousyaYoteiListClick(s) {
+    rbtTaisyousyaClick() {
+      this.userFilter();
+    },
+    taisyousyaYoteiListClick() {
       // 要素があれば削除
-      if (this.taisyousyaYoteiIndex.indexOf(s) != -1) {
-        this.taisyousyaYoteiIndex[this.taisyousyaYoteiIndex.indexOf(s)] = '';
-        let array = [];
-        for (let i = 0; i < this.taisyousyaYoteiIndex.length; i++) {
-          if (this.taisyousyaYoteiIndex[i]) {
-            array.push(this.taisyousyaYoteiIndex[i]);
-          }
-        }
-        this.taisyousyaYoteiIndex = array;
-      } else {
-        this.taisyousyaYoteiIndex.push(s);
-      }
+      // if (this.taisyousyaYoteiIndex.indexOf(s) != -1) {
+      //   this.taisyousyaYoteiIndex[this.taisyousyaYoteiIndex.indexOf(s)] = '';
+      //   let array = [];
+      //   for (let i = 0; i < this.taisyousyaYoteiIndex.length; i++) {
+      //     if (this.taisyousyaYoteiIndex[i]) {
+      //       array.push(this.taisyousyaYoteiIndex[i]);
+      //     }
+      //   }
+      //   this.taisyousyaYoteiIndex = array;
+      // } else {
+      //   this.taisyousyaYoteiIndex.push(s);
+      // }
       this.userFilter();
     },
     searchClicked() {
@@ -1078,10 +1100,10 @@ export default {
         pSym: this.kikanYm.format('YYYYMM'),
       };
       return getConnect('/KeikakuListsView', params, 'SIENP').then((result) => {
-        console.log(result);
         let array = result;
-        this.viewdata = array;
         this.viewdataAll = array;
+        this.userFilter();
+        console.log(this.viewdata);
       });
     },
     userFilter() {
@@ -1090,27 +1112,31 @@ export default {
       tmpviewdata = this.$refs.alp.alphabetFilter(tmpviewdata, 'kana');
 
       if (this.selTantousya && this.selTantousyaVal) {
-        let array = [];
-        for (let i = 0; i < tmpviewdata.length; i++) {
-          if (tmpviewdata[i].tanto == this.selTantousya) {
-            array.push(tmpviewdata[i]);
-          }
+        tmpviewdata = tmpviewdata.filter((x) => x.tanto == this.selTantousya);
+      }
+      if (this.taisyousyaIndex == 1) {
+        if (this.taisyousyaYoteiIndex.length > 0) {
+          tmpviewdata = tmpviewdata.filter(
+            (x) =>
+              (this.taisyousyaYoteiIndex.indexOf(1) >= 0 && x.moniKbn == 1) ||
+              (this.taisyousyaYoteiIndex.indexOf(2) >= 0 && x.moniKbn == 5) ||
+              (this.taisyousyaYoteiIndex.indexOf(3) >= 0 && x.moniKbn == 4)
+          );
+        } else {
+          tmpviewdata = [];
         }
-        tmpviewdata = array;
       }
 
-      if (this.taisyousyaYoteiIndex.length > 0) {
-        let array = [];
-        for (let i = 0; i < tmpviewdata.length; i++) {
-          if (
-            this.taisyousyaYoteiIndex.indexOf(tmpviewdata[i].taisyosya) != -1
-          ) {
-            array.push(tmpviewdata[i]);
-          }
+      //コード順でソート
+      tmpviewdata.sort((a, b) => {
+        if (a.rcode < b.rcode) {
+          return -1;
         }
-
-        tmpviewdata = array;
-      }
+        if (a.rcode > b.rcode) {
+          return 1;
+        }
+        return 0;
+      });
 
       this.viewdata = tmpviewdata;
     },
@@ -1152,7 +1178,7 @@ export default {
     },
 
     douiSelect() {
-      this.doui_dialog_input.douibi = dayjs(this.doui_picker).format(
+      this.doui_dialog_input.anDouiYmd = dayjs(this.doui_picker).format(
         'YYYY年MM月DD日'
       );
       this.datepicker_doui_dialog = false;
@@ -1168,16 +1194,30 @@ export default {
       this.teisyutu_dialog = false;
     },
     // 同意ダイアログの選択初期データ表記
-    settingDouidialog() {
-      // alert(this.select_doui_key);
-      this.doui_dialog_input.riyosya = '100011 東経 わかめ';
-      this.doui_dialog_input.douibi = dayjs().format('YYYY年MM月DD日');
+    settingDouidialog(item) {
+      this.selectedRowItem = item;
+      this.doui_dialog_input.riyosya = item.riyocodeD + ' ' + item.rname;
+      if (dayjs(item.anDouiYmd).isValid()) {
+        this.doui_dialog_input.anDouiYmd = dayjs(item.anDouiYmd).format(
+          'YYYY年MM月DD日'
+        );
+      } else {
+        this.doui_dialog_input.anDouiYmd = dayjs().format('YYYY年MM月DD日');
+      }
+      this.doui_dialog_input.syomei = item.anSyomei;
     },
     // 提出ダイアログの選択初期データ表記
-    settingTeisyutudialog() {
-      // alert(this.select_doui_key);
-      this.teisyutu_dialog_input.riyosya = '100011 東経 わかめ';
-      this.teisyutu_dialog_input.teisyutubi = dayjs().format('YYYY年MM月DD日');
+    settingTeisyutudialog(item) {
+      this.selectedRowItem = item;
+      this.teisyutu_dialog_input.riyosya = item.riyocodeD + ' ' + item.rname;
+      if (dayjs(item.teiYmd).isValid()) {
+        this.teisyutu_dialog_input.teisyutubi = dayjs(item.teiYmd).format(
+          'YYYY年MM月DD日'
+        );
+      } else {
+        this.teisyutu_dialog_input.teisyutubi =
+          dayjs().format('YYYY年MM月DD日');
+      }
     },
 
     onFontsize() {
@@ -1201,6 +1241,106 @@ export default {
       printUtil.setSubTitleList([sub1]);
       printUtil.printExec('計画一覧', printUtil.DIRECTION.landscape);
     },
+    /*
+     * 利用計画案・同意↓
+     */
+    douiDelClick() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        jigyoid: 62,
+        intcode: this.selectedRowItem.intcode,
+        cntid: this.selectedRowItem.anCntID,
+      };
+      if (confirm('同意' + messageConst.CONFIRM.DELETE)) {
+        deleteConnect('/KeikakuAnDoui', params, 'SIENP').then((result) => {
+          if (result.okflg == true) {
+            this.doui_dialog = false;
+            this.search();
+          } else {
+            alert(result.msg);
+          }
+        });
+      }
+    },
+    douiAddClick() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        jigyoid: 62,
+        intcode: this.selectedRowItem.intcode,
+        cntid: this.selectedRowItem.anCntID,
+        ymd: this.doui_dialog_input.anDouiYmd.replaceAll(/年|月|日/g, ''),
+        siid: 1,
+        kbn: this.select_doui_man,
+        syomei: this.doui_dialog_input.syomei,
+      };
+      if (confirm('同意' + messageConst.CONFIRM.POST)) {
+        postConnect('/KeikakuAnDoui', params, 'SIENP').then((result) => {
+          if (result.okflg == true) {
+            this.doui_dialog = false;
+            this.search();
+          } else {
+            alert(result.msg);
+          }
+        });
+      }
+    },
+    /*
+     * 利用計画案・同意↑
+     */
+    /*
+     * 利用計画案・提出↓
+     */
+    teisyutsuDelClick() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pIntcode: this.selectedRowItem.intcode,
+        pCntID: this.selectedRowItem.anCntID,
+      };
+      if (confirm('提出' + messageConst.CONFIRM.DELETE)) {
+        deleteConnect('/KeikakuAnTeisyutsu', params, 'SIENP').then((result) => {
+          if (result.okflg == true) {
+            this.teisyutu_dialog = false;
+            this.search();
+          } else {
+            alert(result.msg);
+          }
+        });
+      }
+    },
+    teisyutsuAddClick() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      let body = {
+        jigyoid: 62,
+        intcode: this.selectedRowItem.intcode,
+        cntid: this.selectedRowItem.anCntID,
+        teiYmd: this.teisyutu_dialog_input.teisyutubi.replaceAll(
+          /年|月|日/g,
+          ''
+        ),
+      };
+      if (confirm('提出' + messageConst.CONFIRM.POST)) {
+        postConnect('/KeikakuAnTeisyutsu', params, 'SIENP', body).then(
+          (result) => {
+            if (result.okflg == true) {
+              this.teisyutu_dialog = false;
+              this.search();
+            } else {
+              alert(result.msg);
+            }
+          }
+        );
+      }
+    },
+    /*
+     * 利用計画案・提出↑
+     */
   },
 };
 </script>

@@ -9,7 +9,7 @@
           class="ml-1"
           color="transparent"
           height="100%"
-          style="border: none"
+          style="border: none; margin-top: -1px"
           outlined
           tile
         >
@@ -449,7 +449,6 @@ export default {
       flexGrid.columnHeaders.rows[1].height = sysConst.GRDROWHEIGHT.Header;
       flexGrid.columnHeaders.rows[2].height = sysConst.GRDROWHEIGHT.Header * 2;
       // flexGrid.columnHeaders.hostElement.style.fontSize = '16px';
-      console.log(flexGrid.columnHeaders.hostElement.style);
       flexGrid.columnFooters.rows.insert(0, new wjGrid.Row());
       // flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header;

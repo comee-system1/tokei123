@@ -51,36 +51,14 @@
                 outlined
                 width="200"
               >
-                {{ userInfo.riyocodeD }} {{ userInfo.names }}
+                {{ userInfo.riyocode }} {{ userInfo.names }}
               </v-card>
             </v-row>
           </v-row>
           <v-row no-gutters class="rowStyle mb-1">
-            <v-card
-              class="koumokuTitle titleMain pa-1 ml-1 mr-1"
-              width="50"
-              outlined
-              tile
-            >
-              入力
+            <v-card elevation="3" height="19" class="mr-1">
+              <a class="addBtn" @click="addClick">新規作成</a>
             </v-card>
-            <v-btn-toggle
-              class="flex-wrap mr-1"
-              v-model="selInput"
-              color="light-blue darken-4"
-            >
-              <v-btn
-                v-for="n in inputList"
-                :key="n.val"
-                outlined
-                elevation="2"
-                width="25"
-                height="19"
-                @click="inputChangeclick(1)"
-              >
-                {{ n.name }}
-              </v-btn>
-            </v-btn-toggle>
             <v-card
               class="koumokuTitle titleMain pa-1 mr-1"
               width="50"
@@ -121,7 +99,7 @@
                 outlined
                 width="160px"
                 height="100%"
-                class="btnymd"
+                class="btnymd m-2"
                 >{{ getYmd(0) }}
                 <div class="float-right">
                   <v-icon small>mdi-calendar-month</v-icon>
@@ -253,6 +231,106 @@
         </v-col>
       </v-row>
     </v-container>
+    <dialog id="modeless_dialog">
+      <v-card class="common_modeless_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          アセスメント未作成
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="modeless_dialogClose"
+          class="dialog_close mt-1"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="pl-1">
+          アセスメント未作成です。<br />新規作成ボタンから作成してください。
+        </v-row>
+      </v-card>
+    </dialog>
+    <v-dialog v-model="createflg" width="350" persistent>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1">
+          アセスメント 新規作成
+        </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="createflg = false"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+            width="100"
+          >
+            利用者名
+          </v-card>
+          <v-card class="koumokuData pl-1" tile outlined width="200">
+            {{ userInfo.riyocode }} {{ userInfo.names }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1 pl-1">
+          <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
+            種類
+          </v-card>
+          <select
+            class="customSelectBox wShort hHigh mr-1"
+            v-model="selKind"
+            @change="onKindClicked"
+          >
+            <option v-for="val in kindList" :key="val.val" :value="val.val">
+              {{ val.name }}
+            </option>
+          </select>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            作成日
+          </v-card>
+          <v-card
+            class="mr-1"
+            color="transparent"
+            height="100%"
+            style="border: none"
+            outlined
+            tile
+          >
+            <v-btn
+              @click="inputCalendarClick(0)"
+              tile
+              outlined
+              elevation="2"
+              width="150px"
+              height="24"
+              class="btnymd pa-0"
+              style="top: 1px"
+              >{{ getYmd() }}
+              <div class="float-right">
+                <v-icon small>mdi-calendar-month</v-icon>
+              </div>
+            </v-btn>
+          </v-card>
+        </v-row>
+
+        <v-row no-gutters class="rowStyle_Input">
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="copyClicked()">
+            新規作成
+          </v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
     <v-dialog
       v-model="datepicker_dialog"
       width="200"
@@ -341,12 +419,10 @@ export default {
       drawer: false,
       maingrid: {},
       userdrawer: true,
+      createflg: false,
     };
   },
   methods: {
-    initComboFilters(combo) {
-      combo.header = combo.selectedItem.name;
-    },
     onInitializeIcrnGrid(flexGrid) {
       this.maingrid = flexGrid;
       flexGrid.beginningEdit.addHandler((s, e) => {
@@ -636,6 +712,17 @@ export default {
         doc.style.minWidth = '95%';
         doc.style.width = '95%';
       }
+    },
+    modeless_dialogOpen() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.show();
+    },
+    modeless_dialogClose() {
+      let popup = document.getElementById('modeless_dialog');
+      popup.close();
+    },
+    addClick() {
+      this.createflg = true;
     },
   },
 };

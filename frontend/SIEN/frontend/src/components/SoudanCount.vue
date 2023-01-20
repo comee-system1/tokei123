@@ -119,10 +119,10 @@
                 <v-icon small>mdi-calendar-month</v-icon>
               </div>
             </v-btn>
-            <v-btn class="mr-1 pa-1" height="20" @click="searchClicked()">
-              検索
-            </v-btn>
           </span>
+          <v-btn class="ml-1 pa-1" height="18" @click="searchClicked()">
+            検索
+          </v-btn>
         </v-card>
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
@@ -324,10 +324,10 @@ export default {
       datepickerYmd_dialog: false,
       datepickerSym_dialog: false,
       datepickerEym_dialog: false,
-      targetYmd: '',
+      targetYmd: dayjs().format('YYYYMMDD'),
       targetSYm: '',
       targetEYm: '',
-      drawer: true,
+      drawer: false,
       dispIndex: 0,
       dispList: [
         { val: 0, name: '日指定' },
@@ -340,6 +340,8 @@ export default {
   },
   mounted() {
     this.setPrintEvent();
+    // 初期データ読込
+    this.setViewData(true);
   },
   beforeDestroy() {
     this.$router.app.$off('print_event_global');

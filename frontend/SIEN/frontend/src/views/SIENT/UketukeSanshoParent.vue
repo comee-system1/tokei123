@@ -24,6 +24,9 @@
           <v-tab-item value="SoudanCountUtiwake" transition="none">
             <SoudanCountUtiwake ref="soudanCountUtiwake"></SoudanCountUtiwake>
           </v-tab-item>
+          <v-tab-item value="MonthJiseki" transition="none">
+            Tab 5 Content
+          </v-tab-item>
           <v-tab-item value="RiyouCheck" transition="none">
             Tab 5 Content
           </v-tab-item>
@@ -54,6 +57,7 @@ export default {
           href: '#SoudanCountUtiwake',
           hrefval: 'SoudanCountUtiwake',
         },
+        { name: '１ヶ月実績', href: '#MonthJiseki', hrefval: 'MonthJiseki' },
         { name: '利用チェック', href: '#RiyouCheck', hrefval: 'RiyouCheck' },
       ],
     };

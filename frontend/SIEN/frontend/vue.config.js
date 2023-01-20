@@ -12,9 +12,15 @@ module.exports = defineConfig({
     resolve: {
       alias: {
         '@backend': '../../../backend/',
-        '@connect': '../../../connect/',
+        '@connect': '../connect/',
         'va': 'vue2-admin-lte/src'
       }
+    }
+  },
+  pages: {
+    index: {
+      entry: 'src/main.js', // 必須パラメータ
+      title: '福祉見聞録',
     }
   },
 })

@@ -17,7 +17,6 @@
       :imeEnabled="true"
       :selectionMode="'Cell'"
       :showMarquee="true"
-      :autoRowHeights="true"
       :itemsSourceChanged="onItemsSourceChanged"
     >
       <wj-flex-grid-column
@@ -32,8 +31,8 @@
         binding="resolve"
         width="*"
         :allowResizing="true"
-        :wordWrap="true"
         :multiLine="true"
+        :wordWrap="true"
         align="left"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
@@ -50,7 +49,8 @@
         header="達成時期"
         binding="tassei"
         :width="100"
-        :word-wrap="false"
+        :wordWrap="true"
+        :multiLine="true"
         :allowResizing="true"
         format="d"
         align="left"
@@ -77,10 +77,10 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'評価\n時期'"
-        :multiLine="true"
         binding="hyoka"
         :width="60"
-        :word-wrap="false"
+        :wordWrap="true"
+        :multiLine="true"
         :allowResizing="true"
         format="d"
         align="left"
@@ -660,6 +660,7 @@ export default {
     },
     onItemsSourceChanged(flexGrid) {
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+      flexGrid.autoSizeRows();
     },
 
     createServiceData(cnt = 3) {
@@ -755,17 +756,22 @@ export default {
       color: $grid_selected_color;
     }
   }
-
-  .wj-cell {
-    padding: 2px;
+  .wj-header {
+    // ヘッダのみ縦横中央寄せ
+    color: $font_color;
     display: flex;
-
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: normal;
+    line-height: 110%;
+    padding: 4px;
+  }
+  .wj-cell:not(.wj-header) {
     &:first-child.wj-state-selected {
       background: transparent;
       color: initial;
     }
-
-    // text-align: left !important;
   }
 }
 .v-dialog--fullscreen {

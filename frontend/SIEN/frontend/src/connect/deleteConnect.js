@@ -13,6 +13,7 @@ export async function deleteConnect(type, params, folderName = "", inputParams =
     } else {
         folder = folderName;
     }
+
     return await axios.delete(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str, {
         data: {
             params,

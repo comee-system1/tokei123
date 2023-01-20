@@ -2,8 +2,6 @@
   <v-container no-gutters fluid class="pa-0" style="max-width: 100%">
     <v-row no-gutters>
       <v-col>
-        {{ keycloak.tokenParsed.realm_access }}\
-        <div>AAA:::{{ animal }}</div>
         <v-card class="commonTab d-flex flex-row" flat tile>
           <v-tabs hide-slider class="wTabShort" v-model="tab">
             <v-tab
@@ -15,15 +13,16 @@
               {{ item.name }}
             </v-tab>
           </v-tabs>
-          <v-card
-            id="yousikiLabel"
-            tile
-            v-if="yousikiLabel"
-            class="body-2 mt-1"
-          >
-            様式
-          </v-card>
+
           <v-tabs v-model="subtab" class="wTabShort" hide-slider>
+            <v-card
+              id="yousikiLabel"
+              tile
+              v-if="yousikiLabel"
+              class="body-2 mt-0"
+            >
+              様式
+            </v-card>
             <v-tab
               v-for="yosikiValue in yosikiArray"
               :key="yosikiValue.key"
@@ -35,25 +34,8 @@
         </v-card>
       </v-col>
     </v-row>
+
     <v-tabs-items v-model="tab">
-      <v-tab-item value="KeikakuLists" :eager="true">
-        <KeikakuLists></KeikakuLists>
-      </v-tab-item>
-      <v-tab-item value="state" :eager="true">
-        <AttendeeState></AttendeeState>
-      </v-tab-item>
-      <v-tab-item value="idea" :eager="true">
-        <div v-if="tab == 'idea'">
-          <KeikakuIdea v-if="ideaFlag == 'create'"></KeikakuIdea>
-          <KeikakuWeek3 v-if="ideaFlag == 'weekplan3'"></KeikakuWeek3>
-        </div>
-      </v-tab-item>
-      <v-tab-item value="plan" :eager="true">
-        <div v-if="tab == 'plan'">
-          <KeikakuPlan v-show="planFlag == 'create'"></KeikakuPlan>
-          <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
-        </div>
-      </v-tab-item>
       <v-layout no-gutters class="pa-1">
         <v-col
           no-gutters
@@ -80,7 +62,7 @@
               ref="state"
             ></AttendeeState>
           </v-tab-item>
-          <v-tab-item value="idea" transition="none">
+          <v-tab-item value="idea" transition="none" eager>
             <div v-show="tab == 'idea'">
               <KeikakuIdea
                 :selectedUserObj="selectedUserObj"
@@ -118,9 +100,8 @@ import KeikakuWeek3 from '../../components/KeikakuWeek3.vue';
 import UserList from '../../components/UserList.vue';
 
 export default {
-  props: ['keycloak'],
   components: {
-    KeikakuLists, //SoudanCount, SoudanCountUtiwake
+    KeikakuLists,
     AttendeeState,
     KeikakuIdea,
     KeikakuPlan,
@@ -157,7 +138,6 @@ export default {
     return {
       leftWidth: '280px',
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
-      animal: this.$store.state.animal,
       subtab: 0,
       ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
       planFlag: 'create', //create:計画案作成 weekplan:週間計画表
@@ -275,11 +255,9 @@ export default {
 #yousikiLabel {
   height: 20px;
   width: 80px;
+  min-width: 80px;
   background-color: $view_Title_font_color_Green;
   color: $white;
   text-align: center;
-  position: absolute;
-  top: 0;
-  left: 43%;
 }
 </style>

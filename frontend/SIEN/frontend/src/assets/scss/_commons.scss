@@ -36,6 +36,10 @@ html {
 
 .rowStyle_Input {
     height: 25px;
+
+    >input {
+        background: $white;
+    }
 }
 
 .rowStyle_Dark {
@@ -73,6 +77,10 @@ html {
         max-width: none;
     }
 
+    &.w120 {
+        width: 120px;
+    }
+
     &.wMdl {
         width: 160px;
         min-width: auto;
@@ -88,6 +96,11 @@ html {
 .titleMain {
     color: $view_Title_font_color_Main !important;
     background: $view_Title_background_Main !important;
+}
+
+.titleMainGreen {
+    color: $view_Title_font_color_Main !important;
+    background: $tab_background !important;
 }
 
 .titleBlueDark {
@@ -113,6 +126,13 @@ html {
     color: $view_Title_font_color_Green !important;
     background: $view_Title_background_Green !important;
 }
+
+.titleGreenDark {
+    color: $font_color !important;
+    background: $view_Title_background_Green_Dark_Dark !important;
+}
+
+
 
 .titleOrange {
     color: $view_Title_font_color_Orange !important;
@@ -256,7 +276,11 @@ input:disabled {
     border-color: $light-gray;
     color: $font_color;
     height: 100%;
-    margin-top: -2px
+    margin-top: -1px;
+
+    &.m-2 {
+        margin-top: -2px;
+    }
 }
 
 .commonBtn {
@@ -295,7 +319,7 @@ a {
         border-radius: 3px;
         padding: 0px 10px 10px 20px;
         cursor: pointer;
-        background-image: url('../plus_gray_15px.png');
+        background-image: url('../plus_15px.png');
         background-position: top 2px left 2px;
         background-repeat: no-repeat;
 

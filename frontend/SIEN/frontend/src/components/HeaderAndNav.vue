@@ -183,6 +183,16 @@ export default {
           mdi: true,
           src: 'mdi-clipboard-edit-outline',
         },
+        // {
+        //   name: '利用者台帳',
+        //   mdi: true,
+        //   src: 'mdi-account-group-outline',
+        //   lists: [
+        //     { name: '基本情報', link: '/KihonJyoho' },
+        //     { name: 'サービス履歴', link: '/TemporaryPage' },
+        //     { name: '受給者証登録', link: '/JyukyuTouroku' },
+        //   ],
+        // },
         {
           name: '相談支援',
           mdi: true,
@@ -210,11 +220,11 @@ export default {
                 },
                 {
                   name: '報告書',
-                  link: '/TemporaryPage',
+                  link: '/SoudanHoukokusyo',
                 },
                 {
                   name: '報告書用集計条件設定',
-                  link: '/TemporaryPage',
+                  link: '/SoudanHoukokusyoJyoukenParent',
                 },
               ],
             },
@@ -257,7 +267,7 @@ export default {
             },
             {
               name: '担当者会議',
-              link: '/TantoKaigi',
+              link: '/TantoKaigi/' + sysConst.TANTOKAIGI_KBN_NAME.KEIKAKU,
             },
             {
               name: '個人履歴',
@@ -297,7 +307,7 @@ export default {
             },
             {
               name: '担当者会議',
-              link: '/TemporaryPage',
+              link: '/TantoKaigi/' + sysConst.TANTOKAIGI_KBN_NAME.CHIIKI,
             },
             {
               name: '地域定着台帳',

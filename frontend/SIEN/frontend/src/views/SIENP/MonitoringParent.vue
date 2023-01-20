@@ -39,11 +39,11 @@
               </user-list>
             </v-col>
             <v-col no-gutters class="pa-0">
-              <v-tab-item value="KeikakuIcrn" transition="none">
-                <KeikakuIcrn
-                  ref="KeikakuIcrn"
+              <v-tab-item value="MonitoringYoteiIcrn" transition="none">
+                <MonitoringYoteiIcrn
+                  ref="MonitoringYoteiIcrn"
                   @moni-select="moniSelect"
-                ></KeikakuIcrn>
+                ></MonitoringYoteiIcrn>
               </v-tab-item>
               <v-tab-item value="Houkokusyo" transition="none" eager>
                 <MonitoringHoukokusho
@@ -82,7 +82,7 @@
 
 <script>
 import ls from '@/utiles/localStorage';
-import KeikakuIcrn from '../../components/MonitoringYoteiIcrn.vue';
+import MonitoringYoteiIcrn from '../../components/MonitoringYoteiIcrn.vue';
 import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
 import MonitoringHoukokusho from '../../components/MonitoringHoukokusho.vue';
 import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
@@ -94,7 +94,7 @@ export default {
     selectedData: Object, // 検索条件等
   },
   components: {
-    KeikakuIcrn,
+    MonitoringYoteiIcrn,
     MonitoringJissiIcrn,
     MonitoringHoukokusho,
     MonitoringSyukanKeikaku,
@@ -108,8 +108,8 @@ export default {
       menuItem: [
         {
           name: 'モニタリング予定一覧',
-          href: '#KeikakuIcrn',
-          hrefval: 'KeikakuIcrn',
+          href: '#MonitoringYoteiIcrn',
+          hrefval: 'MonitoringYoteiIcrn',
         },
         {
           name: 'モニタリング報告書',
@@ -149,9 +149,9 @@ export default {
       if (this.selectedUserObj != null) {
         this.setUserSelectPoint(this.selectedUserObj);
       }
-      if (this.tab == 'KeikakuIcrn') {
-        if (this.$refs.KeikakuIcrn != undefined) {
-          this.$refs.KeikakuIcrn.setPrintEvent();
+      if (this.tab == 'MonitoringYoteiIcrn') {
+        if (this.$refs.MonitoringYoteiIcrn != undefined) {
+          this.$refs.MonitoringYoteiIcrn.setPrintEvent();
         }
       }
       if (this.tab == 'MonitoringJissiIcrn') {

@@ -790,6 +790,7 @@ export default {
       printUtil.setThickRightVLineList(this.thickList);
       let sub1 = '表示期間：' + this.getYm(0) + ' ';
       printUtil.setSubTitleList([sub1]);
+      printUtil.setPageSize(printUtil.SIZE.A3);
       printUtil.printExec('担当者別実施一覧', printUtil.DIRECTION.landscape);
     },
   },

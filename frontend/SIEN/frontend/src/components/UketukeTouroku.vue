@@ -29,7 +29,7 @@
                 class="ml-1"
                 color="transparent"
                 height="100%"
-                style="border: none; margin-top: 2px"
+                style="border: none; margin-top: 1px"
                 outlined
                 tile
               >
@@ -360,7 +360,7 @@
                         対応者名
                       </v-card>
                       <input
-                        id="taiousyamei_keikaku"
+                        id="uketukeTourokuTaiousyamei"
                         type="text"
                         class="ml-1 border"
                         style="width: 400px"
@@ -947,7 +947,7 @@
                       class="ml-1"
                       color="transparent"
                       height="100%"
-                      style="border: none; margin-top: 2px"
+                      style="border: none; margin-top: 1px"
                       outlined
                       tile
                     >
@@ -1133,11 +1133,13 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import * as wjCore from '@grapecity/wijmo';
 import UserList from '../components/UserList.vue';
 import { getConnect } from '@connect/getConnect';
 import { postConnect } from '@connect/postConnect';
 import { putConnect } from '@connect/putConnect';
+import { deleteConnect } from '@connect/deleteConnect';
 
 const DISP_MST_GRD = {
   SienHouhou: 1,
@@ -1189,6 +1191,7 @@ const INPUT_ID = {
   KeikakuSienHouhou: 'uketukeTourokuKeikakuSienHouhou',
   KeikakuKasan: 'uketukeTourokuKeikakuKasan',
   KeikakuKikanBasyo: 'uketukeTourokuKeikakuKikanBasyo',
+  Taiousyamei: 'uketukeTourokuTaiousyamei',
   ChiikiSienHouhou: 'uketukeTourokuChiikiSienHouhou',
   ChiikiKasan: 'uketukeTourokuChiikiKasan',
   ChiikiItakusaki: 'uketukeTourokuChiikiItakusaki',
@@ -1204,6 +1207,7 @@ const TITLE_TXT = {
   Dousekisya3: '同席者３',
   Itakusaki: '委託先',
   Kasan: '加算項目',
+  Kikan: '機関・場所',
 };
 // HTML要素の非表示ID
 const HIDE_NAME = {
@@ -1275,8 +1279,8 @@ export default {
         { val: 1, name: '継続' },
       ],
       PeerCounselorItem: [
-        { val: 1, name: '無し' },
-        { val: 2, name: '有り' },
+        { val: 0, name: '無し' },
+        { val: 1, name: '有り' },
       ],
       RankItem: [
         { val: 1, name: 'A' },
@@ -1350,6 +1354,7 @@ export default {
       mstItakuList: this.getItakuMst(),
       mstKasanList: [],
       mstSoudansyaList: [],
+      mstKikanList: this.getKikanMst(),
     };
   },
   mounted() {
@@ -1449,11 +1454,12 @@ export default {
       });
     },
     getKasanMst(ymd, svc) {
+      alert(svc);
       let params = {
         uniqid: 3,
         traceid: 123,
         pYmd: ymd,
-        pSvcCode: svc,
+        pSvcCode: 0,
       };
       getConnect('/MstKasan', params, 'SIENT').then((result) => {
         this.setClrItem(result);
@@ -1469,10 +1475,22 @@ export default {
         pKanid: 0,
       };
       getConnect('/MstSodansya', params, 'SIENT').then((result) => {
-        console.log(1212333333);
+        console.log(1);
         console.log(result);
         this.setClrItem(result);
         this.mstSoudansyaList = result;
+      });
+    },
+    getKikanMst() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+      };
+      getConnect('/MstKikan', params, 'SIENT').then((result) => {
+        this.mstKikanList = result;
+        this.setClrItem(this.mstKikanList);
+        this.inputClicked(DISP_MST_GRD.User);
       });
     },
     setClrItem(list) {
@@ -1549,6 +1567,9 @@ export default {
             this.inputClicked(DISP_MST_GRD.SienKoumoku);
           } else if (this.dispMstGrid == DISP_MST_GRD.ChiikiKasan) {
             this.inputClicked(DISP_MST_GRD.ChiikiItakusaki);
+          } else if (this.dispMstGrid == DISP_MST_GRD.KeikakuKikanBasyo) {
+            this.selectDataObj.kikanbasyoname = mstitem.name;
+            this.inputClicked(DISP_MST_GRD.Taiousyamei);
           }
         }
       });
@@ -1782,6 +1803,8 @@ export default {
           this.dispMstGrid == DISP_MST_GRD.ChiikiKasan
         ) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.Kasan);
+        } else if (this.dispMstGrid == DISP_MST_GRD.KeikakuKikanBasyo) {
+          e.panel.setCellData(e.row, e.col, TITLE_TXT.Kikan);
         }
       }
     },
@@ -1887,7 +1910,6 @@ export default {
     },
     setUserSelectPoint(row) {
       // ユーザ選択処理はここで行う
-      console.log(row);
       this.userInfo = row;
       if (this.userInfo.riid == 0) {
         this.dispUserName = '';
@@ -1947,7 +1969,6 @@ export default {
       if (!newselectViewData) {
         this.selectDataObj = this.getKihonDefaultData();
       } else {
-        console.log(newselectViewData);
         this.selectDataObj = newselectViewData;
         this.setUserSelectPoint({
           riid: newselectViewData.intcode,
@@ -1975,6 +1996,7 @@ export default {
         this.selectDataObj.taiouYmd,
         this.selectDataObj.intcode
       );
+      this.handleResize();
     },
 
     /**************
@@ -2014,7 +2036,6 @@ export default {
       } else if (type == 1) {
         let mom = new dayjs();
         this.selectDataObj.jikan = mom.format('HH:mm');
-        console.log(this.selectDataObj);
       } else if (type == 2) {
         this.selectDataObj.etime = '';
       } else if (type == 3) {
@@ -2052,6 +2073,8 @@ export default {
         case DISP_MST_GRD.KeikakuKasan:
         case DISP_MST_GRD.ChiikiSienHouhou:
         case DISP_MST_GRD.ChiikiKasan:
+        case DISP_MST_GRD.KeikakuKikanBasyo:
+        case DISP_MST_GRD.Taiousyamei:
           this.mstdata = this.getMstData(kbn);
           document.getElementById(GRD_ID.Mst).style.display = STYLE_BLOCK;
 
@@ -2065,6 +2088,8 @@ export default {
             this.setFocus(INPUT_ID.ChiikiKasan);
           } else if (kbn == DISP_MST_GRD.SoudansyaName) {
             this.setFocus(INPUT_ID.KeikakuKikanBasyo);
+          } else if (kbn == DISP_MST_GRD.Taiousyamei) {
+            this.setFocus(INPUT_ID.Taiousyamei);
           }
           break;
         case DISP_MST_GRD.SoudansyaName:
@@ -2099,9 +2124,6 @@ export default {
           document.getElementById(GRD_ID.SienMst).style.display = STYLE_BLOCK;
           this.setFocus(INPUT_ID.Sienkoumoku);
           break;
-        case DISP_MST_GRD.KeikakuKikanBasyo:
-          this.setFocus(INPUT_ID.KeikakuKikanBasyo);
-          break;
         case DISP_MST_GRD.ChiikiItakusaki:
           document.getElementById(GRD_ID.Mst).style.display = STYLE_BLOCK;
           this.mstdata = this.getMstData(kbn);
@@ -2131,33 +2153,62 @@ export default {
         });
       }
       this.selectDataObj = this.getKihonDefaultData();
+      this.inputClicked(99);
     },
     // 削除
     delClicked() {
-      console.log('delClicked');
+      if (this.selectDataObj.rcnt == 0) {
+        alert('削除対象データ' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (confirm(messageConst.CONFIRM.DELETE)) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+        };
+        let body = {
+          jigyoid: 62,
+          ymd: this.taiouYmd.format('YYYYMMDD'),
+          rcnt: this.selectDataObj.rcnt,
+        };
+        deleteConnect('/Uktk', params, 'SIENT', body).then(() => {
+          this.clrClicked(0);
+        });
+      }
     },
     // 登録
     addClicked() {
-      console.log('addClicked');
+      if (!this.userInfo.riid || this.userInfo.riid == 0) {
+        alert('利用者' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (this.selectDataObj.jikan.length == 0) {
+        alert('開始時間' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
+      if (this.selectDataObj.cskmknm.length == 0) {
+        alert('支援項目' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (this.selectDataObj.naiyo.length == 0) {
+        alert('内容' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
       if (this.selectDataObj.rcnt == 0) {
-        if (confirm('受付登録を実行します。よろしいですか？')) {
+        if (confirm(messageConst.CONFIRM.POST)) {
           let params = {
             uniqid: 3,
             traceid: 123,
             pIntcode: this.userInfo.riid,
           };
-          console.log(this.selectDataObj);
-          console.log(this.createPostData());
-          console.log(1111);
           postConnect('/Uktk', params, 'SIENT', this.createPostData()).then(
-            (result) => {
-              console.log(12345);
-              console.log(result);
+            () => {
+              this.clrClicked(0);
             }
           );
         }
       } else {
-        if (confirm('受付更新を実行します。よろしいですか？')) {
+        if (confirm(messageConst.CONFIRM.PUT)) {
           let params = {
             uniqid: 3,
             traceid: 123,
@@ -2166,15 +2217,9 @@ export default {
             pOldymd: this.selectDataObj.ymd,
             pOldrcnt: this.selectDataObj.rcnt,
           };
-          console.log(1111);
-          console.log(params);
-          console.log(this.selectDataObj);
-          putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(
-            (result) => {
-              console.log(12345);
-              console.log(result);
-            }
-          );
+          putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(() => {
+            this.clrClicked(0);
+          });
         }
       }
     },
@@ -2208,7 +2253,7 @@ export default {
         jikan: this.selectDataObj.jikan,
         cskbn: cskbn,
         cskmkid: this.selectDataObj.cskmkid,
-        kan: this.selectDataObj.kan,
+        kan: this.selectDataObj.kan ? 1 : 0,
         nkbn: 1,
         syoyo: this.selectDataObj.syoyoujikan,
         rank: this.selectDataObj.rank,
@@ -2455,10 +2500,7 @@ export default {
         pEymd: this.kikanEymd.format('YYYYMM') + 31,
         Dspkbn: 0,
       };
-      console.log(params);
       getConnect('/Uktk', params, 'SIENT').then((result) => {
-        console.log(12345);
-        console.log(result);
         this.rirekidata = result;
       });
     },
@@ -2487,6 +2529,8 @@ export default {
         kbn == DISP_MST_GRD.ChiikiKasan
       ) {
         return this.mstKasanList;
+      } else if (kbn == DISP_MST_GRD.KeikakuKikanBasyo) {
+        return this.mstKikanList;
       }
 
       return tmpviewdata;
