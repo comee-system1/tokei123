@@ -23,7 +23,8 @@
               v-show="
                 (tab == 'Houkokusyo' && userdrawer) ||
                 tab == 'SyukanKeikaku' ||
-                tab == 'SampleCaleandar'
+                tab == 'SampleCaleandar' ||
+                tab == 'WeekPlan'
               "
             >
               <user-list
@@ -67,6 +68,9 @@
                 >
                 </SampleCaleandar>
               </v-tab-item>
+              <v-tab-item value="WeekPlan" transition="none" eager>
+                <WeekPlan ref="WeekPlan"> </WeekPlan>
+              </v-tab-item>
               <v-tab-item value="MonitoringJissiIcrn" transition="none">
                 <MonitoringJissiIcrn
                   ref="MonitoringJissiIcrn"
@@ -87,6 +91,7 @@ import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
 import MonitoringHoukokusho from '../../components/MonitoringHoukokusho.vue';
 import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
 import SampleCaleandar from '../../components/MonitoringSampleCaleandar.vue';
+import WeekPlan from '../../components/WeekPlan.vue';
 import UserList from '../../components/UserList.vue';
 
 export default {
@@ -99,6 +104,7 @@ export default {
     MonitoringHoukokusho,
     MonitoringSyukanKeikaku,
     SampleCaleandar,
+    WeekPlan,
     UserList,
   },
   data: function () {
@@ -130,6 +136,11 @@ export default {
           name: 'サンプルカレンダー',
           href: '#SampleCaleandar',
           hrefval: 'SampleCaleandar',
+        },
+        {
+          name: 'カレンダー',
+          href: '#WeekPlan',
+          hrefval: 'WeekPlan',
         },
       ],
       selectedUserObj: {},

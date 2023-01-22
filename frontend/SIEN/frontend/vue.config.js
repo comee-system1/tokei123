@@ -3,7 +3,7 @@ const {
 } = require('@vue/cli-service')
 module.exports = defineConfig({
   devServer: {
-    port: 8888,
+    port: 8765,
   },
   transpileDependencies: [
     'vuetify'
