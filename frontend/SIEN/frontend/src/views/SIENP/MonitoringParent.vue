@@ -192,6 +192,11 @@ export default {
           this.$refs.SampleCalendar.setUserdata(row);
         }
       }
+      if (this.tab == 'WeekPlan') {
+        if (this.$refs.WeekPlan != undefined) {
+          this.$refs.WeekPlan.setUserdata(row);
+        }
+      }
     },
     moniSelect(item, ymItem) {
       // v-tabにeagerが必要

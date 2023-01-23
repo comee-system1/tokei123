@@ -16,6 +16,7 @@
         outlined
         tile
       >
+        {{ riyocode }}
         {{ userName }}
       </v-card>
       <v-card
@@ -43,7 +44,7 @@
           tile
           class="text-center label text-caption pa-1 orenge"
         >
-          週間計画開始年月
+          計画開始年月
         </v-card>
         <v-card outlined tile class="text-center label text-caption pa-1">
           <div class="float-right" @click="inputCalendarClick()">
@@ -54,7 +55,7 @@
         <label
           outlined
           tile
-          class="text-center label text-caption pa-1 lightGray"
+          class="text-center label text-caption pa-1 lightGray ml-1"
         >
           入力内容
         </label>
@@ -69,19 +70,16 @@
         </v-btn-toggle>
       </v-col>
       <v-col cols="4" class="d-flex justify-end">
-        <v-btn small>
+        <v-btn small @click="weekInput()">
           <v-icon small> mdi-plus-circle </v-icon> 週間項目入力</v-btn
         >
         <v-btn small class="ml-1">前回コピー</v-btn>
         <v-btn small class="ml-1">計画コピー</v-btn>
-        <v-btn small class="ml-1">履歴参照</v-btn>
+        <v-btn small class="ml-1" @click="historyFlag = true">履歴参照</v-btn>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1">
-      <svg
-        viewbox="viewport"
-        style="border: 1px solid gray; width: 100%; height: 660px"
-      >
+      <svg viewbox="viewport" class="calendar">
         <!--メモリ-->
         <rect x="0" y="0" height="30" class="colHeader header" />
         <rect x="0" y="0" height="660" width="100" class="rowHeader header" />
@@ -132,13 +130,13 @@
           x="100"
           y="150"
           width="128"
-          height="30"
+          height="15"
           fill="yellow"
           stroke="gray"
           stroke-width="1"
           class="rects"
         />
-        <foreignObject :x="100" :y="150 + 2" width="125" height="80">
+        <foreignObject :x="100" :y="150" width="125" height="80">
           <center>朝食</center>
         </foreignObject>
         <rect
@@ -151,7 +149,7 @@
           stroke-width="1"
           class="rects"
         />
-        <foreignObject :x="100 + 130" :y="150 + 2" width="125" height="80">
+        <foreignObject :x="100 + 130" :y="150" width="125" height="80">
           <p>これはXHTMLなので、自動折り返しされます。</p>
         </foreignObject>
       </svg>
@@ -165,6 +163,47 @@
         <v-btn small class="ml-6">登録</v-btn>
       </v-col>
     </v-row>
+
+    <v-navigation-drawer right v-model="historyFlag" absolute temporary>
+      <v-card elevation="0">
+        <v-card-title class="dialog_title">
+          履歴参照
+          <v-btn class="closeButton pa-0" @click="historyFlag = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card class="pa-2" elevation="0">
+          <wj-flex-grid
+            id="historyGrid"
+            :headersVisibility="'Column'"
+            :alternating-row-step="0"
+            :initialized="onInitializedHistory"
+            :itemsSource="historyView"
+            :formatItem="onFormatItemHistory"
+            :allowResizing="false"
+            :allowDragging="false"
+            :allowSorting="false"
+          >
+            <wj-flex-grid-column
+              header="計画作成日"
+              binding="planDate"
+              :width="'*'"
+              align="center"
+              :isReadOnly="true"
+            ></wj-flex-grid-column>
+            <wj-flex-grid-column
+              header="週間計画完了"
+              binding="planFinFlag"
+              align="center"
+              :width="'*'"
+              :isReadOnly="false"
+              class="finish"
+            ></wj-flex-grid-column>
+          </wj-flex-grid>
+        </v-card>
+      </v-card>
+    </v-navigation-drawer>
+
     <v-dialog v-model="datepickerYoteiYm_dialog">
       <v-date-picker
         id="monitoring_sample_Datepicker"
@@ -176,6 +215,52 @@
       >
       </v-date-picker>
     </v-dialog>
+    <v-dialog v-model="weekInputFlag" width="60%">
+      <v-card elevation="0" tile>
+        <v-card-title class="dialog_title">
+          週間項目入力
+          <v-btn class="closeButton pa-0" @click="weekInputFlag = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </v-card-title>
+      </v-card>
+      <v-card tile class="pa-2">
+        <v-row no-gutters>
+          <v-col class="weekInputFlag__left">
+            <div class="d-flex">
+              <label>項目</label>
+              <textarea v-model="input_komoku" class="ml-1"></textarea>
+            </div>
+            <div class="d-flex mt-1">
+              <label class="low">曜日</label>
+              <div class="ml-1">
+                <v-btn-toggle multiple v-model="input_week" tile>
+                  <v-btn v-for="w in week" :key="w" small>{{ w }}</v-btn>
+                </v-btn-toggle>
+              </div>
+            </div>
+            <div class="d-flex mt-1">
+              <div class="time">
+                <label class="middle">時間</label>
+              </div>
+              <div>
+                <div class="d-flex">
+                  <div class="ml-1">
+                    <input type="time" v-model="input_time_start" />
+                  </div>
+                  <span>～</span>
+                  <div class="ml-1">
+                    <input type="time" v-model="input_time_end" />
+                  </div>
+                </div>
+                <div class="d-flex ml-1">(最小単位30分、以降10分単位)</div>
+              </div>
+            </div>
+          </v-col>
+          <v-col>bbb</v-col>
+        </v-row>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -184,13 +269,28 @@
 import dayjs from 'dayjs';
 // ロケールのインポート
 import 'dayjs/locale/ja';
+import { getConnect } from '@/connect/getConnect';
+import sysConst from '@/utiles/const';
 
+const KEIKAUREKI_URL = '/Keikakureki';
+const TRACEID = 123;
+const UNIQID = 3;
+const JIGYOID = 1;
 export default {
   components: {},
   data() {
     return {
+      input_komoku: '',
+      input_time_start: '',
+      input_time_end: '',
+      input_week: [],
+      week: ['毎日', '月', '火', '水', '木', '金', '土'],
+      historyView: [],
       checkCompleteFlag: false,
+      weekInputFlag: false,
       complete: '',
+      riid: '',
+      riyocode: '',
       userName: '',
       createDate: dayjs().format('YYYY年M月DD日'),
       startDate: dayjs().format('YYYY年M月'),
@@ -198,7 +298,7 @@ export default {
       pickerYoteiYm: '',
       weekplanType: '',
       displayPatternFlag: 0,
-
+      historyFlag: false,
       svgData: {},
       addDialog: false,
       timeLine: [],
@@ -257,9 +357,18 @@ export default {
     }
     this.timeLine = timeline;
   },
-  mounted() {},
+  mounted() {
+    this.calculateWindowHeight();
+    window.addEventListener('resize', this.calculateWindowHeight);
+  },
   beforeDestroy() {},
   methods: {
+    calculateWindowHeight() {
+      if (document.getElementById('historyGrid') != null) {
+        document.getElementById('historyGrid').style.height =
+          window.innerHeight - 140 + 'px';
+      }
+    },
     // ダイアログカレンダー表示
     inputCalendarClick() {
       this.datepickerYoteiYm_dialog = true;
@@ -269,6 +378,53 @@ export default {
       this.startDate = dayjs(this.pickerYoteiYm).format('YYYY年M月');
       this.datepickerYoteiYm_dialog = false;
     },
+    /**********************************
+     * 週間項目入力
+     */
+    weekInput() {
+      this.weekInputFlag = true;
+    },
+    /***************************
+     * 履歴参照
+     */
+    onInitializedHistory() {
+      let params = {
+        jigyoid: JIGYOID,
+        intcode: this.riid,
+        uniqid: UNIQID,
+        traceid: TRACEID,
+      };
+      getConnect(KEIKAUREKI_URL, params, 'SIENP').then((result) => {
+        // console.log(result);
+        // 取得データをbinding名に指定
+        let temp = result.filter(function (value) {
+          value.planDate = value.krekiymd;
+          value.planFinFlag = value.kanryo ? true : false;
+          return value;
+        });
+        this.historyView = temp;
+      });
+    },
+    onFormatItemHistory(historyGrid, e) {
+      if (e.panel == historyGrid.columnHeaders) {
+        if (e.col == 0) {
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundGreen;
+        }
+        if (e.col == 1) {
+          e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
+        }
+      }
+    },
+    /****************
+     * ユーザー一覧を押下
+     */
+    setUserdata(obj) {
+      this.userName = obj.names;
+      this.riyocode = obj.riyocode;
+      this.riid = obj.riid;
+      this.onInitializedHistory();
+    },
   },
 };
 </script>
@@ -276,12 +432,16 @@ export default {
 @import '@/assets/scss/common.scss';
 $headerColor: #f0f8ff;
 $width: 1280px-280px;
+$height: 24px;
+$middle: 48px;
+
 #weekCaleandar {
   margin-left: 0;
   margin-right: auto;
   width: $width;
   min-width: $width;
   max-width: $width;
+  font-size: $cell_fontsize;
   .colHeader {
     width: 100%;
     &.header {
@@ -292,6 +452,34 @@ $width: 1280px-280px;
   .rowHeader {
     &.header {
       fill: $headerColor;
+    }
+  }
+  .calendar {
+    border: 1px solid gray;
+    width: 100%;
+    height: 660px;
+  }
+  .filterArea {
+    background-color: $view_Title_background_Main;
+    .lightGray {
+      background-color: $light-gray;
+    }
+    .lightYellow {
+      background-color: $light_yellow;
+    }
+  }
+  .planArea {
+    label {
+      height: 28px;
+      padding: 2px 10px;
+      line-height: 20px;
+    }
+
+    .orenge {
+      background-color: $view_Title_background_Orange;
+    }
+    .lightGray {
+      background-color: $light-gray;
     }
   }
 
@@ -320,7 +508,79 @@ $width: 1280px-280px;
     }
   }
 }
-
+.v-navigation-drawer__content,
+.v-dialog {
+  .weekInputFlag {
+    &__left {
+      label {
+        background-color: $view_Title_background_Main;
+        font-size: 0.85rem;
+        width: 120px;
+        color: $white;
+        text-align: center;
+        line-height: 100px;
+        &.low {
+          height: $height;
+          line-height: $height;
+        }
+        &.middle {
+          height: $middle;
+          line-height: $middle;
+        }
+      }
+      .d-block {
+        display: block !important;
+        width: 100%;
+      }
+      .time {
+        width: 120px;
+        text-align: center;
+        background-color: $view_Title_background_Main;
+      }
+      input[type='time'] {
+        width: 100px;
+        height: $height;
+      }
+      textarea {
+        border: 1px solid $light-gray;
+        width: 162px;
+        height: 100px;
+        resize: none;
+      }
+      .v-btn-toggle {
+        button {
+          min-width: 40px;
+          &.v-btn {
+            &--active {
+              border: 1px solid $black;
+              color: $view_Title_background_Main;
+            }
+          }
+        }
+      }
+    }
+  }
+  .v-card {
+    &__title {
+      &.dialog_title {
+        font-size: 0.85rem;
+        background-color: $view_Title_background_Main;
+        color: $white;
+        position: relative;
+        padding: 5px;
+        .closeButton {
+          height: $height;
+          min-width: 20px;
+          color: $black;
+          position: absolute;
+          left: auto;
+          right: 10px;
+          top: 10px;
+        }
+      }
+    }
+  }
+}
 #monitoring_sample_Datepicker {
   position: absolute;
   left: 200px;
