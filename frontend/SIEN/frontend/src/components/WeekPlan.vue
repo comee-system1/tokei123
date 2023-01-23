@@ -215,7 +215,7 @@
       >
       </v-date-picker>
     </v-dialog>
-    <v-dialog v-model="weekInputFlag" width="60%">
+    <v-dialog v-model="weekInputFlag" width="900px">
       <v-card elevation="0" tile>
         <v-card-title class="dialog_title">
           週間項目入力
@@ -256,8 +256,66 @@
                 <div class="d-flex ml-1">(最小単位30分、以降10分単位)</div>
               </div>
             </div>
+            <div class="d-flex mt-1">
+              <label class="middle">時間</label>
+              <v-card class="ml-1 mt-1 fcolor" elevation="0">文字色</v-card>
+              <v-btn small class="ml-1">背景色</v-btn>
+              <v-btn small class="ml-1">文字色</v-btn>
+            </div>
           </v-col>
-          <v-col>bbb</v-col>
+          <v-col class="weekInputFlag__right">
+            <label>大分類</label>
+            <select v-model="daibunrui" class="ml-1">
+              <option
+                :value="value.value"
+                v-for="value in daibunruiList"
+                :key="value.value"
+              >
+                {{ value.name }}
+              </option>
+            </select>
+
+            <wj-flex-grid
+              id="bunruiGrid"
+              :headersVisibility="'Column'"
+              :initialized="onInitializedBunrui"
+              :itemsSource="bunruiView"
+              :formatItem="onFormatItemBunrui"
+              :allowResizing="false"
+              :allowDragging="false"
+              :allowSorting="false"
+              class="mt-1"
+            >
+              <wj-flex-grid-column
+                binding="bigBunruiCode"
+                :width="40"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                binding="bigBunrui"
+                :width="'*'"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                binding="middleBunruiCode"
+                align="center"
+                :width="'*'"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                binding="middleBunrui"
+                align="center"
+                :width="'*'"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                binding="middleBunruiType1"
+                align="center"
+                :width="50"
+              ></wj-flex-grid-column>
+              <wj-flex-grid-column
+                binding="middleBunruiType2"
+                align="center"
+                :width="50"
+              ></wj-flex-grid-column>
+            </wj-flex-grid>
+          </v-col>
         </v-row>
       </v-card>
     </v-dialog>
@@ -271,6 +329,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import { getConnect } from '@/connect/getConnect';
 import sysConst from '@/utiles/const';
+import * as wjGrid from '@grapecity/wijmo.grid';
 
 const KEIKAUREKI_URL = '/Keikakureki';
 const TRACEID = 123;
@@ -280,6 +339,18 @@ export default {
   components: {},
   data() {
     return {
+      bunruiView: [],
+      daibunrui: 0,
+      daibunruiList: [
+        {
+          value: 0,
+          name: '指定なし',
+        },
+        {
+          value: 1,
+          name: '余韻',
+        },
+      ],
       input_komoku: '',
       input_time_start: '',
       input_time_end: '',
@@ -287,7 +358,7 @@ export default {
       week: ['毎日', '月', '火', '水', '木', '金', '土'],
       historyView: [],
       checkCompleteFlag: false,
-      weekInputFlag: false,
+      weekInputFlag: true,
       complete: '',
       riid: '',
       riyocode: '',
@@ -416,6 +487,52 @@ export default {
         }
       }
     },
+    /*****************************
+     * 分類grid
+     */
+    onInitializedBunrui(bunruiGrid) {
+      let bunruiView = [];
+      bunruiView.push({
+        bigBunruiCode: '003',
+        bigBunrui: '余韻',
+        middleBunruiCode: '001',
+        middleBunrui: 'テレビを観る',
+        middleBunruiType1: 'TV',
+        middleBunruiType2: 'TV',
+      });
+      bunruiView.push({
+        bigBunruiCode: '003',
+        bigBunrui: '余韻',
+        middleBunruiCode: '002',
+        middleBunrui: 'ゲーム',
+        middleBunruiType1: 'TV',
+        middleBunruiType2: 'TV',
+      });
+
+      this.bunruiView = bunruiView;
+      this.createHeaderBunrui(bunruiGrid);
+    },
+    createHeaderBunrui(bunruiGrid) {
+      var panel = bunruiGrid.columnHeaders;
+      panel.setCellData(0, 0, '大分類');
+      panel.setCellData(0, 2, '中分類');
+
+      let headerRanges = [];
+      headerRanges.push(new wjGrid.CellRange(0, 0, 0, 1));
+      headerRanges.push(new wjGrid.CellRange(0, 2, 0, 5));
+      let mm = new wjGrid.MergeManager();
+      mm.getMergedRange = function (panel, r, c) {
+        if (panel.cellType == wjGrid.CellType.ColumnHeader) {
+          for (let h = 0; h < headerRanges.length; h++) {
+            if (headerRanges[h].contains(r, c)) {
+              return headerRanges[h];
+            }
+          }
+        }
+      };
+      bunruiGrid.mergeManager = mm;
+    },
+    onFormatItemBunrui() {},
     /****************
      * ユーザー一覧を押下
      */
@@ -511,6 +628,27 @@ $middle: 48px;
 .v-navigation-drawer__content,
 .v-dialog {
   .weekInputFlag {
+    &__right {
+      font-size: 0.85rem;
+
+      label {
+        background-color: $view_Title_background_Blue;
+        width: 120px;
+        height: $height;
+        line-height: $height;
+        display: inline-block;
+        text-align: center;
+      }
+      select {
+        width: 200px;
+        height: $height;
+        border: 1px solid $light-gray;
+        font-size: 0.85rem;
+        -webkit-appearance: auto;
+      }
+      #bunruiGrid {
+      }
+    }
     &__left {
       label {
         background-color: $view_Title_background_Main;
@@ -536,6 +674,14 @@ $middle: 48px;
         width: 120px;
         text-align: center;
         background-color: $view_Title_background_Main;
+      }
+      .fcolor {
+        width: 80px;
+        height: $height;
+        line-height: $height;
+        text-align: center;
+        font-size: 0.85rem;
+        border: 1px solid $light-gray;
       }
       input[type='time'] {
         width: 100px;
