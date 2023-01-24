@@ -266,6 +266,7 @@ export default {
     });
     getConnect('/MstSyukeikbn', params, 'SIENT').then((result) => {
       if (result !== undefined) {
+        console.log(result);
         this.viewKbnList = result;
         this.viewKbnList.unshift({ id: 0, name: '（指定なし）' });
         this.selInputKbn = 0;

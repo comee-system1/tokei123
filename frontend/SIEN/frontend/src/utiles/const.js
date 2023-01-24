@@ -101,21 +101,21 @@ const JIGYOKBN = {
 }
 const KEIKAKUJIGYOKBN = {
     Keikaku: {
-        val: 0,
+        val: 3,
         name: '計画相談'
     },
     Syougaiji: {
-        val: 1,
+        val: 8,
         name: '障害児相談'
     },
 }
 const CHIIKIJIGYOKBN = {
     Keikaku: {
-        val: 0,
+        val: 6,
         name: '地域移行'
     },
     Syougaiji: {
-        val: 1,
+        val: 7,
         name: '地域定着'
     },
 }

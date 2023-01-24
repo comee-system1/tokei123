@@ -240,7 +240,7 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="selectDataObj.inputkbn"
+                        v-model="selectDataObj.cskbn"
                       >
                         <v-btn
                           v-for="n in keikakuInputKbnItem"
@@ -431,7 +431,7 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1"
-                        v-model="selectDataObj.inputkbn"
+                        v-model="selectDataObj.cskbn"
                       >
                         <v-btn
                           v-for="n in chiikiInputKbnItem"
@@ -857,10 +857,10 @@
               >
                 <user-list
                   ref="user_list"
-                  class="pt-1 ml-1"
+                  class="pt-1 ml-1 mr-1"
                   :dispAddDaicho="true"
                   :dispHideBar="false"
-                  :headerheight="200"
+                  :headerheight="220"
                   :grdheight="125"
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
@@ -1135,7 +1135,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
 import * as wjCore from '@grapecity/wijmo';
-import UserList from '../components/UserList.vue';
+import UserList from '../components/UserListUktk.vue';
 import { getConnect } from '@connect/getConnect';
 import { postConnect } from '@connect/postConnect';
 import { putConnect } from '@connect/putConnect';
@@ -1385,14 +1385,12 @@ export default {
 
     getKasanUmu() {
       if (this.kbnTab == this.kbnItem[2].hrefval) {
-        if (
-          this.selectDataObj.inputkbn == sysConst.CHIIKIJIGYOKBN.Keikaku.val
-        ) {
+        if (this.selectDataObj.cskbn == sysConst.CHIIKIJIGYOKBN.Keikaku.val) {
           return this.kasanUmuItem.filter(
             (e) => e.kbn == 'all' || e.kbn == 'chiikiIkou'
           );
         } else if (
-          this.selectDataObj.inputkbn == sysConst.CHIIKIJIGYOKBN.Syougaiji.val
+          this.selectDataObj.cskbn == sysConst.CHIIKIJIGYOKBN.Syougaiji.val
         ) {
           return this.kasanUmuItem.filter(
             (e) => e.kbn == 'all' || e.kbn == 'chiikiTeichaku'
@@ -2151,9 +2149,19 @@ export default {
           jyukyuno: 0,
           jyukyunoD: '',
         });
+        this.selectDataObj = this.getKihonDefaultData();
+        this.inputClicked(99);
+      } else {
+        this.selectDataObj.rcnt = 0;
+        this.selectDataObj.cskmknm = '';
+        this.selectDataObj.cskmkid = 0;
+        this.selectDataObj.naiyo = '';
+        this.selectDataObj.kan = 0;
+        this.selectDataObj.peer = 0;
+        this.selectDataObj.syoyoujikan = '';
+        this.selectDataObj.rank = 0;
+        this.inputClicked(7);
       }
-      this.selectDataObj = this.getKihonDefaultData();
-      this.inputClicked(99);
     },
     // 削除
     delClicked() {
@@ -2203,7 +2211,7 @@ export default {
           };
           postConnect('/Uktk', params, 'SIENT', this.createPostData()).then(
             () => {
-              this.clrClicked(0);
+              this.clrClicked(1);
             }
           );
         }
@@ -2218,7 +2226,7 @@ export default {
             pOldrcnt: this.selectDataObj.rcnt,
           };
           putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(() => {
-            this.clrClicked(0);
+            this.clrClicked(1);
           });
         }
       }
@@ -2267,7 +2275,7 @@ export default {
         sdnkanchuid: 0,
         sdnnam: this.selectDataObj.sdnkanrk,
         sdntel: '',
-        dokoflg: doukousya.length == 0 ? 0 : 1,
+        // dokoflg: doukousya.length == 0 ? 0 : 1,
         dokosha: doukousya,
         sdnkeiroid: 0,
         sykkbn: 0,
@@ -2291,7 +2299,7 @@ export default {
       return result;
     },
     getKihonDefaultData() {
-      return {
+      let obj = {
         inputkbn: 0,
         syokaiflg: 0,
         jigyoid: 0,
@@ -2309,8 +2317,9 @@ export default {
         birth: 0,
         age: 0,
         cskbn: 0,
+        kasanumu: 0,
         nkbn: 0,
-        dokoflg: 0,
+        // dokoflg: 0,
         dokosha: [],
         sdntioflg: 0,
         sdntiork: '',
@@ -2355,116 +2364,22 @@ export default {
         nismark: '',
         siid: 0,
         sryaku: '',
-
-        // inputkbn: -1,
-        // syokaikeizoku: -1,
-        // syokaiymd: '',
-        // kankeiObj: {
-        //   id: 0,
-        //   code: '',
-        //   name: '',
-        //   nameD: '',
-        //   codeD: '',
-        //   ryaku: '',
-        //   nikeiflg: 0,
-        //   honninflg: 0,
-        // },
-        // soudansyaObj: {
-        //   id: 0,
-        //   code: '',
-        //   codeD: '',
-        //   name: '',
-        //   tudukigara: '',
-        //   mimoto: '',
-        //   rennrakusaki: '',
-        //   isKazoku: false,
-        // },
-        // dousekisya1Obj: {
-        //   id: 0,
-        //   code: '',
-        //   codeD: '',
-        //   name: '',
-        //   tudukigara: '',
-        //   mimoto: '',
-        //   rennrakusaki: '',
-        //   isKazoku: false,
-        // },
-        // dousekisya2Obj: {
-        //   id: 0,
-        //   code: '',
-        //   codeD: '',
-        //   name: '',
-        //   tudukigara: '',
-        //   mimoto: '',
-        //   rennrakusaki: '',
-        //   isKazoku: false,
-        // },
-        // dousekisya3Obj: {
-        //   id: 0,
-        //   code: '',
-        //   codeD: '',
-        //   name: '',
-        //   tudukigara: '',
-        //   mimoto: '',
-        //   rennrakusaki: '',
-        //   isKazoku: false,
-        // },
-        // sienKoumokuObj: {
-        //   daicskmkid: 0,
-        //   daicode: '',
-        //   dainames: '',
-        //   dairyaku: '',
-        //   daicskbn: '',
-        //   daicolor: '',
-        //   daisyukflg: '',
-        //   tyucskmkid: 0,
-        //   tyucode: '',
-        //   tyunames: '',
-        //   tyuryaku: '',
-        //   tyucolor: '',
-        //   tyusyukflg: '',
-        // },
-        // keikakuSoudanObj: {
-        //   inputkbn: -1,
-        //   kasanumu: -1,
-        //   sienhouhou: 0,
-        //   sienhouhouname: '',
-        //   kasan: 0,
-        //   kasanname: '',
-        //   kikanbasyo: 0,
-        //   kikanbasyoname: '',
-        //   taiousyamei: 0,
-        //   taiousyameiname: '',
-        //   stime: '',
-        //   etime: '',
-        // },
-        // chiikiSoudanObj: {
-        //   inputkbn: -1,
-        //   kasanumu: -1,
-        //   sienhouhou: 0,
-        //   sienhouhouname: '',
-        //   kasan: 0,
-        //   kasanname: '',
-        //   itakusaki: 0,
-        //   itakusakiname: '',
-        // },
-        // itakusaiObj: {
-        //   id: 0,
-        //   code: '',
-        //   codeD: '',
-        //   name: '',
-        //   nameD: '',
-        //   ryaku: '',
-        // },
-        // startTime: '',
-        // syoyoujikan: '',
-        // naiyo: '',
-        // peerCounselor: -1,
-        // rank: -1,
-        // gyoumunissi: false,
       };
+      if (this.kbnItem != undefined) {
+        if (this.kbnTab == this.kbnItem[1].hrefval) {
+          obj.cskbn = sysConst.KEIKAKUJIGYOKBN.Keikaku.val;
+        } else if (this.kbnTab == this.kbnItem[2].hrefval) {
+          obj.cskbn = sysConst.CHIIKIJIGYOKBN.Keikaku.val;
+          obj.kasanumu = 0;
+        }
+      }
+
+      return obj;
     },
     numbervalidate() {
+      this.selectDataObj.syoyoujikan = this.hankaku2Zenkaku(
+        this.selectDataObj.syoyoujikan
+      );
       if (isNaN(this.selectDataObj.syoyoujikan)) {
         this.selectDataObj.syoyoujikan = '';
         return;
@@ -2474,10 +2389,16 @@ export default {
           String(this.selectDataObj.syoyoujikan).slice(0, 3)
         );
       }
+
       this.selectDataObj.syoyoujikan = this.selectDataObj.syoyoujikan.replace(
         /\D/g,
         ''
       );
+    },
+    hankaku2Zenkaku(str) {
+      return str.replace(/[０-９]/g, function (s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+      });
     },
     onRirekiKoumokuClicked() {
       this.selRirekiKoumoku = this.RirekiKoumokuList[this.selRirekiKoumoku].val;
@@ -2754,6 +2675,7 @@ div#uketukeTouroku {
   max-width: 1050px;
   width: 1050px;
   height: auto;
+  min-height: 500px !important;
   // width: auto;
 
   .centerArea {

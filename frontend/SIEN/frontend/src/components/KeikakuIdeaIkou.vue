@@ -91,6 +91,10 @@ export default {
     },
   },
   methods: {
+    getValue(kbn) {
+      console.log(this.viewData);
+      return this.viewData[kbn].value;
+    },
     grdRefresh(userDispflg) {
       this.userdrawer = userDispflg;
       this.mainGrid.refresh();

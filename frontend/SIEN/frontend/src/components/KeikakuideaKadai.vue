@@ -21,14 +21,14 @@
     >
       <wj-flex-grid-column
         header="順位"
-        binding="sort"
+        binding="koban"
         :width="40"
         :isReadOnly="true"
         align="center"
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'解決すべき課題\n(本人のニーズ)'"
-        binding="resolve"
+        binding="kadai"
         width="*"
         :allowResizing="true"
         :multiLine="true"
@@ -37,7 +37,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="支援目標"
-        binding="sien"
+        binding="shienmokuhyo"
         width="*"
         :word-wrap="true"
         :multiLine="true"
@@ -47,7 +47,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="達成時期"
-        binding="tassei"
+        binding="tasseijiki"
         :width="100"
         :wordWrap="true"
         :multiLine="true"
@@ -58,7 +58,7 @@
 
       <wj-flex-grid-column
         :header="'福祉サービス等\n種類-内容-量(頻度-期間)'"
-        binding="service"
+        binding="fukushiservice"
         width="*"
         :wordWrap="true"
         :multiLine="true"
@@ -67,7 +67,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'課題のための本人\nの役割'"
-        binding="task"
+        binding="yakuwari"
         width="*"
         :wordWrap="true"
         :multiLine="true"
@@ -77,7 +77,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         :header="'評価\n時期'"
-        binding="hyoka"
+        binding="hyokajiki"
         :width="60"
         :wordWrap="true"
         :multiLine="true"
@@ -87,7 +87,7 @@
       ></wj-flex-grid-column>
       <wj-flex-grid-column
         header="その他留意事項"
-        binding="other"
+        binding="ryuijiko"
         width="*"
         :wordWrap="true"
         :multiLine="true"
@@ -321,20 +321,18 @@ export default {
       let array = [];
       if (viewData.keikakudetail != undefined) {
         for (let i = 0; i < viewData.keikakudetail.length; i++) {
-          array.push({
-            sort: viewData.keikakudetail[i].koban,
-            resolve: viewData.keikakudetail[i].kadai,
-            sien: viewData.keikakudetail[i].shienmokuhyo,
-            tassei: viewData.keikakudetail[i].tasseijiki,
-            service: viewData.keikakudetail[i].fukushiservice,
-            task: viewData.keikakudetail[i].yakuwari,
-            hyoka: viewData.keikakudetail[i].hyokajiki,
-            other: viewData.keikakudetail[i].ryuijiko,
-            edit: '',
-          });
+          viewData.keikakudetail[i].edit = '';
+          array.push(viewData.keikakudetail[i]);
+          // array.push({
+          //   sort: viewData.keikakudetail[i].koban,
+          //   edit: '',
+          // });
         }
       }
       this.viewData = array;
+    },
+    getViewData() {
+      return this.viewData;
     },
     /************************
      * 順変更
@@ -349,7 +347,7 @@ export default {
         // 並び順を変更するフラグ
         this.sortEditFlag = true;
         for (let i = 0; i < this.viewData.length; i++) {
-          this.viewData[i].sort = '';
+          this.viewData[i].koban = '';
         }
         this.onflexGrid.refresh();
       }
@@ -628,21 +626,21 @@ export default {
         let ht = flexGrid.hitTest(e);
 
         // ダイアログ表示
-        if (ht.col == 4) {
-          _self.openDialog(ht.row);
-          _self.createServiceData();
-        }
+        // if (ht.col == 4) {
+        //   _self.openDialog(ht.row);
+        //   _self.createServiceData();
+        // }
         // 並び順変更
         if (ht.cellType == wjGrid.CellType.Cell) {
           if (_self.sortEditFlag == true) {
             if (ht.col == 0) {
               let sorts = _self.viewData.map(function (value) {
-                return value.sort;
+                return value.koban;
               });
               let max = sorts.reduce(function (a, b) {
                 return Math.max(a, b);
               });
-              _self.viewData[ht.row].sort = max + 1;
+              _self.viewData[ht.row].koban = max + 1;
               _self.onflexGrid.refresh();
             }
           }

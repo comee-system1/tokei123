@@ -257,11 +257,16 @@
               </div>
             </div>
             <div class="d-flex mt-1">
-              <label class="middle">時間</label>
-              <v-card class="ml-1 mt-1 fcolor" elevation="0">文字色</v-card>
+              <label class="low">色</label>
+              <v-card class="ml-1 fcolor" elevation="0">文字色</v-card>
               <v-btn small class="ml-1">背景色</v-btn>
               <v-btn small class="ml-1">文字色</v-btn>
             </div>
+            <v-row class="mt-2" no-gutters>
+              <v-btn small>画面クリア</v-btn>
+              <v-btn small class="ml-1">削除</v-btn>
+              <v-btn small class="ml-auto">登録</v-btn>
+            </v-row>
           </v-col>
           <v-col class="weekInputFlag__right">
             <label>大分類</label>
@@ -280,10 +285,13 @@
               :headersVisibility="'Column'"
               :initialized="onInitializedBunrui"
               :itemsSource="bunruiView"
+              :alternating-row-step="0"
               :formatItem="onFormatItemBunrui"
               :allowResizing="false"
               :allowDragging="false"
               :allowSorting="false"
+              :selectionMode="'Row'"
+              :isReadOnly="true"
               class="mt-1"
             >
               <wj-flex-grid-column
@@ -296,22 +304,18 @@
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="middleBunruiCode"
-                align="center"
-                :width="'*'"
+                :width="40"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="middleBunrui"
-                align="center"
                 :width="'*'"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="middleBunruiType1"
-                align="center"
                 :width="50"
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="middleBunruiType2"
-                align="center"
                 :width="50"
               ></wj-flex-grid-column>
             </wj-flex-grid>
@@ -330,6 +334,7 @@ import 'dayjs/locale/ja';
 import { getConnect } from '@/connect/getConnect';
 import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wijmo from '@grapecity/wijmo';
 
 const KEIKAUREKI_URL = '/Keikakureki';
 const TRACEID = 123;
@@ -358,7 +363,7 @@ export default {
       week: ['毎日', '月', '火', '水', '木', '金', '土'],
       historyView: [],
       checkCompleteFlag: false,
-      weekInputFlag: true,
+      weekInputFlag: false,
       complete: '',
       riid: '',
       riyocode: '',
@@ -505,8 +510,40 @@ export default {
         bigBunrui: '余韻',
         middleBunruiCode: '002',
         middleBunrui: 'ゲーム',
-        middleBunruiType1: 'TV',
-        middleBunruiType2: 'TV',
+        middleBunruiType1: 'ゲーム',
+        middleBunruiType2: '',
+      });
+      bunruiView.push({
+        bigBunruiCode: '003',
+        bigBunrui: '余韻',
+        middleBunruiCode: '003',
+        middleBunrui: '読書',
+        middleBunruiType1: '読書',
+        middleBunruiType2: '',
+      });
+      bunruiView.push({
+        bigBunruiCode: '004',
+        bigBunrui: '余韻1',
+        middleBunruiCode: '004',
+        middleBunrui: '読書',
+        middleBunruiType1: '読書',
+        middleBunruiType2: '',
+      });
+      bunruiView.push({
+        bigBunruiCode: '004',
+        bigBunrui: '余韻1',
+        middleBunruiCode: '004',
+        middleBunrui: '読書',
+        middleBunruiType1: '読書',
+        middleBunruiType2: '',
+      });
+      bunruiView.push({
+        bigBunruiCode: '005',
+        bigBunrui: '余韻2',
+        middleBunruiCode: '005',
+        middleBunrui: '読書',
+        middleBunruiType1: '読書',
+        middleBunruiType2: '',
       });
 
       this.bunruiView = bunruiView;
@@ -520,6 +557,23 @@ export default {
       let headerRanges = [];
       headerRanges.push(new wjGrid.CellRange(0, 0, 0, 1));
       headerRanges.push(new wjGrid.CellRange(0, 2, 0, 5));
+
+      // 大分類のマージ処理
+      let key = 'bigBunruiCode';
+      const tmp = this.bunruiView.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+      }, {});
+
+      let bodyRanges = [];
+      let no = 0;
+      let row = 0;
+      Object.keys(tmp).map(function (value) {
+        row = tmp[value].length - 1 + no;
+        bodyRanges.push(new wjGrid.CellRange(no, 0, row, 0));
+        bodyRanges.push(new wjGrid.CellRange(no, 1, row, 1));
+        no = no + tmp[value].length;
+      });
       let mm = new wjGrid.MergeManager();
       mm.getMergedRange = function (panel, r, c) {
         if (panel.cellType == wjGrid.CellType.ColumnHeader) {
@@ -529,10 +583,30 @@ export default {
             }
           }
         }
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          for (let h = 0; h < bodyRanges.length; h++) {
+            if (bodyRanges[h].contains(r, c)) {
+              return bodyRanges[h];
+            }
+          }
+        }
       };
       bunruiGrid.mergeManager = mm;
     },
-    onFormatItemBunrui() {},
+    onFormatItemBunrui(bunruiGrid, e) {
+      if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
+        if (e.row == 0) {
+          e.cell.style.textAlign = 'center';
+        }
+      }
+      if (e.panel.cellType == wjGrid.CellType.Cell) {
+        e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
+        e.cell.style.color = sysConst.COLOR.black;
+        if (e.col >= 2) {
+          wijmo.addClass(e.cell, 'selectOrenge');
+        }
+      }
+    },
     /****************
      * ユーザー一覧を押下
      */
@@ -647,6 +721,15 @@ $middle: 48px;
         -webkit-appearance: auto;
       }
       #bunruiGrid {
+        font-size: 0.75rem;
+        .wj-cell {
+          &.wj-state-active,
+          &.wj-state-multi-selected {
+            &.selectOrenge {
+              background-color: $view_Title_background_Orange !important;
+            }
+          }
+        }
       }
     }
     &__left {

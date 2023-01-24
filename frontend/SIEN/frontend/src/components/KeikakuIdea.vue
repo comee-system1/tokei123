@@ -1,5 +1,5 @@
 <template>
-  <div id="keikakuIdea" :style="styles">
+  <div id="keikakuIdea">
     <v-container class="pa-0" fluid>
       <v-row no-gutters>
         <!-- <v-col class="mr-1" :style="{ 'max-width': leftWidth }">
@@ -535,7 +535,9 @@ import keikakuideaIkou from './KeikakuIdeaIkou.vue';
 import keikakuideaKadai from './KeikakuideaKadai.vue';
 import { getConnect } from '@connect/getConnect';
 import { postConnect } from '@connect/postConnect';
+import { putConnect } from '@connect/putConnect';
 import printUtil from '@/utiles/printUtil';
+import messageConst from '@/utiles/MessageConst';
 
 export default {
   props: {
@@ -578,10 +580,10 @@ export default {
         dayjs().format('DD') +
         '日',
       keikakuKubun: [
-        { id: 0, name: '障害児支援計画（案）' },
+        { id: 2, name: '障害児支援計画（案）' },
         { id: 1, name: 'サービス等支援計画（案）' },
       ],
-      keikakuKubunModel: 0,
+      keikakuKubunModel: 1,
       userIntcode: 0,
       userName: '',
       headerheight: 80,
@@ -619,13 +621,7 @@ export default {
         return dayjs(this.picker).format('YYYY年MM月DD日');
       }
     },
-    styles() {
-      // ブラウザの高さ
-      return {
-        // '--height': window.innerHeight - this.headerheight + 'px',
-        // '--heightbody': window.innerHeight - this.headerheightbody + 'px',
-      };
-    },
+
     ikouHeight() {
       if (this.inputTypemodel == 'tab-0') {
         return '100%';
@@ -705,8 +701,59 @@ export default {
 
     ideaIkouKadaiRegist() {
       // 意向・方針と課題・支援の両方の登録処理の実行
-      this.$refs.childkadai.registButton();
-      this.$refs.childikou.registButton();
+      // this.$refs.childkadai.registButton();
+      // this.$refs.childikou.registButton();
+      this.putKeikakuan();
+    },
+    putKeikakuan() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+
+      let inputParams = {
+        entpriid: 62,
+        intcode: this.userIntcode,
+        cntid: this.viewdata.cntid,
+        mymd: dayjs(this.picker).format('YYYYMMDD'),
+        // krekiymd: this.viewdata.krekiymd,
+        mcnt: this.viewdata.mcnt,
+        yoshiki: this.keikakuKubunModel,
+        monikikan: this.viewdata.monikikan,
+        monijisshiym: null, //横浜市様式のみで使用
+        shogaikbn: 0, //千葉県様式のみで使用
+        servicesymd: null, //東大和市様式のみで使用
+        hindo: 0, //大阪市様式のみで使用
+        techosyurui: 0, //練馬区様式のみで使用
+        techosyuruinm: null, //練馬区様式のみで使用
+        techotokyu: 0, //練馬区様式のみで使用
+        techotokyunm: null, //練馬区様式のみで使用
+        shokaikasan: 0, //利用計画のみで使用
+        mensetsu: null, //大阪市様式のみで使用 *計画案のみで使用
+        tankaiymd: null, //大阪市様式のみで使用 *利用計画のみで使用
+        tankai: null, //大阪市様式のみで使用 *利用計画のみで使用
+        iko: this.$refs.childikou.getValue(0),
+        hoshin: this.$refs.childikou.getValue(1),
+        chokimokuhyo: this.$refs.childikou.getValue(2),
+        tankimokuhyo: this.$refs.childikou.getValue(3),
+        keikakudetail: this.$refs.childkadai.getViewData(),
+        biko: null, //千葉県様式のみで使用
+        tantoiken: null, //練馬区様式のみで使用
+      };
+      console.log(inputParams);
+      if (confirm(messageConst.CONFIRM.PUT)) {
+        putConnect('/Keikakuan', params, 'SIENP', inputParams).then(
+          (result) => {
+            console.log('put');
+            console.log(result);
+            if (result.okflg == true) {
+              //this.setUserdata(this.selectedUserObj);
+            } else {
+              alert(result.msg);
+            }
+          }
+        );
+      }
     },
     userdrawerCliked() {
       this.userdrawer = !this.userdrawer;
