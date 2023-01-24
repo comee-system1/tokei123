@@ -59,14 +59,10 @@
         >
           入力内容
         </label>
-        <v-btn-toggle
-          v-model="weekplanType"
-          mandatory
-          class="ml-1 weekplanType"
-        >
-          <v-btn small>週間予定</v-btn>
-          <v-btn small>主な日常生活等</v-btn>
-          <v-btn small>全体の生活像</v-btn>
+        <v-btn-toggle v-model="weekplanType" class="ml-1 weekplanType">
+          <v-btn small :value="0">週間予定</v-btn>
+          <v-btn small :value="1" @click="dialogDaily()">主な日常生活等</v-btn>
+          <v-btn small :value="2">全体の生活像</v-btn>
         </v-btn-toggle>
       </v-col>
       <v-col cols="4" class="d-flex justify-end">
@@ -127,21 +123,31 @@
         </text>
 
         <rect
-          x="100"
-          y="150"
-          width="128"
-          height="15"
-          fill="yellow"
-          stroke="gray"
+          v-for="val in rects"
+          :key="val.id"
+          :x="val.x"
+          :y="val.y"
+          :width="val.width"
+          :height="val.height"
+          :fill="val.color"
+          :stroke="val.stroke"
           stroke-width="1"
           class="rects"
         />
-        <foreignObject :x="100" :y="150" width="125" height="80">
-          <center>朝食</center>
+        <foreignObject
+          v-for="val in rects"
+          :key="val.id"
+          :x="val.xText"
+          :y="val.yText"
+          width="125"
+          height="80"
+        >
+          <center>{{ val.text }}</center>
         </foreignObject>
+        <!--
         <rect
-          :x="100 + 128"
-          y="150"
+          :x="100 + 128 * 4"
+          y="300"
           width="128"
           height="90"
           fill="yellow"
@@ -149,9 +155,10 @@
           stroke-width="1"
           class="rects"
         />
-        <foreignObject :x="100 + 130" :y="150" width="125" height="80">
-          <p>これはXHTMLなので、自動折り返しされます。</p>
+        <foreignObject :x="100 + 128 * 4 + 3" :y="300" width="125" height="80">
+          <p>外出(ガイドヘルパーと一緒の希望の場所へ)2週に1回</p>
         </foreignObject>
+        -->
       </svg>
     </v-row>
     <v-row no-gutters class="mt-2 bottomArea">
@@ -253,14 +260,23 @@
                     <input type="time" v-model="input_time_end" />
                   </div>
                 </div>
-                <div class="d-flex ml-1">(最小単位30分、以降10分単位)</div>
+                <div class="d-flex ml-1 text-caption">
+                  (最小単位30分、以降10分単位)
+                </div>
               </div>
             </div>
             <div class="d-flex mt-1">
-              <label class="low">色</label>
-              <v-card class="ml-1 fcolor" elevation="0">文字色</v-card>
-              <v-btn small class="ml-1">背景色</v-btn>
-              <v-btn small class="ml-1">文字色</v-btn>
+              <div class="divLabel">
+                <label class="low">色</label>
+              </div>
+              <div class="ml-1">
+                <span class="text-caption">背景色</span>
+                <input type="color" v-model="input_backColor" class="min" />
+              </div>
+              <div class="ml-5">
+                <span class="text-caption">文字色</span>
+                <input type="color" v-model="input_fontColor" class="min" />
+              </div>
             </div>
             <v-row class="mt-2" no-gutters>
               <v-btn small>画面クリア</v-btn>
@@ -323,6 +339,32 @@
         </v-row>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="dailyFlag" :width="dailyWidth">
+      <v-card elevation="0" tile>
+        <v-card-title class="dialog_title">
+          <span v-if="dailyType == 'mainLife'">主な日常生活等の入力</span>
+          <v-btn class="closeButton pa-0" @click="dailyFlag = false">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-row no-gutters class="pa-1 overflowArea">
+          <v-col cols="6">
+            <div class="mt-2 subject">主な日常生活上の活動</div>
+            <textarea v-model="mainLifeTextarea" class="textarea"></textarea>
+          </v-col>
+          <v-col cols="6 pl-1">
+            <div class="mt-2 subject">週単位以外のサービス</div>
+            <textarea v-model="mainWeekTextarea" class="textarea"></textarea>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="pa-2">
+          <v-btn small>画面クリア</v-btn>
+          <v-btn small>削除</v-btn>
+          <v-btn small class="ml-auto">登録</v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -356,6 +398,8 @@ export default {
           name: '余韻',
         },
       ],
+      input_backColor: '',
+      input_fontColor: '',
       input_komoku: '',
       input_time_start: '',
       input_time_end: '',
@@ -372,7 +416,7 @@ export default {
       startDate: dayjs().format('YYYY年M月'),
       datepickerYoteiYm_dialog: false,
       pickerYoteiYm: '',
-      weekplanType: '',
+      weekplanType: 0,
       displayPatternFlag: 0,
       historyFlag: false,
       svgData: {},
@@ -380,20 +424,59 @@ export default {
       timeLine: [],
       rects: [
         {
+          id: 1,
           x: 100, // 初期値x
-          y: 20, // 初期値y
-          width: 50, // 横幅
-          height: 120, // 高さ
-          xText: 25, // テキストの位置x
-          yText: 10, // テキストの位置y
-          id: 'green',
-          color: 'green',
+          y: 150, // 初期値y
+          width: 128, // 横幅
+          height: 15, // 高さ
+          xText: 100, // テキストの位置x
+          yText: 150, // テキストの位置y
+          color: '#fbebd6',
           stroke: 'black',
-          text: '起床',
-          halfPosition: 1, // 1:左側 2:右側 0:指定なし
-          week: 1,
+          text: '朝食',
+        },
+        {
+          id: 2,
+          x: 228, // 初期値x
+          y: 150, // 初期値y
+          width: 128, // 横幅
+          height: 15, // 高さ
+          xText: 228, // テキストの位置x
+          yText: 150, // テキストの位置y
+          color: '#fbebd6',
+          stroke: 'black',
+          text: '朝食',
+        },
+        {
+          id: 3,
+          x: 356, // 初期値x
+          y: 150, // 初期値y
+          width: 128 / 2, // 横幅
+          height: 15, // 高さ
+          xText: 356 - 30, // テキストの位置x
+          yText: 150, // テキストの位置y
+          color: '#fbebd6',
+          stroke: 'black',
+          text: '朝食',
+        },
+        {
+          id: 4,
+          x: 418, // 初期値x
+          y: 150, // 初期値y
+          width: 128 / 2, // 横幅
+          height: 15, // 高さ
+          xText: 418 - 30, // テキストの位置x
+          yText: 150, // テキストの位置y
+          color: 'yellow',
+          stroke: 'black',
+          text: '朝食2',
         },
       ],
+      dailyFlag: false,
+      dailyWidth: 0,
+      dailyType: '',
+      mainLifeTextarea: '',
+      mainWeekTextarea: '',
     };
   },
   props: {
@@ -453,6 +536,14 @@ export default {
     monthSelect() {
       this.startDate = dayjs(this.pickerYoteiYm).format('YYYY年M月');
       this.datepickerYoteiYm_dialog = false;
+    },
+    /**************************
+     * ダイアログの表示
+     */
+    dialogDaily() {
+      this.dailyFlag = true;
+      this.dailyWidth = 600;
+      this.dailyType = 'mainLife';
     },
     /**********************************
      * 週間項目入力
@@ -733,6 +824,15 @@ $middle: 48px;
       }
     }
     &__left {
+      .divLabel {
+        background-color: $view_Title_background_Main;
+        font-size: 0.85rem;
+        width: 120px;
+        color: $white;
+        text-align: center;
+        line-height: $height;
+        height: $height;
+      }
       label {
         background-color: $view_Title_background_Main;
         font-size: 0.85rem;
@@ -766,9 +866,13 @@ $middle: 48px;
         font-size: 0.85rem;
         border: 1px solid $light-gray;
       }
+      input[type='color'],
       input[type='time'] {
         width: 100px;
         height: $height;
+        &.min {
+          width: 50px;
+        }
       }
       textarea {
         border: 1px solid $light-gray;
@@ -806,6 +910,27 @@ $middle: 48px;
           right: 10px;
           top: 10px;
         }
+      }
+    }
+    .subject {
+      background-color: $view_Title_background_Blue;
+      text-align: center;
+      font-size: 0.85rem;
+      border: 1px solid $light-gray;
+    }
+    .overflowArea {
+      height: 66vh;
+      overflow: auto;
+    }
+    .textarea {
+      border: 1px solid $light-gray;
+      resize: none;
+      width: 100%;
+      height: 440px;
+      font-size: 0.88rem;
+      padding: 1px;
+      &:focus {
+        outline: none;
       }
     }
   }
