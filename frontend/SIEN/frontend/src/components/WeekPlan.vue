@@ -61,8 +61,8 @@
         </label>
         <v-btn-toggle v-model="weekplanType" class="ml-1 weekplanType">
           <v-btn small :value="0">週間予定</v-btn>
-          <v-btn small :value="1" @click="dialogDaily()">主な日常生活等</v-btn>
-          <v-btn small :value="2">全体の生活像</v-btn>
+          <v-btn small :value="1" @click="dialogDaily(1)">主な日常生活等</v-btn>
+          <v-btn small :value="2" @click="dialogDaily(2)">全体の生活像</v-btn>
         </v-btn-toggle>
       </v-col>
       <v-col cols="4" class="d-flex justify-end">
@@ -344,18 +344,25 @@
       <v-card elevation="0" tile>
         <v-card-title class="dialog_title">
           <span v-if="dailyType == 'mainLife'">主な日常生活等の入力</span>
+          <span v-if="dailyType == 'allLife'">生活の全体像</span>
           <v-btn class="closeButton pa-0" @click="dailyFlag = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>
-        <v-row no-gutters class="pa-1 overflowArea">
-          <v-col cols="6">
+        <v-row no-gutters :class="`pa-1 overflowArea ${dailyType}`">
+          <v-col cols="6" v-if="dailyType == 'mainLife'">
             <div class="mt-2 subject">主な日常生活上の活動</div>
             <textarea v-model="mainLifeTextarea" class="textarea"></textarea>
           </v-col>
-          <v-col cols="6 pl-1">
+          <v-col cols="6" class="pl-1" v-if="dailyType == 'mainLife'">
             <div class="mt-2 subject">週単位以外のサービス</div>
             <textarea v-model="mainWeekTextarea" class="textarea"></textarea>
+          </v-col>
+          <v-col cols="12" class="d-flex" v-if="dailyType == 'allLife'">
+            <div class="subject width">
+              <p>サービス提供によって実現する生活の全体像</p>
+            </div>
+            <textarea v-model="lifeAllTextarea" class="textarea min"></textarea>
           </v-col>
         </v-row>
         <v-row no-gutters class="pa-2">
@@ -477,6 +484,7 @@ export default {
       dailyType: '',
       mainLifeTextarea: '',
       mainWeekTextarea: '',
+      lifeAllTextarea: '',
     };
   },
   props: {
@@ -539,11 +547,18 @@ export default {
     },
     /**************************
      * ダイアログの表示
+     * type 1:主な日常生活 2:全体の生活像
      */
-    dialogDaily() {
+    dialogDaily(type) {
       this.dailyFlag = true;
-      this.dailyWidth = 600;
-      this.dailyType = 'mainLife';
+      if (type == 1) {
+        this.dailyWidth = 600;
+        this.dailyType = 'mainLife';
+      }
+      if (type == 2) {
+        this.dailyWidth = 1100;
+        this.dailyType = 'allLife';
+      }
     },
     /**********************************
      * 週間項目入力
@@ -917,10 +932,21 @@ $middle: 48px;
       text-align: center;
       font-size: 0.85rem;
       border: 1px solid $light-gray;
+      &.width {
+        width: 120px;
+        position: relative;
+        p {
+          position: absolute;
+          top: 26%;
+        }
+      }
     }
     .overflowArea {
       height: 66vh;
       overflow: auto;
+      &.allLife {
+        height: 140px;
+      }
     }
     .textarea {
       border: 1px solid $light-gray;
@@ -931,6 +957,10 @@ $middle: 48px;
       padding: 1px;
       &:focus {
         outline: none;
+      }
+      &.min {
+        height: 132px;
+        font-size: 0.76rem;
       }
     }
   }
