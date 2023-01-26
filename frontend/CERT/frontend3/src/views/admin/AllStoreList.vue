@@ -18,7 +18,13 @@
         </select>
       </v-col>
       <v-col class="text-end">
-        <v-btn small class="ml-1" height="24" @click="onsignExplain()">
+        <v-btn
+          small
+          class="ml-1"
+          height="24"
+          @mouseover="onsignExplain(1)"
+          @mouseleave="onsignExplain(0)"
+        >
           <v-icon small color=""> mdi-message-text </v-icon>
           記号説明
         </v-btn>
@@ -566,8 +572,8 @@ export default {
     /****************
      * 記号説明ボタン押下
      */
-    onsignExplain() {
-      this.signExplainFlag = this.signExplainFlag ? false : true;
+    onsignExplain(type) {
+      this.signExplainFlag = type ? true : false;
     },
   },
 };

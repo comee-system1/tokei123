@@ -81,12 +81,13 @@ $dialog_blue: #0F74D8;
 $dialog_red: #c93328;
 $dialog_hover: #eefeef;
 $dialog_pink: #fde9e8;
-
+$dialog_label : #d0e2fb;
+$dialog_yellow : #FFFEED;
 
 .v-tooltip {
-  &.tooltips {
-    .v-overlay__content {
-      background: rgba(var(--v-theme-surface-variant), 0.9);
+    &.tooltips {
+        .v-overlay__content {
+            background: rgba(var(--v-theme-surface-variant), 0.9);
+        }
     }
-  }
 }

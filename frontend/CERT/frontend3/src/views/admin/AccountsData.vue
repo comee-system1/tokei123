@@ -62,33 +62,15 @@
         <wj-flex-grid-filter />
       </wj-flex-grid>
     </v-row>
-
-    <completeDialog
+    <AlertDialog
       v-if="dialogType == 'newResult'"
       :message="`管理者アカウントを発行しました。`"
-      :width="650"
-      args="adminAccountRegist"
-      @dialogCompleteMethod="dialogCompleteMethod"
-      :body="{
-        text1: '管理者アカウントIDと仮パスワードをメールにて通知します。 ',
-        text2: {
-          title: 'ログイン中管理者メールアドレス',
-          body: adminMailAddress,
-        },
-        text3: {
-          title: '新規管理者メールアドレス',
-          body: dialogAdminMail,
-        },
-      }"
+      :submessage="`管理者アカウントIDと仮パスワードをメールにて通知します。`"
+      :sendToMail="sendToMail"
+      :height="`tall`"
+      :width="500"
     />
-    <ConfirmDialog
-      :message="`変更した内容を登録しますか?`"
-      :width="300"
-      v-if="dialogType == 'editConf'"
-      args="editConf"
-      @dialogConfirmMethod="dialogConfirmMethod"
-      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
-    />
+
     <AlertDialog
       v-if="dialogType == 'editFin'"
       :message="`登録完了しました`"
@@ -96,7 +78,8 @@
     />
 
     <ConfirmDialog
-      :message="deleteAdminName + `さんの管理者アカウントを削除しますか？`"
+      :message="`管理者アカウントを削除しますか？`"
+      :messageAligns="'pre'"
       :submessage="`削除すると下記の情報が失われ、管理者システムにログインできなくなります。`"
       :listBox="{
         list1: '管理者名',
@@ -108,20 +91,6 @@
       :rightButton="'削除'"
       v-if="dialogType == 'delete'"
       args="adminDelete"
-      @dialogConfirmMethod="dialogConfirmMethod"
-      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
-    />
-
-    <ConfirmDialog
-      :message="`本当に削除してもよろしいですか？`"
-      alertIcon="alert"
-      :submessage="`※元に戻す場合は、管理者アカウントの再登録が必要になります。`"
-      :width="530"
-      color="red"
-      :leftButton="'キャンセル'"
-      :rightButton="'削除'"
-      v-if="dialogType == 'deleteConf'"
-      args="adminDeleteConf"
       @dialogConfirmMethod="dialogConfirmMethod"
       @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
     />
@@ -208,7 +177,6 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import { WjFlexGrid, WjFlexGridColumn } from '@grapecity/wijmo.vue2.grid';
 import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 
-import completeDialog from '@/components/completeDialog.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import AlertDialog from '@/components/AlertDialog.vue';
 
@@ -218,7 +186,6 @@ export default {
     WjFlexGrid,
     WjFlexGridColumn,
     WjFlexGridFilter,
-    completeDialog,
     ConfirmDialog,
     AlertDialog,
   },
@@ -241,7 +208,7 @@ export default {
       dialogAccountFlag: false,
       deleteDisableFlag: false,
       dialogType: '', // new/newResult/edit/editConf/editFin/delete/deleteConf/deleteFin
-
+      sendToMail: [],
       adminViewData: [],
       headerheight: 140,
       dialogAdminName: '',
@@ -342,10 +309,15 @@ export default {
       if (this.dialogType == 'new') {
         this.dialogType = 'newResult';
         this.dialogAccountFlag = false;
+        this.sendToMail = [
+          this.keycloak.idTokenParsed.email,
+          this.dialogAdminMail,
+        ];
       }
       // 編集の時
       if (this.dialogType == 'edit') {
-        this.dialogType = 'editConf';
+        this.dialogType = 'editFin';
+        this.dialogAccountFlag = false;
       }
     },
     /*********************************
@@ -353,22 +325,17 @@ export default {
      */
     dialogCompleteMethod(args = {}) {
       console.log(args);
-      if (this.dialogType == 'newResult') {
-        this.dialogAccountFlag = false;
-      }
+      // if (this.dialogType == 'newResult') {
+      //   this.dialogAccountFlag = false;
+      // }
     },
     /*********************************
      * 確認用ダイアログからの戻り関数
      */
     dialogConfirmMethod(args = {}) {
       console.log(args);
-      if (this.dialogType == 'editConf') {
-        this.dialogAccountFlag = false;
-        this.dialogType = 'editFin';
-      }
+
       if (this.dialogType == 'delete') {
-        this.dialogType = 'deleteConf';
-      } else if (this.dialogType == 'deleteConf') {
         this.dialogType = 'deleteFin';
         this.dialogAccountFlag = false;
       }
@@ -378,14 +345,8 @@ export default {
      */
     dialogConfirmCancelMethod(args = {}) {
       console.log(args);
-      if (this.dialogType == 'editConf') {
-        this.dialogType = 'edit';
-      }
       if (this.dialogType == 'delete') {
         this.dialogType = 'edit';
-      }
-      if (this.dialogType == 'deleteConf') {
-        this.dialogType = 'delete';
       }
     },
   },
@@ -486,6 +447,7 @@ $height: 24px;
     &.v-btn--disabled {
       color: rgba(var(--v-theme-on-surface), 0.26);
       background: rgb(var(--v-theme-surface));
+      border: 1px solid $light-gray;
     }
   }
   .registButton {

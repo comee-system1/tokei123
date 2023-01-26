@@ -225,6 +225,7 @@
 
     <ConfirmDialog
       :message="`編集内容を破棄しますか？`"
+      :messageAligns="'pre'"
       :width="300"
       color="red"
       :leftButton="'キャンセル'"
@@ -241,12 +242,15 @@
     />
 
     <ConfirmDialog
-      :message="`既に権限が設定されている職員が選択されている場合、内容が上書きされますが実行しますか？`"
+      :message="`既に権限が設定されている職員が選択されている場合、内容が上書きされます。
+上書き対象の議員がいる場合は下記に表示されます。`"
+      :messageAligns="'pre'"
       :width="400"
       :leftButton="'キャンセル'"
       :rightButton="'実行'"
       v-if="authCopyType == 2"
       args="editCancel"
+      :selectedListBox="authSelected"
       @dialogConfirmMethod="dialogConfirmMethod"
       @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
     />
@@ -366,7 +370,7 @@
               ><v-btn
                 height="24"
                 class="doButton"
-                @click="authCopyType = 2"
+                @click="onAuthCopyConf()"
                 :disabled="copyActiveFlag"
                 >実行</v-btn
               ></v-col
@@ -377,8 +381,10 @@
     </v-dialog>
 
     <ConfirmDialog
-      :message="dialogSyokuinName + `さんの職員アカウントを削除しますか？`"
-      :submessage="`削除すると下記の情報が失われ、システムにログインできなくなります。`"
+      :message="`職員アカウントIDを削除しますか？`"
+      :bold="`bold`"
+      :messageAligns="'pre'"
+      :submessage="`※元に戻す場合は、職員アカウントIDの登録が必要になります。`"
       :listBox="{
         list1: '職員アカウントID',
         list2: 'パスワード',
@@ -395,19 +401,6 @@
       @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
     />
 
-    <ConfirmDialog
-      :message="`本当に削除してもよろしいですか？`"
-      alertIcon="alert"
-      :submessage="`※元に戻す場合は、職員アカウントの再登録が必要になります。`"
-      :width="530"
-      color="red"
-      :leftButton="'キャンセル'"
-      :rightButton="'削除'"
-      v-if="dialogAccountDeleteOpenType == 2"
-      args="accountDeleted"
-      @dialogConfirmMethod="dialogConfirmMethod"
-      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
-    />
     <AlertDialog
       v-if="dialogAccountDeleteOpenType == 3"
       :message="`削除完了しました`"
@@ -416,8 +409,12 @@
 
     <ConfirmDialog
       :message="`パスワードを再発行しますか?`"
-      :submessage="`※仮パスワードがメールにて通知されます。再発行機のログイン時にパスワードを変更してください。`"
-      :width="400"
+      :bold="`bold`"
+      :messageAligns="'pre'"
+      :submessage="`現在のパスワードは下記され、新しい仮パスワードが再発行されます。`"
+      :submessageSec="`仮パスワードは、メールにて管理者と職員<sup>※</sup>に通知されます。`"
+      :submessageThd="`※職員への通知はメールアドレスが登録されている場合のみです。`"
+      :width="500"
       :leftButton="'キャンセル'"
       :rightButton="'再発行'"
       v-if="dialogAccountPasswordOpenType == 1"
@@ -425,27 +422,16 @@
       @dialogConfirmMethod="dialogConfirmMethod"
       @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
     />
-    <completeDialog
+
+    <AlertDialog
       v-if="dialogAccountPasswordOpenType == 2"
       :message="`仮パスワードを発行しました`"
-      :width="600"
-      @dialogCompleteMethod="dialogCompleteMethod"
-      :body="{
-        text1: 'アカウントIDと仮パスワードを管理者にメールにて通知します。 ',
-        text2: { title: '管理者メールアドレス', body: dialogAccountMail },
-        min_text:
-          '※職員のメールアドレスが設定されている場合、職員にもメールにて通知します。',
-      }"
+      :submessage="`職員アカウントIDと仮パスワードをメールにて下記の対象メールアドレス宛に通知します。`"
+      :sendToMail="sendToMail"
+      :height="`tall`"
+      :width="400"
     />
 
-    <ConfirmDialog
-      :message="`変更した内容を登録しますか?`"
-      :width="300"
-      v-if="dialogAccountRegistOpenType == 2"
-      args="accountRegist"
-      @dialogConfirmMethod="dialogConfirmMethod"
-      @dialogConfirmCancelMethod="dialogConfirmCancelMethod"
-    />
     <AlertDialog
       v-if="dialogAccountRegistOpenType == 3"
       :message="`登録完了しました`"
@@ -467,7 +453,7 @@
           </v-btn>
         </v-card-title>
         <v-card class="pa-2" elevation="0">
-          <p>教員アカウントのIDを発行し、システムを利用できる状態にします。</p>
+          <p>職員アカウントのIDを発行し、システムを利用できる状態にします。</p>
           <v-row no-gutters class="borderbottom pb-2 mt-1">
             <label class="tle">職員名</label>
             <input
@@ -576,9 +562,7 @@
               <v-btn class="passwordButton htmin" @click="passwordReset()"
                 >パスワード再発行</v-btn
               >
-              <v-btn
-                class="ml-2 registButton htmin"
-                @click="dialogAccountRegistOpenType = 2"
+              <v-btn class="ml-2 registButton htmin" @click="dialogRegist()"
                 >登録</v-btn
               >
             </v-col>
@@ -599,7 +583,6 @@ import { WjFlexGridFilter } from '@grapecity/wijmo.vue2.grid.filter';
 import sysConst from '@/utiles/const';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import AlertDialog from '@/components/AlertDialog.vue';
-import completeDialog from '@/components/completeDialog.vue';
 
 export default {
   props: ['keycloak', 'userName', 'color'],
@@ -610,7 +593,6 @@ export default {
     AlphabetButton,
     ConfirmDialog,
     AlertDialog,
-    completeDialog,
   },
   mounted() {
     this.calculateWindowHeight();
@@ -633,12 +615,13 @@ export default {
       dialogAccountRegistOpenType: 0, //1:登録フォーム, 2:登録確認, 3:登録完了
       dialogAccountDeleteOpenType: 0, //1:削除フォーム, 2:削除確認, 3:削除完了
       dialogAccountPasswordOpenType: 0, //1:確認フォーム, 2:完了
-
+      sendToMail: [],
       syokuinViewDataFlag: false,
       flexGrid: [],
       signExplainFlag: false,
       authBtnActive: { 1: true },
       authBtnSelected: 1, // 権限入力の選択状態
+      authSelected: [],
       selAccount: 1,
       selOther: 1,
       syozokuGroup: 999,
@@ -935,6 +918,21 @@ export default {
       this.authCancelCopy();
       this.authCopyType = 1;
       this.authCopyDialogFlag = false;
+    },
+    /***************************
+     * コピー確認
+     */
+    onAuthCopyConf() {
+      this.authCopyType = 2;
+      // 選択対象者のみを取得
+      let temp = this.syokuinAuthCopyData.filter(function (value) {
+        return value.copySelected;
+      });
+      let authSelected = [];
+      for (let i = 0; i < temp.length; i++) {
+        authSelected.push(temp[i].syokuinName);
+      }
+      this.authSelected = authSelected;
     },
     /***************************
      * コピー実行
@@ -1657,22 +1655,16 @@ export default {
 
     /*********************************
      * 確認用ダイアログからの戻り関数
+     * 引数に戻り値設定可能{}
      */
-    dialogConfirmMethod(args = {}) {
-      console.log(args);
-      if (this.dialogAccountRegistOpenType == 2) {
-        // 利用状況の登録処理の実行
-        this.dialogRegist();
-      }
+    dialogConfirmMethod() {
       if (this.dialogAccountPasswordOpenType == 1) {
         // パスワード再発行実行
         this.dialogPasswordRest();
       }
       if (this.dialogAccountDeleteOpenType == 1) {
         // 職員アカウント削除確認
-        this.dialogAccountDeleteOpenType = 2;
-      } else if (this.dialogAccountDeleteOpenType == 2) {
-        // 職員アカウント削除
+        this.dialogAccountDeleteOpenType = 3;
         this.dialogDelete();
       }
 
@@ -1687,12 +1679,9 @@ export default {
     },
     /*********************************
      * 確認用ダイアログからの戻り関数(キャンセル)
+     * 引数に戻り値設定可能{}
      */
-    dialogConfirmCancelMethod(args = {}) {
-      console.log(args);
-      if (this.dialogAccountRegistOpenType == 2) {
-        this.dialogAccountRegistOpenType = 1;
-      }
+    dialogConfirmCancelMethod() {
       if (this.dialogAccountPasswordOpenType == 1) {
         this.dialogAccountPasswordOpenType = 0;
       }
@@ -1708,9 +1697,9 @@ export default {
     },
     /*********************************
      * 完了ダイアログからの戻り
+     * 引数に戻り値設定可能{}
      */
-    dialogCompleteMethod(args = {}) {
-      console.log(args);
+    dialogCompleteMethod() {
       if (this.dialogAccountPasswordOpenType == 2) {
         this.dialogAccountPasswordOpenType = 0;
       }
@@ -1791,6 +1780,9 @@ export default {
     dialogPasswordRest() {
       this.dialogAccountFlag = false;
       this.dialogAccountPasswordOpenType = 2;
+      // 管理者と対象者
+      let target = this.flexGrid.itemsSource[this.gridSelectedRow];
+      this.sendToMail = [this.keycloak.idTokenParsed.email, target.mailAddress];
     },
 
     /**************************
@@ -1993,8 +1985,9 @@ export default {
           );
         }
 
+        // グランドメニュー権限セル部分mouseover用class付与
         if (e.col > accountRowCount) {
-          // 下記セルはclassを付与しない
+          // 下記コメントのセルはclassを付与しない
           // 終了日が登録＋権限が登録されている場合は背景をピンクに変更
           if (
             tmpitem.accountStatus != this.filterArray[3].value &&
@@ -2005,7 +1998,6 @@ export default {
             wijmo.addClass(e.cell, 'authMouseOver');
             wijmo.addClass(e.cell, 'authMouseOverBody--' + e.col);
 
-            // グランドメニュー権限セル部分mouseover用class付与
             wijmo.addClass(e.cell, 'authMouseOverStatus');
             wijmo.addClass(
               e.cell,
@@ -2165,6 +2157,7 @@ $mwidth: 1366px;
         &.v-btn--disabled {
           color: rgba(var(--v-theme-on-surface), 0.26);
           background: rgb(var(--v-theme-surface));
+          border: 1px solid $light-gray;
         }
       }
     }
@@ -2395,7 +2388,7 @@ div#accountsData {
         background-color: $selected_color;
       }
       &.backgroundPink {
-        background-color: $dialog_pink;
+        background-color: $dialog_pink !important;
       }
       &.backgroundWhite {
         background-color: $white;
@@ -2464,6 +2457,7 @@ div#accountsData {
             &.v-btn--disabled {
               color: rgba(var(--v-theme-on-surface), 0.26);
               background: rgb(var(--v-theme-surface));
+              border: 1px solid $light-gray;
             }
           }
         }

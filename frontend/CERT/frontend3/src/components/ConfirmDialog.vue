@@ -6,8 +6,25 @@
     persistent
   >
     <v-card :class="`confirmArea ${baseColor}`">
-      <p v-if="message" :class="`${baseColor} ${alertIcon}`">{{ message }}</p>
-      <div class="mt-3 small" v-if="submessage">{{ submessage }}</div>
+      <p
+        v-if="message"
+        :class="`${baseColor} ${alertIcon} ${messageAlign} ${bold}`"
+      >
+        {{ message }}
+      </p>
+      <div :class="`mt-3 small ${messageAligns}`" v-if="submessage">
+        {{ submessage }}
+      </div>
+      <div
+        :class="`small ${messageAligns}`"
+        v-if="submessageSec"
+        v-html="submessageSec"
+      ></div>
+      <small
+        :class="`small`"
+        v-if="submessageThd"
+        v-html="submessageThd"
+      ></small>
 
       <v-row v-if="listBox" class="mt-3">
         <div class="grayBox">
@@ -16,6 +33,15 @@
             <li v-if="listBox.list2">{{ listBox.list2 }}</li>
             <li v-if="listBox.list3">{{ listBox.list3 }}</li>
             <li v-if="listBox.list4">{{ listBox.list4 }}</li>
+          </ul>
+        </div>
+      </v-row>
+      <v-row v-if="selectedListBox" class="mt-3">
+        <div class="grayBox">
+          <ul>
+            <li v-for="value in selectedListBox" :key="value">
+              {{ value }}
+            </li>
           </ul>
         </div>
       </v-row>
@@ -39,14 +65,19 @@ export default {
   // args:"関数からの戻り値 どのタグを使ったかの目印になる想定"
   props: [
     'message',
+    'messageAligns',
     'submessage',
+    'submessageSec',
+    'submessageThd',
     'width',
     'args',
     'leftButton',
     'rightButton',
     'color',
     'listBox',
+    'selectedListBox',
     'alertIcon',
+    'bold',
   ],
   data() {
     return {
@@ -54,6 +85,7 @@ export default {
       left: this.getLeftButton(),
       right: this.getRightButton(),
       baseColor: this.color,
+      messageAlign: this.getMessageAlign(),
     };
   },
   mounted() {},
@@ -63,6 +95,9 @@ export default {
     },
     getRightButton() {
       return this.leftButton ? this.rightButton : '登録';
+    },
+    getMessageAlign() {
+      return this.messageAligns;
     },
 
     regist() {
@@ -86,10 +121,19 @@ export default {
   text-align: center;
   .small {
     font-size: 0.85rem;
+    text-align: left;
+    width: 90%;
+    margin: 0 auto;
+  }
+  small {
+    &.small {
+      font-size: 0.75rem;
+    }
   }
   &.red {
     border-top: 3px solid $dialog_red;
   }
+
   button {
     font-size: $dialog_fontSize;
     height: $dialog_buttonHeight;
@@ -106,6 +150,9 @@ export default {
     }
   }
   p {
+    &.bold {
+      font-weight: bold;
+    }
     &.red {
       text-align: right;
       width: 70%;
@@ -117,6 +164,18 @@ export default {
         background-repeat: no-repeat;
         width: 300px;
       }
+      &.pre {
+        white-space: pre-wrap;
+        text-align: left;
+        width: 90%;
+      }
+    }
+    &.pre {
+      white-space: pre-wrap;
+      text-align: left;
+      width: 90%;
+      margin: 0 auto;
+      font-weight: bold;
     }
   }
   .grayBox {

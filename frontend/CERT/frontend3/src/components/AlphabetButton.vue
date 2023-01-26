@@ -1,5 +1,5 @@
 <template>
-  <v-btn-toggle class="flex-wrap" v-model="alphaSearch" mandatory>
+  <v-btn-toggle class="flex-wrap alphabet" v-model="alphaSearch" mandatory>
     <v-btn
       outlined
       elevation="1"
@@ -16,23 +16,23 @@
 </template>
 
 <script>
-import ls from "@/utiles/localStorage";
-import alphabetFilter from "@/utiles/alphabetFilter";
+import ls from '@/utiles/localStorage';
+import alphabetFilter from '@/utiles/alphabetFilter';
 export default {
   data() {
     return {
       alphabet: [
-        "全",
-        "ア",
-        "カ",
-        "サ",
-        "タ",
-        "ナ",
-        "ハ",
-        "マ",
-        "ヤ",
-        "ラ",
-        "ワ",
+        '全',
+        'ア',
+        'カ',
+        'サ',
+        'タ',
+        'ナ',
+        'ハ',
+        'マ',
+        'ヤ',
+        'ラ',
+        'ワ',
       ],
       alphaSearch: 0,
     };
@@ -50,13 +50,25 @@ export default {
     onAlphabet(key) {
       this.alphaSearch = key;
       ls.setlocalStorageEncript(ls.KEY.Alphabet, Number(key));
-      this.$emit("onAlphabetical", key);
+      this.$emit('onAlphabetical', key);
     },
-    alphabetFilter(array, search = "") {
+    alphabetFilter(array, search = '') {
       return alphabetFilter.alphabetFilter(array, this.alphaSearch, search);
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import '@/assets/scss/common.scss';
+.alphabet {
+  button {
+    &.v-btn {
+      &--active {
+        background-color: $view_Title_font_color_Blue;
+        color: $white;
+      }
+    }
+  }
+}
+</style>
