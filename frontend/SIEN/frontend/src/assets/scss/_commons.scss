@@ -329,6 +329,17 @@ a {
     }
 }
 
+.kbnBtn {
+    >.v-btn {
+        background: $btn_background;
+    }
+
+    >.v-btn.v-btn--active {
+        color: $view_Title_font_color_Blue;
+        background: $view_background_Blue;
+    }
+}
+
 /**********************
 * Tab系設定
 ***********************/

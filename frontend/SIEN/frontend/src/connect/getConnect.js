@@ -15,6 +15,7 @@ export async function getConnect(type, params, folderName = "") {
     } else {
         folder = folderName;
     }
+    console.log(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "/" + param);
     return await axios.get(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "/" + param).then(function (response) {
         return response.data.response;
     }).catch(function (error) {

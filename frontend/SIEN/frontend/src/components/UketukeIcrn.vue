@@ -270,7 +270,7 @@
         color="primary"
       ></v-progress-circular>
     </v-overlay>
-    <v-dialog v-model="tourokuScreenFlag" width="1070" eager>
+    <v-dialog v-model="tourokuScreenFlag" width="1140" eager>
       <v-card class="common_dialog pb-1">
         <v-card-title class="dialog_title"> 受付登録 </v-card-title>
         <v-btn
@@ -285,6 +285,7 @@
           :dispTab="inputRef"
           :selectViewData="viewObj"
           class="ml-1 pb-2"
+          ref="uketukeTouroku"
         ></UketukeTouroku>
       </v-card>
     </v-dialog>
@@ -671,15 +672,15 @@ export default {
               wjCore.escapeHtml(tmpitem.sdnnam);
           }
         }
-        // if (e.col == 14) {
-        //   e.cell.innerHTML =
-        //     '<font color="#276bc5">' +
-        //     wjCore.escapeHtml(tmpitem.cskmknm) +
-        //     '</font>' +
-        //     '<div>' +
-        //     wjCore.escapeHtml(e.cell.innerHTML) +
-        //     '</div>';
-        // }
+        if (e.col == 13) {
+          e.cell.innerHTML =
+            '<font color="#276bc5">' +
+            wjCore.escapeHtml(tmpitem.cskmknm) +
+            '</font>' +
+            '<div>' +
+            wjCore.escapeHtml(tmpitem.naiyo) +
+            '</div>';
+        }
       }
       e.cell.style.borderRight = '';
       let thisckCol = this.thickList.filter(function (colindex) {
@@ -755,6 +756,7 @@ export default {
             this.viewdataAll = result;
             this.userFilter();
             this.screenFlag = true;
+            this.$refs.uketukeTouroku.resetEditflg();
           } else {
             alert('検索処理で、エラーが発生しました。');
             this.screenFlag = false;
@@ -953,8 +955,10 @@ export default {
     },
     touroku_dialog_close() {
       this.tourokuScreenFlag = false;
-      // データ読込
-      this.setViewData(true);
+      if (this.$refs.uketukeTouroku.getEditflg()) {
+        // データ読込
+        this.setViewData(true);
+      }
     },
     jigyoKbnclick(kbn) {
       console.log(kbn);

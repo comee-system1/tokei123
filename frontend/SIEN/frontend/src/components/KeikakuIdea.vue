@@ -355,18 +355,25 @@
             ></keikakuideaKadai>
           </div>
           <v-row no-gutters class="rowStyle">
-            <v-btn small height="20" elevation="2">削除</v-btn>
+            <v-btn small height="20" elevation="2" @click="ideaIkouKadaidelete"
+              >削除</v-btn
+            >
             <v-spacer></v-spacer>
             <v-card class="d-flex" height="20" flat tile>
               <v-card outlined tile class="koumokuTitle wMin titleOrange">
                 完了
               </v-card>
               <v-card elevation="0" width="30" class="text-center">
-                <input type="checkbox" v-model="viewdata.kanryo" />
+                <input
+                  type="checkbox"
+                  v-model="viewdata.kanryoD"
+                  @change="kanryoCheck()"
+                  :disabled="userIntcode == 0"
+                />
               </v-card>
               <v-card
                 class="lightYellow pl-1 mr-1 body-2"
-                width="240"
+                width="100"
                 height="20"
                 outlined
                 tile
@@ -426,29 +433,6 @@
             {{ userName }}
           </v-card>
         </v-row>
-        <!-- <v-row no-gutters class="rowStyle_Input mb-1">
-          <v-card
-            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
-            width="100"
-            outlined
-            tile
-          >
-            計画作成日
-          </v-card>
-          <select
-            class="customSelectBox hHigh mr-1"
-            v-model="selMonitoring"
-            style="width: 150px"
-          >
-            <option
-              v-for="val in monitoringList"
-              :key="val.val"
-              :value="val.val"
-            >
-              {{ val.name }}
-            </option>
-          </select>
-        </v-row> -->
         <v-row no-gutters class="rowStyle_Input mb-1">
           <v-card
             class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
@@ -524,6 +508,75 @@
       >
       </v-date-picker>
     </v-dialog>
+    <v-dialog v-model="kanryoInputflg" width="350" persistent>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title mb-1"> 完了登録 </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="kanryoClose()"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlueDark pa-1 ml-1 mr-1"
+            outlined
+            tile
+            width="100"
+          >
+            利用者名
+          </v-card>
+          <v-card class="koumokuData pl-1" tile outlined width="200">
+            {{ userName }}
+          </v-card>
+        </v-row>
+        <v-row no-gutters class="rowStyle_Input mb-1">
+          <v-card
+            class="koumokuTitle titleBlue pa-1 ml-1 mr-1"
+            width="100"
+            outlined
+            tile
+          >
+            完了日
+          </v-card>
+          <v-btn
+            @click="inputCalendarClick(1)"
+            tile
+            outlined
+            width="150px"
+            height="100%"
+            class="pa-0 mr-1"
+            >{{ getYmdKanryo }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
+        </v-row>
+
+        <v-row no-gutters class="rowStyle_Input">
+          <v-btn class="mr-1" height="25" @click="copyClicked()"> 削除 </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="mr-1" height="25" @click="copyClicked()"> 登録 </v-btn>
+        </v-row>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="datepickerKanryoYmd_dialog"
+      width="200"
+      class="datepicker_dialogs"
+    >
+      <v-date-picker
+        id="keikakuIdeaDatepickerKanryo"
+        type="date"
+        v-model="pickerKanryo"
+        locale="jp-ja"
+        :day-format="(date) => new Date(date).getDate()"
+        @change="daySelect()"
+      >
+      </v-date-picker>
+    </v-dialog>
   </div>
 </template>
 
@@ -536,6 +589,7 @@ import keikakuideaKadai from './KeikakuideaKadai.vue';
 import { getConnect } from '@connect/getConnect';
 import { postConnect } from '@connect/postConnect';
 import { putConnect } from '@connect/putConnect';
+import { deleteConnect } from '@connect/deleteConnect';
 import printUtil from '@/utiles/printUtil';
 import messageConst from '@/utiles/MessageConst';
 
@@ -571,7 +625,10 @@ export default {
       rightWidth: '1040px',
       moveLeft: true,
       datepicker_dialog: false,
+      kanryoInputflg: false,
+      datepickerKanryoYmd_dialog: false,
       picker: dayjs().format('YYYY-MM-DD'),
+      pickerKanryo: dayjs().format('YYYY-MM-DD'),
       getYm:
         dayjs().format('YYYY') +
         '年' +
@@ -579,6 +636,13 @@ export default {
         '月' +
         dayjs().format('DD') +
         '日',
+      // getYmdKanryo:
+      //   dayjs().format('YYYY') +
+      //   '年' +
+      //   dayjs().format('MM') +
+      //   '月' +
+      //   dayjs().format('DD') +
+      //   '日',
       keikakuKubun: [
         { id: 2, name: '障害児支援計画（案）' },
         { id: 1, name: 'サービス等支援計画（案）' },
@@ -619,6 +683,13 @@ export default {
         return dayjs().format('YYYY年MM月DD日');
       } else {
         return dayjs(this.picker).format('YYYY年MM月DD日');
+      }
+    },
+    getYmdKanryo() {
+      if (!dayjs(this.pickerKanryo, 'YYYY/MM/DD').isValid()) {
+        return dayjs().format('YYYY年MM月DD日');
+      } else {
+        return dayjs(this.pickerKanryo).format('YYYY年MM月DD日');
       }
     },
 
@@ -680,14 +751,23 @@ export default {
         this.rightWidth = '1040px';
       }
     },
-    inputCalendarClick() {
-      this.picker = dayjs().format('YYYY-MM-DD');
-      this.datepicker_dialog = true;
+    inputCalendarClick(kbn) {
+      if (kbn == 0) {
+        this.picker = dayjs().format('YYYY-MM-DD');
+        this.datepicker_dialog = true;
+      } else {
+        this.pickerKanryo = dayjs().format('YYYY-MM-DD');
+        this.datepickerKanryoYmd_dialog = true;
+      }
     },
     monthSelect() {
       this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
+    },
+    daySelect() {
+      this.getYmdKanryo = dayjs(this.pickerKanryor);
+      this.datepickerKanryoYmd_dialog = false;
     },
     rowSort(type) {
       this.$refs.childkadai.rowSort(type);
@@ -705,6 +785,7 @@ export default {
       // this.$refs.childikou.registButton();
       this.putKeikakuan();
     },
+
     putKeikakuan() {
       let params = {
         uniqid: 3,
@@ -753,6 +834,31 @@ export default {
             }
           }
         );
+      }
+    },
+    ideaIkouKadaidelete() {
+      if (this.userIntcode == 0) {
+        alert('削除対象データ' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (confirm(messageConst.CONFIRM.DELETE)) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+          jigyoid: 62,
+          intcode: this.userIntcode,
+          cntid: this.viewdata.cntid,
+        };
+        deleteConnect('/Keikakuan', params, 'SIENP').then((result) => {
+          console.log('delete');
+          console.log(result);
+          if (result.okflg) {
+            this.setSaisin();
+            this.setRireki();
+          } else {
+            alert(result.msg);
+          }
+        });
       }
     },
     userdrawerCliked() {
@@ -808,20 +914,33 @@ export default {
         intcode: this.userIntcode,
       };
       getConnect('/KeikakuanSaishinReki', params, 'SIENP').then((result) => {
-        console.log(987);
-        console.log(result);
         this.viewdata = result;
-        if (result.intcode != undefined) {
-          this.picker =
-            result.mymd.slice(0, 4) +
-            '-' +
-            result.mymd.slice(4, 6) +
-            '-' +
-            result.mymd.substring(6, 8);
-        }
-        this.$refs.childikou.setViewData(result);
-        this.$refs.childkadai.setViewData(result);
+        this.setViewdata();
       });
+    },
+    setViewdata() {
+      if (this.viewdata.intcode != undefined) {
+        this.picker =
+          this.viewdata.mymd.slice(0, 4) +
+          '-' +
+          this.viewdata.mymd.slice(4, 6) +
+          '-' +
+          this.viewdata.mymd.substring(6, 8);
+
+        if (this.viewdata.kanryoymd.length == 8) {
+          this.pickerKanryo =
+            this.viewdata.kanryoymd.slice(0, 4) +
+            '-' +
+            this.viewdata.kanryoymd.slice(4, 6) +
+            '-' +
+            this.viewdata.kanryoymd.substring(6, 8);
+        } else {
+          this.pickerKanryo = dayjs().format('YYYY-MM-DD');
+        }
+        this.viewdata.kanryoD = this.viewdata.kanryo;
+      }
+      this.$refs.childikou.setViewData(this.viewdata);
+      this.$refs.childkadai.setViewData(this.viewdata);
     },
     rirekiClicked(item) {
       let params = {
@@ -833,19 +952,8 @@ export default {
         cntid: item.cntid,
       };
       getConnect('/Keikakuan', params, 'SIENP').then((result) => {
-        console.log(12345);
-        console.log(result);
         this.viewdata = result;
-        if (result.intcode != undefined) {
-          this.picker =
-            result.mymd.slice(0, 4) +
-            '-' +
-            result.mymd.slice(4, 6) +
-            '-' +
-            result.mymd.substring(6, 8);
-        }
-        this.$refs.childikou.setViewData(result);
-        this.$refs.childkadai.setViewData(result);
+        this.setViewdata();
       });
     },
     printExec() {
@@ -911,12 +1019,20 @@ export default {
             console.log(result);
             if (result.okflg == true) {
               this.setUserdata(this.selectedUserObj);
+              this.createflg = false;
             } else {
               alert(result.msg);
             }
           }
         );
       }
+    },
+    kanryoCheck() {
+      this.kanryoInputflg = true;
+    },
+    kanryoClose() {
+      this.viewdata.kanryoD = this.viewdata.kanryo;
+      this.kanryoInputflg = false;
     },
   },
 };
@@ -962,6 +1078,15 @@ div#keikakuIdea {
   margin-top: 20px;
   top: 100px;
   left: 260px;
+  width: 300px;
+  max-width: 300px;
+}
+#keikakuIdeaDatepickerKanryo {
+  position: absolute;
+  margin-top: 20px;
+  position: fixed !important;
+  top: 330px;
+  left: 600px;
   width: 300px;
   max-width: 300px;
 }

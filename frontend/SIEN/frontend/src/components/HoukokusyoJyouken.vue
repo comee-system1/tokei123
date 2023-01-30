@@ -149,7 +149,7 @@
                   outlined
                   width="50"
                 >
-                  {{ '2/2' }}
+                  {{ tateCount }}
                 </v-card>
               </v-row>
               <v-row no-gutters class="rowStyle_Input mt-1">
@@ -202,7 +202,7 @@
                   outlined
                   width="50"
                 >
-                  {{ '99/99' }}
+                  {{ yokoCount }}
                 </v-card>
               </v-row>
               <v-row no-gutters class="rowStyle_Input mt-1">
@@ -303,11 +303,11 @@
             <v-btn class="mr-1" width="75" height="25" @click="clrClicked(1)">
               クリア
             </v-btn>
-            <v-btn class="mr-1" width="75" height="25" @click="addClicked">
+            <v-btn class="mr-1" width="75" height="25" @click="delClicked(1)">
               削除
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn class="mr-1" width="75" height="25" @click="addClicked">
+            <v-btn class="mr-1" width="75" height="25" @click="addClicked(1)">
               登録
             </v-btn>
           </v-row>
@@ -570,12 +570,7 @@ export default {
         },
       ],
       mainGrid: {},
-      kouseiGrid: {},
       thickList: [2, 9],
-      syuuryouList: [
-        { rnd2: 1, name: '以下' },
-        { rnd2: 2, name: '未満' },
-      ],
       viewDataChohyo: [],
       selectedViewDataChohyo: {},
       selectedViewDataZumi: {},
@@ -603,9 +598,9 @@ export default {
       ],
       viewDataSelect1All: [],
       viewDataSelect1: [],
-      viewTateList: null,
+      viewTateList: [],
       viewDataSelect2: [],
-      viewYokoList: null,
+      viewYokoList: [],
       dispMisentaku: false,
     };
   },
@@ -620,7 +615,73 @@ export default {
     document.removeEventListener('resize', this.calculateWindowHeight);
     this.$router.app.$off('print_event_global');
   },
+  computed: {
+    tateCount() {
+      if (this.viewTateList == null || this.viewTateList.length == 0) {
+        return '';
+      }
+      let tate = this.viewDataSelect1All.find(
+        (e) => e.id == this.selectedViewDataZumi.yid
+      );
+
+      return this.getCountStr(tate, this.viewTateList);
+    },
+    yokoCount() {
+      if (this.viewYokoList == null || this.viewYokoList.length == 0) {
+        return '';
+      }
+      let yoko = this.viewDataSelect1All.find(
+        (e) => e.id == this.selectedViewDataZumi.xid
+      );
+
+      return this.getCountStr(yoko, this.viewYokoList);
+    },
+  },
   methods: {
+    getCountStr(mst, viewList) {
+      let dailist = mst.daiList;
+      let count = 0;
+      let total = 0;
+      for (let i = 0; i < dailist.length; i++) {
+        let item = dailist[i];
+        let findAlldaiitem = viewList.filter((e) => e.daiid == item.id);
+        let finditem = viewList.filter(
+          (e) => e.daiid == item.id && e.chuid == 0 && e.shoid == 0
+        );
+
+        if (findAlldaiitem.length == 0) {
+          // 対象の大項目以下全て未選択の場合
+          total++;
+        } else if (finditem.length > 0) {
+          // 設定された項目が大項目の場合
+          total++;
+          count++;
+        } else {
+          let chulist = item.chuList;
+          for (let chu = 0; chu < chulist.length; chu++) {
+            let chuitem = chulist[chu];
+            let findchuitem = viewList.filter(
+              (e) => e.daiid == item.id && e.chuid == chuitem.id && e.shoid == 0
+            );
+            if (findchuitem.length > 0) {
+              total++;
+              count++;
+            } else if (chuitem.shoList.length == 0) {
+              // 小項目がない場合は中項目としてカウント
+              total++;
+            } else {
+              let findshoitem = viewList.filter(
+                (e) =>
+                  e.daiid == item.id && e.chuid == chuitem.id && e.shoid > 0
+              );
+              total = total + chuitem.shoList.length;
+              count = count + findshoitem.length;
+            }
+          }
+        }
+      }
+      return count + '/' + total;
+    },
     calculateWindowHeight() {
       if (document.getElementById('leftArea') != null) {
         document.getElementById('leftArea').style.height =
@@ -710,16 +771,26 @@ export default {
           );
           if (jyouken1.length > 0) {
             self.selectedViewDataZumi.jyouken1Item = jyouken1[0];
+            this.viewJyouken1List = this.getNewSelect2ListFromDb(
+              self.selectedViewDataZumi.zid,
+              self.selectedViewDataZumi.zKmkList
+            );
           } else {
             self.selectedViewDataZumi.jyouken1Item = null;
+            this.viewJyouken1List = [];
           }
           let yoko = self.viewDataSelect1All.filter(
             (e) => e.id == self.selectedViewDataZumi.xid
           );
           if (yoko.length > 0) {
             self.selectedViewDataZumi.yokoItem = yoko[0];
+            this.viewYokoList = this.getNewSelect2ListFromDb(
+              self.selectedViewDataZumi.xid,
+              self.selectedViewDataZumi.xKmkList
+            );
           } else {
             self.selectedViewDataZumi.yokoItem = null;
+            this.viewYokoList = [];
           }
 
           let tate = self.viewDataSelect1All.filter(
@@ -727,8 +798,13 @@ export default {
           );
           if (tate.length > 0) {
             self.selectedViewDataZumi.tateItem = tate[0];
+            this.viewTateList = this.getNewSelect2ListFromDb(
+              self.selectedViewDataZumi.yid,
+              self.selectedViewDataZumi.yKmkList
+            );
           } else {
             self.selectedViewDataZumi.tateItem = null;
+            this.viewTateList = [];
           }
 
           let selrow = -1;
@@ -779,24 +855,22 @@ export default {
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
-          this.setviewDataSelect2(flexGrid.cells.rows[ht.row].dataItem);
+          let item = flexGrid.cells.rows[ht.row].dataItem;
+          this.setviewDataSelect2(item);
           if (this.selSyukeiKoumoku == 0) {
-            this.selectedViewDataZumi.jyouken1Item =
-              flexGrid.cells.rows[ht.row].dataItem;
-            this.selectedViewDataZumi.zKmkName =
-              flexGrid.cells.rows[ht.row].dataItem.name;
+            this.selectedViewDataZumi.jyouken1Item = item;
+            this.selectedViewDataZumi.zKmkName = item.name;
+            this.viewJyouken1List = this.getNewSelect2List();
           } else {
             if (this.selectedTextBox == SELECTED_TEXTBOX.Tate) {
-              this.selectedViewDataZumi.tateItem =
-                flexGrid.cells.rows[ht.row].dataItem;
-              this.selectedViewDataZumi.yKmkName =
-                flexGrid.cells.rows[ht.row].dataItem.name;
+              this.selectedViewDataZumi.tateItem = item;
+              this.selectedViewDataZumi.yKmkName = item.name;
+              this.selectedViewDataZumi.yid = item.id;
               this.viewTateList = this.getNewSelect2List();
             } else if (this.selectedTextBox == SELECTED_TEXTBOX.Yoko) {
-              this.selectedViewDataZumi.yokoItem =
-                flexGrid.cells.rows[ht.row].dataItem;
-              this.selectedViewDataZumi.xKmkName =
-                flexGrid.cells.rows[ht.row].dataItem.name;
+              this.selectedViewDataZumi.yokoItem = item;
+              this.selectedViewDataZumi.xKmkName = item.name;
+              this.selectedViewDataZumi.xid = item.id;
               this.viewYokoList = this.getNewSelect2List();
             }
           }
@@ -836,14 +910,14 @@ export default {
               let tmpitem = flexGrid.cells.rows[row].dataItem;
               if (
                 targetitem.UtiwakeKbn == UTIWAKE_KBN.Dai &&
-                targetitem.daiID == tmpitem.daiID
+                targetitem.daiid == tmpitem.daiid
               ) {
                 flexGrid.setCellData(row, 2, '');
               }
               if (
                 targetitem.UtiwakeKbn == UTIWAKE_KBN.Chu &&
-                targetitem.daiID == tmpitem.daiID &&
-                tmpitem.chuID == 0
+                targetitem.daiid == tmpitem.daiid &&
+                tmpitem.chuid == 0
               ) {
                 flexGrid.setCellData(row, 2, '');
               }
@@ -859,6 +933,8 @@ export default {
               this.viewTateList = this.getNewSelect2List();
             } else if (this.selectedTextBox == SELECTED_TEXTBOX.Yoko) {
               this.viewYokoList = this.getNewSelect2List();
+            } else if (this.selectedTextBox == SELECTED_TEXTBOX.Jyouken1) {
+              this.viewJyouken1List = this.getNewSelect2List();
             }
           }
         }
@@ -1110,9 +1186,9 @@ export default {
         }
         daiobj.codeD = String(daiobj.code).padStart(3, '0');
         daiobj.UtiwakeKbn = UTIWAKE_KBN.Dai;
-        daiobj.daiID = daiobj.id;
-        daiobj.chuID = 0;
-        daiobj.shoID = 0;
+        daiobj.daiid = daiobj.id;
+        daiobj.chuid = 0;
+        daiobj.shoid = 0;
         daiobj.select = '○';
         tmplist.push(daiobj);
         for (let chu = 0; chu < daiitem.chuList.length; chu++) {
@@ -1121,9 +1197,9 @@ export default {
           chuobj.nameD = '  ' + chuobj.name;
           chuobj.codeD = '';
           chuobj.UtiwakeKbn = UTIWAKE_KBN.Chu;
-          chuobj.daiID = daiobj.id;
-          chuobj.chuID = chuobj.id;
-          chuobj.shoID = 0;
+          chuobj.daiid = daiobj.id;
+          chuobj.chuid = chuobj.id;
+          chuobj.shoid = 0;
           chuobj.select = '';
           tmplist.push(chuobj);
           for (let sho = 0; sho < chuitem.shoList.length; sho++) {
@@ -1131,9 +1207,9 @@ export default {
             let shoobj = Vue.util.extend({}, shoitem);
             shoobj.nameD = '    ' + shoobj.name;
             shoobj.UtiwakeKbn = UTIWAKE_KBN.Sho;
-            shoobj.daiID = daiobj.id;
-            shoobj.chuID = chuobj.id;
-            shoobj.shoID = shoobj.id;
+            shoobj.daiid = daiobj.id;
+            shoobj.chuid = chuobj.id;
+            shoobj.shoid = shoobj.id;
             shoobj.select = '';
             tmplist.push(shoobj);
           }
@@ -1149,7 +1225,7 @@ export default {
       } else {
         let finddata = selectedList.find(
           (e) =>
-            e.daiID == obj.daiID && e.chuID == obj.chuID && e.shoID == obj.shoID
+            e.daiid == obj.daiid && e.chuid == obj.chuid && e.shoid == obj.shoid
         );
         if (finddata != null) {
           return '○';
@@ -1172,6 +1248,7 @@ export default {
       };
       getConnect('/MstSyukeiView', params, 'SIENT').then((result) => {
         this.viewDataZumiAll = result;
+        this.viewDataZumi = [];
         if (result.bodyList.length > 0) {
           let tmplist = result.bodyList.filter((x) => x.kmkType == 1);
           let tmpresult = [];
@@ -1207,43 +1284,99 @@ export default {
         uniqid: 3,
         traceid: 123,
       };
+      let body = {
+        jigyoid: 62,
+        ptnid: this.selectedViewDataChohyo.ptnid,
+        cd: this.selectedViewDataZumi.buhinCd,
+        name: this.selectedViewDataZumi.buhinName,
+        zid: this.selectedViewDataZumi.jyouken1Item.id,
+        zKmkList: [],
+        yid: this.selectedViewDataZumi.yid,
+        yKmkList: [],
+        xid: this.selectedViewDataZumi.xid,
+        xKmkList: [],
+        riyoflg: Number(this.selSyukeiJyoukenCb),
+        ninflg: this.selSyukeiJyouken,
+        // tidayflg: 0,
+        // sdnflg: 0,
+        // koyoflg: 0,
+        // kigyoflg: 0,
+        // multiflg: 0,
+      };
+      for (let i = 0; i < this.viewJyouken1List.length; i++) {
+        let item = this.viewJyouken1List[i];
+        body.zKmkList.push({
+          daiid: item.daiid,
+          chuid: item.chuid,
+          shoid: item.shoid,
+        });
+      }
+      for (let i = 0; i < this.viewYokoList.length; i++) {
+        let item = this.viewYokoList[i];
+        body.xKmkList.push({
+          daiid: item.daiid,
+          chuid: item.chuid,
+          shoid: item.shoid,
+        });
+      }
+      for (let i = 0; i < this.viewTateList.length; i++) {
+        let item = this.viewTateList[i];
+        body.yKmkList.push({
+          daiid: item.daiid,
+          chuid: item.chuid,
+          shoid: item.shoid,
+        });
+      }
 
       if (this.selectedViewDataZumi.buhinId == 0) {
-        let body = {
-          jigyoid: 62,
-          ptncd: this.selectedViewDataChohyo.ptncd,
-          name: this.selectedViewDataChohyo.name,
-          papersize: 1,
-        };
         if (!confirm(messageConst.CONFIRM.POST)) {
           return;
         }
         postConnect('/MstSyukeikmk', params, 'SIENT', body).then((result) => {
           if (result.okflg == true) {
-            this.getChohyoData();
+            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+            this.clrClicked(1);
           } else {
             alert(result.msg);
           }
         });
       } else {
-        let body = {
-          jigyoid: 62,
-          ptnid: this.selectedViewDataChohyo.ptnid,
-          ptncd: this.selectedViewDataChohyo.ptncd,
-          name: this.selectedViewDataChohyo.name,
-          papersize: 1,
-        };
+        body.id = this.selectedViewDataZumi.buhinId;
         if (!confirm(messageConst.CONFIRM.PUT)) {
           return;
         }
-        putConnect('/MstChohyo', params, 'SIENT', body).then((result) => {
+        putConnect('/MstSyukeikmk', params, 'SIENT', body).then((result) => {
           if (result.okflg == true) {
-            this.getChohyoData();
+            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+            this.clrClicked(1);
           } else {
             alert(result.msg);
           }
         });
       }
+    },
+    deleteSyukeiViewData() {
+      if (this.selectedViewDataZumi.buhinId == 0) {
+        alert(messageConst.WARN.NO_SELECT);
+        return;
+      }
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pBuhinId: this.selectedViewDataZumi.buhinId,
+      };
+      if (!confirm(messageConst.CONFIRM.DELETE)) {
+        return;
+      }
+      deleteConnect('/MstSyukeikmk', params, 'SIENT').then((result) => {
+        if (result.okflg == true) {
+          this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+          this.clrClicked(1);
+        } else {
+          alert(result.msg);
+        }
+      });
     },
     /*
      *登録済み集計内容↑
@@ -1251,6 +1384,9 @@ export default {
 
     numbervalidate(kbn) {
       if (kbn == 0) {
+        this.selectedViewDataChohyo.ptncd = this.hankaku2Zenkaku(
+          this.selectedViewDataChohyo.ptncd
+        );
         if (isNaN(this.selectedViewDataChohyo.ptncd)) {
           this.selectedViewDataChohyo.ptncd = '';
           return;
@@ -1263,6 +1399,9 @@ export default {
         this.selectedViewDataChohyo.ptncd =
           this.selectedViewDataChohyo.ptncd.replace(/\D/g, '');
       } else if (kbn == 1) {
+        this.selectedViewDataChohyo.buhinCd = this.hankaku2Zenkaku(
+          this.selectedViewDataChohyo.buhinCd
+        );
         if (isNaN(this.selectedViewDataZumi.buhinCd)) {
           this.selectedViewDataZumi.buhinCd = '';
           return;
@@ -1276,6 +1415,14 @@ export default {
           this.selectedViewDataZumi.buhinCd.replace(/\D/g, '');
       }
     },
+    hankaku2Zenkaku(str) {
+      if (!str) {
+        return '';
+      }
+      return str.replace(/[０-９]/g, function (s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+      });
+    },
     clrClicked(kbn) {
       if (kbn == 0) {
         this.selectedViewDataChohyo = {
@@ -1286,6 +1433,7 @@ export default {
           papersize: 0,
           papersizeName: '',
         };
+        this.clrClicked(1);
       } else if (kbn == 1) {
         this.selectedViewDataZumi = {
           buhinCd: '',
@@ -1293,13 +1441,8 @@ export default {
           buhinId: 0,
           buhinName: '',
           buhinNo: 0,
-          kigyoflg: 0,
-          koyoflg: 0,
-          multiflg: 0,
           ninflg: 0,
           riyoflg: 0,
-          sdnflg: 0,
-          tidayflg: 0,
           xKmkList: [],
           xKmkName: '',
           xid: 0,
@@ -1313,18 +1456,25 @@ export default {
           yokoItem: null,
           tateItem: null,
         };
+        this.viewJyouken1List = null;
         this.viewTateList = null;
         this.viewYokoList = null;
+        this.selSyukeiJyouken = 0;
+        this.selSyukeiJyoukenCb = 0;
       }
     },
     delClicked(kbn) {
       if (kbn == 0) {
         this.deleteChohyoData();
+      } else if (kbn == 1) {
+        this.deleteSyukeiViewData();
       }
     },
     addClicked(kbn) {
       if (kbn == 0) {
         this.postChohyoData();
+      } else if (kbn == 1) {
+        this.postSyukeiViewData();
       }
     },
     inputclick(kbn) {
@@ -1333,6 +1483,7 @@ export default {
       if (kbn == 0) {
         this.selSyukeiKoumoku = 0;
         selitem = this.selectedViewDataZumi.jyouken1Item;
+        selectedSelectList = this.viewJyouken1List;
       } else if (kbn == 1 || kbn == 2) {
         if (kbn == 1 && this.selectedViewDataZumi.tateItem != null) {
           this.selSyukeiKoumoku = this.getselSyukeiKbn(
@@ -1352,6 +1503,19 @@ export default {
       }
       this.setviewDataSelect1(kbn, selitem);
       this.setSelect2Resetting(selectedSelectList);
+
+      this.dispMisentaku = false;
+      if (kbn == 1) {
+        if (this.tateCount.length > 0) {
+          let str = this.tateCount.split('/');
+          this.dispMisentaku = str[0] != str[1];
+        }
+      } else if (kbn == 2) {
+        if (this.yokoCount.length > 0) {
+          let str = this.yokoCount.split('/');
+          this.dispMisentaku = str[0] != str[1];
+        }
+      }
     },
     /*
      * 選択済み項目の再表示設定
@@ -1365,9 +1529,9 @@ export default {
         let tmpitem = tmplist[row];
         let finddata = selectedSelectList.find(
           (e) =>
-            e.daiID == tmpitem.daiID &&
-            e.chuID == tmpitem.chuID &&
-            e.shoID == tmpitem.shoID
+            e.daiid == tmpitem.daiid &&
+            e.chuid == tmpitem.chuid &&
+            e.shoid == tmpitem.shoid
         );
         if (finddata == undefined) {
           tmpitem.select = '';
@@ -1414,6 +1578,65 @@ export default {
     },
     getNewSelect2List() {
       return this.viewDataSelect2.filter((x) => x.select == '○').concat();
+    },
+    getNewSelect2ListFromDb(id, selectedlist) {
+      let result = [];
+      let targetList = this.viewDataSelect1All.filter((e) => e.id == id);
+      for (let i = 0; i < targetList.length; i++) {
+        let daiList = targetList[i].daiList;
+        for (let dai = 0; dai < daiList.length; dai++) {
+          let daiItem = daiList[dai];
+          if (
+            selectedlist.filter(
+              (e) => e.daiid == daiItem.id && e.chuid == 0 && e.shoid == 0
+            ).length > 0
+          ) {
+            daiItem.UtiwakeKbn = UTIWAKE_KBN.Dai;
+            daiItem.daiid = daiItem.id;
+            daiItem.chuid = 0;
+            daiItem.shoid = 0;
+            result.push(daiItem);
+          }
+
+          // 中分類
+          let chuList = daiItem.chuList;
+          for (let chu = 0; chu < chuList.length; chu++) {
+            let chuItem = chuList[chu];
+            if (
+              selectedlist.filter(
+                (e) =>
+                  e.daiid == daiItem.id && e.chuid == chuItem.id && e.shoid == 0
+              ).length > 0
+            ) {
+              chuItem.UtiwakeKbn = UTIWAKE_KBN.Chu;
+              chuItem.daiid = daiItem.id;
+              chuItem.chuid = chuItem.id;
+              chuItem.shoid = 0;
+              result.push(chuItem);
+            }
+            // 小分類
+            let shoList = chuItem.shoList;
+            for (let sho = 0; sho < shoList.length; sho++) {
+              let shoItem = shoList[sho];
+              if (
+                selectedlist.filter(
+                  (e) =>
+                    e.daiid == daiItem.id &&
+                    e.chuid == chuItem.id &&
+                    e.shoid == shoItem.id
+                ).length > 0
+              ) {
+                shoItem.UtiwakeKbn = UTIWAKE_KBN.Chu;
+                shoItem.daiid = daiItem.id;
+                shoItem.chuid = chuItem.id;
+                shoItem.shoid = shoItem.id;
+                result.push(shoItem);
+              }
+            }
+          }
+        }
+      }
+      return result;
     },
   },
 };

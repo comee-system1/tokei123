@@ -171,18 +171,19 @@
                         入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
-                        class="flex-wrap ml-1"
-                        v-model="selectDataObj.inputkbn"
+                        class="flex-wrap ml-1 kbnBtn"
+                        v-model="selectDataObj.sykkbn"
                       >
                         <v-btn
-                          v-for="n in jigyoKbnItem"
+                          v-for="n in mstSyukeiKbnList"
                           :key="n.val"
                           outlined
-                          height="25"
+                          height="23"
+                          elevation="2"
+                          width="60"
                           @click="jigyoKbnclick(n.val)"
-                          color="secondary"
                         >
-                          {{ n.name }}
+                          {{ n.ryaku }}
                         </v-btn>
                       </v-btn-toggle>
                     </v-row>
@@ -196,16 +197,16 @@
                       </v-card>
                       <v-btn-toggle
                         id="uketukeTourokuSyokaibtn"
-                        class="flex-wrap ml-1"
+                        class="flex-wrap ml-1 kbnBtn"
                         v-model="selectDataObj.syokaiflg"
                       >
                         <v-btn
                           v-for="n in SyokaiorKeizokuItem"
                           :key="n.val"
                           outlined
-                          height="25"
-                          :disabled="selectDataObj.inputkbn == 3"
-                          color="secondary"
+                          height="23"
+                          elevation="2"
+                          :disabled="selectDataObj.sykkbn == 3"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -239,7 +240,7 @@
                         入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
-                        class="flex-wrap ml-1"
+                        class="flex-wrap ml-1 kbnBtn"
                         v-model="selectDataObj.cskbn"
                       >
                         <v-btn
@@ -247,9 +248,9 @@
                           :key="n.val"
                           :value="n.val"
                           outlined
-                          height="25"
+                          height="23"
+                          elevation="2"
                           @click="keikakuInputKbnclick(n.val)"
-                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -264,7 +265,7 @@
                         加算有無<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
-                        class="flex-wrap ml-1"
+                        class="flex-wrap ml-1 kbnBtn"
                         v-model="selectDataObj.kasanUmu"
                       >
                         <v-btn
@@ -272,9 +273,9 @@
                           :key="n.val"
                           :value="n.val"
                           outlined
-                          height="25"
+                          height="23"
+                          elevation="2"
                           @click="KasanUmuclick(n.val, 0)"
-                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -430,7 +431,7 @@
                         入力区分<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
-                        class="flex-wrap ml-1"
+                        class="flex-wrap ml-1 kbnBtn"
                         v-model="selectDataObj.cskbn"
                       >
                         <v-btn
@@ -438,9 +439,9 @@
                           :key="n.val"
                           :value="n.val"
                           outlined
-                          height="25"
+                          height="23"
+                          elevation="2"
                           @click="chiikiInputKbnclick(n.val)"
-                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -455,16 +456,16 @@
                         加算有無<span class="requiredMark"> * </span>
                       </v-card>
                       <v-btn-toggle
-                        class="flex-wrap ml-1"
+                        class="flex-wrap ml-1 kbnBtn"
                         v-model="selectDataObj.kasanUmu"
                       >
                         <v-btn
                           v-for="n in getKasanUmu"
                           :key="n.val"
                           outlined
-                          height="25"
+                          height="23"
+                          elevation="2"
                           @click="KasanUmuclick(n.val, 1)"
-                          color="secondary"
                         >
                           {{ n.name }}
                         </v-btn>
@@ -606,7 +607,7 @@
                 v-model="selectDataObj.sdnhourk"
                 @click="inputClicked(1)"
                 readonly="readonly"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者１
@@ -618,7 +619,7 @@
                 name="txtdouseki1"
                 v-model="selectDataObj.sdnnam1"
                 @click="inputClicked(4)"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
@@ -633,7 +634,7 @@
                 v-model="selectDataObj.sdnkanrk"
                 @click="inputClicked(2)"
                 readonly="readonly"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者２
@@ -645,7 +646,7 @@
                 name="txtdouseki2"
                 v-model="selectDataObj.sdnnam2"
                 @click="inputClicked(5)"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
@@ -659,7 +660,7 @@
                 name="txtsoudansya"
                 v-model="selectDataObj.sdnnam"
                 @click="inputClicked(3)"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者３
@@ -671,7 +672,7 @@
                 name="txtdouseki3"
                 v-model="selectDataObj.sdnnam3"
                 @click="inputClicked(6)"
-                :disabled="selectDataObj.inputkbn == 3"
+                :disabled="selectDataObj.sykkbn == 3"
               />
             </v-row>
             <v-divider class="btmborder mt-1"></v-divider>
@@ -741,7 +742,7 @@
                   ﾋﾟｱｶｳﾝｾﾗｰ
                 </v-card>
                 <v-btn-toggle
-                  class="flex-wrap ml-1"
+                  class="flex-wrap ml-1 kbnBtn"
                   v-model="selectDataObj.peer"
                   v-show="dispPeerCounselor"
                 >
@@ -750,8 +751,8 @@
                     :key="n.val"
                     :value="n.val"
                     outlined
-                    height="25"
-                    color="secondary"
+                    height="23"
+                    elevation="2"
                   >
                     {{ n.name }}
                   </v-btn>
@@ -783,7 +784,7 @@
                   >ランク</v-card
                 >
                 <v-btn-toggle
-                  class="flex-wrap ml-1"
+                  class="flex-wrap ml-1 kbnBtn"
                   v-model="selectDataObj.rank"
                   v-show="dispRank"
                 >
@@ -792,8 +793,8 @@
                     :key="n.val"
                     :value="n.val"
                     outlined
-                    height="25"
-                    color="secondary"
+                    height="23"
+                    elevation="2"
                   >
                     {{ n.name }}
                   </v-btn>
@@ -1355,12 +1356,15 @@ export default {
       mstKasanList: [],
       mstSoudansyaList: [],
       mstKikanList: this.getKikanMst(),
+      mstSyukeiKbnList: [],
+      editFlg: false,
     };
   },
   mounted() {
     window.addEventListener('resize', this.handleResize);
     // 空データ作成
     this.setKihonInfo();
+    this.getSyukeiKbn();
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -1407,6 +1411,21 @@ export default {
     /*
      * マスタ取得処理
      */
+    getSyukeiKbn() {
+      if (this.kbnTab == this.kbnItem[0].hrefval) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+          pJigyoid: 62,
+        };
+
+        getConnect('/MstSyukeikbn', params, 'SIENT').then((result) => {
+          if (result !== undefined) {
+            this.mstSyukeiKbnList = result;
+          }
+        });
+      }
+    },
     getHouhouMst() {
       let params = {
         uniqid: 3,
@@ -1496,6 +1515,12 @@ export default {
     },
     setClrItemSoudantaiou(list) {
       list.unshift({ daicodeD: '', dainames: 'クリア' });
+    },
+    getEditflg() {
+      return this.editFlg;
+    },
+    resetEditflg() {
+      this.editFlg = false;
     },
     /**************
      * 初期化系
@@ -2181,6 +2206,7 @@ export default {
         };
         deleteConnect('/Uktk', params, 'SIENT', body).then(() => {
           this.clrClicked(0);
+          this.editFlg = true;
         });
       }
     },
@@ -2212,6 +2238,7 @@ export default {
           postConnect('/Uktk', params, 'SIENT', this.createPostData()).then(
             () => {
               this.clrClicked(1);
+              this.editFlg = true;
             }
           );
         }
@@ -2227,6 +2254,7 @@ export default {
           };
           putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(() => {
             this.clrClicked(1);
+            this.editFlg = true;
           });
         }
       }
@@ -2278,7 +2306,7 @@ export default {
         // dokoflg: doukousya.length == 0 ? 0 : 1,
         dokosha: doukousya,
         sdnkeiroid: 0,
-        sykkbn: 0,
+        sykkbn: this.selectDataObj.sykkbn,
         kasan: 0,
         homon: 0,
         kikan: '',
@@ -2671,17 +2699,17 @@ div#uketukeTouroku {
   font-size: 14px;
   // overflow-x: scroll;
   // width: 1366px !important;
-  min-width: 1050px !important;
-  max-width: 1050px;
-  width: 1050px;
+  min-width: 1120px !important;
+  max-width: 1120px;
+  width: 1120px;
   height: auto;
   min-height: 500px !important;
   // width: auto;
 
   .centerArea {
     // margin-right: 4px;
-    min-width: 630px;
-    max-width: 630px;
+    min-width: 700px;
+    max-width: 700px;
     .v-tab {
       border: 1px solid;
       margin-right: 4px;

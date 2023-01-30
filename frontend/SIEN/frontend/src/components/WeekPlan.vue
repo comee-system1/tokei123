@@ -1,17 +1,12 @@
 <template>
   <v-container id="weekCaleandar" class="pa-0">
-    <v-row no-gutters class="filterArea pa-1">
-      <v-card
-        outlined
-        tile
-        width="60"
-        class="text-center label text-caption lightGray"
-      >
+    <v-row no-gutters class="rowStyle_Dark pa-1 pl-0">
+      <v-card class="koumokuTitle titleBlueDark mr-1 ml-1" outlined tile>
         利用者名
       </v-card>
       <v-card
-        width="200"
-        class="text-caption lightYellow pl-1"
+        width="250"
+        class="koumokuData border mr-1 pl-1"
         elevation="0"
         outlined
         tile
@@ -19,17 +14,12 @@
         {{ riyocode }}
         {{ userName }}
       </v-card>
-      <v-card
-        outlined
-        tile
-        width="60"
-        class="text-center label text-caption lightGray ml-2"
-      >
+      <v-card class="koumokuTitle titleBlueDark mr-1 ml-1" outlined tile>
         作成日
       </v-card>
       <v-card
         width="120"
-        class="text-caption lightYellow pl-1"
+        class="koumokuData border mr-1 pl-1"
         elevation="0"
         outlined
         tile
@@ -37,79 +27,90 @@
         {{ createDate }}
       </v-card>
     </v-row>
-    <v-row no-gutters class="mt-1 planArea">
+    <v-row no-gutters class="mt-1">
       <v-col class="d-flex" cols="8">
+        <v-card class="koumokuTitle titleBlueDark mr-1" outlined tile>
+          計画開始年月
+        </v-card>
         <v-card
           outlined
           tile
-          class="text-center label text-caption pa-1 orenge"
+          class="text-center label text-caption pa-1 koumokuTitle"
         >
-          計画開始年月
-        </v-card>
-        <v-card outlined tile class="text-center label text-caption pa-1">
           <div class="float-right" @click="inputCalendarClick()">
             {{ startDate }}
             <v-icon small>mdi-calendar-month</v-icon>
           </div>
         </v-card>
-        <label
-          outlined
-          tile
-          class="text-center label text-caption pa-1 lightGray ml-1"
-        >
+        <v-card class="koumokuTitle titleBlueDark mr-1 ml-1" outlined tile>
           入力内容
-        </label>
-        <v-btn-toggle v-model="weekplanType" class="ml-1 weekplanType">
-          <v-btn small :value="0">週間予定</v-btn>
-          <v-btn small :value="1" @click="dialogDaily(1)">主な日常生活等</v-btn>
-          <v-btn small :value="2" @click="dialogDaily(2)">全体の生活像</v-btn>
+        </v-card>
+        <v-btn-toggle v-model="weekplanType" class="weekplanType">
+          <v-btn :value="0">週間予定</v-btn>
+          <v-btn :value="1" @click="dialogDaily(1)">主な日常生活等</v-btn>
+          <v-btn :value="2" @click="dialogDaily(2)">生活の全体像</v-btn>
         </v-btn-toggle>
       </v-col>
-      <v-col cols="4" class="d-flex justify-end">
-        <v-btn small @click="weekInput()">
+      <v-col cols="4" class="d-flex justify-end weekplanType">
+        <v-btn @click="weekInput()">
           <v-icon small> mdi-plus-circle </v-icon> 週間項目入力</v-btn
         >
-        <v-btn small class="ml-1">前回コピー</v-btn>
-        <v-btn small class="ml-1">計画コピー</v-btn>
-        <v-btn small class="ml-1" @click="historyFlag = true">履歴参照</v-btn>
+        <v-btn class="ml-1">前回コピー</v-btn>
+        <v-btn class="ml-1">計画コピー</v-btn>
+        <v-btn class="ml-1" @click="historyFlag = true">履歴参照</v-btn>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1">
       <svg viewbox="viewport" class="calendar">
         <!--メモリ-->
-        <rect x="0" y="0" height="30" class="colHeader header" />
-        <rect x="0" y="0" height="660" width="100" class="rowHeader header" />
-        <g stroke="gray" stroke-width="1">
+
+        <rect x="0" y="0" height="22" class="colHeader header" />
+        <rect
+          x="0"
+          y="0"
+          :height="calendarHeight"
+          width="100"
+          class="rowHeader header"
+        />
+        <g stroke="black" stroke-width="0.5">
           <!--各時間軸-->
+          <line x1="0" y1="1" x2="100%" y2="1"></line>
           <line
-            v-for="n in 26"
+            x1="0"
+            :y1="calendarHeight"
+            x2="100%"
+            :y2="calendarHeight"
+          ></line>
+          <line
+            v-for="n in 24"
             :key="`k-${n}`"
             x1="100"
-            :y1="n * 30"
+            :y1="n * calendarSepalate"
             x2="100%"
-            :y2="n * 30"
-            stroke="black"
+            :y2="n * calendarSepalate"
+            class="lines"
           ></line>
 
           <!--各曜日軸-->
-
+          <line x1="1" y1="1" x2="0" :y2="calendarHeight"></line>
+          <line x1="99.9%" y1="1" x2="99.9%" :y2="calendarHeight"></line>
           <line
             v-for="n of 7"
             :key="n"
             :x1="128 * (n - 1) + 100"
             y1="0"
             :x2="128 * (n - 1) + 100"
-            y2="700"
+            :y2="calendarHeight"
           ></line>
         </g>
         <!--週-->
-        <text x="158" y="20" class="week">月</text>
-        <text x="286" y="20" class="week">火</text>
-        <text x="414" y="20" class="week">水</text>
-        <text x="542" y="20" class="week">木</text>
-        <text x="670" y="20" class="week">金</text>
-        <text x="798" y="20" class="week">土</text>
-        <text x="910" y="20" class="week">日・祝</text>
+        <text x="158" y="15" class="week">月</text>
+        <text x="286" y="15" class="week">火</text>
+        <text x="414" y="15" class="week">水</text>
+        <text x="542" y="15" class="week">木</text>
+        <text x="670" y="15" class="week">金</text>
+        <text x="798" y="15" class="week">土</text>
+        <text x="910" y="15" class="week">日・祝</text>
 
         <!--time-->
         <text
@@ -123,8 +124,8 @@
         </text>
 
         <rect
-          v-for="val in rects"
-          :key="val.id"
+          v-for="val in getSchedule"
+          :key="`box-${val.id}`"
           :x="val.x"
           :y="val.y"
           :width="val.width"
@@ -135,14 +136,19 @@
           class="rects"
         />
         <foreignObject
-          v-for="val in rects"
-          :key="val.id"
+          v-for="val in getSchedule"
+          :key="`text-${val.id}`"
           :x="val.xText"
           :y="val.yText"
           width="125"
           height="80"
         >
-          <center>{{ val.text }}</center>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <center v-bind="attrs" v-on="on">{{ val.text }}</center>
+            </template>
+            <span>{{ val.text }}</span>
+          </v-tooltip>
         </foreignObject>
         <!--
         <rect
@@ -385,14 +391,20 @@ import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 
-const KEIKAUREKI_URL = '/Keikakureki';
+const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
+const WEEKPLAN_URL = '/WeekPlan'; // 週間予定データ
 const TRACEID = 123;
 const UNIQID = 3;
 const JIGYOID = 1;
+const FOLDER = 'SIENP';
+const CALENDARHEIGHT = 540;
+const CALENDARSEPALATE = 22;
 export default {
   components: {},
   data() {
     return {
+      calendarHeight: CALENDARHEIGHT,
+      calendarSepalate: CALENDARSEPALATE,
       bunruiView: [],
       daibunrui: 0,
       daibunruiList: [
@@ -429,56 +441,9 @@ export default {
       svgData: {},
       addDialog: false,
       timeLine: [],
-      rects: [
-        {
-          id: 1,
-          x: 100, // 初期値x
-          y: 150, // 初期値y
-          width: 128, // 横幅
-          height: 15, // 高さ
-          xText: 100, // テキストの位置x
-          yText: 150, // テキストの位置y
-          color: '#fbebd6',
-          stroke: 'black',
-          text: '朝食',
-        },
-        {
-          id: 2,
-          x: 228, // 初期値x
-          y: 150, // 初期値y
-          width: 128, // 横幅
-          height: 15, // 高さ
-          xText: 228, // テキストの位置x
-          yText: 150, // テキストの位置y
-          color: '#fbebd6',
-          stroke: 'black',
-          text: '朝食',
-        },
-        {
-          id: 3,
-          x: 356, // 初期値x
-          y: 150, // 初期値y
-          width: 128 / 2, // 横幅
-          height: 15, // 高さ
-          xText: 356 - 30, // テキストの位置x
-          yText: 150, // テキストの位置y
-          color: '#fbebd6',
-          stroke: 'black',
-          text: '朝食',
-        },
-        {
-          id: 4,
-          x: 418, // 初期値x
-          y: 150, // 初期値y
-          width: 128 / 2, // 横幅
-          height: 15, // 高さ
-          xText: 418 - 30, // テキストの位置x
-          yText: 150, // テキストの位置y
-          color: 'yellow',
-          stroke: 'black',
-          text: '朝食2',
-        },
-      ],
+      // ヘッダ(曜日表記エリア)の高さ20
+      // 項目1時間当たり22
+      rects: [],
       dailyFlag: false,
       dailyWidth: 0,
       dailyType: '',
@@ -494,16 +459,16 @@ export default {
     // タイムラインの配列を作成
     let timeline = []; // 2時間刻み用
     let timelineAll = []; // 1時間刻み用
-    let time = 4;
-    let y = 35;
-    for (let i = 1; i <= 21; i++) {
+    let time = 6;
+    let y = 50;
+    for (let i = 1; i <= 23; i++) {
       let dispTime = '';
       let dispTimeAll = '';
       if (i % 2 == 1) {
         let hour = ('00' + time).slice(-2);
         // 24時の時は0を表示
-        if (hour == 24) {
-          hour = '00';
+        if (hour >= 24) {
+          hour = '0' + (hour - 24);
         }
         dispTime = hour + ':00';
       }
@@ -520,9 +485,84 @@ export default {
         y: y,
       });
       time++;
-      y = y + 30;
+      y = y + CALENDARSEPALATE;
     }
     this.timeLine = timeline;
+  },
+  computed: {
+    getSchedule: {
+      get() {
+        let data = [
+          {
+            id: 1,
+            pSymd: '20230130',
+            startTime: '0900',
+            endTime: '0930',
+            x: 100, // 初期値x
+            y: 22, // 初期値y
+            width: 128, // 横幅
+            height: 11, // 高さ
+            xText: 100, // テキストの位置x
+            yText: 20, // テキストの位置y
+            color: '#fbebd6',
+            stroke: 'black',
+            text: '朝食',
+          },
+          {
+            id: 2,
+            x: 228, // 初期値x
+            y: 88, // 初期値y
+            width: 128, // 横幅
+            height: 12, // 高さ
+            xText: 228, // テキストの位置x
+            yText: 88, // テキストの位置y
+            color: '#fbebd6',
+            stroke: 'black',
+            text: '朝食',
+          },
+          {
+            id: 3,
+            x: 356, // 初期値x
+            y: 88, // 初期値y
+            width: 128 / 2, // 横幅
+            height: 12, // 高さ
+            xText: 356 - 30, // テキストの位置x
+            yText: 88, // テキストの位置y
+            color: '#fbebd6',
+            stroke: 'black',
+            text: '朝食',
+          },
+          {
+            id: 4,
+            x: 418, // 初期値x
+            y: 88, // 初期値y
+            width: 128 / 2, // 横幅
+            height: 12, // 高さ
+            xText: 418 - 30, // テキストの位置x
+            yText: 88, // テキストの位置y
+            color: 'yellow',
+            stroke: 'black',
+            text: '朝食2',
+          },
+        ];
+        // 日付の重複チェック
+        // 重複している場合はflagを立てる
+        let tmp = [];
+        for (let i = 0; i < data.length; i++) {
+          let halfFlag = false;
+          // for (let j = 0; j < data.length; j++) {
+          //    if(data[i].pSymd){
+
+          //    }
+          //  }
+          data[i].halfFlag = halfFlag;
+          tmp.push(data[i]);
+        }
+        console.log(tmp);
+
+        return tmp;
+      },
+    },
   },
   mounted() {
     this.calculateWindowHeight();
@@ -576,7 +616,7 @@ export default {
         uniqid: UNIQID,
         traceid: TRACEID,
       };
-      getConnect(KEIKAUREKI_URL, params, 'SIENP').then((result) => {
+      getConnect(KEIKAUREKI_URL, params, FOLDER).then((result) => {
         // console.log(result);
         // 取得データをbinding名に指定
         let temp = result.filter(function (value) {
@@ -713,6 +753,22 @@ export default {
         }
       }
     },
+    /****************************
+     * 週間予定データを取得
+     */
+    getWeekPlanData() {
+      let ymd = dayjs().format('YYYYMMDD');
+      let params = {
+        jigyoid: JIGYOID,
+        // intcode: this.riid,
+        intcode: 100,
+        // ymd: '20220401',
+        ymd: ymd,
+      };
+      getConnect(WEEKPLAN_URL, params, FOLDER).then((result) => {
+        console.log(result);
+      });
+    },
     /****************
      * ユーザー一覧を押下
      */
@@ -720,6 +776,10 @@ export default {
       this.userName = obj.names;
       this.riyocode = obj.riyocode;
       this.riid = obj.riid;
+
+      // 選択したユーザー一覧から週間予定データを取得
+      this.getWeekPlanData();
+      // 選択したユーザー一覧から履歴を取得
       this.onInitializedHistory();
     },
   },
@@ -751,10 +811,15 @@ $middle: 48px;
       fill: $headerColor;
     }
   }
+  svg line {
+    fill: none;
+  }
   .calendar {
-    border: 1px solid gray;
     width: 100%;
-    height: 660px;
+    height: 560px;
+    foreignObject {
+      font-size: 10px;
+    }
   }
   .filterArea {
     background-color: $view_Title_background_Main;
@@ -765,18 +830,25 @@ $middle: 48px;
       background-color: $light_yellow;
     }
   }
-  .planArea {
-    label {
-      height: 28px;
-      padding: 2px 10px;
-      line-height: 20px;
+  .weekplanType,
+  .koumokuTitle {
+    height: 21px;
+    button {
+      height: 21px;
+      padding: 0px 4px;
     }
-
-    .orenge {
-      background-color: $view_Title_background_Orange;
-    }
-    .lightGray {
-      background-color: $light-gray;
+  }
+  .weekplanType {
+    button {
+      &.v-btn {
+        &--active {
+          background-color: $light_yellow;
+          color: $view_Title_background_Main;
+        }
+        &:before {
+          top: auto;
+        }
+      }
     }
   }
 
