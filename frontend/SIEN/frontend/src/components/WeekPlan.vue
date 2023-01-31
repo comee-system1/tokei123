@@ -232,8 +232,20 @@
             <div class="d-flex mt-1">
               <label class="low">曜日</label>
               <div class="ml-1">
-                <v-btn-toggle multiple v-model="input_week" tile>
-                  <v-btn v-for="w in week" :key="w" small>{{ w }}</v-btn>
+                <v-btn-toggle
+                  v-model="input_week"
+                  dense
+                  multiple
+                  @change="onInputWeek()"
+                >
+                  <v-btn
+                    v-for="(w, key) in week"
+                    :key="key"
+                    :value="key"
+                    small
+                    class="input_week_btn"
+                    >{{ w }}</v-btn
+                  >
                 </v-btn-toggle>
               </div>
             </div>
@@ -432,8 +444,8 @@ export default {
           name: '余韻',
         },
       ],
-      input_backColor: '',
-      input_fontColor: '',
+      input_backColor: '#FFFFFF',
+      input_fontColor: '#000000',
       input_komoku: '',
       input_time_start: '',
       input_time_end: '',
@@ -549,14 +561,7 @@ export default {
     },
 
     onRegistSchedule() {
-      console.log(this.viewSchedule);
       let tmp = this.viewSchedule;
-      let max = Math.max.apply(
-        null,
-        tmp.map(function (o) {
-          return o.id;
-        })
-      );
 
       // 適当な日付を指定したいので、今日の日付を指定
       // 12時以降の日付を指定する場合は翌日を指定
@@ -567,20 +572,30 @@ export default {
       if (this.input_time_start > this.input_time_end) {
         ed = nextDay;
       }
-      // stが12時以降の場合翌日を指定
+      // 開始日が4時前の場合は翌日を指定
       if (this.input_time_start < '04:00') {
         st = nextDay;
         ed = nextDay;
       }
+      let tmpWeek = this.input_week;
+      let _self = this;
+      tmpWeek.map(function (value) {
+        let max = Math.max.apply(
+          null,
+          tmp.map(function (o) {
+            return o.id;
+          })
+        );
 
-      tmp.push({
-        id: max + 1,
-        startTime: st + ' ' + this.input_time_start,
-        endTime: ed + ' ' + this.input_time_end,
-        week: 4, // 月曜日:0
-        color: 'red',
-        stroke: 'black',
-        text: this.input_komoku,
+        tmp.push({
+          id: max + 1,
+          startTime: st + ' ' + _self.input_time_start,
+          endTime: ed + ' ' + _self.input_time_end,
+          week: value - 1,
+          stroke: _self.input_fontColor,
+          color: _self.input_backColor,
+          text: _self.input_komoku,
+        });
       });
       this.viewSchedule = this.settingSchedule(tmp);
       this.weekInputFlag = false;
@@ -652,6 +667,8 @@ export default {
     },
     // ダイアログ時間設定
     onTimeMinute() {
+      this.scheduleRegistFlag = true;
+      this.time_minute = '-';
       // 今日を基準に日付の差分時間(分)の取得を行う
       let today = dayjs().format('YYYY-MM-DD');
       let minute = 0;
@@ -678,7 +695,7 @@ export default {
           }
         } else {
           // 終了時が4時以降
-          if (four < ed) {
+          if (four < ed && ed < st) {
             this.scheduleRegistFlag = true;
             this.time_minute = '-';
           } else {
@@ -686,6 +703,22 @@ export default {
             this.time_minute = minute / 60;
           }
         }
+      }
+    },
+    /************************
+     *  ダイアログ曜日選択
+     */
+    onInputWeek() {
+      let found = this.input_week.find((element) => element == 0);
+      if (found == 0) {
+        this.input_week = [];
+        let tmp = [];
+        this.week.map(function (value, k) {
+          if (k != 0) {
+            tmp.push(k);
+          }
+        });
+        this.input_week = tmp;
       }
     },
     /**********************************
@@ -1049,6 +1082,10 @@ $middle: 48px;
           height: $middle;
           line-height: $middle;
         }
+      }
+      .input_week_btn {
+        min-width: 20px;
+        background-color: $white;
       }
       .d-block {
         display: block !important;
