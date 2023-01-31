@@ -92,6 +92,10 @@
             >
               月指定
             </v-btn>
+            <v-btn class="mr-1" height="19" @click="searchclick()">
+              <v-icon dense>mdi-magnify</v-icon>
+              検索
+            </v-btn>
             <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
               詳細表示
             </v-card>
@@ -867,13 +871,11 @@ export default {
       flexGrid.endUpdate();
     },
     grdDispChangeclick(kbn) {
-      console.log(kbn);
       this.selSyousaiDispUmuIndex = kbn;
       this.setViewData(false);
     },
     grdNaiyouclick(kbn) {
       this.selDispNaiyouIndex = kbn;
-      console.log(kbn);
       this.setViewData(false);
     },
     // 左メニューで作成されたユーザ一覧の取得を行う
@@ -885,59 +887,63 @@ export default {
       this.userInfo = row;
       this.setViewData(true);
     },
+    searchclick() {
+      this.setViewData(true);
+    },
     setViewData(isAll) {
       if (isAll) {
-        let params = {
-          uniqid: 3,
-          traceid: 123,
-          pJigyoid: 62,
-          pIntcode: this.userInfo.riid,
-          pSymd: this.startymd.format('YYYYMMDD'),
-          pEymd: this.endymd.format('YYYYMMDD'),
-        };
-        getConnect('/Uktk', params, 'SIENT').then((result) => {
-          console.log(12345);
-          console.log(result);
-          this.viewDataAll = result;
-          this.userFilter();
-          this.screenFlag = false;
-        });
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pJigyoid: 62,
+            pIntcode: this.userInfo.riid,
+            pSymd: this.startymd.format('YYYYMMDD'),
+            pEymd: this.endymd.format('YYYYMMDD'),
+          };
+          getConnect('/Uktk', params, 'SIENT').then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewDataAll = result;
+            this.userFilter();
+            this.screenFlag = false;
+          });
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pJigyoid: 62,
+            pIntcode: this.userInfo.riid,
+            pSrhym: this.startymd.format('YYYYMMDD'),
+            pSrheym: this.endymd.format('YYYYMMDD'),
+          };
+          getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewDataAll = result;
+            this.userFilter();
+            this.screenFlag = false;
+          });
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          let params = {
+            uniqid: 3,
+            traceid: 123,
+            pJigyoid: 62,
+            pIntcode: this.userInfo.riid,
+            pSrhym: this.startymd.format('YYYYMMDD'),
+            pSrheym: this.endymd.format('YYYYMMDD'),
+          };
+          getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewDataAll = result;
+            this.userFilter();
+            this.screenFlag = false;
+          });
+        }
       } else {
         this.userFilter();
       }
-    },
-    loadData() {
-      let result = [];
-      for (let i = 0; i < 100; i++) {
-        let d = new Date('2020', Number('9') - 1, '26');
-        if (i < 20 && i < 30) {
-          d = new Date('2020', Number('10') - 1, '26');
-        } else if (i < 30 && i < 40) {
-          d = new Date('2020', Number('11') - 1, '26');
-        } else {
-          d = new Date('2020', Number('12') - 1, '26');
-        }
-        result.push({
-          day: d,
-          jigyokbn: 0,
-          jigyokbnD: '基',
-          houhou: '電話',
-          naiyou: '（初回問い合わせ）',
-          naiyouDetail:
-            'あいうえおあいうえおあいうえおあいうえおあいうえお\nかきくけこかきくけこかきくけこかきくけこかきくけこかきくけこ',
-          kasankoumoku: '入院時情報連携加算',
-          tantousya: '担当者A',
-          keiyakuteiketu: '●',
-          keikakusakusei: '計画書作成',
-          P_tantousyakaigi: '●',
-          jyukyukoufu: '者',
-          jissi: '●',
-          kbn: '継続',
-          jikaiyotei: 'x月',
-          M_tantousyakaigi: '●',
-        });
-      }
-      return result;
     },
     userFilter() {
       let tmpviewdata = this.viewDataAll.concat();

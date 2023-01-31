@@ -21,6 +21,7 @@ import ChiikiIkoSienKeikaku from '../views/SIENC/ChiikiIkoSienKeikaku.vue'
 import ChiikiteityakuDaicho from '../views/SIENC/ChiikiteityakuDaicho.vue'
 import ChiikiteityakuDaichoMst from '../views/SIENC/ChiikiteityakuDaichoMst.vue'
 
+import KoteiinfList from '../views/SIENT/KoteiinfList.vue'
 
 
 
@@ -211,6 +212,15 @@ const routes = [
         component: ChiikiteityakuDaichoMst,
         meta: {
             title: "マスタ",
+        },
+    },
+
+    {
+        path:'/KoteiinfList/:uniqid',
+        name:'固定情報',
+        component:KoteiinfList,
+        meta: {
+            title: TitleSoudansien,
         },
     },
 

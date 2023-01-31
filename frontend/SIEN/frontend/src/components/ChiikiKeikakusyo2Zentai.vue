@@ -27,7 +27,7 @@
         tile
         style="height: 20px"
         v-model="arrow"
-        @change="cahngeArrow()"
+        @change="changeArrow()"
         mandatory
       >
         <v-btn height="20" elevation="2">矢印書く</v-btn>
@@ -584,7 +584,7 @@ export default {
         this.selectedRanges
       );
     },
-    cahngeArrow() {
+    changeArrow() {
       this.drawArrow = !this.drawArrow;
       this.arrow = this.drawArrow ? 0 : 1;
     },

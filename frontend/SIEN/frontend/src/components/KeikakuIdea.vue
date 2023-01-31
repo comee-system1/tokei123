@@ -395,7 +395,9 @@
     <!-- ダイアログエリア -->
     <dialog id="modeless_dialog">
       <v-card class="common_modeless_dialog pb-1">
-        <v-card-title class="dialog_title mb-1"> 計画案未作成 </v-card-title>
+        <v-card-title class="dialog_title mb-1"
+          >{{ htmlMsg.noCreateTitle }}
+        </v-card-title>
         <v-btn
           elevation="2"
           icon
@@ -405,7 +407,7 @@
           ><v-icon dark small> mdi-close </v-icon></v-btn
         >
         <v-row no-gutters class="pl-1">
-          計画案未作成です。<br />新規作成ボタンから作成してください。
+          {{ htmlMsg.noCreate }}<br />{{ htmlMsg.needCreate }}
         </v-row>
       </v-card>
     </dialog>
@@ -629,20 +631,6 @@ export default {
       datepickerKanryoYmd_dialog: false,
       picker: dayjs().format('YYYY-MM-DD'),
       pickerKanryo: dayjs().format('YYYY-MM-DD'),
-      getYm:
-        dayjs().format('YYYY') +
-        '年' +
-        dayjs().format('MM') +
-        '月' +
-        dayjs().format('DD') +
-        '日',
-      // getYmdKanryo:
-      //   dayjs().format('YYYY') +
-      //   '年' +
-      //   dayjs().format('MM') +
-      //   '月' +
-      //   dayjs().format('DD') +
-      //   '日',
       keikakuKubun: [
         { id: 2, name: '障害児支援計画（案）' },
         { id: 1, name: 'サービス等支援計画（案）' },
@@ -658,6 +646,11 @@ export default {
       rirekiList: [],
       createflg: false,
       formChanged: true,
+      htmlMsg: {
+        noCreateTitle: '計画案未作成',
+        noCreate: '計画案' + messageConst.WARN.NO_CREATE,
+        needCreate: '新規作成ボタンから作成してください。',
+      },
     };
   },
   created() {},
@@ -761,7 +754,6 @@ export default {
       }
     },
     monthSelect() {
-      this.getYm = dayjs(this.picker).format('YYYY年MM月DD日');
       this.viewdatakeikaku = [];
       this.datepicker_dialog = false;
     },
@@ -780,9 +772,6 @@ export default {
     },
 
     ideaIkouKadaiRegist() {
-      // 意向・方針と課題・支援の両方の登録処理の実行
-      // this.$refs.childkadai.registButton();
-      // this.$refs.childikou.registButton();
       this.putKeikakuan();
     },
 
@@ -821,12 +810,9 @@ export default {
         biko: null, //千葉県様式のみで使用
         tantoiken: null, //練馬区様式のみで使用
       };
-      console.log(inputParams);
       if (confirm(messageConst.CONFIRM.PUT)) {
         putConnect('/Keikakuan', params, 'SIENP', inputParams).then(
           (result) => {
-            console.log('put');
-            console.log(result);
             if (result.okflg == true) {
               //this.setUserdata(this.selectedUserObj);
             } else {
@@ -850,8 +836,6 @@ export default {
           cntid: this.viewdata.cntid,
         };
         deleteConnect('/Keikakuan', params, 'SIENP').then((result) => {
-          console.log('delete');
-          console.log(result);
           if (result.okflg) {
             this.setSaisin();
             this.setRireki();
@@ -880,8 +864,6 @@ export default {
       // this.mainGrid.autoSizeRows();
     },
     setDataFromKeikauList(anItem) {
-      console.log('anItem');
-      console.log(anItem);
       this.userIntcode = anItem.intcode;
       this.userName = anItem.rname;
       this.setSaisin();
@@ -895,8 +877,6 @@ export default {
         intcode: this.userIntcode,
       };
       getConnect('/KeikakuanReki', params, 'SIENP').then((result) => {
-        console.log(98765);
-        console.log(result);
         this.rirekiList = result;
         if (this.rirekiList.length == 0) {
           this.modeless_dialogOpen();
@@ -994,7 +974,7 @@ export default {
         this.picker = dayjs().format('YYYY-MM-DD');
       }
       let ymd = dayjs(this.picker).format('YYYYMMDD');
-      if (confirm('新規作成します。よろしいですか？')) {
+      if (confirm(messageConst.CONFIRM.ADD_RIREKI)) {
         let params = {
           uniqid: 3,
           traceid: 123,
@@ -1015,8 +995,6 @@ export default {
         };
         postConnect('/KeikakuanReki', params, 'SIENP', inputParams).then(
           (result) => {
-            console.log('put');
-            console.log(result);
             if (result.okflg == true) {
               this.setUserdata(this.selectedUserObj);
               this.createflg = false;

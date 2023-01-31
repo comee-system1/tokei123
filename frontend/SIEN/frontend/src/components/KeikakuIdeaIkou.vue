@@ -182,12 +182,6 @@ export default {
     onkeikakuKubun(s) {
       s.header = this.keikakuKubun[s.selectedIndex].name;
     },
-    /****************************
-     * 登録ボタンを押下
-     */
-    registButton() {
-      alert('意向登録ボタン');
-    },
     setViewData(viewData) {
       console.log(viewData);
 
@@ -200,7 +194,7 @@ export default {
         {
           key: 1,
           title: '\n総合方針\n\n',
-          value: viewData.housin != undefined ? viewData.housin : '',
+          value: viewData.hoshin != undefined ? viewData.hoshin : '',
         },
         {
           key: 2,

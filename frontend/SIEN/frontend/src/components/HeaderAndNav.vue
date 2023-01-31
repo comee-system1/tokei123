@@ -202,7 +202,7 @@ export default {
             { name: 'スケジュール', link: '/TemporaryPage' },
             { name: '施設管理', link: '/TemporaryPage' },
             { name: '利用者情報', link: '/TemporaryPage' },
-            { name: '固定情報', link: '/TemporaryPage' },
+            { name: '固定情報', link: '/KoteiinfList' },
             // {
             //   name: '受付・対応登録',
             //   link: '/UketukeTourokuParent',

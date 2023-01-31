@@ -177,6 +177,7 @@
                         <v-btn
                           v-for="n in mstSyukeiKbnList"
                           :key="n.val"
+                          :value="n.val"
                           outlined
                           height="23"
                           elevation="2"
@@ -203,6 +204,7 @@
                         <v-btn
                           v-for="n in SyokaiorKeizokuItem"
                           :key="n.val"
+                          :value="n.val"
                           outlined
                           height="23"
                           elevation="2"
@@ -1276,8 +1278,8 @@ export default {
       keikakuInputKbnItem: sysConst.KEIKAKUJIGYOKBN,
       chiikiInputKbnItem: sysConst.CHIIKIJIGYOKBN,
       SyokaiorKeizokuItem: [
-        { val: 0, name: '初回' },
-        { val: 1, name: '継続' },
+        { val: 1, name: '初回' },
+        { val: 2, name: '継続' },
       ],
       PeerCounselorItem: [
         { val: 0, name: '無し' },
@@ -1411,6 +1413,24 @@ export default {
     /*
      * マスタ取得処理
      */
+    getSinkiKeizoku() {
+      if (this.kbnTab == this.kbnItem[0].hrefval) {
+        let params = {
+          uniqid: 3,
+          traceid: 123,
+          pJigyoid: 62,
+          pIntcode: this.userInfo.riid,
+          pYmd: this.taiouYmd.format('YYYYMMDD'),
+          pJikan: this.selectDataObj.jikan,
+        };
+
+        getConnect('/UktkSinkiKeizoku', params, 'SIENT').then((result) => {
+          if (result !== undefined) {
+            this.selectDataObj.syokaiflg = result;
+          }
+        });
+      }
+    },
     getSyukeiKbn() {
       if (this.kbnTab == this.kbnItem[0].hrefval) {
         let params = {
@@ -1492,8 +1512,6 @@ export default {
         pKanid: 0,
       };
       getConnect('/MstSodansya', params, 'SIENT').then((result) => {
-        console.log(1);
-        console.log(result);
         this.setClrItem(result);
         this.mstSoudansyaList = result;
       });
@@ -1942,6 +1960,7 @@ export default {
           ' ' +
           this.userInfo.names;
         this.getMstSodansya();
+        this.getSinkiKeizoku();
       }
       this.rirekiSearchClicked(
         this.kikanSymd.format('YYYYMMDD'),
@@ -2329,7 +2348,7 @@ export default {
     getKihonDefaultData() {
       let obj = {
         inputkbn: 0,
-        syokaiflg: 0,
+        syokaiflg: 1,
         jigyoid: 0,
         ymd: 0,
         ymdD: '',

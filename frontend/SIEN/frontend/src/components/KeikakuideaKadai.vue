@@ -309,12 +309,6 @@ export default {
   mounted() {},
   computed: {},
   methods: {
-    /****************************
-     * 登録ボタンを押下
-     */
-    registButton() {
-      alert('課題登録ボタン');
-    },
     setViewData(viewData) {
       console.log(viewData);
 

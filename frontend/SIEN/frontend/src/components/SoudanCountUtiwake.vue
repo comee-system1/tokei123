@@ -22,8 +22,9 @@
             v-on:click.stop="drawer = !drawer"
             class="mt-1"
             color="secondary"
-            ><v-icon dark small> mdi-close </v-icon></v-btn
           >
+            <v-icon dark small> mdi-close </v-icon>
+          </v-btn>
         </v-card>
         <MdSelect class="ma-1" ref="mdselect" @dateSelect="setMd"></MdSelect>
       </v-navigation-drawer>
@@ -120,6 +121,7 @@
             </v-btn>
           </span>
           <v-btn class="ml-1 pa-1" height="18" @click="searchClicked()">
+            <v-icon dense>mdi-magnify</v-icon>
             検索
           </v-btn>
         </v-card>

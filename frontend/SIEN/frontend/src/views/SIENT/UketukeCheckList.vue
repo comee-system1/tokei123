@@ -303,7 +303,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
-// import * as wjCore from '@grapecity/wijmo';
+import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
@@ -618,15 +618,15 @@ export default {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-        // if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
-        //   e.cell.innerHTML =
-        //     '<font color="#276bc5">' +
-        //     wjCore.escapeHtml(tmpitem.cskmknm) +
-        //     '</font>' +
-        //     '<div>' +
-        //     wjCore.escapeHtml(e.cell.innerHTML) +
-        //     '</div>';
-        // }
+        if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
+          e.cell.innerHTML =
+            '<font color="#276bc5">' +
+            wjCore.escapeHtml(tmpitem.cskmknm) +
+            '</font>' +
+            '<div>' +
+            wjCore.escapeHtml(tmpitem.naiyo) +
+            '</div>';
+        }
         if (e.col == 10) {
           if (tmpitem.setairk.length == 0) {
             e.cell.innerHTML = '<font color="#c93328">※未入力</font>';

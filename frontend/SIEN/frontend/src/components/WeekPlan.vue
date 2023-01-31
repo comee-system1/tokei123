@@ -64,12 +64,12 @@
       <svg viewbox="viewport" class="calendar">
         <!--メモリ-->
 
-        <rect x="0" y="0" height="22" class="colHeader header" />
+        <rect x="0" y="0" :height="calendarSepalate" class="colHeader header" />
         <rect
           x="0"
           y="0"
           :height="calendarHeight"
-          width="100"
+          :width="timewidth"
           class="rowHeader header"
         />
         <g stroke="black" stroke-width="0.5">
@@ -84,7 +84,7 @@
           <line
             v-for="n in 24"
             :key="`k-${n}`"
-            x1="100"
+            :x1="timewidth"
             :y1="n * calendarSepalate"
             x2="100%"
             :y2="n * calendarSepalate"
@@ -97,9 +97,9 @@
           <line
             v-for="n of 7"
             :key="n"
-            :x1="128 * (n - 1) + 100"
+            :x1="planwidth * (n - 1) + timewidth"
             y1="0"
-            :x2="128 * (n - 1) + 100"
+            :x2="planwidth * (n - 1) + timewidth"
             :y2="calendarHeight"
           ></line>
         </g>
@@ -124,7 +124,7 @@
         </text>
 
         <rect
-          v-for="val in getSchedule"
+          v-for="val in viewSchedule"
           :key="`box-${val.id}`"
           :x="val.x"
           :y="val.y"
@@ -136,12 +136,12 @@
           class="rects"
         />
         <foreignObject
-          v-for="val in getSchedule"
+          v-for="val in viewSchedule"
           :key="`text-${val.id}`"
           :x="val.xText"
           :y="val.yText"
-          width="125"
-          height="80"
+          :width="val.width"
+          :height="val.height"
         >
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -150,21 +150,6 @@
             <span>{{ val.text }}</span>
           </v-tooltip>
         </foreignObject>
-        <!--
-        <rect
-          :x="100 + 128 * 4"
-          y="300"
-          width="128"
-          height="90"
-          fill="yellow"
-          stroke="gray"
-          stroke-width="1"
-          class="rects"
-        />
-        <foreignObject :x="100 + 128 * 4 + 3" :y="300" width="125" height="80">
-          <p>外出(ガイドヘルパーと一緒の希望の場所へ)2週に1回</p>
-        </foreignObject>
-        -->
       </svg>
     </v-row>
     <v-row no-gutters class="mt-2 bottomArea">
@@ -259,16 +244,30 @@
               <div>
                 <div class="d-flex">
                   <div class="ml-1">
-                    <input type="time" v-model="input_time_start" />
+                    <input
+                      type="time"
+                      v-model="input_time_start"
+                      @change="onTimeMinute()"
+                    />
                   </div>
                   <span>～</span>
                   <div class="ml-1">
-                    <input type="time" v-model="input_time_end" />
+                    <input
+                      type="time"
+                      v-model="input_time_end"
+                      @change="onTimeMinute()"
+                    />
                   </div>
+                  <v-card
+                    class="ml-1 minutebox text-caption"
+                    elevation="0"
+                    outlined
+                    shaped
+                    tile
+                    >{{ time_minute }}分</v-card
+                  >
                 </div>
-                <div class="d-flex ml-1 text-caption">
-                  (最小単位30分、以降10分単位)
-                </div>
+                <div class="d-flex ml-1 text-caption">(最小30分)</div>
               </div>
             </div>
             <div class="d-flex mt-1">
@@ -287,7 +286,13 @@
             <v-row class="mt-2" no-gutters>
               <v-btn small>画面クリア</v-btn>
               <v-btn small class="ml-1">削除</v-btn>
-              <v-btn small class="ml-auto">登録</v-btn>
+              <v-btn
+                small
+                class="ml-auto"
+                @click="onRegistSchedule()"
+                :disabled="scheduleRegistFlag"
+                >登録</v-btn
+              >
             </v-row>
           </v-col>
           <v-col class="weekInputFlag__right">
@@ -399,10 +404,20 @@ const JIGYOID = 1;
 const FOLDER = 'SIENP';
 const CALENDARHEIGHT = 540;
 const CALENDARSEPALATE = 22;
+const PLANHEIGHT = 11;
+const PLANWIDTH = 128; // 予定表示部分横幅
+const TIMEWIDTH = 100; // 時間軸幅
+const STARTTIME = 500; // 開始時間5時
 export default {
   components: {},
   data() {
     return {
+      scheduleRegistFlag: true,
+      viewSchedule: this.getSchedule(),
+      time_minute: 0,
+      starttime: STARTTIME,
+      planwidth: PLANWIDTH,
+      timewidth: TIMEWIDTH,
       calendarHeight: CALENDARHEIGHT,
       calendarSepalate: CALENDARSEPALATE,
       bunruiView: [],
@@ -489,81 +504,7 @@ export default {
     }
     this.timeLine = timeline;
   },
-  computed: {
-    getSchedule: {
-      get() {
-        let data = [
-          {
-            id: 1,
-            pSymd: '20230130',
-            startTime: '0900',
-            endTime: '0930',
-            x: 100, // 初期値x
-            y: 22, // 初期値y
-            width: 128, // 横幅
-            height: 11, // 高さ
-            xText: 100, // テキストの位置x
-            yText: 20, // テキストの位置y
-            color: '#fbebd6',
-            stroke: 'black',
-            text: '朝食',
-          },
-          {
-            id: 2,
-            x: 228, // 初期値x
-            y: 88, // 初期値y
-            width: 128, // 横幅
-            height: 12, // 高さ
-            xText: 228, // テキストの位置x
-            yText: 88, // テキストの位置y
-            color: '#fbebd6',
-            stroke: 'black',
-            text: '朝食',
-          },
-          {
-            id: 3,
-            x: 356, // 初期値x
-            y: 88, // 初期値y
-            width: 128 / 2, // 横幅
-            height: 12, // 高さ
-            xText: 356 - 30, // テキストの位置x
-            yText: 88, // テキストの位置y
-            color: '#fbebd6',
-            stroke: 'black',
-            text: '朝食',
-          },
-          {
-            id: 4,
-            x: 418, // 初期値x
-            y: 88, // 初期値y
-            width: 128 / 2, // 横幅
-            height: 12, // 高さ
-            xText: 418 - 30, // テキストの位置x
-            yText: 88, // テキストの位置y
-            color: 'yellow',
-            stroke: 'black',
-            text: '朝食2',
-          },
-        ];
-        // 日付の重複チェック
-        // 重複している場合はflagを立てる
-        let tmp = [];
-        for (let i = 0; i < data.length; i++) {
-          let halfFlag = false;
-          // for (let j = 0; j < data.length; j++) {
-          //    if(data[i].pSymd){
-
-          //    }
-          //  }
-          data[i].halfFlag = halfFlag;
-          tmp.push(data[i]);
-        }
-        console.log(tmp);
-
-        return tmp;
-      },
-    },
-  },
+  computed: {},
   mounted() {
     this.calculateWindowHeight();
     window.addEventListener('resize', this.calculateWindowHeight);
@@ -575,6 +516,184 @@ export default {
         document.getElementById('historyGrid').style.height =
           window.innerHeight - 140 + 'px';
       }
+    },
+
+    getSchedule() {
+      // 適当な日付を指定したいので、今日の日付を指定
+      // 12時以降の日付を指定する場合は翌日を指定
+      let tmpDay = dayjs().format('YYYY-MM-DD');
+      let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
+      let data = [
+        {
+          id: 1,
+          startTime: tmpDay + ' 05:00',
+          endTime: tmpDay + ' 06:30',
+          week: 1,
+          color: '#fbebd6',
+          stroke: 'black',
+          text: '朝食aa',
+        },
+        {
+          id: 2,
+          startTime: tmpDay + ' 12:00',
+          endTime: nextDay + ' 01:30',
+          week: 1,
+          color: '#fbebd6',
+          stroke: 'black',
+          text: '朝食aa',
+        },
+      ];
+      let tmp = this.settingSchedule(data);
+
+      return tmp;
+    },
+
+    onRegistSchedule() {
+      console.log(this.viewSchedule);
+      let tmp = this.viewSchedule;
+      let max = Math.max.apply(
+        null,
+        tmp.map(function (o) {
+          return o.id;
+        })
+      );
+
+      // 適当な日付を指定したいので、今日の日付を指定
+      // 12時以降の日付を指定する場合は翌日を指定
+      let tmpDay = dayjs().format('YYYY-MM-DD');
+      let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
+      let st = tmpDay;
+      let ed = tmpDay;
+      if (this.input_time_start > this.input_time_end) {
+        ed = nextDay;
+      }
+      // stが12時以降の場合翌日を指定
+      if (this.input_time_start < '04:00') {
+        st = nextDay;
+        ed = nextDay;
+      }
+
+      tmp.push({
+        id: max + 1,
+        startTime: st + ' ' + this.input_time_start,
+        endTime: ed + ' ' + this.input_time_end,
+        week: 4, // 月曜日:0
+        color: 'red',
+        stroke: 'black',
+        text: this.input_komoku,
+      });
+      this.viewSchedule = this.settingSchedule(tmp);
+      this.weekInputFlag = false;
+    },
+    settingSchedule(data) {
+      // 日付の重複チェック
+      // 重複している場合はflagを立てる
+      // 0:初期値 1:左半分 2:右半分
+      // 初回はすべて0にしておく
+      for (let i = 0; i < data.length; i++) {
+        data[i].halfType = 0;
+      }
+      let tmp = [];
+      for (let i = 0; i < data.length; i++) {
+        let halfType = 0;
+        for (let j = 0; j < data.length; j++) {
+          if (
+            data[i].id != data[j].id &&
+            data[i].week == data[j].week &&
+            ((data[i].endTime >= data[j].startTime &&
+              data[i].startTime <= data[j].endTime) ||
+              (data[i].startTime <= data[j].startTime &&
+                data[i].endTime >= data[j].startTime))
+          ) {
+            halfType = 1;
+            if (data[j].halfType > 0) {
+              halfType = 2;
+            }
+          }
+        }
+        data[i].halfType = halfType;
+
+        // 時間軸におけるyとyTextの位置
+        // 初期値をendTimeの日付の5:00からとする
+        // 基準日
+        let first = dayjs().format('YYYY-MM-DD 05:00');
+        let st = dayjs(data[i].startTime).unix();
+        let ed = dayjs(data[i].endTime).unix();
+        let fst = dayjs(first).unix();
+        let startPos = st - fst;
+        let endPos = ed - st;
+        let sec = 30 * 60;
+        let div = startPos / sec;
+        let divEnd = endPos / sec;
+        // 高さの指定
+        data[i].height = PLANHEIGHT * divEnd;
+        // 曜日におけるxとxTextの位置
+        data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week;
+        data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week;
+        // 右半分表示
+        if (halfType == 2) {
+          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+          data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+        }
+
+        // 横幅の指定
+        data[i].width = PLANWIDTH;
+        if (halfType > 0) {
+          data[i].width = PLANWIDTH / 2;
+        }
+
+        data[i].y = CALENDARSEPALATE + PLANHEIGHT * div;
+        data[i].yText = CALENDARSEPALATE + PLANHEIGHT * div - 2;
+
+        tmp.push(data[i]);
+      }
+      this.viewSchedule = tmp;
+      return tmp;
+    },
+    // ダイアログ時間設定
+    onTimeMinute() {
+      // 今日を基準に日付の差分時間(分)の取得を行う
+      let today = dayjs().format('YYYY-MM-DD');
+      let minute = 0;
+      if (this.input_time_end && this.input_time_start) {
+        let end = today + ' ' + this.input_time_end;
+        let ed = dayjs(end).unix();
+        let start = today + ' ' + this.input_time_start;
+        let st = dayjs(start).unix();
+        minute = ed - st;
+        // 表示が4時までの為4時以降の時間は処理を行わない
+        let four = dayjs(dayjs().format('YYYY-MM-DD 04:00')).unix();
+        // input_time_startの方が大きいときは翌日として日付を指定する
+        if (st > ed) {
+          today = dayjs().add(1, 'd').format('YYYY-MM-DD');
+          if (ed < four) {
+            start = today + ' ' + this.input_time_start;
+            st = dayjs(start).unix();
+            minute = st - ed;
+            this.scheduleRegistFlag = false;
+            this.time_minute = minute / 60;
+          } else {
+            this.scheduleRegistFlag = true;
+            this.time_minute = '-';
+          }
+        } else {
+          // 終了時が4時以降
+          if (four < ed) {
+            this.scheduleRegistFlag = true;
+            this.time_minute = '-';
+          } else {
+            this.scheduleRegistFlag = false;
+            this.time_minute = minute / 60;
+          }
+        }
+      }
+    },
+    /**********************************
+     * 週間項目入力
+     */
+    weekInput() {
+      this.onTimeMinute();
+      this.weekInputFlag = true;
     },
     // ダイアログカレンダー表示
     inputCalendarClick() {
@@ -592,20 +711,15 @@ export default {
     dialogDaily(type) {
       this.dailyFlag = true;
       if (type == 1) {
-        this.dailyWidth = 600;
+        this.dailyWidth = 600; // ダイアログのサイズ
         this.dailyType = 'mainLife';
       }
       if (type == 2) {
-        this.dailyWidth = 1100;
+        this.dailyWidth = 1100; // ダイアログのサイズ
         this.dailyType = 'allLife';
       }
     },
-    /**********************************
-     * 週間項目入力
-     */
-    weekInput() {
-      this.weekInputFlag = true;
-    },
+
     /***************************
      * 履歴参照
      */
@@ -966,6 +1080,10 @@ $middle: 48px;
         width: 162px;
         height: 100px;
         resize: none;
+      }
+      .minutebox {
+        width: 80px;
+        text-align: right;
       }
       .v-btn-toggle {
         button {

@@ -26,11 +26,13 @@
               class="ml-1"
               style="width: 200px; text-align: left"
               v-model="selctedPatternItem.name"
-              @input="numbervalidate"
             />
           </v-row>
           <v-row no-gutters class="rowStyle_Input mt-1"> </v-row>
           <v-row no-gutters class="rowStyle_Input mt-1">
+            <v-btn class="mr-1" width="75" height="25" @click="clrClicked">
+              クリア
+            </v-btn>
             <v-btn class="" width="75" height="25" @click="delClicked">
               削除
             </v-btn>
@@ -123,6 +125,7 @@ import { ComboBox } from '@grapecity/wijmo.input';
 import { DataMap } from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
 export default {
@@ -208,7 +211,7 @@ export default {
           selectedValuePath: 'rnd1',
         }),
       },
-      selctedPatternItem: {},
+      selctedPatternItem: { code: '' },
     };
   },
   mounted() {
@@ -385,6 +388,9 @@ export default {
       this.userFilter();
     },
     numbervalidate() {
+      this.selctedPatternItem.code = this.hankaku2Zenkaku(
+        String(this.selctedPatternItem.code)
+      );
       if (isNaN(this.selctedPatternItem.code)) {
         this.selctedPatternItem.code = '';
         return;
@@ -399,6 +405,17 @@ export default {
         ''
       );
     },
+    hankaku2Zenkaku(str) {
+      if (!str) {
+        return '';
+      }
+      return str.replace(/[０-９]/g, function (s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+      });
+    },
+    clrClicked() {
+      this.selctedPatternItem = { code: '' };
+    },
     delClicked() {
       console.log('del');
     },
@@ -410,11 +427,19 @@ export default {
         this.kouseiGrid.cells.rows.length > 0 &&
         this.kouseiGrid.selectedRows.length == 0
       ) {
-        alert('一覧が未選択のため、挿入できません。');
+        alert(messageConst.WARN.ROW_EDIT_NO_SELECT);
+      } else if (this.viewDataKousei.length == 0) {
+        let newList = [
+          {
+            data1: '',
+            rnd1: 1,
+            data2: '',
+            rnd2: 1,
+          },
+        ];
+        this.viewDataKousei = newList.concat();
       } else {
-        if (
-          window.confirm('選択行の下に新しい行を挿入します。よろしいですか？')
-        ) {
+        if (window.confirm(messageConst.CONFIRM.ROW_EDIT_ADD)) {
           let newList = this.viewDataKousei.slice();
           newList.splice(this.kouseiGrid.selectedRows[0].dataIndex + 1, 0, {
             data1: '',
@@ -428,9 +453,9 @@ export default {
     },
     delRowClicked() {
       if (this.kouseiGrid.selectedRows.length == 0) {
-        alert('一覧が未選択のため、削除できません。');
+        alert(messageConst.WARN.ROW_EDIT_NO_SELECT);
       } else {
-        if (window.confirm('選択行を削除します。よろしいですか？')) {
+        if (window.confirm(messageConst.CONFIRM.ROW_EDIT_DELETE)) {
           let newList = this.viewDataKousei.slice();
           newList.splice(this.kouseiGrid.selectedRows[0].dataIndex, 1);
           this.viewDataKousei = newList;

@@ -682,3 +682,229 @@ div {
         }
     }
 }
+
+
+//#####################
+//固定情報追加
+//#####################
+.closeButton_win {
+    z-index: 100;
+    margin-left: 3px;
+    right: 0;
+    top: 0;
+    background-color: $white;
+    //background-color: #fff;
+  }
+
+//履歴追加ダイアログ
+//履歴登録
+.clssheet-head{
+    border-radius: 10px 10px 10px 10px;
+    padding: 0px 0px ;
+    margin-top: 0px !important;
+    margin-left: 0px !important;
+    width: 255px;
+    height:  110px;
+}
+
+  //タイトル
+.areahead{
+    display :inline-flex;
+    margin-top: 0px;
+    width: 250px;
+    height: 30px;
+}  
+
+.clsstitlehead{
+    border-radius: 5px 5px 5px 5px;
+    background-color: #4CCB81;
+    color: #ffffff;
+    margin-left: 0px;
+    width: 255px;
+    text-align: center;
+}
+
+//作成日
+.areahead2{
+        display :inline-flex;
+        margin-top: 10px;
+        width: 270px;
+        height: 25px;
+    }    
+.koteititle-head{
+    background-color: #dffae0;
+    font-size: 16px;
+    margin-left: 5px;
+    height: 30px;
+    width: 90px;
+    line-height:30px;
+    text-align: center;
+    border: 1px solid;
+    border-color: #8ffd7a;
+}
+.koteiheadinp1{
+    background-color: #fff !important;
+    margin-left: 3px;
+    margin-top: 0px;
+    width: 180px;
+    height: 30px !important;
+    text-align: left;
+    border: 1px solid;
+    border-color: #7e7e7e;
+}
+//ボタン
+.areahead-btn{
+    display :inline-flex;
+    margin-top: 10px;
+    width: 250px;
+    height: 25px;
+}
+
+.clsbtnmenuhead-ins{
+    margin-top: 0px;
+    margin-left: 180px;
+    height: 25px !important;
+    background-color: #ffffff !important;
+    color:#0081eb !important;
+    border: thin solid #a5a5a5 ;
+}
+
+
+//確認ダイアログ
+.areaMes-001{
+    display :inline-flex;
+    margin-top: 0px;
+    width: 260px;
+    height: 25px;
+}  
+.clsstitleMes_001{
+    border-radius: 5px 5px 5px 5px;
+    background-color: #4CCB81;
+    color: #ffffff;
+    margin-left: 0px;
+    width: 250px;
+    text-align: center;
+}
+
+.areaMes-003{
+    display :inline-flex;
+    margin-top: 3px;
+    width: 300px;
+    height: 60px;
+}
+.clslabelMes{
+    white-space: pre;
+    word-wrap :break-word;
+}  
+.clssheet-Mes{
+    border-radius: 10px 10px 10px 10px;
+    padding: 5px 5px;
+    margin-top: 0px ;
+    margin-left: 0px ;
+    width: 262px;
+    height:  130px;
+}
+.areaMes-002{
+    margin-top: 5px !important;
+    display: inline-flex;
+    width: 300px;
+    height: 40px;
+}
+.area-Ok{
+    width: 85px;
+    height: 40px;
+} 
+
+
+
+//作成履歴ダイアログ
+.clssheet-Reki{
+    border-radius: 10px 10px 10px 10px;
+    padding: 5px 5px;
+    margin-top: 0px ;
+    margin-left: 0px ;
+    width: 210px;
+    height:  280px;
+    //position: absolute;
+  }
+
+//タイトル
+.areaReki{
+    display :inline-flex;
+    margin-top: 0px;
+    width: 200px;
+    height: 25px;
+}  
+
+.clsstitleReki{
+    border-radius: 5px 5px 5px 5px;
+    background-color: #4CCB81;
+    color: #ffffff;
+    margin-left: 0px;
+    width: 280px;
+    text-align: center;
+}    
+
+/*グリッドヘッダ*/
+.column-Reki{
+    font-size:medium;
+    font-weight:normal !important;
+    text-align: center !important;
+    background-color: #dffae0 !important;
+    border-color: #8ffd7a !important;
+}    
+
+.areaReki2{
+    display :inline-flex;
+    margin-top: 10px;
+    width: 200px;
+    height: 200px;
+}  
+
+//履歴グリッド 削除ボタン無し
+.GrdReki-001{
+    height: 230px;
+}
+
+//履歴グリッド 削除ボタン有り
+.GrdReki-002{
+height: 200px;
+}
+
+//固定情報新規ボタン
+a {
+    &.addBtn_kotei {
+        margin-top: 0px;
+        margin-left: 0px;
+        height: 25px !important;
+        width: 110px !important;
+        background-color: #ffffff ;
+        font-size: 14px;
+        //background-color: $btn_background;
+        color:#0081eb !important;
+        border: thin solid #a5a5a5 ;
+
+        display: block;
+        float: left;
+        text-align: center;
+        border-radius: 3px;
+        padding: 0px 10px 10px 20px;
+        cursor: pointer;
+        background-image: url('../plus_gray_15px.png');
+        background-position: top 2px left 2px;
+        background-repeat: no-repeat;
+
+        &:hover {
+            background-color: $light-gray;
+        }
+    }
+}
+
+.btnymd_kotei {
+    background-color: $white !important;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 25px !important;
+    margin-top: -1px
+}

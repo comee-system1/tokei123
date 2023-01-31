@@ -120,6 +120,25 @@ const CHIIKIJIGYOKBN = {
     },
 }
 
+//###################
+//固定情報追加定数
+//###################
+const MSG_REKI_CRE = "履歴を作成してください。";            //履歴登録
+const MSG_DATA_INS = "データの登録が完了しました。";        //履歴登録
+const MSG_DATA_INS_CHK = "入力データを登録します。\nよろしいですか。"   //データ登録チェック
+const MSG_DATA_DEL = "データの削除が完了しました。";        //履歴削除
+const MSG_DATA_DEL_CHK = "入力データを削除します。\nよろしいですか。"   //データ登録チェック
+const MSG_REKI_INS = "新規履歴を登録しました。";            //履歴登録
+const MSG_REKI_INS_CHK = "履歴を新規登録します。\nよろしいですか。";            //履歴登録
+const MSG_REKI_UPD_CHK = "履歴を更新登録します。\nよろしいですか。";            //履歴登録
+
+const MSG_REKI_UPD = "履歴を更新しました。";                //履歴更新
+const MSG_REKI_DEL = "履歴の削除しました。";                //履歴削除
+const MSG_COPY_CHK = "前回のデータをコピーします。\nよろしいですか。";              //前回コピー
+const MSG_COPY = "前回コピーが完了しました。";              //前回コピー
+const MSG_COPY_ERR = "前回の履歴がありません。";            //前回コピー
+
+
 export default {
     COLOR,
     FORMAT,
@@ -129,5 +148,23 @@ export default {
     KEIKAKUJIGYOKBN,
     CHIIKIJIGYOKBN,
     JIGYO_KBN_NAME,
-    TANTOKAIGI_KBN_NAME
+    TANTOKAIGI_KBN_NAME,
+
+    //###################
+    //固定情報追加定数
+    //###################
+    MSG_REKI_CRE,
+    MSG_DATA_INS,
+    MSG_DATA_INS_CHK,
+    MSG_DATA_DEL,
+    MSG_DATA_DEL_CHK,
+    MSG_REKI_INS,
+    MSG_REKI_UPD,
+    MSG_REKI_DEL,
+    MSG_COPY_CHK,
+    MSG_COPY,
+    MSG_COPY_ERR,
+    MSG_REKI_INS_CHK,
+    MSG_REKI_UPD_CHK     
 }
+

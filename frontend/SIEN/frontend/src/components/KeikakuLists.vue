@@ -398,17 +398,18 @@
     <!-- 計画案 利用者同意・署名ダイアログ-->
     <v-dialog width="400" v-model="doui_dialog">
       <v-card elevation="2" class="common_dialog">
-        <v-card-title class="dialog_title"
-          >計画案 利用者同意・署名</v-card-title
-        >
+        <v-card-title class="dialog_title">
+          計画案 利用者同意・署名
+        </v-card-title>
         <v-btn
           elevation="2"
           icon
           small
           @click="header_dialog_close"
           class="dialog_close"
-          ><v-icon dark small> mdi-close </v-icon></v-btn
         >
+          <v-icon dark small> mdi-close </v-icon>
+        </v-btn>
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
             <v-card
@@ -416,16 +417,18 @@
               class="koumokuTitle titleBlueDark wd-70"
               outlined
               tile
-              >利用者名</v-card
             >
+              利用者名
+            </v-card>
             <v-card
               outlined
               tile
               v-model="doui_dialog_input.riyosya"
               height="25"
               class="ml-1 dialog_border_blue koumokuData wLng pl-1"
-              >{{ doui_dialog_input.riyosya }}</v-card
             >
+              {{ doui_dialog_input.riyosya }}
+            </v-card>
           </v-row>
           <v-row no-gutters class="mt-1 rowStyle_input">
             <v-card
@@ -433,8 +436,9 @@
               class="koumokuTitle titleBlue wd-70"
               outlined
               tile
-              >同意日</v-card
             >
+              同意日
+            </v-card>
             <v-card
               outlined
               tile
@@ -456,8 +460,9 @@
               class="koumokuTitle titleBlue wd-70"
               outlined
               tile
-              >区分</v-card
             >
+              区分
+            </v-card>
             <v-btn-toggle v-model="select_doui_man" class="ml-1">
               <v-btn
                 height="24"
@@ -465,8 +470,9 @@
                 elevation="0"
                 v-for="val in doui_man"
                 :key="val.id"
-                >{{ val.name }}</v-btn
               >
+                {{ val.name }}
+              </v-btn>
             </v-btn-toggle>
           </v-row>
           <v-row no-gutters class="mt-1 rowStyle_input">
@@ -524,8 +530,9 @@
           small
           @click="header_dialog_close"
           class="dialog_close"
-          ><v-icon dark small> mdi-close </v-icon></v-btn
         >
+          <v-icon dark small> mdi-close </v-icon>
+        </v-btn>
         <div class="common_dialog pa-1">
           <v-row no-gutters class="rowStyle_input">
             <v-card
@@ -533,15 +540,17 @@
               class="koumokuTitle titleBlueDark wd-70"
               outlined
               tile
-              >利用者名</v-card
             >
+              利用者名
+            </v-card>
             <v-card
               outlined
               height="25"
               class="ml-1 dialog_border_blue koumokuData wLng pl-1"
               v-model="teisyutu_dialog_input.riyosya"
-              >{{ teisyutu_dialog_input.riyosya }}</v-card
             >
+              {{ teisyutu_dialog_input.riyosya }}
+            </v-card>
           </v-row>
           <v-row no-gutters class="rowStyle_input mt-1">
             <v-card
@@ -549,8 +558,9 @@
               class="koumokuTitle titleBlue wd-70"
               outlined
               tile
-              >提出日</v-card
             >
+              提出日
+            </v-card>
 
             <v-card
               outlined
@@ -599,15 +609,6 @@
 <script>
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
-// import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.cultures/wijmo.culture.ja';
-import '@grapecity/wijmo.styles/wijmo.css';
-import '@grapecity/wijmo.vue2.grid';
-import '@grapecity/wijmo.touch';
-import '@grapecity/wijmo.vue2.grid.grouppanel';
-import '@grapecity/wijmo.vue2.grid.filter';
-import '@grapecity/wijmo.vue2.grid.search';
-import '@grapecity/wijmo.vue2.input';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';

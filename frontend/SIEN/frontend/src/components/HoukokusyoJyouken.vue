@@ -343,9 +343,27 @@
               </v-row>
             </v-col>
             <v-col style="width: 75px; max-width: 75px; min-width: 75px">
-              <v-row no-gutters class="rowStyle_Input">
-                <v-btn width="75" height="25" @click="addClicked">
+              <v-row no-gutters class="rowStyle_Input mb-1">
+                <v-btn
+                  width="75"
+                  height="25"
+                  @click="junhenkouClicked(0)"
+                  v-show="!junhenkoumode"
+                >
                   順変更
+                </v-btn>
+                <v-btn
+                  width="75"
+                  height="25"
+                  @click="junhenkouClicked(1)"
+                  v-show="junhenkoumode"
+                >
+                  順決定
+                </v-btn>
+              </v-row>
+              <v-row no-gutters class="rowStyle_Input" v-show="junhenkoumode">
+                <v-btn width="75" height="25" @click="junhenkouClicked(2)">
+                  キャンセル
                 </v-btn>
               </v-row>
             </v-col>
@@ -498,8 +516,8 @@ export default {
       headerListChohyo: [
         {
           dataname: 'ptncdD',
-          title: 'コード',
-          width: 50,
+          title: 'ｺｰﾄﾞ',
+          width: 35,
           align: 'center',
         },
         {
@@ -602,6 +620,7 @@ export default {
       viewDataSelect2: [],
       viewYokoList: [],
       dispMisentaku: false,
+      junhenkoumode: false,
     };
   },
   mounted() {
@@ -758,6 +777,26 @@ export default {
       flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
         let ht = flexGrid.hitTest(e);
         if (ht.panel == flexGrid.cells) {
+          if (self.junhenkoumode) {
+            if (ht.col == 0) {
+              if (flexGrid.cells.rows[ht.row].dataItem.buhinNo > 0) {
+                return;
+              }
+              let maxval = Math.max.apply(
+                null,
+                this.viewDataZumi.map(function (e) {
+                  return e.buhinNo;
+                })
+              );
+              flexGrid.cells.rows[ht.row].dataItem.buhinNo = maxval + 1;
+              flexGrid.refreshRange(
+                new wjGrid.CellRange(ht.row, ht.col, ht.row, ht.col)
+              );
+            } else {
+              alert('順番変更モードのため、選択できません。');
+            }
+            return;
+          }
           /*
            * 登録済みを選択
            * 第一条件に指定されたマスタを表示する
@@ -828,6 +867,22 @@ export default {
           this.inputclick(0);
         }
       });
+
+      // グリッドのスタイルをカスタマイズ
+      flexGrid.itemFormatter = function (panel, r, c, cell) {
+        // グリッド内共通スタイル
+        let s = cell.style;
+        if (panel.cellType == wjGrid.CellType.Cell) {
+          // セル背景の変更
+          if (c == 0) {
+            if (self.junhenkoumode) {
+              s.backgroundColor = sysConst.COLOR.gridSelectedColor;
+            } else {
+              s.backgroundColor = sysConst.COLOR.gridBackground;
+            }
+          }
+        }
+      };
 
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows[0].allowMerging = true;
@@ -1257,12 +1312,13 @@ export default {
             tmpresult[i].buhinCdD = String(
               tmplist[i].buhinData.buhinCd
             ).padStart(3, '0');
+            tmpresult[i].buhinNoBk = tmpresult[i].buhinNo; // 順変更用Noバックアップ
           }
           tmpresult.sort((a, b) => {
-            if (a.buhinCd < b.buhinCd) {
+            if (a.buhinNo < b.buhinNo) {
               return -1;
             }
-            if (a.buhinCd > b.buhinCd) {
+            if (a.buhinNo > b.buhinNo) {
               return 1;
             }
           });
@@ -1461,6 +1517,7 @@ export default {
         this.viewYokoList = null;
         this.selSyukeiJyouken = 0;
         this.selSyukeiJyoukenCb = 0;
+        this.junhenkoumode = false;
       }
     },
     delClicked(kbn) {
@@ -1637,6 +1694,86 @@ export default {
         }
       }
       return result;
+    },
+    junhenkouClicked(kbn) {
+      if (this.viewDataZumi.length == 0) {
+        return;
+      }
+      if (kbn == 0) {
+        // 順変更モード
+        this.junhenkoumode = true;
+        let tmplist = [];
+        for (let i = 0; i < this.viewDataZumi.length; i++) {
+          this.viewDataZumi[i].buhinNo = '';
+          tmplist.push(this.viewDataZumi[i]);
+        }
+        this.viewDataZumi = tmplist.concat();
+      } else if (kbn == 1) {
+        this.putZumiSortData();
+      } else if (kbn == 2) {
+        // キャンセル
+        this.junhenkoumode = false;
+
+        let tmplist = [];
+        for (let i = 0; i < this.viewDataZumi.length; i++) {
+          this.viewDataZumi[i].buhinNo = this.viewDataZumi[i].buhinNoBk;
+          tmplist.push(this.viewDataZumi[i]);
+        }
+        this.viewDataZumi = tmplist.concat();
+      }
+    },
+    putZumiSortData() {
+      let tmpList = this.viewDataZumi.concat();
+      if (tmpList.find((e) => e.buhinNo == 0) != undefined) {
+        if (!confirm(messageConst.CONFIRM.NO_RESET)) {
+          return;
+        }
+        let maxval = Math.max.apply(
+          null,
+          tmpList.map(function (e) {
+            return e.buhinNo;
+          })
+        );
+        for (let i = 0; i < tmpList.length; i++) {
+          if (tmpList[i].buhinNo == 0) {
+            maxval++;
+            tmpList[i].buhinNo = maxval;
+          }
+        }
+      } else {
+        if (!confirm(messageConst.CONFIRM.NO_RESET)) {
+          return;
+        }
+      }
+      tmpList.sort((a, b) => {
+        if (a.buhinNo < b.buhinNo) {
+          return -1;
+        }
+        if (a.buhinNo > b.buhinNo) {
+          return 1;
+        }
+        return 0;
+      });
+      let buhinIdList = tmpList.map((e) => e.buhinId);
+
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      let body = {
+        jigyoid: 62,
+        ptnid: this.selectedViewDataChohyo.ptnid,
+        buhinIdList: buhinIdList,
+      };
+
+      putConnect('/MstSyukeikmkSort', params, 'SIENT', body).then((result) => {
+        if (result.okflg == true) {
+          this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+        } else {
+          alert(result.msg);
+        }
+      });
+      this.junhenkoumode = false;
     },
   },
 };
