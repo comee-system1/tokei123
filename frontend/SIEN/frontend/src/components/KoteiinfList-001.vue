@@ -352,6 +352,7 @@ import { putConnect } from '../connect/putConnect';
 import { deleteConnect } from '../connect/deleteConnect';
 import dayjs from '../../node_modules/dayjs';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjCore from '@grapecity/wijmo';
 import sysConst from '../utiles/const';
 
 let INS_KBN_NAIYO = 0;  //登録区分:データ  
@@ -1759,13 +1760,13 @@ export default {
         this.dataflg = dataflg;
 
         //画面表示
-        document.getElementById("lblRiyonm").innerText = data[0].kihon_name;
-        document.getElementById("lblBirth").innerText = data[0].kihon_birth;
-        document.getElementById("lblAge").innerText = data[0].kihon_age  + "歳";
-        document.getElementById("lblSex").innerText = data[0].kihon_sex_view;
-        document.getElementById("lbladress").innerText = data[0].kihon_address;
-        document.getElementById("tel1").innerText = data[0].kihon_tel_view;
-        document.getElementById("tel2").innerText = data[0].kihon_tel2_view;
+        document.getElementById("lblRiyonm").innerHTML = wjCore.escapeHtml(data[0].kihon_name);
+        document.getElementById("lblBirth").innerHTML = wjCore.escapeHtml(data[0].kihon_birth);
+        document.getElementById("lblAge").innerHTML = wjCore.escapeHtml(data[0].kihon_age  + "歳");
+        document.getElementById("lblSex").innerHTML = wjCore.escapeHtml(data[0].kihon_sex_view);
+        document.getElementById("lbladress").innerHTML = wjCore.escapeHtml(data[0].kihon_address);
+        document.getElementById("tel1").innerHTML = wjCore.escapeHtml(data[0].kihon_tel_view);
+        document.getElementById("tel2").innerHTML = wjCore.escapeHtml(data[0].kihon_tel2_view);
 
         this.dispMail = data[0].kihon_email;      //メールアドレス
         this.dispKMail = data[0].kihon_kmail;     //携帯アドレス
@@ -1938,13 +1939,13 @@ export default {
   {
     if(kbn == 0)
     {
-      document.getElementById("lblRiyonm").innerText = "";
-      document.getElementById("lblBirth").innerText = "";
-      document.getElementById("lblAge").innerText = "";
-      document.getElementById("lblSex").innerText = "";
-      document.getElementById("lbladress").innerText = "";
-      document.getElementById("tel1").innerText = "";
-      document.getElementById("tel2").innerText = "";
+      document.getElementById("lblRiyonm").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("lblBirth").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("lblAge").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("lblSex").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("lbladress").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("tel1").innerHTML = wjCore.escapeHtml("");
+      document.getElementById("tel2").innerHTML = wjCore.escapeHtml("");
     }
 
 

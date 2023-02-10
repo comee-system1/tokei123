@@ -57,21 +57,21 @@
               v-for="(list, index) in nav_list.lists"
               :key="index"
               :to="list.link + queryParam"
-              class="p-0"
+              class="pa-0 ma-0"
             >
-              <v-list-item-content>
-                <v-list-item-title v-if="list.link"
-                  >・ {{ list.name }}</v-list-item-title
-                >
-                <v-subheader v-else>{{ list.name }}</v-subheader>
+              <v-list-item-content class="pa-2">
+                <v-list-item-title v-if="list.link">
+                  ・ {{ list.name }}
+                </v-list-item-title>
+                <v-subheader disabled v-else>{{ list.name }}</v-subheader>
 
                 <v-list-item
                   v-for="(sublist, subindex) in list.sublists"
                   :key="subindex"
                   :to="sublist.link + queryParam"
-                  class="sublists"
+                  class="sublists pa-0 ma-0"
                 >
-                  <v-list-item-content>
+                  <v-list-item-content class="pa-2 pl-4">
                     <v-list-item-title>・ {{ sublist.name }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
@@ -319,7 +319,6 @@ export default {
             },
             {
               name: 'マスタ',
-              link: '/TemporaryPage',
               sublists: [
                 {
                   name: '地域定着台帳様式設定',
@@ -481,6 +480,10 @@ div#headerAndNav {
   }
   .v-list-item__icon {
     margin: auto 4px;
+  }
+  .v-list-item--dense,
+  .v-list--dense .v-list-item {
+    min-height: 20px;
   }
   .coditionbtn {
     margin-left: 10px;

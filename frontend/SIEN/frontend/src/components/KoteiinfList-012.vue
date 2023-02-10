@@ -436,6 +436,7 @@ import { getConnect } from '../connect/getConnect';
 import { postConnect } from '../connect/postConnect';
 import { putConnect } from '../connect/putConnect';
 import { deleteConnect } from '../connect/deleteConnect';
+import * as wjCore from '@grapecity/wijmo';
 
 let INS_KBN_NAIYO = 0;  //登録区分:データ  
 let INS_KBN_HEAD = 1;   //登録区分:ヘッダ
@@ -820,11 +821,11 @@ export default
                       && S1.style != null && K1.style != null)
                     {
                       clearInterval(winter);
-                      lbl03.innerText = this.dispsimei;
-                      lbl05.innerText = this.disptuduki;
-                      lbl07.innerText = this.dispdoukyo;
-                      lbl09.innerText = this.dispkazoku;
-                      lbl11.innerText = this.dispkaigo;
+                      lbl03.innerHTML = wjCore.escapeHtml(this.dispsimei);
+                      lbl05.innerHTML = wjCore.escapeHtml(this.disptuduki);
+                      lbl07.innerHTML = wjCore.escapeHtml(this.dispdoukyo);
+                      lbl09.innerHTML = wjCore.escapeHtml(this.dispkazoku);
+                      lbl11.innerHTML = wjCore.escapeHtml(this.dispkaigo);
 
                       this.dispkaigotime = this.viewdata[ht.row].kaigotimeid;
                       //ラジオボタン

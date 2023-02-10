@@ -24,8 +24,8 @@
           <v-tab-item value="SoudanCountUtiwake" transition="none">
             <SoudanCountUtiwake ref="soudanCountUtiwake"></SoudanCountUtiwake>
           </v-tab-item>
-          <v-tab-item value="MonthJiseki" transition="none">
-            Tab 5 Content
+          <v-tab-item value="SoudanCountMonthly" transition="none">
+            <SoudanCountMonthly ref="soudanCountMonthly"></SoudanCountMonthly>
           </v-tab-item>
           <v-tab-item value="RiyouCheck" transition="none">
             Tab 5 Content
@@ -40,12 +40,18 @@
 import UketukeIcrn from '../../components/UketukeIcrn.vue';
 import SoudanCount from '../../components/SoudanCount.vue';
 import SoudanCountUtiwake from '../../components/SoudanCountUtiwake.vue';
+import SoudanCountMonthly from '../../components/SoudanCountMonthly.vue';
 import ls from '@/utiles/localStorage';
 export default {
   props: {
     selectedData: Object, // 検索条件等
   },
-  components: { UketukeIcrn, SoudanCount, SoudanCountUtiwake },
+  components: {
+    UketukeIcrn,
+    SoudanCount,
+    SoudanCountUtiwake,
+    SoudanCountMonthly,
+  },
   data: function () {
     return {
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
@@ -57,7 +63,11 @@ export default {
           href: '#SoudanCountUtiwake',
           hrefval: 'SoudanCountUtiwake',
         },
-        { name: '１ヶ月実績', href: '#MonthJiseki', hrefval: 'MonthJiseki' },
+        {
+          name: '１ヶ月実績',
+          href: '#SoudanCountMonthly',
+          hrefval: 'SoudanCountMonthly',
+        },
         { name: '利用チェック', href: '#RiyouCheck', hrefval: 'RiyouCheck' },
       ],
     };

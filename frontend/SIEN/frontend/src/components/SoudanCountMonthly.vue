@@ -1,51 +1,10 @@
 <template>
-  <div id="soudanCountUtiwake">
+  <div id="soudanCountMonthly">
     <v-container class="pa-1" fluid>
-      <v-navigation-drawer
-        class="blue lighten-5"
-        v-model="drawer"
-        absolute
-        left
-        width="100"
-        min-width="100"
-      >
-        <v-card class="drawerTitle pa-1" outlined tile :height="30">
-          日付選択
-          <v-btn
-            elevation="2"
-            icon
-            absolute
-            top
-            right
-            height="20"
-            width="20"
-            v-on:click.stop="drawer = !drawer"
-            class="mt-1"
-            color="secondary"
-          >
-            <v-icon dark small> mdi-close </v-icon>
-          </v-btn>
-        </v-card>
-        <MdSelect class="ma-1" ref="mdselect" @dateSelect="setMd"></MdSelect>
-      </v-navigation-drawer>
       <v-row no-gutters class="rowStyle mb-1">
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
           表示単位
         </v-card>
-        <v-btn-toggle class="flex-wrap mr-1" v-model="dispIndex" mandatory>
-          <v-btn
-            v-for="n in dispList"
-            :key="n.val"
-            color="secondary"
-            outlined
-            width="50"
-            height="20"
-            @click="dispClicked(n.val)"
-          >
-            {{ n.name }}
-          </v-btn>
-        </v-btn-toggle>
-
         <v-card
           class="mr-1"
           color="transparent"
@@ -54,72 +13,19 @@
           outlined
           tile
         >
-          <span v-if="dispIndex == 0">
-            <v-btn
-              @click="inputCalendarClick(0)"
-              class="btnymd mr-1"
-              tile
-              outlined
-              width="150px"
-              height="100%"
-              >{{ getYmd() }}
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
+          <v-btn
+            @click="inputCalendarClick()"
+            class="btnymd mr-1"
+            tile
+            outlined
+            width="125px"
+            height="100%"
+            >{{ getYm() }}
+            <div class="float-right">
+              <v-icon small>mdi-calendar-month</v-icon>
+            </div>
+          </v-btn>
 
-            <v-btn
-              elevation="0"
-              class="btnymd pa-0 mr-1"
-              height="100%"
-              x-small
-              tile
-              @click="inputCalendarClick(1)"
-            >
-              <v-icon>mdi-arrow-left-bold</v-icon>
-            </v-btn>
-            <v-btn
-              elevation="0"
-              class="btnymd pa-0 mr-1"
-              height="100%"
-              x-small
-              tile
-              @click="inputCalendarClick(2)"
-            >
-              <v-icon>mdi-arrow-right-bold</v-icon>
-            </v-btn>
-            <v-btn elevation="2" height="18" v-on:click.stop="drawer = !drawer">
-              <v-icon dense>mdi-calendar-expand-horizontal</v-icon>
-              日付選択
-            </v-btn>
-          </span>
-          <span v-else>
-            <v-btn
-              @click="inputCalendarClick(90)"
-              class="btnymd mr-1"
-              tile
-              outlined
-              width="125px"
-              height="100%"
-              >{{ getYm(0) }}
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
-            <label class="mr-1">～</label>
-            <v-btn
-              @click="inputCalendarClick(99)"
-              class="btnymd mr-1"
-              tile
-              outlined
-              width="125px"
-              height="100%"
-              >{{ getYm(1) }}
-              <div class="float-right">
-                <v-icon small>mdi-calendar-month</v-icon>
-              </div>
-            </v-btn>
-          </span>
           <v-btn class="ml-1 pa-1" height="18" @click="searchClicked()">
             <v-icon dense>mdi-magnify</v-icon>
             検索
@@ -199,7 +105,7 @@
           {{ title }}
         </v-card>
         <wj-flex-grid
-          id="soudanCountUtiwakeGrid"
+          id="soudanCountMonthlyGrid"
           :headersVisibility="'Column'"
           :autoGenerateColumns="false"
           :allowAddNew="false"
@@ -211,8 +117,8 @@
           :allowDragging="false"
           :selectionMode="'Row'"
           :isReadOnly="true"
-          :initialized="onInitializeSoudanCountUtiwakeGrid"
-          :formatItem="onFormatItemSoudanCountUtiwake"
+          :initialized="onInitializeSoudanCountMonthlyGrid"
+          :formatItem="onFormatItemSoudanCountMonthly"
           :itemsSourceChanged="onItemsSourceChanged"
           :itemsSourceChanging="onItemsSourceChanging"
           :itemsSource="viewJyoukyouList"
@@ -243,46 +149,18 @@
       </v-row>
     </v-container>
     <!-- ダイアログエリア -->
-    <v-dialog v-model="datepickerYmd_dialog" class="datepickerYmd_dialogs">
-      <v-date-picker
-        id="soudanCountUtiwakeDatepicker"
-        scrollable
-        no-title
-        mode="single"
-        v-model="pickerYmd"
-        locale="jp-ja"
-        :day-format="(date) => new Date(date).getDate()"
-        @change="dateSelect"
-      >
-      </v-date-picker>
-    </v-dialog>
     <v-dialog
       v-model="datepickerSym_dialog"
       width="200"
       class="datepickerSym_dialogs"
     >
       <v-date-picker
-        id="soudanCountUtiwakeDatepickerS"
+        id="soudanCountMonthlyDatepickerS"
         type="month"
         v-model="pickerSym"
         locale="jp-ja"
         :day-format="(date) => new Date(date).getDate()"
         @change="monthSelect(0)"
-      >
-      </v-date-picker>
-    </v-dialog>
-    <v-dialog
-      v-model="datepickerEym_dialog"
-      width="200"
-      class="datepickerSym_dialogs"
-    >
-      <v-date-picker
-        id="soudanCountUtiwakeDatepickerE"
-        type="month"
-        v-model="pickerEym"
-        locale="jp-ja"
-        :day-format="(date) => new Date(date).getDate()"
-        @change="monthSelect(1)"
       >
       </v-date-picker>
     </v-dialog>
@@ -295,8 +173,6 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
-
-import MdSelect from '../components/MdSelect.vue';
 import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
 const BORDER_SOLID = '1px solid';
@@ -312,7 +188,7 @@ const DISPLAY_TC = 'table-cell';
 // const STYLE_BLOCK = 'block';
 const STYLE_NONE = 'none';
 const GRID_ID = {
-  Soudan: 'soudanCountUtiwakeGrid',
+  Soudan: 'soudanCountMonthlyGrid',
   Sien: 'sienNaiyouGridUtiwake',
 };
 // const SOUDAN_COUNT_ROW_HEAD_ITEM = [
@@ -360,7 +236,7 @@ const GRID_ID = {
 // };
 
 export default {
-  components: { MdSelect },
+  components: {},
   data() {
     return {
       selDispGridIndex: 0,
@@ -370,7 +246,7 @@ export default {
       ],
       selSyukeiIndex: 0,
       syukeiList: [
-        { val: 0, name: '回数' },
+        { val: 0, name: '件数' },
         { val: 1, name: '人数' },
       ],
       inputList: [
@@ -394,50 +270,31 @@ export default {
         { val: 3, name: 'C' },
         { val: 4, name: 'D' },
       ],
-      soudanCountUtiwakeViewDataAll: [],
-      soudanCountUtiwakeViewData: [],
+      soudanCountMonthlyViewDataAll: [],
+      soudanCountMonthlyViewData: [],
       sienNaiyouViewDataAll: [],
       sienNaiyouViewData: [],
       viewObj: {},
       userObj: {},
-      datepicker_dialog: false,
       selTaiousya: 0,
       selInputKbn: 0,
       screenFlag: false,
-      mstHouhouList: [],
-      mstKankeiList: [],
-      selectedYmd: {},
-      selectedYmdD: '',
       headerList: [],
       viewKiasuList: [],
       viewNinzuList: [],
       viewJyoukyouList: [],
       viewNaiyouList: [],
-      kikanYmd: '',
       kikanSYm: '',
-      kikanEYm: '',
-      pickerYmd: '',
       pickerSym: '',
-      pickerEym: '',
-      datepickerYmd_dialog: false,
       datepickerSym_dialog: false,
-      datepickerEym_dialog: false,
-      targetYmd: dayjs().format('YYYYMMDD'),
-      targetSYm: '',
-      targetEYm: '',
-      drawer: false,
-      dispIndex: 0,
-      dispList: [
-        { val: 0, name: '日指定' },
-        { val: 1, name: '月指定' },
-      ],
+      targetSYm: dayjs().format('YYYYMMDD'),
     };
   },
   computed: {
     title() {
       let option = '';
       if (this.selSyukeiIndex == 0) {
-        option = ' （回数）';
+        option = ' （件数）';
       } else {
         option = ' （人数）';
       }
@@ -448,27 +305,13 @@ export default {
       }
     },
   },
-  watch: {
-    selectedYmd(newymd) {
-      if (!newymd) {
-        this.selectedYmdD = '';
-      } else {
-        this.selectedYmdD =
-          this.getYm() +
-          String(newymd.day).padStart(2, '0') +
-          '日' +
-          '（' +
-          newymd.youbi +
-          '曜日）';
-      }
-    },
-  },
   mounted() {
     this.$nextTick(function () {
       // ビュー全体がレンダリングされた後にのみ実行されるコード
       document.getElementById(GRID_ID.Sien).style.display = STYLE_NONE;
       window.addEventListener('resize', this.calculateWindowHeight);
       this.calculateWindowHeight();
+      alert(location.hostname);
     });
     this.setPrintEvent();
     // 初期データ読込
@@ -490,7 +333,7 @@ export default {
       this.$router.app.$off('print_event_global');
       this.$router.app.$on('print_event_global', this.printExec);
     },
-    onInitializeSoudanCountUtiwakeGrid(flexGrid) {
+    onInitializeSoudanCountMonthlyGrid(flexGrid) {
       flexGrid.beginUpdate();
       // ヘッダの追加と設定
       flexGrid.columnHeaders.rows.insert(1, new wjGrid.Row());
@@ -504,9 +347,6 @@ export default {
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
       flexGrid.endUpdate();
-      let tmp =
-        this.kikanYmd.format('YYYY') + '-' + this.kikanYmd.format('MM') + '-01';
-      this.$refs.mdselect.setYm(tmp);
     },
     onInitializesienNaiyouGridUtiwake(flexGrid) {
       flexGrid.beginUpdate();
@@ -525,7 +365,7 @@ export default {
     },
     onItemsSourceChanging(flexGrid) {
       flexGrid.beginUpdate();
-      if (flexGrid.hostElement.id == 'soudanCountUtiwakeGrid') {
+      if (flexGrid.hostElement.id == 'soudanCountMonthlyGrid') {
         this.createSoudanCountGridHeader(flexGrid);
       } else {
         this.createsienNaiyouGridHeader(flexGrid);
@@ -541,17 +381,12 @@ export default {
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         if (colIndex == 0) {
-          col.binding = 'riyo_codeD';
+          col.binding = 'date';
           col.align = ALI_CENTER;
           col.width = 70;
         } else if (colIndex == 1) {
-          col.binding = 'riyo_name';
+          col.binding = 'youbi';
           col.width = 150;
-        } else {
-          col.binding = 'col' + (colIndex - 2);
-          col.width = 30;
-          col.align = ALI_RIGHT;
-          col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
 
@@ -580,17 +415,12 @@ export default {
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
         if (colIndex == 0) {
-          col.binding = 'riyo_codeD';
+          col.binding = 'date';
           col.align = ALI_CENTER;
           col.width = 70;
         } else if (colIndex == 1) {
-          col.binding = 'riyo_name';
+          col.binding = 'youbi';
           col.width = 150;
-        } else {
-          col.binding = 'col' + (colIndex - 2);
-          col.align = ALI_RIGHT;
-          col.width = 30;
-          col.aggregate = 'Sum';
         }
         col.header = this.headerList[colIndex].title_list2;
 
@@ -614,7 +444,7 @@ export default {
       // 初期選択を解除
       flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
     },
-    onFormatItemSoudanCountUtiwake(flexGrid, e) {
+    onFormatItemSoudanCountMonthly(flexGrid, e) {
       if (flexGrid.columns.length == 0) {
         return;
       }
@@ -769,7 +599,6 @@ export default {
       this.setViewData(true);
     },
     setViewData(isAll) {
-      this.selectedYmd = null;
       if (isAll) {
         let params = {
           uniqid: 3,
@@ -780,21 +609,13 @@ export default {
           pEymd: this.targetYmd,
           pSiid: 0,
           pChiku: 0,
-          pHostName: 'tokei3',
+          pHostName: 'cl021',
         };
-        if (this.dispIndex == 1) {
-          let split = this.pickerSym.split('-');
-          this.targetSYm = split[0] + split[1].padStart(2, '0') + '01';
-          let splitE = this.pickerEym.split('-');
-          this.targetEYm =
-            splitE[0] +
-            splitE[1].padStart(2, '0') +
-            this.kikanEYm.endOf('month').format('DD');
-          params.pSymd = this.targetSYm;
-          params.pEymd = this.targetEYm;
-        }
+        let split = this.pickerSym.split('-');
+        this.targetSYm = split[0] + split[1].padStart(2, '0') + '01';
+        params.pSymd = this.targetSYm;
         this.screenFlag = true;
-        getConnect('/SyukeiMeisai', params, 'SIENT').then((result) => {
+        getConnect('/SyukeiMonth', params, 'SIENT').then((result) => {
           this.headerList = result.headerList;
           this.viewKiasuList = result.kaisuList;
           this.viewNinzuList = result.ninzuList;
@@ -820,21 +641,21 @@ export default {
         }
       }
     },
-    userFilterSoudanCountUtiwake() {
-      let tmpSoudanCountUtiwakeViewData = [];
-      tmpSoudanCountUtiwakeViewData =
-        this.soudanCountUtiwakeViewDataAll.concat();
+    userFilterSoudanCountMonthly() {
+      let tmpSoudanCountMonthlyViewData = [];
+      tmpSoudanCountMonthlyViewData =
+        this.soudanCountMonthlyViewDataAll.concat();
 
       if (this.selTaiousya > 0) {
         // 対応者
-        tmpSoudanCountUtiwakeViewData = tmpSoudanCountUtiwakeViewData.filter(
+        tmpSoudanCountMonthlyViewData = tmpSoudanCountMonthlyViewData.filter(
           (x) => x.tanntouid == this.selTaiousya
         );
       }
 
       // //コード順でソート
       // if (this.sortSearch == 0) {
-      //   tmpSoudanCountUtiwakeViewData.sort((a, b) => {
+      //   tmpSoudanCountMonthlyViewData.sort((a, b) => {
       //     if (a.id < b.id) {
       //       return -1;
       //     }
@@ -849,7 +670,7 @@ export default {
       // }
       // //利用者名でソート
       // if (this.sortSearch == 1) {
-      //   tmpSoudanCountUtiwakeViewData.sort((a, b) => {
+      //   tmpSoudanCountMonthlyViewData.sort((a, b) => {
       //     if (a.kana < b.kana) {
       //       return -1;
       //     }
@@ -863,7 +684,7 @@ export default {
       // }
       // //受給者番号でソート
       // if (this.sortSearch == 2) {
-      //   tmpSoudanCountUtiwakeViewData.sort((a, b) => {
+      //   tmpSoudanCountMonthlyViewData.sort((a, b) => {
       //     if (a.nobk < b.nobk) {
       //       return -1;
       //     }
@@ -875,7 +696,7 @@ export default {
       //     }
       //   });
       // }
-      this.soudanCountUtiwakeViewData = tmpSoudanCountUtiwakeViewData;
+      this.soudanCountMonthlyViewData = tmpSoudanCountMonthlyViewData;
     },
     userFilterSienNaiyou() {
       let tmpSienNaiyouViewData = [];
@@ -890,135 +711,29 @@ export default {
 
       this.sienNaiyouViewData = tmpSienNaiyouViewData;
     },
-    getYmd() {
-      if (!this.kikanYmd) {
-        this.kikanYmd = dayjs();
-        this.pickerYmd =
-          this.kikanYmd.year() +
-          '-' +
-          this.kikanYmd.format('MM') +
-          '-' +
-          this.kikanYmd.format('DD');
+    getYm() {
+      if (!this.kikanSYm) {
+        this.kikanSYm = dayjs().startOf('months');
+        this.pickerSym =
+          this.kikanSYm.year() + '-' + this.kikanSYm.format('MM');
       }
       return (
-        this.kikanYmd.format('YYYY') +
-        '年' +
-        this.kikanYmd.format('MM') +
-        '月' +
-        this.kikanYmd.format('DD') +
-        '日'
+        this.kikanSYm.format('YYYY') + '年' + this.kikanSYm.format('MM') + '月'
       );
     },
-    getYm(kbn) {
-      if (kbn == 0) {
-        if (!this.kikanSYm) {
-          this.kikanSYm = dayjs().startOf('months');
-          this.pickerSym =
-            this.kikanSYm.year() + '-' + this.kikanSYm.format('MM');
-        }
-        return (
-          this.kikanSYm.format('YYYY') +
-          '年' +
-          this.kikanSYm.format('MM') +
-          '月'
-        );
-      } else {
-        if (!this.kikanEYm) {
-          this.kikanEYm = dayjs().startOf('months');
-          this.pickerEym =
-            this.kikanEYm.year() + '-' + this.kikanEYm.format('MM');
-        }
-        return (
-          this.kikanEYm.format('YYYY') +
-          '年' +
-          this.kikanEYm.format('MM') +
-          '月'
-        );
-      }
-    },
-    inputCalendarClick(kbn) {
-      if (kbn == 99) {
-        this.pickerEym =
-          this.kikanEYm.format('YYYY') +
-          '-' +
-          this.kikanEYm.format('MM') +
-          '-' +
-          this.kikanEYm.format('DD');
-        this.datepickerEym_dialog = true;
-      } else if (kbn == 90 || kbn == 91 || kbn == 92) {
-        if (kbn == 91) {
-          this.kikanSYm = this.kikanSYm.subtract(1, 'months');
-        } else if (kbn == 92) {
-          this.kikanSYm = this.kikanSYm.add(1, 'months');
-        }
-        this.pickerSym =
-          this.kikanSYm.format('YYYY') +
-          '-' +
-          this.kikanSYm.format('MM') +
-          '-' +
-          this.kikanSYm.format('DD');
-        if (kbn == 90) {
-          this.datepickerSym_dialog = true;
-        } else {
-          this.viewdata = [];
-        }
-      } else {
-        if (kbn == 1) {
-          this.kikanYmd = this.kikanYmd.subtract(1, 'day');
-        } else if (kbn == 2) {
-          this.kikanYmd = this.kikanYmd.add(1, 'day');
-        }
-        this.pickerYmd =
-          this.kikanYmd.format('YYYY') +
-          '-' +
-          this.kikanYmd.format('MM') +
-          '-' +
-          this.kikanYmd.format('DD');
-        if (kbn == 0) {
-          this.datepickerYmd_dialog = true;
-        } else {
-          this.viewdata = [];
-        }
-        let tmp =
-          this.kikanYmd.format('YYYY') +
-          '-' +
-          this.kikanYmd.format('MM') +
-          '-01';
-        this.$refs.mdselect.setYm(tmp);
-      }
-    },
-    dateSelect() {
-      this.kikanYmd = dayjs(this.pickerYmd);
-      let tmp =
-        this.kikanYmd.format('YYYY') +
+    inputCalendarClick() {
+      this.pickerSym =
+        this.kikanSYm.format('YYYY') +
         '-' +
-        this.kikanYmd.format('MM') +
+        this.kikanSYm.format('MM') +
         '-' +
-        this.kikanYmd.format('DD');
-      this.$refs.mdselect.setYm(tmp);
-      this.datepickerYmd_dialog = false;
+        this.kikanSYm.format('DD');
+      this.datepickerSym_dialog = true;
     },
-    monthSelect(kbn) {
-      if (kbn == 0) {
-        this.kikanSYm = dayjs(this.pickerSym);
-        this.$refs.mdselect.setYm(this.pickerSym);
-        this.viewdata = [];
-        this.datepickerSym_dialog = false;
-      } else {
-        this.kikanEYm = dayjs(this.pickerEym);
-        this.viewdata = [];
-        this.datepickerEym_dialog = false;
-      }
-    },
-    setMd(param1) {
-      //paramには日付と曜日(３と"金")が入る
-      let split = this.pickerYmd.split('-');
-      this.targetYmd =
-        split[0] +
-        split[1].padStart(2, '0') +
-        String(param1.day).padStart(2, '0');
-      this.kikanYmd = dayjs(this.targetYmd);
-      this.setViewData(true);
+    monthSelect() {
+      this.kikanSYm = dayjs(this.pickerSym);
+      this.viewdata = [];
+      this.datepickerSym_dialog = false;
     },
     dispclick(val) {
       this.selDispGridIndex = val;
@@ -1028,21 +743,13 @@ export default {
       this.selSyukeiIndex = val;
       this.setViewData(true);
     },
-    dispClicked(index) {
-      this.dispIndex = index;
-      if (this.dispIndex == 0) {
-        this.drawer = true;
-      } else {
-        this.drawer = false;
-      }
-    },
   },
 };
 </script>
 
 <style  lang="scss">
 @import '@/assets/scss/common.scss';
-div#soudanCountUtiwake {
+div#soudanCountMonthly {
   color: $font_color;
   font-size: 14px;
   font-family: 'メイリオ';
@@ -1081,7 +788,7 @@ div#soudanCountUtiwake {
       font-weight: bold;
     }
   }
-  #soudanCountUtiwakeGrid,
+  #soudanCountMonthlyGrid,
   #sienNaiyouGridUtiwake {
     color: $font_color;
     width: 100%;
@@ -1142,7 +849,7 @@ div#soudanCountUtiwake {
     }
   }
 
-  #soudanCountUtiwakeGrid {
+  #soudanCountMonthlyGrid {
     .wj-header {
       background: $view_Title_background_Green_Dark;
     }
@@ -1159,7 +866,7 @@ div#soudanCountUtiwake {
 .v-picker__title {
   display: none !important;
 }
-#soudanCountUtiwakeDatepicker {
+#soudanCountMonthlyDatepicker {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
@@ -1168,7 +875,7 @@ div#soudanCountUtiwake {
   width: 300px;
   max-width: 300px;
 }
-#soudanCountUtiwakeDatepickerS {
+#soudanCountMonthlyDatepickerS {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;
@@ -1177,7 +884,7 @@ div#soudanCountUtiwake {
   width: 300px;
   max-width: 300px;
 }
-#soudanCountUtiwakeDatepickerE {
+#soudanCountMonthlyDatepickerE {
   position: absolute;
   margin-top: 20px;
   position: fixed !important;

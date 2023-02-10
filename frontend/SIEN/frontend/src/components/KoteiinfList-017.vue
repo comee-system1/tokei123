@@ -627,7 +627,8 @@
     import { getConnect } from '../connect/getConnect';
     import { postConnect } from '../connect/postConnect';
     import { putConnect } from '../connect/putConnect';
-    import { deleteConnect } from '../connect/deleteConnect';    
+    import { deleteConnect } from '../connect/deleteConnect';
+    import * as wjCore from '@grapecity/wijmo';    
 
     let INS_KBN_NAIYO = 0;  //登録区分:データ  
     let INS_KBN_HEAD = 1;   //登録区分:ヘッダ
@@ -1243,8 +1244,8 @@
             this.insflg = true;
 
             //画面表示
-            document.getElementById("lblsyogaikbn").innerText = "";
-            document.getElementById("lblyukokikakn").innerText = "";
+            document.getElementById("lblsyogaikbn").innerHTML = wjCore.escapeHtml("");
+            document.getElementById("lblyukokikakn").innerHTML = wjCore.escapeHtml("");
             this.dispsinsyo_no = "";
             this.sintai_kouhuYm = "";
             this.radio001 = "radio001-1";
@@ -1441,8 +1442,8 @@
             this.dataflg = dataflg;
 
             //画面表示
-            document.getElementById("lblsyogaikbn").innerText = data[0].tetyo_syogaikbn;
-            document.getElementById("lblyukokikakn").innerText = data[0].tetyo_syogaikikan;
+            document.getElementById("lblsyogaikbn").innerHTML = wjCore.escapeHtml(data[0].tetyo_syogaikbn);
+            document.getElementById("lblyukokikakn").innerHTML = wjCore.escapeHtml(data[0].tetyo_syogaikikan);
             this.dispsinsyo_no = data[0].tetyo_sinsyobango;
             this.sintai_kouhuYm = data[0].tetyo_sinsyoymd.substring(0, 4)
                     + "年" + data[0].tetyo_sinsyoymd.substring(4, 6)

@@ -175,6 +175,7 @@
                         v-model="selectDataObj.sykkbn"
                       >
                         <v-btn
+                          mandatory
                           v-for="n in mstSyukeiKbnList"
                           :key="n.val"
                           :value="n.val"
@@ -246,6 +247,7 @@
                         v-model="selectDataObj.cskbn"
                       >
                         <v-btn
+                          mandatory
                           v-for="n in keikakuInputKbnItem"
                           :key="n.val"
                           :value="n.val"
@@ -437,6 +439,7 @@
                         v-model="selectDataObj.cskbn"
                       >
                         <v-btn
+                          mandatory
                           v-for="n in chiikiInputKbnItem"
                           :key="n.val"
                           :value="n.val"
@@ -1367,6 +1370,11 @@ export default {
     // 空データ作成
     this.setKihonInfo();
     this.getSyukeiKbn();
+    if (this.kbnTab == this.kbnItem[1].hrefval) {
+      this.keikakuInputKbnclick(sysConst.KEIKAKUJIGYOKBN.Keikaku.val);
+    } else if (this.kbnTab == this.kbnItem[2].hrefval) {
+      this.keikakuInputKbnclick(sysConst.CHIIKIJIGYOKBN.Keikaku.val);
+    }
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -1491,12 +1499,11 @@ export default {
       });
     },
     getKasanMst(ymd, svc) {
-      alert(svc);
       let params = {
         uniqid: 3,
         traceid: 123,
         pYmd: ymd,
-        pSvcCode: 0,
+        pSvcCode: svc,
       };
       getConnect('/MstKasan', params, 'SIENT').then((result) => {
         this.setClrItem(result);

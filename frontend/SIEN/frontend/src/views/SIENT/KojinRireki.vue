@@ -110,7 +110,7 @@
                   :id="'rbkojinrirekisyousaiDisp-' + item.val"
                   v-model="selSyousaiDispUmuIndex"
                   :value="item.val"
-                  @change="grdDispChangeclick(n.val)"
+                  @change="grdDispChangeclick(item.val)"
                 />
                 <label
                   :for="'rbkojinrirekisyousaiDisp-' + item.val"
@@ -230,7 +230,7 @@ import 'dayjs/locale/ja';
 import UserList from '../../components/UserList.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
-// import * as wjCore from '@grapecity/wijmo';
+import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
@@ -292,7 +292,7 @@ export default {
           title: '時間',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: '2*',
           align: 'center',
         },
         {
@@ -343,7 +343,7 @@ export default {
 
         {
           dispkbn: 2,
-          dataname: 'kojin_naiiyou',
+          dataname: 'naiyou',
           dataname2: 'cskmknm',
           title: '内容',
           chutitle: '',
@@ -353,7 +353,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'keikakusakusei',
+          dataname: 'keiyoshikidsp',
           title: '様\n式',
           chutitle: '',
           kbntitle: '計画作成',
@@ -362,7 +362,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'P_tantousyakaigi',
+          dataname: 'keitankaidsp',
           title: '担\n会\n議',
           chutitle: '',
           kbntitle: '計画作成',
@@ -371,7 +371,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jyukyukoufu',
+          dataname: 'jukyushogaishadsp',
           title: '障\n害\n者',
           chutitle: '',
           kbntitle: '受給者証',
@@ -380,7 +380,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jyukyukoufu',
+          dataname: 'jukyushogaijidsp',
           title: '障\n害\n児',
           chutitle: '',
           kbntitle: '受給者証',
@@ -389,7 +389,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jyukyukoufu',
+          dataname: 'jukyuchiikidsp',
           title: '地\n域\n相',
           chutitle: '',
           kbntitle: '受給者証',
@@ -398,7 +398,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jissi',
+          dataname: 'moniyoteiymdsp',
           title: '予\n定\n月',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -407,7 +407,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jissi',
+          dataname: 'monishukidsp',
           title: '終\n期\n月',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -416,7 +416,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'kbn',
+          dataname: 'monikbndsp',
           title: '区分',
           chutitle: '中止・延期',
           kbntitle: 'モニタリング',
@@ -425,7 +425,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'kbn',
+          dataname: 'moniriyu',
           title: '理由',
           chutitle: '中止・延期',
           kbntitle: 'モニタリング',
@@ -434,7 +434,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jikaiyotei',
+          dataname: 'monijisshidsp',
           title: '実\n施',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -443,7 +443,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jikaiyotei',
+          dataname: 'monisyukandsp',
           title: '週\n間',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -452,7 +452,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jikaiyotei',
+          dataname: 'monianhenkodsp',
           title: '変\n更',
           chutitle: '案',
           kbntitle: 'モニタリング',
@@ -461,7 +461,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'jikaiyotei',
+          dataname: 'moniankoshindsp',
           title: '更\n新',
           chutitle: '案',
           kbntitle: 'モニタリング',
@@ -470,7 +470,7 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'M_tantousyakaigi',
+          dataname: 'monitankaidsp',
           title: '担\n会\n議',
           chutitle: '',
           kbntitle: 'モニタリング',
@@ -515,7 +515,7 @@ export default {
         },
         {
           dispkbn: 4,
-          dataname: 'sdnhourk',
+          dataname: 'shienhouhou',
           title: '方法',
           chutitle: '',
           kbntitle: '支援内容',
@@ -524,7 +524,7 @@ export default {
         },
         {
           dispkbn: 4,
-          dataname: 'naiyo',
+          dataname: 'shiennaiyou',
           title: '内容',
           chutitle: '',
           kbntitle: '支援内容',
@@ -560,7 +560,7 @@ export default {
         },
         {
           dispkbn: 4,
-          dataname: 'kasankoumoku',
+          dataname: 'kasanname',
           title: '加算項目',
           chutitle: '',
           kbntitle: '',
@@ -758,29 +758,38 @@ export default {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-        // if (this.selSyousaiDispUmuIndex == 1 && e.col == 3) {
-        //   e.cell.innerHTML =
-        //     '<font color="#276bc5">' +
-        //     wjCore.escapeHtml(tmpitem.cskmknm) +
-        //     '</font>' +
-        //     '<div>' +
-        //     wjCore.escapeHtml(e.cell.innerHTML) +
-        //     '</div>';
-        // }
+        if (this.selSyousaiDispUmuIndex == 1) {
+          if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
+            if (e.col == 25) {
+              e.cell.innerHTML =
+                '<font color="#276bc5">' +
+                wjCore.escapeHtml(tmpitem.cskmknm) +
+                '</font>' +
+                '<div>' +
+                wjCore.escapeHtml(tmpitem.naiyo) +
+                '</div>';
+            }
+          }
+        }
+
+        if (
+          e.col == 0 ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 3) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 6) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 15) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 17) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 9) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 12) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 21)
+        ) {
+          e.cell.style.borderRight = STYLE_BORDER_SOLID;
+        }
+
         if (e.row < flexGrid.rows.length - 1) {
           let tmpitempre = e.panel.rows[e.row + 1].dataItem;
           if (tmpitem.ymd.substring(0, 6) != tmpitempre.ymd.substring(0, 6)) {
             e.cell.style.borderBottom = STYLE_BORDER_SOLID;
           }
-        }
-        if (
-          e.col == 0 ||
-          e.col == 3 ||
-          e.col == 6 ||
-          e.col == 15 ||
-          e.col == 17
-        ) {
-          e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
       } else {
         if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
@@ -933,7 +942,7 @@ export default {
             pSrhym: this.startymd.format('YYYYMMDD'),
             pSrheym: this.endymd.format('YYYYMMDD'),
           };
-          getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
+          getConnect('/ChikiKojinrireki', params, 'SIENC').then((result) => {
             console.log(12345);
             console.log(result);
             this.viewDataAll = result;

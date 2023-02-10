@@ -23,4 +23,5 @@ module.exports = defineConfig({
       title: '福祉見聞録',
     }
   },
+  // publicPath: './',
 })

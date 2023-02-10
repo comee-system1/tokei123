@@ -140,6 +140,7 @@ import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.input';
 import { getConnect } from '../../connect/getConnect';
 import dayjs from '../../../node_modules/dayjs';
+import * as wjCore from '@grapecity/wijmo';
 let uniqid = 3; //テスト3を使用
 let traceid = 123;
 let jigyoid = 99999;
@@ -285,8 +286,8 @@ export default {
               {
                 clearInterval(winter);
                 this.userInfo = row;
-                document.getElementById("Riyocd_id").innerText =this.userInfo.riyocode;
-                document.getElementById("Riyonm_id").innerText =this.userInfo.names;
+                document.getElementById("Riyocd_id").innerHTML = wjCore.escapeHtml(this.userInfo.riyocode);
+                document.getElementById("Riyonm_id").innerHTML = wjCore.escapeHtml(this.userInfo.names);
                 this.get_data(this.userInfo.riid);                
               }
           }, 1000);

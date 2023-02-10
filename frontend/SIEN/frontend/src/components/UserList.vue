@@ -269,8 +269,6 @@ import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import { getConnect } from '@connect/getConnect';
 import AlphabetButton from '@/components/AlphabetButton.vue';
-let uniqid = 3; // 現在は1のみapiが実行する
-let traceid = 123;
 
 const keySort = 'keyval00003';
 const keyAlp = 'keyval00006';
@@ -614,8 +612,6 @@ export default {
       let params = [];
 
       params = {
-        uniqid: uniqid,
-        traceid: traceid,
         getkbn: 0,
         jkbn: 0,
         sdnflg: 0,
@@ -623,11 +619,16 @@ export default {
         eymd: '20220901',
       };
 
-      return getConnect('/userListPrint', params).then((result) => {
-        _self.usersData = result.icrn_inf;
-        _self.userDataSelect = result;
-        this.userFilter();
-      });
+      return getConnect('/userListPrint', params)
+        .then((result) => {
+          _self.usersData = result.icrn_inf;
+          _self.userDataSelect = result;
+          this.userFilter();
+        })
+        .catch(function () {
+          //console.log(error);
+          alert('エラーが発生しました。');
+        });
     },
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.Cell) {
@@ -720,7 +721,9 @@ div#user-list_scrollbar {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
+      .wj-state-active
+    ) {
     transition: all 0s;
     background: $grid_hover_background;
   }

@@ -218,46 +218,10 @@ export default {
       checkAll = s.selectedIndex;
       this.userFilter(s);
     },
-    createUser: function (response) {
+    createUser: function () {
       let usersData = [];
       usersData['status'] = 'idle';
       let riyo_inf = [];
-      //axiosを利用するとき下記有効
-      // for (let i = 0; i < response.data.length; i++) {
-      //   riyo_inf.push({
-      //     riid: response.data[i]['riid'],
-      //     riyocode: response.data[i]['riyocode'],
-      //     names: response.data[i]['names'],
-      //     kana: response.data[i]['kana'],
-      //     jukyuid: response.data[i]['jukyuid'],
-      //     jyukyuno: response.data[i]['jyukyuno'],
-      //     sityoid: response.data[i]['sityoid'],
-      //     jidoid: response.data[i]['jidoid'],
-      //     kzkname: response.data[i]['kzkname'],
-      //     kakutei: response.data[i]['kakutei'],
-      //     print: response.data[i]['print'],
-      //   });
-      // }
-
-      //axiosを利用しないとき下記有効
-      console.log(response);
-      userCount = 100;
-      for (let i = 0; i < userCount; i++) {
-        riyo_inf.push({
-          riid: '5500' + i,
-          riyocode: '123456' + (Math.floor(Math.random() * 9) + 1),
-          names: '東経太郎' + i,
-          kana: 'トウケイタロウ' + i,
-          jukyuid: i * 10,
-          jyukyuno: '876543210' + i,
-          sityoid: i * 30,
-          jidoid: i * 40,
-          kzkname: '東経家族' + i,
-          kakutei: 0,
-          print: '',
-        });
-      }
-      //--axiosを利用しないとき下記有効
 
       usersData['riyo_inf'] = riyo_inf;
       userDataSelect = usersData;
@@ -355,41 +319,6 @@ export default {
     onInitializedUser: function (flexGrid) {
       this.userGrid = flexGrid;
       let _self = this;
-      //axiosを利用する時下記有効
-      // const axiosApi = axios.create({
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // });
-      // axiosApi
-      //   .get(userUrl)
-      //   .then(function (response) {
-      //     _self.usersData = _self.createUser(response);
-
-      //     let i = 0;
-      //     while (flexGrid.columns.length < 3) {
-      //       let clm = new wjGrid.Column();
-      //       if (i == 0) clm.width = '2*';
-      //       if (i == 1) clm.width = '2*';
-      //       if (i == 2) clm.width = '1*';
-      //       flexGrid.columns.push(clm);
-      //       i++;
-      //     }
-
-      //     while (flexGrid.rows.length < userCount) {
-      //       flexGrid.rows.push(new wjGrid.Row());
-      //     }
-      //     flexGrid.formatItem.addHandler(userCell);
-      //     // configure the grid
-      //     flexGrid.alternatingRowStep = 0;
-
-      //     //初回のユーザ選択値
-      //     _self.$emit('child-select', 0);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     alert('error');
-      //   });
 
       //axiosを利用しない時下記1行有効
       _self.usersData = _self.createUser();
@@ -455,7 +384,7 @@ function userCell(s, e) {
   }
 }
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 
 div#user-list-print_scrollbar {

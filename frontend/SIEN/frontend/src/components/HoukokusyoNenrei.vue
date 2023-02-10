@@ -95,7 +95,7 @@
               :allowResizing="true"
               :allowSorting="false"
               :allowDragging="false"
-              :selectionMode="'Row'"
+              :selectionMode="'Cell'"
               :initialized="onInitializeKouseiGrid"
               :itemsSourceChanged="onItemsSourceChanged"
               :itemsSource="viewDataKousei"
@@ -106,7 +106,12 @@
           </v-row>
           <v-row no-gutters class="rowStyle_Input mt-1">
             <v-spacer></v-spacer>
-            <v-btn class="mr-1" width="75" height="25" @click="addClicked">
+            <v-btn
+              class="mr-1"
+              width="75"
+              height="25"
+              @click="addClickedKousei"
+            >
               登録
             </v-btn>
           </v-row>
@@ -128,6 +133,9 @@ import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
 import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
+import { deleteConnect } from '@connect/deleteConnect';
+import { putConnect } from '@connect/putConnect';
+import { postConnect } from '@connect/postConnect';
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -186,11 +194,8 @@ export default {
         { rnd2: 1, name: '以下' },
         { rnd2: 2, name: '未満' },
       ],
-      viewData: [{ code: 11, codeD: '011', name: 'aaa' }],
-      viewDataKousei: [
-        { data1: '1', rnd1: 1, data2: '1', rnd2: 1 },
-        { data1: '1', rnd1: 2, data2: '1', rnd2: 2 },
-      ],
+      viewData: [],
+      viewDataKousei: [],
       editors: {
         kaisiCombo: new ComboBox(document.createElement('div'), {
           itemsSource: [
@@ -218,6 +223,9 @@ export default {
     window.addEventListener('resize', this.calculateWindowHeight);
     this.calculateWindowHeight();
     this.setPrintEvent();
+    // 初期データ読込
+    this.setViewData();
+    this.clrClicked();
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -253,7 +261,7 @@ export default {
         if (ht.panel == flexGrid.cells) {
           this.selctedPatternItem = flexGrid.cells.rows[ht.row].dataItem;
 
-          this.setViewData();
+          this.setViewDataKousei();
         }
       });
 
@@ -295,8 +303,34 @@ export default {
           if (ht.col == 0 || ht.col == 2) {
             // 完全編集モードへ移行
             flexGrid.startEditing(true);
-            flexGrid.imeEnabled = true;
+            flexGrid.imeEnabled = false;
           }
+        }
+      });
+      flexGrid.beginningEdit.addHandler(function (s, e) {
+        setTimeout(function () {
+          // セルエディタの最大文字数を設定します。
+          if (s.activeEditor == null) {
+            return;
+          }
+          if (e.col == 0) {
+            s.activeEditor.setAttribute('maxlength', '3');
+          } else if (e.col == 2) {
+            s.activeEditor.setAttribute('maxlength', '3');
+          }
+        });
+      });
+      let self = this;
+      flexGrid.cellEditEnding.addHandler((s, e) => {
+        // 半角数字以外は除去
+        s.activeEditor.value = self.hankaku2Zenkaku(s.activeEditor.value);
+        s.activeEditor.value = s.activeEditor.value.replace('.', '');
+        s.activeEditor.value = s.activeEditor.value.replace('-', '');
+        let numVal = self.hankaku2Zenkaku(s.activeEditor.value);
+        if (isNaN(numVal)) {
+          e.cancel = true;
+          e.stayInEditMode = true;
+          alert('数字を入力してください。');
         }
       });
 
@@ -372,6 +406,21 @@ export default {
         pJigyoid: 62,
       };
       console.log(params);
+      getConnect('/MstNenreikoseiPtn', params, 'SIENT').then((result) => {
+        console.log(12345);
+        console.log(result);
+        this.viewData = result;
+        this.screenFlag = false;
+      });
+    },
+    setViewDataKousei() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pPtnId: this.selctedPatternItem.id,
+      };
+      console.log(params);
       getConnect('/MstNenreikosei', params, 'SIENT').then((result) => {
         console.log(12345);
         console.log(result);
@@ -414,13 +463,111 @@ export default {
       });
     },
     clrClicked() {
-      this.selctedPatternItem = { code: '' };
+      this.selctedPatternItem = { id: 0, code: '' };
+      this.viewDataKousei = [];
     },
     delClicked() {
-      console.log('del');
+      if (this.selctedPatternItem.id == 0) {
+        alert(messageConst.WARN.NO_SELECT);
+        return;
+      }
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pId: this.selctedPatternItem.id,
+      };
+      if (!confirm(messageConst.CONFIRM.DELETE)) {
+        return;
+      }
+      deleteConnect('/MstNenreikoseiPtn', params, 'SIENT').then((result) => {
+        if (result.okflg == true) {
+          this.setViewData();
+          this.clrClicked();
+        } else {
+          alert(result.msg);
+        }
+      });
     },
     addClicked() {
-      console.log('add');
+      if (String(this.selctedPatternItem.code).length == 0) {
+        alert('コード' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
+      if (this.selctedPatternItem.name.length == 0) {
+        alert('パターン名' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
+
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+
+      if (this.selctedPatternItem.id == 0) {
+        let body = {
+          jigyoid: 62,
+          id: 0,
+          code: this.selctedPatternItem.code,
+          name: this.selctedPatternItem.name,
+        };
+        if (!confirm(messageConst.CONFIRM.POST)) {
+          return;
+        }
+        postConnect('/MstNenreikoseiPtn', params, 'SIENT', body).then(
+          (result) => {
+            if (result.okflg == true) {
+              this.setViewData();
+              this.clrClicked();
+            } else {
+              alert(result.msg);
+            }
+          }
+        );
+      } else {
+        let body = {
+          jigyoid: 62,
+          id: this.selctedPatternItem.id,
+          code: this.selctedPatternItem.code,
+          name: this.selctedPatternItem.name,
+        };
+        if (!confirm(messageConst.CONFIRM.PUT)) {
+          return;
+        }
+        putConnect('/MstNenreikoseiPtn', params, 'SIENT', body).then(
+          (result) => {
+            if (result.okflg == true) {
+              this.setViewData();
+              this.clrClicked();
+            } else {
+              alert(result.msg);
+            }
+          }
+        );
+      }
+    },
+    addClickedKousei() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+      };
+      let body = {
+        jigyoid: 62,
+        ptnId: this.selctedPatternItem.id,
+        dataList: this.viewDataKousei.concat(),
+      };
+      console.log(body);
+      if (!confirm(messageConst.CONFIRM.PUT)) {
+        return;
+      }
+      putConnect('/MstNenreikosei', params, 'SIENT', body).then((result) => {
+        if (result.okflg == true) {
+          this.setViewData();
+          this.clrClicked();
+        } else {
+          alert(result.msg);
+        }
+      });
     },
     addRowClicked() {
       if (

@@ -131,7 +131,7 @@
           :width="val.width"
           :height="val.height"
           :fill="val.color"
-          :stroke="val.stroke"
+          :stroke="`#ccc`"
           stroke-width="1"
           class="rects"
         />
@@ -142,10 +142,13 @@
           :y="val.yText"
           :width="val.width"
           :height="val.height"
+          @click="weekInput(val.id)"
         >
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <center v-bind="attrs" v-on="on">{{ val.text }}</center>
+              <center v-bind="attrs" v-on="on" :style="`color: ${val.stroke}`">
+                {{ val.text }}
+              </center>
             </template>
             <span>{{ val.text }}</span>
           </v-tooltip>
@@ -244,6 +247,7 @@
                     :value="key"
                     small
                     class="input_week_btn"
+                    height="24"
                     >{{ w }}</v-btn
                   >
                 </v-btn-toggle>
@@ -301,13 +305,13 @@
               <v-btn
                 small
                 class="ml-auto"
-                @click="onRegistSchedule()"
+                @click="onRegistSchedule(`${schedule_id}`)"
                 :disabled="scheduleRegistFlag"
                 >登録</v-btn
               >
             </v-row>
           </v-col>
-          <v-col class="weekInputFlag__right">
+          <v-col class="weekInputFlag__right ml-1">
             <label>大分類</label>
             <select v-model="daibunrui" class="ml-1">
               <option
@@ -409,7 +413,8 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 
 const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
-const WEEKPLAN_URL = '/WeekPlan'; // 週間予定データ
+// const SAISHINREKI_URL = '/WeekSaishinreki'; // 週間計画最新
+const KBN = 2;
 const TRACEID = 123;
 const UNIQID = 3;
 const JIGYOID = 1;
@@ -420,6 +425,7 @@ const PLANHEIGHT = 11;
 const PLANWIDTH = 128; // 予定表示部分横幅
 const TIMEWIDTH = 100; // 時間軸幅
 const STARTTIME = 500; // 開始時間5時
+const ERRORMESSAGE = '2件登録されているデータが存在します。';
 export default {
   components: {},
   data() {
@@ -444,13 +450,14 @@ export default {
           name: '余韻',
         },
       ],
+      schedule_id: 0,
       input_backColor: '#FFFFFF',
       input_fontColor: '#000000',
       input_komoku: '',
       input_time_start: '',
       input_time_end: '',
       input_week: [],
-      week: ['毎日', '月', '火', '水', '木', '金', '土'],
+      week: ['毎日', '月', '火', '水', '木', '金', '土', '日・祝'],
       historyView: [],
       checkCompleteFlag: false,
       weekInputFlag: false,
@@ -531,6 +538,7 @@ export default {
     },
 
     getSchedule() {
+      /*
       // 適当な日付を指定したいので、今日の日付を指定
       // 12時以降の日付を指定する場合は翌日を指定
       let tmpDay = dayjs().format('YYYY-MM-DD');
@@ -552,16 +560,28 @@ export default {
           week: 1,
           color: '#fbebd6',
           stroke: 'black',
-          text: '朝食aa',
+          text: '朝食bb',
+        },
+        {
+          id: 3,
+          startTime: tmpDay + ' 12:00',
+          endTime: tmpDay + ' 20:30',
+          week: 1,
+          color: '#fbebd6',
+          stroke: '#ff7f50',
+          text: '朝食cc',
         },
       ];
+      */
+      let data = [];
       let tmp = this.settingSchedule(data);
 
       return tmp;
     },
 
-    onRegistSchedule() {
-      let tmp = this.viewSchedule;
+    onRegistSchedule(id = 0) {
+      let tmp = [];
+      tmp = [...this.viewSchedule];
 
       // 適当な日付を指定したいので、今日の日付を指定
       // 12時以降の日付を指定する場合は翌日を指定
@@ -577,16 +597,16 @@ export default {
         st = nextDay;
         ed = nextDay;
       }
-      let tmpWeek = this.input_week;
+      let inputWeek = this.input_week;
+
       let _self = this;
-      tmpWeek.map(function (value) {
+      inputWeek.map(function (value) {
         let max = Math.max.apply(
           null,
           tmp.map(function (o) {
             return o.id;
           })
         );
-
         tmp.push({
           id: max + 1,
           startTime: st + ' ' + _self.input_time_start,
@@ -597,73 +617,119 @@ export default {
           text: _self.input_komoku,
         });
       });
-      this.viewSchedule = this.settingSchedule(tmp);
-      this.weekInputFlag = false;
+      // idがある時はデータのdelete/insertを行う
+      // 指定IDのデータ削除
+      if (id > 0) {
+        let k = tmp.findIndex((value) => value.id == id);
+        tmp.splice(k, 1);
+      }
+      let errorFlag = this.registDataErrorCheck(tmp);
+      if (errorFlag) {
+        alert(ERRORMESSAGE);
+      } else {
+        this.viewSchedule = this.settingSchedule(tmp);
+        this.weekInputFlag = false;
+      }
     },
     settingSchedule(data) {
       // 日付の重複チェック
-      // 重複している場合はflagを立てる
-      // 0:初期値 1:左半分 2:右半分
-      // 初回はすべて0にしておく
-      for (let i = 0; i < data.length; i++) {
-        data[i].halfType = 0;
-      }
+      // 2件以上重複データがある時はエラーを表示
+      let errorFlag = this.registDataErrorCheck(data);
       let tmp = [];
+      if (errorFlag) {
+        alert(ERRORMESSAGE);
+      } else {
+        // 重複している場合はflagを立てる
+        // 0:初期値 1:左半分 2:右半分
+        // 初回はすべて0にしておく
+        for (let i = 0; i < data.length; i++) {
+          data[i].halfType = 0;
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          let halfType = 0;
+          for (let j = 0; j < data.length; j++) {
+            if (
+              data[i].id != data[j].id &&
+              data[i].week == data[j].week &&
+              ((data[i].endTime >= data[j].startTime &&
+                data[i].startTime <= data[j].endTime) ||
+                (data[i].startTime <= data[j].startTime &&
+                  data[i].endTime >= data[j].startTime))
+            ) {
+              if (data[j].halfType == 1) {
+                halfType = 2;
+              } else {
+                halfType = 1;
+              }
+            }
+          }
+          data[i].halfType = halfType;
+
+          // 時間軸におけるyとyTextの位置
+          // 初期値をendTimeの日付の5:00からとする
+          // 基準日
+          let first = dayjs().format('YYYY-MM-DD 05:00');
+          let st = dayjs(data[i].startTime).unix();
+          let ed = dayjs(data[i].endTime).unix();
+          let fst = dayjs(first).unix();
+          let startPos = st - fst;
+          let endPos = ed - st;
+          let sec = 30 * 60;
+          let div = startPos / sec;
+          let divEnd = endPos / sec;
+          // 高さの指定
+          data[i].height = PLANHEIGHT * divEnd;
+          // 曜日におけるxとxTextの位置
+          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week;
+          data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week;
+          // 右半分表示
+          if (halfType == 2) {
+            data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+            data[i].xText =
+              TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+          }
+
+          // 横幅の指定
+          data[i].width = PLANWIDTH;
+          if (halfType) {
+            data[i].width = PLANWIDTH / 2;
+          }
+
+          data[i].y = CALENDARSEPALATE + PLANHEIGHT * div;
+          data[i].yText = CALENDARSEPALATE + PLANHEIGHT * div - 2;
+
+          tmp.push(data[i]);
+        }
+        this.viewSchedule = tmp.slice();
+      }
+      return tmp;
+    },
+    // 登録データのエラーチェック
+    registDataErrorCheck(data) {
+      let errorCnt = 0;
+      let errorFlag = false;
       for (let i = 0; i < data.length; i++) {
-        let halfType = 0;
+        errorCnt = 0;
         for (let j = 0; j < data.length; j++) {
           if (
-            data[i].id != data[j].id &&
+            data[i].id > data[j].id &&
             data[i].week == data[j].week &&
             ((data[i].endTime >= data[j].startTime &&
               data[i].startTime <= data[j].endTime) ||
               (data[i].startTime <= data[j].startTime &&
                 data[i].endTime >= data[j].startTime))
           ) {
-            halfType = 1;
-            if (data[j].halfType > 0) {
-              halfType = 2;
-            }
+            errorCnt++;
+          }
+          // エラーカウントが2以上の文字があればエラーを表示
+          if (errorCnt >= 2) {
+            errorFlag = true;
+            break;
           }
         }
-        data[i].halfType = halfType;
-
-        // 時間軸におけるyとyTextの位置
-        // 初期値をendTimeの日付の5:00からとする
-        // 基準日
-        let first = dayjs().format('YYYY-MM-DD 05:00');
-        let st = dayjs(data[i].startTime).unix();
-        let ed = dayjs(data[i].endTime).unix();
-        let fst = dayjs(first).unix();
-        let startPos = st - fst;
-        let endPos = ed - st;
-        let sec = 30 * 60;
-        let div = startPos / sec;
-        let divEnd = endPos / sec;
-        // 高さの指定
-        data[i].height = PLANHEIGHT * divEnd;
-        // 曜日におけるxとxTextの位置
-        data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week;
-        data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week;
-        // 右半分表示
-        if (halfType == 2) {
-          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
-          data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
-        }
-
-        // 横幅の指定
-        data[i].width = PLANWIDTH;
-        if (halfType > 0) {
-          data[i].width = PLANWIDTH / 2;
-        }
-
-        data[i].y = CALENDARSEPALATE + PLANHEIGHT * div;
-        data[i].yText = CALENDARSEPALATE + PLANHEIGHT * div - 2;
-
-        tmp.push(data[i]);
       }
-      this.viewSchedule = tmp;
-      return tmp;
+      return errorFlag;
     },
     // ダイアログ時間設定
     onTimeMinute() {
@@ -724,7 +790,31 @@ export default {
     /**********************************
      * 週間項目入力
      */
-    weekInput() {
+    weekInput(k = 0) {
+      // 選択データの取得
+      if (k > 0) {
+        let tmp = '';
+        tmp = this.viewSchedule.find(function (value) {
+          if (value.id == k) {
+            return value;
+          }
+        });
+        this.schedule_id = k;
+        this.input_komoku = tmp.text;
+        this.input_week = [tmp.week + 1];
+        this.input_time_start = dayjs(tmp.startTime).format('HH:mm');
+        this.input_time_end = dayjs(tmp.endTime).format('HH:mm');
+        this.input_backColor = tmp.color;
+        this.input_fontColor = tmp.stroke;
+      } else {
+        this.schedule_id = k;
+        this.input_komoku = '';
+        this.input_week = [];
+        this.input_time_start = '';
+        this.input_time_end = '';
+        this.input_backColor = '#FFFFFF';
+        this.input_fontColor = '#000000';
+      }
       this.onTimeMinute();
       this.weekInputFlag = true;
     },
@@ -759,7 +849,7 @@ export default {
     onInitializedHistory() {
       let params = {
         jigyoid: JIGYOID,
-        intcode: this.riid,
+        intcode: 100,
         uniqid: UNIQID,
         traceid: TRACEID,
       };
@@ -904,17 +994,20 @@ export default {
      * 週間予定データを取得
      */
     getWeekPlanData() {
-      let ymd = dayjs().format('YYYYMMDD');
       let params = {
         jigyoid: JIGYOID,
-        // intcode: this.riid,
         intcode: 100,
-        // ymd: '20220401',
-        ymd: ymd,
+        cntid: 1,
+        kbn: KBN,
+        uniqid: UNIQID,
+        traceid: TRACEID,
       };
-      getConnect(WEEKPLAN_URL, params, FOLDER).then((result) => {
+      console.log(params);
+      /*
+      getConnect(SAISHINREKI_URL, params, FOLDER).then((result) => {
         console.log(result);
       });
+      */
     },
     /****************
      * ユーザー一覧を押下

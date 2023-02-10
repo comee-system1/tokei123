@@ -345,6 +345,7 @@ export default {
         pTidayid: 0,
       };
       getConnect('/Houkokusyo', params, 'SIENT').then((result) => {
+        console.log(result);
         this.viewDataAll = result;
         this.createHtml();
         this.screenFlag = false;

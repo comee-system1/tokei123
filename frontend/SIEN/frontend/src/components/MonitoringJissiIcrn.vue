@@ -669,7 +669,7 @@ export default {
         if (e.col == 1 && tmpitem.age < 18) {
           wjCore.addClass(e.cell, 'under18');
         }
-        if (tmpitem.chusi == '○' || tmpitem.enki == '○') {
+        if (tmpitem.chusi == 1 || tmpitem.enki == 1) {
           if (11 <= e.col && e.col <= 20) {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }

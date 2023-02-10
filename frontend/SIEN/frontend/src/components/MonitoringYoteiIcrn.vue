@@ -1099,7 +1099,7 @@ export default {
         obj1.rcode = String(el.rcode);
         obj1.rcodeD = obj1.rcode.padStart(7, '0');
         obj1.birthMonth = Number(el.birth.substring(4, 6));
-        obj1.mymdFmt = this.getFmtDate(el.mymd);
+        // obj1.mymdFmt = this.getFmtDate(el.mymd);
         obj1.rksymdFmt = this.getFmtDate(el.rksymd);
         obj1.rkeymdFmt = this.getFmtDate(el.rkeymd);
         obj1.keikakuYmdFmt = this.getFmtDate(el.keikakuYmd);

@@ -484,6 +484,7 @@
     import { deleteConnect } from '../connect/deleteConnect';
     import dayjs from '../../node_modules/dayjs';
     import sysConst from '../utiles/const';
+    import * as wjCore from '@grapecity/wijmo';
 
     let INS_KBN_NAIYO = 0;  //登録区分:データ  
     let INS_KBN_HEAD = 1;   //登録区分:ヘッダ
@@ -1385,7 +1386,7 @@
                     if(label.style != null)        
                     {
                       clearInterval(winter);
-                      label.innerText = this.viewdata[ht.row].kiou_syobyonm.substring(0,20);  //一旦20文字
+                      label.innerHTML = wjCore.escapeHtml(this.viewdata[ht.row].kiou_syobyonm.substring(0,20));  //一旦20文字
                     }
                   }, "interval");
                   

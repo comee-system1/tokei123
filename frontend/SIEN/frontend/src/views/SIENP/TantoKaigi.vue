@@ -251,7 +251,7 @@
                 class="input_text pa-1 wflex"
               />
             </v-row>
-            <v-layout no-gutters class="mt-1 mr-1" v-show="onDisplayFlag">
+            <v-layout no-gutters class="mr-1" v-show="onDisplayFlag">
               <v-card
                 elevation="0"
                 tile
@@ -2568,8 +2568,8 @@ div#tantokaigi {
     padding: 3px;
     border: 1px solid;
     border-color: $light-gray;
-    min-height: 330px;
-    height: 330px;
+    min-height: 320px;
+    // height: 330px;
     overflow-y: scroll;
   }
   ::-webkit-scrollbar {
