@@ -291,12 +291,16 @@
                 <label class="low">色</label>
               </div>
               <div class="ml-1">
-                <span class="text-caption">背景色</span>
+                <v-btn small height="24" @click="onColorFlag(1)">背景色</v-btn>
+                <!--
                 <input type="color" v-model="input_backColor" class="min" />
+                -->
               </div>
-              <div class="ml-5">
-                <span class="text-caption">文字色</span>
+              <div class="ml-1">
+                <v-btn small height="24" @click="onColorFlag(2)">文字色</v-btn>
+                <!--
                 <input type="color" v-model="input_fontColor" class="min" />
+                -->
               </div>
             </div>
             <v-row class="mt-2" no-gutters>
@@ -399,6 +403,12 @@
         </v-row>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="colorFlag" width="400px">
+      <v-card elevation="0" tile>
+        <v-card-title class="dialog_title"> aaaa </v-card-title>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -479,6 +489,7 @@ export default {
       // 項目1時間当たり22
       rects: [],
       dailyFlag: false,
+      colorFlag: false,
       dailyWidth: 0,
       dailyType: '',
       mainLifeTextarea: '',
@@ -1022,6 +1033,12 @@ export default {
       // 選択したユーザー一覧から履歴を取得
       this.onInitializedHistory();
     },
+    /****************************
+     * 色コードダイアログ
+     */
+    onColorFlag() {
+      this.colorFlag = true;
+    },
   },
 };
 </script>
@@ -1051,6 +1068,7 @@ $middle: 48px;
       fill: $headerColor;
     }
   }
+
   svg line {
     fill: none;
   }
@@ -1115,6 +1133,11 @@ $middle: 48px;
       padding: 1px 2px;
       font-size: 0.85rem;
     }
+  }
+
+  #colorDialog {
+    width: 400px;
+    border: 1px solid red;
   }
 }
 .v-navigation-drawer__content,
