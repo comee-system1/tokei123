@@ -748,20 +748,22 @@ export default {
           params.pEymd = this.targetEYm;
         }
         console.log(params);
-        getConnect('/Uktk', params, 'SIENT').then((result) => {
-          console.log(12345);
-          console.log(result);
-
-          if (result != undefined) {
-            this.viewdataAll = result;
-            this.userFilter();
-            this.screenFlag = true;
-            this.$refs.uketukeTouroku.resetEditflg();
-          } else {
-            alert('検索処理で、エラーが発生しました。');
-            this.screenFlag = false;
-          }
-        });
+        let self = this;
+        getConnect('/Uktk', params, 'SIENT')
+          .then((result) => {
+            self.screenFlag = true;
+            self.viewdataAll = result;
+            self.userFilter();
+            self.$refs.uketukeTouroku.resetEditflg();
+          })
+          .catch(function (error) {
+            self.screenFlag = false;
+            alert(
+              '検索処理で、エラーが発生しました。[' +
+                error.response.data.message +
+                ']'
+            );
+          });
       } else {
         this.userFilter();
         this.screenFlag = false;

@@ -23,10 +23,10 @@
         "appenders": {
             "logger": {
                 "type": "dateFile",
-                "filename": "log/app",
+                "filename": "log/app.log",
+                "backups": 14,
                 "compress": true,
-                "pattern": "yyyyMMdd.log",
-                "alwaysIncludePattern": "true",
+                "pattern": "-yyyy-MM-dd",
                 "layout": {
                     "type": "pattern",
                     "pattern": "[%d{yyyy-MM-dd hh:mm:ss.SSS}][%5p][%X{requestId}] %m"

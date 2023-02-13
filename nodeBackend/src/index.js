@@ -1,15 +1,15 @@
 // @ts-check
 const Express = require('express');
-
+const i18n = require('i18n')
 const HttpContext = require('express-http-context');
 const BodyParser = require("body-parser");
 const Config = require('config');
 const Helmet = require('helmet');
 const Logger = require('./utils/logger').logger();
 const {
-    check,
     validationResult
-} = require('express-validator')
+} = require('express-validator');
+
 
 // Express起動用のポート番号を指定する
 const Port = process.env.PORT || Config.get('express').port;
@@ -19,6 +19,21 @@ App.use(BodyParser.json());
 App.use(BodyParser.urlencoded({
     extended: true
 }));
+
+// i18nの利用設定
+i18n.configure({
+    // 利用するlocalesを設定。
+    locales: ['ja', 'en'],
+    defaultLocale: 'ja',
+    // 辞書ファイルのありかを指定
+    directory: __dirname + "/locales",
+    // オブジェクトを利用したい場合はtrue
+    objectNotation: true
+});
+App.use(i18n.init);
+module.exports.i18n = i18n;
+const validate = require("../validate/validate");
+
 
 // @ts-ignore
 App.use(Helmet({
@@ -53,49 +68,65 @@ App.listen(Port, () =>
     Logger.info('リクエストの待ち受けを開始します。[Port=' + Port + ']')
 );
 
+// バリデーション
+let validateCheck = validate.ERRORCHECK;
+
 // getでリクエストがきたときの処理
-App.get('/:folder/:name', (req, res) => {
-    res.type('text/plain');
-    try {
-        res.header('Content-Type', 'application/json; charset=utf-8')
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+App.get('/:folder/:name/:kbn?',
+    validateCheck, async (req, res) => {
+        res.type('text/plain');
 
-        let filename = `${req.params.name}`;
 
-        let params = `${req.query.param}`;
-        params = JSON.parse(params);
+        try {
+            const errors = validationResult(req);
+            console.log(errors);
+            if (!errors.isEmpty()) {
+                let error = JSON.stringify(errors.array());
+                // console.log(error);
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+                return res.status(422).send('{"message":"サーバで予期しないエラーが発生しました。"}');
+            }
+            res.header('Content-Type', 'application/json; charset=utf-8')
+            res.header('Access-Control-Allow-Origin', req.headers.origin);
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 
-        params['traceid'] = req.query.traceid;
-        params['uniqid'] = req.query.uniqid;
+            let filename = `${req.params.name}`;
+            let kbn = `${req.params.kbn}`;
 
-        let folder = `${req.params.folder}`;
-        const obj = require('./api/' + folder + '/' + filename);
+            let params = `${req.query.param}`;
+            params = JSON.parse(params);
 
-        obj.connected(params).then(function (response) {
-            res.send({
-                response: response
+            params['traceid'] = req.query.traceid;
+            params['uniqid'] = req.query.uniqid;
+
+            let folder = `${req.params.folder}`;
+            console.log(filename);
+            const obj = require('./api/' + folder + '/' + filename);
+
+            obj.connected(params, kbn).then(function (response) {
+                res.send({
+                    response: response
+                });
+                Logger.info('処理が正常終了しました。');
+            }).catch(function (error) {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+                res.status(500)
+                    .send('{"message":"サーバで予期しないエラーが発生しました。"}');
             });
-            Logger.info('処理が正常終了しました。');
-        }).catch(function (error) {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
-            res.status(500)
-                .send('{"message":"サーバで予期しないエラーが発生しました。"}');
-        });
-    } catch (error) {
-        Logger.error(error);
-        if (error.code == 'MODULE_NOT_FOUND') {
-            Logger.error('URLが不正です。');
-            res.status(404)
-                .send('{"message":"URLが不正です。"}');
-        } else {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
-            res.status(500)
-                .send('{"message":"サーバで予期しないエラーが発生しました。"}');
-        }
+        } catch (error) {
+            Logger.error(error);
+            if (error.code == 'MODULE_NOT_FOUND') {
+                Logger.error('URLが不正です。');
+                res.status(404)
+                    .send('{"message":"URLが不正です。"}');
+            } else {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+                res.status(500)
+                    .send('{"message":"サーバで予期しないエラーが発生しました。"}');
+            }
 
-    }
-});
+        }
+    });
 // postの処理
 App.post('/:folder/:name', (req, res) => {
     try {

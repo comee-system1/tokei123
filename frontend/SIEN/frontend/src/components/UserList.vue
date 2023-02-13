@@ -474,65 +474,6 @@ export default {
         data = array;
       }
 
-      // let alpval = this.alphaSearch;
-      // if (alpval > 0) {
-      //   let get = [];
-      //   data.forEach(function (value) {
-      //     switch (alpval) {
-      //       case 1:
-      //         if (value.kana.match(/^[ｱ-ｵ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 2:
-      //         if (value.kana.match(/^[ｶ-ｺ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 3:
-      //         if (value.kana.match(/^[ｻ-ｿ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 4:
-      //         if (value.kana.match(/^[ﾀ-ﾄ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 5:
-      //         if (value.kana.match(/^[ﾅ-ﾉ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 6:
-      //         if (value.kana.match(/^[ﾊ-ﾎ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 7:
-      //         if (value.kana.match(/^[ﾏ-ﾓ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 8:
-      //         if (value.kana.match(/^[ﾔ-ﾖ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 9:
-      //         if (value.kana.match(/^[ﾗ-ﾛ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //       case 10:
-      //         if (value.kana.match(/^[ﾜ-ﾝ]/)) {
-      //           get.push(value);
-      //         }
-      //         break;
-      //     }
-      //   });
-      //   data = get;
-      // }
       if (document.getElementById('alpCommon') != null) {
         data = this.$refs.alp.alphabetFilter(data, 'kana');
       }
@@ -669,14 +610,15 @@ export default {
     },
     monthSelect() {
       let split = this.pickerYoteiYm.split('-');
-      this.yoteiYm = dayjs({
-        years: split[0],
-        months: Number(split[1]) - 1,
-        days: 1,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      });
+      // this.yoteiYm = dayjs({
+      //   years: split[0],
+      //   months: Number(split[1]) - 1,
+      //   days: 1,
+      //   hours: 0,
+      //   minutes: 0,
+      //   seconds: 0,
+      // });
+      this.yoteiYm = dayjs(split[0] + '-' + split[1] + '-01');
       this.datepickerYoteiYm_dialog = false;
     },
   },

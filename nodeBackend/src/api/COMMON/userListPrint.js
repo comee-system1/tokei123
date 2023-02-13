@@ -10,7 +10,6 @@ exports.connected = async function (param) {
     apiRun.setUniqID(param.uniqid);
     apiRun.setTraceID(param.traceid);
     return await service.getData(apiRun).then(result => {
-
         let returns = {};
         returns = {
             icrn_inf: result.data

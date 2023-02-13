@@ -1,0 +1,12 @@
+{
+	"item": {
+		"traceid": "トレースID",
+		"uniqid": "ユニークID"
+	},
+	"validation": {
+		"message": {
+			"required": "は必須入力です。",
+			"number": "は数値を入力してください。"
+		}
+	}
+}

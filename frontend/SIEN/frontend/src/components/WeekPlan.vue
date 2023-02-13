@@ -423,7 +423,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 
 const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
-// const SAISHINREKI_URL = '/WeekSaishinreki'; // 週間計画最新
+const SAISHINREKI_URL = '/weekKeikakuSaishinReki'; // 週間計画最新
 const KBN = 2;
 const TRACEID = 123;
 const UNIQID = 3;
@@ -1008,17 +1008,11 @@ export default {
       let params = {
         jigyoid: JIGYOID,
         intcode: 100,
-        cntid: 1,
-        kbn: KBN,
-        uniqid: UNIQID,
-        traceid: TRACEID,
+        ymd: dayjs().format('YYYYMMDD'),
       };
-      console.log(params);
-      /*
-      getConnect(SAISHINREKI_URL, params, FOLDER).then((result) => {
+      getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER).then((result) => {
         console.log(result);
       });
-      */
     },
     /****************
      * ユーザー一覧を押下
