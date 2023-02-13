@@ -1,0 +1,70 @@
+{
+    "express": {
+        "port": "8000"
+    },
+    "axios": {
+        "timeout": "5000"
+    },
+    "system_auth": {
+        "x_api_account": "tokei",
+        "x_api_key": "tokei"
+    },
+    "api_common": {
+        "base_url": "http://192.168.10.32/common/",
+        "x_api_account": "IPADUUID001",
+        "x_api_key": "888"
+    },
+    "api_kaigo": {
+        "base_url": "http://192.168.10.34:80/",
+        "x_api_account": "IPADUUID001",
+        "x_api_key": "888"
+    },
+    "log4js": {
+        "appenders": {
+            "logger": {
+                "type": "dateFile",
+                "filename": "log/app",
+                "compress": true,
+                "pattern": "yyyyMMdd.log",
+                "alwaysIncludePattern": "true",
+                "layout": {
+                    "type": "pattern",
+                    "pattern": "[%d{yyyy-MM-dd hh:mm:ss.SSS}][%5p][%X{requestId}] %m"
+                }
+            },
+            "error_logger_appender": {
+                "type": "dateFile",
+                "filename": "log/error.log",
+                "backups": 14,
+                "compress": true,
+                "pattern": "-yyyy-MM-dd",
+                "layout": {
+                    "type": "pattern",
+                    "pattern": "[%d{yyyy-MM-dd hh:mm:ss.SSS}][%5p][%X{requestId}] %m"
+                }
+            },
+            "error_logger": {
+                "type": "logLevelFilter",
+                "appender": "error_logger_appender",
+                "level": "error"
+            },
+            "out": {
+                "type": "stdout",
+                "layout": {
+                    "type": "pattern",
+                    "pattern": "[%d{yyyy-MM-dd hh:mm:ss.SSS}][%5p][%X{requestId}] %m"
+                }
+            }
+        },
+        "categories": {
+            "default": {
+                "appenders": [
+                    "logger",
+                    "error_logger"
+                ],
+                "level": "debug",
+                "enableCallStack": true
+            }
+        }
+    }
+}
