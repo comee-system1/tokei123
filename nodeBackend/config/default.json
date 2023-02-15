@@ -5,19 +5,15 @@
     "axios": {
         "timeout": "5000"
     },
-    "system_auth": {
-        "x_api_account": "tokei",
-        "x_api_key": "tokei"
+    "api_sogo": {
+        "base_url": "http://192.168.10.32:80/",
+        "x_api_account": "toukei-sogo-api",
+        "x_api_key": "urxLpRzn0ilqcWoS"
     },
     "api_common": {
-        "base_url": "http://192.168.10.32/common/",
-        "x_api_account": "IPADUUID001",
-        "x_api_key": "888"
-    },
-    "api_kaigo": {
-        "base_url": "http://192.168.10.34:80/",
-        "x_api_account": "IPADUUID001",
-        "x_api_key": "888"
+        "base_url": "http://192.168.10.32:80/",
+        "x_api_account": "toukei-common-api",
+        "x_api_key": "jKGbd4PqxN5yzyxn"
     },
     "log4js": {
         "appenders": {

@@ -1,39 +1,23 @@
 // @ts-check
 const Express = require('express');
-const i18n = require('i18n')
 const HttpContext = require('express-http-context');
 const BodyParser = require("body-parser");
 const Config = require('config');
 const Helmet = require('helmet');
+const cors = require('cors');
 const Logger = require('./utils/logger').logger();
-const {
-    validationResult
-} = require('express-validator');
 
 
 // Express起動用のポート番号を指定する
 const Port = process.env.PORT || Config.get('express').port;
 const App = Express();
+
+
 // 基本的な機能を利用可能にする
 App.use(BodyParser.json());
 App.use(BodyParser.urlencoded({
     extended: true
 }));
-
-// i18nの利用設定
-i18n.configure({
-    // 利用するlocalesを設定。
-    locales: ['ja', 'en'],
-    defaultLocale: 'ja',
-    // 辞書ファイルのありかを指定
-    directory: __dirname + "/locales",
-    // オブジェクトを利用したい場合はtrue
-    objectNotation: true
-});
-App.use(i18n.init);
-module.exports.i18n = i18n;
-const validate = require("../validate/validate");
-
 
 // @ts-ignore
 App.use(Helmet({
@@ -44,8 +28,15 @@ App.use(Helmet({
     }
 }));
 
+App.use(cors({
+    origin: process.env.NODE_ENV === 'production' ? ['https://t-sct1wb00.fukushikenbunroku.com:50443', 'https://t-sct1wb00.fukushikenbunroku.com:55443'] : 'http://localhost:8080', //アクセス許可するオリジン
+    credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
+    optionsSuccessStatus: 200 //レスポンスstatusを200に設定
+}));
+
 // リクエストIDを生成する
 App.use(HttpContext.middleware);
+// @ts-ignore
 App.use((req, res, next) => {
     const requestId = req.get('x-request-id');
     HttpContext.set('requestId', requestId);
@@ -63,70 +54,56 @@ App.use((req, res, next) => {
 });
 
 
+
 // 待ち受けポートを設定する
 App.listen(Port, () =>
     Logger.info('リクエストの待ち受けを開始します。[Port=' + Port + ']')
 );
 
-// バリデーション
-let validateCheck = validate.ERRORCHECK;
-
 // getでリクエストがきたときの処理
-App.get('/:folder/:name/:kbn?',
-    validateCheck, async (req, res) => {
-        res.type('text/plain');
+App.get('/:folder/:name/:kbn?', (req, res) => {
+    res.type('text/plain');
+    try {
 
+        res.header('Content-Type', 'application/json; charset=utf-8')
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 
-        try {
-            const errors = validationResult(req);
-            console.log(errors);
-            if (!errors.isEmpty()) {
-                let error = JSON.stringify(errors.array());
-                // console.log(error);
-                Logger.error('システムエラーが発生しました。[' + error + ']');
-                return res.status(422).send('{"message":"サーバで予期しないエラーが発生しました。"}');
-            }
-            res.header('Content-Type', 'application/json; charset=utf-8')
-            res.header('Access-Control-Allow-Origin', req.headers.origin);
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+        let filename = `${req.params.name}`;
+        let kbn = `${req.params.kbn}`;
 
-            let filename = `${req.params.name}`;
-            let kbn = `${req.params.kbn}`;
+        let params = `${req.query.param}`;
+        params = JSON.parse(params);
+        params['traceid'] = req.query.traceid;
+        params['uniqid'] = req.query.uniqid;
 
-            let params = `${req.query.param}`;
-            params = JSON.parse(params);
+        let folder = `${req.params.folder}`;
+        const obj = require('./api/' + folder + '/' + filename);
 
-            params['traceid'] = req.query.traceid;
-            params['uniqid'] = req.query.uniqid;
-
-            let folder = `${req.params.folder}`;
-            console.log(filename);
-            const obj = require('./api/' + folder + '/' + filename);
-
-            obj.connected(params, kbn).then(function (response) {
-                res.send({
-                    response: response
-                });
-                Logger.info('処理が正常終了しました。');
-            }).catch(function (error) {
-                Logger.error('システムエラーが発生しました。[' + error + ']');
-                res.status(500)
-                    .send('{"message":"サーバで予期しないエラーが発生しました。"}');
+        obj.connected(params, kbn).then(function (response) {
+            res.send({
+                response: response
             });
-        } catch (error) {
-            Logger.error(error);
-            if (error.code == 'MODULE_NOT_FOUND') {
-                Logger.error('URLが不正です。');
-                res.status(404)
-                    .send('{"message":"URLが不正です。"}');
-            } else {
-                Logger.error('システムエラーが発生しました。[' + error + ']');
-                res.status(500)
-                    .send('{"message":"サーバで予期しないエラーが発生しました。"}');
-            }
-
+            Logger.info('処理が正常終了しました。');
+        }).catch(function (error) {
+            Logger.error('システムエラーが発生しました。[' + error + ']');
+            res.status(500)
+                .send('{"message":"サーバで予期しないエラーが発生しました。"}');
+        });
+    } catch (error) {
+        Logger.error(error);
+        if (error.code == 'MODULE_NOT_FOUND') {
+            Logger.error('URLが不正です。');
+            res.status(404)
+                .send('{"message":"URLが不正です。"}');
+        } else {
+            Logger.error('システムエラーが発生しました。[' + error + ']');
+            res.status(500)
+                .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         }
-    });
+
+    }
+});
 // postの処理
 App.post('/:folder/:name', (req, res) => {
     try {
@@ -144,10 +121,11 @@ App.post('/:folder/:name', (req, res) => {
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
-            query: req.body.params,
-            data: req.body.inputParams,
+            query: req.body.parameter,
+            data: req.body.requestBody,
         }
-        // console.log(param);
+        console.log(param);
+        console.log(filename);
         const obj = require('./api/' + folder + '/' + filename);
 
         // logger.info(`name=> ${req.params.name}`);
@@ -155,13 +133,6 @@ App.post('/:folder/:name', (req, res) => {
         // logger.info("params=>" + JSON.stringify(param));
         // logger.info(`request=> POST`);
 
-
-
-        let defaults = {};
-        defaults = {
-            uniqid: param.data.uniqid,
-            traceid: param.data.traceid
-        };
         /*************************
          * データ登録用
          *****************/
@@ -190,6 +161,7 @@ App.post('/:folder/:name', (req, res) => {
 });
 // deleteの処理
 App.delete('/:folder/:name', (req, res) => {
+    console.log(11111)
     try {
         res.header('Content-Type', 'application/json; charset=utf-8')
         // res.header("Access-Control-Allow-Origin: *");
@@ -205,8 +177,8 @@ App.delete('/:folder/:name', (req, res) => {
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
-            query: req.body.params,
-            data: req.body.inputParams,
+            query: req.body.parameter,
+            data: req.body.requestBody,
         }
         const obj = require('./api/' + folder + '/' + filename);
 
@@ -215,11 +187,12 @@ App.delete('/:folder/:name', (req, res) => {
         // logger.info("params=>" + JSON.stringify(param));
         // logger.info(`request=> DELETE`);
 
-        let defaults = {};
-        defaults = {
-            uniqid: param.data.uniqid,
-            traceid: param.data.traceid
-        };
+        // @ts-ignore
+        // let defaults = {};
+        // defaults = {
+        //     uniqid: param.data.uniqid,
+        //     traceid: param.data.traceid
+        // };
         /*************************
          * データ削除
          *****************/
@@ -258,19 +231,16 @@ App.put('/:folder/:name', (req, res) => {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
         res.header('Access-Control-Allow-Methods', 'PUT');
-        //    res.header('Access-Control-Allow-Credentials', true);
-        //res.header('Access-Control-Max-Age', '86400');
-        //res.sendStatus(200);
-        // putデータ
-        // console.log(req.body);
 
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
-            query: req.body.params,
-            data: req.body.inputParams,
+            query: req.body.parameter,
+            data: req.body.requestBody,
         }
-        // console.log(param);
+        console.log(param);
+        console.log(folder);
+        console.log(filename);
         const obj = require('./api/' + folder + '/' + filename);
 
         // logger.info(`name=> ${req.params.name}`);
@@ -280,11 +250,12 @@ App.put('/:folder/:name', (req, res) => {
 
 
 
-        let defaults = {};
-        defaults = {
-            uniqid: param.data.uniqid,
-            traceid: param.data.traceid
-        };
+        // @ts-ignore
+        // let defaults = {};
+        // defaults = {
+        //     uniqid: param.data.uniqid,
+        //     traceid: param.data.traceid
+        // };
         /*************************
          * データ更新用
          *****************/

@@ -1,35 +1,27 @@
-// @ts-nocheck
-const Service = require('../../SIENP/weekKeikakuSaishinReki/Service');
+// @ts-check
+const Service = require('../../SIENT/UktkSinkiKeizoku/Service')
 const service = new Service();
 const ApiRun = require('../ApiRun');
 const apiRun = new ApiRun();
-const z = require('zod');
-const Logger = require('../../utils/logger').logger();
-
-exports.connected = async function (param, kbn) {
+exports.connected = async function (param) {
     // 接続確認用URL
+
+    console.log(param);
     let query = "";
     Object.keys(param).forEach(function (key) {
-        query += "&" + key + "=" + param[key];
+        if (key != 'uniqid' && key != 'traceid') {
+            query += "&" + key + "=" + param[key];
+        }
+
     });
-    query = query.slice(1);
-
-    // 日付チェック
-    let regex = /^[0-9]{8}$/;
-    const ymd = z.string().regex(regex);
-    if (!ymd.safeParse(param.ymd).success) {
-        Logger.error('システムエラーが発生しました。[' + ymd.safeParse(param.ymd).data + ']');
-        throw new Error;
-    }
-
-    var url = apiRun.getDomain() + '/sodan/v1/week-keikaku/saishin-reki/' + kbn + '?' + query;
+    query = query.replace(/&/, '');
+    var url = apiRun.getDomain() + '/sodan/v1/uktk-kihon?' + query;
+    console.log(url);
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     return await service.getData(apiRun).then(result => {
-        //console.log(result);
-        let returnData = [];
-
-        return returnData;
+        console.log(result);
+        return result;
     });
 }
 
@@ -38,13 +30,18 @@ exports.connected = async function (param, kbn) {
  */
 exports.registed = async function (param, data) {
     let query = "";
+    let intcode = "";
     Object.keys(param).forEach(function (key) {
+        if (key == "pIntcode") {
+            intcode = String(param[key]);
+        }
         if (key != 'uniqid' && key != 'traceid') {
             query += "&" + key + "=" + param[key];
         }
+
     });
     query = query.replace(/&/, '');
-    var url = apiRun.getDomain() + '/sodan/v1/keikakuan?' + query;
+    let url = apiRun.getDomain() + '/sodan/v1/uktk/uktk-kihon?'; // + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     apiRun.setTraceID(param.traceid);
@@ -60,13 +57,17 @@ exports.registed = async function (param, data) {
  */
 exports.update = async function (param, data) {
     let query = "";
+    let intcode = "";
     Object.keys(param).forEach(function (key) {
+        if (key == "pIntcode") {
+            intcode = String(param[key]);
+        }
         if (key != 'uniqid' && key != 'traceid') {
             query += "&" + key + "=" + param[key];
         }
 
     });
-    var url = apiRun.getDomain() + '/sodan/v1/keikakuan?' + query;
+    let url = apiRun.getDomain() + '/sodan/v1/uktk/uktk-kihon?';
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     apiRun.setTraceID(param.traceid);
@@ -81,13 +82,7 @@ exports.update = async function (param, data) {
  */
 exports.deleted = async function (param, data) {
     apiRun.setQuery(param);
-    let query = "";
-    Object.keys(param).forEach(function (key) {
-        if (key != 'uniqid' && key != 'traceid') {
-            query += "&" + key + "=" + param[key];
-        }
-    });
-    var url = apiRun.getDomain() + '/sodan/v1/keikakuan?' + query;
+    let url = apiRun.getDomain() + '/sodan/v1/uktk/uktk-kihon?';
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     apiRun.setTraceID(param.traceid);

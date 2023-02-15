@@ -4,6 +4,7 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "assert": "^2.0.0",
     "axios": "^1.2.1",
     "body-parser": "^1.20.0",
     "config": "^3.3.9",
@@ -15,6 +16,9 @@
     "helmet": "^6.0.1",
     "i18n": "^0.15.1",
     "log4js": "^6.7.1",
-    "moment": "^2.29.4"
+    "moment": "^2.29.4",
+    "sub-adjuster": "^0.1.0",
+    "value-schema": "^3.0.0",
+    "zod": "^3.20.6"
   }
 }

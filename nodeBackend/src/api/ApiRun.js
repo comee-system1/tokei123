@@ -1,10 +1,12 @@
 // @ts-check
 const axios = require('axios')
+const Config = require('config');
 // @ts-ignore
-const DOMAIN = process.env.NODE_ENV === 'production' ? 'http://192.168.10.32' : 'http://192.168.30.32'; //"";
+const DOMAIN = process.env.NODE_ENV === 'production' ? Config.get('api_sogo').base_url : 'http://192.168.30.32:80'; //"";
 
 
 module.exports = class ApiRun {
+
     constructor() {
         this.baseUrl = "";
         this.uniqueId = 1;
@@ -66,22 +68,23 @@ module.exports = class ApiRun {
     async api() {
         // x-corporation-unique-id は引数によって変わる
         const HEADER = {};
-        if (this.getUniqID() == 1) {
-            // HEADER['Content-type'] = "application/json";//GETでは不要
-            HEADER['x-api-account'] = 'tokei';
-            HEADER['x-api-key'] = '999';
-        }
-        if (this.getUniqID() == 2) {
-            // HEADER['Content-type'] = "application/json";
-            HEADER['x-api-account'] = 'tokei2';
-            HEADER['x-api-key'] = '989';
-        }
-        if (this.getUniqID() == 3) {
-            // HEADER['Content-type'] = "application/json";
-            HEADER['x-api-account'] = 'tokei3';
-            HEADER['x-api-key'] = '987';
-        }
-
+        // if (this.getUniqID() == 1) {
+        //     // HEADER['Content-type'] = "application/json";//GETでは不要
+        //     HEADER['x-api-account'] = 'tokei';
+        //     HEADER['x-api-key'] = '999';
+        // }
+        // if (this.getUniqID() == 2) {
+        //     // HEADER['Content-type'] = "application/json";
+        //     HEADER['x-api-account'] = 'tokei2';
+        //     HEADER['x-api-key'] = '989';
+        // }
+        // if (this.getUniqID() == 3) {
+        //     // HEADER['Content-type'] = "application/json";
+        //     HEADER['x-api-account'] = 'tokei3';
+        //     HEADER['x-api-key'] = '987';
+        // }
+        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
+        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
         //HEADER['x-corporation-unique-id'] = '2';
@@ -96,7 +99,7 @@ module.exports = class ApiRun {
             })
             .catch(function (error) {
                 console.log('API ERROR!');
-                //console.log(error);
+                // console.log(error);
                 // console.log(typeof error);
                 // for (let key of Object.keys(error)) {
                 //     console.log(key);
@@ -112,21 +115,23 @@ module.exports = class ApiRun {
 
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        if (this.getUniqID() == 1) {
-            HEADER['Content-type'] = "application/json";
-            HEADER['x-api-account'] = 'tokei';
-            HEADER['x-api-key'] = '999';
-        }
-        if (this.getUniqID() == 2) {
-            HEADER['Content-type'] = "application/json";
-            HEADER['x-api-account'] = 'tokei2';
-            HEADER['x-api-key'] = '989';
-        }
-        if (this.getUniqID() == 3) {
-            HEADER['Content-type'] = "application/json";
-            HEADER['x-api-account'] = 'tokei3';
-            HEADER['x-api-key'] = '987';
-        }
+        // if (this.getUniqID() == 1) {
+        //     HEADER['Content-type'] = "application/json";
+        //     HEADER['x-api-account'] = 'tokei';
+        //     HEADER['x-api-key'] = '999';
+        // }
+        // if (this.getUniqID() == 2) {
+        //     HEADER['Content-type'] = "application/json";
+        //     HEADER['x-api-account'] = 'tokei2';
+        //     HEADER['x-api-key'] = '989';
+        // }
+        // if (this.getUniqID() == 3) {
+        //     HEADER['Content-type'] = "application/json";
+        //     HEADER['x-api-account'] = 'tokei3';
+        //     HEADER['x-api-key'] = '987';
+        // }
+        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
+        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
         var url = this.getURL();
@@ -158,18 +163,20 @@ module.exports = class ApiRun {
 
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        if (this.getUniqID() == 1) {
-            HEADER['x-api-account'] = 'tokei';
-            HEADER['x-api-key'] = '999';
-        }
-        if (this.getUniqID() == 2) {
-            HEADER['x-api-account'] = 'tokei2';
-            HEADER['x-api-key'] = '989';
-        }
-        if (this.getUniqID() == 3) {
-            HEADER['x-api-account'] = 'tokei3';
-            HEADER['x-api-key'] = '987';
-        }
+        // if (this.getUniqID() == 1) {
+        //     HEADER['x-api-account'] = 'tokei';
+        //     HEADER['x-api-key'] = '999';
+        // }
+        // if (this.getUniqID() == 2) {
+        //     HEADER['x-api-account'] = 'tokei2';
+        //     HEADER['x-api-key'] = '989';
+        // }
+        // if (this.getUniqID() == 3) {
+        //     HEADER['x-api-account'] = 'tokei3';
+        //     HEADER['x-api-key'] = '987';
+        // }
+        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
+        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
 
@@ -203,18 +210,20 @@ module.exports = class ApiRun {
 
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        if (this.getUniqID() == 1) {
-            HEADER['x-api-account'] = 'tokei';
-            HEADER['x-api-key'] = '999';
-        }
-        if (this.getUniqID() == 2) {
-            HEADER['x-api-account'] = 'tokei2';
-            HEADER['x-api-key'] = '989';
-        }
-        if (this.getUniqID() == 3) {
-            HEADER['x-api-account'] = 'tokei3';
-            HEADER['x-api-key'] = '987';
-        }
+        // if (this.getUniqID() == 1) {
+        //     HEADER['x-api-account'] = 'tokei';
+        //     HEADER['x-api-key'] = '999';
+        // }
+        // if (this.getUniqID() == 2) {
+        //     HEADER['x-api-account'] = 'tokei2';
+        //     HEADER['x-api-key'] = '989';
+        // }
+        // if (this.getUniqID() == 3) {
+        //     HEADER['x-api-account'] = 'tokei3';
+        //     HEADER['x-api-key'] = '987';
+        // }
+        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
+        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
         var url = this.getURL();
