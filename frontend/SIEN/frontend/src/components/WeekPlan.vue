@@ -147,10 +147,10 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <center v-bind="attrs" v-on="on" :style="`color: ${val.stroke}`">
-                {{ val.text }}
+                {{ val.freetok }}
               </center>
             </template>
-            <span>{{ val.text }}</span>
+            <span>{{ val.freetok }}</span>
           </v-tooltip>
         </foreignObject>
       </svg>
@@ -418,15 +418,16 @@ import dayjs from 'dayjs';
 // ロケールのインポート
 import 'dayjs/locale/ja';
 import { getConnect } from '@/connect/getConnect';
+import { postConnect } from '@/connect/postConnect';
 import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 
 const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
 const SAISHINREKI_URL = '/weekKeikakuSaishinReki'; // 週間計画最新
+const SYUKANREGIST_URL = '/weekKeikakuRegist'; // 週間計画案の新規登録
+const SYUKANKMK_URL = '/weekKeikakuKmk'; // 週間項目
 const KBN = 2;
-const TRACEID = 123;
-const UNIQID = 3;
 const JIGYOID = 1;
 const FOLDER = 'SIENP';
 const CALENDARHEIGHT = 540;
@@ -591,6 +592,8 @@ export default {
     },
 
     onRegistSchedule(id = 0) {
+      console.log(id);
+      /*
       let tmp = [];
       tmp = [...this.viewSchedule];
 
@@ -609,8 +612,31 @@ export default {
         ed = nextDay;
       }
       let inputWeek = this.input_week;
+*/
 
-      let _self = this;
+      //   let _self = this;
+      let body = {
+        entpriid: 1,
+        riid: 100,
+        rekiid: 1,
+        mymd: '20220315',
+        msiid: 1,
+        sym: '20220401',
+        nichijokatsudo: '朝は散歩をする',
+        shugaiservice:
+          '第3日曜日には、特別支援学校の同窓会で実施している同窓会に参加する',
+        zentaizou:
+          '本人の生活スタイル作りにおける着眼点として、学校卒業による生活環境の変化を見据る',
+      };
+      let params2 = {
+        kbn: KBN,
+      };
+
+      postConnect(SYUKANREGIST_URL, params2, FOLDER, body).then((result) => {
+        alert(result.okflg);
+      });
+
+      /*
       inputWeek.map(function (value) {
         let max = Math.max.apply(
           null,
@@ -641,6 +667,7 @@ export default {
         this.viewSchedule = this.settingSchedule(tmp);
         this.weekInputFlag = false;
       }
+      */
     },
     settingSchedule(data) {
       // 日付の重複チェック
@@ -662,11 +689,11 @@ export default {
           for (let j = 0; j < data.length; j++) {
             if (
               data[i].id != data[j].id &&
-              data[i].week == data[j].week &&
-              ((data[i].endTime >= data[j].startTime &&
-                data[i].startTime <= data[j].endTime) ||
-                (data[i].startTime <= data[j].startTime &&
-                  data[i].endTime >= data[j].startTime))
+              data[i].yobi == data[j].yobi &&
+              ((data[i].etime >= data[j].stime &&
+                data[i].stime <= data[j].etime) ||
+                (data[i].stime <= data[j].stime &&
+                  data[i].etime >= data[j].stime))
             ) {
               if (data[j].halfType == 1) {
                 halfType = 2;
@@ -681,8 +708,8 @@ export default {
           // 初期値をendTimeの日付の5:00からとする
           // 基準日
           let first = dayjs().format('YYYY-MM-DD 05:00');
-          let st = dayjs(data[i].startTime).unix();
-          let ed = dayjs(data[i].endTime).unix();
+          let st = dayjs(data[i].stime).unix();
+          let ed = dayjs(data[i].etime).unix();
           let fst = dayjs(first).unix();
           let startPos = st - fst;
           let endPos = ed - st;
@@ -692,13 +719,13 @@ export default {
           // 高さの指定
           data[i].height = PLANHEIGHT * divEnd;
           // 曜日におけるxとxTextの位置
-          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week;
-          data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].week;
+          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].yobi;
+          data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].yobi;
           // 右半分表示
           if (halfType == 2) {
-            data[i].x = TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+            data[i].x = TIMEWIDTH + PLANWIDTH * data[i].yobi + PLANWIDTH / 2;
             data[i].xText =
-              TIMEWIDTH + PLANWIDTH * data[i].week + PLANWIDTH / 2;
+              TIMEWIDTH + PLANWIDTH * data[i].yobi + PLANWIDTH / 2;
           }
 
           // 横幅の指定
@@ -725,11 +752,11 @@ export default {
         for (let j = 0; j < data.length; j++) {
           if (
             data[i].id > data[j].id &&
-            data[i].week == data[j].week &&
-            ((data[i].endTime >= data[j].startTime &&
-              data[i].startTime <= data[j].endTime) ||
-              (data[i].startTime <= data[j].startTime &&
-                data[i].endTime >= data[j].startTime))
+            data[i].yobi == data[j].yobi &&
+            ((data[i].etime >= data[j].stime &&
+              data[i].stime <= data[j].etime) ||
+              (data[i].stime <= data[j].stime &&
+                data[i].etime >= data[j].stime))
           ) {
             errorCnt++;
           }
@@ -744,7 +771,8 @@ export default {
     },
     // ダイアログ時間設定
     onTimeMinute() {
-      this.scheduleRegistFlag = true;
+      //  this.scheduleRegistFlag = true;
+      this.scheduleRegistFlag = false;
       this.time_minute = '-';
       // 今日を基準に日付の差分時間(分)の取得を行う
       let today = dayjs().format('YYYY-MM-DD');
@@ -811,10 +839,10 @@ export default {
           }
         });
         this.schedule_id = k;
-        this.input_komoku = tmp.text;
-        this.input_week = [tmp.week + 1];
-        this.input_time_start = dayjs(tmp.startTime).format('HH:mm');
-        this.input_time_end = dayjs(tmp.endTime).format('HH:mm');
+        this.input_komoku = tmp.freetok;
+        this.input_week = [tmp.yobi + 1];
+        this.input_time_start = dayjs(tmp.stime).format('HH:mm');
+        this.input_time_end = dayjs(tmp.etime).format('HH:mm');
         this.input_backColor = tmp.color;
         this.input_fontColor = tmp.stroke;
       } else {
@@ -861,8 +889,6 @@ export default {
       let params = {
         jigyoid: JIGYOID,
         intcode: 100,
-        uniqid: UNIQID,
-        traceid: TRACEID,
       };
       getConnect(KEIKAUREKI_URL, params, FOLDER).then((result) => {
         // console.log(result);
@@ -1010,9 +1036,99 @@ export default {
         intcode: 100,
         ymd: dayjs().format('YYYYMMDD'),
       };
-      getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER).then((result) => {
-        console.log(result);
-      });
+      let _self = this;
+      getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER)
+        .then((result) => {
+          // console.log(result);
+          _self.createDate = dayjs(
+            insertStr(insertStr(result.mymd, 4, '-'), 7, '-')
+          ).format('YYYY年MM月DD日');
+          // 指定文字列を指定位置に挿入
+          function insertStr(str, index, insert) {
+            return str.slice(0, index) + insert + str.slice(index, str.length);
+          }
+          // 週間項目取得
+          _self.getWeekKmkData(result.cntid);
+        })
+        .catch(function (e) {
+          alert(e);
+        });
+    },
+    /***********************
+     * 週間項目データの取得
+     * cntid作成内部IDをキーにして項目データを取得
+     */
+    getWeekKmkData(cntid) {
+      let params = {
+        cntid: cntid,
+      };
+      let _self = this;
+      getConnect(SYUKANKMK_URL + '/' + KBN, params, FOLDER)
+        .then((result) => {
+          // console.log(result);
+          let data = [];
+          result.map(function (value, key) {
+            // 適当な日付を指定したいので、今日の日付を指定
+            // 12時以降の日付を指定する場合は翌日を指定
+            let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
+            let etimeInt = Number(value.etime.replace(/:/, ''));
+            let tmpDay = dayjs().format('YYYY-MM-DD');
+            // 5時より前なら翌日を指定
+            if (etimeInt < 500) {
+              tmpDay = nextDay.slice();
+            }
+            data.push({
+              id: key,
+              stime: tmpDay + ' ' + value.stime,
+              etime: tmpDay + ' ' + value.etime,
+              yobi: value.yobi,
+              color: '#fbebd6',
+              stroke: 'black',
+              freetok: value.freetok,
+              entpriid: value.entpriid,
+              rekiid: value.rekiid,
+              riid: value.riid,
+              kmkchucode: value.kmkchucode,
+              kmkdaicode: value.kmkdaicode,
+            });
+          });
+          console.log(data);
+          /*
+          let data = [
+            {
+              id: 1,
+              startTime: tmpDay + ' 05:00',
+              endTime: tmpDay + ' 06:30',
+              week: 1,
+              color: '#fbebd6',
+              stroke: 'black',
+              text: '朝食aa',
+            },
+            {
+              id: 2,
+              startTime: tmpDay + ' 12:00',
+              endTime: nextDay + ' 01:30',
+              week: 1,
+              color: '#fbebd6',
+              stroke: 'black',
+              text: '朝食bb',
+            },
+            {
+              id: 3,
+              startTime: tmpDay + ' 12:00',
+              endTime: tmpDay + ' 20:30',
+              week: 1,
+              color: '#fbebd6',
+              stroke: '#ff7f50',
+              text: '朝食cc',
+            },
+          ];
+          */
+          _self.settingSchedule(data);
+        })
+        .catch(function (e) {
+          alert(e);
+        });
     },
     /****************
      * ユーザー一覧を押下

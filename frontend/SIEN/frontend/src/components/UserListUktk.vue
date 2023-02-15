@@ -414,12 +414,12 @@ export default {
       // mijissou
     },
     userFilter(s) {
-      let data = [];
-      this.userDataSelect.icrn_inf.forEach(function (value) {
-        // if (value.names.indexOf(this.textSearch) != -1) {
-        data.push(value);
-        // }
-      });
+      let data = this.userDataSelect.icrn_inf.concat();
+      // this.userDataSelect.icrn_inf.forEach(function (value) {
+      //   // if (value.names.indexOf(this.textSearch) != -1) {
+      //   data.push(value);
+      //   // }
+      // });
       if (this.textSearch.length) {
         let array = [];
         let param = this.textSearch;

@@ -1439,6 +1439,33 @@ export default {
         });
       }
     },
+    getUktkKihon() {
+      let params = {
+        pJigyoid: 62,
+        pIntcode: this.userInfo.riid,
+        pYmd: dayjs().format('YYYYMMDD'),
+      };
+      this.kihondata = [];
+      getConnect('/UktkKihon', params, 'SIENT').then((result) => {
+        console.log(result);
+        let tmplist = [
+          { title: '生年月日', naiyo: result.birth },
+          { title: '性別', naiyo: result.sex_view },
+          { title: '住所', naiyo: result.address },
+          { title: '電話番号１', naiyo: result.tel_view },
+          { title: '電話番号２', naiyo: result.tel2_view },
+          { title: '携帯電話', naiyo: result.ktelno },
+          { title: 'FAX番号', naiyo: result.faxno },
+          { title: 'メールアドレス', naiyo: result.email },
+          { title: '携帯メール', naiyo: result.kmail },
+          { title: '障害区分', naiyo: result.syogaikbnnm1 },
+          { title: '世帯の状況', naiyo: result.setainm },
+          { title: '本人の状況', naiyo: result.honninnm },
+        ];
+
+        this.kihondata = tmplist.concat();
+      });
+    },
     getSyukeiKbn() {
       if (this.kbnTab == this.kbnItem[0].hrefval) {
         let params = {
@@ -1830,8 +1857,6 @@ export default {
 
         flexGrid.columnHeaders.setCellData(0, colIndex, GRD_TITLE.Kihon);
       }
-      this.kihondata = this.getKihonData();
-
       flexGrid.endUpdate();
     },
     onFormatItemmstIcrnGrid(flexGrid, e) {
@@ -1968,6 +1993,7 @@ export default {
           this.userInfo.names;
         this.getMstSodansya();
         this.getSinkiKeizoku();
+        this.getUktkKihon();
       }
       this.rirekiSearchClicked(
         this.kikanSymd.format('YYYYMMDD'),
@@ -2466,13 +2492,14 @@ export default {
         this.rirekidata = [];
         return;
       }
+      let endDate = this.kikanEymd.endOf('month').format('DD');
       let params = {
         uniqid: 3,
         traceid: 123,
         pJigyoid: 62,
         pIntcode: this.userInfo.riid,
         pSymd: this.kikanSymd.format('YYYYMMDD'),
-        pEymd: this.kikanEymd.format('YYYYMM') + 31,
+        pEymd: this.kikanEymd.format('YYYYMM') + endDate,
         Dspkbn: 0,
       };
       getConnect('/Uktk', params, 'SIENT').then((result) => {
@@ -2569,24 +2596,6 @@ export default {
           isKazoku: true,
         }
       );
-      return tmpviewdata;
-    },
-
-    getKihonData() {
-      let tmpviewdata = [
-        { title: '生年月日', naiyo: '1950年01月01日' },
-        { title: '性別', naiyo: '男性' },
-        { title: '住所', naiyo: '〒520-0462\n東経県西経市南経区北経町1-1-1' },
-        { title: '電話番号１', naiyo: '000-0000-0000' },
-        { title: '電話番号２', naiyo: '111-2222-3333' },
-        { title: '携帯電話', naiyo: '090-4444-5555' },
-        { title: 'FAX番号', naiyo: '666-7777-8888' },
-        { title: 'メールアドレス', naiyo: 'mailaddress@xxx.co.jp' },
-        { title: '携帯メール', naiyo: 'mailaddress2@xxx.co.jp' },
-        { title: '障害区分', naiyo: '障害区分' },
-        { title: '世帯の状況', naiyo: '施設入所' },
-        { title: '本人の状況', naiyo: '要介護状態' },
-      ];
       return tmpviewdata;
     },
     getSYm() {

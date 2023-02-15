@@ -8,11 +8,12 @@ import common from './Common';
 export async function getConnect(type, params, folderName = "") {
 
     let str = type.slice(1);
-    let traceid = 123;
-    let uniqid = 3;
-    let sample = 123;
-    let param = JSON.stringify(params);
+    let paramQuery = JSON.stringify(params);
+    let parameter = {};
+    parameter = params;
 
+    parameter.traceid = 123;
+    parameter.uniqid = 110003;
     let folder = "";
     if (folderName == "") {
         folder = common.selectFolder(str);
@@ -29,13 +30,9 @@ export async function getConnect(type, params, folderName = "") {
         data: {}
     });
     instance.timeout = 5000;
-    console.log(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "?param=" + param);
-    return await instance.get(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "?param=" + param, {
-        params: {
-            traceid: traceid,
-            uniqid: uniqid,
-            sample: sample,
-        }
+    //   console.log(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "?param=" + param);
+    return await instance.get(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "?param=" + paramQuery, {
+        params: parameter
     }).then(function (response) {
         return response.data.response;
     }).catch(function (error) {

@@ -774,7 +774,7 @@ export default {
         let params = {
           uniqid: 3,
           traceid: 123,
-          pJigyoid: 43,
+          pJigyoid: 62,
           pTaisyo: this.selDispGridIndex == 0 ? 1 : 2,
           pSymd: this.targetYmd,
           pEymd: this.targetYmd,
