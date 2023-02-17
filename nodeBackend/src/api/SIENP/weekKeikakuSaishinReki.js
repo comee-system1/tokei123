@@ -8,27 +8,37 @@ const Logger = require('../../utils/logger').logger();
 
 exports.connected = async function (param, kbn) {
     // 接続確認用URL
-    let query = "";
-    Object.keys(param).forEach(function (key) {
-        query += "&" + key + "=" + param[key];
-    });
-    query = query.slice(1);
-
+    apiRun.setQuery(param);
     // 日付チェック
-    let regex = /^[0-9]{8}$/;
-    const ymd = z.string().regex(regex);
-    if (!ymd.safeParse(param.ymd).success) {
-        Logger.error('システムエラーが発生しました。[' + ymd.safeParse(param.ymd).data + ']');
-        throw new Error;
-    }
+    // let regex = /^[0-9]{8}$/;
+    // const ymd = z.string().regex(regex);
+    // if (!ymd.safeParse(param.ymd).success) {
+    //     Logger.error('システムエラーが発生しました。[' + ymd.safeParse(param.ymd).data + ']');
+    //     throw new Error;
+    // }
 
-    var url = apiRun.getDomain() + '/sodan/v1/week-keikaku/saishin-reki/' + kbn + '?' + query;
+    var url = apiRun.getDomain() + '/sodan/v1/week-keikaku/saishin-reki/' + kbn + '?' + apiRun.getQuery();
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     return await service.getData(apiRun).then(result => {
-        //console.log(result);
-        let returnData = [];
-
+        console.log(result);
+        let returnData = {};
+        // データが取得できないのでテスト用に作成
+        returnData = {
+            cntid: 1,
+            entpriid: 100,
+            riid: 100,
+            rekiid: 1,
+            mymd: "20230101",
+            msiid: 1,
+            msinm: 1,
+            kanryo: 1,
+            kanryoymd: "20230101",
+            sym: "20230101",
+            nichijokatsudo: "aaa",
+            shugaiservice: "vvv",
+            zentaizou: "ddd"
+        };
         return returnData;
     });
 }

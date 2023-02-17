@@ -5,7 +5,9 @@ const apiRun = new ApiRun();
 
 exports.connected = async function (param) {
     var url = "";
-    url = apiRun.getDomain() + '/syogai/daityo/v1/riyosya/riyosya/?getkbn=0&jkbn=0&sdnflg=0&symd=20220101&eymd=20220101';
+    apiRun.setQuery(param);
+    let query = apiRun.getQuery();
+    url = apiRun.getDomain() + '/syogai/daityo/v1/riyosya/riyosya/?' + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     apiRun.setTraceID(param.traceid);

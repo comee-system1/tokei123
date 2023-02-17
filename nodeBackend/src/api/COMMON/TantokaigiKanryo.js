@@ -13,6 +13,7 @@ exports.deleted = async function (query) {
     apiRun.setURL(url);
     apiRun.setUniqID(query.uniqid);
     apiRun.setTraceID(query.traceid);
+    apiRun.setApiAccount("api_common");
     return await service.deleteData(apiRun)
         .then(result => {
             return result.data;

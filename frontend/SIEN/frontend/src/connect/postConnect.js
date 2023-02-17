@@ -30,7 +30,6 @@ export async function postConnect(type, params, folderName = "", requestBody = [
         timeout: 2000,
         data: {}
     };
-
     // console.log(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str);
     return await axios.post(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str, {
             requestBody,
@@ -42,5 +41,6 @@ export async function postConnect(type, params, folderName = "", requestBody = [
     }).catch(function (error) {
         console.log("api接続用サーバーに接続失敗。BACKENDの実行確認");
         console.log(error);
+        throw error;
     });
 }

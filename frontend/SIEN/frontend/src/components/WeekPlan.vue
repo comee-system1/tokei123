@@ -291,33 +291,44 @@
                 <label class="low">色</label>
               </div>
               <div class="ml-1">
-                <v-btn small height="24" @click="onColorFlag(1)">背景色</v-btn>
-                <!--
-                <input type="color" v-model="input_backColor" class="min" />
-                -->
+                <v-btn
+                  small
+                  height="24"
+                  @click="onColorFlag(1)"
+                  :style="`background-color:${input_backColor}`"
+                  >背景色</v-btn
+                >
               </div>
               <div class="ml-1">
-                <v-btn small height="24" @click="onColorFlag(2)">文字色</v-btn>
-                <!--
-                <input type="color" v-model="input_fontColor" class="min" />
-                -->
+                <v-btn
+                  small
+                  height="24"
+                  @click="onColorFlag(2)"
+                  :style="`background-color:${input_fontColor}`"
+                  >文字色</v-btn
+                >
               </div>
             </div>
             <v-row class="mt-2" no-gutters>
-              <v-btn small>画面クリア</v-btn>
-              <v-btn small class="ml-1">削除</v-btn>
+              <v-btn small @click="onClearSchedule()">画面クリア</v-btn>
+              <v-btn
+                small
+                class="ml-1"
+                @click="onDeleteSchedule()"
+                :disabled="scheduleDisabledFlag"
+                >削除</v-btn
+              >
               <v-btn
                 small
                 class="ml-auto"
                 @click="onRegistSchedule(`${schedule_id}`)"
-                :disabled="scheduleRegistFlag"
                 >登録</v-btn
               >
             </v-row>
           </v-col>
           <v-col class="weekInputFlag__right ml-1">
             <label>大分類</label>
-            <select v-model="daibunrui" class="ml-1">
+            <select v-model="daibunrui" class="ml-1" @change="onBunruiSelect()">
               <option
                 :value="value.value"
                 v-for="value in daibunruiList"
@@ -331,6 +342,7 @@
               id="bunruiGrid"
               :headersVisibility="'Column'"
               :initialized="onInitializedBunrui"
+              :itemsSourceChanged="onInitializedBunruiChange"
               :itemsSource="bunruiView"
               :alternating-row-step="0"
               :formatItem="onFormatItemBunrui"
@@ -359,10 +371,6 @@
               ></wj-flex-grid-column>
               <wj-flex-grid-column
                 binding="middleBunruiType1"
-                :width="50"
-              ></wj-flex-grid-column>
-              <wj-flex-grid-column
-                binding="middleBunruiType2"
                 :width="50"
               ></wj-flex-grid-column>
             </wj-flex-grid>
@@ -406,7 +414,19 @@
 
     <v-dialog v-model="colorFlag" width="400px">
       <v-card elevation="0" tile>
-        <v-card-title class="dialog_title"> aaaa </v-card-title>
+        <v-card-title class="dialog_title"> 色選択 </v-card-title>
+        <v-row no-gutters>
+          <v-col
+            v-for="value in palette"
+            :key="`${value.CODE}`"
+            cols="2"
+            :style="`backgroundColor:${value.CODE}`"
+            class="palette"
+            @click="onPalette(value.CODE)"
+          >
+            &nbsp;
+          </v-col>
+        </v-row>
       </v-card>
     </v-dialog>
   </v-container>
@@ -419,16 +439,18 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import { getConnect } from '@/connect/getConnect';
 import { postConnect } from '@/connect/postConnect';
+import MessageConst from '@/utiles/MessageConst.js';
 import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
 
 const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
+const MSTKMK_URL = '/MstWeekKmk'; // 週間計画項目一覧マスタ取得
 const SAISHINREKI_URL = '/weekKeikakuSaishinReki'; // 週間計画最新
-const SYUKANREGIST_URL = '/weekKeikakuRegist'; // 週間計画案の新規登録
 const SYUKANKMK_URL = '/weekKeikakuKmk'; // 週間項目
 const KBN = 2;
-const JIGYOID = 1;
+const JIGYOID = 62;
+const ENTPRIID = 1; // 事業者内部ID
 const FOLDER = 'SIENP';
 const CALENDARHEIGHT = 540;
 const CALENDARSEPALATE = 22;
@@ -436,13 +458,17 @@ const PLANHEIGHT = 11;
 const PLANWIDTH = 128; // 予定表示部分横幅
 const TIMEWIDTH = 100; // 時間軸幅
 const STARTTIME = 500; // 開始時間5時
-const ERRORMESSAGE = '2件登録されているデータが存在します。';
+const ERRORMESSAGE = '登録データに誤りがあります。';
 export default {
   components: {},
   data() {
     return {
-      scheduleRegistFlag: true,
-      viewSchedule: this.getSchedule(),
+      scheduleDisabledFlag: false,
+      kmkdaicode: 0,
+      kmkchucode: 0,
+      rekiid: 0,
+      palette: sysConst.COLORPALETTE,
+      viewSchedule: [],
       time_minute: 0,
       starttime: STARTTIME,
       planwidth: PLANWIDTH,
@@ -451,19 +477,12 @@ export default {
       calendarSepalate: CALENDARSEPALATE,
       bunruiView: [],
       daibunrui: 0,
-      daibunruiList: [
-        {
-          value: 0,
-          name: '指定なし',
-        },
-        {
-          value: 1,
-          name: '余韻',
-        },
-      ],
+      bunruiGrid: [],
+      daibunruiList: [],
+      defaultBunruiView: [],
       schedule_id: 0,
-      input_backColor: '#FFFFFF',
-      input_fontColor: '#000000',
+      input_backColor: '',
+      input_fontColor: '',
       input_komoku: '',
       input_time_start: '',
       input_time_end: '',
@@ -491,6 +510,7 @@ export default {
       rects: [],
       dailyFlag: false,
       colorFlag: false,
+      selectColorType: 0,
       dailyWidth: 0,
       dailyType: '',
       mainLifeTextarea: '',
@@ -548,52 +568,21 @@ export default {
           window.innerHeight - 140 + 'px';
       }
     },
-
-    getSchedule() {
-      /*
-      // 適当な日付を指定したいので、今日の日付を指定
-      // 12時以降の日付を指定する場合は翌日を指定
-      let tmpDay = dayjs().format('YYYY-MM-DD');
-      let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
-      let data = [
-        {
-          id: 1,
-          startTime: tmpDay + ' 05:00',
-          endTime: tmpDay + ' 06:30',
-          week: 1,
-          color: '#fbebd6',
-          stroke: 'black',
-          text: '朝食aa',
-        },
-        {
-          id: 2,
-          startTime: tmpDay + ' 12:00',
-          endTime: nextDay + ' 01:30',
-          week: 1,
-          color: '#fbebd6',
-          stroke: 'black',
-          text: '朝食bb',
-        },
-        {
-          id: 3,
-          startTime: tmpDay + ' 12:00',
-          endTime: tmpDay + ' 20:30',
-          week: 1,
-          color: '#fbebd6',
-          stroke: '#ff7f50',
-          text: '朝食cc',
-        },
-      ];
-      */
-      let data = [];
-      let tmp = this.settingSchedule(data);
-
-      return tmp;
+    onClearSchedule() {
+      this.input_komoku = '';
+      this.input_week = [];
+      this.input_time_start = '';
+      this.input_time_end = '';
+      this.time_minute = '-';
+      this.input_backColor = '#fff';
+      this.input_fontColor = '#fff';
     },
-
+    onDeleteSchedule(id = 0) {
+      alert(id);
+    },
     onRegistSchedule(id = 0) {
       console.log(id);
-      /*
+
       let tmp = [];
       tmp = [...this.viewSchedule];
 
@@ -612,31 +601,7 @@ export default {
         ed = nextDay;
       }
       let inputWeek = this.input_week;
-*/
-
-      //   let _self = this;
-      let body = {
-        entpriid: 1,
-        riid: 100,
-        rekiid: 1,
-        mymd: '20220315',
-        msiid: 1,
-        sym: '20220401',
-        nichijokatsudo: '朝は散歩をする',
-        shugaiservice:
-          '第3日曜日には、特別支援学校の同窓会で実施している同窓会に参加する',
-        zentaizou:
-          '本人の生活スタイル作りにおける着眼点として、学校卒業による生活環境の変化を見据る',
-      };
-      let params2 = {
-        kbn: KBN,
-      };
-
-      postConnect(SYUKANREGIST_URL, params2, FOLDER, body).then((result) => {
-        alert(result.okflg);
-      });
-
-      /*
+      let _self = this;
       inputWeek.map(function (value) {
         let max = Math.max.apply(
           null,
@@ -646,12 +611,12 @@ export default {
         );
         tmp.push({
           id: max + 1,
-          startTime: st + ' ' + _self.input_time_start,
-          endTime: ed + ' ' + _self.input_time_end,
-          week: value - 1,
-          stroke: _self.input_fontColor,
-          color: _self.input_backColor,
-          text: _self.input_komoku,
+          stime: st + ' ' + _self.input_time_start,
+          etime: ed + ' ' + _self.input_time_end,
+          yobi: value - 1,
+          fcolor: _self.input_fontColor,
+          bcolor: _self.input_backColor,
+          freetok: _self.input_komoku,
         });
       });
       // idがある時はデータのdelete/insertを行う
@@ -660,14 +625,47 @@ export default {
         let k = tmp.findIndex((value) => value.id == id);
         tmp.splice(k, 1);
       }
+
       let errorFlag = this.registDataErrorCheck(tmp);
       if (errorFlag) {
         alert(ERRORMESSAGE);
+      } else if (this.input_komoku.length == 0) {
+        alert('項目' + MessageConst.INPUT_ERROR.NO_INPUT);
+      } else if (this.input_week.length == 0) {
+        alert('曜日' + MessageConst.INPUT_ERROR.NO_INPUT);
+      } else if (!this.input_time_start) {
+        alert('開始時間' + MessageConst.INPUT_ERROR.NO_INPUT);
+      } else if (!this.input_time_end) {
+        alert('終了時間' + MessageConst.INPUT_ERROR.NO_INPUT);
       } else {
-        this.viewSchedule = this.settingSchedule(tmp);
+        let body = {
+          entpriid: ENTPRIID,
+          riid: this.riid,
+          rekiid: this.rekiid,
+          intcode: 0,
+          kmkdaicode: this.kmkdaicode,
+          kmkchucode: this.kmkchucode,
+          freetok: this.input_komoku,
+          yobi: this.input_week,
+          stime: this.input_time_start,
+          etime: this.input_time_end,
+          bcolor: 0, // 後ほど色コードが入る予定
+          fcolor: 0, // 後ほど色コードが入る予定
+        };
+        let params2 = {
+          kbn: KBN,
+        };
+        console.log(body);
+        postConnect(SYUKANKMK_URL, params2, FOLDER, body)
+          .then((result) => {
+            console.log(result);
+          })
+          .catch(function (e) {
+            alert(e);
+          });
+
         this.weekInputFlag = false;
       }
-      */
     },
     settingSchedule(data) {
       // 日付の重複チェック
@@ -771,14 +769,20 @@ export default {
     },
     // ダイアログ時間設定
     onTimeMinute() {
-      //  this.scheduleRegistFlag = true;
-      this.scheduleRegistFlag = false;
       this.time_minute = '-';
       // 今日を基準に日付の差分時間(分)の取得を行う
       let today = dayjs().format('YYYY-MM-DD');
+      let tomorrow = dayjs().add(1, 'd').format('YYYY-MM-DD');
       let minute = 0;
       if (this.input_time_end && this.input_time_start) {
-        let end = today + ' ' + this.input_time_end;
+        let end = '';
+        // 四時より前の時間なら翌日を指定
+        if (Number(this.input_time_end.replace(/:/, '')) < 400) {
+          end = tomorrow + ' ' + this.input_time_end;
+        } else {
+          end = today + ' ' + this.input_time_end;
+        }
+
         let ed = dayjs(end).unix();
         let start = today + ' ' + this.input_time_start;
         let st = dayjs(start).unix();
@@ -792,19 +796,15 @@ export default {
             start = today + ' ' + this.input_time_start;
             st = dayjs(start).unix();
             minute = st - ed;
-            this.scheduleRegistFlag = false;
             this.time_minute = minute / 60;
           } else {
-            this.scheduleRegistFlag = true;
             this.time_minute = '-';
           }
         } else {
           // 終了時が4時以降
           if (four < ed && ed < st) {
-            this.scheduleRegistFlag = true;
             this.time_minute = '-';
           } else {
-            this.scheduleRegistFlag = false;
             this.time_minute = minute / 60;
           }
         }
@@ -832,27 +832,33 @@ export default {
     weekInput(k = 0) {
       // 選択データの取得
       if (k > 0) {
+        this.scheduleDisabledFlag = false;
         let tmp = '';
         tmp = this.viewSchedule.find(function (value) {
           if (value.id == k) {
             return value;
           }
         });
+        console.log(tmp);
         this.schedule_id = k;
         this.input_komoku = tmp.freetok;
         this.input_week = [tmp.yobi + 1];
         this.input_time_start = dayjs(tmp.stime).format('HH:mm');
         this.input_time_end = dayjs(tmp.etime).format('HH:mm');
-        this.input_backColor = tmp.color;
-        this.input_fontColor = tmp.stroke;
+        this.input_backColor = tmp.bcolor;
+        this.input_fontColor = tmp.fcolor;
+        this.kmkchucode = tmp.kmkchucode;
+        this.kmkdaicode = tmp.kmkdaicode;
       } else {
+        this.scheduleDisabledFlag = true;
+
         this.schedule_id = k;
         this.input_komoku = '';
         this.input_week = [];
         this.input_time_start = '';
         this.input_time_end = '';
         this.input_backColor = '#FFFFFF';
-        this.input_fontColor = '#000000';
+        this.input_fontColor = '#FFFFFF';
       }
       this.onTimeMinute();
       this.weekInputFlag = true;
@@ -890,7 +896,7 @@ export default {
         jigyoid: JIGYOID,
         intcode: 100,
       };
-      getConnect(KEIKAUREKI_URL, params, FOLDER).then((result) => {
+      getConnect(KEIKAUREKI_URL + '/' + KBN, params, FOLDER).then((result) => {
         // console.log(result);
         // 取得データをbinding名に指定
         let temp = result.filter(function (value) {
@@ -915,59 +921,67 @@ export default {
     /*****************************
      * 分類grid
      */
+    onInitializedBunruiChange(bunruiGrid) {
+      if (this.kmkchucode && this.kmkdaicode) {
+        bunruiGrid.select(this.kmkchucode - 1, 0);
+      } else {
+        bunruiGrid.select(-1, -1);
+      }
+    },
     onInitializedBunrui(bunruiGrid) {
-      let bunruiView = [];
-      bunruiView.push({
-        bigBunruiCode: '003',
-        bigBunrui: '余韻',
-        middleBunruiCode: '001',
-        middleBunrui: 'テレビを観る',
-        middleBunruiType1: 'TV',
-        middleBunruiType2: 'TV',
-      });
-      bunruiView.push({
-        bigBunruiCode: '003',
-        bigBunrui: '余韻',
-        middleBunruiCode: '002',
-        middleBunrui: 'ゲーム',
-        middleBunruiType1: 'ゲーム',
-        middleBunruiType2: '',
-      });
-      bunruiView.push({
-        bigBunruiCode: '003',
-        bigBunrui: '余韻',
-        middleBunruiCode: '003',
-        middleBunrui: '読書',
-        middleBunruiType1: '読書',
-        middleBunruiType2: '',
-      });
-      bunruiView.push({
-        bigBunruiCode: '004',
-        bigBunrui: '余韻1',
-        middleBunruiCode: '004',
-        middleBunrui: '読書',
-        middleBunruiType1: '読書',
-        middleBunruiType2: '',
-      });
-      bunruiView.push({
-        bigBunruiCode: '004',
-        bigBunrui: '余韻1',
-        middleBunruiCode: '004',
-        middleBunrui: '読書',
-        middleBunruiType1: '読書',
-        middleBunruiType2: '',
-      });
-      bunruiView.push({
-        bigBunruiCode: '005',
-        bigBunrui: '余韻2',
-        middleBunruiCode: '005',
-        middleBunrui: '読書',
-        middleBunruiType1: '読書',
-        middleBunruiType2: '',
+      let params = {
+        pJigyoid: JIGYOID,
+      };
+      let _self = this;
+      bunruiGrid.hostElement.addEventListener('click', function (e) {
+        var ht = bunruiGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          _self.input_komoku = _self.bunruiView[ht.row].middleBunrui;
+          _self.kmkdaicode = _self.bunruiView[ht.row].bigBunruiCode;
+          _self.kmkchucode = _self.bunruiView[ht.row].middleBunruiCode;
+        }
       });
 
-      this.bunruiView = bunruiView;
-      this.createHeaderBunrui(bunruiGrid);
+      getConnect(MSTKMK_URL, params, FOLDER).then((result) => {
+        let bunruiView = [];
+        let daibunruiList = [];
+        daibunruiList.push({
+          value: 0,
+          name: '指定なし',
+        });
+        result.map(function (value) {
+          value.tyu.map(function (val) {
+            bunruiView.push({
+              bigBunruiCode: value.intcode,
+              bigBunrui: value.kmkname,
+              middleBunruiCode: val.intcode,
+              middleBunrui: val.kmkname,
+              middleBunruiType1: val.ryaku,
+            });
+          });
+          daibunruiList.push({
+            value: value.intcode,
+            name: value.kmkname,
+          });
+        });
+
+        _self.bunruiView = bunruiView;
+        _self.defaultBunruiView = [...bunruiView];
+        _self.daibunruiList = daibunruiList;
+        _self.bunruiGrid = bunruiGrid;
+        _self._self.createHeaderBunrui(bunruiGrid);
+      });
+    },
+    onBunruiSelect() {
+      let view = [];
+      let _self = this;
+      _self.defaultBunruiView.filter(function (value) {
+        if (value.bigBunruiCode == _self.daibunrui || _self.daibunrui == 0) {
+          view.push(value);
+        }
+      });
+      this.bunruiView = view;
+      _self._self.createHeaderBunrui(this.bunruiGrid);
     },
     createHeaderBunrui(bunruiGrid) {
       var panel = bunruiGrid.columnHeaders;
@@ -976,7 +990,7 @@ export default {
 
       let headerRanges = [];
       headerRanges.push(new wjGrid.CellRange(0, 0, 0, 1));
-      headerRanges.push(new wjGrid.CellRange(0, 2, 0, 5));
+      headerRanges.push(new wjGrid.CellRange(0, 2, 0, 4));
 
       // 大分類のマージ処理
       let key = 'bigBunruiCode';
@@ -1033,13 +1047,14 @@ export default {
     getWeekPlanData() {
       let params = {
         jigyoid: JIGYOID,
-        intcode: 100,
-        ymd: dayjs().format('YYYYMMDD'),
+        intcode: this.riid,
+        ymd: '',
       };
       let _self = this;
       getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER)
         .then((result) => {
-          // console.log(result);
+          //console.log(result);
+          this.rekiid = result.rekiid;
           _self.createDate = dayjs(
             insertStr(insertStr(result.mymd, 4, '-'), 7, '-')
           ).format('YYYY年MM月DD日');
@@ -1078,12 +1093,12 @@ export default {
               tmpDay = nextDay.slice();
             }
             data.push({
-              id: key,
+              id: key + 1,
               stime: tmpDay + ' ' + value.stime,
               etime: tmpDay + ' ' + value.etime,
               yobi: value.yobi,
-              color: '#fbebd6',
-              stroke: 'black',
+              color: value.bcolor,
+              stroke: value.fcolor,
               freetok: value.freetok,
               entpriid: value.entpriid,
               rekiid: value.rekiid,
@@ -1093,37 +1108,6 @@ export default {
             });
           });
           console.log(data);
-          /*
-          let data = [
-            {
-              id: 1,
-              startTime: tmpDay + ' 05:00',
-              endTime: tmpDay + ' 06:30',
-              week: 1,
-              color: '#fbebd6',
-              stroke: 'black',
-              text: '朝食aa',
-            },
-            {
-              id: 2,
-              startTime: tmpDay + ' 12:00',
-              endTime: nextDay + ' 01:30',
-              week: 1,
-              color: '#fbebd6',
-              stroke: 'black',
-              text: '朝食bb',
-            },
-            {
-              id: 3,
-              startTime: tmpDay + ' 12:00',
-              endTime: tmpDay + ' 20:30',
-              week: 1,
-              color: '#fbebd6',
-              stroke: '#ff7f50',
-              text: '朝食cc',
-            },
-          ];
-          */
           _self.settingSchedule(data);
         })
         .catch(function (e) {
@@ -1146,8 +1130,20 @@ export default {
     /****************************
      * 色コードダイアログ
      */
-    onColorFlag() {
+    onColorFlag(type) {
       this.colorFlag = true;
+      this.selectColorType = type;
+    },
+    onPalette(colorCode) {
+      // 背景色の指定
+      if (this.selectColorType == 1) {
+        this.input_backColor = colorCode;
+      }
+      // 文字色の指定
+      if (this.selectColorType == 2) {
+        this.input_fontColor = colorCode;
+      }
+      this.colorFlag = false;
     },
   },
 };
@@ -1252,6 +1248,12 @@ $middle: 48px;
 }
 .v-navigation-drawer__content,
 .v-dialog {
+  .palette {
+    height: 40px;
+    &:hover {
+      border: 1px solid #666;
+    }
+  }
   .weekInputFlag {
     &__right {
       font-size: 0.85rem;
@@ -1273,6 +1275,8 @@ $middle: 48px;
       }
       #bunruiGrid {
         font-size: 0.75rem;
+        width: 400px;
+        height: 220px;
         .wj-cell {
           &.wj-state-active,
           &.wj-state-multi-selected {

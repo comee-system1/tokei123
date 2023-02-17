@@ -4,23 +4,14 @@ const service = new Service();
 const ApiRun = require('../ApiRun');
 const apiRun = new ApiRun();
 
-exports.connected = async function (param) {
+exports.connected = async function (param, kbn) {
     // 接続確認用URL
-    console.log(param);
-
-    let query = "";
-    Object.keys(param).forEach(function (key) {
-        if (key != 'uniqid' && key != 'traceid') {
-            query += "&" + key + "=" + param[key];
-        }
-
-    });
-    var url = apiRun.getDomain() + '/sodan/v1/keikaku/reki?' + query;
-
+    apiRun.setQuery(param);
+    let query = apiRun.getQuery();
+    var url = apiRun.getDomain() + '/Sodan/v1/week-keikaku/reki/' + kbn + '?' + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
     return await service.getData(apiRun).then(result => {
-        console.log(result);
         let returnData = [];
         // テスト用データ
         returnData.push({

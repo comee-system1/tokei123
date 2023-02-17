@@ -259,7 +259,7 @@
               outlined
               tile
             >
-              {{ viewdata.shogaishienkbnnm }}
+              {{ viewdata.hogosha }}
             </v-card>
             <v-card class="koumokuTitle titleBlue fblue wMin" outlined tile>
               続柄
@@ -271,7 +271,7 @@
               outlined
               tile
             >
-              {{ viewdata.shogaishienkbnnm }}
+              {{ viewdata.tsuzukigara }}
             </v-card>
             <v-card
               class="koumokuTitle titleBlue fblue w120 mr-1"
@@ -876,14 +876,18 @@ export default {
         jigyoid: 62,
         intcode: this.userIntcode,
       };
-      getConnect('/KeikakuanReki', params, 'SIENP').then((result) => {
-        this.rirekiList = result;
-        if (this.rirekiList.length == 0) {
-          this.modeless_dialogOpen();
-        } else {
-          this.modeless_dialogClose();
-        }
-      });
+      getConnect('/KeikakuanReki', params, 'SIENP')
+        .then((result) => {
+          this.rirekiList = result;
+          if (this.rirekiList.length == 0) {
+            this.modeless_dialogOpen();
+          } else {
+            this.modeless_dialogClose();
+          }
+        })
+        .catch(function (error) {
+          alert(error);
+        });
     },
     setSaisin() {
       let params = {
@@ -893,10 +897,15 @@ export default {
         jigyoid: 62,
         intcode: this.userIntcode,
       };
-      getConnect('/KeikakuanSaishinReki', params, 'SIENP').then((result) => {
-        this.viewdata = result;
-        this.setViewdata();
-      });
+      getConnect('/KeikakuanSaishinReki', params, 'SIENP')
+        .then((result) => {
+          console.log(result);
+          this.viewdata = result;
+          this.setViewdata();
+        })
+        .catch(function (error) {
+          alert(error);
+        });
     },
     setViewdata() {
       if (this.viewdata.intcode != undefined) {
@@ -931,10 +940,14 @@ export default {
         intcode: this.userIntcode,
         cntid: item.cntid,
       };
-      getConnect('/Keikakuan', params, 'SIENP').then((result) => {
-        this.viewdata = result;
-        this.setViewdata();
-      });
+      getConnect('/Keikakuan', params, 'SIENP')
+        .then((result) => {
+          this.viewdata = result;
+          this.setViewdata();
+        })
+        .catch(function (error) {
+          alert(error);
+        });
     },
     printExec() {
       this.inputTypemodel = 'tab-2';
@@ -993,16 +1006,14 @@ export default {
           doui: 0,
           sinseikbn: 0,
         };
-        postConnect('/KeikakuanReki', params, 'SIENP', inputParams).then(
-          (result) => {
-            if (result.okflg == true) {
-              this.setUserdata(this.selectedUserObj);
-              this.createflg = false;
-            } else {
-              alert(result.msg);
-            }
-          }
-        );
+        postConnect('/KeikakuanReki', params, 'SIENP', inputParams)
+          .then(() => {
+            this.setUserdata(this.selectedUserObj);
+            this.createflg = false;
+          })
+          .catch(function (error) {
+            alert(error);
+          });
       }
     },
     kanryoCheck() {

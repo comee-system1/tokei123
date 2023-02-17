@@ -19,6 +19,7 @@ exports.connected = async function (param) {
     var url = apiRun.getDomain() + '/common/tantokaigi/v1/?' + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
+    apiRun.setApiAccount("api_common");
     return await service.getData(apiRun).then(result => {
         let icrn_inf = [];
         let obj = {};
@@ -43,7 +44,7 @@ exports.update = async function (query, data) {
     apiRun.setUniqID(query.uniqid);
     apiRun.setTraceID(query.traceid);
     apiRun.setInputs(data);
-
+    apiRun.setApiAccount("api_common");
     return await service.putData(apiRun)
         .then(result => {
             return result.data;

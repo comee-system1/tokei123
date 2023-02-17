@@ -6,12 +6,12 @@
         "timeout": "5000"
     },
     "api_sogo": {
-        "base_url": "http://192.168.10.32:80/",
+        "base_url": "http://192.168.10.32:80",
         "x_api_account": "toukei-sogo-api",
         "x_api_key": "urxLpRzn0ilqcWoS"
     },
     "api_common": {
-        "base_url": "http://192.168.10.32:80/",
+        "base_url": "http://192.168.10.32:80",
         "x_api_account": "toukei-common-api",
         "x_api_key": "jKGbd4PqxN5yzyxn"
     },

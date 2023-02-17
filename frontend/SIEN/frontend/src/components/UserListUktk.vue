@@ -678,7 +678,9 @@ div#userListUktk {
 
   .wj-cells
     .wj-row:hover
-    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active) {
+    .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
+      .wj-state-active
+    ) {
     transition: all 0s;
     background: $grid_hover_background;
   }

@@ -232,6 +232,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
 // const STR_MARU = '○';
@@ -910,45 +911,73 @@ export default {
             pSymd: this.startymd.format('YYYYMMDD'),
             pEymd: this.endymd.format('YYYYMMDD'),
           };
-          getConnect('/Uktk', params, 'SIENT').then((result) => {
-            console.log(12345);
-            console.log(result);
-            this.viewDataAll = result;
-            this.userFilter();
-            this.screenFlag = false;
-          });
+          getConnect('/Uktk', params, 'SIENT')
+            .then((result) => {
+              console.log(12345);
+              console.log(result);
+              this.viewDataAll = result;
+              this.userFilter();
+              this.screenFlag = false;
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
           let params = {
             uniqid: 3,
             traceid: 123,
             pJigyoid: 62,
             pIntcode: this.userInfo.riid,
-            pSrhym: this.startymd.format('YYYYMMDD'),
-            pSrheym: this.endymd.format('YYYYMMDD'),
+            pSrhym: this.startymd.format('YYYYMM'),
+            pSrheym: this.endymd.format('YYYYMM'),
           };
-          getConnect('/Kojinrireki', params, 'SIENT').then((result) => {
-            console.log(12345);
-            console.log(result);
-            this.viewDataAll = result;
-            this.userFilter();
-            this.screenFlag = false;
-          });
+          getConnect('/Kojinrireki', params, 'SIENT')
+            .then((result) => {
+              console.log(12345);
+              console.log(result);
+              this.viewDataAll = result;
+              this.userFilter();
+              this.screenFlag = false;
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
           let params = {
             uniqid: 3,
             traceid: 123,
             pJigyoid: 62,
             pIntcode: this.userInfo.riid,
-            pSrhym: this.startymd.format('YYYYMMDD'),
-            pSrheym: this.endymd.format('YYYYMMDD'),
+            pSym: this.startymd.format('YYYYMM'),
+            pEym: this.endymd.format('YYYYMM'),
+            pSrcType: 0,
           };
-          getConnect('/ChikiKojinrireki', params, 'SIENC').then((result) => {
-            console.log(12345);
-            console.log(result);
-            this.viewDataAll = result;
-            this.userFilter();
-            this.screenFlag = false;
-          });
+          getConnect('/ChikiKojinrireki', params, 'SIENC')
+            .then((result) => {
+              console.log(12345);
+              console.log(result);
+              this.viewDataAll = result;
+              this.userFilter();
+              this.screenFlag = false;
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         }
       } else {
         this.userFilter();

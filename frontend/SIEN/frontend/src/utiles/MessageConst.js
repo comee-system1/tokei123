@@ -10,6 +10,10 @@ const CONFIRM = {
     ADD_RIREKI: '履歴を新規作成します。よろしいですか？',
 }
 
+const ERROR = {
+    ERROR: 'エラーが発生しました。',
+}
+
 const WARN = {
     NO_SELECT: '対象が未選択です。',
     ROW_EDIT_NO_SELECT: '一覧が未選択のため、実行できません。',
@@ -23,6 +27,7 @@ const INPUT_ERROR = {
 
 export default {
     CONFIRM,
+    ERROR,
     WARN,
     INPUT_ERROR
 }

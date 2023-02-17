@@ -60,11 +60,14 @@ App.listen(Port, () =>
     Logger.info('リクエストの待ち受けを開始します。[Port=' + Port + ']')
 );
 
-// getでリクエストがきたときの処理
+/**
+ * getを実行します。
+ * @param {string} url - 実行URL。
+ * @return  response 。
+ */
 App.get('/:folder/:name/:kbn?', (req, res) => {
     res.type('text/plain');
     try {
-
         res.header('Content-Type', 'application/json; charset=utf-8')
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
@@ -78,6 +81,8 @@ App.get('/:folder/:name/:kbn?', (req, res) => {
         params['uniqid'] = req.query.uniqid;
 
         let folder = `${req.params.folder}`;
+        console.log(folder);
+        console.log(filename);
         const obj = require('./api/' + folder + '/' + filename);
 
         obj.connected(params, kbn).then(function (response) {
@@ -86,7 +91,11 @@ App.get('/:folder/:name/:kbn?', (req, res) => {
             });
             Logger.info('処理が正常終了しました。');
         }).catch(function (error) {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
+            if (error.response != undefined) {
+                Logger.error('システムエラーが発生しました。[' + error + "(" + error.response.data + ')]');
+            } else {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+            }
             res.status(500)
                 .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         });
@@ -104,35 +113,24 @@ App.get('/:folder/:name/:kbn?', (req, res) => {
 
     }
 });
-// postの処理
+/**
+ * postを実行します。
+ * @param {string} url - 実行URL。
+ * @return  response 。
+ */
 App.post('/:folder/:name', (req, res) => {
     try {
         res.header('Content-Type', 'application/json; charset=utf-8')
-        // res.header("Access-Control-Allow-Origin: *");
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
         res.header('Access-Control-Allow-Methods', 'POST');
-        // res.header('Access-Control-Allow-Credentials', true);
-        //res.header('Access-Control-Max-Age', '86400');
-        //res.sendStatus(200);
-        // postデータ
-        // console.log(req.body);
-
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
             query: req.body.parameter,
             data: req.body.requestBody,
         }
-        console.log(param);
-        console.log(filename);
         const obj = require('./api/' + folder + '/' + filename);
-
-        // logger.info(`name=> ${req.params.name}`);
-        // logger.info(`folder=> ${req.params.folder}`);
-        // logger.info("params=>" + JSON.stringify(param));
-        // logger.info(`request=> POST`);
-
         /*************************
          * データ登録用
          *****************/
@@ -142,7 +140,11 @@ App.post('/:folder/:name', (req, res) => {
             });
             Logger.info('処理が正常終了しました。');
         }).catch(function (error) {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
+            if (error.response != undefined) {
+                Logger.error('システムエラーが発生しました。[' + error + "(" + error.response.data + ')]');
+            } else {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+            }
             res.status(500)
                 .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         });
@@ -159,21 +161,17 @@ App.post('/:folder/:name', (req, res) => {
         }
     }
 });
-// deleteの処理
+/**
+ * deleteを実行します。
+ * @param {string} url - 実行URL。
+ * @return  response 。
+ */
 App.delete('/:folder/:name', (req, res) => {
-    console.log(11111)
     try {
         res.header('Content-Type', 'application/json; charset=utf-8')
-        // res.header("Access-Control-Allow-Origin: *");
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
         res.header('Access-Control-Allow-Methods', 'DELETE');
-        //     res.header('Access-Control-Allow-Credentials', true);
-        //res.header('Access-Control-Max-Age', '86400');
-        //res.sendStatus(200);
-        // postデータ
-        //console.log(req.body);
-
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
@@ -181,29 +179,20 @@ App.delete('/:folder/:name', (req, res) => {
             data: req.body.requestBody,
         }
         const obj = require('./api/' + folder + '/' + filename);
-
-        // logger.info(`name=> ${req.params.name}`);
-        // logger.info(`folder=> ${req.params.folder}`);
-        // logger.info("params=>" + JSON.stringify(param));
-        // logger.info(`request=> DELETE`);
-
-        // @ts-ignore
-        // let defaults = {};
-        // defaults = {
-        //     uniqid: param.data.uniqid,
-        //     traceid: param.data.traceid
-        // };
         /*************************
          * データ削除
          *****************/
         obj.deleted(param.query, param.data).then(function (response) {
-            //console.log(response);
             res.send({
                 response: response
             });
             Logger.info('処理が正常終了しました。');
         }).catch(function (error) {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
+            if (error.response != undefined) {
+                Logger.error('システムエラーが発生しました。[' + error + "(" + error.response.data + ')]');
+            } else {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+            }
             res.status(500)
                 .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         });
@@ -218,16 +207,17 @@ App.delete('/:folder/:name', (req, res) => {
             res.status(500)
                 .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         }
-
     }
 });
 
-
-// putの処理
+/**
+ * putを実行します。
+ * @param {string} url - 実行URL。
+ * @return  response 。
+ */
 App.put('/:folder/:name', (req, res) => {
     try {
         res.header('Content-Type', 'application/json; charset=utf-8')
-        // res.header("Access-Control-Allow-Origin: *");
         res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
         res.header('Access-Control-Allow-Methods', 'PUT');
@@ -235,38 +225,24 @@ App.put('/:folder/:name', (req, res) => {
         let filename = `${req.params.name}`;
         let folder = `${req.params.folder}`;
         let param = {
-            query: req.body.parameter,
-            data: req.body.requestBody,
+            query: req.body.data.parameter,
+            data: req.body.data.requestBody,
         }
-        console.log(param);
-        console.log(folder);
-        console.log(filename);
         const obj = require('./api/' + folder + '/' + filename);
-
-        // logger.info(`name=> ${req.params.name}`);
-        // logger.info(`folder=> ${req.params.folder}`);
-        // logger.info("params=>" + JSON.stringify(param));
-        // logger.info(`request=> PUT`);
-
-
-
-        // @ts-ignore
-        // let defaults = {};
-        // defaults = {
-        //     uniqid: param.data.uniqid,
-        //     traceid: param.data.traceid
-        // };
         /*************************
          * データ更新用
          *****************/
         obj.update(param.query, param.data).then(function (response) {
-            //console.log(response);
             res.send({
                 response: response
             });
             Logger.info('処理が正常終了しました。');
         }).catch(function (error) {
-            Logger.error('システムエラーが発生しました。[' + error + ']');
+            if (error.response != undefined) {
+                Logger.error('システムエラーが発生しました。[' + error + "(" + error.response.data + ')]');
+            } else {
+                Logger.error('システムエラーが発生しました。[' + error + ']');
+            }
             res.status(500)
                 .send('{"message":"サーバで予期しないエラーが発生しました。"}');
         });

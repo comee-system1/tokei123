@@ -123,24 +123,122 @@ const CHIIKIJIGYOKBN = {
 //###################
 //固定情報追加定数
 //###################
-const MSG_REKI_CRE = "履歴を作成してください。";            //履歴登録
-const MSG_DATA_INS = "データの登録が完了しました。";        //履歴登録
-const MSG_DATA_INS_CHK = "入力データを登録します。\nよろしいですか。"   //データ登録チェック
-const MSG_DATA_DEL = "データの削除が完了しました。";        //履歴削除
-const MSG_DATA_DEL_CHK = "入力データを削除します。\nよろしいですか。"   //データ登録チェック
-const MSG_REKI_INS = "新規履歴を登録しました。";            //履歴登録
-const MSG_REKI_INS_CHK = "履歴を新規登録します。\nよろしいですか。";            //履歴登録
-const MSG_REKI_UPD_CHK = "履歴を更新登録します。\nよろしいですか。";            //履歴登録
+const MSG_REKI_CRE = "履歴を作成してください。"; //履歴登録
+const MSG_DATA_INS = "データの登録が完了しました。"; //履歴登録
+const MSG_DATA_INS_CHK = "入力データを登録します。\nよろしいですか。" //データ登録チェック
+const MSG_DATA_DEL = "データの削除が完了しました。"; //履歴削除
+const MSG_DATA_DEL_CHK = "入力データを削除します。\nよろしいですか。" //データ登録チェック
+const MSG_REKI_INS = "新規履歴を登録しました。"; //履歴登録
+const MSG_REKI_INS_CHK = "履歴を新規登録します。\nよろしいですか。"; //履歴登録
+const MSG_REKI_UPD_CHK = "履歴を更新登録します。\nよろしいですか。"; //履歴登録
 
-const MSG_REKI_UPD = "履歴を更新しました。";                //履歴更新
-const MSG_REKI_DEL = "履歴の削除しました。";                //履歴削除
-const MSG_COPY_CHK = "前回のデータをコピーします。\nよろしいですか。";              //前回コピー
-const MSG_COPY = "前回コピーが完了しました。";              //前回コピー
-const MSG_COPY_ERR = "前回の履歴がありません。";            //前回コピー
+const MSG_REKI_UPD = "履歴を更新しました。"; //履歴更新
+const MSG_REKI_DEL = "履歴の削除しました。"; //履歴削除
+const MSG_COPY_CHK = "前回のデータをコピーします。\nよろしいですか。"; //前回コピー
+const MSG_COPY = "前回コピーが完了しました。"; //前回コピー
+const MSG_COPY_ERR = "前回の履歴がありません。"; //前回コピー
 
+const COLORPALETTE = [{
+        COLOR: 'white',
+        CODE: '#ffffff'
+    },
+    {
+        COLOR: 'black',
+        CODE: '#333333'
+    },
+    {
+        COLOR: 'gray3',
+        CODE: '#cfd3d9'
+    },
+    {
+        COLOR: 'blue1',
+        CODE: '#e4effd'
+    },
+    {
+        COLOR: 'blue5',
+        CODE: '#86b6f5'
+    },
+    {
+        COLOR: 'blue8',
+        CODE: '#276bc5'
+    },
+    {
+        COLOR: 'violet1',
+        CODE: '#f5e9fd'
+    },
+    {
+        COLOR: 'violet5',
+        CODE: '#d19ff7'
+    },
+    {
+        COLOR: 'violet8',
+        CODE: '#9a2fec'
+    },
+    {
+        COLOR: 'red1',
+        CODE: '#fde9e8'
+    },
+    {
+        COLOR: 'red8',
+        CODE: '#c93328'
+    },
+    {
+        COLOR: 'red9',
+        CODE: '#781e18'
+    },
+    {
+        COLOR: 'orenge1',
+        CODE: '#fbebd6'
+    },
+    {
+        COLOR: 'orenge5',
+        CODE: '#efa341'
+    },
+    {
+        COLOR: 'orenge8',
+        CODE: '#94611d'
+    },
+    {
+        COLOR: 'yellow1',
+        CODE: '#edf588'
+    },
+    {
+        COLOR: 'yellow5',
+        CODE: '#b1bb25'
+    },
+    {
+        COLOR: 'yellow8',
+        CODE: '#6b7116'
+    },
+    {
+        COLOR: 'green1',
+        CODE: '#c7facb'
+    },
+    {
+        COLOR: 'green5',
+        CODE: '#29ce34'
+    },
+    {
+        COLOR: 'green8',
+        CODE: '#197d20'
+    },
+    {
+        COLOR: 'cyan1',
+        CODE: '#c5f6fa'
+    },
+    {
+        COLOR: 'cyan5',
+        CODE: '#29c5d0'
+    },
+    {
+        COLOR: 'cyan8',
+        CODE: '#19777e'
+    },
+];
 
 export default {
     COLOR,
+    COLORPALETTE,
     FORMAT,
     GRDROWHEIGHT,
     GRD_COL_WIDTH,
@@ -165,6 +263,5 @@ export default {
     MSG_COPY,
     MSG_COPY_ERR,
     MSG_REKI_INS_CHK,
-    MSG_REKI_UPD_CHK     
+    MSG_REKI_UPD_CHK
 }
-

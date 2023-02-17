@@ -20,6 +20,7 @@ exports.connected = async function (param) {
     var url = apiRun.getDomain() + '/common/tantokaigi/v1/reki?' + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
+    apiRun.setApiAccount("api_common");
     return await service.getData(apiRun).then(result => {
         return result;
     });
@@ -34,6 +35,7 @@ exports.registed = async function (query, data) {
     apiRun.setUniqID(query.uniqid);
     apiRun.setTraceID(query.traceid);
     apiRun.setInputs(data);
+    apiRun.setApiAccount("api_common");
     return await service.postData(apiRun)
         .then(result => {
             return result.data;
@@ -50,6 +52,7 @@ exports.deleted = async function (query) {
     apiRun.setURL(url);
     apiRun.setUniqID(query.uniqid);
     apiRun.setTraceID(query.traceid);
+    apiRun.setApiAccount("api_common");
     return await service.deleteData(apiRun)
         .then(result => {
             return result.data;

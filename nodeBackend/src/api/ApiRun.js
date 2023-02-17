@@ -13,12 +13,17 @@ module.exports = class ApiRun {
         this.traceid = 0;
         this.params = {};
         this.query = "";
+        this.apiAccount = Config.get('api_sogo').x_api_account;
+        this.apiKey = Config.get('api_sogo').x_api_key;
     }
     // paramを取得しqueryを作成
     setQuery(param) {
         var query = "";
         Object.keys(param).forEach(function (key) {
-            query += "&" + key + "=" + param[key];
+            if (key != "traceid" && key != 'uniqid') {
+                query += "&" + key + "=" + param[key];
+            }
+
         });
         this.query = query.slice(1);
     }
@@ -61,33 +66,20 @@ module.exports = class ApiRun {
         this.params = data;
     }
     getInputs() {
-
         return this.params;
+    }
+    setApiAccount(key = 'api_sogo') {
+        this.apiAccount = Config.get(key).x_api_account;
+        this.apiKey = Config.get(key).x_api_key;
     }
 
     async api() {
-        // x-corporation-unique-id は引数によって変わる
         const HEADER = {};
-        // if (this.getUniqID() == 1) {
-        //     // HEADER['Content-type'] = "application/json";//GETでは不要
-        //     HEADER['x-api-account'] = 'tokei';
-        //     HEADER['x-api-key'] = '999';
-        // }
-        // if (this.getUniqID() == 2) {
-        //     // HEADER['Content-type'] = "application/json";
-        //     HEADER['x-api-account'] = 'tokei2';
-        //     HEADER['x-api-key'] = '989';
-        // }
-        // if (this.getUniqID() == 3) {
-        //     // HEADER['Content-type'] = "application/json";
-        //     HEADER['x-api-account'] = 'tokei3';
-        //     HEADER['x-api-key'] = '987';
-        // }
-        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
-        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
+
+        HEADER['x-api-account'] = this.apiAccount;
+        HEADER['x-api-key'] = this.apiKey;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
-        //HEADER['x-corporation-unique-id'] = '2';
         var url = this.getURL();
         return await axios
             // @ts-ignore
@@ -98,46 +90,22 @@ module.exports = class ApiRun {
                 return response;
             })
             .catch(function (error) {
-                console.log('API ERROR!');
-                // console.log(error);
-                // console.log(typeof error);
-                // for (let key of Object.keys(error)) {
-                //     console.log(key);
-                //     console.log(error[key]);
-                // }
-                return false;
+                throw error;
+
             });
     }
 
     async apiPost() {
-
-        // x-corporation-unique-id は引数によって変わる
-
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        // if (this.getUniqID() == 1) {
-        //     HEADER['Content-type'] = "application/json";
-        //     HEADER['x-api-account'] = 'tokei';
-        //     HEADER['x-api-key'] = '999';
-        // }
-        // if (this.getUniqID() == 2) {
-        //     HEADER['Content-type'] = "application/json";
-        //     HEADER['x-api-account'] = 'tokei2';
-        //     HEADER['x-api-key'] = '989';
-        // }
-        // if (this.getUniqID() == 3) {
-        //     HEADER['Content-type'] = "application/json";
-        //     HEADER['x-api-account'] = 'tokei3';
-        //     HEADER['x-api-key'] = '987';
-        // }
-        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
-        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
+
+        HEADER['x-api-account'] = this.apiAccount;
+        HEADER['x-api-key'] = this.apiKey;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
         var url = this.getURL();
         var input = this.getInputs();
-        console.log(HEADER);
-        // テストデータ
+
         return await axios
             // @ts-ignore
             .post(url, input, {
@@ -147,36 +115,17 @@ module.exports = class ApiRun {
                 return response;
             })
             .catch(function (error) {
-                console.log('API ERROR');
-                console.log(error);
-                // console.log(typeof error);
-                // for (let key of Object.keys(error)) {
-                //     console.log(key);
-                //     console.log(error[key]);
-                // }
-                return false;
+                throw error;
             });
     }
     async apiPut() {
 
-        // x-corporation-unique-id は引数によって変わる
 
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        // if (this.getUniqID() == 1) {
-        //     HEADER['x-api-account'] = 'tokei';
-        //     HEADER['x-api-key'] = '999';
-        // }
-        // if (this.getUniqID() == 2) {
-        //     HEADER['x-api-account'] = 'tokei2';
-        //     HEADER['x-api-key'] = '989';
-        // }
-        // if (this.getUniqID() == 3) {
-        //     HEADER['x-api-account'] = 'tokei3';
-        //     HEADER['x-api-key'] = '987';
-        // }
-        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
-        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
+
+        HEADER['x-api-account'] = this.apiAccount;
+        HEADER['x-api-key'] = this.apiKey;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
 
@@ -193,37 +142,16 @@ module.exports = class ApiRun {
                 return response;
             })
             .catch(function (error) {
-                console.log('API ERROR');
-                // console.log(error);
-                // console.log(typeof error);
-                // for (let key of Object.keys(error)) {
-                //     console.log(key);
-                //     console.log(error[key]);
-                // }
-                return false;
+                throw error;
             });
     }
 
     async apiDelete() {
 
-        // x-corporation-unique-id は引数によって変わる
-
         const HEADER = {};
         HEADER['Content-type'] = "application/json";
-        // if (this.getUniqID() == 1) {
-        //     HEADER['x-api-account'] = 'tokei';
-        //     HEADER['x-api-key'] = '999';
-        // }
-        // if (this.getUniqID() == 2) {
-        //     HEADER['x-api-account'] = 'tokei2';
-        //     HEADER['x-api-key'] = '989';
-        // }
-        // if (this.getUniqID() == 3) {
-        //     HEADER['x-api-account'] = 'tokei3';
-        //     HEADER['x-api-key'] = '987';
-        // }
-        HEADER['x-api-account'] = Config.get('api_sogo').x_api_account;
-        HEADER['x-api-key'] = Config.get('api_sogo').x_api_key;
+        HEADER['x-api-account'] = this.apiAccount;
+        HEADER['x-api-key'] = this.apiKey;
         HEADER['x-trace-id'] = this.getTraceID();
         HEADER['x-corporation-unique-id'] = this.getUniqID();
         var url = this.getURL();
@@ -238,14 +166,8 @@ module.exports = class ApiRun {
                 return response;
             })
             .catch(function (error) {
-                console.log('API ERROR');
-                console.log(error);
-                console.log(typeof error);
-                for (let key of Object.keys(error)) {
-                    console.log(key);
-                    console.log(error[key]);
-                }
-                return false;
+
+                throw error;
             });
     }
 }

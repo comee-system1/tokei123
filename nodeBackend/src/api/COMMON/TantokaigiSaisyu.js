@@ -19,6 +19,7 @@ exports.connected = async function (param) {
     var url = apiRun.getDomain() + '/common/tantokaigi/v1/saisyu?' + query;
     apiRun.setURL(url);
     apiRun.setUniqID(param.uniqid);
+    apiRun.setApiAccount("api_common");
     return await service.getData(apiRun).then(result => {
         return result;
     });

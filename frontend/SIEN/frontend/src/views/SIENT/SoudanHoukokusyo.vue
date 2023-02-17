@@ -207,6 +207,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import datepickerYear from 'vuejs-datepicker';
 import printUtil from '@/utiles/printUtil';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '../../connect/getConnect';
 export default {
   props: {
@@ -258,20 +259,32 @@ export default {
       traceid: 123,
       pJigyoid: 62,
     };
-    getConnect('/MstChohyo', params, 'SIENT').then((result) => {
-      this.cyouhyouList = result;
-      if (this.cyouhyouList.length > 0) {
-        this.selCyouhyou = this.cyouhyouList[0].ptnid;
-      }
-    });
-    getConnect('/MstSyukeikbn', params, 'SIENT').then((result) => {
-      if (result !== undefined) {
-        console.log(result);
-        this.viewKbnList = result;
-        this.viewKbnList.unshift({ id: 0, name: '（指定なし）' });
-        this.selInputKbn = 0;
-      }
-    });
+    getConnect('/MstChohyo', params, 'SIENT')
+      .then((result) => {
+        this.cyouhyouList = result;
+        if (this.cyouhyouList.length > 0) {
+          this.selCyouhyou = this.cyouhyouList[0].ptnid;
+        }
+      })
+      .catch(function (error) {
+        alert(
+          messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+        );
+      });
+    getConnect('/MstSyukeikbn', params, 'SIENT')
+      .then((result) => {
+        if (result !== undefined) {
+          console.log(result);
+          this.viewKbnList = result;
+          this.viewKbnList.unshift({ id: 0, name: '（指定なし）' });
+          this.selInputKbn = 0;
+        }
+      })
+      .catch(function (error) {
+        alert(
+          messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+        );
+      });
   },
   beforeDestroy() {
     document.removeEventListener('resize', this.calculateWindowHeight);
@@ -344,12 +357,18 @@ export default {
         pNyusgid: 0,
         pTidayid: 0,
       };
-      getConnect('/Houkokusyo', params, 'SIENT').then((result) => {
-        console.log(result);
-        this.viewDataAll = result;
-        this.createHtml();
-        this.screenFlag = false;
-      });
+      getConnect('/Houkokusyo', params, 'SIENT')
+        .then((result) => {
+          console.log(result);
+          this.viewDataAll = result;
+          this.createHtml();
+          this.screenFlag = false;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     createHtml() {
       let rootEl = document.getElementById('soudanHoukokusyoScrollbody');
