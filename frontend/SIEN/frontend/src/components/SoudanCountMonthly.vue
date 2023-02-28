@@ -171,8 +171,10 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
+import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
 const BORDER_SOLID = '1px solid';
@@ -279,9 +281,7 @@ export default {
       selTaiousya: 0,
       selInputKbn: 0,
       screenFlag: false,
-      headerList: [],
-      viewKiasuList: [],
-      viewNinzuList: [],
+      viewdataAll: null,
       viewJyoukyouList: [],
       viewNaiyouList: [],
       kikanSYm: '',
@@ -311,7 +311,6 @@ export default {
       document.getElementById(GRID_ID.Sien).style.display = STYLE_NONE;
       window.addEventListener('resize', this.calculateWindowHeight);
       this.calculateWindowHeight();
-      alert(location.hostname);
     });
     this.setPrintEvent();
     // 初期データ読込
@@ -346,6 +345,7 @@ export default {
       flexGrid.frozenColumns = 2;
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
+      flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.endUpdate();
     },
     onInitializesienNaiyouGridUtiwake(flexGrid) {
@@ -360,6 +360,7 @@ export default {
       flexGrid.alternatingRowStep = 0;
       flexGrid.columnFooters.rows.insert(0, new wjGrid.GroupRow());
       flexGrid.columnFooters.rows[0].height = sysConst.GRDROWHEIGHT.Header + 4;
+      flexGrid.columnFooters.rows[0].allowMerging = true;
       flexGrid.frozenColumns = 2;
       flexGrid.endUpdate();
     },
@@ -373,30 +374,52 @@ export default {
       flexGrid.endUpdate();
     },
     createSoudanCountGridHeader(flexGrid) {
+      if (!this.viewdataAll) {
+        return;
+      }
       // ヘッダの追加と設定
       flexGrid.columns.length = 0;
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+      for (
+        let colIndex = 0;
+        colIndex < this.viewdataAll.title_list1.length + 2;
+        colIndex++
+      ) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
+        col.allowMerging = true;
+        col.multiLine = true;
+
         if (colIndex == 0) {
           col.binding = 'date';
           col.align = ALI_CENTER;
-          col.width = 70;
+          col.width = 30;
+          col.header = ' ';
+          flexGrid.columnHeaders.setCellData(0, colIndex, '');
         } else if (colIndex == 1) {
           col.binding = 'youbi';
-          col.width = 150;
+          col.align = ALI_CENTER;
+          col.width = 30;
+          col.header = ' ';
+          flexGrid.columnHeaders.setCellData(0, colIndex, '');
+        } else {
+          col.aggregate = 'Sum';
+          col.width = 40;
+          let syukeiitem = this.viewdataAll.syukeiid[colIndex - 2];
+          col.binding =
+            syukeiitem.title_daiid +
+            '_' +
+            syukeiitem.title_tyuid +
+            '_' +
+            syukeiitem.title_shoid;
+          col.header = this.viewdataAll.title_list2[colIndex - 2];
+          flexGrid.columnHeaders.setCellData(
+            0,
+            colIndex,
+            this.viewdataAll.title_list1[colIndex - 2]
+          );
         }
-        col.header = this.headerList[colIndex].title_list2;
-
-        col.allowMerging = true;
-        col.multiLine = true;
-        flexGrid.columnHeaders.setCellData(
-          0,
-          colIndex,
-          this.headerList[colIndex].title_list1
-        );
         if (colIndex == 1) {
           if (this.selSyukeiIndex == 0) {
             flexGrid.columnFooters.setCellData(0, colIndex, '件数');
@@ -407,30 +430,52 @@ export default {
       }
     },
     createsienNaiyouGridHeader(flexGrid) {
+      if (!this.viewdataAll) {
+        return;
+      }
       // ヘッダの追加と設定
       flexGrid.columns.length = 0;
       // ヘッダ文字列の設定
-      for (let colIndex = 0; colIndex < this.headerList.length; colIndex++) {
+      for (
+        let colIndex = 0;
+        colIndex < this.viewdataAll.title_list1.length;
+        colIndex++
+      ) {
         flexGrid.columns.insert(colIndex, new wjGrid.Column());
         let col = flexGrid.columns[colIndex];
         col.wordWrap = true;
+        col.allowMerging = true;
+        col.multiLine = true;
+        col.width = 30;
         if (colIndex == 0) {
           col.binding = 'date';
           col.align = ALI_CENTER;
-          col.width = 70;
+          col.width = 30;
+          col.header = ' ';
+          flexGrid.columnHeaders.setCellData(0, colIndex, '');
         } else if (colIndex == 1) {
           col.binding = 'youbi';
-          col.width = 150;
+          col.align = ALI_CENTER;
+          col.width = 30;
+          col.header = ' ';
+          flexGrid.columnHeaders.setCellData(0, colIndex, '');
+        } else {
+          col.aggregate = 'Sum';
+          col.width = 40;
+          let syukeiitem = this.viewdataAll.syukeiid[colIndex - 2];
+          col.binding =
+            syukeiitem.title_daiid +
+            '_' +
+            syukeiitem.title_tyuid +
+            '_' +
+            syukeiitem.title_shoid;
+          col.header = this.viewdataAll.title_list2[colIndex - 2];
+          flexGrid.columnHeaders.setCellData(
+            0,
+            colIndex,
+            this.viewdataAll.title_list1[colIndex - 2]
+          );
         }
-        col.header = this.headerList[colIndex].title_list2;
-
-        col.allowMerging = true;
-        col.multiLine = true;
-        flexGrid.columnHeaders.setCellData(
-          0,
-          colIndex,
-          this.headerList[colIndex].title_list1
-        );
         if (colIndex == 1) {
           if (this.selSyukeiIndex == 0) {
             flexGrid.columnFooters.setCellData(0, colIndex, '件数');
@@ -451,20 +496,23 @@ export default {
       e.cell.style.writingMode = STYLE_DEFAULT;
       e.cell.style.borderRight = STYLE_DEFAULT;
       e.cell.style.borderBottom = STYLE_DEFAULT;
+      e.cell.style.borderColor = STYLE_DEFAULT;
       e.cell.style.verticalAlign = STYLE_DEFAULT;
       e.cell.style.justifyContent = STYLE_DEFAULT;
       e.cell.style.alignItems = STYLE_DEFAULT;
       e.cell.style.textAlign = STYLE_DEFAULT;
       e.cell.style.display = STYLE_DEFAULT;
       e.cell.style.paddingTop = STYLE_DEFAULT;
+      e.cell.style.color = STYLE_DEFAULT;
 
       // ヘッダのbindingに組み込まれた区分が異なれば太線区切り
       if (e.panel.columns[e.col].binding != null) {
-        let title_list1 = this.headerList[e.col].title_list1;
-        let nexttitle_list1 = '';
         if (e.col < flexGrid.columns.length - 1) {
-          nexttitle_list1 = this.headerList[e.col + 1].title_list1;
-          if (title_list1 != nexttitle_list1) {
+          if (
+            (e.panel == flexGrid.columnHeaders && e.col == 0) ||
+            this.viewdataAll.title_list1[e.col - 2] !=
+              this.viewdataAll.title_list1[e.col - 1]
+          ) {
             e.cell.style.borderRight = BORDER_SOLID;
           }
         }
@@ -501,13 +549,22 @@ export default {
           //     '</div>';
           // }
         }
-      }
-      // else if (e.panel == flexGrid.cells) {
-      //   if (e.row == flexGrid.rows.length - 1) {
-      //     e.cell.style.borderBottom = NONE;
-      //   }
-      // }
-      else if (e.panel == flexGrid.columnFooters) {
+      } else if (e.panel == flexGrid.cells) {
+        let tmpitem = flexGrid.cells.rows[e.row].dataItem;
+        if (e.col <= 1) {
+          if (tmpitem.youbi == '土') {
+            e.cell.style.color = sysConst.COLOR.fontColorSaturday;
+          } else if (tmpitem.youbi == '日') {
+            e.cell.innerHTML =
+              '<div class="sunday">' +
+              wjCore.escapeHtml(e.cell.innerHTML) +
+              '</div>';
+          }
+        }
+        if (tmpitem.youbi == '日') {
+          e.cell.style.borderBottom = BORDER_SOLID;
+        }
+      } else if (e.panel == flexGrid.columnFooters) {
         e.cell.style.borderTop = ' double 4px black';
         if (e.col <= 1) {
           e.cell.style.backgroundColor = sysConst.COLOR.gridTotalBackground;
@@ -527,20 +584,24 @@ export default {
       }
       e.cell.style.writingMode = STYLE_DEFAULT;
       e.cell.style.borderRight = STYLE_DEFAULT;
+      e.cell.style.borderBottom = STYLE_DEFAULT;
+      e.cell.style.borderColor = STYLE_DEFAULT;
       e.cell.style.verticalAlign = STYLE_DEFAULT;
       e.cell.style.justifyContent = STYLE_DEFAULT;
       e.cell.style.alignItems = STYLE_DEFAULT;
       e.cell.style.textAlign = STYLE_DEFAULT;
       e.cell.style.display = STYLE_DEFAULT;
       e.cell.style.paddingTop = STYLE_DEFAULT;
+      e.cell.style.color = STYLE_DEFAULT;
 
       // ヘッダのbindingに組み込まれた区分が異なれば太線区切り
       if (e.panel.columns[e.col].binding != null) {
-        let title_list1 = this.headerList[e.col].title_list1;
-        let nexttitle_list1 = '';
         if (e.col < flexGrid.columns.length - 1) {
-          nexttitle_list1 = this.headerList[e.col + 1].title_list1;
-          if (title_list1 != nexttitle_list1) {
+          if (
+            (e.panel == flexGrid.columnHeaders && e.col == 0) ||
+            this.viewdataAll.title_list1[e.col - 2] !=
+              this.viewdataAll.title_list1[e.col - 1]
+          ) {
             e.cell.style.borderRight = BORDER_SOLID;
           }
         }
@@ -571,9 +632,20 @@ export default {
             sysConst.COLOR.viewTitleBackgroundOrange;
         }
       } else if (e.panel == flexGrid.cells) {
-        // if (e.row == flexGrid.rows.length - 1) {
-        //   e.cell.style.borderBottom = NONE;
-        // }
+        let tmpitem = flexGrid.cells.rows[e.row].dataItem;
+        if (e.col <= 1) {
+          if (tmpitem.youbi == '土') {
+            e.cell.style.color = sysConst.COLOR.fontColorSaturday;
+          } else if (tmpitem.youbi == '日') {
+            e.cell.innerHTML =
+              '<div class="sunday">' +
+              wjCore.escapeHtml(e.cell.innerHTML) +
+              '</div>';
+          }
+        }
+        if (tmpitem.youbi == '日') {
+          e.cell.style.borderBottom = BORDER_SOLID;
+        }
       } else if (e.panel == flexGrid.columnFooters) {
         e.cell.style.borderTop = ' double 4px black';
         if (e.col <= 1) {
@@ -601,44 +673,76 @@ export default {
     setViewData(isAll) {
       if (isAll) {
         let params = {
-          uniqid: 3,
-          traceid: 123,
           pJigyoid: 62,
           pTaisyo: this.selDispGridIndex == 0 ? 1 : 2,
-          pSymd: this.targetYmd,
-          pEymd: this.targetYmd,
-          pSiid: 0,
-          pChiku: 0,
-          pHostName: 'cl021',
+          pSymd: dayjs(this.pickerSym).format('YYYYMM01'),
+          pEymd: dayjs(this.pickerSym).endOf('month').format('YYYYMMDD'),
+          // pSiid: 0,
+          // pChiku: 0,
+          pHostName: 10,
         };
-        let split = this.pickerSym.split('-');
-        this.targetSYm = split[0] + split[1].padStart(2, '0') + '01';
-        params.pSymd = this.targetSYm;
+
         this.screenFlag = true;
-        getConnect('/SyukeiMonth', params, 'SIENT').then((result) => {
-          this.headerList = result.headerList;
-          this.viewKiasuList = result.kaisuList;
-          this.viewNinzuList = result.ninzuList;
-          this.setViewList();
-          this.screenFlag = false;
-        });
+        getConnect('/SyukeiMonth', params, 'SIENT')
+          .then((result) => {
+            console.log(result);
+            this.viewdataAll = result;
+            this.setViewList();
+            this.screenFlag = false;
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.setViewList();
       }
     },
     setViewList() {
-      if (this.selDispGridIndex == 0) {
-        if (this.selSyukeiIndex == 0) {
-          this.viewJyoukyouList = this.viewKiasuList.slice();
-        } else {
-          this.viewJyoukyouList = this.viewNinzuList.slice();
+      this.viewJyoukyouList = [];
+      this.viewNaiyouList = [];
+      let tmplist = [];
+
+      if (this.selSyukeiIndex == 0) {
+        for (let i = 0; i < this.viewdataAll.day.length; i++) {
+          let item = {};
+          item.date = this.viewdataAll.day[i];
+          item.youbi = this.viewdataAll.day_week[i];
+          for (let mst = 0; mst < this.viewdataAll.syukeiid.length; mst++) {
+            let syukeiitem = this.viewdataAll.syukeiid[mst];
+            item[
+              syukeiitem.title_daiid +
+                '_' +
+                syukeiitem.title_tyuid +
+                '_' +
+                syukeiitem.title_shoid
+            ] = this.viewdataAll.kaisu_list[i][mst];
+          }
+          tmplist.push(item);
         }
       } else {
-        if (this.selSyukeiIndex == 0) {
-          this.viewNaiyouList = this.viewKiasuList.slice();
-        } else {
-          this.viewNaiyouList = this.viewNinzuList.slice();
+        for (let i = 0; i < this.viewdataAll.day.length; i++) {
+          let item = {};
+          item.date = this.viewdataAll.day[i];
+          item.youbi = this.viewdataAll.day_week[i];
+          for (let mst = 0; mst < this.viewdataAll.syukeiid.length; mst++) {
+            let syukeiitem = this.viewdataAll.syukeiid[mst];
+            item[
+              syukeiitem.title_daiid +
+                '_' +
+                syukeiitem.title_tyuid +
+                '_' +
+                syukeiitem.title_shoid
+            ] = this.viewdataAll.ninzu_list[i][mst];
+          }
+          tmplist.push(item);
         }
+      }
+      if (this.selDispGridIndex == 0) {
+        this.viewJyoukyouList = tmplist.slice();
+      } else {
+        this.viewNaiyouList = tmplist.slice();
       }
     },
     userFilterSoudanCountMonthly() {
@@ -815,6 +919,12 @@ div#soudanCountMonthly {
     }
     .wj-cell {
       padding: 2px;
+      > .saturday {
+        color: $font_color_saturday;
+      }
+      > .sunday {
+        color: $font_color_sunday;
+      }
     }
     .wj-cell:not(.wj-header) {
       background: $grid_background;

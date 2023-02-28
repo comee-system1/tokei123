@@ -190,6 +190,7 @@ import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import printUtil from '@/utiles/printUtil';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '@connect/getConnect';
 export default {
   components: { AlphabetButton },
@@ -693,12 +694,18 @@ export default {
           pEym: this.kikanYm.format('YYYYMM'),
         };
         console.log(params);
-        getConnect('/moniJissiView', params).then((result) => {
-          console.log(12345);
-          console.log(result);
-          this.viewdatayoteisyaAll = result;
-          this.userFilter();
-        });
+        getConnect('/moniJissiView', params)
+          .then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewdatayoteisyaAll = result;
+            this.userFilter();
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.userFilter();
       }

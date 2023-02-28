@@ -384,6 +384,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import { getConnect } from '@connect/getConnect';
 import printUtil from '@/utiles/printUtil';
@@ -1082,12 +1083,16 @@ export default {
           pSym: this.dispYmList[0],
           pEym: this.dispYmList[this.dispYmList.length - 1],
         };
-        getConnect('/moniYoteiView', params).then((result) => {
-          console.log(11111);
-          console.log(result);
-          this.viewdatakeikakuAll = this.createViewData(result);
-          this.userFilter();
-        });
+        getConnect('/moniYoteiView', params)
+          .then((result) => {
+            this.viewdatakeikakuAll = this.createViewData(result);
+            this.userFilter();
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.userFilter();
       }

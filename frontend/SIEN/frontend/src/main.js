@@ -6,8 +6,6 @@ import commons from './assets/scss/_commons.scss'
 import dialogs from './assets/scss/_dialogs.scss'
 
 import '@grapecity/wijmo.styles/wijmo.css';
-
-
 Vue.config.productionTip = false
 
 new Vue({

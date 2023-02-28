@@ -300,6 +300,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import UketukeTouroku from '../components/UketukeTouroku.vue';
 import MdSelect from '../components/MdSelect.vue';
 import printUtil from '@/utiles/printUtil';
@@ -747,21 +748,20 @@ export default {
           params.pSymd = this.targetSYm;
           params.pEymd = this.targetEYm;
         }
-        console.log(params);
+        console.dir(params);
         let self = this;
         getConnect('/Uktk', params, 'SIENT')
           .then((result) => {
+            console.log(result);
             self.screenFlag = true;
             self.viewdataAll = result;
             self.userFilter();
             self.$refs.uketukeTouroku.resetEditflg();
           })
           .catch(function (error) {
-            self.screenFlag = false;
+            self.screenFlag = true;
             alert(
-              '検索処理で、エラーが発生しました。[' +
-                error.response.data.message +
-                ']'
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
             );
           });
       } else {

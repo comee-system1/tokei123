@@ -940,6 +940,7 @@ import dayjs from 'dayjs';
 import UserList from '../../components/UserList.vue';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { getConnect } from '../../connect/getConnect';
 import { postConnect } from '../../connect/postConnect';
@@ -1230,35 +1231,43 @@ export default {
         pSvcKbn: this.svcKbn,
         pSiid: this.siid,
       };
-      getConnect(apiTantoKaigiSaisyu, params, 'COMMON').then((result) => {
-        // データ初期化
-        this.dataClear();
+      getConnect(apiTantoKaigiSaisyu, params, 'COMMON')
+        .then((result) => {
+          // データ初期化
+          this.dataClear();
 
-        if (result.info.sTime) {
-          this.sTime = result.info.sTime;
-        }
-        if (result.info.eTime) {
-          this.eTime = result.info.eTime;
-        }
-        if (result.info.basho) {
-          this.basho = result.info.basho;
-        }
-        this.shussekiList = result.shussekiList;
+          if (result.info.sTime) {
+            this.sTime = result.info.sTime;
+          }
+          if (result.info.eTime) {
+            this.eTime = result.info.eTime;
+          }
+          if (result.info.basho) {
+            this.basho = result.info.basho;
+          }
+          this.shussekiList = result.shussekiList;
 
-        let attendees = [];
-        for (let i = 0; i < 15; i++) {
-          attendees.push({
-            num: i + 1,
-            syokusyu: this.shussekiList[i] ? this.shussekiList[i].siYakuNm : '',
-            name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
-          });
-        }
-        // 出席者選択内へ反映
-        this.selectedAttendList = attendees;
-        this.selectedAttendView = this.selectedAttendList;
-        // 出席者一覧へ反映
-        this.setShussekiData();
-      });
+          let attendees = [];
+          for (let i = 0; i < 15; i++) {
+            attendees.push({
+              num: i + 1,
+              syokusyu: this.shussekiList[i]
+                ? this.shussekiList[i].siYakuNm
+                : '',
+              name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
+            });
+          }
+          // 出席者選択内へ反映
+          this.selectedAttendList = attendees;
+          this.selectedAttendView = this.selectedAttendList;
+          // 出席者一覧へ反映
+          this.setShussekiData();
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     /*****************************
      * 検討した項目・検討内容・結論
@@ -1424,8 +1433,8 @@ export default {
           kanryoYmd: kanryoYmd,
           kanryoChk: this.kanryoChk,
         };
-        putConnect(apiTantoKaigi, params, 'COMMON', inputParams).then(
-          (result) => {
+        putConnect(apiTantoKaigi, params, 'COMMON', inputParams)
+          .then((result) => {
             let order = this.considerView.slice();
             // 順変更時の並べ替え
             order.sort((a, b) => {
@@ -1459,8 +1468,12 @@ export default {
             if (btnofType == 'registBtn') {
               this.considerView = order;
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
 
@@ -2028,40 +2041,265 @@ export default {
         pJigyoid: 62,
         pIntcode: this.intCode,
       };
-      getConnect(apiTantoKaigiSaishinReki, params, 'COMMON').then((result) => {
-        // データの初期化
-        this.dataClear();
+      getConnect(apiTantoKaigiSaishinReki, params, 'COMMON')
+        .then((result) => {
+          // データの初期化
+          this.dataClear();
 
-        if (result.cntID == 0) {
-          this.modeless_dialogOpen();
-        } else {
-          // 履歴がある
-          this.modeless_dialogClose();
+          if (result.cntID == 0) {
+            this.modeless_dialogOpen();
+          } else {
+            // 履歴がある
+            this.modeless_dialogClose();
 
+            // 会議内容
+            if (result.info.mkYmd && dayjs(result.info.mkYmd).isValid()) {
+              this.mkYmd = dayjs(result.info.mkYmd).format('YYYY年MM月DD日');
+            }
+            if (result.info.opnYmd && dayjs(result.info.opnYmd).isValid()) {
+              this.opnYmd = dayjs(result.info.opnYmd).format('YYYY年MM月DD日');
+            }
+
+            if (result.info.sTime) {
+              this.sTime = result.info.sTime;
+            }
+            if (result.info.eTime) {
+              this.eTime = result.info.eTime;
+            }
+            if (result.info.basho) {
+              this.basho = result.info.basho;
+            }
+            if (result.kadai) {
+              this.kadai = result.kadai;
+            }
+
+            // 出席者一覧
+            this.shussekiList = result.shussekiList;
+
+            let attendees = [];
+            for (let i = 0; i < 15; i++) {
+              attendees.push({
+                num: i + 1,
+                syokusyu: this.shussekiList[i]
+                  ? this.shussekiList[i].siYakuNm
+                  : '',
+                name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
+              });
+            }
+            // 出席者選択内へ反映
+            this.selectedAttendList = attendees;
+            this.selectedAttendView = this.selectedAttendList;
+            // 出席者一覧へ反映
+            this.setShussekiData();
+
+            // 検討項目/内容・結論
+            let tmp = result.naiyoGyoList;
+            let considerView = [];
+            if (tmp == '') {
+              considerView.push({
+                cnt: 1,
+                kentoKmk: '',
+                kentoNaiyo: '',
+                ketsuron: '',
+              });
+              this.considerView = considerView;
+            } else {
+              for (let i = 0; i < tmp.length; i++) {
+                let kentoKmk = '';
+                let kentoNaiyo = '';
+                let ketsuron = '';
+                let list = tmp[i].naiyoList;
+                for (let j = 0; j < list.length; j++) {
+                  if (list[j].kbn == 1) {
+                    kentoKmk = list[j].naiyo;
+                  }
+                  if (list[j].kbn == 2) {
+                    kentoNaiyo = list[j].naiyo;
+                  }
+                  if (list[j].kbn == 3) {
+                    ketsuron = list[j].naiyo;
+                  }
+                }
+                // gridへ反映
+                considerView.push({
+                  cnt: tmp[i].cnt,
+                  kentoKmk: kentoKmk,
+                  kentoNaiyo: kentoNaiyo,
+                  ketsuron: ketsuron,
+                });
+              }
+              this.considerView = considerView;
+            }
+            // 完了チェック
+            if (result.kanryoChk == 0) {
+              this.kanryoChkBtn = false;
+              this.kanryoChk = 0;
+              this.kanryoYmd = '';
+            } else {
+              this.kanryoChkBtn = true;
+              this.kanryoChk = 1;
+              if (result.kanryoYmd && dayjs(result.kanryoYmd).isValid()) {
+                this.kanryoYmd = dayjs(result.kanryoYmd).format(
+                  'YYYY年MM月DD日'
+                );
+              }
+            }
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
+    },
+    // 履歴参照 GET
+    getTantoReki() {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pSvcKbn: this.svcKbn,
+        pJigyoid: 62,
+        pIntcode: this.intCode,
+      };
+      getConnect(apiTantoKaigiReki, params, 'COMMON')
+        .then((result) => {
+          result.sort((a, b) => b.cntID - a.cntID);
+          // cntIDの最大値を取得
+          let newestReki = Math.max.apply(
+            null,
+            result.map(function (o) {
+              return o.cntID;
+            })
+          );
+
+          this.cntID = newestReki;
+          let kbn = 0;
+          // 履歴参照ダイアログに出力
+          for (let i = 0; i < result.length; i++) {
+            if (
+              result[i].length != 0 &&
+              dayjs(result[i].mkYmd, 'YYYY/MM/DD').isValid()
+            ) {
+              result[i].mkYmd = dayjs(result[i].mkYmd).format('YYYY/MM/DD');
+            }
+            if (
+              result[i].length != 0 &&
+              dayjs(result[i].opnYmd, 'YYYY/MM/DD').isValid()
+            ) {
+              result[i].opnYmd = dayjs(result[i].opnYmd).format('YYYY/MM/DD');
+            }
+            if (
+              result[i].length != 0 &&
+              dayjs(result[i].kanryoYmd, 'YYYY/MM/DD').isValid()
+            ) {
+              result[i].kanryoYmd = dayjs(result[i].kanryoYmd).format(
+                'YYYY/MM/DD'
+              );
+            }
+            // 完了チェック
+            if (result[i].kanryoChk == 0) {
+              result[i].kanryoChk = '未完了';
+            } else {
+              result[i].kanryoChk = '完了済';
+            }
+            this.siid = result[i].siid;
+            this.annCntID = result[i].annCntID;
+            this.moniCntID = result[i].moniCntID;
+
+            // 会議区分
+            this.kaigiKbn = result[i].kaigiKbn;
+            if (newestReki == result[i].cntID) {
+              kbn = result[i].kaigiKbn;
+            }
+          }
+          // 履歴参照へ反映
+          this.rirekiView = result;
+          // 対象の活性化
+          if (kbn == 3) {
+            this.targetOn = 1;
+          }
+          if (kbn == 4) {
+            this.targetOn = 0;
+          }
+          if (kbn == 9) {
+            this.targetOn = 2;
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
+    },
+    // 担当会議 GET
+    setViewData(copyofType = 0) {
+      let params = {
+        uniqid: 3,
+        traceid: 123,
+        pJigyoid: 62,
+        pSvcKbn: this.svcKbn,
+        pIntcode: this.intCode,
+        pCntId: this.cntID,
+      };
+      getConnect(apiTantoKaigi, params, 'COMMON')
+        .then((result) => {
           // 会議内容
-          if (result.info.mkYmd && dayjs(result.info.mkYmd).isValid()) {
-            this.mkYmd = dayjs(result.info.mkYmd).format('YYYY年MM月DD日');
-          }
-          if (result.info.opnYmd && dayjs(result.info.opnYmd).isValid()) {
-            this.opnYmd = dayjs(result.info.opnYmd).format('YYYY年MM月DD日');
+          if (copyofType == 0) {
+            // データの初期化
+            this.dataClear();
+            if (result[0].info.mkYmd && dayjs(result[0].info.mkYmd).isValid()) {
+              this.mkYmd = dayjs(result[0].info.mkYmd).format('YYYY年MM月DD日');
+            }
+            if (
+              result[0].info.opnYmd &&
+              dayjs(result[0].info.opnYmd).isValid()
+            ) {
+              this.opnYmd = dayjs(result[0].info.opnYmd).format(
+                'YYYY年MM月DD日'
+              );
+            }
+            if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
+              this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
+                'YYYY年MM月DD日'
+              );
+            }
+
+            // 完了チェック
+            // 未完了
+            if (result[0].kanryoChk == 0) {
+              this.kanryoChkBtn = false;
+              this.kanryoChk = 0;
+              this.kanryoYmd = '';
+            } else {
+              // 完了
+              this.kanryoChkBtn = true;
+              this.kanryoChk = 1;
+              if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
+                this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
+                  'YYYY年MM月DD日'
+                );
+              }
+            }
+          } else {
+            this.kanryoYmd = '';
+            this.kanryoChkBtn = false;
           }
 
-          if (result.info.sTime) {
-            this.sTime = result.info.sTime;
+          if (result[0].info.sTime) {
+            this.sTime = result[0].info.sTime;
           }
-          if (result.info.eTime) {
-            this.eTime = result.info.eTime;
+          if (result[0].info.eTime) {
+            this.eTime = result[0].info.eTime;
           }
-          if (result.info.basho) {
-            this.basho = result.info.basho;
+          if (result[0].info.basho) {
+            this.basho = result[0].info.basho;
           }
-          if (result.kadai) {
-            this.kadai = result.kadai;
+          if (result[0].kadai) {
+            this.kadai = result[0].kadai;
           }
 
           // 出席者一覧
-          this.shussekiList = result.shussekiList;
-
+          this.shussekiList = result[0].shussekiList;
           let attendees = [];
           for (let i = 0; i < 15; i++) {
             attendees.push({
@@ -2079,7 +2317,7 @@ export default {
           this.setShussekiData();
 
           // 検討項目/内容・結論
-          let tmp = result.naiyoGyoList;
+          let tmp = result[0].naiyoGyoList;
           let considerView = [];
           if (tmp == '') {
             considerView.push({
@@ -2116,210 +2354,12 @@ export default {
             }
             this.considerView = considerView;
           }
-          // 完了チェック
-          if (result.kanryoChk == 0) {
-            this.kanryoChkBtn = false;
-            this.kanryoChk = 0;
-            this.kanryoYmd = '';
-          } else {
-            this.kanryoChkBtn = true;
-            this.kanryoChk = 1;
-            if (result.kanryoYmd && dayjs(result.kanryoYmd).isValid()) {
-              this.kanryoYmd = dayjs(result.kanryoYmd).format('YYYY年MM月DD日');
-            }
-          }
-        }
-      });
-    },
-    // 履歴参照 GET
-    getTantoReki() {
-      let params = {
-        uniqid: 3,
-        traceid: 123,
-        pSvcKbn: this.svcKbn,
-        pJigyoid: 62,
-        pIntcode: this.intCode,
-      };
-      getConnect(apiTantoKaigiReki, params, 'COMMON').then((result) => {
-        result.sort((a, b) => b.cntID - a.cntID);
-        // cntIDの最大値を取得
-        let newestReki = Math.max.apply(
-          null,
-          result.map(function (o) {
-            return o.cntID;
-          })
-        );
-
-        this.cntID = newestReki;
-        let kbn = 0;
-        // 履歴参照ダイアログに出力
-        for (let i = 0; i < result.length; i++) {
-          if (
-            result[i].length != 0 &&
-            dayjs(result[i].mkYmd, 'YYYY/MM/DD').isValid()
-          ) {
-            result[i].mkYmd = dayjs(result[i].mkYmd).format('YYYY/MM/DD');
-          }
-          if (
-            result[i].length != 0 &&
-            dayjs(result[i].opnYmd, 'YYYY/MM/DD').isValid()
-          ) {
-            result[i].opnYmd = dayjs(result[i].opnYmd).format('YYYY/MM/DD');
-          }
-          if (
-            result[i].length != 0 &&
-            dayjs(result[i].kanryoYmd, 'YYYY/MM/DD').isValid()
-          ) {
-            result[i].kanryoYmd = dayjs(result[i].kanryoYmd).format(
-              'YYYY/MM/DD'
-            );
-          }
-          // 完了チェック
-          if (result[i].kanryoChk == 0) {
-            result[i].kanryoChk = '未完了';
-          } else {
-            result[i].kanryoChk = '完了済';
-          }
-          this.siid = result[i].siid;
-          this.annCntID = result[i].annCntID;
-          this.moniCntID = result[i].moniCntID;
-
-          // 会議区分
-          this.kaigiKbn = result[i].kaigiKbn;
-          if (newestReki == result[i].cntID) {
-            kbn = result[i].kaigiKbn;
-          }
-        }
-        // 履歴参照へ反映
-        this.rirekiView = result;
-        // 対象の活性化
-        if (kbn == 3) {
-          this.targetOn = 1;
-        }
-        if (kbn == 4) {
-          this.targetOn = 0;
-        }
-        if (kbn == 9) {
-          this.targetOn = 2;
-        }
-      });
-    },
-    // 担当会議 GET
-    setViewData(copyofType = 0) {
-      let params = {
-        uniqid: 3,
-        traceid: 123,
-        pJigyoid: 62,
-        pSvcKbn: this.svcKbn,
-        pIntcode: this.intCode,
-        pCntId: this.cntID,
-      };
-      getConnect(apiTantoKaigi, params, 'COMMON').then((result) => {
-        // 会議内容
-        if (copyofType == 0) {
-          // データの初期化
-          this.dataClear();
-          if (result[0].info.mkYmd && dayjs(result[0].info.mkYmd).isValid()) {
-            this.mkYmd = dayjs(result[0].info.mkYmd).format('YYYY年MM月DD日');
-          }
-          if (result[0].info.opnYmd && dayjs(result[0].info.opnYmd).isValid()) {
-            this.opnYmd = dayjs(result[0].info.opnYmd).format('YYYY年MM月DD日');
-          }
-          if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
-            this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
-              'YYYY年MM月DD日'
-            );
-          }
-
-          // 完了チェック
-          // 未完了
-          if (result[0].kanryoChk == 0) {
-            this.kanryoChkBtn = false;
-            this.kanryoChk = 0;
-            this.kanryoYmd = '';
-          } else {
-            // 完了
-            this.kanryoChkBtn = true;
-            this.kanryoChk = 1;
-            if (result[0].kanryoYmd && dayjs(result[0].kanryoYmd).isValid()) {
-              this.kanryoYmd = dayjs(result[0].kanryoYmd).format(
-                'YYYY年MM月DD日'
-              );
-            }
-          }
-        } else {
-          this.kanryoYmd = '';
-          this.kanryoChkBtn = false;
-        }
-
-        if (result[0].info.sTime) {
-          this.sTime = result[0].info.sTime;
-        }
-        if (result[0].info.eTime) {
-          this.eTime = result[0].info.eTime;
-        }
-        if (result[0].info.basho) {
-          this.basho = result[0].info.basho;
-        }
-        if (result[0].kadai) {
-          this.kadai = result[0].kadai;
-        }
-
-        // 出席者一覧
-        this.shussekiList = result[0].shussekiList;
-        let attendees = [];
-        for (let i = 0; i < 15; i++) {
-          attendees.push({
-            num: i + 1,
-            syokusyu: this.shussekiList[i] ? this.shussekiList[i].siYakuNm : '',
-            name: this.shussekiList[i] ? this.shussekiList[i].siNm : '',
-          });
-        }
-        // 出席者選択内へ反映
-        this.selectedAttendList = attendees;
-        this.selectedAttendView = this.selectedAttendList;
-        // 出席者一覧へ反映
-        this.setShussekiData();
-
-        // 検討項目/内容・結論
-        let tmp = result[0].naiyoGyoList;
-        let considerView = [];
-        if (tmp == '') {
-          considerView.push({
-            cnt: 1,
-            kentoKmk: '',
-            kentoNaiyo: '',
-            ketsuron: '',
-          });
-          this.considerView = considerView;
-        } else {
-          for (let i = 0; i < tmp.length; i++) {
-            let kentoKmk = '';
-            let kentoNaiyo = '';
-            let ketsuron = '';
-            let list = tmp[i].naiyoList;
-            for (let j = 0; j < list.length; j++) {
-              if (list[j].kbn == 1) {
-                kentoKmk = list[j].naiyo;
-              }
-              if (list[j].kbn == 2) {
-                kentoNaiyo = list[j].naiyo;
-              }
-              if (list[j].kbn == 3) {
-                ketsuron = list[j].naiyo;
-              }
-            }
-            // gridへ反映
-            considerView.push({
-              cnt: tmp[i].cnt,
-              kentoKmk: kentoKmk,
-              kentoNaiyo: kentoNaiyo,
-              ketsuron: ketsuron,
-            });
-          }
-          this.considerView = considerView;
-        }
-      });
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     // 履歴削除 DELETE
     deleteRireki() {
@@ -2332,15 +2372,21 @@ export default {
           pIntcode: this.intCode,
           pCntId: this.cntID,
         };
-        deleteConnect(apiTantoKaigiReki, params, 'COMMON').then((result) => {
-          if (result.okflg == true) {
-            // alert('削除が完了しました。');
-            this.dataClear();
-            this.getTantoReki();
-          } else {
-            alert(result.msg);
-          }
-        });
+        deleteConnect(apiTantoKaigiReki, params, 'COMMON')
+          .then((result) => {
+            if (result.okflg == true) {
+              // alert('削除が完了しました。');
+              this.dataClear();
+              this.getTantoReki();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     dispalyChange() {
@@ -2436,8 +2482,8 @@ export default {
           annCntID: this.annCntID,
           moniCntID: this.moniCntID,
         };
-        postConnect(apiTantoKaigiReki, params, 'COMMON', inputParams).then(
-          (result) => {
+        postConnect(apiTantoKaigiReki, params, 'COMMON', inputParams)
+          .then((result) => {
             if (result.okflg == true) {
               // alert('新規登録が完了しました。');
               this.getTantoSaishinReki();
@@ -2445,8 +2491,12 @@ export default {
             } else {
               alert(result.msg);
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
       this.createRekiFlg = false;
     },
@@ -2494,8 +2544,8 @@ export default {
             pIntcode: this.intCode,
             pCntID: this.cntID,
           };
-          deleteConnect(apiTantoKaigiKanryo, params, 'COMMON').then(
-            (result) => {
+          deleteConnect(apiTantoKaigiKanryo, params, 'COMMON')
+            .then((result) => {
               if (result.okflg == true) {
                 // alert('削除が完了しました。');
                 let tmp = this.rirekiView.slice();
@@ -2510,8 +2560,15 @@ export default {
                 this.remCheckBtn();
                 this.kanryoCheckOpenFlg = true;
               }
-            }
-          );
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         }
       } else {
         alert('利用者名を選択してください。');

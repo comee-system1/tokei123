@@ -177,13 +177,13 @@
                         <v-btn
                           mandatory
                           v-for="n in mstSyukeiKbnList"
-                          :key="n.val"
-                          :value="n.val"
+                          :key="n.id"
+                          :value="n.id"
                           outlined
                           height="23"
                           elevation="2"
                           width="60"
-                          @click="jigyoKbnclick(n.val)"
+                          @click="jigyoKbnclick(n.id)"
                         >
                           {{ n.ryaku }}
                         </v-btn>
@@ -778,7 +778,7 @@
                   style="width: 50px; text-align: right"
                   type="text"
                   @input="numbervalidate"
-                  v-model="selectDataObj.syoyoujikan"
+                  v-model="selectDataObj.syoyo"
                 />
                 <P class="ma-1" v-show="dispRank" style="width: 150px">分</P>
                 <v-card
@@ -1432,11 +1432,17 @@ export default {
           pJikan: this.selectDataObj.jikan,
         };
 
-        getConnect('/UktkSinkiKeizoku', params, 'SIENT').then((result) => {
-          if (result !== undefined) {
-            this.selectDataObj.syokaiflg = result;
-          }
-        });
+        getConnect('/UktkSinkiKeizoku', params, 'SIENT')
+          .then((result) => {
+            if (result !== undefined) {
+              this.selectDataObj.syokaiflg = result;
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     getUktkKihon() {
@@ -1446,25 +1452,30 @@ export default {
         pYmd: dayjs().format('YYYYMMDD'),
       };
       this.kihondata = [];
-      getConnect('/UktkKihon', params, 'SIENT').then((result) => {
-        console.log(result);
-        let tmplist = [
-          { title: '生年月日', naiyo: result.birth },
-          { title: '性別', naiyo: result.sex_view },
-          { title: '住所', naiyo: result.address },
-          { title: '電話番号１', naiyo: result.tel_view },
-          { title: '電話番号２', naiyo: result.tel2_view },
-          { title: '携帯電話', naiyo: result.ktelno },
-          { title: 'FAX番号', naiyo: result.faxno },
-          { title: 'メールアドレス', naiyo: result.email },
-          { title: '携帯メール', naiyo: result.kmail },
-          { title: '障害区分', naiyo: result.syogaikbnnm1 },
-          { title: '世帯の状況', naiyo: result.setainm },
-          { title: '本人の状況', naiyo: result.honninnm },
-        ];
+      getConnect('/UktkKihon', params, 'SIENT')
+        .then((result) => {
+          let tmplist = [
+            { title: '生年月日', naiyo: result.birth },
+            { title: '性別', naiyo: result.sex_view },
+            { title: '住所', naiyo: result.address },
+            { title: '電話番号１', naiyo: result.tel_view },
+            { title: '電話番号２', naiyo: result.tel2_view },
+            { title: '携帯電話', naiyo: result.ktelno },
+            { title: 'FAX番号', naiyo: result.faxno },
+            { title: 'メールアドレス', naiyo: result.email },
+            { title: '携帯メール', naiyo: result.kmail },
+            { title: '障害区分', naiyo: result.syogaikbnnm1 },
+            { title: '世帯の状況', naiyo: result.setainm },
+            { title: '本人の状況', naiyo: result.honninnm },
+          ];
 
-        this.kihondata = tmplist.concat();
-      });
+          this.kihondata = tmplist.concat();
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getSyukeiKbn() {
       if (this.kbnTab == this.kbnItem[0].hrefval) {
@@ -1474,11 +1485,17 @@ export default {
           pJigyoid: 62,
         };
 
-        getConnect('/MstSyukeikbn', params, 'SIENT').then((result) => {
-          if (result !== undefined) {
-            this.mstSyukeiKbnList = result;
-          }
-        });
+        getConnect('/MstSyukeikbn', params, 'SIENT')
+          .then((result) => {
+            if (result !== undefined) {
+              this.mstSyukeiKbnList = result;
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     getHouhouMst() {
@@ -1487,11 +1504,17 @@ export default {
         traceid: 123,
         pJigyoid: 62,
       };
-      getConnect('/MstHouhou', params, 'SIENT').then((result) => {
-        this.mstHouhouList = result;
-        this.setClrItem(this.mstHouhouList);
-        this.inputClicked(DISP_MST_GRD.User);
-      });
+      getConnect('/MstHouhou', params, 'SIENT')
+        .then((result) => {
+          this.mstHouhouList = result;
+          this.setClrItem(this.mstHouhouList);
+          this.inputClicked(DISP_MST_GRD.User);
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getKankeiMst() {
       let params = {
@@ -1499,10 +1522,16 @@ export default {
         traceid: 123,
         pJigyoid: 62,
       };
-      getConnect('/MstKankei', params, 'SIENT').then((result) => {
-        this.setClrItem(result);
-        this.mstKankeiList = result;
-      });
+      getConnect('/MstKankei', params, 'SIENT')
+        .then((result) => {
+          this.setClrItem(result);
+          this.mstKankeiList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getSodantaiouMst() {
       let params = {
@@ -1510,20 +1539,32 @@ export default {
         traceid: 123,
         pJigyoid: 62,
       };
-      getConnect('/MstSodanTaiou', params, 'SIENT').then((result) => {
-        this.setClrItemSoudantaiou(result);
-        this.mstSodantaiouList = result;
-      });
+      getConnect('/MstSodanTaiou', params, 'SIENT')
+        .then((result) => {
+          this.setClrItemSoudantaiou(result);
+          this.mstSodantaiouList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getItakuMst() {
       let params = {
         uniqid: 3,
         traceid: 123,
       };
-      getConnect('/MstItaku', params, 'SIENC').then((result) => {
-        this.setClrItem(result);
-        this.mstItakuList = result;
-      });
+      getConnect('/MstItaku', params, 'SIENC')
+        .then((result) => {
+          this.setClrItem(result);
+          this.mstItakuList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getKasanMst(ymd, svc) {
       let params = {
@@ -1532,10 +1573,16 @@ export default {
         pYmd: ymd,
         pSvcCode: svc,
       };
-      getConnect('/MstKasan', params, 'SIENT').then((result) => {
-        this.setClrItem(result);
-        this.mstKasanList = result;
-      });
+      getConnect('/MstKasan', params, 'SIENT')
+        .then((result) => {
+          this.setClrItem(result);
+          this.mstKasanList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getMstSodansya() {
       let params = {
@@ -1545,10 +1592,16 @@ export default {
         pIntcode: this.userInfo.riid,
         pKanid: 0,
       };
-      getConnect('/MstSodansya', params, 'SIENT').then((result) => {
-        this.setClrItem(result);
-        this.mstSoudansyaList = result;
-      });
+      getConnect('/MstSodansya', params, 'SIENT')
+        .then((result) => {
+          this.setClrItem(result);
+          this.mstSoudansyaList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getKikanMst() {
       let params = {
@@ -1556,11 +1609,17 @@ export default {
         traceid: 123,
         pJigyoid: 62,
       };
-      getConnect('/MstKikan', params, 'SIENT').then((result) => {
-        this.mstKikanList = result;
-        this.setClrItem(this.mstKikanList);
-        this.inputClicked(DISP_MST_GRD.User);
-      });
+      getConnect('/MstKikan', params, 'SIENT')
+        .then((result) => {
+          this.mstKikanList = result;
+          this.setClrItem(this.mstKikanList);
+          this.inputClicked(DISP_MST_GRD.User);
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     setClrItem(list) {
       list.unshift({ codeD: '', name: 'クリア' });
@@ -2065,7 +2124,6 @@ export default {
       } else {
         this.dispUserName = '';
       }
-
       this.rirekiSearchClicked(
         this.selectDataObj.taiouYmd,
         this.selectDataObj.taiouYmd,
@@ -2235,7 +2293,7 @@ export default {
         this.selectDataObj.naiyo = '';
         this.selectDataObj.kan = 0;
         this.selectDataObj.peer = 0;
-        this.selectDataObj.syoyoujikan = '';
+        this.selectDataObj.syoyo = '';
         this.selectDataObj.rank = 0;
         this.inputClicked(7);
       }
@@ -2256,10 +2314,16 @@ export default {
           ymd: this.taiouYmd.format('YYYYMMDD'),
           rcnt: this.selectDataObj.rcnt,
         };
-        deleteConnect('/Uktk', params, 'SIENT', body).then(() => {
-          this.clrClicked(0);
-          this.editFlg = true;
-        });
+        deleteConnect('/Uktk', params, 'SIENT', body)
+          .then(() => {
+            this.clrClicked(0);
+            this.editFlg = true;
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     // 登録
@@ -2287,12 +2351,19 @@ export default {
             traceid: 123,
             pIntcode: this.userInfo.riid,
           };
-          postConnect('/Uktk', params, 'SIENT', this.createPostData()).then(
-            () => {
+          postConnect('/Uktk', params, 'SIENT', this.createPostData())
+            .then(() => {
               this.clrClicked(1);
               this.editFlg = true;
-            }
-          );
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         }
       } else {
         if (confirm(messageConst.CONFIRM.PUT)) {
@@ -2304,10 +2375,19 @@ export default {
             pOldymd: this.selectDataObj.ymd,
             pOldrcnt: this.selectDataObj.rcnt,
           };
-          putConnect('/Uktk', params, 'SIENT', this.selectDataObj).then(() => {
-            this.clrClicked(1);
-            this.editFlg = true;
-          });
+          putConnect('/Uktk', params, 'SIENT', this.selectDataObj)
+            .then(() => {
+              this.clrClicked(1);
+              this.editFlg = true;
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         }
       }
     },
@@ -2316,9 +2396,9 @@ export default {
       if (this.kbnTab == sysConst.JIGYO_KBN_NAME.KIHON) {
         cskbn = 3;
       } else if (this.kbnTab == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
-        cskbn = 3;
+        cskbn = 8;
       } else if (this.kbnTab == sysConst.JIGYO_KBN_NAME.CHIIKI) {
-        cskbn = 3;
+        cskbn = this.selectDataObj.cskbn;
       }
 
       let doukousya = [];
@@ -2331,7 +2411,6 @@ export default {
       if (this.selectDataObj.sdnnam3.trim().length > 0) {
         doukousya.push(this.selectDataObj.sdnnam3.trim());
       }
-
       let result = {
         jigyoid: 62,
         ymd: this.taiouYmd.format('YYYYMMDD'),
@@ -2343,7 +2422,7 @@ export default {
         cskmkid: this.selectDataObj.cskmkid,
         kan: this.selectDataObj.kan ? 1 : 0,
         nkbn: 1,
-        syoyo: this.selectDataObj.syoyoujikan,
+        syoyo: this.selectDataObj.syoyo,
         rank: this.selectDataObj.rank,
         peer: this.selectDataObj.peer,
         sgyjky: 1,
@@ -2457,23 +2536,18 @@ export default {
       return obj;
     },
     numbervalidate() {
-      this.selectDataObj.syoyoujikan = this.hankaku2Zenkaku(
-        this.selectDataObj.syoyoujikan
-      );
-      if (isNaN(this.selectDataObj.syoyoujikan)) {
-        this.selectDataObj.syoyoujikan = '';
+      this.selectDataObj.syoyo = this.hankaku2Zenkaku(this.selectDataObj.syoyo);
+      if (isNaN(this.selectDataObj.syoyo)) {
+        this.selectDataObj.syoyo = '';
         return;
       }
-      if (String(this.selectDataObj.syoyoujikan).length > 3) {
-        this.selectDataObj.syoyoujikan = Number(
-          String(this.selectDataObj.syoyoujikan).slice(0, 3)
+      if (String(this.selectDataObj.syoyo).length > 3) {
+        this.selectDataObj.syoyo = Number(
+          String(this.selectDataObj.syoyo).slice(0, 3)
         );
       }
 
-      this.selectDataObj.syoyoujikan = this.selectDataObj.syoyoujikan.replace(
-        /\D/g,
-        ''
-      );
+      this.selectDataObj.syoyo = this.selectDataObj.syoyo.replace(/\D/g, '');
     },
     hankaku2Zenkaku(str) {
       return str.replace(/[０-９]/g, function (s) {
@@ -2502,9 +2576,15 @@ export default {
         pEymd: this.kikanEymd.format('YYYYMM') + endDate,
         Dspkbn: 0,
       };
-      getConnect('/Uktk', params, 'SIENT').then((result) => {
-        this.rirekidata = result;
-      });
+      getConnect('/Uktk', params, 'SIENT')
+        .then((result) => {
+          this.rirekidata = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     kihonInputClicked() {},
     getMstData(kbn) {

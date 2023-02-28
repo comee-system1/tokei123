@@ -266,6 +266,7 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import MdSelect from '../components/MdSelect.vue';
 import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
@@ -604,40 +605,48 @@ export default {
           params.pSymd = this.targetSYm;
           params.pEymd = this.targetEYm;
         }
-        getConnect('/SyukeiKensu', params, 'SIENT').then((result) => {
-          console.log(999);
-          console.log(result);
-          this.jyoukyouViewAllList = result.filter((x) => x.kbn == 1);
-          this.jyoukyouViewAllList.unshift({
-            kaisu_list: '回数',
-            kbn: 1,
-            ninzu_list: '人数',
-            title_list1: ' ',
-            title_list2: ' ',
-          });
-          let tmplist = [{}, {}];
-          for (let i = 0; i < this.jyoukyouViewAllList.length; i++) {
-            tmplist[0]['col' + i] = this.jyoukyouViewAllList[i].kaisu_list;
-            tmplist[1]['col' + i] = this.jyoukyouViewAllList[i].ninzu_list;
-          }
+        getConnect('/SyukeiKensu', params, 'SIENT')
+          .then((result) => {
+            console.log(999);
+            console.log(result);
+            this.jyoukyouViewAllList = result.filter((x) => x.kbn == 1);
+            console.log(this.jyoukyouViewAllList);
+            this.jyoukyouViewAllList.unshift({
+              kaisu_list: '回数',
+              kbn: 1,
+              ninzu_list: '人数',
+              title_list1: ' ',
+              title_list2: ' ',
+            });
 
-          this.naiyouViewAllList = result.filter((x) => x.kbn == 2);
-          this.naiyouViewAllList.unshift({
-            kaisu_list: '件数',
-            kbn: 1,
-            ninzu_list: '人数',
-            title_list1: ' ',
-            title_list2: ' ',
+            let tmplist = [{}, {}];
+            for (let i = 0; i < this.jyoukyouViewAllList.length; i++) {
+              tmplist[0]['col' + i] = this.jyoukyouViewAllList[i].kaisu_list;
+              tmplist[1]['col' + i] = this.jyoukyouViewAllList[i].ninzu_list;
+            }
+
+            this.naiyouViewAllList = result.filter((x) => x.kbn == 2);
+            this.naiyouViewAllList.unshift({
+              kaisu_list: '件数',
+              kbn: 1,
+              ninzu_list: '人数',
+              title_list1: ' ',
+              title_list2: ' ',
+            });
+            let tmplist2 = [{}, {}];
+            for (let i = 0; i < this.naiyouViewAllList.length; i++) {
+              tmplist2[0]['col' + i] = this.naiyouViewAllList[i].kaisu_list;
+              tmplist2[1]['col' + i] = this.naiyouViewAllList[i].ninzu_list;
+            }
+            this.jyoukyouViewList = tmplist;
+            this.naiyouViewList = tmplist2;
+            this.screenFlag = false;
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
           });
-          let tmplist2 = [{}, {}];
-          for (let i = 0; i < this.naiyouViewAllList.length; i++) {
-            tmplist2[0]['col' + i] = this.naiyouViewAllList[i].kaisu_list;
-            tmplist2[1]['col' + i] = this.naiyouViewAllList[i].ninzu_list;
-          }
-          this.jyoukyouViewList = tmplist;
-          this.naiyouViewList = tmplist2;
-          this.screenFlag = false;
-        });
       }
     },
 

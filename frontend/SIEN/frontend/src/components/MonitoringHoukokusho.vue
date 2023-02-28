@@ -601,7 +601,7 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
-// import UserList from '../components/UserList.vue';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '@connect/getConnect';
 
 export default {
@@ -1065,17 +1065,23 @@ export default {
         cntid: targetcntid,
       };
       console.log(params);
-      getConnect('/moni', params).then((result) => {
-        console.log(12345);
-        console.log(result);
-        if (result.length == 0) {
-          this.viewdataAll = {};
-        } else {
-          this.createViewData(result);
-        }
-        this.screenFlag = false;
-        this.loading = false;
-      });
+      getConnect('/moni', params)
+        .then((result) => {
+          console.log(12345);
+          console.log(result);
+          if (result.length == 0) {
+            this.viewdataAll = {};
+          } else {
+            this.createViewData(result);
+          }
+          this.screenFlag = false;
+          this.loading = false;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     createViewData(apiresult) {
       if (apiresult.length > 0) {
@@ -1249,15 +1255,21 @@ export default {
           intcode: this.userData.riid,
         };
         console.log(params);
-        getConnect('/moniSaishinReki', params).then((result) => {
-          console.log(999);
-          console.log(result);
-          if (result.length == 0) {
-            this.viewdataAll = {};
-          } else {
-            this.createViewData(result);
-          }
-        });
+        getConnect('/moniSaishinReki', params)
+          .then((result) => {
+            console.log(999);
+            console.log(result);
+            if (result.length == 0) {
+              this.viewdataAll = {};
+            } else {
+              this.createViewData(result);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
 
         this.getRireki();
       }
@@ -1272,16 +1284,22 @@ export default {
       console.log(params);
       this.rirekiList = [];
       this.viewdataAll = {};
-      getConnect('/moniReki', params).then((result) => {
-        console.log('/moniReki');
-        console.log(result);
-        if (result.length == 0) {
-          this.modeless_dialogOpen();
-        } else {
-          this.modeless_dialogClose();
-        }
-        this.rirekiList = result;
-      });
+      getConnect('/moniReki', params)
+        .then((result) => {
+          console.log('/moniReki');
+          console.log(result);
+          if (result.length == 0) {
+            this.modeless_dialogOpen();
+          } else {
+            this.modeless_dialogClose();
+          }
+          this.rirekiList = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     getSelectUserChildComponent(data) {
       this.userList = data;

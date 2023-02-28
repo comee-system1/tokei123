@@ -180,6 +180,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 // import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import printUtil from '@/utiles/printUtil';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '../../connect/getConnect';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
@@ -632,14 +633,20 @@ export default {
           pSym: this.targetYm.format('YYYYMM'),
         };
         console.log(params);
-        getConnect('/TantobetsuJisseki', params, 'SIENP').then((result) => {
-          console.log(12345);
-          console.log(result);
-          this.viewDataAll = this.createKasanColData(result);
-          this.userFilter();
+        getConnect('/TantobetsuJisseki', params, 'SIENP')
+          .then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewDataAll = this.createKasanColData(result);
+            this.userFilter();
 
-          this.screenFlag = false;
-        });
+            this.screenFlag = false;
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.userFilter();
       }

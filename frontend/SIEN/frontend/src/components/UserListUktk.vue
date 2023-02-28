@@ -250,6 +250,7 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import ls from '@/utiles/localStorage';
 import { Tooltip, PopupPosition } from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '@connect/getConnect';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 let uniqid = 3; // 現在は1のみapiが実行する
@@ -579,11 +580,17 @@ export default {
         eymd: '20220901',
       };
 
-      return getConnect('/userListPrint', params).then((result) => {
-        _self.usersData = result.icrn_inf;
-        _self.userDataSelect = result;
-        this.userFilter();
-      });
+      return getConnect('/userListPrint', params)
+        .then((result) => {
+          _self.usersData = result.icrn_inf;
+          _self.userDataSelect = result;
+          this.userFilter();
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     onFormatItem(flexGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.Cell) {

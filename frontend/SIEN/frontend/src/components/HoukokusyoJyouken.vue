@@ -1076,9 +1076,15 @@ export default {
         traceid: 123,
         pJigyoid: 62,
       };
-      getConnect('/MstChohyo', params, 'SIENT').then((result) => {
-        this.viewDataChohyo = result;
-      });
+      getConnect('/MstChohyo', params, 'SIENT')
+        .then((result) => {
+          this.viewDataChohyo = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     postChohyoData() {
       if (String(this.selectedViewDataChohyo.ptncd).length == 0) {
@@ -1105,13 +1111,19 @@ export default {
         if (!confirm(messageConst.CONFIRM.POST)) {
           return;
         }
-        postConnect('/MstChohyo', params, 'SIENT', body).then((result) => {
-          if (result.okflg == true) {
-            this.getChohyoData();
-          } else {
-            alert(result.msg);
-          }
-        });
+        postConnect('/MstChohyo', params, 'SIENT', body)
+          .then((result) => {
+            if (result.okflg == true) {
+              this.getChohyoData();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         let body = {
           jigyoid: 62,
@@ -1123,13 +1135,19 @@ export default {
         if (!confirm(messageConst.CONFIRM.PUT)) {
           return;
         }
-        putConnect('/MstChohyo', params, 'SIENT', body).then((result) => {
-          if (result.okflg == true) {
-            this.getChohyoData();
-          } else {
-            alert(result.msg);
-          }
-        });
+        putConnect('/MstChohyo', params, 'SIENT', body)
+          .then((result) => {
+            if (result.okflg == true) {
+              this.getChohyoData();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     deleteChohyoData() {
@@ -1146,14 +1164,20 @@ export default {
       if (!confirm(messageConst.CONFIRM.DELETE)) {
         return;
       }
-      deleteConnect('/MstChohyo', params, 'SIENT').then((result) => {
-        if (result.okflg == true) {
-          this.getChohyoData();
-          this.clrClicked(0);
-        } else {
-          alert(result.msg);
-        }
-      });
+      deleteConnect('/MstChohyo', params, 'SIENT')
+        .then((result) => {
+          if (result.okflg == true) {
+            this.getChohyoData();
+            this.clrClicked(0);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     /*
      * ↑ここまで帳票関係↑
@@ -1166,10 +1190,16 @@ export default {
         pNyusgJigyoid: 0,
         pRes_flg: 1,
       };
-      getConnect('/MstSyukeiSentaku', params, 'SIENT').then((result) => {
-        this.viewDataSelect1All = result;
-        this.setviewDataSelect1();
-      });
+      getConnect('/MstSyukeiSentaku', params, 'SIENT')
+        .then((result) => {
+          this.viewDataSelect1All = result;
+          this.setviewDataSelect1();
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     setviewDataSelect1(kbn = 1, item = null) {
       this.viewDataSelect1 = [];
@@ -1301,30 +1331,36 @@ export default {
         pRes_flg: 1,
         pPtnid: ptnid,
       };
-      getConnect('/MstSyukeiView', params, 'SIENT').then((result) => {
-        this.viewDataZumiAll = result;
-        this.viewDataZumi = [];
-        if (result.bodyList.length > 0) {
-          let tmplist = result.bodyList.filter((x) => x.kmkType == 1);
-          let tmpresult = [];
-          for (let i = 0; i < tmplist.length; i++) {
-            tmpresult.push(tmplist[i].buhinData);
-            tmpresult[i].buhinCdD = String(
-              tmplist[i].buhinData.buhinCd
-            ).padStart(3, '0');
-            tmpresult[i].buhinNoBk = tmpresult[i].buhinNo; // 順変更用Noバックアップ
+      getConnect('/MstSyukeiView', params, 'SIENT')
+        .then((result) => {
+          this.viewDataZumiAll = result;
+          this.viewDataZumi = [];
+          if (result.bodyList.length > 0) {
+            let tmplist = result.bodyList.filter((x) => x.kmkType == 1);
+            let tmpresult = [];
+            for (let i = 0; i < tmplist.length; i++) {
+              tmpresult.push(tmplist[i].buhinData);
+              tmpresult[i].buhinCdD = String(
+                tmplist[i].buhinData.buhinCd
+              ).padStart(3, '0');
+              tmpresult[i].buhinNoBk = tmpresult[i].buhinNo; // 順変更用Noバックアップ
+            }
+            tmpresult.sort((a, b) => {
+              if (a.buhinNo < b.buhinNo) {
+                return -1;
+              }
+              if (a.buhinNo > b.buhinNo) {
+                return 1;
+              }
+            });
+            this.viewDataZumi = tmpresult;
           }
-          tmpresult.sort((a, b) => {
-            if (a.buhinNo < b.buhinNo) {
-              return -1;
-            }
-            if (a.buhinNo > b.buhinNo) {
-              return 1;
-            }
-          });
-          this.viewDataZumi = tmpresult;
-        }
-      });
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     postSyukeiViewData() {
       if (String(this.selectedViewDataZumi.buhinCd).length == 0) {
@@ -1388,27 +1424,39 @@ export default {
         if (!confirm(messageConst.CONFIRM.POST)) {
           return;
         }
-        postConnect('/MstSyukeikmk', params, 'SIENT', body).then((result) => {
-          if (result.okflg == true) {
-            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
-            this.clrClicked(1);
-          } else {
-            alert(result.msg);
-          }
-        });
+        postConnect('/MstSyukeikmk', params, 'SIENT', body)
+          .then((result) => {
+            if (result.okflg == true) {
+              this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+              this.clrClicked(1);
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         body.id = this.selectedViewDataZumi.buhinId;
         if (!confirm(messageConst.CONFIRM.PUT)) {
           return;
         }
-        putConnect('/MstSyukeikmk', params, 'SIENT', body).then((result) => {
-          if (result.okflg == true) {
-            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
-            this.clrClicked(1);
-          } else {
-            alert(result.msg);
-          }
-        });
+        putConnect('/MstSyukeikmk', params, 'SIENT', body)
+          .then((result) => {
+            if (result.okflg == true) {
+              this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+              this.clrClicked(1);
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     deleteSyukeiViewData() {
@@ -1425,14 +1473,20 @@ export default {
       if (!confirm(messageConst.CONFIRM.DELETE)) {
         return;
       }
-      deleteConnect('/MstSyukeikmk', params, 'SIENT').then((result) => {
-        if (result.okflg == true) {
-          this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
-          this.clrClicked(1);
-        } else {
-          alert(result.msg);
-        }
-      });
+      deleteConnect('/MstSyukeikmk', params, 'SIENT')
+        .then((result) => {
+          if (result.okflg == true) {
+            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+            this.clrClicked(1);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     /*
      *登録済み集計内容↑
@@ -1766,13 +1820,19 @@ export default {
         buhinIdList: buhinIdList,
       };
 
-      putConnect('/MstSyukeikmkSort', params, 'SIENT', body).then((result) => {
-        if (result.okflg == true) {
-          this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
-        } else {
-          alert(result.msg);
-        }
-      });
+      putConnect('/MstSyukeikmkSort', params, 'SIENT', body)
+        .then((result) => {
+          if (result.okflg == true) {
+            this.getSyukeiViewData(this.selectedViewDataChohyo.ptnid);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
       this.junhenkoumode = false;
     },
   },

@@ -25,23 +25,23 @@ export async function putConnect(type, params, folderName = "", requestBody = []
             Accept: 'application/json',
         },
         timeout: 2000,
-        data: {
-            requestBody,
-            parameter
-
-        }
+        data: {}
     };
     console.log(requestBody);
     console.log(parameter);
     console.log(headers);
     console.log(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str);
 
-    return await axios.put(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "/",
+    return await axios.put(common.LOG_DOMAIN + ":" + common.LOG_PORT + "/" + folder + "/" + str + "/", {
+            requestBody,
+            parameter
+        },
         headers
     ).then(function (response) {
         return response.data.response;
     }).catch(function (error) {
         console.log("api接続用サーバーに接続失敗。BACKENDの実行確認");
         console.log(error);
+        throw error;
     });
 }

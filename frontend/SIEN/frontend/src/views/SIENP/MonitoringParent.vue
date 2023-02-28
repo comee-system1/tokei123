@@ -22,8 +22,8 @@
               :style="{ 'max-width': leftWidth }"
               v-show="
                 (tab == 'Houkokusyo' && userdrawer) ||
-                tab == 'SyukanKeikaku' ||
-                tab == 'SampleCaleandar' ||
+                //   tab == 'SyukanKeikaku' ||
+                //                tab == 'SampleCaleandar' ||
                 tab == 'WeekPlan'
               "
             >
@@ -54,6 +54,7 @@
                 >
                 </MonitoringHoukokusho>
               </v-tab-item>
+              <!--
               <v-tab-item value="SyukanKeikaku" transition="none">
                 <MonitoringSyukanKeikaku
                   :selectedUserObj="selectedUserObj"
@@ -61,6 +62,8 @@
                 >
                 </MonitoringSyukanKeikaku>
               </v-tab-item>
+              -->
+              <!--
               <v-tab-item value="SampleCaleandar" transition="none" eager>
                 <SampleCaleandar
                   :selectedUserObj="selectedUserObj"
@@ -68,6 +71,7 @@
                 >
                 </SampleCaleandar>
               </v-tab-item>
+              -->
               <v-tab-item value="WeekPlan" transition="none" eager>
                 <WeekPlan ref="WeekPlan"> </WeekPlan>
               </v-tab-item>
@@ -89,8 +93,8 @@ import ls from '@/utiles/localStorage';
 import MonitoringYoteiIcrn from '../../components/MonitoringYoteiIcrn.vue';
 import MonitoringJissiIcrn from '../../components/MonitoringJissiIcrn.vue';
 import MonitoringHoukokusho from '../../components/MonitoringHoukokusho.vue';
-import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
-import SampleCaleandar from '../../components/MonitoringSampleCaleandar.vue';
+//import MonitoringSyukanKeikaku from '../../components/MonitoringSyukanKeikaku.vue';
+//import SampleCaleandar from '../../components/MonitoringSampleCaleandar.vue';
 import WeekPlan from '../../components/WeekPlan.vue';
 import UserList from '../../components/UserList.vue';
 
@@ -102,8 +106,8 @@ export default {
     MonitoringYoteiIcrn,
     MonitoringJissiIcrn,
     MonitoringHoukokusho,
-    MonitoringSyukanKeikaku,
-    SampleCaleandar,
+    //  MonitoringSyukanKeikaku,
+    //  SampleCaleandar,
     WeekPlan,
     UserList,
   },
@@ -124,24 +128,24 @@ export default {
         },
         {
           name: '週間計画書',
-          href: '#SyukanKeikaku',
-          hrefval: 'SyukanKeikaku',
+          href: '#WeekPlan',
+          hrefval: 'WeekPlan',
         },
+        // {
+        //   name: '週間計画書',
+        //   href: '#SyukanKeikaku',
+        //   hrefval: 'SyukanKeikaku',
+        // },
         {
           name: 'モニタリング実施一覧',
           href: '#MonitoringJissiIcrn',
           hrefval: 'MonitoringJissiIcrn',
         },
-        {
-          name: 'サンプルカレンダー',
-          href: '#SampleCaleandar',
-          hrefval: 'SampleCaleandar',
-        },
-        {
-          name: 'カレンダー',
-          href: '#WeekPlan',
-          hrefval: 'WeekPlan',
-        },
+        // {
+        //   name: 'サンプルカレンダー',
+        //   href: '#SampleCaleandar',
+        //   hrefval: 'SampleCaleandar',
+        // },
       ],
       selectedUserObj: {},
       userdrawer: true,
@@ -170,6 +174,11 @@ export default {
           this.$refs.MonitoringJissiIcrn.setPrintEvent();
         }
       }
+      if (this.tab == 'WeekPlan') {
+        if (this.$refs.WeekPlan != undefined) {
+          this.$refs.WeekPlan.setPrintEvent();
+        }
+      }
     },
     /****************
      * ユーザー一覧を押下
@@ -182,16 +191,16 @@ export default {
           this.$refs.Houkokusyo.setUserdata(row);
         }
       }
-      if (this.tab == 'SyukanKeikaku') {
-        if (this.$refs.SyukanKeikaku != undefined) {
-          this.$refs.SyukanKeikaku.setUserdata(row);
-        }
-      }
-      if (this.tab == 'SampleCaleandar') {
-        if (this.$refs.SampleCalendar != undefined) {
-          this.$refs.SampleCalendar.setUserdata(row);
-        }
-      }
+      // if (this.tab == 'SyukanKeikaku') {
+      //   if (this.$refs.SyukanKeikaku != undefined) {
+      //     this.$refs.SyukanKeikaku.setUserdata(row);
+      //   }
+      // }
+      // if (this.tab == 'SampleCaleandar') {
+      //   if (this.$refs.SampleCalendar != undefined) {
+      //     this.$refs.SampleCalendar.setUserdata(row);
+      //   }
+      // }
       if (this.tab == 'WeekPlan') {
         if (this.$refs.WeekPlan != undefined) {
           this.$refs.WeekPlan.setUserdata(row);

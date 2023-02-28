@@ -488,6 +488,7 @@ import dayjs from 'dayjs';
 import AlphabetButton from '@/components/AlphabetButton.vue';
 import * as wjcGridFilter from '@grapecity/wijmo.grid.filter';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import { getConnect } from '../../connect/getConnect';
 import { deleteConnect } from '@/connect/deleteConnect';
@@ -843,21 +844,27 @@ export default {
         pJigyoid: 62,
         pSrcYmd: 20211101,
       };
-      getConnect('/KeiyakuHoukokuView', params, 'SIENP').then((result) => {
-        for (let i = 0; i < result.length; i++) {
-          let sDateView = dayjs(result[i].symd).format('YYYY/MM/DD');
-          let eDateView = dayjs(result[i].eymd).format('YYYY/MM/DD');
-          result[i].symd = dayjs(sDateView, 'YYYY/MM/DD').isValid()
-            ? sDateView
-            : '';
-          result[i].eymd = dayjs(eDateView, 'YYYY/MM/DD').isValid()
-            ? eDateView
-            : '';
-          result[i].riCode = String(result[i].riCode);
-        }
-        this.viewData = result;
-        this.viewDataDefault = result;
-      });
+      getConnect('/KeiyakuHoukokuView', params, 'SIENP')
+        .then((result) => {
+          for (let i = 0; i < result.length; i++) {
+            let sDateView = dayjs(result[i].symd).format('YYYY/MM/DD');
+            let eDateView = dayjs(result[i].eymd).format('YYYY/MM/DD');
+            result[i].symd = dayjs(sDateView, 'YYYY/MM/DD').isValid()
+              ? sDateView
+              : '';
+            result[i].eymd = dayjs(eDateView, 'YYYY/MM/DD').isValid()
+              ? eDateView
+              : '';
+            result[i].riCode = String(result[i].riCode);
+          }
+          this.viewData = result;
+          this.viewDataDefault = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     // 契約報告書
     keiyakuHoukoku(tmpitem) {
@@ -877,35 +884,47 @@ export default {
         pSvcCode: tmpitem.svcCode,
         pSymd: tmp,
       };
-      getConnect('/KeiyakuHoukoku', params, 'SIENP').then((result) => {
-        this.riCode = result.riCode;
-        this.intcode = result.intcode;
-        this.hoKbn = tmpitem.hoKbn;
-        this.riName = result.riName;
-        this.jigyoCd = result.jigyoCd.toString().padStart('10', 0);
-        this.jigyoName = result.jigyoName;
-        this.svcCode = result.svcCode;
-        this.svcName = result.svcName;
-        this.jukyuNo = result.jukyuNo;
-        this.jukyuName = result.jukyuName;
-        this.jidoName = result.jidoName;
-        this.endReason = result.endReason;
-        this.noDataFlg = result.noDataFlg;
+      getConnect('/KeiyakuHoukoku', params, 'SIENP')
+        .then((result) => {
+          this.riCode = result.riCode;
+          this.intcode = result.intcode;
+          this.hoKbn = tmpitem.hoKbn;
+          this.riName = result.riName;
+          this.jigyoCd = result.jigyoCd.toString().padStart('10', 0);
+          this.jigyoName = result.jigyoName;
+          this.svcCode = result.svcCode;
+          this.svcName = result.svcName;
+          this.jukyuNo = result.jukyuNo;
+          this.jukyuName = result.jukyuName;
+          this.jidoName = result.jidoName;
+          this.endReason = result.endReason;
+          this.noDataFlg = result.noDataFlg;
 
-        this.symd = '';
-        this.oldsymd = '';
-        this.eymd = '';
-        // 空のまま登録可へ
-        if (result.length != 0 && dayjs(result.symd, 'YYYY/MM/DD').isValid()) {
-          this.symd = dayjs(result.symd).format('YYYY年MM月DD日');
-          this.oldsymd = result.symd;
-        }
-        if (result.length != 0 && dayjs(result.eymd, 'YYYY/MM/DD').isValid()) {
-          this.eymd = dayjs(result.eymd).format('YYYY年MM月DD日');
-        }
-        // 履歴参照
-        this.keiyakuHoukokuReki();
-      });
+          this.symd = '';
+          this.oldsymd = '';
+          this.eymd = '';
+          // 空のまま登録可へ
+          if (
+            result.length != 0 &&
+            dayjs(result.symd, 'YYYY/MM/DD').isValid()
+          ) {
+            this.symd = dayjs(result.symd).format('YYYY年MM月DD日');
+            this.oldsymd = result.symd;
+          }
+          if (
+            result.length != 0 &&
+            dayjs(result.eymd, 'YYYY/MM/DD').isValid()
+          ) {
+            this.eymd = dayjs(result.eymd).format('YYYY年MM月DD日');
+          }
+          // 履歴参照
+          this.keiyakuHoukokuReki();
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     // 契約報告書履歴
     keiyakuHoukokuReki() {
@@ -917,23 +936,29 @@ export default {
         pHoKbn: this.hoKbn,
         pSvcCode: this.svcCode,
       };
-      getConnect('/KeiyakuHoukokuReki', params, 'SIENP').then((result) => {
-        for (let i = 0; i < result.length; i++) {
-          if (
-            result[i].length != 0 &&
-            dayjs(result[i].symd, 'YYYY/MM/DD').isValid()
-          ) {
-            result[i].symd = dayjs(result[i].symd).format('YYYY/MM/DD');
+      getConnect('/KeiyakuHoukokuReki', params, 'SIENP')
+        .then((result) => {
+          for (let i = 0; i < result.length; i++) {
+            if (
+              result[i].length != 0 &&
+              dayjs(result[i].symd, 'YYYY/MM/DD').isValid()
+            ) {
+              result[i].symd = dayjs(result[i].symd).format('YYYY/MM/DD');
+            }
+            if (
+              result[i].length != 0 &&
+              dayjs(result[i].eymd, 'YYYY/MM/DD').isValid()
+            ) {
+              result[i].eymd = dayjs(result[i].eymd).format('YYYY/MM/DD');
+            }
           }
-          if (
-            result[i].length != 0 &&
-            dayjs(result[i].eymd, 'YYYY/MM/DD').isValid()
-          ) {
-            result[i].eymd = dayjs(result[i].eymd).format('YYYY/MM/DD');
-          }
-        }
-        this.viewDataHistory = result;
-      });
+          this.viewDataHistory = result;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     /**********************
      * 絞込み
@@ -1005,8 +1030,8 @@ export default {
         };
         // 履歴がない場合
         if (this.noDataFlg == 1) {
-          postConnect('/KeiyakuHoukoku', params, 'SIENP', inputParams).then(
-            (result) => {
+          postConnect('/KeiyakuHoukoku', params, 'SIENP', inputParams)
+            .then((result) => {
               if (result.okflg == true) {
                 // gridへ反映
                 this.viewData = [];
@@ -1015,8 +1040,15 @@ export default {
               } else {
                 alert(result.msg);
               }
-            }
-          );
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
           // 履歴がある場合
         } else {
           let params = {
@@ -1037,8 +1069,8 @@ export default {
             eymd: eymd,
             endReason: this.endReason,
           };
-          putConnect('/KeiyakuHoukoku', params, 'SIENP', inputParams).then(
-            (result) => {
+          putConnect('/KeiyakuHoukoku', params, 'SIENP', inputParams)
+            .then((result) => {
               if (result.okflg == true) {
                 this.viewData = [];
                 this.keiyakuHoukokuView();
@@ -1046,8 +1078,15 @@ export default {
               } else {
                 alert(result.msg);
               }
-            }
-          );
+            })
+            .catch(function (error) {
+              alert(
+                messageConst.ERROR.ERROR +
+                  '[' +
+                  error.response.data.message +
+                  ']'
+              );
+            });
         }
       }
     },
@@ -1064,17 +1103,23 @@ export default {
           pSvcCode: this.svcCode,
           pSymd: symd,
         };
-        deleteConnect('/KeiyakuHoukoku', params, 'SIENP').then((result) => {
-          if (result.okflg == true) {
-            // gridへ反映
-            this.viewData = [];
-            this.keiyakuHoukokuView();
-            // ダイアログ閉じる
-            this.contactDialog = false;
-          } else {
-            alert(result.msg);
-          }
-        });
+        deleteConnect('/KeiyakuHoukoku', params, 'SIENP')
+          .then((result) => {
+            if (result.okflg == true) {
+              // gridへ反映
+              this.viewData = [];
+              this.keiyakuHoukokuView();
+              // ダイアログ閉じる
+              this.contactDialog = false;
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     printExec() {

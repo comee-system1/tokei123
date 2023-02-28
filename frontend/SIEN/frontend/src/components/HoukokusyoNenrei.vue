@@ -406,12 +406,18 @@ export default {
         pJigyoid: 62,
       };
       console.log(params);
-      getConnect('/MstNenreikoseiPtn', params, 'SIENT').then((result) => {
-        console.log(12345);
-        console.log(result);
-        this.viewData = result;
-        this.screenFlag = false;
-      });
+      getConnect('/MstNenreikoseiPtn', params, 'SIENT')
+        .then((result) => {
+          console.log(12345);
+          console.log(result);
+          this.viewData = result;
+          this.screenFlag = false;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     setViewDataKousei() {
       let params = {
@@ -421,12 +427,18 @@ export default {
         pPtnId: this.selctedPatternItem.id,
       };
       console.log(params);
-      getConnect('/MstNenreikosei', params, 'SIENT').then((result) => {
-        console.log(12345);
-        console.log(result);
-        this.viewDataKousei = result;
-        this.screenFlag = false;
-      });
+      getConnect('/MstNenreikosei', params, 'SIENT')
+        .then((result) => {
+          console.log(12345);
+          console.log(result);
+          this.viewDataKousei = result;
+          this.screenFlag = false;
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     onTantousyaClicked() {
       this.selTantouId = this.tantouist[this.selTantouId].val;
@@ -480,14 +492,20 @@ export default {
       if (!confirm(messageConst.CONFIRM.DELETE)) {
         return;
       }
-      deleteConnect('/MstNenreikoseiPtn', params, 'SIENT').then((result) => {
-        if (result.okflg == true) {
-          this.setViewData();
-          this.clrClicked();
-        } else {
-          alert(result.msg);
-        }
-      });
+      deleteConnect('/MstNenreikoseiPtn', params, 'SIENT')
+        .then((result) => {
+          if (result.okflg == true) {
+            this.setViewData();
+            this.clrClicked();
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     addClicked() {
       if (String(this.selctedPatternItem.code).length == 0) {
@@ -514,16 +532,20 @@ export default {
         if (!confirm(messageConst.CONFIRM.POST)) {
           return;
         }
-        postConnect('/MstNenreikoseiPtn', params, 'SIENT', body).then(
-          (result) => {
+        postConnect('/MstNenreikoseiPtn', params, 'SIENT', body)
+          .then((result) => {
             if (result.okflg == true) {
               this.setViewData();
               this.clrClicked();
             } else {
               alert(result.msg);
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         let body = {
           jigyoid: 62,
@@ -534,16 +556,20 @@ export default {
         if (!confirm(messageConst.CONFIRM.PUT)) {
           return;
         }
-        putConnect('/MstNenreikoseiPtn', params, 'SIENT', body).then(
-          (result) => {
+        putConnect('/MstNenreikoseiPtn', params, 'SIENT', body)
+          .then((result) => {
             if (result.okflg == true) {
               this.setViewData();
               this.clrClicked();
             } else {
               alert(result.msg);
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     addClickedKousei() {
@@ -560,14 +586,20 @@ export default {
       if (!confirm(messageConst.CONFIRM.PUT)) {
         return;
       }
-      putConnect('/MstNenreikosei', params, 'SIENT', body).then((result) => {
-        if (result.okflg == true) {
-          this.setViewData();
-          this.clrClicked();
-        } else {
-          alert(result.msg);
-        }
-      });
+      putConnect('/MstNenreikosei', params, 'SIENT', body)
+        .then((result) => {
+          if (result.okflg == true) {
+            this.setViewData();
+            this.clrClicked();
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     addRowClicked() {
       if (

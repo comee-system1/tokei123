@@ -1,4 +1,26 @@
 @import "common.scss";
+$height: 24px;
+$fontSize:24px;
+
+.dialogClose {
+    background-color: $light-white;
+    border-radius: 10%;
+    height: $height;
+    width: $height;
+    min-width: 20px;
+    color: $black;
+    position: absolute;
+    left: auto;
+    right: 10px;
+    top: 10px;
+
+    span {
+        i {
+            font-size: $fontSize !important;
+            color: $black !important;
+        }
+    }
+}
 
 //dialog大枠
 .common_dialog {
@@ -19,12 +41,8 @@
     //ボタンデザイン
     .v-btn {
         &.dialog_close {
-            color: $grid_selected_color;
-            background-color: $view_Title_font_color; //white
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            left: auto;
+            @extend .dialogClose;
+
         }
 
         &.func_btn {
@@ -157,14 +175,8 @@
 
     //ボタンデザイン
     .v-btn {
-        &.dialog_close {
-            color: $grid_selected_color;
-            background-color: $view_Title_font_color; //white
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            left: auto;
-        }
+        @extend .dialogClose;
+
 
         &.func_btn {
             color: $grid_selected_color;

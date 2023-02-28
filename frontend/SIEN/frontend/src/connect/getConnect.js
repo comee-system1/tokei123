@@ -1,5 +1,6 @@
 import axios from 'axios';
 import common from './Common';
+
 /**********************
  * 第一引数:実行ファイルのパス名
  * 第二引数：json形式

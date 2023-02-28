@@ -305,6 +305,7 @@ import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
+import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
 const STYLE_DEFAULT = '';
@@ -681,12 +682,18 @@ export default {
           Dspkbn: 0,
         };
         console.log(params);
-        getConnect('/Uktk', params, 'SIENT').then((result) => {
-          console.log(12345);
-          console.log(result);
-          this.viewDataAll = result;
-          this.userFilter();
-        });
+        getConnect('/Uktk', params, 'SIENT')
+          .then((result) => {
+            console.log(12345);
+            console.log(result);
+            this.viewDataAll = result;
+            this.userFilter();
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.userFilter();
       }

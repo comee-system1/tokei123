@@ -295,7 +295,7 @@ import 'dayjs/locale/ja';
 import * as wjGrid from '@grapecity/wijmo.grid';
 // import ls from '@/utiles/localStorage';
 import sysConst from '@/utiles/const';
-
+import messageConst from '@/utiles/MessageConst';
 import MdSelect from '../components/MdSelect.vue';
 import { getConnect } from '@connect/getConnect';
 const STYLE_DEFAULT = '';
@@ -794,13 +794,19 @@ export default {
           params.pEymd = this.targetEYm;
         }
         this.screenFlag = true;
-        getConnect('/SyukeiMeisai', params, 'SIENT').then((result) => {
-          this.headerList = result.headerList;
-          this.viewKiasuList = result.kaisuList;
-          this.viewNinzuList = result.ninzuList;
-          this.setViewList();
-          this.screenFlag = false;
-        });
+        getConnect('/SyukeiMeisai', params, 'SIENT')
+          .then((result) => {
+            this.headerList = result.headerList;
+            this.viewKiasuList = result.kaisuList;
+            this.viewNinzuList = result.ninzuList;
+            this.setViewList();
+            this.screenFlag = false;
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       } else {
         this.setViewList();
       }

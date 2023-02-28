@@ -811,15 +811,19 @@ export default {
         tantoiken: null, //練馬区様式のみで使用
       };
       if (confirm(messageConst.CONFIRM.PUT)) {
-        putConnect('/Keikakuan', params, 'SIENP', inputParams).then(
-          (result) => {
+        putConnect('/Keikakuan', params, 'SIENP', inputParams)
+          .then((result) => {
             if (result.okflg == true) {
               //this.setUserdata(this.selectedUserObj);
             } else {
               alert(result.msg);
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     ideaIkouKadaidelete() {
@@ -835,14 +839,20 @@ export default {
           intcode: this.userIntcode,
           cntid: this.viewdata.cntid,
         };
-        deleteConnect('/Keikakuan', params, 'SIENP').then((result) => {
-          if (result.okflg) {
-            this.setSaisin();
-            this.setRireki();
-          } else {
-            alert(result.msg);
-          }
-        });
+        deleteConnect('/Keikakuan', params, 'SIENP')
+          .then((result) => {
+            if (result.okflg) {
+              this.setSaisin();
+              this.setRireki();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     userdrawerCliked() {
@@ -886,7 +896,9 @@ export default {
           }
         })
         .catch(function (error) {
-          alert(error);
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
         });
     },
     setSaisin() {
@@ -904,7 +916,9 @@ export default {
           this.setViewdata();
         })
         .catch(function (error) {
-          alert(error);
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
         });
     },
     setViewdata() {
@@ -946,7 +960,9 @@ export default {
           this.setViewdata();
         })
         .catch(function (error) {
-          alert(error);
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
         });
     },
     printExec() {
@@ -1012,7 +1028,9 @@ export default {
             this.createflg = false;
           })
           .catch(function (error) {
-            alert(error);
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
           });
       }
     },
