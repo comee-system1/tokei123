@@ -44,12 +44,26 @@
         </v-card>
       </v-row>
       <v-row no-gutters class="ma-1">
-        <alphabet-button
-          class="mt-1"
-          ref="alp"
-          @onAlphabetical="onAlphabetical"
-        >
-        </alphabet-button>
+        <v-col class="mr-auto">
+          <alphabet-button
+            class="mt-1"
+            ref="alp"
+            @onAlphabetical="onAlphabetical"
+          >
+          </alphabet-button>
+        </v-col>
+        <v-col class="text-end mr-3">
+          <v-btn-toggle v-model="addItemSelected" mandatory>
+            <v-btn
+              width="20"
+              class="pa-0 ma-0"
+              v-for="val in addItem"
+              :key="val.id"
+              x-small
+              >{{ val.text }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
       </v-row>
       <v-row no-gutters>
         <wj-flex-grid
@@ -83,7 +97,7 @@
           ></wj-flex-grid-column>
         </wj-flex-grid>
       </v-row>
-      <v-row no-gutters class="mt-1 justify-end">
+      <v-row no-gutters class="mt-1 justify-end ma-3">
         <v-btn small>登録</v-btn>
       </v-row>
     </v-container>
@@ -109,6 +123,7 @@ export default {
   },
   data() {
     return {
+      frozenPosition: 9,
       flexGrid: [],
       filtered: [], // フィルターデータ
       serviceViewData: [],
@@ -192,117 +207,147 @@ export default {
           top: '基本報酬',
           middle: '計画',
           bottom: 'Ⅰ',
+          kbn: 1,
         },
         {
           top: '基本報酬',
           middle: '計画',
           bottom: 'Ⅱ',
+          kbn: 1,
         },
         {
           top: '基本報酬',
           middle: 'ﾓﾆﾀﾘﾝｸﾞ',
           bottom: 'Ⅰ',
+          kbn: 1,
         },
         {
           top: '基本報酬',
           middle: 'ﾓﾆﾀﾘﾝｸﾞ',
           bottom: 'Ⅱ',
+          kbn: 1,
         },
         {
           top: '居宅重複減',
           middle: 'Ⅰ',
           bottom: 'Ⅰ',
+          kbn: 2,
         },
         {
           top: '居宅重複減',
           middle: 'Ⅱ',
           bottom: 'Ⅱ',
+          kbn: 2,
         },
         {
           top: '居宅重複減',
           middle: '予防',
           bottom: '予防',
+          kbn: 2,
         },
         {
           top: '加算項目',
           middle: '得地加算',
           bottom: '得地加算',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '初回加算',
           bottom: '初回加算',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '初回（訪問）',
           bottom: '初回（訪問）',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '退院・退所',
           bottom: '退院・退所',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '医療・保育',
           bottom: '医療・保育',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '担当者会議',
           bottom: '担当者会議',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '入院時情',
           bottom: 'Ⅰ',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '入院時情',
           bottom: 'Ⅱ',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '居宅介護',
           bottom: '訪会',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '居宅介護',
           bottom: '情報',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: 'モニタリン',
           bottom: 'モニタリン',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '集中支援加',
           bottom: '訪問',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '集中支援加',
           bottom: '会議開',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '集中支援加',
           bottom: '会議参',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '地域生活支',
           bottom: '地域生活支',
+          kbn: 3,
         },
         {
           top: '加算項目',
           middle: '地域体制強',
           bottom: '地域体制強',
+          kbn: 3,
         },
+      ],
+      addItemSelected: 0,
+      addItem: [
+        { id: 0, text: 'クリア' },
+        { id: 1, text: '1' },
+        { id: 2, text: '2' },
+        { id: 3, text: '3' },
       ],
     };
   },
@@ -421,6 +466,19 @@ export default {
         monitorDate: '2021/07/19',
         col_11: '〇',
       });
+      viewData.push({
+        expired: '',
+        userNumber: '11000000144',
+        userName: '東経洋子',
+        kana: 'ﾖｳｺﾄｳｹｲ',
+        contactDate: '2021/07/15',
+        planDate: '',
+        finishDate: '',
+        type: '者',
+        makeDate: '',
+        monitorDate: '',
+        col_11: '〇',
+      });
       //this.viewData = viewData;
       this.viewDataAll = viewData;
       this.viewData = new wijmo.CollectionView(viewData);
@@ -428,7 +486,7 @@ export default {
       this.viewData.collectionChanged.addHandler(() => {
         _self.createFooterTotal(flexGrid);
       });
-      flexGrid.frozenColumns = 9;
+      flexGrid.frozenColumns = this.frozenPosition;
 
       this.createFooter(flexGrid);
       this.createFooterTotal(flexGrid);
@@ -439,6 +497,37 @@ export default {
       });
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filtered.showFilterIcons = false;
+      });
+      // グリッドを押下
+      flexGrid.hostElement.addEventListener('click', function (e) {
+        let ht = flexGrid.hitTest(e);
+        if (ht.cellType == wjGrid.CellType.Cell) {
+          let col = 'col_' + ht.col;
+          let pos = ht.col - _self.frozenPosition; // 基本報酬以降のcol番号を変数化
+
+          if (ht.col >= _self.frozenPosition) {
+            // 基本報酬と居宅重複減に〇をつける
+            // 基本報酬と居宅重複減が対象
+            if (
+              _self.girdClumnsEdit[pos].kbn == 1 ||
+              _self.girdClumnsEdit[pos].kbn == 2
+            ) {
+              if (flexGrid.rows[ht._row].dataItem[col] == '〇') {
+                flexGrid.rows[ht._row].dataItem[col] = '';
+              } else {
+                flexGrid.rows[ht._row].dataItem[col] = '〇';
+              }
+            }
+            // 加算項目が対象
+            if (_self.girdClumnsEdit[pos].kbn == 3) {
+              flexGrid.rows[ht._row].dataItem[col] = _self.addItemSelected
+                ? _self.addItemSelected
+                : '';
+            }
+          }
+        }
+        _self.createFooterTotal(flexGrid);
+        flexGrid.refresh();
       });
     },
 
@@ -469,7 +558,7 @@ export default {
       flexGrid.columnHeaders.rows[0].allowMerging = true;
       flexGrid.columnHeaders.rows[1].allowMerging = true;
       flexGrid.columnHeaders.rows[2].allowMerging = true;
-      let c = 9;
+      let c = this.frozenPosition;
       this.girdClumnsEdit.forEach(function (value) {
         flexGrid.columns.insert(c, new wjGrid.Column());
         panel.setCellData(0, c, value.top);
@@ -507,7 +596,7 @@ export default {
       }
 
       let tempEdit = [];
-      let c = 9;
+      let c = this.frozenPosition;
       for (let j = 0; j < this.girdClumnsEdit.length; j++) {
         let cnt = 0;
         let column = 'col_' + c;
@@ -521,7 +610,7 @@ export default {
       }
       panel.setCellData(0, 7, makeDateTotal);
       panel.setCellData(0, 8, monitorDateTotal);
-      c = 9;
+      c = this.frozenPosition;
       for (let j = 0; j < this.girdClumnsEdit.length; j++) {
         let column = 'col_' + c;
         panel.setCellData(0, c, tempEdit[column]);
@@ -621,7 +710,7 @@ div#RiyoJyokyo {
   color: $font_color;
   font-size: 12px;
   min-width: 1300px !important;
-
+  width: 100%;
   .label {
     background-color: $view_Title_background_Main;
     color: $white;
@@ -650,8 +739,6 @@ div#RiyoJyokyo {
   }
 
   #flexViewGrid {
-    width: 1266px;
-
     .verticalCustom {
       writing-mode: vertical-rl;
     }
