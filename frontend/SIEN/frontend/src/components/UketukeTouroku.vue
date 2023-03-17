@@ -209,8 +209,8 @@
                           outlined
                           height="23"
                           elevation="2"
-                          :disabled="selectDataObj.sykkbn == 3"
                         >
+                          <!-- :disabled="selectDataObj.sykkbn == 3" -->
                           {{ n.name }}
                         </v-btn>
                       </v-btn-toggle>
@@ -244,8 +244,23 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1 kbnBtn"
-                        v-model="selectDataObj.cskbn"
+                        v-model="selectDataObj.sykkbn"
                       >
+                        <v-btn
+                          mandatory
+                          v-for="n in mstSyukeiKbnList"
+                          :key="n.id"
+                          :value="n.id"
+                          outlined
+                          height="23"
+                          elevation="2"
+                          width="100"
+                          @click="keikakuInputKbnclick(n.id)"
+                        >
+                          {{ n.name }}
+                        </v-btn>
+                      </v-btn-toggle>
+                      <!-- </v-btn-toggle>
                         <v-btn
                           mandatory
                           v-for="n in keikakuInputKbnItem"
@@ -258,7 +273,7 @@
                         >
                           {{ n.name }}
                         </v-btn>
-                      </v-btn-toggle>
+                      </v-btn-toggle> -->
                     </v-row>
                     <v-row no-gutters class="rowStyle_Input mt-1">
                       <v-card
@@ -306,6 +321,7 @@
                         @click="inputClicked(11)"
                         readonly="readonly"
                       />
+                      <div class="ml-1" style="width: 30px"></div>
                     </v-row>
                     <v-row
                       v-show="selectDataObj.kasanumu == kasanUmuItem[1].val"
@@ -436,7 +452,7 @@
                       </v-card>
                       <v-btn-toggle
                         class="flex-wrap ml-1 kbnBtn"
-                        v-model="selectDataObj.cskbn"
+                        v-model="selectDataObj.sykkbn"
                       >
                         <v-btn
                           mandatory
@@ -501,6 +517,7 @@
                         @click="inputClicked(21)"
                         readonly="readonly"
                       />
+                      <div class="ml-1" style="width: 30px"></div>
                     </v-row>
                     <v-row
                       v-show="
@@ -612,20 +629,50 @@
                 v-model="selectDataObj.sdnhourk"
                 @click="inputClicked(1)"
                 readonly="readonly"
-                :disabled="selectDataObj.sykkbn == 3"
+                style="width: 150px"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <div class="ml-1" style="width: 30px"></div>
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者１
               </v-card>
+              <input
+                id="uketukeTourokuDousekisya1Kankei"
+                type="text"
+                class="ml-1 border"
+                name="txtdouseki1Kankei"
+                v-model="selectDataObj.sdnnam1Kankei"
+                @click="inputClicked(24)"
+                readonly="readonly"
+                style="width: 100px"
+              />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
               <input
                 id="uketukeTourokuDousekisya1"
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki1"
+                style="width: 150px"
                 v-model="selectDataObj.sdnnam1"
                 @click="inputClicked(4)"
-                :disabled="selectDataObj.sykkbn == 3"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="ml-1 pa-0"
+                    height="24"
+                    elevation="2"
+                    style="width: 30px; min-width: 30px"
+                    @click="addSoudansya(1)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon dense>mdi-account-plus-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>入力済みの名前をマスタに登録します</span>
+              </v-tooltip>
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
@@ -639,25 +686,56 @@
                 v-model="selectDataObj.sdnkanrk"
                 @click="inputClicked(2)"
                 readonly="readonly"
-                :disabled="selectDataObj.sykkbn == 3"
+                style="width: 150px"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <div class="ml-1" style="width: 30px"></div>
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者２
               </v-card>
+              <input
+                id="uketukeTourokuDousekisya2Kankei"
+                type="text"
+                class="ml-1 border"
+                name="txtdouseki2Kankei"
+                v-model="selectDataObj.sdnnam2Kankei"
+                @click="inputClicked(25)"
+                readonly="readonly"
+                style="width: 100px"
+              />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
               <input
                 id="uketukeTourokuDousekisya2"
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki2"
+                style="width: 150px"
                 v-model="selectDataObj.sdnnam2"
                 @click="inputClicked(5)"
-                :disabled="selectDataObj.sykkbn == 3"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="ml-1 pa-0"
+                    height="24"
+                    elevation="2"
+                    style="width: 30px; min-width: 30px"
+                    @click="addSoudansya(2)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon dense>mdi-account-plus-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>入力済みの名前をマスタに登録します</span>
+              </v-tooltip>
             </v-row>
             <v-row no-gutters class="rowStyle_Input mt-1" v-show="dipCommonFlg">
               <v-card class="koumokuTitle titleGreen pa-1" outlined tile>
                 相談者名
               </v-card>
+
               <input
                 id="uketukeTourokuSoudansya"
                 type="text"
@@ -665,20 +743,66 @@
                 name="txtsoudansya"
                 v-model="selectDataObj.sdnnam"
                 @click="inputClicked(3)"
-                :disabled="selectDataObj.sykkbn == 3"
+                style="width: 150px"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="ml-1 pa-0"
+                    height="24"
+                    elevation="2"
+                    style="width: 30px; min-width: 30px"
+                    @click="addSoudansya(0)"
+                    v-bind="attrs"
+                    v-on="on"
+                    :disabled="ishonnin"
+                  >
+                    <v-icon dense>mdi-account-plus-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>入力済みの名前をマスタに登録します</span>
+              </v-tooltip>
               <v-card class="koumokuTitle titleGreen ml-1 pa-1" outlined tile>
                 同席者３
               </v-card>
+              <input
+                id="uketukeTourokuDousekisya3Kankei"
+                type="text"
+                class="ml-1 border"
+                name="txtdouseki3Kankei"
+                v-model="selectDataObj.sdnnam3Kankei"
+                @click="inputClicked(26)"
+                readonly="readonly"
+                style="width: 100px"
+              />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
               <input
                 id="uketukeTourokuDousekisya3"
                 type="text"
                 class="ml-1 border"
                 name="txtdouseki3"
+                style="width: 150px"
                 v-model="selectDataObj.sdnnam3"
                 @click="inputClicked(6)"
-                :disabled="selectDataObj.sykkbn == 3"
               />
+              <!-- :disabled="selectDataObj.sykkbn == 3" -->
+              <v-tooltip bottom color="info">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="ml-1 pa-0"
+                    height="24"
+                    elevation="2"
+                    style="width: 30px; min-width: 30px"
+                    @click="addSoudansya(3)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon dense>mdi-account-plus-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>入力済みの名前をマスタに登録します</span>
+              </v-tooltip>
             </v-row>
             <v-divider class="btmborder mt-1"></v-divider>
             <v-row no-gutters class="rowStyle_Input mt-1">
@@ -786,8 +910,8 @@
                   outlined
                   tile
                   v-show="dispRank"
-                  >ランク</v-card
-                >
+                  >ランク
+                </v-card>
                 <v-btn-toggle
                   class="flex-wrap ml-1 kbnBtn"
                   v-model="selectDataObj.rank"
@@ -861,8 +985,8 @@
                 eager
                 transition="none"
               >
-                <user-list
-                  ref="user_list"
+                <user-list-uktk
+                  ref="user_list_uktk"
                   class="pt-1 ml-1 mr-1"
                   :dispAddDaicho="true"
                   :dispHideBar="false"
@@ -871,7 +995,7 @@
                   @child-select="setUserSelectPoint"
                   @child-user="getSelectUserChildComponent"
                 >
-                </user-list>
+                </user-list-uktk>
               </v-tab-item>
               <v-tab-item value="Mst" eager transition="none">
                 <!-- 右側＞参照＞マスタ -->
@@ -1141,11 +1265,13 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
 import * as wjCore from '@grapecity/wijmo';
-import UserList from '../components/UserListUktk.vue';
+import UserListUktk from '../components/UserListUktk.vue';
 import { getConnect } from '@connect/getConnect';
 import { postConnect } from '@connect/postConnect';
 import { putConnect } from '@connect/putConnect';
 import { deleteConnect } from '@connect/deleteConnect';
+
+const jigyoid = 62;
 
 const DISP_MST_GRD = {
   SienHouhou: 1,
@@ -1161,6 +1287,9 @@ const DISP_MST_GRD = {
   ChiikiSienHouhou: 21,
   ChiikiKasan: 22,
   ChiikiItakusaki: 23,
+  Douseki1Kaneki: 24,
+  Douseki2Kaneki: 25,
+  Douseki3Kaneki: 26,
   User: 99,
 };
 const KANKEI_KBN = {
@@ -1190,6 +1319,9 @@ const INPUT_ID = {
   SienHouhou: 'uketukeTourokuSienhouhou',
   Kankei: 'uketukeTourokuKankei',
   Soudansya: 'uketukeTourokuSoudansya',
+  Dousekisya1Kankei: 'uketukeTourokuDousekisya1Kankei',
+  Dousekisya2Kankei: 'uketukeTourokuDousekisya2Kankei',
+  Dousekisya3Kankei: 'uketukeTourokuDousekisya3Kankei',
   Dousekisya1: 'uketukeTourokuDousekisya1',
   Dousekisya2: 'uketukeTourokuDousekisya2',
   Dousekisya3: 'uketukeTourokuDousekisya3',
@@ -1235,7 +1367,7 @@ export default {
     userData: Object, // 選択ユーザ
     selectViewData: Object, // 選択登録済みデータ
   },
-  components: { UserList },
+  components: { UserListUktk },
   data() {
     return {
       sysConst: sysConst,
@@ -1314,7 +1446,7 @@ export default {
       mstdata: [],
       MstHerderItem: [
         { dataname: 'codeD', title: 'コード', width: 70, align: 'center' },
-        { dataname: 'name', title: '', width: '*', align: 'left' },
+        { dataname: 'name', title: '名称', width: '*', align: 'left' },
       ],
       soudansyaMstdata: [],
       SoudansyaMstHerderItem: [
@@ -1363,6 +1495,7 @@ export default {
       mstKikanList: this.getKikanMst(),
       mstSyukeiKbnList: [],
       editFlg: false,
+      ishonnin: false,
     };
   },
   mounted() {
@@ -1371,7 +1504,7 @@ export default {
     this.setKihonInfo();
     this.getSyukeiKbn();
     if (this.kbnTab == this.kbnItem[1].hrefval) {
-      this.keikakuInputKbnclick(sysConst.KEIKAKUJIGYOKBN.Keikaku.val);
+      this.keikakuInputKbnclick(1);
     } else if (this.kbnTab == this.kbnItem[2].hrefval) {
       this.keikakuInputKbnclick(sysConst.CHIIKIJIGYOKBN.Keikaku.val);
     }
@@ -1426,7 +1559,7 @@ export default {
         let params = {
           uniqid: 3,
           traceid: 123,
-          pJigyoid: 62,
+          pJigyoid: jigyoid,
           pIntcode: this.userInfo.riid,
           pYmd: this.taiouYmd.format('YYYYMMDD'),
           pJikan: this.selectDataObj.jikan,
@@ -1447,7 +1580,7 @@ export default {
     },
     getUktkKihon() {
       let params = {
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
         pIntcode: this.userInfo.riid,
         pYmd: dayjs().format('YYYYMMDD'),
       };
@@ -1478,12 +1611,20 @@ export default {
         });
     },
     getSyukeiKbn() {
-      if (this.kbnTab == this.kbnItem[0].hrefval) {
+      if (
+        this.kbnTab == this.kbnItem[0].hrefval ||
+        this.kbnTab == this.kbnItem[1].hrefval
+      ) {
         let params = {
           uniqid: 3,
           traceid: 123,
-          pJigyoid: 62,
+          pJigyoid: jigyoid,
         };
+        if (this.kbnTab == this.kbnItem[0].hrefval) {
+          params.pKbn = 1;
+        } else {
+          params.pKbn = 2;
+        }
 
         getConnect('/MstSyukeikbn', params, 'SIENT')
           .then((result) => {
@@ -1502,7 +1643,7 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
       };
       getConnect('/MstHouhou', params, 'SIENT')
         .then((result) => {
@@ -1520,10 +1661,11 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
       };
       getConnect('/MstKankei', params, 'SIENT')
         .then((result) => {
+          console.log(result);
           this.setClrItem(result);
           this.mstKankeiList = result;
         })
@@ -1537,7 +1679,7 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
       };
       getConnect('/MstSodanTaiou', params, 'SIENT')
         .then((result) => {
@@ -1588,13 +1730,13 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
         pIntcode: this.userInfo.riid,
         pKanid: 0,
       };
       getConnect('/MstSodansya', params, 'SIENT')
         .then((result) => {
-          this.setClrItem(result);
+          this.setClrItemSoudansya(result);
           this.mstSoudansyaList = result;
         })
         .catch(function (error) {
@@ -1607,7 +1749,7 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
       };
       getConnect('/MstKikan', params, 'SIENT')
         .then((result) => {
@@ -1626,6 +1768,9 @@ export default {
     },
     setClrItemSoudantaiou(list) {
       list.unshift({ daicodeD: '', dainames: 'クリア' });
+    },
+    setClrItemSoudansya(list) {
+      list.unshift({ codeD: '', sdnnamD: 'クリア' });
     },
     getEditflg() {
       return this.editFlg;
@@ -1687,12 +1832,14 @@ export default {
               document.getElementById(INPUT_ID.Soudansya).disabled = true;
               document.getElementById(INPUT_ID.Soudansya).style.background =
                 sysConst.COLOR.gridBackground;
-              this.inputClicked(DISP_MST_GRD.Douseki1);
+              this.inputClicked(DISP_MST_GRD.Douseki1Kaneki);
+              this.ishonnin = true;
             } else {
               document.getElementById(INPUT_ID.Soudansya).disabled = false;
               document.getElementById(INPUT_ID.Soudansya).style.background =
                 sysConst.COLOR.gridSelectedColor;
               this.inputClicked(DISP_MST_GRD.SoudansyaName);
+              this.ishonnin = false;
             }
           } else if (this.dispMstGrid == DISP_MST_GRD.KeikakuKasan) {
             this.selectDataObj.kasanname = mstitem.name;
@@ -1704,6 +1851,36 @@ export default {
           } else if (this.dispMstGrid == DISP_MST_GRD.KeikakuKikanBasyo) {
             this.selectDataObj.kikanbasyoname = mstitem.name;
             this.inputClicked(DISP_MST_GRD.Taiousyamei);
+          } else if (this.dispMstGrid == DISP_MST_GRD.Douseki1Kaneki) {
+            let kankeiObj = flexGrid.cells.rows[ht.row].dataItem;
+            if (kankeiObj.codeD == '') {
+              this.selectDataObj.sdnnam1Kankeiid = 0;
+              this.selectDataObj.sdnnam1Kankei = '';
+            } else {
+              this.selectDataObj.sdnnam1Kankeiid = kankeiObj.sdnkanid;
+              this.selectDataObj.sdnnam1Kankei = kankeiObj.sdnkannm;
+            }
+            this.inputClicked(DISP_MST_GRD.Douseki1);
+          } else if (this.dispMstGrid == DISP_MST_GRD.Douseki2Kaneki) {
+            let kankeiObj = flexGrid.cells.rows[ht.row].dataItem;
+            if (kankeiObj.codeD == '') {
+              this.selectDataObj.sdnnam2Kankeiid = 0;
+              this.selectDataObj.sdnnam2Kankei = '';
+            } else {
+              this.selectDataObj.sdnnam2Kankeiid = kankeiObj.sdnkanid;
+              this.selectDataObj.sdnnam2Kankei = kankeiObj.sdnkannm;
+            }
+            this.inputClicked(DISP_MST_GRD.Douseki2);
+          } else if (this.dispMstGrid == DISP_MST_GRD.Douseki3Kaneki) {
+            let kankeiObj = flexGrid.cells.rows[ht.row].dataItem;
+            if (kankeiObj.codeD == '') {
+              this.selectDataObj.sdnnam3Kankeiid = 0;
+              this.selectDataObj.sdnnam3Kankei = '';
+            } else {
+              this.selectDataObj.sdnnam3Kankeiid = kankeiObj.sdnkanid;
+              this.selectDataObj.sdnnam3Kankei = kankeiObj.sdnkannm;
+            }
+            this.inputClicked(DISP_MST_GRD.Douseki3);
           }
         }
       });
@@ -1738,16 +1915,16 @@ export default {
         if (ht.panel == flexGrid.cells) {
           let item = flexGrid.cells.rows[ht.row].dataItem;
           if (this.dispMstGrid == DISP_MST_GRD.SoudansyaName) {
-            this.selectDataObj.sdnnam = item.sdnnam;
-            this.inputClicked(DISP_MST_GRD.Douseki1);
+            this.selectDataObj.sdnnam = item.sdnnamD;
+            this.inputClicked(DISP_MST_GRD.Douseki1Kaneki);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki1) {
-            this.selectDataObj.sdnnam1 = item.sdnnam;
-            this.inputClicked(DISP_MST_GRD.Douseki2);
+            this.selectDataObj.sdnnam1 = item.sdnnamD;
+            this.inputClicked(DISP_MST_GRD.Douseki2Kaneki);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki2) {
-            this.selectDataObj.sdnnam2 = item.sdnnam;
-            this.inputClicked(DISP_MST_GRD.Douseki3);
+            this.selectDataObj.sdnnam2 = item.sdnnamD;
+            this.inputClicked(DISP_MST_GRD.Douseki3Kaneki);
           } else if (this.dispMstGrid == DISP_MST_GRD.Douseki3) {
-            this.selectDataObj.sdnnam3 = item.sdnnam;
+            this.selectDataObj.sdnnam3 = item.sdnnamD;
             this.inputClicked(DISP_MST_GRD.SienKoumoku);
           }
         }
@@ -1926,7 +2103,12 @@ export default {
           this.dispMstGrid == DISP_MST_GRD.ChiikiSienHouhou
         ) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.Sienhouhou);
-        } else if (this.dispMstGrid == DISP_MST_GRD.Kankei) {
+        } else if (
+          this.dispMstGrid == DISP_MST_GRD.Kankei ||
+          this.dispMstGrid == DISP_MST_GRD.Douseki1Kaneki ||
+          this.dispMstGrid == DISP_MST_GRD.Douseki2Kaneki ||
+          this.dispMstGrid == DISP_MST_GRD.Douseki3Kaneki
+        ) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.HonninnKankei);
         } else if (this.dispMstGrid == DISP_MST_GRD.ChiikiItakusaki) {
           e.panel.setCellData(e.row, e.col, TITLE_TXT.Itakusaki);
@@ -2085,7 +2267,7 @@ export default {
       }
     },
     keikakuInputKbnclick(kbn) {
-      if (kbn == sysConst.KEIKAKUJIGYOKBN.Keikaku.val) {
+      if (kbn == 1) {
         this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 52);
       } else {
         this.getKasanMst(this.taiouYmd.format('YYYYMMDD'), 55);
@@ -2099,7 +2281,6 @@ export default {
       }
     },
     setKihonInfo(newselectViewData) {
-      // this.kihonInfo = newselectViewData;
       if (!newselectViewData) {
         this.selectDataObj = this.getKihonDefaultData();
       } else {
@@ -2107,7 +2288,7 @@ export default {
         this.setUserSelectPoint({
           riid: newselectViewData.intcode,
           riyocode: 0,
-          riyocodeD: '',
+          riyocodeD: newselectViewData.riyocodeD,
           names: newselectViewData.rname,
           kana: '',
           jyukyuno: 0,
@@ -2207,6 +2388,9 @@ export default {
         case DISP_MST_GRD.ChiikiSienHouhou:
         case DISP_MST_GRD.ChiikiKasan:
         case DISP_MST_GRD.KeikakuKikanBasyo:
+        case DISP_MST_GRD.Douseki1Kaneki:
+        case DISP_MST_GRD.Douseki2Kaneki:
+        case DISP_MST_GRD.Douseki3Kaneki:
         case DISP_MST_GRD.Taiousyamei:
           this.mstdata = this.getMstData(kbn);
           document.getElementById(GRD_ID.Mst).style.display = STYLE_BLOCK;
@@ -2223,17 +2407,25 @@ export default {
             this.setFocus(INPUT_ID.KeikakuKikanBasyo);
           } else if (kbn == DISP_MST_GRD.Taiousyamei) {
             this.setFocus(INPUT_ID.Taiousyamei);
+          } else if (kbn == DISP_MST_GRD.Douseki1Kaneki) {
+            this.setFocus(INPUT_ID.Dousekisya1Kankei);
+          } else if (kbn == DISP_MST_GRD.Douseki2Kaneki) {
+            this.setFocus(INPUT_ID.Dousekisya2Kankei);
+          } else if (kbn == DISP_MST_GRD.Douseki3Kaneki) {
+            this.setFocus(INPUT_ID.Dousekisya3Kankei);
           }
           break;
         case DISP_MST_GRD.SoudansyaName:
           if (this.selectDataObj.honninflg != KANKEI_KBN.Kazoku) {
-            this.soudansyaMstdata = this.getSoudansyaMstData().filter(
-              (x) => !x.isKazoku
-            );
+            this.soudansyaMstdata = this.mstSoudansyaList;
+            // this.getSoudansyaMstData().filter(
+            //   (x) => !x.isKazoku
+            // );
           } else {
-            this.soudansyaMstdata = this.getSoudansyaMstData().filter(
-              (x) => x.isKazoku
-            );
+            this.soudansyaMstdata = this.mstSoudansyaList;
+            // this.getSoudansyaMstData().filter(
+            //   (x) => x.isKazoku
+            // );
           }
           document.getElementById(GRD_ID.SoudansyaMst).style.display =
             STYLE_BLOCK;
@@ -2242,7 +2434,7 @@ export default {
         case DISP_MST_GRD.Douseki1:
         case DISP_MST_GRD.Douseki2:
         case DISP_MST_GRD.Douseki3:
-          this.soudansyaMstdata = this.getSoudansyaMstData();
+          this.soudansyaMstdata = this.mstSoudansyaList; //this.getSoudansyaMstData();
           document.getElementById(GRD_ID.SoudansyaMst).style.display =
             STYLE_BLOCK;
           if (kbn == DISP_MST_GRD.Douseki1) {
@@ -2310,7 +2502,7 @@ export default {
           traceid: 123,
         };
         let body = {
-          jigyoid: 62,
+          jigyoid: jigyoid,
           ymd: this.taiouYmd.format('YYYYMMDD'),
           rcnt: this.selectDataObj.rcnt,
         };
@@ -2327,6 +2519,77 @@ export default {
       }
     },
     // 登録
+    /**
+     * 相談者マスタ登録処理
+     * @param {number} kbn 処理区分
+     */
+    addSoudansya(kbn) {
+      alert(this.userInfo.riid);
+      if (!this.userInfo.riid || this.userInfo.riid == 0) {
+        alert('利用者' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      let kankeiid = 0;
+      let name = '';
+      let msg = '';
+      if (kbn == 0) {
+        kankeiid = this.selectDataObj.sdnkanid;
+        name = this.selectDataObj.sdnnam;
+        msg = '相談者';
+      } else if (kbn == 1) {
+        kankeiid = this.selectDataObj.sdnnam1Kankeiid;
+        name = this.selectDataObj.sdnnam1;
+        msg = '同席者１';
+      } else if (kbn == 2) {
+        kankeiid = this.selectDataObj.sdnnam2Kankeiid;
+        name = this.selectDataObj.sdnnam2;
+        msg = '同席者２';
+      } else if (kbn == 3) {
+        kankeiid = this.selectDataObj.sdnnam3Kankeiid;
+        name = this.selectDataObj.sdnnam3;
+        msg = '同席者３';
+      }
+      if (kankeiid == 0) {
+        alert('関係' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (name.trim().length == 0) {
+        alert(msg + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
+      if (this.mstSoudansyaList.find((e) => e.name == name) != undefined) {
+        if (confirm(messageConst.CONFIRM.HAS_SAME_NAME)) {
+          return;
+        }
+      }
+
+      let body = {
+        jigyoid: jigyoid,
+        intcode: this.userInfo.riid,
+        kanid: kankeiid,
+        code: 0,
+        name: name,
+      };
+
+      postConnect('/MstSodansya', {}, 'SIENT', body)
+        .then(() => {
+          this.getMstSodansya();
+          if (kbn == 0) {
+            this.inputClicked(DISP_MST_GRD.Douseki1Kaneki);
+          } else if (kbn == 1) {
+            this.inputClicked(DISP_MST_GRD.Douseki2Kaneki);
+          } else if (kbn == 2) {
+            this.inputClicked(DISP_MST_GRD.Douseki3Kaneki);
+          } else if (kbn == 3) {
+            this.inputClicked(DISP_MST_GRD.SienKoumoku);
+          }
+        })
+        .catch(function (error) {
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
+    },
     addClicked() {
       if (!this.userInfo.riid || this.userInfo.riid == 0) {
         alert('利用者' + messageConst.INPUT_ERROR.NO_SELECT);
@@ -2335,6 +2598,12 @@ export default {
       if (this.selectDataObj.jikan.length == 0) {
         alert('開始時間' + messageConst.INPUT_ERROR.NO_INPUT);
         return;
+      }
+      if (this.kbnTab == this.kbnItem[0].hrefval) {
+        if (this.selectDataObj.sykkbn == 0) {
+          alert('入力区分' + messageConst.INPUT_ERROR.NO_SELECT);
+          return;
+        }
       }
       if (this.selectDataObj.cskmknm.length == 0) {
         alert('支援項目' + messageConst.INPUT_ERROR.NO_SELECT);
@@ -2371,7 +2640,7 @@ export default {
             uniqid: 3,
             traceid: 123,
             pIntcode: this.userInfo.riid,
-            pJigyoid: 62,
+            pJigyoid: jigyoid,
             pOldymd: this.selectDataObj.ymd,
             pOldrcnt: this.selectDataObj.rcnt,
           };
@@ -2403,16 +2672,28 @@ export default {
 
       let doukousya = [];
       if (this.selectDataObj.sdnnam1.trim().length > 0) {
-        doukousya.push(this.selectDataObj.sdnnam1.trim());
+        doukousya.push({
+          kandaiid: this.selectDataObj.sdnnam1Kankeiid,
+          kanchuid: 0,
+          dokosha: this.selectDataObj.sdnnam1.trim(),
+        });
       }
       if (this.selectDataObj.sdnnam2.trim().length > 0) {
-        doukousya.push(this.selectDataObj.sdnnam2.trim());
+        doukousya.push({
+          kandaiid: this.selectDataObj.sdnnam2Kankeiid,
+          kanchuid: 0,
+          dokosha: this.selectDataObj.sdnnam2.trim(),
+        });
       }
       if (this.selectDataObj.sdnnam3.trim().length > 0) {
-        doukousya.push(this.selectDataObj.sdnnam3.trim());
+        doukousya.push({
+          kandaiid: this.selectDataObj.sdnnam3Kankeiid,
+          kanchuid: 0,
+          dokosha: this.selectDataObj.sdnnam3.trim(),
+        });
       }
       let result = {
-        jigyoid: 62,
+        jigyoid: jigyoid,
         ymd: this.taiouYmd.format('YYYYMMDD'),
         rcnt: 0,
         siid: 261,
@@ -2432,7 +2713,7 @@ export default {
         sdnhouchuid: 0,
         sdnkanid: this.selectDataObj.sdnkanid,
         sdnkanchuid: 0,
-        sdnnam: this.selectDataObj.sdnkanrk,
+        sdnnam: this.selectDataObj.sdnnam,
         sdntel: '',
         // dokoflg: doukousya.length == 0 ? 0 : 1,
         dokosha: doukousya,
@@ -2494,6 +2775,12 @@ export default {
         sdnnam1: '',
         sdnnam2: '',
         sdnnam3: '',
+        sdnnam1Kankei: '',
+        sdnnam2Kankei: '',
+        sdnnam3Kankei: '',
+        sdnnam1Kankeiid: 0,
+        sdnnam2Kankeiid: 0,
+        sdnnam3Kankeiid: 0,
         sdntel: '',
         setaiid: 0,
         setairk: '',
@@ -2570,11 +2857,12 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        pJigyoid: 62,
+        pJigyoid: jigyoid,
         pIntcode: this.userInfo.riid,
         pSymd: this.kikanSymd.format('YYYYMMDD'),
         pEymd: this.kikanEymd.format('YYYYMM') + endDate,
         Dspkbn: 0,
+        pHostName: 1,
       };
       getConnect('/Uktk', params, 'SIENT')
         .then((result) => {
@@ -2602,7 +2890,12 @@ export default {
         kbn == DISP_MST_GRD.ChiikiSienHouhou
       ) {
         return this.mstHouhouList;
-      } else if (kbn == DISP_MST_GRD.Kankei) {
+      } else if (
+        kbn == DISP_MST_GRD.Kankei ||
+        kbn == DISP_MST_GRD.Douseki1Kaneki ||
+        kbn == DISP_MST_GRD.Douseki2Kaneki ||
+        kbn == DISP_MST_GRD.Douseki3Kaneki
+      ) {
         return this.mstKankeiList;
       } else if (kbn == DISP_MST_GRD.ChiikiItakusaki) {
         return this.mstItakuList;

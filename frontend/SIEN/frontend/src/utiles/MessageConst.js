@@ -8,6 +8,7 @@ const CONFIRM = {
     ROW_EDIT_ADD: '選択行の下に新しい行を挿入します。よろしいですか？',
     ROW_EDIT_DELETE: '選択行を削除します。よろしいですか？',
     ADD_RIREKI: '履歴を新規作成します。よろしいですか？',
+    HAS_SAME_NAME: '既に同じ名前が登録済みですが、よろしいですか？'
 }
 
 const ERROR = {

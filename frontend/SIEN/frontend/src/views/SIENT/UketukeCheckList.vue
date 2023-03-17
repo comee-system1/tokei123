@@ -295,6 +295,25 @@
       >
       </v-date-picker>
     </v-dialog>
+    <v-dialog v-model="tourokuScreenFlag" width="1140" eager>
+      <v-card class="common_dialog pb-1">
+        <v-card-title class="dialog_title"> 受付登録 </v-card-title>
+        <v-btn
+          elevation="2"
+          icon
+          small
+          @click="touroku_dialog_close()"
+          class="dialog_close mt-2"
+          ><v-icon dark small> mdi-close </v-icon></v-btn
+        >
+        <UketukeTouroku
+          :dispTab="'Kihonsoudan'"
+          :selectViewData="viewObj"
+          class="ml-1 pb-2"
+          ref="uketukeTouroku"
+        ></UketukeTouroku>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -306,13 +325,42 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
+import UketukeTouroku from '../../components/UketukeTouroku.vue';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
 const STYLE_DEFAULT = '';
+let JIGYOID = 62;
+/*
+ * 列
+ */
+let grdindex = 0;
+const COLS = {
+  TAIOUYMD: grdindex++,
+  TIME: grdindex++,
+  NAME: grdindex++,
+  AGE: grdindex++,
+  SEX: grdindex++,
+  SICHOSON: grdindex++,
+  SYOUGAISIENKBN: grdindex++,
+  SYOUGAIKBN1: grdindex++,
+  SYOUGAIKBN2: grdindex++,
+  SYOUGAIKBN3: grdindex++,
+  SETAI: grdindex++,
+  HONNIN: grdindex++,
+  NYUKBN: grdindex++,
+  SINKI: grdindex++,
+  HOUHOU: grdindex++,
+  KANKEI: grdindex++,
+  NAIYOU: grdindex++,
+  RANK: grdindex++,
+  SYOYO: grdindex++,
+  TAIOU: grdindex++,
+};
 export default {
   props: {
     selectedData: Object, // 検索条件等
   },
+  components: { UketukeTouroku },
   data() {
     return {
       tantouData: {
@@ -388,7 +436,7 @@ export default {
         {
           dataname: 'jikan',
           title: '時間',
-          width: '2*',
+          width: '1.5*',
           align: 'center',
         },
         {
@@ -406,7 +454,7 @@ export default {
         {
           dataname: 'sexname',
           title: '性\n別',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -416,9 +464,9 @@ export default {
           align: 'left',
         },
         {
-          dataname: 'syogaikbn',
+          dataname: 'syogaikbnnm',
           title: '障\n支\n区',
-          width: '1*',
+          width: '1.7*',
           align: 'center',
         },
         {
@@ -525,7 +573,17 @@ export default {
       dispSearchAdd: false,
       filter: {},
       mainGrid: [],
-      thickList: [0, 1, 6, 9, 11, 15, 18],
+      thickList: [
+        COLS.TAIOUYMD,
+        COLS.TIME,
+        COLS.SYOUGAISIENKBN,
+        COLS.SYOUGAIKBN3,
+        COLS.HONNIN,
+        COLS.KANKEI,
+        COLS.SYOYO,
+      ],
+      tourokuScreenFlag: false,
+      viewObj: {},
     };
   },
   mounted() {
@@ -563,6 +621,15 @@ export default {
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filter.showFilterIcons = false;
       });
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          this.tourokuScreenFlag = true;
+          this.setDispdata(tmpitem);
+        }
+      });
 
       flexGrid.beginUpdate();
 
@@ -584,9 +651,9 @@ export default {
         col.allowMerging = true;
         col.multiLine = true;
         col.allowResizing = true;
-        if (colIndex == 0) {
-          col.format = sysConst.FORMAT.Ymd;
-        }
+        // if (colIndex == 0) {
+        //   col.format = sysConst.FORMAT.Ymd;
+        // }
 
         flexGrid.columnHeaders.setCellData(
           0,
@@ -603,12 +670,12 @@ export default {
       }
 
       if (e.panel == flexGrid.columnHeaders) {
-        if (e.col < 12) {
+        if (e.col < COLS.NYUKBN) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
-        } else if (e.col < 16) {
+        } else if (e.col < COLS.NAIYOU) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
-        } else if (e.col < 19) {
+        } else if (e.col < COLS.TAIOU) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundOrange;
         } else {
@@ -619,16 +686,16 @@ export default {
         e.cell.style.borderBottom = STYLE_DEFAULT;
         e.cell.style.borderRight = STYLE_DEFAULT;
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (this.selSyousaiDispUmuIndex == 1 && e.col == 16) {
+        if (this.selSyousaiDispUmuIndex == 1 && e.col == COLS.NAIYOU) {
           e.cell.innerHTML =
-            '<font color="#276bc5">' +
+            '<font color="#276bc5"><' +
             wjCore.escapeHtml(tmpitem.cskmknm) +
-            '</font>' +
+            '></font>' +
             '<div>' +
             wjCore.escapeHtml(tmpitem.naiyo) +
             '</div>';
         }
-        if (e.col == 10) {
+        if (e.col == COLS.SETAI) {
           if (tmpitem.setairk.length == 0) {
             e.cell.innerHTML = '<font color="#c93328">※未入力</font>';
           }
@@ -648,9 +715,11 @@ export default {
       flexGrid.beginUpdate();
       if (flexGrid.columns.length > 0) {
         if (this.selSyousaiDispUmuIndex == 1) {
-          flexGrid.columns[16].binding = this.headerList[16].dataname;
+          flexGrid.columns[COLS.NAIYOU].binding =
+            this.headerList[COLS.NAIYOU].dataname;
         } else {
-          flexGrid.columns[16].binding = this.headerList[16].dataname2;
+          flexGrid.columns[COLS.NAIYOU].binding =
+            this.headerList[COLS.NAIYOU].dataname2;
         }
       }
       flexGrid.endUpdate();
@@ -676,16 +745,14 @@ export default {
         let params = {
           uniqid: 3,
           traceid: 123,
-          pJigyoid: 62,
+          pJigyoid: JIGYOID,
+          pHostName: 1,
           pSymd: this.startymd.format('YYYYMMDD'),
           pEymd: this.endymd.format('YYYYMMDD'),
           Dspkbn: 0,
         };
-        console.log(params);
         getConnect('/Uktk', params, 'SIENT')
           .then((result) => {
-            console.log(12345);
-            console.log(result);
             this.viewDataAll = result;
             this.userFilter();
           })
@@ -872,6 +939,16 @@ export default {
     },
     filterClrclick() {
       this.filter.clear();
+    },
+    touroku_dialog_close() {
+      this.tourokuScreenFlag = false;
+      if (this.$refs.uketukeTouroku.getEditflg()) {
+        // データ読込
+        this.setViewData(true);
+      }
+    },
+    setDispdata(tmpitem) {
+      this.viewObj = tmpitem;
     },
     printExec() {
       printUtil.setGridList([this.mainGrid]);

@@ -209,6 +209,8 @@ import datepickerYear from 'vuejs-datepicker';
 import printUtil from '@/utiles/printUtil';
 import messageConst from '@/utiles/MessageConst';
 import { getConnect } from '../../connect/getConnect';
+import { Tooltip, PopupPosition } from '@grapecity/wijmo';
+let JIGYOID = 62;
 export default {
   props: {
     selectedData: Object, // 検索条件等
@@ -247,6 +249,11 @@ export default {
       viewData: [],
       mainGrid: [],
       thickList: [2, 9],
+      hdrTips: new Tooltip({
+        position: PopupPosition.RightTop,
+        showAtMouse: true,
+        showDelay: 600,
+      }),
     };
   },
   mounted() {
@@ -255,9 +262,7 @@ export default {
     this.setPrintEvent();
 
     let params = {
-      uniqid: 3,
-      traceid: 123,
-      pJigyoid: 62,
+      pJigyoid: JIGYOID,
     };
     getConnect('/MstChohyo', params, 'SIENT')
       .then((result) => {
@@ -344,10 +349,8 @@ export default {
         eymd = this.kikanEYm.format('YYYYMM31');
       }
       let params = {
-        uniqid: 3,
-        traceid: 123,
         pHostname: 'cl002',
-        pJigyoid: 62,
+        pJigyoid: JIGYOID,
         pRptid: this.selCyouhyou,
         pSymd: symd,
         pEymd: eymd,
@@ -450,6 +453,7 @@ export default {
           col.allowMerging = true;
           col.binding = key;
           col.header = '';
+          col.width = 65;
           colIndex++;
         });
 
@@ -508,7 +512,7 @@ export default {
               );
             }
           }
-          flexgrid.autoSizeColumns();
+          // flexgrid.autoSizeColumns();
           flexgrid.autoSizeColumns(
             0,
             flexgrid.columnHeaders.columns.length,
@@ -516,6 +520,17 @@ export default {
           );
           flexgrid.autoSizeRows();
         });
+
+        let self = this;
+        grid.formatItem.addHandler(function (s, e) {
+          if (e.panel == s.columnHeaders) {
+            self.hdrTips.setTooltip(
+              e.cell,
+              '<span>' + s.columnHeaders.getCellData(e.row, e.col) + '</span>'
+            );
+          }
+        });
+
         // イベント設定後にitemsSourceを設定すること
         grid.itemsSource = buhin.naiyo_list.syukeidata; // autoGenerateColumnsの後にitemsSourceを設定すると反映されない
       }
@@ -592,15 +607,16 @@ div#soudanHoukokusyo {
     // min-width: 1050px;
     background: $grid_background;
     border: 1px solid $grid_Border_Color;
+    height: auto;
     // min-height: 500px;
     .wj-header {
       // ヘッダのみ縦横中央寄せ
       color: $font_color;
       font-size: $cell_fontsize;
       display: flex;
-      justify-content: center;
+      justify-content: left;
       align-items: center;
-      text-align: center;
+      text-align: left;
       font-weight: normal;
       line-height: 110%;
       background: $view_Title_background_Orange;

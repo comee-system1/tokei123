@@ -1,6 +1,15 @@
 <template>
   <div id="uketukeIcrn">
-    <v-container class="pa-1" fluid>
+    <div class="viewer-host" v-show="printflg">
+      <v-row no-gutters>
+        <v-btn class="printClose" elevation="2" @click="printflg = false">
+          <v-icon dense>mdi-close</v-icon>
+          印刷画面を閉じる
+        </v-btn>
+      </v-row>
+      <JSViewer language="ja" ref="reportViewer"></JSViewer>
+    </div>
+    <v-container class="pa-1" fluid v-show="!printflg">
       <v-navigation-drawer
         class="blue lighten-5"
         v-model="drawer"
@@ -146,7 +155,7 @@
       </v-row>
       <v-row no-gutters class="rowStyle mb-1">
         <v-card class="koumokuTitle titleMain pa-1 mr-1" outlined tile>
-          対応者
+          担当者
         </v-card>
         <select
           class="customSelectBox wShort mr-1"
@@ -166,7 +175,7 @@
           @change="onInputClicked"
           style="width: 150px"
         >
-          <option v-for="val in inputList" :key="val.val" :value="val.val">
+          <option v-for="val in inputList" :key="val.id" :value="val.id">
             {{ val.name }}
           </option>
         </select>
@@ -303,13 +312,48 @@ import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
 import UketukeTouroku from '../components/UketukeTouroku.vue';
 import MdSelect from '../components/MdSelect.vue';
-import printUtil from '@/utiles/printUtil';
+// import printUtil from '@/utiles/printUtil';
 import { getConnect } from '@connect/getConnect';
+import { Viewer } from '@grapecity/activereports-vue';
+
+const jigyoid = 62;
 const GRD_ID = {
   Uketuke: 'uketukeIcrnGrid',
 };
+/*
+ * 列
+ * A=全て T=相談支援 P=計画相談 C=地域相談
+ */
+let grdindex = 0;
+const COLS = {
+  A_YMD: grdindex++,
+  A_JIKAN: grdindex++,
+  A_NAME: grdindex++,
+  T_KBN: grdindex++,
+  P_KBN: grdindex++,
+  C_KBN: grdindex++,
+  C_TAIMEN: grdindex++,
+  C_KINKYU: grdindex++,
+  T_SINKI: grdindex++,
+  A_HOUHOU: grdindex++,
+  A_KANKEI: grdindex++,
+  P_KASAN: grdindex++,
+  C_KASAN: grdindex++,
+  P_KIKAN: grdindex++,
+  C_ITAKU: grdindex++,
+  P_TANTOU: grdindex++,
+  P_ETIME: grdindex++,
+  C_ETIME: grdindex++,
+  T_SIEN: grdindex++,
+  A_NAIYOU: grdindex++,
+  T_PEER: grdindex++,
+  T_RANK: grdindex++,
+  T_SYOYO: grdindex++,
+  C_NISSI: grdindex++,
+  A_TAIOUSYA: grdindex++,
+};
 export default {
-  components: { UketukeTouroku, MdSelect },
+  components: { UketukeTouroku, MdSelect, JSViewer: Viewer },
   data() {
     return {
       uketukeHeaderList: [
@@ -343,15 +387,29 @@ export default {
         },
         {
           dispkbn: 2,
-          dataname: 'nkbnD',
+          dataname: 'sykkbnkigo',
+          title: '入力\n区分',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 3,
+          dataname: 'sykkbnkigo',
           title: '入\n区',
           width: '0.5*',
           align: 'center',
         },
         {
-          dispkbn: 2,
+          dispkbn: 3,
           dataname: 'jigyouKbnD',
           title: '対\n面',
+          width: '0.5*',
+          align: 'center',
+        },
+        {
+          dispkbn: 3,
+          dataname: 'jigyouKbnD',
+          title: '緊\n急',
           width: '0.5*',
           align: 'center',
         },
@@ -362,13 +420,6 @@ export default {
           width: '0.5*',
           align: 'center',
         },
-        // {
-        //   dispkbn: 1,
-        //   dataname: 'kasanD',
-        //   title: '加\n算',
-        //   width: '0.5*',
-        //   align: 'center',
-        // },
         {
           dispkbn: 0,
           dataname: 'sdnhourk',
@@ -378,11 +429,12 @@ export default {
         },
         {
           dispkbn: 0,
-          dataname: 'sdnkanrk',
+          dataname: 'kanekiD',
           title: '関係相談者',
           width: '3*',
           align: 'left',
         },
+
         {
           dispkbn: 2,
           dataname: 'kasanrk',
@@ -391,25 +443,54 @@ export default {
           align: 'left',
         },
         {
-          dispkbn: 1,
-          dataname: 'daicskmkrk',
-          title: '支援項目',
+          dispkbn: 3,
+          dataname: 'kasanrk',
+          title: '加算項目',
+          width: '1.5*',
+          align: 'left',
+        },
+
+        {
+          dispkbn: 2,
+          dataname: 'basho',
+          title: '機関名・委託先\n・場所',
           width: '2*',
           align: 'left',
         },
         {
-          dispkbn: 2,
-          dataname: 'TODO',
+          dispkbn: 3,
+          dataname: 'basho',
           title: '委託先',
           width: '2*',
           align: 'left',
         },
         {
           dispkbn: 2,
-          dataname: 'ejikan',
+          dataname: 'tanto',
+          title: '担当者',
+          width: '2*',
+          align: 'left',
+        },
+        {
+          dispkbn: 2,
+          dataname: 'etime',
           title: '終了\n時間',
           width: '1*',
           align: 'center',
+        },
+        {
+          dispkbn: 3,
+          dataname: 'etime',
+          title: '終了\n時間',
+          width: '1*',
+          align: 'center',
+        },
+        {
+          dispkbn: 1,
+          dataname: 'daicskmkrk',
+          title: '支援項目',
+          width: '2*',
+          align: 'left',
         },
         {
           dispkbn: 0,
@@ -440,7 +521,7 @@ export default {
           align: 'right',
         },
         {
-          dispkbn: 1,
+          dispkbn: 3,
           dataname: 'nismark',
           title: '日\n誌',
           width: '0.5*',
@@ -459,17 +540,7 @@ export default {
         { val: 0, name: '指定なし' },
         { val: 1, name: '宇都宮' },
       ],
-      inputList: [
-        { val: 0, name: '指定なし' },
-        { val: 1, name: '基本相談' },
-        { val: 2, name: '退院サポート' },
-        { val: 3, name: '自立アシスト' },
-        { val: 4, name: '連絡調整' },
-        { val: 5, name: '計画相談' },
-        { val: 6, name: '障害児相談' },
-        { val: 7, name: '地域移行' },
-        { val: 8, name: '地域定着' },
-      ],
+      inputList: [],
       rankList: [
         { val: 0, name: '指定なし' },
         { val: 1, name: 'A' },
@@ -506,7 +577,8 @@ export default {
       ],
       inputRef: this.getDispKbn(),
       mainGrid: [],
-      thickList: [2, 8],
+      thickList: [COLS.A_NAME, COLS.A_KANKEI, COLS.P_ETIME, COLS.C_ETIME],
+      printflg: false,
     };
   },
   mounted() {
@@ -514,6 +586,7 @@ export default {
     this.calculateWindowHeight();
     this.setPrintEvent();
     // 初期データ読込
+    this.getSyukeiKbn();
     this.setViewData(true);
   },
   beforeDestroy() {
@@ -545,6 +618,40 @@ export default {
     setPrintEvent() {
       this.$router.app.$off('print_event_global');
       this.$router.app.$on('print_event_global', this.printExec);
+    },
+    getSyukeiKbn() {
+      if (
+        this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON ||
+        this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU
+      ) {
+        let params = {
+          pJigyoid: jigyoid,
+        };
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
+          params.pKbn = 1;
+        } else {
+          params.pKbn = 2;
+        }
+
+        getConnect('/MstSyukeikbn', params, 'SIENT')
+          .then((result) => {
+            if (result !== undefined) {
+              this.inputList = result;
+              this.inputList.unshift({ id: 0, name: '指定なし' });
+            }
+          })
+          .catch(function (error) {
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
+      } else {
+        this.inputList = [
+          { id: 0, name: '指定なし' },
+          { id: 7, name: '地域移行' },
+          { id: 8, name: '地域定着' },
+        ];
+      }
     },
     filterInitialized: function (filter) {
       this.filter = filter;
@@ -582,11 +689,24 @@ export default {
         let col = flexGrid.columns[colIndex];
 
         if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
-          if (headerlist[colIndex].dispkbn == 1) {
+          if (
+            headerlist[colIndex].dispkbn == 1 ||
+            headerlist[colIndex].dispkbn == 2
+          ) {
+            col.visible = false;
+          }
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+          if (
+            headerlist[colIndex].dispkbn == 1 ||
+            headerlist[colIndex].dispkbn == 3
+          ) {
             col.visible = false;
           }
         } else {
-          if (headerlist[colIndex].dispkbn == 2) {
+          if (
+            headerlist[colIndex].dispkbn == 2 ||
+            headerlist[colIndex].dispkbn == 3
+          ) {
             col.visible = false;
           }
         }
@@ -601,13 +721,10 @@ export default {
         col.align = headerlist[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 2 || colIndex == 7) {
+        if (colIndex == COLS.A_NAME || colIndex == COLS.C_KINKYU) {
           col.allowResizing = true;
         } else {
           col.allowResizing = false;
-        }
-        if (colIndex == 0) {
-          col.format = sysConst.FORMAT.Ymd;
         }
         flexGrid.columnHeaders.setCellData(
           0,
@@ -647,9 +764,9 @@ export default {
     },
     onFormatItemUketukeIcrn(flexGrid, e) {
       if (e.panel == flexGrid.columnHeaders) {
-        if (e.col < 3) {
+        if (e.col < COLS.T_KBN) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
-        } else if (e.col < 9) {
+        } else if (e.col < COLS.T_SIEN) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
         } else {
@@ -660,24 +777,16 @@ export default {
       if (e.panel == flexGrid.cells) {
         e.cell.style.backgroundColor = '';
         let tmpitem = e.panel.rows[e.row].dataItem;
-        if (e.col == 6 || e.col == 7) {
+        if (e.col == COLS.C_TAIMEN || e.col == COLS.C_KINKYU) {
           if (tmpitem.jigyouKbn == sysConst.JIGYOKBN.Renraku) {
             e.cell.style.backgroundColor = sysConst.COLOR.gridNoneBackground;
           }
         }
-        if (e.col == 8) {
-          if (tmpitem.sdnkanid != 2) {
-            e.cell.innerHTML =
-              wjCore.escapeHtml(e.cell.innerHTML) +
-              ' ' +
-              wjCore.escapeHtml(tmpitem.sdnnam);
-          }
-        }
-        if (e.col == 13) {
+        if (e.col == COLS.A_NAIYOU) {
           e.cell.innerHTML =
-            '<font color="#276bc5">' +
+            '<font color="#276bc5"><' +
             wjCore.escapeHtml(tmpitem.cskmknm) +
-            '</font>' +
+            '></font>' +
             '<div>' +
             wjCore.escapeHtml(tmpitem.naiyo) +
             '</div>';
@@ -703,7 +812,7 @@ export default {
       this.selTaiousya = this.taiousyaList[this.selTaiousya].val;
     },
     onInputClicked() {
-      this.selInputKbn = this.inputList[this.selInputKbn].val;
+      this.selInputKbn = this.inputList[this.selInputKbn].id;
     },
     onRankClicked() {
       this.selRank = this.rankList[this.selRank].val;
@@ -727,15 +836,22 @@ export default {
       this.setViewData(true);
     },
     setViewData(isAll) {
-      this.screenFlag = true;
       if (isAll) {
+        let dspkbn = 1;
+        if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
+          dspkbn = 2;
+        } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
+          dspkbn = 3;
+        }
+
         let params = {
           uniqid: 3,
           traceid: 123,
-          pJigyoid: 62,
+          pJigyoid: jigyoid,
           pSymd: this.targetYmd,
           pEymd: this.targetYmd,
-          Dspkbn: 0,
+          Dspkbn: dspkbn,
+          pHostName: 1,
         };
         if (this.dispIndex == 1) {
           let split = this.pickerSym.split('-');
@@ -748,7 +864,6 @@ export default {
           params.pSymd = this.targetSYm;
           params.pEymd = this.targetEYm;
         }
-        console.dir(params);
         let self = this;
         getConnect('/Uktk', params, 'SIENT')
           .then((result) => {
@@ -759,7 +874,7 @@ export default {
             self.$refs.uketukeTouroku.resetEditflg();
           })
           .catch(function (error) {
-            self.screenFlag = true;
+            self.screenFlag = false;
             alert(
               messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
             );
@@ -978,23 +1093,57 @@ export default {
     filterClrclick() {
       this.filter.clear();
     },
-    printExec() {
-      printUtil.setGridList([this.mainGrid]);
-      printUtil.setThickRightVLineList(this.thickList);
-      let sub1 = '表示単位：' + this.dispList[this.dispIndex].name + ' ';
-      if (this.dispIndex == 0) {
-        sub1 += this.getYmd();
-      } else {
-        sub1 += this.getYm(0) + '～' + this.getYm(1);
+    async printExec() {
+      if (this.printflg) {
+        this.printflg = false;
+        return;
       }
-      printUtil.setSubTitleList([sub1]);
-      printUtil.printExec('相談一覧', printUtil.DIRECTION.landscape);
+      // const viewer = this.$refs.reportViewer.Viewer();
+      // console.log(viewer);
+      // console.log(JSON.stringify(this.viewdata));
+      // // viewer.open('/reports/test2.rdlx-json');
+      this.printflg = true;
+      // this.$refs.reportViewer.Viewer().open('/reports/test2.rdlx-json');
+      const report = await this.loadReport();
+      console.log(report);
+      report.DataSources[0].ConnectionProperties.ConnectString =
+        'jsondata=' + JSON.stringify(this.viewdata);
+      let obj = [
+        {
+          condition2: 'aiueo',
+          img1: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZBJREFUeNpiZMACztm5KwCpfCB2AGIDNOkLQHwAiCcaHdr5AF0vI5pBAkCqHogL2CTEGfhtrBgEbC1RNHw4fJzh45FjDL9evARxJwANLcRqINSw/cw8PAaSiTEMoiEBDPjA6zUbGJ7PX8Lw98sXkIsdgQZ/gBuIbJjqxC4GThUluMZ3O3bDXMMAcrWQhytc7vudewy388tQDGWCytVjMwzmRZBLQBjERgYgtSA9IL3QoGJggkZAAcib6IaBAJeqElY2sqEgvSAzQGaBXJgP8gqhMMMHQHpBZoDMAhnoAIpNSgHUDAeQgQboSYMcADXDgImByoD+BnKqKMPZ0IAnaOAF9PSFDECG8BjogTGy4egAasYFFlBGB+ZNA5ncdBwuhCReQgCUv0FmgVw4EZS1QHkTG3ixYAnDeXsPMAaxceVraPacyAQtgiaAshYob5IKQHpAeqElzwNmECtdXuXk/1+/PN7vOyjBZ27CwCokiKKJXVKcgdcQEo7IEYNcOAANC6Rd8YVWyPZTpYClVhUAEGAAgoC+jSd5RfQAAAAASUVORK5CYII=',
+        },
+      ];
+      report.DataSources[1].ConnectionProperties.ConnectString =
+        'jsondata=' + JSON.stringify(obj);
+      // var params = [{ Name: 'paramCondition', Value: 'testtest' }];
+      this.$refs.reportViewer.Viewer().open(report);
+      // const url = '/TokeiTestPrint';
+      // window.open(url, '_blank');
+      // printUtil.setGridList([this.mainGrid]);
+      // printUtil.setThickRightVLineList(this.thickList);
+      // let sub1 = '表示単位：' + this.dispList[this.dispIndex].name + ' ';
+      // if (this.dispIndex == 0) {
+      //   sub1 += this.getYmd();
+      // } else {
+      //   sub1 += this.getYm(0) + '～' + this.getYm(1);
+      // }
+      // printUtil.setSubTitleList([sub1]);
+      // printUtil.printExec('相談一覧', printUtil.DIRECTION.landscape);
+    },
+    async loadReport() {
+      // load report definition from the file
+      const reportResponse = await fetch(
+        '/reports/SIENT/UketukeIcrn.rdlx-json'
+      );
+      const report = await reportResponse.json();
+      return report;
     },
   },
 };
 </script>
 
-<style  lang="scss">
+<style lang="scss">
 @import '@/assets/scss/common.scss';
 div#uketukeIcrn {
   color: $font_color;

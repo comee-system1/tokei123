@@ -1060,8 +1060,8 @@ export default {
         uniqid: 3,
         traceid: 123,
         keitype: 1,
-        jigyoid: 62,
-        intcode: this.userData.riid,
+        pJigyoid: 62,
+        pIntcode: this.userData.riid,
         cntid: targetcntid,
       };
       console.log(params);
@@ -1251,8 +1251,8 @@ export default {
           uniqid: 3,
           traceid: 123,
           keitype: 1,
-          jigyoid: 62,
-          intcode: this.userData.riid,
+          pJigyoid: 62,
+          pIntcode: this.userData.riid,
         };
         console.log(params);
         getConnect('/moniSaishinReki', params)
@@ -1278,8 +1278,8 @@ export default {
       let params = {
         uniqid: 3,
         traceid: 123,
-        jigyoid: 62,
-        intcode: this.userData.riid,
+        pJigyoid: 62,
+        pIntcode: this.userData.riid,
       };
       console.log(params);
       this.rirekiList = [];
@@ -1427,7 +1427,9 @@ div#monitoringHoukokusho {
 
     .wj-cells
       .wj-row:hover
-      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(.wj-state-active):not(.wj-grid-editor) {
+      .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected):not(
+        .wj-state-active
+      ):not(.wj-grid-editor) {
       transition: all 0s;
       background: $grid_hover_background;
     }

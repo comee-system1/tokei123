@@ -1,0 +1,869 @@
+@import "common.scss";
+
+
+//ラベル
+.label {
+    border: none;
+}
+
+//ラベル　固定メニューボタンタイトル
+.label.menutitle {
+    font-size: 16px;
+    color: #1d5c81;
+}
+
+//ラベル　固定情報ヘッダ
+.label.koteihead {
+    font-size: 16px;
+    font-weight: 100;
+    background-color: $Light_Green;
+    color: $Text_Black;
+    height: 25px;
+    width: 90px;
+    height: 25px;
+    text-align: center;
+}
+
+//ラベル見出しヘッダ
+.label.midashihead {
+    text-align: center;
+    font-size: 16px !important;
+    height: 25px;
+    line-height: 25px;
+}
+//ラベル左上タイトル
+.label.midashihead.title {
+    background-color: $Theme_Green;
+    color: $Text_White;
+    width: 200px !important;
+}
+
+//ラベル　調査日
+.label.midashihead.tyosa {
+    background-color: $Light_Green;
+    color: $Text_Black;
+    width: 90px;
+}
+
+
+//項目の見出し
+.label.midashi {
+    background-color: $Background_Label; 
+    font-size: 14px;
+    height: 30px;
+    width: 90px;
+    line-height: 30px;
+    text-align: center;
+    border: none;   
+    color: $Text_Black;
+}
+
+//ラベル電話番号
+.label.midashi.tell {
+    width: 90px;
+    height: 24px;
+}
+
+//ラベル二行分の高さ
+.label.midashi.wrap {
+    height: 50px;
+    line-height: 50px;
+}
+
+//ラベル三行分の高さ
+.label.midashi.line3 {
+    height: 100px;
+    line-height: 100px;
+}
+
+//ラベル経過記録
+.label.midashi.keika {
+    height: 200px;
+    line-height: 200px;
+}
+
+//ラベル既往歴特記
+.label.midashi.kioutok {
+    height: 250px;
+    line-height: 250px;
+}
+
+//ラベル　固定項目
+.label.kmk {
+    background-color: $Background_Reference;
+    text-align: left;
+    border-bottom: 1px solid;
+    border-color: $Border_Default;
+    padding-top: 3px;
+    font-size: 14px;
+}
+
+.label.kmk.headname {
+    height: 25px;
+    line-height: 25px;
+    width: 300px;
+    border-bottom: 1px solid $Border_Default;
+    padding-left: 4px;
+}
+
+.label.kmk.headtanto {
+    background-color: $Background_White;
+    text-align: left;
+    border: 1px solid $Border_Default;
+    height: 25px;
+    width: 300px;
+    line-height: 25px;
+}
+
+.label.kmk.headcode {
+    height: 25px;
+    line-height: 25px;
+    width: 110px;
+    border-bottom: 1px solid $Border_Default;
+    padding-left: 4px;
+}
+
+
+//ラベルフッター
+.label.footer {
+    background-color: $Background_Reference;
+    color: $Text_Black;
+    font-size: 14px;
+    width: 430px ;
+    height: 27px;
+    line-height: 27px;
+    text-align: center;
+    border-bottom: 1px solid $Border_Default;
+}
+
+
+
+//ラベルウィンドウタイトル
+.label.kotei_wintitle {
+    border-radius: 6px 6px 6px 6px;
+    background-color: #0277BD;
+    color: $Text_White;
+    text-align: center;
+    font-size: 16px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.label.kotei_wintitle.syokuin{
+    width: 280px !important;
+}
+
+//生活歴-登録ウィンドウ
+.label.kotei_wintitle.seikatu {
+    width: 718px;
+}
+
+//表示順変更
+.label.kotei_wintitle.sort {
+    width: 980px;
+}
+
+//既往歴-登録ウィンドウ
+.label.kotei_wintitle.kiou {
+    width: 810px;
+}
+
+
+//履歴無しラベル
+.label.noreki_back {
+    border-radius: 6px 6px 6px 6px;
+    bottom: 0px;
+    left: 0px;
+    position: absolute;
+    background-color: rgba(128, 128, 128, 0.55);
+    width: 955px;
+    text-align: center;
+}
+
+//基本情報
+.label.noreki_back.kihon {
+    height: 520px;
+}
+
+//生活歴
+.label.noreki_back.seikatureki {
+    height: 480px;
+}
+
+//既往歴
+.label.noreki_back.kiou {
+    height: 750px;
+}
+
+//ラベル履歴無しメッセージ
+.label.noreki {
+    border-radius: 6px 6px 6px 6px;
+
+    position: absolute;
+    background-color: $Background_Label;
+    padding-top: 5px;
+    padding-left: 4px;
+    font-size: 20px;
+    //font-weight: normal;
+    height: 130px;
+    width: 290px;
+    text-align: left;
+    border: 1px solid;
+    border-color: $Border_Default;
+    line-height: 40px;
+    word-wrap: break-word;
+    left: 327px;
+}
+
+//履歴無しメッセージ　基本情報
+.label.noreki.kihon {
+    bottom: 195px;
+}
+
+//履歴無しメッセージ　生活歴
+.label.noreki.seikatureki {
+    bottom: 175px;
+}
+
+//履歴無しメッセージ　既往歴
+.label.noreki.kiou {
+    bottom: 310px;
+}
+
+
+//#####表示エリア#####
+.area {
+    display: inline-flex;
+    width: 943px;
+    height: 30px;
+}
+
+.area.koteihead {
+    display: inline-flex;
+}
+
+//二行分のエリア
+.area.wrap {
+    flex-wrap: wrap;
+    height: 50px;
+}
+
+
+//二行分のエリア内部エリア
+.area.wrap_naiyo {
+    width: 368px;
+    height: 24px;
+    background-color: $Background_White;
+}
+
+//三行分のエリア
+.area.wrap3 {
+    flex-wrap: wrap;
+    height: 90px;
+}
+
+//左上タイトル
+.area.title {
+    display: inline-flex;
+    width: 943px;
+    height: 30px;
+}
+
+//右上ボタン
+.area.rireki {
+    display: inline-flex;
+    width: 10px !important;
+    height: 30px;
+    border: 1px solid;
+}
+
+//グリッドの表示エリア
+.area.grid {
+    display: inline-flex;
+    flex-wrap: wrap;
+    width: 204px;
+    height: 278px;
+    padding: 3px 0px;
+    background-color: #7fb9f0;
+    border: 1px solid #4396e4;
+}
+
+//職員ウィンドウ
+.area.syokuin.win{
+    width: 320px;
+    height: 35px;
+}
+
+//生活歴登録ウィンドウ
+.area.seikatureki.win {
+    width: 760px;
+    height: 25px;
+}
+
+//生活歴登録ウィンドウ-経過記録
+.area.seikatureki.winkeika {
+    width: 760px;
+    height: 210px;
+}
+
+//生活歴登録ウィンドウ-表示順
+.area.seikatureki.sort
+{
+    width: 1020px;
+    height: 35px;
+}
+
+//既往歴
+.area.kiou{
+    height: 260px;
+}
+
+//既往歴ウィンドウ
+.area.kiou.win{
+    display: inline-flex;
+    width: 840px;
+    height: 360px;
+}
+
+//既往歴ウィンドウ左側のエリア
+.area.kiou.winleft{
+    display: block;
+    width: 450px;
+    height: 360px;
+}
+
+//既往歴ウィンドウ右側のエリア
+.area.kiou.winright{
+    display: block;
+    width: 384px;
+    height: 355px;
+    background-color: #7fb9f0;
+    border: 1px solid #4396e4;
+}
+
+//既往歴ウィンドウ右側の項目エリア
+.area.kiou.winright_kmk{
+    width: 390px;
+    height: 30px;
+}
+
+//既往歴ウィンドウ右側の項目エリア2
+.area.kiou.winright_kmk2{
+    width: 390px;
+    height: 300px;
+}
+
+//既往歴ウィンドウ通常項目のエリア
+.area.kiou.winkmk{
+    width: 750px;
+    height: 25px;
+}
+
+//#####グリッド#####
+.grid {
+    font-size: 14px;
+    border: 1px solid;
+    border-color: $Border_Light;
+}
+
+//通常列
+.Column {
+    font-size: 12px ;
+    text-align: center ;
+    font-weight: 800 !important;   
+}
+
+//通常列
+.Column.std {
+    color: $Text_Black;
+    background-color: #dffae0 ;
+    border-color: #8ffd7a ;
+}
+
+//職員グリッド
+.grid.syokuin {
+    width: 310px;
+    height: 400px;
+}
+
+
+//生活歴グリッド
+.grid.seikatu {
+    width: 945px;
+    height: 400px;
+}
+
+//表示順グリッド
+.grid.sort {
+    width: 1010px;
+    height: 400px;
+}
+
+//既往歴グリッド
+.grid.kiou {
+    width: 940px;
+    height: 380px;
+}
+
+//マスタグリッド
+.grid.mst {
+    font-size: 12px;
+    width: 190px;
+    height: 265px;
+    border: 1px solid;
+    background-color: $Background_White;
+    border-color: $Border_Light;
+    background: $Background_Reference;   
+}
+
+//マスタグリッドの列
+.column-Mst {
+    font-size: 12px !important;
+    font-weight: 800;
+    text-align: center !important;
+    border-color: $Border_Light;
+    color: $Text_Black;
+}
+
+//グリッド傷病名
+.grid.syobyo
+{
+    width: 376px ;
+    height: 278px;
+    border: 1px solid;
+    grid-row: auto;
+    border-color: #4396e4;
+}
+
+//グリッド傷病名の列
+.Column.syobyo {
+    font-weight: 100;
+    text-align: center;
+    background-color: #d6f3fc;
+    border-color: #4396e4 ;
+}
+
+//#######ボタン#######
+.btn {
+    font-size: 14px !important;
+    height: 25px !important;
+    width: 90px;
+}
+
+.btn.menu {
+    height: 50px  !important;
+    width: 50px;
+    background-color: $Background_White !important;
+    color: $Text_Black !important;
+    border: thin solid $Border_Default;
+}
+
+//登録ボタン等　使用頻度の多いボタン
+.btn.pri {
+    background-color: $Button_Primary !important;
+    color: $Text_White !important;
+    border: none;
+}
+
+//通常のボタン
+.btn.def {
+    background-color: $Button_Default !important;
+    color: $Text_Black !important;
+    border: thin solid $Border_Default;
+}
+
+//破壊的なアクションに使用するボタン
+.btn.alt {
+    background-color: $Background_White !important;
+    color: $Button_Alert !important;
+    border: thin solid $Button_Alert;
+}
+
+//メッセージボックス用ボタン
+.btn.def.mes {
+    width: 80px;
+}
+
+//ウィンドウ閉じるボタン
+.winbtn.close {
+    z-index: 100;
+    background-color: $white;
+    border-radius: 10%;
+    height: 20px;
+    width: 20px;
+    //background-color: #fff;
+}
+
+//#######テキスト#######
+.textbox {
+    background-color: $Background_White;
+    text-align: left;
+    border-bottom: 1px solid;
+    border-color: $Border_Default;
+    padding-top: 3px;
+    font-size: 14px;
+}
+
+//テキストボックス　ロングサイズ
+.textbox.Long {
+    width: 480px;
+    height: 30px;
+}
+
+//テキストボックス　ショートサイズ
+.textbox.Short {
+    width: 273px;
+    height: 30px;
+}
+
+//テキストボックス　ミニサイズ
+.textbox.mini {
+    width: 90px;
+    height: 30px;
+}
+
+//テキストボックス　調査日
+.textbox.tyosa {
+    font-weight: 400;
+    width: 146px;
+    height: 25px;
+}
+
+//テキストボックス　傷病名用
+.textbox.syobyo {
+    width: 238px;
+    height: 30px;
+}
+
+//中線
+.hr_style01 {
+    border-top: 1px solid $Border_Default;
+    border-bottom: 1px solid $Border_Default;
+}
+
+//#####チェックボックス　#####
+.chkbox {
+    background-color: $Background_White;
+    font-size: 16px;
+    text-align: left;
+    border: 1px solid;
+    border-color: $Border_Default;
+    height: 28px;
+}
+
+
+//#####テキストエリア#####
+.textarea {
+    background-color: $Background_White;
+    width: 410px;
+    height: 100px;
+    text-align: left;
+    border: 1px solid;
+    border-color: $Border_Default;
+    resize: none;
+    outline-color: $Border_Default;
+    outline-width: 1px !important;
+    font-size: 14px;
+
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+}
+
+//生活歴-経過記録
+.textarea.keika {
+    width: 650px;
+    height: 200px;
+}
+
+//既往歴-特記
+.textarea.kioutok {
+    width: 330px;
+    height: 250px;
+}
+//#####シート#####
+.sheet {
+    border-radius: 6px 6px 6px 6px;
+    padding: 4px 4px 4px 4px;
+}
+
+//職員
+.sheet.syokuin {
+    width: 320px;
+    height: 460px;
+    position: relative;
+}
+
+//基本情報
+.sheet.kihon {
+    width: 951px;
+    height: 520px;
+    position: relative;
+}
+
+//生活歴
+.sheet.seikatureki {
+    width: 951px;
+    height: 485px;
+    position: relative;
+}
+
+//生活歴-新規登録ウィンドウ
+.sheet.seikatureki.win {
+    width: 760px;
+    height: 320px;
+}
+//生活歴-表示順変更
+.sheet.seikatureki.sort {
+    width: 1020px;
+    height: 482px;
+}
+
+//既往歴
+.sheet.kiou {
+    width: 951px;
+    height: 750px;
+    position: relative;
+}
+
+//既往歴ウィンドウ
+.sheet.kiouwin {
+    width: 850px;
+    height: 430px;
+}
+
+//#####カード#####
+.vcard.reki {
+    height: 25px;
+}
+
+
+//#####メッセージダイアログ関係#####
+
+//表示エリア
+.areaMes {
+    display: inline-flex;
+    width: 364px;
+}
+
+.areaMes.label {
+    height: 24px;
+    width: 380px;
+    border: 1px solid;
+}
+
+//タイトルエリア
+.areaMes.title {
+    height: 30px;
+}
+
+//内容エリア
+.areaMes.naiyo {
+    height: 50px;
+}
+
+.areaMes.data {
+    display: block;
+    height: 130px;
+}
+
+//ボタン配置エリア
+.areaMes.btn {
+    height: 40px;
+    border: none;
+}
+
+//ボタンエリア
+.areaMes.Ok {
+    width: 150px;
+    height: 40px;
+}
+
+//タイトルメッセージ
+.titlelabel {
+    background-color: $Text_Primary;
+    color: $Text_White;
+    width: 380px;
+    height: 6px;
+}
+
+//メッセージエリア
+.clslabelMes {
+    white-space: pre;
+    word-wrap: break-word;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+//メッセージエリア
+.textarea.mes {
+    background-color: $Background_Label;
+    width: 384px;
+    height: 100px;
+    text-align: left;
+    border: none;
+    resize: none;
+    font-size: 14px;
+}
+
+//シート
+.sheet.Mes {
+    border-radius: 6px 6px 6px 6px;
+    padding: 0px 0px;
+    width: 400px;
+    //height: 290px;
+}
+
+//#####履歴参照#####
+
+//作成履歴ダイアログ
+.sheet.reki {
+    padding: 0px 0px;
+    width: 310px;
+    height: 280px;
+}
+
+//タイトル
+.areaReki.title {
+    display: inline-flex;
+    width: 310px;
+    height: 25px;
+}
+
+//内容エリア
+.areaReki.naiyo {
+    height: 200px;
+}
+
+//タイトルラベル
+.label.titleReki {
+    padding:2px 0px 0px 112px;
+    background-color: $Theme_Green;
+    color: $Text_White;
+    width: 380px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+    text-align: center;
+}
+
+/*履歴ヘッダ*/
+.column-Reki {
+    font-size: 12px;
+    font-weight: 800 !important;
+    text-align: center;
+    background-color: $Background_Label;
+    border-color: $Border_Light;
+}
+
+//履歴グリッド
+.grid.reki {
+    height: 200px;
+    border-color: $Border_Light;
+    background-color: $Background_White;
+    background: $Background_Reference;   
+    font-size: 12px;
+}
+
+
+//#####履歴追加ダイアログ#####
+//履歴登録
+.sheet-head {
+    border-radius: 6px 6px 6px 6px;
+    padding: 0px 0px;
+    width: 400px;
+    height: 200px;
+}
+
+//タイトル
+.areahead {
+    display: inline-flex;
+    height: 30px;
+}
+
+//エリア全体
+.areahead.all {
+    width: 400px;
+}
+
+//エリア左側
+.areahead.left {
+    width: 90px;
+    height: 60px;
+}
+
+//エリア右側
+.areahead.right {
+    display: block;
+    width: 310px;
+}
+
+//タイトルラベル
+.label.titlehead {
+    padding:2px 0px 0px 160px;
+    background-color: $Theme_Green;
+    color: $Text_White;
+    width: 400px;
+    text-align: center;
+}
+
+
+//二行分のエリア
+.label.midashi.wraphead {
+    height: 60px;
+    line-height: 60px;
+}
+
+//選択ボタン
+.btn_select {
+    height: 25px !important;
+    background-color: $Background_White;
+    color: $Text_Black;
+    border: thin solid $Border_Default;
+}
+
+//固定情報新規ボタン
+a {
+    &.addBtn_kotei {
+        height: 25px !important;
+        line-height: 25px !important;
+        width: 110px !important;
+        font-size: 14px;
+        background-color: $Text_White !important;
+        color: $Text_Black !important;
+        border: thin solid $Border_Default;
+
+        display: block;
+        float: left;
+        text-align: center;
+        border-radius: 3px;
+        padding: 0px 10px 10px 20px;
+        cursor: pointer;
+        background-image: url('../plus_gray_15px.png');
+        background-position: top 2px left 2px;
+        background-repeat: no-repeat;
+
+        &:hover {
+            background-color: $light-gray;
+        }
+    }
+}
+
+.btnymd_kotei {
+    background-color: $white !important;
+    border: thin solid;
+    border-color: $light-gray;
+    color: $font_color;
+    height: 25px !important;
+    margin-top: -1px;
+    font-size:14px;
+    font-weight: 400;
+
+}
+
+.closeButton_win {
+    z-index: 100;
+    background-color: $white;
+    background-color: #fff;
+}

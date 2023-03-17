@@ -121,6 +121,14 @@
               readonly
               @click="inputclick(0)"
             />
+            <v-btn
+              class="ml-1"
+              width="75"
+              height="25"
+              @click="zKmkClrClicked(0)"
+            >
+              クリア
+            </v-btn>
           </v-row>
           <v-row no-gutters class="mt-1">
             <v-col
@@ -816,7 +824,7 @@ export default {
             );
           } else {
             self.selectedViewDataZumi.jyouken1Item = null;
-            this.viewJyouken1List = [];
+            this.viewJyouken1List = null;
           }
           let yoko = self.viewDataSelect1All.filter(
             (e) => e.id == self.selectedViewDataZumi.xid
@@ -1371,6 +1379,14 @@ export default {
         alert('集計内容' + messageConst.INPUT_ERROR.NO_INPUT);
         return;
       }
+      if (this.selectedViewDataZumi.yid == 0) {
+        alert('集計項目【縦】' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
+      if (this.selectedViewDataZumi.xid == 0) {
+        alert('集計項目【横】' + messageConst.INPUT_ERROR.NO_INPUT);
+        return;
+      }
 
       let params = {
         uniqid: 3,
@@ -1381,7 +1397,10 @@ export default {
         ptnid: this.selectedViewDataChohyo.ptnid,
         cd: this.selectedViewDataZumi.buhinCd,
         name: this.selectedViewDataZumi.buhinName,
-        zid: this.selectedViewDataZumi.jyouken1Item.id,
+        zid:
+          this.selectedViewDataZumi.jyouken1Item == null
+            ? 0
+            : this.selectedViewDataZumi.jyouken1Item.id,
         zKmkList: [],
         yid: this.selectedViewDataZumi.yid,
         yKmkList: [],
@@ -1395,13 +1414,15 @@ export default {
         // kigyoflg: 0,
         // multiflg: 0,
       };
-      for (let i = 0; i < this.viewJyouken1List.length; i++) {
-        let item = this.viewJyouken1List[i];
-        body.zKmkList.push({
-          daiid: item.daiid,
-          chuid: item.chuid,
-          shoid: item.shoid,
-        });
+      if (this.viewJyouken1List != null) {
+        for (let i = 0; i < this.viewJyouken1List.length; i++) {
+          let item = this.viewJyouken1List[i];
+          body.zKmkList.push({
+            daiid: item.daiid,
+            chuid: item.chuid,
+            shoid: item.shoid,
+          });
+        }
       }
       for (let i = 0; i < this.viewYokoList.length; i++) {
         let item = this.viewYokoList[i];
@@ -1532,6 +1553,11 @@ export default {
       return str.replace(/[０-９]/g, function (s) {
         return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
       });
+    },
+    zKmkClrClicked() {
+      this.selectedViewDataZumi.jyouken1Item = null;
+      this.selectedViewDataZumi.zKmkName = '';
+      this.viewJyouken1List = null;
     },
     clrClicked(kbn) {
       if (kbn == 0) {

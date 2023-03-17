@@ -1100,12 +1100,19 @@ export default {
         pJigyoid: 62,
         pSym: this.kikanYm.format('YYYYMM'),
       };
-      return getConnect('/KeikakuListsView', params, 'SIENP').then((result) => {
-        let array = result;
-        this.viewdataAll = array;
-        this.userFilter();
-        console.log(this.viewdata);
-      });
+      getConnect('/KeikakuListsView', params, 'SIENP')
+        .then((result) => {
+          let array = result;
+          this.viewdataAll = array;
+          this.userFilter();
+          console.log(this.viewdata);
+        })
+        .catch(function (error) {
+          self.screenFlag = true;
+          alert(
+            messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+          );
+        });
     },
     userFilter() {
       let tmpviewdata = [];
@@ -1254,14 +1261,21 @@ export default {
         cntid: this.selectedRowItem.anCntID,
       };
       if (confirm('同意' + messageConst.CONFIRM.DELETE)) {
-        deleteConnect('/KeikakuAnDoui', params, 'SIENP').then((result) => {
-          if (result.okflg == true) {
-            this.doui_dialog = false;
-            this.search();
-          } else {
-            alert(result.msg);
-          }
-        });
+        deleteConnect('/KeikakuAnDoui', params, 'SIENP')
+          .then((result) => {
+            if (result.okflg == true) {
+              this.doui_dialog = false;
+              this.search();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            self.screenFlag = true;
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     douiAddClick() {
@@ -1277,14 +1291,21 @@ export default {
         syomei: this.doui_dialog_input.syomei,
       };
       if (confirm('同意' + messageConst.CONFIRM.POST)) {
-        postConnect('/KeikakuAnDoui', params, 'SIENP').then((result) => {
-          if (result.okflg == true) {
-            this.doui_dialog = false;
-            this.search();
-          } else {
-            alert(result.msg);
-          }
-        });
+        postConnect('/KeikakuAnDoui', params, 'SIENP')
+          .then((result) => {
+            if (result.okflg == true) {
+              this.doui_dialog = false;
+              this.search();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            self.screenFlag = true;
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     /*
@@ -1302,14 +1323,21 @@ export default {
         pCntID: this.selectedRowItem.anCntID,
       };
       if (confirm('提出' + messageConst.CONFIRM.DELETE)) {
-        deleteConnect('/KeikakuAnTeisyutsu', params, 'SIENP').then((result) => {
-          if (result.okflg == true) {
-            this.teisyutu_dialog = false;
-            this.search();
-          } else {
-            alert(result.msg);
-          }
-        });
+        deleteConnect('/KeikakuAnTeisyutsu', params, 'SIENP')
+          .then((result) => {
+            if (result.okflg == true) {
+              this.teisyutu_dialog = false;
+              this.search();
+            } else {
+              alert(result.msg);
+            }
+          })
+          .catch(function (error) {
+            self.screenFlag = true;
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     teisyutsuAddClick() {
@@ -1327,16 +1355,21 @@ export default {
         ),
       };
       if (confirm('提出' + messageConst.CONFIRM.POST)) {
-        postConnect('/KeikakuAnTeisyutsu', params, 'SIENP', body).then(
-          (result) => {
+        postConnect('/KeikakuAnTeisyutsu', params, 'SIENP', body)
+          .then((result) => {
             if (result.okflg == true) {
               this.teisyutu_dialog = false;
               this.search();
             } else {
               alert(result.msg);
             }
-          }
-        );
+          })
+          .catch(function (error) {
+            self.screenFlag = true;
+            alert(
+              messageConst.ERROR.ERROR + '[' + error.response.data.message + ']'
+            );
+          });
       }
     },
     /*

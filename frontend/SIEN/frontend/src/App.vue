@@ -21,6 +21,12 @@ import '@grapecity/wijmo.vue2.grid.grouppanel';
 import '@grapecity/wijmo.vue2.grid.filter';
 import '@grapecity/wijmo.vue2.grid.search';
 import '@grapecity/wijmo.vue2.input';
+import '@grapecity/activereports/styles/ar-js-ui.css';
+import '@grapecity/activereports/styles/ar-js-viewer.css';
+import '@grapecity/activereports/pdfexport';
+import '@grapecity/activereports/htmlexport';
+import '@grapecity/activereports/xlsxexport';
+import '@grapecity/activereports-localization';
 
 // 開発用
 // wjcCore.setLicenseKey(
@@ -38,6 +44,14 @@ export default {
   data() {
     return {
       selectedData: {},
+    };
+  },
+  mounted() {
+    document.onkeydown = function (e) {
+      // ボタンにフォーカスがある状態で、エンターキーだったら無効にする（APIを連続で呼ばせない）
+      if (e.target.type == 'button' && e.key === 'Enter') {
+        return false;
+      }
     };
   },
   methods: {

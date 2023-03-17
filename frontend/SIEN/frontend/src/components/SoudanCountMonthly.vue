@@ -452,13 +452,13 @@ export default {
           col.align = ALI_CENTER;
           col.width = 30;
           col.header = ' ';
-          flexGrid.columnHeaders.setCellData(0, colIndex, '');
+          flexGrid.columnHeaders.setCellData(0, colIndex, ' ');
         } else if (colIndex == 1) {
           col.binding = 'youbi';
           col.align = ALI_CENTER;
           col.width = 30;
           col.header = ' ';
-          flexGrid.columnHeaders.setCellData(0, colIndex, '');
+          flexGrid.columnHeaders.setCellData(0, colIndex, ' ');
         } else {
           col.aggregate = 'Sum';
           col.width = 40;
@@ -608,14 +608,16 @@ export default {
       }
 
       if (e.panel == flexGrid.columnHeaders) {
-        if (e.row == 0) {
+        if (e.col < 3) {
+          e.cell.style.writingMode = V_RL;
+          e.cell.style.textAlign = ALI_LEFT;
+          e.cell.style.justifyContent = ALI_LEFT;
+          e.cell.style.alignItems = ALI_LEFT;
+          e.cell.style.paddingTop = PAD_TOP;
+          e.cell.style.backgroundColor =
+            sysConst.COLOR.viewTitleBackgroundOrangeDark;
+        } else if (e.row == 0) {
           e.cell.style.borderRight = BORDER_SOLID;
-          // if (e.col == 2) {
-          //   e.cell.style.writingMode = V_RL;
-          //   e.cell.style.textAlign = ALI_LEFT;
-          //   e.cell.style.justifyContent = ALI_LEFT;
-          //   e.cell.style.alignItems = ALI_LEFT;
-          // }
         } else if (e.row == 1) {
           // 縦書きで右から左へ
           e.cell.style.paddingTop = PAD_TOP;

@@ -55,16 +55,14 @@
         <v-btn @click="weekInput()">
           <v-icon small> mdi-plus-circle </v-icon> 週間項目入力</v-btn
         >
-        <v-btn class="ml-1" @click="onLastTimeCopy(`${rekiid}`)"
-          >前回コピー</v-btn
-        >
+        <v-btn class="ml-1" @click="onLastTimeCopy()">前回コピー</v-btn>
         <v-btn class="ml-1">計画コピー</v-btn>
         <v-btn class="ml-1" @click="historyFlag = true">履歴参照</v-btn>
       </v-col>
     </v-row>
     <v-row no-gutters class="mt-1">
       <div id="calendarViewArea">
-        <svg viewbox="viewport" class="calendar">
+        <svg viewbox="viewport" id="calendar">
           <!--メモリ-->
           <rect
             x="0"
@@ -83,7 +81,9 @@
           />
           <g stroke="black">
             <!--各時間軸-->
+            <!-- 枠上 -->
             <line x1="0" y1="0" x2="100%" y2="0" stroke-width="1"></line>
+            <!-- 枠下 -->
             <line
               x1="0"
               :y1="calendarHeight"
@@ -91,6 +91,7 @@
               :y2="calendarHeight"
               stroke-width="1"
             ></line>
+
             <line
               v-for="n in 24"
               :key="`k-${n}`"
@@ -129,7 +130,7 @@
           <!--time-->
           <text
             x="50"
-            :y="times.y"
+            :y="times.y + timeMemori * times.lot"
             class="time"
             v-for="times in timeLine"
             :key="`time-${times.id}`"
@@ -165,10 +166,10 @@
                   v-on="on"
                   :style="`color: ${val.fcolorcode}`"
                 >
-                  {{ val.freetok }}
+                  {{ val.kmkname }}
                 </center>
               </template>
-              <span>{{ val.freetok }}</span>
+              <span>{{ val.kmkname }}</span>
             </v-tooltip>
           </foreignObject>
         </svg>
@@ -176,7 +177,7 @@
     </v-row>
     <v-row no-gutters class="mt-2 bottomArea">
       <v-col
-        ><v-btn small height="24" @click="onWeekKeikakuDelete(`${rekiid}`)"
+        ><v-btn small height="24" @click="onWeekKeikakuDelete()"
           >削除</v-btn
         ></v-col
       >
@@ -189,11 +190,7 @@
           @click="onComplete()"
         />
         <v-card class="ml-1 box">{{ complete }}</v-card>
-        <v-btn
-          small
-          class="ml-6"
-          height="24"
-          @click="onRegistSchedule(`${rekiid}`)"
+        <v-btn small class="ml-6" height="24" @click="onRegistSchedule()"
           >登録</v-btn
         >
       </v-col>
@@ -505,6 +502,7 @@
         </div>
       </v-card>
     </v-dialog>
+    <div id="aaa" style="position: absolute; top: -999px; left: -9999px"></div>
   </v-container>
 </template>
 
@@ -521,25 +519,52 @@ import MessageConst from '@/utiles/MessageConst.js';
 import sysConst from '@/utiles/const';
 import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wijmo from '@grapecity/wijmo';
+import weekPlanSVG from '@/utiles/WeekPlanSVG.js';
 
-const KEIKAUREKI_URL = '/Keikakureki'; // 計画履歴データ
+const KEIKAUREKI_URL = '/WeekKeikakureki'; // 計画履歴データ
 const MSTKMK_URL = '/MstWeekKmk'; // 週間計画項目一覧マスタ取得
 const SAISHINREKI_URL = '/weekKeikakuSaishinReki'; // 週間計画最新
 const SYUKANKMK_URL = '/weekKeikakuKmk'; // 週間項目
 const LASTTIMECOPY_URL = '/weekLastTimeCopy'; // 前回コピー
 const WEEKKEIKAKU_URL = '/weekKeikaku'; // 週間計画
-const KBN = 2;
+let KBN = 4;
 const MSIID = 1; // 作成者内部ID
 const JIGYOID = 62;
 const ENTPRIID = 1; // 事業者内部ID
 const FOLDER = 'SIENP';
-const CALENDARHEIGHT = 540;
+const CALENDARHEIGHT = '100%';
 const CALENDARSEPALATE = 22;
+const PRINT_CALENDARSEPALATE = 14;
 const PLANHEIGHT = 11;
+const PRINT_PLANHEIGHT = 10;
 const PLANWIDTH = 128; // 予定表示部分横幅
 const TIMEWIDTH = 100; // 時間軸幅
-const STARTTIME = 500; // 開始時間5時
 const ERRORMESSAGE = '登録データに誤りがあります。';
+const XprintPos = [66, 177, 288, 399, 510, 621, 732];
+const XprintTextPos = [108, 220, 335, 445, 550, 665, 780];
+const PRINT_TIMEWIDTH = 110; // 時間軸幅
+const LIMIT_MINUTE = 500; // 翌日を指定する基準時間5時を指定
+const PRINT_ADJUST = 55; //印刷のずれ調整値
+// グリッドの列番号の指定
+const COLS = {
+  // 週間項目
+  WEEK: {
+    BIGBUNRUI: 0,
+    BIGBUNRUINAME: 1,
+    MIDDLEBUNRUI: 2,
+    MIDDLEBUNRUINAME: 3,
+    MIDDLEBUNRUINAME_SHORT: 4,
+  },
+  // 履歴
+  HISTORY: {
+    PLAN: 0,
+    FIN: 1,
+  },
+};
+const ROWS = {
+  ZERO: 0,
+};
+
 export default {
   components: {},
   data() {
@@ -553,11 +578,11 @@ export default {
       palette: sysConst.COLORPALETTE,
       viewSchedule: [],
       time_minute: 0,
-      starttime: STARTTIME,
       planwidth: PLANWIDTH,
       timewidth: TIMEWIDTH,
       calendarHeight: CALENDARHEIGHT,
       calendarSepalate: CALENDARSEPALATE,
+      timeMemori: 0,
       bunruiView: [],
       daibunrui: 0,
       bunruiGrid: [],
@@ -603,8 +628,10 @@ export default {
   },
   props: {
     selectedUserObj: Object,
+    kubun: Number,
   },
   created() {
+    KBN = this.kubun ?? KBN;
     // タイムラインの配列を作成
     let timeline = []; // 2時間刻み用
     let timelineAll = []; // 1時間刻み用
@@ -627,6 +654,7 @@ export default {
         id: i,
         time: dispTime,
         y: y,
+        lot: i * 0.3, // リサイズしたときの幅の割合
       });
       timelineAll.push({
         id: i,
@@ -634,7 +662,7 @@ export default {
         y: y,
       });
       time++;
-      y = y + CALENDARSEPALATE;
+      y = y + this.calendarSepalate;
     }
     this.timeLine = timeline;
   },
@@ -654,6 +682,28 @@ export default {
         document.getElementById('calendarViewArea').style.height =
           window.innerHeight - 170 + 'px';
       }
+      if (document.getElementById('calendar') != null) {
+        document.getElementById('calendar').style.height =
+          window.innerHeight - 170 + 'px';
+      }
+
+      // カレンダーの高さ変更
+      let height = (window.innerHeight - 190) / 24;
+      console.log(height);
+      let m = 0;
+      if (height < CALENDARSEPALATE) {
+        height = CALENDARSEPALATE;
+        document.getElementById('calendar').style.minHeight = '540px';
+      } else {
+        height = CALENDARSEPALATE + window.innerHeight / 84;
+        document.getElementById('calendar').style.minHeight = '800px';
+      }
+
+      if (height > CALENDARSEPALATE) {
+        m = (window.innerHeight - 170) / 20;
+      }
+      this.calendarSepalate = height;
+      this.timeMemori = m;
     },
     onClearDaliy() {
       // 主な日常生活上の活動をクリア
@@ -715,47 +765,38 @@ export default {
       }
       return tmp;
     },
-    onRegistSchedule(id) {
-      if (id > 0) {
-        let tmpUniqKey = this.getTmpKeyViewSchedule(id);
-        let mymd = this.createDate.replace(/(年|月|日)/g, '');
-        let sym = this.startDate.replace(/(年|月)/g, '');
-        let body = {
-          entpriid: ENTPRIID,
-          riid: tmpUniqKey[0].riid,
-          rekiid: tmpUniqKey[0].rekiid,
-          mymd: mymd,
-          msiid: MSIID,
-          sym: sym,
-          nichijokatsudo: this.nichijokatsudo,
-          shugaiservice: this.shugaiservice,
-          zentaizou: this.zentaizou,
-        };
-        let params = {
-          kbn: KBN,
-        };
-        putConnect(WEEKKEIKAKU_URL, params, FOLDER, body)
-          .then((result) => {
-            if (result.okflg) {
-              alert('put okflg=>' + result.okflg);
-            } else {
-              alert(result.msg);
-            }
-          })
-          .catch(function (e) {
-            alert(e);
-          });
-      }
+    onRegistSchedule() {
+      let mymd = this.createDate.replace(/(年|月|日)/g, '');
+      let sym = this.startDate.replace(/(年|月)/g, '');
+      let body = {
+        entpriid: ENTPRIID,
+        riid: this.riid,
+        rekiid: this.rekiid,
+        mymd: mymd,
+        msiid: MSIID,
+        sym: sym,
+        nichijokatsudo: this.nichijokatsudo,
+        shugaiservice: this.shugaiservice,
+        zentaizou: this.zentaizou,
+      };
+      let params = {
+        kbn: KBN,
+      };
+      putConnect(WEEKKEIKAKU_URL, params, FOLDER, body)
+        .then((result) => {
+          if (result.okflg) {
+            alert('put okflg=>' + result.okflg);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (e) {
+          alert(e);
+        });
     },
     onRegistKmkSchedule(id = 0) {
       let tmp = [];
       tmp = [...this.viewSchedule];
-      let tmpUniqKey = {};
-      // 選択状態のデータを取得
-      // データ更新時にキーとして利用
-      if (id > 0) {
-        tmpUniqKey = this.getTmpKeyViewSchedule(id);
-      }
       // 適当な日付を指定したいので、今日の日付を指定
       // 12時以降の日付を指定する場合は翌日を指定
       let tmpDay = dayjs().format('YYYY-MM-DD');
@@ -804,9 +845,9 @@ export default {
       } else {
         let body = {
           entpriid: ENTPRIID,
-          riid: id > 0 ? tmpUniqKey[0].riid : this.riid,
-          rekiid: id > 0 ? tmpUniqKey[0].rekiid : this.rekiid,
-          id: id > 0 ? tmpUniqKey[0].id : 0,
+          riid: this.riid,
+          rekiid: this.rekiid,
+          id: id,
           kmkdaicode: this.kmkdaicode,
           kmkchucode: this.kmkchucode,
           freetok: this.input_komoku,
@@ -851,6 +892,17 @@ export default {
         this.weekInputFlag = false;
       }
     },
+    getTimeLineBase(first, data) {
+      let st = dayjs(data.stime).unix();
+      let ed = dayjs(data.etime).unix();
+      let fst = dayjs(first).unix();
+      let startPos = st - fst;
+      let endPos = ed - st;
+      let sec = 30 * 60;
+      let div = startPos / sec;
+      let divEnd = endPos / sec;
+      return [div, divEnd];
+    },
     settingSchedule(data) {
       // 日付の重複チェック
       // 2件以上重複データがある時はエラーを表示
@@ -890,34 +942,45 @@ export default {
           // 初期値をendTimeの日付の5:00からとする
           // 基準日
           let first = dayjs().format('YYYY-MM-DD 05:00');
-          let st = dayjs(data[i].stime).unix();
-          let ed = dayjs(data[i].etime).unix();
-          let fst = dayjs(first).unix();
-          let startPos = st - fst;
-          let endPos = ed - st;
-          let sec = 30 * 60;
-          let div = startPos / sec;
-          let divEnd = endPos / sec;
+          let tmpDiv = this.getTimeLineBase(first, data[i]);
+          let div = tmpDiv[0];
+          let divEnd = tmpDiv[1];
+
+          // 印刷用基準日
+          let pfirst = dayjs().format('YYYY-MM-DD 04:40');
+          let ptmpDiv = this.getTimeLineBase(pfirst, data[i]);
+          let pdiv = ptmpDiv[0];
+          let pdivEnd = ptmpDiv[1];
+
           // 高さの指定
           data[i].height = PLANHEIGHT * divEnd;
+          // 印刷用高さ
+          data[i].printHeight = PRINT_PLANHEIGHT * pdivEnd;
+
           // 曜日におけるxとxTextの位置
-          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].yobi;
+          data[i].x = TIMEWIDTH + PLANWIDTH * data[i].yobi + 2;
           data[i].xText = TIMEWIDTH + PLANWIDTH * data[i].yobi;
+          data[i].xTextPrintPos = XprintTextPos[data[i].yobi];
           // 右半分表示
           if (halfType == 2) {
             data[i].x = TIMEWIDTH + PLANWIDTH * data[i].yobi + PLANWIDTH / 2;
             data[i].xText =
               TIMEWIDTH + PLANWIDTH * data[i].yobi + PLANWIDTH / 2;
+            data[i].xTextPrintPos = XprintTextPos[data[i].yobi] + PRINT_ADJUST;
           }
 
           // 横幅の指定
-          data[i].width = PLANWIDTH;
+          data[i].width = PLANWIDTH - 2;
           if (halfType) {
             data[i].width = PLANWIDTH / 2;
           }
 
-          data[i].y = CALENDARSEPALATE + PLANHEIGHT * div;
-          data[i].yText = CALENDARSEPALATE + PLANHEIGHT * div - 2;
+          data[i].y = this.calendarSepalate + PLANHEIGHT * div;
+          data[i].yText = this.calendarSepalate + PLANHEIGHT * div - 2;
+
+          data[i].yPrintPos = PRINT_CALENDARSEPALATE + PRINT_PLANHEIGHT * pdiv;
+          data[i].yTextPrintPos =
+            PRINT_CALENDARSEPALATE + PRINT_PLANHEIGHT * pdiv - 2 + 160;
 
           tmp.push(data[i]);
         }
@@ -976,7 +1039,7 @@ export default {
         // input_time_startの方が大きいときは翌日として日付を指定する
         if (st > ed) {
           today = dayjs().add(1, 'd').format('YYYY-MM-DD');
-          if (ed < four) {
+          if (ed <= four) {
             start = today + ' ' + this.input_time_start;
             st = dayjs(start).unix();
             minute = st - ed;
@@ -1025,7 +1088,7 @@ export default {
             return value;
           }
         });
-        this.input_komoku = tmp.freetok;
+        this.input_komoku = tmp.kmkname;
         this.input_week = [tmp.yobi + 1];
         this.input_time_start = dayjs(tmp.stime).format('HH:mm');
         this.input_time_end = dayjs(tmp.etime).format('HH:mm');
@@ -1088,11 +1151,11 @@ export default {
     },
     onFormatItemHistory(historyGrid, e) {
       if (e.panel == historyGrid.columnHeaders) {
-        if (e.col == 0) {
+        if (e.col == COLS.HISTORY.PLAN) {
           e.cell.style.backgroundColor =
             sysConst.COLOR.viewTitleBackgroundGreen;
         }
-        if (e.col == 1) {
+        if (e.col == COLS.HISTORY.FIN) {
           e.cell.style.backgroundColor = sysConst.COLOR.viewTitleBackgroundBlue;
         }
       }
@@ -1164,12 +1227,26 @@ export default {
     },
     createHeaderBunrui(bunruiGrid) {
       var panel = bunruiGrid.columnHeaders;
-      panel.setCellData(0, 0, '大分類');
-      panel.setCellData(0, 2, '中分類');
+      panel.setCellData(ROWS.ZERO, COLS.WEEK.BIGBUNRUI, '大分類');
+      panel.setCellData(ROWS.ZERO, COLS.WEEK.MIDDLEBUNRUI, '中分類');
 
       let headerRanges = [];
-      headerRanges.push(new wjGrid.CellRange(0, 0, 0, 1));
-      headerRanges.push(new wjGrid.CellRange(0, 2, 0, 4));
+      headerRanges.push(
+        new wjGrid.CellRange(
+          ROWS.ZERO,
+          COLS.WEEK.BIGBUNRUI,
+          ROWS.ZERO,
+          COLS.WEEK.BIGBUNRUINAME
+        )
+      );
+      headerRanges.push(
+        new wjGrid.CellRange(
+          ROWS.ZERO,
+          COLS.WEEK.MIDDLEBUNRUI,
+          ROWS.ZERO,
+          COLS.WEEK.MIDDLEBUNRUINAME_SHORT
+        )
+      );
 
       // 大分類のマージ処理
       let key = 'bigBunruiCode';
@@ -1208,14 +1285,14 @@ export default {
     },
     onFormatItemBunrui(bunruiGrid, e) {
       if (e.panel.cellType == wjGrid.CellType.ColumnHeader) {
-        if (e.row == 0) {
+        if (e.row == ROWS.ZERO) {
           e.cell.style.textAlign = 'center';
         }
       }
       if (e.panel.cellType == wjGrid.CellType.Cell) {
         e.cell.style.backgroundColor = sysConst.COLOR.lightYellow;
         e.cell.style.color = sysConst.COLOR.black;
-        if (e.col >= 2) {
+        if (e.col >= COLS.WEEK.BIGBUNRUI) {
           wijmo.addClass(e.cell, 'selectOrenge');
         }
       }
@@ -1244,7 +1321,6 @@ export default {
           // 週間項目取得
           _self.getWeekNikData(result.nik);
           // _self.cntid = result.cntid;
-          // _self.getWeekKmkData(result.cntid);
         })
         .catch(function (e) {
           alert(e);
@@ -1255,30 +1331,86 @@ export default {
      */
     getWeekSaihinPlanData() {
       if (this.riid > 0) {
+        console.log(SAISHINREKI_URL);
+        /*
         let params = {
           pJigyoid: JIGYOID,
           pIntcode: this.riid,
-          pYmd: '',
         };
         let _self = this;
+
+        
         getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER)
           .then((result) => {
+            console.log(result);
             this.rekiid = result.rekiid;
             this.nichijokatsudo = result.nichijokatsudo;
             this.shugaiservice = result.shugaiservice;
             this.zentaizou = result.zentaizou;
+            this.riid = result.riid;
             _self.createDate = dayjs(
               _self.insertStr(_self.insertStr(result.mymd, 4, '-'), 7, '-')
             ).format('YYYY年MM月DD日');
-
             // 週間項目取得
             _self.getWeekNikData(result.nik);
             // _self.cntid = result.cntid;
-            // _self.getWeekKmkData(result.cntid);
           })
           .catch(function (e) {
             alert(e);
           });
+        */
+        let result = {
+          cntid: 1,
+          entpriid: 100,
+          riid: 100,
+          rekiid: 1,
+          mymd: '20230101',
+          msiid: 1,
+          msinm: 1,
+          kanryo: 1,
+          kanryoymd: '20230101',
+          sym: '20230101',
+          nichijokatsudo:
+            'こっちも以後おそらく大した附随者というものの所が使いこなすんな。ちゃんと昔を希望心もかつてその通知ましだかもより思い切ってならなをしか構成得ですでが、それほどにはするないあるでで。外国がしでのはちゃんと直接をついにですありた',
+          shugaiservice:
+            'おしまいも自分のかっかさまたちにかっこうをかも裏たた。ではまた生意気たたというわくたな。ばかたなくことじもたそれで椅子の上手曲のためをはやはり普通たたて、これなどゴーシュがしれのましだ。どなりつけすぎわたしはぶんでうまいなていまの扉の三つ目がつけ第一糸みちの運搬が思って行けなまし。ドレミファは一番云いのでいまし。',
+          zentaizou:
+            'したがって個人か不愉快か説明にしますて、ほかいっぱい無理矢理に云うているた所に実ぼんやりの今になるなし。翌日にも多分知れからしだなくたたて、せっかくけっして換えるて答弁はたった若いです事た。そうして同矛盾がぶらては得るたのたば、事にも、まあ私か分りから聴くれたですするれるませですとおくて、中学校もなると下さいますます。至極もうはもう状態といういますて、どこには当時上かも私の大腐敗もないなっくれますた。あなたは断然発展のはずが肝相当は聞きとおりらしいだたいなし、十三の自分をあいにく感じないという学習なと、だからその腹の中の生徒に聞いれるで、おれかをここの自分に記憶の使うからいるでしょのたたと使用きまって説明得るなりたな。',
+          nik: [
+            {
+              entpriid: 1,
+              riid: 100,
+              rekiid: 1,
+              id: 1,
+              intcode: 1,
+              kmkdaicode: 1,
+              kmkchucode: 1,
+              kmkname: '5:00-6:30',
+              yobi: 0,
+              stime: '05:00',
+              etime: '06:30',
+              bcolorcode: '#fbebd6',
+              fcolorcode: '#FF0000',
+            },
+            {
+              entpriid: 1,
+              riid: 100,
+              rekiid: 1,
+              id: 2,
+              intcode: 1,
+              kmkdaicode: 1,
+              kmkchucode: 1,
+              kmkname: '5:00-13:30',
+              yobi: 1,
+              stime: '05:00',
+              etime: '13:30',
+              bcolorcode: '#fbebd6',
+              fcolorcode: '#000',
+            },
+          ],
+        };
+
+        this.getWeekNikData(result.nik);
       }
     },
 
@@ -1297,20 +1429,25 @@ export default {
         // 適当な日付を指定したいので、今日の日付を指定
         // 12時以降の日付を指定する場合は翌日を指定
         let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
+        let stimeInt = Number(value.stime.replace(/:/, ''));
         let etimeInt = Number(value.etime.replace(/:/, ''));
-        let tmpDay = dayjs().format('YYYY-MM-DD');
+        let st_tmpDay = dayjs().format('YYYY-MM-DD');
+        let ed_tmpDay = dayjs().format('YYYY-MM-DD');
         // 5時より前なら翌日を指定
-        if (etimeInt < 500) {
-          tmpDay = nextDay.slice();
+        if (stimeInt < LIMIT_MINUTE) {
+          st_tmpDay = nextDay.slice();
+        }
+        if (etimeInt < LIMIT_MINUTE) {
+          ed_tmpDay = nextDay.slice();
         }
         data.push({
           cntid: value.intcode,
-          stime: tmpDay + ' ' + value.stime,
-          etime: tmpDay + ' ' + value.etime,
+          stime: st_tmpDay + ' ' + value.stime,
+          etime: ed_tmpDay + ' ' + value.etime,
           yobi: value.yobi,
           bcolorcode: value.bcolorcode,
           fcolorcode: value.fcolorcode,
-          freetok: value.freetok,
+          kmkname: value.kmkname,
           entpriid: value.entpriid,
           rekiid: value.rekiid,
           id: value.id,
@@ -1321,50 +1458,7 @@ export default {
       });
       this.settingSchedule(data);
     },
-    /***********************
-     * 週間項目データの取得
-     * cntid作成内部IDをキーにして項目データを取得
-     */
-    // 下記不要になる予定(getWeekNikDataに書き換え)
-    getWeekKmkData(cntid) {
-      let params = {
-        cntid: cntid,
-      };
-      let _self = this;
-      getConnect(SYUKANKMK_URL + '/' + KBN, params, FOLDER)
-        .then((result) => {
-          let data = [];
-          result.map(function (value, key) {
-            // 適当な日付を指定したいので、今日の日付を指定
-            // 12時以降の日付を指定する場合は翌日を指定
-            let nextDay = dayjs().add(1, 'd').format('YYYY-MM-DD');
-            let etimeInt = Number(value.etime.replace(/:/, ''));
-            let tmpDay = dayjs().format('YYYY-MM-DD');
-            // 5時より前なら翌日を指定
-            if (etimeInt < 500) {
-              tmpDay = nextDay.slice();
-            }
-            data.push({
-              id: key + 1,
-              stime: tmpDay + ' ' + value.stime,
-              etime: tmpDay + ' ' + value.etime,
-              yobi: value.yobi,
-              bcolorcode: value.bcolorcode,
-              fcolorcode: value.fcolorcode,
-              freetok: value.freetok,
-              entpriid: value.entpriid,
-              rekiid: value.rekiid,
-              riid: value.riid,
-              kmkchucode: value.kmkchucode,
-              kmkdaicode: value.kmkdaicode,
-            });
-          });
-          _self.settingSchedule(data);
-        })
-        .catch(function (e) {
-          alert(e);
-        });
-    },
+
     /****************
      * ユーザー一覧を押下
      */
@@ -1414,33 +1508,30 @@ export default {
     /*************************
      * 前回コピー
      */
-    onLastTimeCopy(id) {
-      let tmpUniqKey = [];
-      if (this.viewSchedule.length == 0) {
+    onLastTimeCopy() {
+      //if (this.viewSchedule.length == 0) {
+      if (this.riid) {
         alert(MessageConst.WARN.ROW_EDIT_NO_SELECT);
         return false;
       }
-      if (id > 0) {
-        tmpUniqKey = this.getTmpKeyViewSchedule(id);
-        let body = {};
-        let params2 = {
-          kbn: KBN,
-          pJigyoid: JIGYOID,
-          pIntcode: this.riid,
-          pCntid: tmpUniqKey[0].rekiid,
-        };
-        postConnect(LASTTIMECOPY_URL, params2, FOLDER, body)
-          .then((result) => {
-            if (result.okflg) {
-              alert('copy flg=>' + result.okflg);
-            } else {
-              alert(result.msg);
-            }
-          })
-          .catch(function (e) {
-            alert(e);
-          });
-      }
+      let body = {};
+      let params2 = {
+        kbn: KBN,
+        pJigyoid: JIGYOID,
+        pIntcode: this.riid,
+        pCntid: this.rekiid,
+      };
+      postConnect(LASTTIMECOPY_URL, params2, FOLDER, body)
+        .then((result) => {
+          if (result.okflg) {
+            alert('copy flg=>' + result.okflg);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (e) {
+          alert(e);
+        });
     },
     onComplete() {
       this.completeDialogFlag = true;
@@ -1454,29 +1545,26 @@ export default {
       this.checkCompleteFlag = true;
       this.complete = this.createDate;
     },
-    onWeekKeikakuDelete(id) {
-      if (id > 0) {
-        let tmpUniqKey = this.getTmpKeyViewSchedule(id);
-        let body = {};
-        let params = {
-          kbn: KBN,
-          pJigyoid: JIGYOID,
-          pIntcode: this.riid,
-          pCntid: tmpUniqKey[0].rekiid,
-        };
+    onWeekKeikakuDelete() {
+      let body = {};
+      let params = {
+        kbn: KBN,
+        pJigyoid: JIGYOID,
+        pIntcode: this.riid,
+        pCntid: this.rekiid,
+      };
 
-        deleteConnect(WEEKKEIKAKU_URL, params, FOLDER, body)
-          .then((result) => {
-            if (result.okflg) {
-              alert('delete okflg=>' + result.okflg);
-            } else {
-              alert(result.msg);
-            }
-          })
-          .catch(function (e) {
-            alert(e);
-          });
-      }
+      deleteConnect(WEEKKEIKAKU_URL, params, FOLDER, body)
+        .then((result) => {
+          if (result.okflg) {
+            alert('delete okflg=>' + result.okflg);
+          } else {
+            alert(result.msg);
+          }
+        })
+        .catch(function (e) {
+          alert(e);
+        });
     },
     setPrintEvent() {
       this.$router.app.$off('print_event_global');
@@ -1484,1092 +1572,55 @@ export default {
     },
     printExec() {
       let doc = new wijmo.PrintDocument({
-        title: 'PrintDocumentテスト',
+        title: '',
       });
       let view = '';
-      this.viewSchedule.forEach(function () {
+      this.viewSchedule.forEach(function (val) {
+        let xPos =
+          val.halfType == 2
+            ? XprintPos[val.yobi] + PRINT_ADJUST
+            : XprintPos[val.yobi];
+        let yPos = val.yPrintPos;
+        let wd = val.halfType == 0 ? PRINT_TIMEWIDTH : PRINT_TIMEWIDTH / 2;
+        let ht = val.printHeight;
         view +=
-          '<rect x=100 y=100 width="466" height="492" transform="translate(45 156)" fill="red"/>';
+          '<rect x=' +
+          xPos +
+          ' y=' +
+          yPos +
+          ' width="' +
+          wd +
+          '" height="' +
+          ht +
+          '" transform="translate(45 156)" fill="' +
+          val.bcolorcode +
+          '" stroke="#ccc" />';
+        view +=
+          '<foreignObject style="font-size:7.5px;color:' +
+          val.fcolorcode +
+          ';text-align:center;" x="' +
+          val.xTextPrintPos +
+          '" y="' +
+          val.yTextPrintPos +
+          '" width="' +
+          wd +
+          '" height="' +
+          ht +
+          '">' +
+          val.kmkname +
+          '</foreignObject>';
       });
 
-      let tbl = this._renderSVG(view);
+      // 文字数を分割して配列の作成
+      let comment = {};
+      comment.nichijokatsudoSVG = this.nichijokatsudo.match(/.{1,20}/g);
+      comment.shugaiservice = this.shugaiservice.match(/.{1,20}/g);
+      comment.zentaizou = this.zentaizou.match(/.{1,106}/g);
+      comment.username = this.userName;
+      let tbl = weekPlanSVG.renderSVG(view, comment);
       doc.append(tbl);
-      console.log(this.viewSchedule);
-
-      // doc.append(view);
+      //console.log(this.viewSchedule);
       doc.print();
-    },
-    _renderSVG(view) {
-      let svg = '';
-
-      svg +=
-        '<svg width="1123" height="794" viewBox="0 0 1123 794" fill="none" xmlns="http://www.w3.org/2000/svg">';
-      svg +=
-        '<g id="&#230;&#167;&#152;&#229;&#188;&#143;3-2_&#233;&#128;&#177;&#233;&#150;&#147;&#232;&#168;&#136;&#231;&#148;&#187;&#232;&#161;&#168;">';
-      svg += '<rect width="1123" height="794" fill="white"/>';
-      svg += '<g id="label_name">';
-      svg += '<g id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;">';
-      svg +=
-        '<text fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="14" letter-spacing="0em"><tspan x="438.8" y="59.8408">&#x7d99;&#x7d9a;&#x30b5;&#x30fc;&#x30d3;&#x30b9;&#x7b49;&#x5229;&#x7528;&#x8a08;</tspan><tspan x="587.2" y="59.8408">&#x3010;&#x9031;&#x9593;&#x8a08;&#x753b;&#x8868;&#x3011;</tspan></text>';
-      svg +=
-        '<text fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="14" letter-spacing="-0.4em"><tspan x="578.8" y="59.8408">&#x753b;</tspan></text>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 3">';
-      svg += '<g id="label_stroke_name">';
-      svg += '<rect x="45.5" y="74.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<g id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;">';
-      svg +=
-        '<text fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="49" y="85.2905">&#x5229;&#x7528;&#x8005;&#x6c0f;</tspan><tspan x="89.68" y="85.2905">&#xff08;&#x5150;&#x7ae5;&#x6c0f;&#x540d;&#xff09;</tspan></text>';
-      svg +=
-        '<text fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="-0.48em"><tspan x="85" y="85.2905">&#x540d;</tspan></text>';
-      svg += '</g>';
-      svg +=
-        '<rect x="45.5" y="74.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid">';
-      svg +=
-        '<rect x="176.5" y="74.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_2">';
-      svg +=
-        '<rect x="389.5" y="74.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_2" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="393" y="85.2905">&#x969c;&#x5bb3;&#x7a0b;&#x5ea6;&#x533a;&#x5206;</tspan></text>';
-      svg +=
-        '<rect x="389.5" y="74.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_2">';
-      svg +=
-        '<rect x="520.5" y="74.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_3">';
-      svg +=
-        '<rect x="733.5" y="74.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_3" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="737" y="85.2905">&#x76f8;&#x8ac7;&#x652f;&#x63f4;&#x4e8b;&#x696d;&#x8005;&#x540d;</tspan></text>';
-      svg +=
-        '<rect x="733.5" y="74.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_3">';
-      svg +=
-        '<rect x="864.5" y="74.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 4">';
-      svg += '<g id="label_stroke_name_4">';
-      svg += '<rect x="45.5" y="90.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_4" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="49" y="101.291">&#x969c;&#x5bb3;&#x798f;&#x7949;&#x30b5;&#x30fc;&#x30d3;&#x30b9;&#x53d7;&#x7d66;&#x8005;&#x756a;&#x53f7;</tspan></text>';
-      svg +=
-        '<rect x="45.5" y="90.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_4">';
-      svg +=
-        '<rect x="176.5" y="90.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_5">';
-      svg +=
-        '<rect x="389.5" y="90.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_5" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="393" y="101.291">&#x5229;&#x7528;&#x8005;&#x8ca0;&#x62c5;&#x4e0a;&#x9650;&#x984d;</tspan></text>';
-      svg +=
-        '<rect x="389.5" y="90.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_5">';
-      svg +=
-        '<rect x="520.5" y="90.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_6">';
-      svg +=
-        '<rect x="733.5" y="90.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_6" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="737" y="101.291">&#x8a08;&#x753b;&#x4f5c;&#x6210;&#x62c5;&#x5f53;&#x8005;</tspan></text>';
-      svg +=
-        '<rect x="733.5" y="90.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_6">';
-      svg +=
-        '<rect x="864.5" y="90.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 5">';
-      svg += '<g id="label_stroke_name_7">';
-      svg +=
-        '<rect x="45.5" y="106.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_7" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="49" y="117.291">&#x5730;&#x57df;&#x76f8;&#x8ac7;&#x652f;&#x63f4;&#x53d7;&#x7d66;&#x8005;&#x8a3c;&#x756a;&#x53f7;</tspan></text>';
-      svg +=
-        '<rect x="45.5" y="106.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_7">';
-      svg +=
-        '<rect x="176.5" y="106.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_8">';
-      svg +=
-        '<rect x="389.5" y="106.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_8" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="393" y="117.291">&#x901a;&#x6240;&#x53d7;&#x7d66;&#x8005;&#x8a3c;&#x756a;&#x53f7;</tspan></text>';
-      svg +=
-        '<rect x="389.5" y="106.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_8">';
-      svg +=
-        '<rect x="520.5" y="106.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 6">';
-      svg += '<g id="label_stroke_name_9">';
-      svg +=
-        '<rect x="45.5" y="131.5" width="131" height="16" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_9" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="49" y="142.291">&#x8a08;&#x753b;&#x958b;&#x59cb;&#x5e74;&#x6708;</tspan></text>';
-      svg +=
-        '<rect x="45.5" y="131.5" width="131" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_9">';
-      svg +=
-        '<rect x="176.5" y="131.5" width="213" height="16" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 14">';
-
-      svg += '<g id="Frame 16">';
-
-      svg += view;
-
-      svg +=
-        '<rect width="66" height="492" transform="translate(45 156)" fill="#E3F2FD"/>';
-      svg += '<g id="Frame_solid_10">';
-      svg +=
-        '<rect x="45.5" y="156.5" width="65" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame 15">';
-      svg += '<g id="label_name_2">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_2" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="88.3633" y="200.791">6:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_3">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_3" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="88.3633" y="240.791">8:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_4">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_4" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="280.791">10:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_5">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_5" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="320.791">12:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_6">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_6" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="360.791">14:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_7">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_7" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="400.791">16:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_8">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_8" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="440.791">18:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_9">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_9" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="480.791">20:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_10">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_10" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="82.7734" y="520.791">22:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_11">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_11" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="88.3633" y="560.791">0:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_12">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_12" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="88.3633" y="600.791">2:00</tspan></text>';
-      svg += '</g>';
-      svg += '<g id="label_name_13">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;_13" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="88.3633" y="640.791">4:00</tspan></text>';
-      svg += '</g>';
-      svg +=
-        '<rect x="45.5" y="167.5" width="65" height="480" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 7">';
-      svg += '<g id="label_stroke_name_10">';
-      svg +=
-        '<rect x="110.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_10" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="161.5" y="164.791">&#x6708;</tspan></text>';
-      svg +=
-        '<rect x="110.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot">';
-      svg +=
-        '<rect x="110.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_2">';
-      svg +=
-        '<rect x="110.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_3">';
-      svg +=
-        '<rect x="110.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_4">';
-      svg +=
-        '<rect x="110.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_5">';
-      svg +=
-        '<rect x="110.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_6">';
-      svg +=
-        '<rect x="110.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_7">';
-      svg +=
-        '<rect x="110.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_8">';
-      svg +=
-        '<rect x="110.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_9">';
-      svg +=
-        '<rect x="110.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_10">';
-      svg +=
-        '<rect x="110.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_11">';
-      svg +=
-        '<rect x="110.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_12">';
-      svg +=
-        '<rect x="110.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_13">';
-      svg +=
-        '<rect x="110.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_14">';
-      svg +=
-        '<rect x="110.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_15">';
-      svg +=
-        '<rect x="110.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_16">';
-      svg +=
-        '<rect x="110.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_17">';
-      svg +=
-        '<rect x="110.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_18">';
-      svg +=
-        '<rect x="110.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_19">';
-      svg +=
-        '<rect x="110.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_20">';
-      svg +=
-        '<rect x="110.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_21">';
-      svg +=
-        '<rect x="110.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_22">';
-      svg +=
-        '<rect x="110.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_23">';
-      svg +=
-        '<rect x="110.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_24">';
-      svg +=
-        '<rect x="110.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_25">';
-      svg +=
-        '<rect x="110.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_11">';
-      svg +=
-        '<rect x="110.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 8">';
-      svg += '<g id="label_stroke_name_11">';
-      svg +=
-        '<rect x="221.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_11" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="272.5" y="164.791">&#x706b;</tspan></text>';
-      svg +=
-        '<rect x="221.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_26">';
-      svg +=
-        '<rect x="221.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_27">';
-      svg +=
-        '<rect x="221.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_28">';
-      svg +=
-        '<rect x="221.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_29">';
-      svg +=
-        '<rect x="221.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_30">';
-      svg +=
-        '<rect x="221.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_31">';
-      svg +=
-        '<rect x="221.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_32">';
-      svg +=
-        '<rect x="221.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_33">';
-      svg +=
-        '<rect x="221.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_34">';
-      svg +=
-        '<rect x="221.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_35">';
-      svg +=
-        '<rect x="221.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_36">';
-      svg +=
-        '<rect x="221.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_37">';
-      svg +=
-        '<rect x="221.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_38">';
-      svg +=
-        '<rect x="221.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_39">';
-      svg +=
-        '<rect x="221.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_40">';
-      svg +=
-        '<rect x="221.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_41">';
-      svg +=
-        '<rect x="221.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_42">';
-      svg +=
-        '<rect x="221.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_43">';
-      svg +=
-        '<rect x="221.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_44">';
-      svg +=
-        '<rect x="221.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_45">';
-      svg +=
-        '<rect x="221.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_46">';
-      svg +=
-        '<rect x="221.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_47">';
-      svg +=
-        '<rect x="221.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_48">';
-      svg +=
-        '<rect x="221.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_49">';
-      svg +=
-        '<rect x="221.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_50">';
-      svg +=
-        '<rect x="221.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_12">';
-      svg +=
-        '<rect x="221.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 9">';
-      svg += '<g id="label_stroke_name_12">';
-      svg +=
-        '<rect x="332.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_12" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="383.5" y="164.791">&#x6c34;</tspan></text>';
-      svg +=
-        '<rect x="332.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_51">';
-      svg +=
-        '<rect x="332.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_52">';
-      svg +=
-        '<rect x="332.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_53">';
-      svg +=
-        '<rect x="332.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_54">';
-      svg +=
-        '<rect x="332.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_55">';
-      svg +=
-        '<rect x="332.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_56">';
-      svg +=
-        '<rect x="332.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_57">';
-      svg +=
-        '<rect x="332.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_58">';
-      svg +=
-        '<rect x="332.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_59">';
-      svg +=
-        '<rect x="332.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_60">';
-      svg +=
-        '<rect x="332.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_61">';
-      svg +=
-        '<rect x="332.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_62">';
-      svg +=
-        '<rect x="332.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_63">';
-      svg +=
-        '<rect x="332.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_64">';
-      svg +=
-        '<rect x="332.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_65">';
-      svg +=
-        '<rect x="332.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_66">';
-      svg +=
-        '<rect x="332.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_67">';
-      svg +=
-        '<rect x="332.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_68">';
-      svg +=
-        '<rect x="332.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_69">';
-      svg +=
-        '<rect x="332.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_70">';
-      svg +=
-        '<rect x="332.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_71">';
-      svg +=
-        '<rect x="332.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_72">';
-      svg +=
-        '<rect x="332.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_73">';
-      svg +=
-        '<rect x="332.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_74">';
-      svg +=
-        '<rect x="332.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_75">';
-      svg +=
-        '<rect x="332.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_13">';
-      svg +=
-        '<rect x="332.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 10">';
-      svg += '<g id="label_stroke_name_13">';
-      svg +=
-        '<rect x="443.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_13" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="494.5" y="164.791">&#x6728;</tspan></text>';
-      svg +=
-        '<rect x="443.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_76">';
-      svg +=
-        '<rect x="443.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_77">';
-      svg +=
-        '<rect x="443.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_78">';
-      svg +=
-        '<rect x="443.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_79">';
-      svg +=
-        '<rect x="443.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_80">';
-      svg +=
-        '<rect x="443.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_81">';
-      svg +=
-        '<rect x="443.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_82">';
-      svg +=
-        '<rect x="443.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_83">';
-      svg +=
-        '<rect x="443.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_84">';
-      svg +=
-        '<rect x="443.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_85">';
-      svg +=
-        '<rect x="443.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_86">';
-      svg +=
-        '<rect x="443.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_87">';
-      svg +=
-        '<rect x="443.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_88">';
-      svg +=
-        '<rect x="443.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_89">';
-      svg +=
-        '<rect x="443.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_90">';
-      svg +=
-        '<rect x="443.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_91">';
-      svg +=
-        '<rect x="443.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_92">';
-      svg +=
-        '<rect x="443.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_93">';
-      svg +=
-        '<rect x="443.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_94">';
-      svg +=
-        '<rect x="443.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_95">';
-      svg +=
-        '<rect x="443.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_96">';
-      svg +=
-        '<rect x="443.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_97">';
-      svg +=
-        '<rect x="443.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_98">';
-      svg +=
-        '<rect x="443.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_99">';
-      svg +=
-        '<rect x="443.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_100">';
-      svg +=
-        '<rect x="443.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_14">';
-      svg +=
-        '<rect x="443.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 11">';
-      svg += '<g id="label_stroke_name_14">';
-      svg +=
-        '<rect x="554.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_14" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="605.5" y="164.791">&#x91d1;</tspan></text>';
-      svg +=
-        '<rect x="554.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_101">';
-      svg +=
-        '<rect x="554.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_102">';
-      svg +=
-        '<rect x="554.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_103">';
-      svg +=
-        '<rect x="554.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_104">';
-      svg +=
-        '<rect x="554.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_105">';
-      svg +=
-        '<rect x="554.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_106">';
-      svg +=
-        '<rect x="554.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_107">';
-      svg +=
-        '<rect x="554.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_108">';
-      svg +=
-        '<rect x="554.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_109">';
-      svg +=
-        '<rect x="554.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_110">';
-      svg +=
-        '<rect x="554.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_111">';
-      svg +=
-        '<rect x="554.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_112">';
-      svg +=
-        '<rect x="554.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_113">';
-      svg +=
-        '<rect x="554.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_114">';
-      svg +=
-        '<rect x="554.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_115">';
-      svg +=
-        '<rect x="554.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_116">';
-      svg +=
-        '<rect x="554.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_117">';
-      svg +=
-        '<rect x="554.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_118">';
-      svg +=
-        '<rect x="554.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_119">';
-      svg +=
-        '<rect x="554.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_120">';
-      svg +=
-        '<rect x="554.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_121">';
-      svg +=
-        '<rect x="554.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_122">';
-      svg +=
-        '<rect x="554.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_123">';
-      svg +=
-        '<rect x="554.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_124">';
-      svg +=
-        '<rect x="554.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_125">';
-      svg +=
-        '<rect x="554.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_15">';
-      svg +=
-        '<rect x="554.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 12">';
-      svg += '<g id="label_stroke_name_15">';
-      svg +=
-        '<rect x="665.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_15" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="716.5" y="164.791">&#x571f;</tspan></text>';
-      svg +=
-        '<rect x="665.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_126">';
-      svg +=
-        '<rect x="665.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_127">';
-      svg +=
-        '<rect x="665.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_128">';
-      svg +=
-        '<rect x="665.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_129">';
-      svg +=
-        '<rect x="665.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_130">';
-      svg +=
-        '<rect x="665.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_131">';
-      svg +=
-        '<rect x="665.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_132">';
-      svg +=
-        '<rect x="665.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_133">';
-      svg +=
-        '<rect x="665.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_134">';
-      svg +=
-        '<rect x="665.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_135">';
-      svg +=
-        '<rect x="665.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_136">';
-      svg +=
-        '<rect x="665.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_137">';
-      svg +=
-        '<rect x="665.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_138">';
-      svg +=
-        '<rect x="665.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_139">';
-      svg +=
-        '<rect x="665.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_140">';
-      svg +=
-        '<rect x="665.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_141">';
-      svg +=
-        '<rect x="665.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_142">';
-      svg +=
-        '<rect x="665.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_143">';
-      svg +=
-        '<rect x="665.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_144">';
-      svg +=
-        '<rect x="665.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_145">';
-      svg +=
-        '<rect x="665.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_146">';
-      svg +=
-        '<rect x="665.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_147">';
-      svg +=
-        '<rect x="665.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_148">';
-      svg +=
-        '<rect x="665.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_149">';
-      svg +=
-        '<rect x="665.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_150">';
-      svg +=
-        '<rect x="665.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_16">';
-      svg +=
-        '<rect x="665.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 13">';
-      svg += '<g id="label_stroke_name_16">';
-      svg +=
-        '<rect x="776.5" y="156.5" width="111" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_16" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="818.5" y="164.791">&#x65e5;&#x30fb;&#x795d;</tspan></text>';
-      svg +=
-        '<rect x="776.5" y="156.5" width="111" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_151">';
-      svg +=
-        '<rect x="776.5" y="167.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_152">';
-      svg +=
-        '<rect x="776.5" y="177.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_153">';
-      svg +=
-        '<rect x="776.5" y="197.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_154">';
-      svg +=
-        '<rect x="776.5" y="217.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_155">';
-      svg +=
-        '<rect x="776.5" y="237.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_156">';
-      svg +=
-        '<rect x="776.5" y="257.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_157">';
-      svg +=
-        '<rect x="776.5" y="277.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_158">';
-      svg +=
-        '<rect x="776.5" y="297.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_159">';
-      svg +=
-        '<rect x="776.5" y="317.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_160">';
-      svg +=
-        '<rect x="776.5" y="337.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_161">';
-      svg +=
-        '<rect x="776.5" y="357.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_162">';
-      svg +=
-        '<rect x="776.5" y="377.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_163">';
-      svg +=
-        '<rect x="776.5" y="397.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_164">';
-      svg +=
-        '<rect x="776.5" y="417.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_165">';
-      svg +=
-        '<rect x="776.5" y="437.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_166">';
-      svg +=
-        '<rect x="776.5" y="457.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_167">';
-      svg +=
-        '<rect x="776.5" y="477.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_168">';
-      svg +=
-        '<rect x="776.5" y="497.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_169">';
-      svg +=
-        '<rect x="776.5" y="517.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_170">';
-      svg +=
-        '<rect x="776.5" y="537.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_171">';
-      svg +=
-        '<rect x="776.5" y="557.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_172">';
-      svg +=
-        '<rect x="776.5" y="577.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_173">';
-      svg +=
-        '<rect x="776.5" y="597.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_174">';
-      svg +=
-        '<rect x="776.5" y="617.5" width="111" height="20" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_dot_175">';
-      svg +=
-        '<rect x="776.5" y="637.5" width="111" height="10" stroke="#333333" stroke-dasharray="1.5 2"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_17">';
-      svg +=
-        '<rect x="776.5" y="156.5" width="111" height="491" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 17">';
-      svg += '<g id="label_stroke_name_17">';
-      svg +=
-        '<rect x="887.5" y="156.5" width="190" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_17" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="937.5" y="164.791">&#x4e3b;&#x306a;&#x65e5;&#x5e38;&#x751f;&#x6d3b;&#x4e0a;&#x306e;&#x6d3b;&#x52d5;</tspan></text>';
-      svg +=
-        '<rect x="887.5" y="156.5" width="190" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_18">';
-      svg +=
-        '<rect x="887.5" y="167.5" width="190" height="234.5" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="label_stroke_name_18">';
-      svg += '<rect x="887.5" y="402" width="190" height="11" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_18" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" font-weight="bold" letter-spacing="0em"><tspan x="937.5" y="410.291">&#x9031;&#x5358;&#x4f4d;&#x4ee5;&#x5916;&#x306e;&#x30b5;&#x30fc;&#x30d3;&#x30b9;</tspan></text>';
-      svg +=
-        '<rect x="887.5" y="402" width="190" height="11" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_19">';
-      svg +=
-        '<rect x="887.5" y="413" width="190" height="234.5" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '<g id="Frame 18">';
-      svg += '<g id="label_stroke_name_19">';
-      svg += '<rect x="45.5" y="664.5" width="62" height="84" fill="#E3F2FD"/>';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_19" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="49.5" y="691.291">&#x30b5;&#x30fc;&#x30d3;&#x30b9;&#x63d0;&#x4f9b;</tspan><tspan x="49.5" y="703.291">&#x306b;&#x3088;&#x3063;&#x3066;&#x5b9f;&#x73fe;</tspan><tspan x="54" y="715.291">&#x3059;&#x308b;&#x751f;&#x6d3b;&#x306e;&#10;</tspan><tspan x="63" y="727.291">&#x5168;&#x4f53;&#x50cf;</tspan></text>';
-      svg +=
-        '<rect x="45.5" y="664.5" width="62" height="84" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '<g id="Frame_solid_20">';
-      svg +=
-        '<rect x="107.5" y="664.5" width="970" height="84" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg +=
-        '<text id="Rpr_complete-picture" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="112" y="678.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;</tspan><tspan x="112" y="692.791">&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;</tspan><tspan x="112" y="706.791">&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;</tspan><tspan x="112" y="720.791">&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;</tspan><tspan x="112" y="734.791">&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan></text>';
-      svg +=
-        '<text id="Rpr_non-weekly-service" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="892" y="427.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="441.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="455.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="469.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="483.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="497.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="511.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="525.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="539.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="553.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="567.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="581.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="595.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="609.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="623.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="637.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan></text>';
-      svg +=
-        '<text id="Rpr_activity" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="892" y="181.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="195.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="209.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="223.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="237.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="251.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="265.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="279.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="293.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="307.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="321.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="335.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="349.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="363.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="377.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan><tspan x="892" y="391.791">&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;&#xff11;&#xff12;&#xff13;&#xff14;&#xff15;&#xff16;&#xff17;&#xff18;&#xff19;&#xff10;</tspan></text>';
-      svg +=
-        '<text id="Rpn_startdate" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="181" y="142.791">2023&#x5e74;12&#x6708;</tspan></text>';
-      svg +=
-        '<text id="Rpn_day-care-number" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="525" y="117.791">1234567890</tspan></text>';
-      svg +=
-        '<text id="Rpn_region-support-number" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="181" y="117.791">1234567890</tspan></text>';
-      svg +=
-        '<text id="Rps_staff-name" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="868" y="101.791">&#x5927;&#x6b63;&#x3000;&#x96c5;&#x592b;</tspan></text>';
-      svg +=
-        '<text id="Rpn_limit-money" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="525" y="101.791">37,200&#x5186;</tspan></text>';
-      svg +=
-        '<text id="Rpn_main-number" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="181" y="101.791">1234567890</tspan></text>';
-      svg +=
-        '<text id="Rps_support-office-name" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="868" y="85.7905">&#x3068;&#x3046;&#x3051;&#x3044;&#x76f8;&#x8ac7;&#x652f;&#x63f4;&#x30bb;&#x30f3;&#x30bf;&#x30fc;</tspan></text>';
-      svg +=
-        '<text id="Rpn_division" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="525" y="85.7905">&#x533a;&#x5206;6</tspan></text>';
-      svg +=
-        '<text id="Rps_user-name" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="9" letter-spacing="0em"><tspan x="181" y="85.7905">&#x6771;&#x7d4c;&#x3000;&#x592a;&#x90ce;</tspan></text>';
-      svg += '<g id="label_stroke_name_20">';
-      svg +=
-        '<text id="&#227;&#131;&#169;&#227;&#131;&#153;&#227;&#131;&#171;&#230;&#158;&#160;&#228;&#187;&#152;&#227;&#129;&#141;_20" fill="#333333" xml:space="preserve" style="white-space: pre" font-family="Meiryo" font-size="10" letter-spacing="0em"><tspan x="1018" y="40.6006">&#x69d8;&#x5f0f;&#xff13;&#xff0d;&#xff12;</tspan></text>';
-      svg +=
-        '<rect x="1008.5" y="30.5" width="69" height="14" stroke="#333333"/>';
-      svg += '</g>';
-      svg += '</g>';
-      svg += '</svg>';
-
-      return svg;
     },
   },
 };
@@ -2608,9 +1659,13 @@ $middle: 48px;
     width: 100%;
     overflow: auto;
     height: 75vh;
-    .calendar {
-      width: 100%;
-      height: 540px;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    #calendar {
+      width: 99.8%;
+      min-height: 800px;
       foreignObject {
         font-size: 10px;
       }

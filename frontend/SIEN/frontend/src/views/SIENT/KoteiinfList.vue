@@ -12,51 +12,51 @@
         <!--<centermenu   class="centermenu">-->
         <div class="centermenu">
             <!-- ****中間メニュー**** -->
-            <div class="clsstitlecenter0 mt-3"><b>本 人</b></div>
+            <div class="label menutitle" style="margin-left: 20px; margin-top: 3px;"><b>本 人</b></div>
 
-            <v-btn class="clsbtnmenu mt-2" @click="get_scroll(0)">
+            <v-btn class="btn menu" style="margin-top: 2px;margin-left: 7px;" @click="get_scroll(0)">
                 基本<br>情報
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(1)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(1)">
                 生活歴
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(2)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(2)">
                 病歴・<br>障害歴
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(3)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(3)">
                 現在受<br>診状況
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(4)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(4)">
                 医療<br>保険
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(5)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(5)">
                 生活<br>状況
             </v-btn>
-            <div class="clsstitlecenter0"><b>家 族</b></div>
-            <v-btn class="clsbtnmenu" @click="get_scroll(6)">
+            <div class="label menutitle" style="margin-left: 20px; margin-top: 5px;"><b>家 族</b></div>
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(6)">
                 家族<br>情報
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(7)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(7)">
                 介護者<br>情報
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(8)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(8)">
                 住環境
             </v-btn>
-            <div class="clsstitlecenter0"><b>社 会</b></div>
-            <v-btn class="clsbtnmenu" @click="get_scroll(9)">
+            <div class="label menutitle" style="margin-left: 20px; margin-top: 5px;"><b>社 会</b></div>
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(9)">
                 関係<br>機関
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(10)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(10)">
                 手帳<br>情報
             </v-btn>
-            <v-btn class="clsbtnmenu" @click="get_scroll(11)">
+            <v-btn class="btn menu" style="margin-top: 3px;margin-left: 7px;" @click="get_scroll(11)">
                 福祉<br>サービス
             </v-btn>
         </div>
         <main class="main">
             <v-sheet class="clssheet-dai0" color="#FFFFFF" elevation="2">
-                <div class="RiyoLabel">
-                    <label class="clssdaititle0_a"><b>日付</b></label>
+                <div class="area koteihead">
+                    <label class="label koteihead"><b>日付</b></label>
                     <v-btn class="btnymd_kotei ml-1" @click="inputCalendarClick()" tile width="150px" height="30px">{{
                         getYm()
                     }}
@@ -73,65 +73,99 @@
                     </v-dialog>
                 </div>
                 <br>
-                <div class="RiyoLabel">
-                    <label class="clssdaititle0_a"><b>利用者名:</b></label>
-                    <label class="clssdaititle0_b" id="Riyocd_id"></label>
-                    <label class="clssdaititle0_c" id="Riyonm_id"></label>
+                <div class="area koteihead">
+                    <label class="label koteihead"><b>利用者名</b></label>
+                    <label class="label kmk headcode" style="margin-left: 4px;" id="Riyocd_id"></label>
+                    <label class="label kmk headname" id="Riyonm_id" style="margin-left: 4px;"></label>
+                    <label class="label koteihead" style="margin-left: 8px;"><b>担当者</b></label>
+                    <label class="label kmk headtanto" style="margin-left: 4px;" id="Tantonm_id" @click="Tantonm_click"></label>
                 </div>
                 <!-- ****障がい者本人の状況（基本情報）****-->
                 <v-sheet id="area_dai" class="wrap001-dai1" color="#F4F6F9">
                     <label class="clssdaititle0 mt-3"><b>◆障がい者本人の状況</b></label>
                     <component :is="kotei001" ref="childkotei001" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 1 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 1, login_siid: param_login_siid }">
                     </component>
                     <component class="mt-3" :is="kotei002" ref="childkotei002" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 2 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 2, login_siid: param_login_siid }">
                     </component>
                     <component class="mt-3" :is="kotei004" ref="childkotei004" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 3 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 3, login_siid: param_login_siid }">
                     </component>
                     <component class="mt-3" :is="kotei006" ref="childkotei006" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 4 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 4, login_siid: param_login_siid }">
                     </component>
                     <component class="mt-3" :is="kotei008" ref="childkotei008" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 5 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 5, login_siid: param_login_siid }">
                     </component>
                     <component class="mt-3" :is="kotei009" ref="childkotei009" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 6 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 6, login_siid: param_login_siid }">
                     </component>
                     <label class="clssdaititle0 mt-3"><b>◆家族の状況</b></label>
                     <component class="mt-1" :is="kotei010" ref="childkotei010" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 100 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 100 ,login_siid: param_login_siid}">
                     </component>
                     <component class="mt-3" :is="kotei012" ref="childkotei012" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 101 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 101 ,login_siid: param_login_siid}">
                     </component>
                     <component class="mt-3" :is="kotei014" ref="childkotei014" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 102 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 102 ,login_siid: param_login_siid}">
                     </component>
                     <label class="clssdaititle0 mt-3"><b>◆社会的支援</b></label>
                     <component class="mt-1" :is="kotei015" ref="childkotei015" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 200 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 200 ,login_siid: param_login_siid}">
                     </component>
                     <component class="mt-3" :is="kotei017" ref="childkotei017" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 201 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 201 ,login_siid: param_login_siid}">
                     </component>
                     <component class="mt-3" :is="kotei018" ref="childkotei018" @child-dataupd="get_data"
                         @child-datasel="setUserSelectPoint"
-                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, jigyoid_kotei: this.param_jigyoid_kotei, kotei_kbn: 202 }">
+                        v-bind="{ ymd: getYYYYMMDD(), uniqid: this.param_uniqid, traceid: this.param_traceid, jigyoid: this.param_jigyoid, kotei_kbn: 202 ,login_siid: param_login_siid}">
                     </component>
                 </v-sheet>
+
+                <!-- 職員ダイアログ  -->
+                <v-dialog v-model="dialog_Syoku_flg" width="320">
+                    <v-sheet id="syoku_win" class="sheet syokuin" elevation="2">
+                        <div class="area syokuin win">
+                            <label class="label kotei_wintitle syokuin">職員選択画面</label>
+                            <v-btn margin-left="1px" elevation="2" icon small top class="closeButton ml-1" color="red"
+                                @click="Click_colse_syokuin">
+                                <v-icon> mdi-close </v-icon>
+                            </v-btn>
+                        </div>
+
+                        <wj-flex-grid id="Gridsyokuin-id" class="grid syokuin" :headersVisibility="'Column'"
+                            :autoGenerateColumns="false" :allowAddNew="false" :allowDelete="false" :allowPinning="false"
+                            :allowMerging="'AllHeaders'" :allowResizing="true" :allowSorting="false" :allowDragging="false"
+                            :selectionMode="'Row'" :isReadOnly="true" :initialized="onInitializeIcrnGrid_syokuin"
+                            :itemsSourceChanged="onItemsSourceChanged_syokuin" :itemsSource="viewdata_syokuin"
+                            :autoRowHeights="true">
+
+                            <!--列-->
+                            <wj-flex-grid-column header="" binding="siid" :width="0"
+                                :allowResizing=false></wj-flex-grid-column>
+                            <wj-flex-grid-column header="コード" binding="sicode" :width="80" :allowResizing=false
+                                format="d0"></wj-flex-grid-column>
+                            <wj-flex-grid-column header="職員名" binding="name" :width="210" :wordWrap=true
+                                :allowResizing=false></wj-flex-grid-column>
+
+
+                        </wj-flex-grid>
+
+                    </v-sheet>
+                </v-dialog>
             </v-sheet>
         </main>
     </div>
@@ -140,18 +174,18 @@
 
 <script>
 import UserList from '../../components/UserList.vue';
-import KoteiinfList001 from '../../components/KoteiinfList-001.vue';
-import KoteiinfList002 from '../../components/KoteiinfList-002.vue';
-import KoteiinfList004 from '../../components/KoteiinfList-004.vue';
-import KoteiinfList006 from '../../components/KoteiinfList-006.vue';
-import KoteiinfList008 from '../../components/KoteiinfList-008.vue';
-import KoteiinfList009 from '../../components/KoteiinfList-009.vue';
-import KoteiinfList010 from '../../components/KoteiinfList-010.vue';
-import KoteiinfList012 from '../../components/KoteiinfList-012.vue';
-import KoteiinfList014 from '../../components/KoteiinfList-014.vue';
-import KoteiinfList015 from '../../components/KoteiinfList-015.vue';
-import KoteiinfList017 from '../../components/KoteiinfList-017.vue';
-import KoteiinfList018 from '../../components/KoteiinfList-018.vue';
+import KoteiinfList001 from './koteiinf/KoteiinfList-001.vue';
+import KoteiinfList002 from './koteiinf/KoteiinfList-002.vue';
+import KoteiinfList004 from './koteiinf/KoteiinfList-004.vue';
+import KoteiinfList006 from './koteiinf/KoteiinfList-006.vue';
+import KoteiinfList008 from './koteiinf/KoteiinfList-008.vue';
+import KoteiinfList009 from './koteiinf/KoteiinfList-009.vue';
+import KoteiinfList010 from './koteiinf/KoteiinfList-010.vue';
+import KoteiinfList012 from './koteiinf/KoteiinfList-012.vue';
+import KoteiinfList014 from './koteiinf/KoteiinfList-014.vue';
+import KoteiinfList015 from './koteiinf/KoteiinfList-015.vue';
+import KoteiinfList017 from './koteiinf/KoteiinfList-017.vue';
+import KoteiinfList018 from './koteiinf/KoteiinfList-018.vue';
 import '@grapecity/wijmo.cultures/wijmo.culture.ja';
 import '@grapecity/wijmo.touch';
 import '@grapecity/wijmo.vue2.grid.grouppanel';
@@ -161,10 +195,11 @@ import '@grapecity/wijmo.vue2.input';
 import { getConnect } from '../../connect/getConnect';
 import dayjs from '../../../node_modules/dayjs';
 import * as wjCore from '@grapecity/wijmo';
+import * as wjGrid from '@grapecity/wijmo.grid';
 let uniqid = 3; //テスト3を使用
 let traceid = 123;
-let jigyoid = 99999;
-let jigyoid_kotei = 99999;
+let jigyoid = 62;
+let siid = 1;
 
 
 export default {
@@ -203,12 +238,13 @@ export default {
             GetSelInf: [],                  //API取得データ(本人)
             GetSelInf_kzk: [],              //API取得データ(家族)
             GetSelInf_syakai: [],           //API取得データ(社会)
+            viewdata_syokuin: [],       //履歴グリッド表示データ
 
             //基本パラメータ
             param_uniqid: uniqid,
             param_traceid: traceid,
             param_jigyoid: jigyoid,
-            param_jigyoid_kotei: jigyoid_kotei,
+            param_login_siid: siid,
 
             kotei001: 'KoteiinfList001', //基本情報用パラメータ
             kotei002: 'KoteiinfList002', //生活歴用パラメータ
@@ -222,7 +258,46 @@ export default {
             kotei015: 'KoteiinfList015', //関係機関パラメータ
             kotei017: 'KoteiinfList017', //手帳情報パラメータ
             kotei018: 'KoteiinfList018', //福祉ｻｰﾋﾞｽパラメータ
+
+            dialog_Syoku_flg: false    //職員選択画面
         };
+
+    },
+
+
+    mounted() {
+        //職員データを検索
+
+        //API取得
+        let _self = this;
+        let params = [];
+        let ymd = this.getYm();
+        ymd = ymd.replace("年", "");
+        ymd = ymd.replace("月", "");
+        ymd = ymd.replace("日", "");
+
+        params = {
+            uniqid: uniqid,
+            traceid: traceid,
+
+            Getkbn: 0,
+            Sikibetuid: 110003,  //仮
+            kanritaniid: "",
+            Siid: "",
+            Srcymd: ymd,
+            Ekbn: "",
+            Ssid: "",
+            Hlpkbn: "",
+            Kyu3flg: "",
+            Judoflg: "",
+            Kodoflg: "",
+            Tykflg: ""
+        };
+
+        getConnect('/syokuin', params, 'COMMON').then((result) => {
+
+            _self.viewdata_syokuin = result.icrn_inf;
+        })
 
     },
 
@@ -247,7 +322,7 @@ export default {
                 ymd: ymd,
                 intcode: intcode,
 
-                Jigyoid: jigyoid_kotei,
+                pJigyoid: jigyoid,
                 Kbn: 0,
                 Dataid: 0,
                 Modeflg: 0,
@@ -393,6 +468,61 @@ export default {
             this.datepicker_dialog = false;
             this.get_data(this.userInfo.riid);
         }
+
+        , Tantonm_click() {
+            //担当者名クリック
+            this.dialog_Syoku_flg = true;// 職員ダイアログ表示
+        }
+
+        //職員グリッド関係
+        , onInitializeIcrnGrid_syokuin(flexGrid) {
+            flexGrid.beginUpdate();
+            //flexGrid.cssClassAll = "Gridicrn001";
+            // ヘッダの追加と設定
+            flexGrid.frozenRows = 0;
+            flexGrid.columnHeaders.rows[0].allowMerging = true;
+            flexGrid.columnHeaders.rows[0].height = 20 * 2;
+            flexGrid.columnHeaders.rows[0].max = 20 * 2;
+            flexGrid.columnHeaders.rows[0].cssClassAll = 'column-header'
+            flexGrid.cells.rows.defaultSize = 35;
+            flexGrid.alternatingRowStep = 0;
+
+            //イベントの追加
+            this.flexsyoku = flexGrid;
+            flexGrid.hostElement.addEventListener("click", function (e) { this.grid_click_syoku(e) }.bind(this));
+            flexGrid.endUpdate();
+        }
+        , grid_click_syoku: function (e) {
+            var ht = this.flexsyoku.hitTest(e);
+
+            if (ht.row >= 0) {
+                document.getElementById("Tantonm_id").innerHTML = wjCore.escapeHtml(this.viewdata_syokuin[ht.row].name);
+                document.getElementById("Tantonm_id").tag = wjCore.escapeHtml(this.viewdata_syokuin[ht.row].siid);
+
+
+                //各画面にセット
+                this.$refs.childkotei001.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei002.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei004.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei006.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei008.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei009.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei010.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei012.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei014.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei015.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei017.set_siid(document.getElementById("Tantonm_id").tag);
+                this.$refs.childkotei018.set_siid(document.getElementById("Tantonm_id").tag);
+                this.dialog_Syoku_flg = false;
+            }
+        }
+        , onItemsSourceChanged_syokuin(flexGrid) {
+            flexGrid.selection = new wjGrid.CellRange(-1, -1, -1, -1);
+        }
+        , Click_colse_syokuin() {
+            this.dialog_Syoku_flg = false;
+        }
+
     }
 
 };
@@ -404,6 +534,8 @@ document.addEventListener('mousewheel', function () { }, { passive: true });
 </script>
 
 <style  lang="scss">
+@import '../../assets/scss/common.scss';
+
 .main {
     background-color: #F4F6F9;
 }
@@ -538,5 +670,74 @@ document.addEventListener('mousewheel', function () { }, { passive: true });
     //border-color: #8ffd7a;
     border-color: #27904d;
     font-size: large;
+}
+
+//#####職員変更ダイアログ#####
+.koteititle_syokuin {
+    border-radius: 5px 5px 5px 5px;
+    background-color: #282cf0;
+    color: #ffffff;
+    width: 280px;
+    height: 25px;
+    text-align: center;
+}
+
+.clssheet-syokuin {
+    border-radius: 10px 10px 10px 10px;
+    padding: 5px 5px;
+    margin-top: 0px;
+    margin-left: 0px;
+    width: 320px;
+    height: 460px;
+}
+
+.area-syokuin {
+    display: inline-flex;
+    width: 320px;
+    height: 35px;
+}
+
+.Grid-syokuin {
+    font-size: 15px;
+    margin-top: 5px;
+    width: 310px;
+    height: 400px;
+    border: 1px solid;
+    border-color: #8ffd7a !important;
+}
+
+#Gridsyokuin-id {
+
+    .wj-header {
+        // ヘッダのみ縦横中央寄せ
+        color: $font_color;
+        font-size: 16px;
+        // 下の4つはセット
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .wj-cell-maker {
+        width: 15px;
+        height: 15px;
+    }
+
+    .wj-cells .wj-row:hover .wj-cell:not(.wj-state-selected):not(.wj-state-multi-selected) {
+        transition: all 0s;
+        background: $grid_hover_background;
+    }
+
+
+    .wj-cells .wj-cell.wj-state-multi-selected {
+        background: $grid_selected_background;
+        color: $grid_selected_color;
+    }
+
+    .wj-cells .wj-cell.wj-state-selected {
+        background: $grid_selected_background;
+        color: $grid_selected_color;
+    }
 }
 </style>

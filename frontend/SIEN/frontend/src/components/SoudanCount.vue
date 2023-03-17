@@ -625,7 +625,9 @@ export default {
               tmplist[1]['col' + i] = this.jyoukyouViewAllList[i].ninzu_list;
             }
 
-            this.naiyouViewAllList = result.filter((x) => x.kbn == 2);
+            this.naiyouViewAllList = result.filter(
+              (x) => x.kbn == 2 || x.kbn == -1
+            );
             this.naiyouViewAllList.unshift({
               kaisu_list: '件数',
               kbn: 1,

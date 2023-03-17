@@ -324,7 +324,10 @@
           <div class="scrollbody mb-1 pa-1">
             <keikakuideaIkou
               ref="childikou"
-              :style="{ height: ikouHeight, 'max-height': ikouHeight }"
+              :style="{
+                height: ikouHeight,
+                'max-height': ikouHeight,
+              }"
               v-show="inputTypemodel == 'tab-2' || inputTypemodel == 'tab-0'"
             ></keikakuideaIkou>
             <v-row
@@ -594,7 +597,9 @@ import { putConnect } from '@connect/putConnect';
 import { deleteConnect } from '@connect/deleteConnect';
 import printUtil from '@/utiles/printUtil';
 import messageConst from '@/utiles/MessageConst';
-
+const TRACEID = 123;
+const UNIQID = 3;
+const JIGYOID = 62;
 export default {
   props: {
     dispHideBar: Boolean,
@@ -702,6 +707,11 @@ export default {
     },
   },
   methods: {
+    setPrintEvent() {
+      // 印刷イベントの登録
+      this.$router.app.$off('print_event_global');
+      this.$router.app.$on('print_event_global', this.printExec);
+    },
     confirmSave(event) {
       // 他サイト、ブラウザ終了時の確認
       if (this.formChanged) {
@@ -714,12 +724,12 @@ export default {
         document.getElementById('keikakuIdea').style.height =
           window.innerHeight - this.headerheight + 'px';
       }
-      if (
-        document.getElementsByClassName('scrollbody') != null &&
-        document.getElementsByClassName('scrollbody')[0] != null
-      ) {
-        document.getElementsByClassName('scrollbody')[0].style.height =
-          window.innerHeight - this.headerheightbody + 'px';
+      let element = document.getElementsByClassName('scrollbody');
+      for (let i = 0; i < element.length; i++) {
+        if (document.getElementsByClassName('scrollbody')[i] != null) {
+          document.getElementsByClassName('scrollbody')[i].style.height =
+            window.innerHeight - this.headerheightbody + 'px';
+        }
       }
     },
     /****************
@@ -777,12 +787,12 @@ export default {
 
     putKeikakuan() {
       let params = {
-        uniqid: 3,
-        traceid: 123,
+        uniqid: UNIQID,
+        traceid: TRACEID,
       };
 
       let inputParams = {
-        entpriid: 62,
+        jigyoid: JIGYOID,
         intcode: this.userIntcode,
         cntid: this.viewdata.cntid,
         mymd: dayjs(this.picker).format('YYYYMMDD'),
@@ -833,9 +843,9 @@ export default {
       }
       if (confirm(messageConst.CONFIRM.DELETE)) {
         let params = {
-          uniqid: 3,
-          traceid: 123,
-          jigyoid: 62,
+          uniqid: UNIQID,
+          traceid: TRACEID,
+          jigyoid: JIGYOID,
           intcode: this.userIntcode,
           cntid: this.viewdata.cntid,
         };
@@ -857,6 +867,7 @@ export default {
     },
     userdrawerCliked() {
       this.userdrawer = !this.userdrawer;
+
       let doc = document.getElementById('keikakuIdea');
       if (this.userdrawer) {
         doc.style.minWidth = '1040px';
@@ -881,10 +892,10 @@ export default {
     },
     setRireki() {
       let params = {
-        uniqid: 3,
-        traceid: 123,
-        jigyoid: 62,
-        intcode: this.userIntcode,
+        uniqid: UNIQID,
+        traceid: TRACEID,
+        pJigyoid: JIGYOID,
+        pIntcode: this.userIntcode,
       };
       getConnect('/KeikakuanReki', params, 'SIENP')
         .then((result) => {
@@ -903,11 +914,11 @@ export default {
     },
     setSaisin() {
       let params = {
-        uniqid: 3,
-        traceid: 123,
+        uniqid: UNIQID,
+        traceid: TRACEID,
         keitype: 0,
-        jigyoid: 62,
-        intcode: this.userIntcode,
+        pJigyoid: JIGYOID,
+        pIntcode: this.userIntcode,
       };
       getConnect('/KeikakuanSaishinReki', params, 'SIENP')
         .then((result) => {
@@ -947,11 +958,11 @@ export default {
     },
     rirekiClicked(item) {
       let params = {
-        uniqid: 3,
-        traceid: 123,
+        uniqid: UNIQID,
+        traceid: TRACEID,
         keitype: 0,
-        jigyoid: 62,
-        intcode: this.userIntcode,
+        pJigyoid: JIGYOID,
+        pIntcode: this.userIntcode,
         cntid: item.cntid,
       };
       getConnect('/Keikakuan', params, 'SIENP')
@@ -1005,13 +1016,13 @@ export default {
       let ymd = dayjs(this.picker).format('YYYYMMDD');
       if (confirm(messageConst.CONFIRM.ADD_RIREKI)) {
         let params = {
-          uniqid: 3,
-          traceid: 123,
+          uniqid: UNIQID,
+          traceid: TRACEID,
           keitype: 0,
         };
 
         let inputParams = {
-          entpriid: 62,
+          jigyoid: JIGYOID,
           intcode: this.userIntcode,
           mymd: ymd,
           msiid: 1,
@@ -1055,7 +1066,6 @@ div#keikakuIdea {
   max-width: 1040px;
   // height: var(--height);
   width: auto;
-
   .lightYellow {
     background-color: $view_Data_Read_background;
   }

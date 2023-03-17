@@ -161,7 +161,7 @@
         </div>
 
         <wj-flex-grid
-          id="userListGrid"
+          id="userListUktkGrid"
           :autoSearch="true"
           :headersVisibility="'Column'"
           :selectionMode="3"
@@ -371,8 +371,8 @@ export default {
         document.getElementById('userListUktk').style.height =
           window.innerHeight - 200 + 'px';
       }
-      if (document.getElementById('userListGrid') != null) {
-        document.getElementById('userListGrid').style.height =
+      if (document.getElementById('userListUktkGrid') != null) {
+        document.getElementById('userListUktkGrid').style.height =
           window.innerHeight - 320 + 'px';
       }
     },
@@ -655,7 +655,7 @@ div#userListUktk {
   width: var(--width);
   background: $view_Title_background_Gray;
   min-height: 485px;
-  #userListGrid {
+  #userListUktkGrid {
     // height: var(--height);
     background: $grid_background;
     border: 1px solid $grid_Border_Color;

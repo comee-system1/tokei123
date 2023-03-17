@@ -177,6 +177,25 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-dialog v-model="tourokuScreenFlag" width="1140" eager>
+        <v-card class="common_dialog pb-1">
+          <v-card-title class="dialog_title"> 受付登録 </v-card-title>
+          <v-btn
+            elevation="2"
+            icon
+            small
+            @click="touroku_dialog_close()"
+            class="dialog_close mt-2"
+            ><v-icon dark small> mdi-close </v-icon></v-btn
+          >
+          <UketukeTouroku
+            :dispTab="inputRef"
+            :selectViewData="viewObj"
+            class="ml-1 pb-2"
+            ref="uketukeTouroku"
+          ></UketukeTouroku>
+        </v-card>
+      </v-dialog>
     </v-container>
     <v-dialog
       v-model="datepicker_dialog_sym"
@@ -233,18 +252,60 @@ import * as wjGrid from '@grapecity/wijmo.grid';
 import * as wjCore from '@grapecity/wijmo';
 import sysConst from '@/utiles/const';
 import messageConst from '@/utiles/MessageConst';
+import UketukeTouroku from '../../components/UketukeTouroku.vue';
 import { getConnect } from '../../connect/getConnect';
 import printUtil from '@/utiles/printUtil';
 // const STR_MARU = '○';
 const STYLE_DEFAULT = '';
 const STYLE_BORDER_SOLID = '1px solid black';
 // const GRD_FROZEN_ROW = 1;
+let JIGYOID = 62;
+/*
+ * 列
+ */
+let grdindex = 0;
+const COLS = {
+  YMD: grdindex++,
+  TIME: grdindex++,
+  JIGYOKBN: grdindex++,
+  SINKI: grdindex++,
+  SIENHOUHOU: grdindex++,
+  KANKEI: grdindex++,
+  SIENKOUMOKU: grdindex++,
+  KEIKAKU_NAIYOU: grdindex++,
+  YOUSIKI: grdindex++,
+  KAIGI: grdindex++,
+  SYOUGAISYA: grdindex++,
+  SYOUGAIJI: grdindex++,
+  CHIIKISOUDAN: grdindex++,
+  YOTEI: grdindex++,
+  SYUKI: grdindex++,
+  MONI_KBN: grdindex++,
+  MONI_RIYU: grdindex++,
+  MONI_JISSI: grdindex++,
+  MONI_WEEK: grdindex++,
+  MONI_HENKOU: grdindex++,
+  MONI_KOUSIN: grdindex++,
+  MONI_KAIGI: grdindex++,
+  CHIIKI_NAIYOU: grdindex++,
+  CHIIKI_KAIGI: grdindex++,
+  CHIIKI_SIEN: grdindex++,
+  NAIYOU: grdindex++,
+  HOUHOU: grdindex++,
+  SIEN_NAIYOU: grdindex++,
+  PEER: grdindex++,
+  RANK: grdindex++,
+  SYOYO: grdindex++,
+  KASAN: grdindex++,
+  TATNOU: grdindex++,
+};
 export default {
   props: {
     selectedData: Object, // 検索条件等
   },
   components: {
     UserList,
+    UketukeTouroku,
   },
   data() {
     return {
@@ -284,7 +345,7 @@ export default {
           title: '日付',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: '2.5*',
           align: 'center',
         },
         {
@@ -293,7 +354,7 @@ export default {
           title: '時間',
           chutitle: '',
           kbntitle: '',
-          width: '2*',
+          width: '1.5*',
           align: 'center',
         },
         {
@@ -321,7 +382,7 @@ export default {
           chutitle: '',
           kbntitle: '',
           width: '2*',
-          align: 'center',
+          align: 'left',
         },
         {
           dispkbn: 1,
@@ -329,7 +390,7 @@ export default {
           title: '関係/相談者',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: '4*',
           align: 'left',
         },
         {
@@ -349,7 +410,7 @@ export default {
           title: '内容',
           chutitle: '',
           kbntitle: '計画作成',
-          width: '3*',
+          width: '2.5*',
           align: 'left',
         },
         {
@@ -358,7 +419,7 @@ export default {
           title: '様\n式',
           chutitle: '',
           kbntitle: '計画作成',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -367,7 +428,7 @@ export default {
           title: '担\n会\n議',
           chutitle: '',
           kbntitle: '計画作成',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -376,7 +437,7 @@ export default {
           title: '障\n害\n者',
           chutitle: '',
           kbntitle: '受給者証',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -385,7 +446,7 @@ export default {
           title: '障\n害\n児',
           chutitle: '',
           kbntitle: '受給者証',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -394,7 +455,7 @@ export default {
           title: '地\n域\n相',
           chutitle: '',
           kbntitle: '受給者証',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -412,7 +473,7 @@ export default {
           title: '終\n期\n月',
           chutitle: '',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -421,7 +482,7 @@ export default {
           title: '区分',
           chutitle: '中止・延期',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '1.4*',
           align: 'center',
         },
         {
@@ -439,7 +500,7 @@ export default {
           title: '実\n施',
           chutitle: '',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -448,7 +509,7 @@ export default {
           title: '週\n間',
           chutitle: '',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -457,7 +518,7 @@ export default {
           title: '変\n更',
           chutitle: '案',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -466,7 +527,7 @@ export default {
           title: '更\n新',
           chutitle: '案',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -475,7 +536,7 @@ export default {
           title: '担\n会\n議',
           chutitle: '',
           kbntitle: 'モニタリング',
-          width: '1*',
+          width: '0.8*',
           align: 'center',
         },
         {
@@ -520,7 +581,7 @@ export default {
           title: '方法',
           chutitle: '',
           kbntitle: '支援内容',
-          width: '1.5*',
+          width: '1*',
           align: 'left',
         },
         {
@@ -534,20 +595,20 @@ export default {
         },
         {
           dispkbn: 1,
-          dataname: 'sdntiork',
+          dataname: 'peermark',
           title: 'ピ\nア\nカ',
           chutitle: '',
           kbntitle: '',
-          width: '1*',
+          width: '0.7*',
           align: 'center',
         },
         {
           dispkbn: 1,
-          dataname: 'sdntiork',
+          dataname: 'ranknm',
           title: 'ラ\nン\nク',
           chutitle: '',
           kbntitle: '',
-          width: '1*',
+          width: '0.7*',
           align: 'center',
         },
         {
@@ -565,7 +626,7 @@ export default {
           title: '加算項目',
           chutitle: '',
           kbntitle: '',
-          width: '3*',
+          width: '2*',
           align: 'left',
         },
         {
@@ -626,6 +687,8 @@ export default {
       inputRef: this.getDispKbn(),
       mainGrid: {},
       thickList: [2, 9],
+      tourokuScreenFlag: false,
+      viewObj: {},
     };
   },
   mounted() {
@@ -661,6 +724,16 @@ export default {
       });
       flexGrid.addEventListener(flexGrid.hostElement, 'mouseleave', () => {
         this.filter.showFilterIcons = false;
+      });
+
+      // クリックイベント
+      flexGrid.addEventListener(flexGrid.hostElement, 'click', (e) => {
+        let ht = flexGrid.hitTest(e);
+        if (ht.panel == flexGrid.cells) {
+          let tmpitem = flexGrid.cells.rows[ht.row].dataItem;
+          this.tourokuScreenFlag = true;
+          this.setDispdata(tmpitem);
+        }
       });
 
       flexGrid.beginUpdate();
@@ -710,14 +783,11 @@ export default {
         col.align = this.headerList[colIndex].align;
         col.allowMerging = true;
         col.multiLine = true;
-        if (colIndex == 4 || colIndex == 7) {
-          col.allowResizing = true;
-        } else {
-          col.allowResizing = false;
-        }
-        if (colIndex == 0) {
-          col.format = sysConst.FORMAT.Ymd;
-        }
+        col.allowResizing = true;
+
+        // if (colIndex == 0) {
+        //   col.format = sysConst.FORMAT.Ymd;
+        // }
 
         flexGrid.columnHeaders.setCellData(
           0,
@@ -761,27 +831,63 @@ export default {
         let tmpitem = e.panel.rows[e.row].dataItem;
         if (this.selSyousaiDispUmuIndex == 1) {
           if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
-            if (e.col == 25) {
+            if (e.col == COLS.NAIYOU) {
               e.cell.innerHTML =
-                '<font color="#276bc5">' +
+                '<font color="#276bc5"><' +
                 wjCore.escapeHtml(tmpitem.cskmknm) +
-                '</font>' +
+                '></font>' +
                 '<div>' +
                 wjCore.escapeHtml(tmpitem.naiyo) +
                 '</div>';
             }
           }
         }
+        if (e.col == COLS.KANKEI) {
+          if (tmpitem.sdnkanid != 2) {
+            e.cell.innerHTML =
+              wjCore.escapeHtml(e.cell.innerHTML) +
+              ' ' +
+              wjCore.escapeHtml(tmpitem.sdnnam);
+            if (tmpitem.sdnnam1Kankei != undefined) {
+              e.cell.innerHTML +=
+                '<br/>' +
+                wjCore.escapeHtml(tmpitem.sdnnam1Kankei) +
+                ' ' +
+                wjCore.escapeHtml(tmpitem.sdnnam1);
+            }
+            if (tmpitem.sdnnam2Kankei != undefined) {
+              e.cell.innerHTML +=
+                '<br/>' +
+                wjCore.escapeHtml(tmpitem.sdnnam2Kankei) +
+                ' ' +
+                wjCore.escapeHtml(tmpitem.sdnnam2);
+            }
+            if (tmpitem.sdnnam3Kankei != undefined) {
+              e.cell.innerHTML +=
+                '<br/>' +
+                wjCore.escapeHtml(tmpitem.sdnnam3Kankei) +
+                ' ' +
+                wjCore.escapeHtml(tmpitem.sdnnam3);
+            }
+          }
+        }
 
         if (
           e.col == 0 ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 3) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 6) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 15) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON && e.col == 17) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 9) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 12) ||
-          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU && e.col == 21)
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON &&
+            e.col == COLS.SINKI) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON &&
+            e.col == COLS.SIENKOUMOKU) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON &&
+            e.col == COLS.MONI_KBN) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON &&
+            e.col == COLS.MONI_JISSI) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU &&
+            e.col == COLS.KAIGI) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU &&
+            e.col == COLS.CHIIKISOUDAN) ||
+          (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU &&
+            e.col == COLS.MONI_KAIGI)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -794,10 +900,10 @@ export default {
         }
       } else {
         if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
-          if (7 <= e.col && e.col <= 12) {
+          if (COLS.KEIKAKU_NAIYOU <= e.col && e.col <= COLS.CHIIKISOUDAN) {
             e.cell.style.backgroundColor =
               sysConst.COLOR.viewTitleBackgroundGreen;
-          } else if (13 <= e.col && e.col <= 21) {
+          } else if (COLS.YOTEI <= e.col && e.col <= COLS.MONI_KAIGI) {
             e.cell.style.backgroundColor =
               sysConst.COLOR.viewTitleBackgroundBlue;
           } else {
@@ -805,7 +911,7 @@ export default {
               sysConst.COLOR.viewTitleBackgroundOrange;
           }
         } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
-          if (22 <= e.col && e.col <= 24) {
+          if (COLS.CHIIKI_NAIYOU <= e.col && e.col <= COLS.CHIIKI_SIEN) {
             e.cell.style.backgroundColor =
               sysConst.COLOR.viewTitleBackgroundGreen;
           } else {
@@ -832,19 +938,15 @@ export default {
         //     sysConst.COLOR.viewTitleBackgroundOrange;
         // }
         if (
-          (e.row == 0 && e.col == 0) ||
-          // (e.row == 0 && e.col == 1) ||
-          // (e.row == 0 && e.col == 4) ||
-          (e.row == 0 && e.col == 7) ||
-          (e.row == 0 && e.col == 10) ||
-          (e.row == 0 && e.col == 13) ||
-          (e.row == 0 && e.col == 22) ||
-          // (e.row == 1 && e.col == 3) ||
-          // (e.row == 1 && e.col == 6) ||
-          (e.row == 1 && e.col == 9) ||
-          (e.row == 1 && e.col == 12) ||
-          (e.row == 1 && e.col == 21) ||
-          (e.row == 1 && e.col == 24)
+          (e.row == 0 && e.col == COLS.YMD) ||
+          (e.row == 0 && e.col == COLS.KEIKAKU_NAIYOU) ||
+          (e.row == 0 && e.col == COLS.SYOUGAISYA) ||
+          (e.row == 0 && e.col == COLS.YOTEI) ||
+          (e.row == 0 && e.col == COLS.CHIIKI_NAIYOU) ||
+          (e.row == 1 && e.col == COLS.KAIGI) ||
+          (e.row == 1 && e.col == COLS.CHIIKISOUDAN) ||
+          (e.row == 1 && e.col == COLS.MONI_KAIGI) ||
+          (e.row == 1 && e.col == COLS.CHIIKI_SIEN)
         ) {
           e.cell.style.borderRight = STYLE_BORDER_SOLID;
         }
@@ -860,9 +962,9 @@ export default {
       flexGrid.beginUpdate();
       if (flexGrid.columns.length > 0) {
         if (this.selSyousaiDispUmuIndex == 1) {
-          flexGrid.columns[3].binding = this.headerList[16].dataname;
+          flexGrid.columns[COLS.SINKI].binding = this.headerList[16].dataname;
         } else {
-          flexGrid.columns[3].binding = this.headerList[16].dataname2;
+          flexGrid.columns[COLS.SINKI].binding = this.headerList[16].dataname2;
         }
       }
       flexGrid.endUpdate();
@@ -901,20 +1003,21 @@ export default {
       this.setViewData(true);
     },
     setViewData(isAll) {
+      if (!this.userInfo.riid || this.userInfo.riid == 0) {
+        alert('利用者' + messageConst.INPUT_ERROR.NO_SELECT);
+        return;
+      }
       if (isAll) {
         if (this.inputRef == sysConst.JIGYO_KBN_NAME.KIHON) {
           let params = {
-            uniqid: 3,
-            traceid: 123,
-            pJigyoid: 62,
+            pJigyoid: JIGYOID,
             pIntcode: this.userInfo.riid,
             pSymd: this.startymd.format('YYYYMMDD'),
             pEymd: this.endymd.format('YYYYMMDD'),
+            pHostName: 1,
           };
           getConnect('/Uktk', params, 'SIENT')
             .then((result) => {
-              console.log(12345);
-              console.log(result);
               this.viewDataAll = result;
               this.userFilter();
               this.screenFlag = false;
@@ -929,17 +1032,14 @@ export default {
             });
         } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.KEIKAKU) {
           let params = {
-            uniqid: 3,
-            traceid: 123,
-            pJigyoid: 62,
+            pJigyoid: JIGYOID,
             pIntcode: this.userInfo.riid,
             pSrhym: this.startymd.format('YYYYMM'),
             pSrheym: this.endymd.format('YYYYMM'),
+            pHostName: 1,
           };
           getConnect('/Kojinrireki', params, 'SIENT')
             .then((result) => {
-              console.log(12345);
-              console.log(result);
               this.viewDataAll = result;
               this.userFilter();
               this.screenFlag = false;
@@ -954,18 +1054,15 @@ export default {
             });
         } else if (this.inputRef == sysConst.JIGYO_KBN_NAME.CHIIKI) {
           let params = {
-            uniqid: 3,
-            traceid: 123,
-            pJigyoid: 62,
+            pJigyoid: JIGYOID,
             pIntcode: this.userInfo.riid,
             pSym: this.startymd.format('YYYYMM'),
             pEym: this.endymd.format('YYYYMM'),
             pSrcType: 0,
+            pHostName: 1,
           };
           getConnect('/ChikiKojinrireki', params, 'SIENC')
             .then((result) => {
-              console.log(12345);
-              console.log(result);
               this.viewDataAll = result;
               this.userFilter();
               this.screenFlag = false;
@@ -1141,6 +1238,22 @@ export default {
         this.inputRef = sysConst.JIGYO_KBN_NAME.CHIIKI;
       }
       return this.inputRef;
+    },
+    touroku_dialog_close() {
+      this.tourokuScreenFlag = false;
+      if (this.$refs.uketukeTouroku.getEditflg()) {
+        // データ読込
+        this.setViewData(true);
+      }
+    },
+    setDispdata(tmpitem) {
+      if (this.inputRef != sysConst.JIGYO_KBN_NAME.KIHON) {
+        tmpitem.intcode = this.userInfo.riid;
+        tmpitem.rname = this.userInfo.names;
+        tmpitem.riyocode = Number(this.userInfo.riyocode);
+        tmpitem.riyocodeD = this.userInfo.riyocode;
+      }
+      this.viewObj = tmpitem;
     },
     printExec() {
       printUtil.setGridList([this.mainGrid]);

@@ -42,7 +42,9 @@
           class="pa-0 mr-1"
           :style="{ 'max-width': leftWidth }"
           v-show="
-            tab == 'state' || (tab == 'idea' && userdrawer) || tab == 'plan'
+            tab == 'state' ||
+            (tab == 'idea' && userdrawer) ||
+            (tab == 'plan' && userdrawer)
           "
         >
           <user-list
@@ -70,17 +72,33 @@
                 v-show="ideaFlag == 'create'"
                 ref="create"
               ></KeikakuIdea>
-              <KeikakuWeek3 v-show="ideaFlag == 'weekplan3'"></KeikakuWeek3>
+              <weekPlan
+                v-show="ideaFlag == yosikiMenu[1].key"
+                :ref="yosikiMenu[1].key"
+                :kubun="3"
+              ></weekPlan>
             </div>
           </v-tab-item>
           <v-tab-item value="plan" transition="none">
             <div v-show="tab == 'plan'">
+              <KeikakuIdea2
+                :selectedUserObj="selectedUserObj"
+                @userDispChange="userdrawer = $event"
+                v-show="ideaFlag == 'create'"
+                ref="plan"
+              ></KeikakuIdea2>
+              <!--
               <KeikakuPlan
                 :selectedUserObj="selectedUserObj"
-                v-show="planFlag == 'create'"
+                v-show="ideaFlag == 'create'"
                 ref="plan"
               ></KeikakuPlan>
-              <KeikakuWeek v-show="planFlag == 'weekplan'"></KeikakuWeek>
+              -->
+              <weekPlan2
+                v-show="ideaFlag == yosikiMenu[1].key2"
+                :ref="yosikiMenu[1].key2"
+                :kubun="4"
+              ></weekPlan2>
             </div>
           </v-tab-item>
         </v-col>
@@ -94,9 +112,11 @@ import ls from '@/utiles/localStorage';
 import KeikakuLists from '../../components/KeikakuLists.vue';
 import AttendeeState from '../../components/AttendeeState.vue';
 import KeikakuIdea from '../../components/KeikakuIdea.vue';
-import KeikakuPlan from '../../components/KeikakuPlan.vue';
-import KeikakuWeek from '../../components/KeikakuWeek.vue';
-import KeikakuWeek3 from '../../components/KeikakuWeek3.vue';
+import KeikakuIdea2 from '../../components/KeikakuIdea.vue';
+// import KeikakuPlan from '../../components/KeikakuPlan.vue'; // KeikakuPlan.vue不要確認？
+//import KeikakuWeek from '../../components/KeikakuWeek.vue'; // keikakuweek.vue不要確認？2,3も併せて
+import weekPlan from '../../components/WeekPlan.vue';
+import weekPlan2 from '../../components/WeekPlan.vue'; //計画作成の週間計画表のためコンポーネント名を変更して利用
 import UserList from '../../components/UserList.vue';
 
 export default {
@@ -104,9 +124,11 @@ export default {
     KeikakuLists,
     AttendeeState,
     KeikakuIdea,
-    KeikakuPlan,
-    KeikakuWeek,
-    KeikakuWeek3,
+    KeikakuIdea2,
+    // KeikakuPlan,
+    //  KeikakuWeek,
+    weekPlan,
+    weekPlan2,
     UserList,
   },
 
@@ -125,7 +147,10 @@ export default {
             this.yosikiMenu[i].group == 1)
         ) {
           yosikiMenu.push({
-            key: this.yosikiMenu[i].key,
+            key:
+              this.tab == 'idea'
+                ? this.yosikiMenu[i].key
+                : this.yosikiMenu[i].key2,
             name: this.yosikiMenu[i].name,
             group: this.yosikiMenu[i].group,
           });
@@ -139,21 +164,22 @@ export default {
       leftWidth: '280px',
       tab: ls.getlocalStorageEncript(ls.KEY.SansyoTab), // タブの初期状態
       subtab: 0,
-      ideaFlag: 'create', //create:計画案作成 weekplan:週間計画表
-      planFlag: 'create', //create:計画案作成 weekplan:週間計画表
+      ideaFlag: 'create', //create:計画案作成 weekPlan:週間計画表
+      planFlag: 'create', //create:計画案作成 weekPlan:週間計画表
       yousikiLabel: false,
       yosikiMenu: [
         {
           key: 'create',
+          key2: 'create',
           name: '計画案',
           group: 1,
         },
         {
-          key: 'weekplan3',
+          key: 'weekPlan',
+          key2: 'weekPlan2',
           name: '週間計画表',
           group: 1,
         },
-
         {
           key: 'basic',
           name: '基本情報',
@@ -207,7 +233,7 @@ export default {
       //alert(hrefval);
       this.yousikiLabel = false;
       // alert(this.ideaFlag);
-      if (hrefval == 'idea') {
+      if (hrefval == 'idea' || hrefval == 'plan') {
         this.ideaFlag = 'create';
       }
       if (hrefval == 'state' || hrefval == 'idea' || hrefval == 'plan') {
@@ -220,6 +246,17 @@ export default {
     },
     tabsYosikiChange(value) {
       this.ideaFlag = value;
+      // weekPlanを指定
+      if (value == this.yosikiMenu[1].key) {
+        this.$refs.weekPlan.setPrintEvent();
+      }
+      if (value == this.yosikiMenu[1].key2) {
+        this.$refs.weekPlan2.setPrintEvent();
+      }
+      // 計画案を指定
+      if (value == this.yosikiMenu[0].key) {
+        this.$refs.create.setPrintEvent();
+      }
     },
     /****************
      * ユーザー一覧を押下
@@ -234,11 +271,13 @@ export default {
       if (this.tab == 'idea') {
         if (this.$refs.create != undefined) {
           this.$refs.create.setUserdata(row);
+          this.$refs.weekPlan.setUserdata(row);
         }
       }
       if (this.tab == 'plan') {
         if (this.$refs.plan != undefined) {
           this.$refs.plan.setUserdata(row);
+          this.$refs.weekPlan2.setUserdata(row);
         }
       }
     },
