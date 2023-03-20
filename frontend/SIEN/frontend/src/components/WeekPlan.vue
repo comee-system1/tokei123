@@ -130,7 +130,7 @@
           <!--time-->
           <text
             x="50"
-            :y="times.y + timeMemori * times.lot"
+            :y="times.y"
             class="time"
             v-for="times in timeLine"
             :key="`time-${times.id}`"
@@ -624,6 +624,7 @@ export default {
       nichijokatsudo: '',
       shugaiservice: '',
       zentaizou: '',
+      windowStartHeight: 0,
     };
   },
   props: {
@@ -632,39 +633,7 @@ export default {
   },
   created() {
     KBN = this.kubun ?? KBN;
-    // タイムラインの配列を作成
-    let timeline = []; // 2時間刻み用
-    let timelineAll = []; // 1時間刻み用
-    let time = 6;
-    let y = 50;
-    for (let i = 1; i <= 23; i++) {
-      let dispTime = '';
-      let dispTimeAll = '';
-      if (i % 2 == 1) {
-        let hour = ('00' + time).slice(-2);
-        // 24時の時は0を表示
-        if (hour >= 24) {
-          hour = '0' + (hour - 24);
-        }
-        dispTime = hour + ':00';
-      }
-      dispTimeAll = ('00' + time).slice(-2) + ':00';
-
-      timeline.push({
-        id: i,
-        time: dispTime,
-        y: y,
-        lot: i * 0.3, // リサイズしたときの幅の割合
-      });
-      timelineAll.push({
-        id: i,
-        time: dispTimeAll,
-        y: y,
-      });
-      time++;
-      y = y + this.calendarSepalate;
-    }
-    this.timeLine = timeline;
+    this.windowStartHeight = window.innerHeight;
   },
   computed: {},
   mounted() {
@@ -689,7 +658,6 @@ export default {
 
       // カレンダーの高さ変更
       let height = (window.innerHeight - 190) / 24;
-      console.log(height);
       let m = 0;
       if (height < CALENDARSEPALATE) {
         height = CALENDARSEPALATE;
@@ -699,11 +667,39 @@ export default {
         document.getElementById('calendar').style.minHeight = '800px';
       }
 
+      let y = 50; // 時間軸の高さのスタート位置
       if (height > CALENDARSEPALATE) {
-        m = (window.innerHeight - 170) / 20;
+        m = (window.innerHeight - 170) / 19;
+        y = 50 + (window.innerHeight - this.windowStartHeight) + 22;
       }
+
       this.calendarSepalate = height;
       this.timeMemori = m;
+      // タイムラインの配列を作成
+      let timeline = []; // 2時間刻み用
+      let time = 6;
+
+      for (let i = 1; i <= 23; i++) {
+        let dispTime = '';
+        if (i % 2 == 1) {
+          let hour = ('00' + time).slice(-2);
+          // 24時の時は0を表示
+          if (hour >= 24) {
+            hour = '0' + (hour - 24);
+          }
+          dispTime = hour + ':00';
+        }
+        timeline.push({
+          id: i,
+          time: dispTime,
+          y: y,
+          lot: i * 0.35, // リサイズしたときの幅の割合
+        });
+
+        time++;
+        y = y + this.calendarSepalate;
+      }
+      this.timeLine = timeline;
     },
     onClearDaliy() {
       // 主な日常生活上の活動をクリア
@@ -831,18 +827,20 @@ export default {
         });
       });
 
-      let errorFlag = this.registDataErrorCheck(tmp);
-      if (errorFlag) {
-        alert(ERRORMESSAGE);
-      } else if (this.input_komoku.length == 0) {
-        alert('項目' + MessageConst.INPUT_ERROR.NO_INPUT);
-      } else if (this.input_week.length == 0) {
-        alert('曜日' + MessageConst.INPUT_ERROR.NO_INPUT);
-      } else if (!this.input_time_start) {
-        alert('開始時間' + MessageConst.INPUT_ERROR.NO_INPUT);
-      } else if (!this.input_time_end) {
-        alert('終了時間' + MessageConst.INPUT_ERROR.NO_INPUT);
-      } else {
+      //let errorFlag = this.registDataErrorCheck(tmp);
+      // if (errorFlag) {
+      //   alert(ERRORMESSAGE);
+      // } else if (this.input_komoku.length == 0) {
+      //   alert('項目' + MessageConst.INPUT_ERROR.NO_INPUT);
+      // } else if (this.input_week.length == 0) {
+      //   alert('曜日' + MessageConst.INPUT_ERROR.NO_INPUT);
+      // } else if (!this.input_time_start) {
+      //   alert('開始時間' + MessageConst.INPUT_ERROR.NO_INPUT);
+      // } else if (!this.input_time_end) {
+      //   alert('終了時間' + MessageConst.INPUT_ERROR.NO_INPUT);
+      // } else
+
+      {
         let body = {
           entpriid: ENTPRIID,
           riid: this.riid,
@@ -865,6 +863,7 @@ export default {
           putConnect(SYUKANKMK_URL, params2, FOLDER, body)
             .then((result) => {
               if (result.okflg) {
+                console.log(result);
                 alert('put okflg=>' + result.okflg);
                 // データの再表示
                 _self.getWeekSaihinPlanData();
@@ -880,6 +879,7 @@ export default {
           postConnect(SYUKANKMK_URL, params2, FOLDER, body)
             .then((result) => {
               if (result.okflg) {
+                console.log(result);
                 alert('post okflg=>' + result.okflg);
                 // データの再表示
                 _self.getWeekSaihinPlanData();
@@ -1331,18 +1331,14 @@ export default {
      */
     getWeekSaihinPlanData() {
       if (this.riid > 0) {
-        console.log(SAISHINREKI_URL);
-        /*
         let params = {
           pJigyoid: JIGYOID,
           pIntcode: this.riid,
         };
         let _self = this;
 
-        
         getConnect(SAISHINREKI_URL + '/' + KBN, params, FOLDER)
           .then((result) => {
-            console.log(result);
             this.rekiid = result.rekiid;
             this.nichijokatsudo = result.nichijokatsudo;
             this.shugaiservice = result.shugaiservice;
@@ -1358,7 +1354,8 @@ export default {
           .catch(function (e) {
             alert(e);
           });
-        */
+
+        /*
         let result = {
           cntid: 1,
           entpriid: 100,
@@ -1411,6 +1408,7 @@ export default {
         };
 
         this.getWeekNikData(result.nik);
+        */
       }
     },
 
@@ -1474,6 +1472,7 @@ export default {
         pIntcode: this.riid,
       };
       let _self = this;
+      this.windowStartHeight;
       getConnect(KEIKAUREKI_URL + '/' + KBN, params, FOLDER).then((result) => {
         // 取得データをbinding名に指定
         let temp = result.filter(function (value) {
